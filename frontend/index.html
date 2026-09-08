@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#101114" />
+  <title>xbow-perso</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;background:#0b0c0f;color:#f4f6f8}body{margin:0}main{max-width:760px;margin:auto;padding:20px}.card{background:#15171c;border:1px solid #282b33;border-radius:16px;padding:16px;margin:14px 0}h1{font-size:28px;margin:8px 0}h2{font-size:18px}label{display:block;font-size:13px;color:#b8bdc9;margin:12px 0 6px}input,textarea{width:100%;box-sizing:border-box;border-radius:10px;border:1px solid #343945;background:#0f1116;color:white;padding:12px;font-size:16px}button{width:100%;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700;background:#f4f6f8;color:#0b0c0f;margin-top:12px}.muted{color:#8f96a3;font-size:13px}.ok{color:#8ee6a6}.err{color:#ff9292}pre{white-space:pre-wrap;word-break:break-word;background:#0d0f13;padding:12px;border-radius:10px;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>xbow-perso</h1>
+  <p class="muted">Plateforme autonome pour tests de sécurité explicitement autorisés.</p>
+
+  <section class="card">
+    <h2>Nouvelle campagne</h2>
+    <label>Nom</label><input id="name" placeholder="Programme Example" />
+    <label>URL principale</label><input id="url" placeholder="https://app.example.com" />
+    <label>Référence d'autorisation</label><input id="auth" placeholder="HackerOne program / URL des règles / référence écrite" />
+    <label>Cibles autorisées (une par ligne)</label><textarea id="allowed" rows="4" placeholder="app.example.com\n*.api.example.com"></textarea>
+    <label>Cibles exclues (une par ligne)</label><textarea id="denied" rows="3" placeholder="status.example.com"></textarea>
+    <div class="grid">
+      <div><label>Req/s maximum</label><input id="rps" type="number" value="2" min="0.1" max="20" step="0.1" /></div>
+      <div><label>Notes</label><input id="notes" placeholder="Règles spécifiques du programme" /></div>
+    </div>
+    <button id="create">Créer la campagne</button>
+    <button id="start" disabled>Démarrer</button>
+    <p id="status" class="muted">Aucune campagne active.</p>
+  </section>
+
+  <section class="card">
+    <h2>État</h2>
+    <pre id="output">Prêt.</pre>
+  </section>
+</main>
+<script>
+let campaign=null;
+const $=id=>document.getElementById(id);
+const lines=id=>$(id).value.split('\n').map(x=>x.trim()).filter(Boolean);
+async function api(path, opts={}){const r=await fetch('/api'+path,{headers:{'content-type':'application/json'},...opts}); const data=await r.json(); if(!r.ok)throw new Error(JSON.stringify(data)); return data}
+$('create').onclick=async()=>{try{
+ const payload={name:$('name').value,primary_url:$('url').value,rules:{authorization_reference:$('auth').value,allowed_targets:lines('allowed'),denied_targets:lines('denied'),max_requests_per_second:Number($('rps').value),destructive_testing:false,denial_of_service:false,social_engineering:false,credential_attacks:false,automated_scanning:true,notes:$('notes').value}};
+ campaign=await api('/campaigns',{method:'POST',body:JSON.stringify(payload)}); $('start').disabled=false; $('status').className='ok'; $('status').textContent='Campagne prête : '+campaign.id; $('output').textContent=JSON.stringify(campaign,null,2);
+}catch(e){$('status').className='err';$('status').textContent=e.message}}
+$('start').onclick=async()=>{if(!campaign)return;try{const r=await api('/campaigns/'+campaign.id+'/start',{method:'POST'});$('status').className='ok';$('status').textContent='Campagne démarrée';$('output').textContent=JSON.stringify(r,null,2)}catch(e){$('status').className='err';$('status').textContent=e.message}}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>
