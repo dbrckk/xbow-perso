@@ -5,6 +5,16 @@ services:
     environment:
       DRY_RUN: ${DRY_RUN:-true}
       WORKER_TIMEOUT_SECONDS: ${WORKER_TIMEOUT_SECONDS:-7200}
+      XBOW_DB_PATH: /data/xbow.sqlite3
+    volumes:
+      - xbow-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks: [control]
 
   frontend:
@@ -13,7 +23,19 @@ services:
     depends_on: [backend]
     ports:
       - "${XBOW_PORT:-8080}:80"
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=32m
+      - /var/run:size=8m
+      - /tmp:size=16m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks: [control]
+
+volumes:
+  xbow-data:
 
 networks:
   control:
