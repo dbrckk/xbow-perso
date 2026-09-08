@@ -1,0 +1,109 @@
+from __future__ import annotations
+
+import json
+import os
+from dataclasses import asdict, dataclass
+from urllib.error import HTTPError, URLError
+from urllib.parse import urljoin, urlparse
+from urllib.request import HTTPRedirectHandler, Request, build_opener
+
+
+class ValidationPolicyError(RuntimeError):
+    pass
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+@dataclass(frozen=True)
+class ProbeResult:
+    status: str
+    url: str
+    http_status: int | None = None
+    content_type: str | None = None
+    body_preview: str = ""
+    error: str | None = None
+
+    def json_bytes(self) -> bytes:
+        return json.dumps(asdict(self), sort_keys=True, ensure_ascii=False).encode("utf-8")
+
+
+def _bool_env(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def build_probe_url(campaign, finding) -> str:
+    """Resolve one read-only validation URL and fail closed on scope ambiguity."""
+    from .main import is_host_allowed
+
+    primary = str(campaign.target.primary_url)
+    candidate = finding.endpoint or finding.asset or primary
+    if candidate.startswith("/"):
+        candidate = urljoin(primary, candidate)
+    elif "://" not in candidate:
+        # Bare hosts are not sufficient for an HTTP reproduction. Falling back to
+        # the campaign primary URL avoids guessing a path or scheme.
+        candidate = primary
+
+    parsed = urlparse(candidate)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        raise ValidationPolicyError("validation requires an explicit HTTP(S) URL")
+    host = parsed.hostname.lower().rstrip(".")
+    rules = campaign.target.rules
+    if not is_host_allowed(host, rules.allowed_targets, rules.denied_targets):
+        raise ValidationPolicyError("validation URL is outside declared scope")
+    if parsed.username or parsed.password:
+        raise ValidationPolicyError("userinfo in validation URLs is forbidden")
+    return candidate
+
+
+def safe_http_probe(campaign, finding) -> ProbeResult:
+    """Perform one bounded, non-destructive GET for independent evidence capture.
+
+    Active validation is off by default. Redirects are deliberately not followed,
+    credentials are never injected, and the response body is truncated. This probe
+    observes a target; it never decides that a vulnerability is confirmed.
+    """
+    url = build_probe_url(campaign, finding)
+    if not _bool_env("XBOW_ENABLE_HTTP_VALIDATION", False):
+        return ProbeResult(status="dry_run", url=url)
+
+    timeout = min(max(float(os.getenv("XBOW_VALIDATION_TIMEOUT_SECONDS", "10")), 1.0), 30.0)
+    max_bytes = min(max(int(os.getenv("XBOW_VALIDATION_MAX_BYTES", "262144")), 1024), 1_048_576)
+    request = Request(
+        url,
+        method="GET",
+        headers={
+            "User-Agent": "xbow-perso-independent-validator/1.0",
+            "Accept": "*/*",
+            "Cache-Control": "no-cache",
+        },
+    )
+    opener = build_opener(_NoRedirect())
+    try:
+        with opener.open(request, timeout=timeout) as response:
+            body = response.read(max_bytes + 1)[:max_bytes]
+            return ProbeResult(
+                status="observed",
+                url=url,
+                http_status=int(response.status),
+                content_type=response.headers.get("Content-Type"),
+                body_preview=body.decode("utf-8", errors="replace"),
+            )
+    except HTTPError as exc:
+        # Redirects and non-2xx responses are observations, not execution failures.
+        body = exc.read(max_bytes + 1)[:max_bytes] if exc.fp else b""
+        return ProbeResult(
+            status="observed",
+            url=url,
+            http_status=int(exc.code),
+            content_type=exc.headers.get("Content-Type") if exc.headers else None,
+            body_preview=body.decode("utf-8", errors="replace"),
+        )
+    except (URLError, TimeoutError, OSError) as exc:
+        return ProbeResult(status="error", url=url, error=str(exc))

@@ -9,6 +9,7 @@ from .jobqueue import JobQueue
 from .main import Campaign, CampaignState, Finding, utcnow
 from .report import render_markdown
 from .storage import Storage
+from .validator import ValidationPolicyError, safe_http_probe
 from .worker import (
     WorkerPolicyError,
     build_strix_plan,
@@ -69,26 +70,48 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
 
 
 def process_validation(job: dict, store: Storage) -> None:
-    """Independent validation gate that never self-confirms from discovery output.
-
-    Until a second active validator is configured, the worker records that an
-    independent reproduction is required and leaves the finding unconfirmed.
-    This is deliberately fail-closed: report generation cannot promote it.
-    """
+    """Capture independent read-only HTTP evidence without self-confirming findings."""
     campaign = _campaign(store, job["campaign_id"])
     finding_id = str(job["payload"].get("finding_id") or "")
     finding = next((f for f in campaign.findings if f.id == finding_id), None)
     if not finding:
         raise KeyError(f"finding {finding_id} not found")
-    campaign.events.append(
-        {
-            "type": "independent_validation_required",
-            "finding_id": finding.id,
-            "job_id": job["id"],
-            "discovered_by": finding.discovered_by,
-            "at": utcnow(),
-        }
+    if finding.discovered_by == "independent-http-validator":
+        raise ValidationPolicyError("discovery agent cannot validate its own finding")
+
+    result = safe_http_probe(campaign, finding)
+    artifact = store.put_artifact(
+        campaign.id,
+        "validation",
+        result.json_bytes(),
+        media_type="application/json",
+        finding_id=finding.id,
     )
+    event = {
+        "type": "independent_validation_observation",
+        "finding_id": finding.id,
+        "job_id": job["id"],
+        "validator": "independent-http-validator",
+        "probe_status": result.status,
+        "http_status": result.http_status,
+        "artifact_id": artifact["id"],
+        "at": utcnow(),
+    }
+    campaign.events.append(event)
+
+    # A network observation is evidence, not a vulnerability verdict. Promotion to
+    # confirmed still requires an independent semantic validator or explicit review.
+    finding.status = "validation_required"
+    if result.status == "error":
+        campaign.events.append(
+            {
+                "type": "independent_validation_error",
+                "finding_id": finding.id,
+                "job_id": job["id"],
+                "error": result.error,
+                "at": utcnow(),
+            }
+        )
     _save(store, campaign)
 
 
@@ -113,10 +136,7 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
             process_report(job, store)
         else:
             raise ValueError("unsupported job kind")
-    except (WorkerPolicyError, ValueError, KeyError) as exc:
-        # Policy/schema failures are deterministic. Consume all retries immediately
-        # by finishing normally; they remain visible in campaign/job events without
-        # accidentally executing a broader fallback.
+    except (WorkerPolicyError, ValidationPolicyError, ValueError, KeyError) as exc:
         queue.finish(job["id"], False, str(exc))
     except Exception as exc:
         queue.finish(job["id"], False, str(exc))
