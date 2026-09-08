@@ -4,13 +4,40 @@ services:
     restart: unless-stopped
     environment:
       DRY_RUN: ${DRY_RUN:-true}
-      WORKER_TIMEOUT_SECONDS: ${WORKER_TIMEOUT_SECONDS:-7200}
       XBOW_DB_PATH: /data/xbow.sqlite3
+      XBOW_ARTIFACT_ROOT: /data/artifacts
     volumes:
       - xbow-data:/data
     read_only: true
     tmpfs:
       - /tmp:size=64m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks: [control]
+
+  worker:
+    build: ./backend
+    command: ["python", "-m", "app.worker_service"]
+    restart: unless-stopped
+    depends_on: [backend]
+    environment:
+      DRY_RUN: ${DRY_RUN:-true}
+      XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
+      WORKER_TIMEOUT_SECONDS: ${WORKER_TIMEOUT_SECONDS:-7200}
+      XBOW_DB_PATH: /data/xbow.sqlite3
+      XBOW_ARTIFACT_ROOT: /data/artifacts
+      XBOW_STRIX_RUN_ROOT: /data/strix_runs
+      XBOW_WORKER_POLL_SECONDS: ${XBOW_WORKER_POLL_SECONDS:-1}
+      STRIX_LLM: ${STRIX_LLM:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_API_BASE: ${LLM_API_BASE:-}
+    volumes:
+      - xbow-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,noexec,nosuid,nodev
     security_opt:
       - no-new-privileges:true
     cap_drop:
