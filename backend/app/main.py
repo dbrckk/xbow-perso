@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from datetime import datetime, timezone
 from enum import Enum
 from fnmatch import fnmatch
@@ -7,14 +8,25 @@ from typing import Any, Literal
 from urllib.parse import urlparse
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Body, FastAPI, HTTPException
 from pydantic import BaseModel, Field, HttpUrl, model_validator
 
-app = FastAPI(title="xbow-perso", version="0.1.0")
+from .jobqueue import JobQueue
+from .storage import Storage
+
+app = FastAPI(title="xbow-perso", version="0.2.0")
 
 
 def utcnow() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def storage() -> Storage:
+    return Storage()
+
+
+def queue() -> JobQueue:
+    return JobQueue()
 
 
 class CampaignState(str, Enum):
@@ -84,7 +96,11 @@ class Campaign(BaseModel):
     events: list[dict[str, Any]] = Field(default_factory=list)
 
 
-CAMPAIGNS: dict[str, Campaign] = {}
+class EvidenceInput(BaseModel):
+    kind: Literal["scanner_stdout", "scanner_stderr", "http_evidence", "validation", "report"]
+    content: str = Field(max_length=1_000_000)
+    media_type: str = Field(default="text/plain", max_length=120)
+    finding_id: str | None = None
 
 
 def normalize_pattern(pattern: str) -> str:
@@ -103,11 +119,15 @@ def is_host_allowed(host: str, allowed: list[str], denied: list[str]) -> bool:
     return any(fnmatch(host, p) for p in allowed_patterns)
 
 
+def save_campaign(campaign: Campaign) -> None:
+    storage().save_campaign(campaign.model_dump(mode="json"))
+
+
 def assert_campaign_exists(campaign_id: str) -> Campaign:
-    campaign = CAMPAIGNS.get(campaign_id)
-    if not campaign:
+    document = storage().get_campaign(campaign_id)
+    if not document:
         raise HTTPException(status_code=404, detail="Campaign not found")
-    return campaign
+    return Campaign.model_validate(document)
 
 
 def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]:
@@ -132,6 +152,25 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
     }
 
 
+def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[str, Any]:
+    """Immutable worker input. Secrets/credential notes are intentionally excluded."""
+    return {
+        "campaign_id": campaign.id,
+        "target": str(campaign.target.primary_url),
+        "policy": receipt,
+        "rules": {
+            "allowed_targets": campaign.target.rules.allowed_targets,
+            "denied_targets": campaign.target.rules.denied_targets,
+            "max_requests_per_second": campaign.target.rules.max_requests_per_second,
+            "destructive_testing": False,
+            "denial_of_service": False,
+            "social_engineering": False,
+            "credential_attacks": False,
+            "automated_scanning": campaign.target.rules.automated_scanning,
+        },
+    }
+
+
 @app.get("/health")
 def health():
     return {"ok": True, "service": "xbow-perso", "version": app.version}
@@ -141,13 +180,13 @@ def health():
 def create_campaign(target: TargetInput):
     campaign = Campaign(target=target, state=CampaignState.ready)
     campaign.events.append({"type": "campaign_created", "at": utcnow()})
-    CAMPAIGNS[campaign.id] = campaign
+    save_campaign(campaign)
     return campaign
 
 
 @app.get("/api/campaigns", response_model=list[Campaign])
 def list_campaigns():
-    return list(CAMPAIGNS.values())
+    return [Campaign.model_validate(x) for x in storage().list_campaigns()]
 
 
 @app.get("/api/campaigns/{campaign_id}", response_model=Campaign)
@@ -160,6 +199,8 @@ def check_policy(campaign_id: str, host: str, action: str = "automated_scan"):
     campaign = assert_campaign_exists(campaign_id)
     receipt = policy_receipt(campaign, host, action)
     campaign.events.append({"type": "policy_check", **receipt})
+    campaign.updated_at = utcnow()
+    save_campaign(campaign)
     return receipt
 
 
@@ -171,12 +212,26 @@ def start_campaign(campaign_id: str):
     host = (urlparse(str(campaign.target.primary_url)).hostname or "").lower()
     receipt = policy_receipt(campaign, host, "automated_scan")
     if not receipt["allowed"]:
+        campaign.events.append({"type": "campaign_blocked", "at": utcnow(), "policy": receipt})
+        campaign.updated_at = utcnow()
+        save_campaign(campaign)
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
+
+    payload = sanitized_scan_payload(campaign, receipt)
+    job = queue().enqueue(campaign.id, "strix_scan", payload, max_attempts=2)
     campaign.state = CampaignState.running
     campaign.updated_at = utcnow()
-    campaign.events.append({"type": "campaign_started", "at": utcnow(), "policy": receipt})
-    # Worker dispatch is deliberately adapter-based; see worker.py.
-    return {"campaign_id": campaign.id, "state": campaign.state, "policy": receipt}
+    campaign.events.append({"type": "campaign_started", "at": utcnow(), "policy": receipt, "job_id": job["id"]})
+    save_campaign(campaign)
+    return {"campaign_id": campaign.id, "state": campaign.state, "policy": receipt, "job": job}
+
+
+@app.get("/api/jobs/{job_id}")
+def get_job(job_id: str):
+    job = queue().get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return job
 
 
 @app.post("/api/campaigns/{campaign_id}/findings", response_model=Finding)
@@ -190,6 +245,14 @@ def add_finding(campaign_id: str, finding: Finding):
     campaign.state = CampaignState.validating
     campaign.updated_at = utcnow()
     campaign.events.append({"type": "finding_received", "finding_id": finding.id, "at": utcnow()})
+    validation_job = queue().enqueue(
+        campaign.id,
+        "independent_validation",
+        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
+        max_attempts=2,
+    )
+    campaign.events.append({"type": "validation_queued", "finding_id": finding.id, "job_id": validation_job["id"], "at": utcnow()})
+    save_campaign(campaign)
     return finding
 
 
@@ -204,5 +267,33 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
     finding.status = "confirmed" if confirmed else "rejected"
     finding.validated_by = validator
     campaign.updated_at = utcnow()
-    campaign.events.append({"type": "finding_validated", "finding_id": finding.id, "confirmed": confirmed, "at": utcnow()})
+    campaign.events.append({"type": "finding_validated", "finding_id": finding.id, "confirmed": confirmed, "validator": validator, "at": utcnow()})
+    save_campaign(campaign)
     return finding
+
+
+@app.post("/api/campaigns/{campaign_id}/artifacts")
+def add_text_artifact(campaign_id: str, evidence: EvidenceInput = Body(...)):
+    campaign = assert_campaign_exists(campaign_id)
+    if evidence.finding_id and not any(f.id == evidence.finding_id for f in campaign.findings):
+        raise HTTPException(status_code=404, detail="Finding not found")
+    try:
+        artifact = storage().put_artifact(
+            campaign_id,
+            evidence.kind,
+            evidence.content.encode("utf-8"),
+            media_type=evidence.media_type,
+            finding_id=evidence.finding_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    campaign.events.append({"type": "artifact_stored", "artifact_id": artifact["id"], "kind": evidence.kind, "at": utcnow()})
+    campaign.updated_at = utcnow()
+    save_campaign(campaign)
+    return artifact
+
+
+@app.get("/api/campaigns/{campaign_id}/artifacts")
+def list_artifacts(campaign_id: str):
+    assert_campaign_exists(campaign_id)
+    return storage().list_artifacts(campaign_id)
