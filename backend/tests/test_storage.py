@@ -16,7 +16,7 @@ def test_campaign_roundtrip_and_artifact_hash(tmp_path):
     assert store.get_campaign("c1") == campaign
 
     artifact = store.put_artifact("c1", "http_evidence", b"evidence", media_type="text/plain")
-    assert artifact["sha256"] == "1f6a832c2f1a7c5a3f51f6ff1759c797c96c72f197b9d9b428f75fca3f728318"
+    assert artifact["sha256"] == "ee8250fb76e094b34b471f13a73dbbe51d1ae142e9df59d7c0d31ec20f0a0a8e"
     listed = store.list_artifacts("c1")
     assert listed[0]["id"] == artifact["id"]
     assert listed[0]["size_bytes"] == 8
