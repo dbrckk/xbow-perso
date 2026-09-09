@@ -57,7 +57,7 @@ class JobQueue:
             db.execute("CREATE INDEX IF NOT EXISTS jobs_running_claimed ON jobs(status, claimed_at)")
 
     def enqueue(self, campaign_id: str, kind: str, payload: dict[str, Any], max_attempts: int = 2) -> dict[str, Any]:
-        if kind not in {"strix_scan", "independent_validation", "report"}:
+        if kind not in {"strix_scan", "independent_validation", "browser_flow", "report"}:
             raise ValueError("unsupported job kind")
         if not 1 <= max_attempts <= 5:
             raise ValueError("max_attempts must be 1..5")
