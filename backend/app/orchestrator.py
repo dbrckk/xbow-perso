@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from .agent_registry import agent_for_action
 from .jobqueue import JobQueue
-from .knowledge_memory import build_knowledge_snapshot, decision_history
+from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
 from .main import Campaign, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .storage import Storage
@@ -73,7 +73,15 @@ def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
         for parent_id in validation.parent_ids
         if parent_id in finding_observations
     }
-    return [finding for finding in campaign.findings if f"finding:{finding.id}" not in validated]
+    pending = [finding for finding in campaign.findings if f"finding:{finding.id}" not in validated]
+    priorities = {item.finding_id: item for item in rank_findings(pending, graph)}
+    return sorted(
+        pending,
+        key=lambda finding: (
+            -priorities[str(finding.id)].score,
+            str(finding.id),
+        ),
+    )
 
 
 def _enqueue_action(
@@ -101,12 +109,20 @@ def _enqueue_action(
 
     if action.kind == "validate":
         jobs = []
-        for finding in _pending_findings(campaign, graph):
+        pending = _pending_findings(campaign, graph)
+        priorities = {item.finding_id: item for item in rank_findings(pending, graph)}
+        for finding in pending:
+            priority = priorities[str(finding.id)]
             jobs.append(
                 queue.enqueue(
                     campaign.id,
                     "independent_validation",
-                    {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
+                    {
+                        "campaign_id": campaign.id,
+                        "finding_id": finding.id,
+                        "asset": finding.asset,
+                        "planner_priority": priority.score,
+                    },
                     max_attempts=2,
                     dedupe_key=f"validation:{finding.id}",
                 )
