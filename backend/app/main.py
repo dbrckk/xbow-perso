@@ -185,7 +185,14 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
 
 @app.get("/health")
 def health():
-    return {"ok": True, "service": "xbow-perso", "version": app.version}
+    try:
+        database = queue().health()
+    except Exception:
+        database = {"ok": False, "database": "unavailable"}
+    payload = {"ok": bool(database.get("ok")), "service": "xbow-perso", "version": app.version, "database": database}
+    if not payload["ok"]:
+        return JSONResponse(status_code=503, content=payload)
+    return payload
 
 
 @app.post("/api/campaigns", response_model=Campaign)
