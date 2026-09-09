@@ -8,13 +8,26 @@ from typing import Any, Literal
 from urllib.parse import urlparse
 from uuid import uuid4
 
-from fastapi import Body, FastAPI, HTTPException
+from fastapi import Body, FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, HttpUrl, model_validator
 
+from .auth import AuthError, require_api_token
 from .jobqueue import JobQueue
 from .storage import Storage
 
-app = FastAPI(title="xbow-perso", version="0.2.0")
+app = FastAPI(title="xbow-perso", version="0.3.0")
+
+
+@app.middleware("http")
+async def authenticate_control_api(request: Request, call_next):
+    if request.url.path.startswith("/api/") or request.url.path == "/api":
+        try:
+            require_api_token(request)
+        except AuthError as exc:
+            headers = {"WWW-Authenticate": "Bearer"} if exc.status_code == 401 else None
+            return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=headers)
+    return await call_next(request)
 
 
 def utcnow() -> str:
