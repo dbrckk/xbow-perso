@@ -35,6 +35,14 @@ def _campaign(store: Storage, campaign_id: str) -> Campaign:
     return Campaign.model_validate(raw)
 
 
+def _append_event_once(campaign: Campaign, event: dict) -> None:
+    event_type = event.get("type")
+    job_id = event.get("job_id")
+    if job_id and any(e.get("type") == event_type and e.get("job_id") == job_id for e in campaign.events):
+        return
+    campaign.events.append(event)
+
+
 @contextmanager
 def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
     """Keep ownership of a long-running job without hiding lease loss."""
@@ -73,7 +81,7 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
 
     if result["status"] == "dry_run":
         campaign.state = CampaignState.ready
-        campaign.events.append({"type": "scan_dry_run", "job_id": job["id"], "at": utcnow()})
+        _append_event_once(campaign, {"type": "scan_dry_run", "job_id": job["id"], "at": utcnow()})
         _save(store, campaign)
         return
     if result["status"] != "completed":
@@ -95,8 +103,9 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
         )
         queued += 1
     campaign.state = CampaignState.validating if queued else CampaignState.completed
-    campaign.events.append(
-        {"type": "strix_results_ingested", "job_id": job["id"], "findings": len(findings), "validation_jobs": queued, "at": utcnow()}
+    _append_event_once(
+        campaign,
+        {"type": "strix_results_ingested", "job_id": job["id"], "findings": len(findings), "validation_jobs": queued, "at": utcnow()},
     )
     _save(store, campaign)
 
@@ -118,29 +127,33 @@ def process_validation(job: dict, store: Storage) -> None:
         result.json_bytes(),
         media_type="application/json",
         finding_id=finding.id,
+        idempotency_key=f"{job['id']}:validation",
     )
-    event = {
-        "type": "independent_validation_observation",
-        "finding_id": finding.id,
-        "job_id": job["id"],
-        "validator": "independent-http-validator",
-        "probe_status": result.status,
-        "http_status": result.http_status,
-        "artifact_id": artifact["id"],
-        "at": utcnow(),
-    }
-    campaign.events.append(event)
+    _append_event_once(
+        campaign,
+        {
+            "type": "independent_validation_observation",
+            "finding_id": finding.id,
+            "job_id": job["id"],
+            "validator": "independent-http-validator",
+            "probe_status": result.status,
+            "http_status": result.http_status,
+            "artifact_id": artifact["id"],
+            "at": utcnow(),
+        },
+    )
 
     finding.status = "validation_required"
     if result.status == "error":
-        campaign.events.append(
+        _append_event_once(
+            campaign,
             {
                 "type": "independent_validation_error",
                 "finding_id": finding.id,
                 "job_id": job["id"],
                 "error": result.error,
                 "at": utcnow(),
-            }
+            },
         )
     _save(store, campaign)
 
@@ -149,14 +162,15 @@ def process_browser_flow(job: dict, store: Storage) -> None:
     campaign = _campaign(store, job["campaign_id"])
     result = execute_browser_flow(campaign, job["payload"])
     artifacts = persist_browser_result(store, campaign.id, result)
-    campaign.events.append(
+    _append_event_once(
+        campaign,
         {
             "type": "browser_flow_completed" if result.status == "completed" else "browser_flow_dry_run",
             "job_id": job["id"],
             "status": result.status,
             "artifact_ids": [artifact["id"] for artifact in artifacts],
             "at": utcnow(),
-        }
+        },
     )
     _save(store, campaign)
 
@@ -167,15 +181,22 @@ def process_report(job: dict, store: Storage) -> None:
     if platform not in {"generic", "hackerone", "bugcrowd"}:
         raise ValueError("unsupported report platform")
     report = render_markdown(campaign, platform=platform).encode("utf-8")
-    artifact = store.put_artifact(campaign.id, "report", report, media_type="text/markdown")
-    campaign.events.append(
+    artifact = store.put_artifact(
+        campaign.id,
+        "report",
+        report,
+        media_type="text/markdown",
+        idempotency_key=f"{job['id']}:report:{platform}",
+    )
+    _append_event_once(
+        campaign,
         {
             "type": "report_generated",
             "job_id": job["id"],
             "platform": platform,
             "artifact_id": artifact["id"],
             "at": utcnow(),
-        }
+        },
     )
     _save(store, campaign)
 
