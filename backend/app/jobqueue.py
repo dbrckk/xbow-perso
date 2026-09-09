@@ -4,7 +4,7 @@ import json
 import os
 import sqlite3
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -20,8 +20,9 @@ class JobQueue:
     """Small durable SQLite queue for self-hosted single-node deployments.
 
     Jobs contain only validated execution plans, never arbitrary shell strings.
-    Workers claim jobs atomically. A future Redis/Postgres adapter can preserve
-    this interface without weakening scope checks in the API/worker layers.
+    Workers claim jobs atomically. Running jobs use a durable lease so a worker
+    crash cannot strand a campaign forever; expired leases are recovered on the
+    next claim without bypassing retry limits.
     """
 
     def __init__(self, path: str | None = None):
@@ -47,9 +48,13 @@ class JobQueue:
                 payload TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'queued',
                 attempts INTEGER NOT NULL DEFAULT 0, max_attempts INTEGER NOT NULL DEFAULT 2,
                 created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
-                claimed_by TEXT, last_error TEXT
+                claimed_by TEXT, claimed_at TEXT, last_error TEXT
             )""")
+            columns = {row["name"] for row in db.execute("PRAGMA table_info(jobs)").fetchall()}
+            if "claimed_at" not in columns:
+                db.execute("ALTER TABLE jobs ADD COLUMN claimed_at TEXT")
             db.execute("CREATE INDEX IF NOT EXISTS jobs_status_created ON jobs(status, created_at)")
+            db.execute("CREATE INDEX IF NOT EXISTS jobs_running_claimed ON jobs(status, claimed_at)")
 
     def enqueue(self, campaign_id: str, kind: str, payload: dict[str, Any], max_attempts: int = 2) -> dict[str, Any]:
         if kind not in {"strix_scan", "independent_validation", "report"}:
@@ -58,8 +63,10 @@ class JobQueue:
             raise ValueError("max_attempts must be 1..5")
         job_id, now = str(uuid4()), utcnow()
         with self.connect() as db:
-            db.execute("INSERT INTO jobs(id,campaign_id,kind,payload,status,max_attempts,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)",
-                       (job_id, campaign_id, kind, json.dumps(payload), "queued", max_attempts, now, now))
+            db.execute(
+                "INSERT INTO jobs(id,campaign_id,kind,payload,status,max_attempts,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)",
+                (job_id, campaign_id, kind, json.dumps(payload), "queued", max_attempts, now, now),
+            )
         return self.get(job_id)
 
     def get(self, job_id: str) -> dict[str, Any] | None:
@@ -67,18 +74,55 @@ class JobQueue:
             row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
         return self._decode(row) if row else None
 
+    def _recover_expired_leases(self, db: sqlite3.Connection, now: datetime) -> int:
+        lease_seconds = int(os.getenv("XBOW_JOB_LEASE_SECONDS", "21600"))
+        if not 60 <= lease_seconds <= 86400:
+            raise ValueError("XBOW_JOB_LEASE_SECONDS must be between 60 and 86400")
+        cutoff = (now - timedelta(seconds=lease_seconds)).isoformat()
+        stale = db.execute(
+            "SELECT id,attempts,max_attempts FROM jobs WHERE status='running' AND claimed_at IS NOT NULL AND claimed_at < ?",
+            (cutoff,),
+        ).fetchall()
+        for row in stale:
+            exhausted = row["attempts"] >= row["max_attempts"]
+            status = "failed" if exhausted else "queued"
+            db.execute(
+                """UPDATE jobs
+                   SET status=?, updated_at=?, claimed_by=NULL, claimed_at=NULL,
+                       last_error='worker lease expired before completion'
+                   WHERE id=? AND status='running'""",
+                (status, now.isoformat(), row["id"]),
+            )
+        return len(stale)
+
+    def recover_expired_leases(self) -> int:
+        """Recover jobs abandoned by dead workers while respecting max_attempts."""
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            count = self._recover_expired_leases(db, datetime.now(timezone.utc))
+            db.execute("COMMIT")
+        return count
+
     def claim(self, worker_id: str) -> dict[str, Any] | None:
         if not worker_id.strip():
             raise ValueError("worker_id required")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            row = db.execute("SELECT id FROM jobs WHERE status='queued' AND attempts < max_attempts ORDER BY created_at LIMIT 1").fetchone()
+            now_dt = datetime.now(timezone.utc)
+            self._recover_expired_leases(db, now_dt)
+            row = db.execute(
+                "SELECT id FROM jobs WHERE status='queued' AND attempts < max_attempts ORDER BY created_at LIMIT 1"
+            ).fetchone()
             if not row:
                 db.execute("COMMIT")
                 return None
-            now = utcnow()
-            db.execute("UPDATE jobs SET status='running', attempts=attempts+1, claimed_by=?, updated_at=? WHERE id=? AND status='queued'",
-                       (worker_id, now, row["id"]))
+            now = now_dt.isoformat()
+            db.execute(
+                """UPDATE jobs
+                   SET status='running', attempts=attempts+1, claimed_by=?, claimed_at=?, updated_at=?
+                   WHERE id=? AND status='queued'""",
+                (worker_id, now, now, row["id"]),
+            )
             claimed = db.execute("SELECT * FROM jobs WHERE id=?", (row["id"],)).fetchone()
             db.execute("COMMIT")
         return self._decode(claimed)
@@ -91,7 +135,12 @@ class JobQueue:
             if row["status"] != "running":
                 raise ValueError("only running jobs can finish")
             status = "completed" if success else ("queued" if row["attempts"] < row["max_attempts"] else "failed")
-            db.execute("UPDATE jobs SET status=?, updated_at=?, last_error=? WHERE id=?", (status, utcnow(), (error or "")[-4000:] or None, job_id))
+            db.execute(
+                """UPDATE jobs
+                   SET status=?, updated_at=?, last_error=?, claimed_by=NULL, claimed_at=NULL
+                   WHERE id=?""",
+                (status, utcnow(), (error or "")[-4000:] or None, job_id),
+            )
         return self.get(job_id)  # type: ignore[return-value]
 
     @staticmethod
