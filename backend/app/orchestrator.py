@@ -28,6 +28,7 @@ def _graph_fingerprint(graph: ObservationGraph) -> str:
             "metadata": item.metadata,
         }
         for item in sorted(graph.values(), key=lambda item: item.id)
+        if item.metadata.get("memory_type") != "planner_decision"
     ]
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:20]
