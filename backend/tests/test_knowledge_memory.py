@@ -4,10 +4,15 @@ from app.knowledge_memory import build_knowledge_snapshot, decision_history, ran
 from app.observation_graph import Observation, ObservationGraph
 
 
-def test_confidence_increases_with_validation_and_evidence():
+def _finding_graph():
     graph = ObservationGraph()
     graph.add(Observation("a1", "asset", "example.test", "recon"))
     graph.add(Observation("f1", "finding", "f1", "scanner", parent_ids=("a1",)))
+    return graph
+
+
+def test_confidence_increases_with_observed_validation_and_evidence():
+    graph = _finding_graph()
 
     baseline = build_knowledge_snapshot(graph)
     assert baseline.finding_confidence[0].score == 0.35
@@ -30,6 +35,50 @@ def test_confidence_increases_with_validation_and_evidence():
     assert evidenced.finding_confidence[0].score == 1.0
     assert evidenced.finding_confidence[0].validation_count == 1
     assert evidenced.finding_confidence[0].evidence_count == 1
+
+
+def test_dry_run_and_error_do_not_masquerade_as_strong_validation():
+    dry_run_graph = _finding_graph()
+    dry_run_graph.add(Observation("v-dry", "validation", "dry_run", "validator", parent_ids=("f1",)))
+    dry_run_graph.add(
+        Observation(
+            "e-dry",
+            "evidence",
+            "artifact-dry",
+            "validator",
+            parent_ids=("v-dry",),
+            metadata={"artifact_kind": "validation"},
+        )
+    )
+    dry_run_confidence = build_knowledge_snapshot(dry_run_graph).finding_confidence[0]
+    assert dry_run_confidence.score == 0.40
+    assert dry_run_confidence.validation_count == 1
+    assert dry_run_confidence.evidence_count == 1
+
+    error_graph = _finding_graph()
+    error_graph.add(Observation("v-error", "validation", "error", "validator", parent_ids=("f1",)))
+    error_graph.add(
+        Observation(
+            "e-error",
+            "evidence",
+            "artifact-error",
+            "validator",
+            parent_ids=("v-error",),
+            metadata={"artifact_kind": "validation"},
+        )
+    )
+    error_confidence = build_knowledge_snapshot(error_graph).finding_confidence[0]
+    assert error_confidence.score == 0.35
+    assert error_confidence.validation_count == 1
+    assert error_confidence.evidence_count == 1
+
+
+def test_unknown_validation_outcome_fails_closed():
+    graph = _finding_graph()
+    graph.add(Observation("v1", "validation", "mystery", "validator", parent_ids=("f1",)))
+
+    confidence = build_knowledge_snapshot(graph).finding_confidence[0]
+    assert confidence.score == 0.35
 
 
 def test_rank_findings_prioritizes_severity():
