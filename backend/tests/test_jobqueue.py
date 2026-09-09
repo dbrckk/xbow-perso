@@ -105,3 +105,27 @@ def test_stats_expose_counts_without_payloads(tmp_path):
     assert stats["oldest_queued_at"] is not None
     assert "secret" not in str(stats)
     assert "must-not-leak" not in str(stats)
+
+
+def test_heartbeat_renews_only_current_owner(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    job = q.enqueue("campaign-1", "strix_scan", {"target": "https://example.test"})
+    q.claim("worker-a")
+    with q.connect() as db:
+        db.execute(
+            "UPDATE jobs SET claimed_at='2000-01-01T00:00:00+00:00' WHERE id=?",
+            (job["id"],),
+        )
+
+    assert q.heartbeat(job["id"], "worker-b") is False
+    assert q.get(job["id"])["claimed_at"] == "2000-01-01T00:00:00+00:00"
+    assert q.heartbeat(job["id"], "worker-a") is True
+    assert q.get(job["id"])["claimed_at"] != "2000-01-01T00:00:00+00:00"
+
+
+def test_heartbeat_rejects_finished_job(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    job = q.enqueue("campaign-1", "report", {})
+    q.claim("worker-a")
+    q.finish(job["id"], True)
+    assert q.heartbeat(job["id"], "worker-a") is False
