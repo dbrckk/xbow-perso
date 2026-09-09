@@ -123,6 +123,19 @@ def _record_artifact_observation(
     return observation.id
 
 
+def _record_scan_observation(store: Storage, campaign: Campaign, job_id: str, findings: int) -> None:
+    store.put_observation(
+        campaign.id,
+        Observation(
+            id=f"scan:{job_id}",
+            kind="evidence",
+            value="completed",
+            source="strix",
+            metadata={"phase": "scan", "status": "completed", "findings": findings, "job_id": job_id},
+        ).to_dict(),
+    )
+
+
 @contextmanager
 def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
     """Keep ownership of a long-running job without hiding lease loss."""
@@ -170,6 +183,7 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
 
     vuln_path = locate_vulnerabilities_json(run_dir)
     findings: list[Finding] = parse_strix_vulnerabilities(vuln_path, campaign) if vuln_path else []
+    _record_scan_observation(store, campaign, job["id"], len(findings))
     existing = {f.id for f in campaign.findings}
     queued = 0
     for finding in findings:
