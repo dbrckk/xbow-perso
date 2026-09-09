@@ -12,6 +12,7 @@ from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_r
 from .jobqueue import JobQueue
 from .main import Campaign, CampaignState, Finding, utcnow
 from .observation_graph import Observation
+from .orchestrator import advance_campaign
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
@@ -53,10 +54,29 @@ def _observation_id(prefix: str, value: str) -> str:
 
 def _record_asset_observation(store: Storage, campaign: Campaign, asset: str, source: str) -> str:
     observation = Observation(
-        id=_observation_id("asset", asset),
+        id=_observation_id("asset", f"{source}\x1f{asset}"),
         kind="asset",
         value=asset,
         source=source,
+    )
+    store.put_observation(campaign.id, observation.to_dict())
+    return observation.id
+
+
+def _record_endpoint_observation(
+    store: Storage,
+    campaign: Campaign,
+    endpoint: str,
+    *,
+    source: str,
+    parent_id: str,
+) -> str:
+    observation = Observation(
+        id=_observation_id("endpoint", f"{source}\x1f{endpoint}"),
+        kind="endpoint",
+        value=endpoint,
+        source=source,
+        parent_ids=(parent_id,),
     )
     store.put_observation(campaign.id, observation.to_dict())
     return observation.id
@@ -162,6 +182,7 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
             "independent_validation",
             {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
             max_attempts=2,
+            dedupe_key=f"validation:{finding.id}",
         )
         queued += 1
     campaign.state = CampaignState.validating if queued else CampaignState.completed
@@ -244,6 +265,15 @@ def process_browser_flow(job: dict, store: Storage) -> None:
     asset_id = _record_asset_observation(store, campaign, str(campaign.target.primary_url), "browser")
     result = execute_browser_flow(campaign, job["payload"])
     artifacts = persist_browser_result(store, campaign.id, result)
+    for observation in result.observations:
+        if observation.get("operation") == "navigate" and observation.get("url"):
+            _record_endpoint_observation(
+                store,
+                campaign,
+                str(observation["url"]),
+                source="browser",
+                parent_id=asset_id,
+            )
     for artifact in artifacts:
         _record_artifact_observation(
             store,
@@ -315,6 +345,9 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
                 process_report(job, store)
             else:
                 raise ValueError("unsupported job kind")
+
+            latest_campaign, _ = _campaign(store, job["campaign_id"])
+            advance_campaign(latest_campaign, queue, store)
     except CampaignConflictError as exc:
         queue.finish(job["id"], worker_id, False, f"campaign state changed concurrently: {exc}")
     except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ValueError, KeyError) as exc:
