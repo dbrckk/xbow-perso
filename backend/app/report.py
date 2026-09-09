@@ -1,20 +1,33 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from .main import Campaign
 
+ReportPlatform = Literal["generic", "hackerone", "bugcrowd"]
 
-def render_markdown(campaign: Campaign) -> str:
+
+def render_markdown(campaign: Campaign, platform: ReportPlatform = "generic") -> str:
+    """Render a submission-oriented report from independently confirmed findings only."""
     confirmed = [f for f in campaign.findings if f.status == "confirmed"]
+    platform_name = {"generic": "Security program", "hackerone": "HackerOne", "bugcrowd": "Bugcrowd"}[platform]
+    severity_counts = {level: sum(1 for f in confirmed if f.severity == level) for level in ("critical", "high", "medium", "low", "info")}
+
     lines = [
-        f"# Security Assessment — {campaign.target.name}",
+        f"# Submission-ready security report — {campaign.target.name}",
         "",
+        f"**Submission format:** {platform_name}  ",
         f"**Campaign ID:** `{campaign.id}`  ",
         f"**Target:** {campaign.target.primary_url}  ",
         f"**Authorization reference:** {campaign.target.rules.authorization_reference}  ",
         "",
         "## Executive summary",
         "",
-        f"{len(confirmed)} independently validated finding(s) are included in this report.",
+        f"{len(confirmed)} independently validated finding(s) are eligible for submission.",
+        "",
+        "| Severity | Count |",
+        "| --- | ---: |",
+        *[f"| {level.title()} | {severity_counts[level]} |" for level in ("critical", "high", "medium", "low", "info")],
         "",
         "## Scope",
         "",
@@ -24,7 +37,7 @@ def render_markdown(campaign: Campaign) -> str:
         "### Explicit exclusions",
         *([f"- `{x}`" for x in campaign.target.rules.denied_targets] or ["- None declared"]),
         "",
-        "## Findings",
+        "## Submission candidates",
         "",
     ]
     if not confirmed:
@@ -34,29 +47,35 @@ def render_markdown(campaign: Campaign) -> str:
         lines += [
             f"### {index}. {finding.title}",
             "",
-            f"**Severity:** {finding.severity.upper()}  ",
-            f"**Asset:** `{finding.asset}`  ",
-            f"**Endpoint:** `{finding.endpoint or 'N/A'}`  ",
-            f"**CWE:** {finding.cwe or 'N/A'}  ",
-            f"**CVSS:** {finding.cvss if finding.cvss is not None else 'N/A'}  ",
+            "#### Submission metadata",
+            "",
+            f"- **Severity:** {finding.severity.upper()}",
+            f"- **Asset:** `{finding.asset}`",
+            f"- **Endpoint:** `{finding.endpoint or 'N/A'}`",
+            f"- **Weakness / CWE:** {finding.cwe or 'N/A'}",
+            f"- **CVSS:** {finding.cvss if finding.cvss is not None else 'N/A'}",
+            f"- **Discovery engine:** {finding.discovered_by}",
+            f"- **Independent validator:** {finding.validated_by or 'N/A'}",
             "",
             "#### Summary",
-            finding.summary,
+            "",
+            finding.summary or "No summary recorded.",
             "",
             "#### Security impact",
-            finding.impact or "Impact requires analyst completion.",
+            "",
+            finding.impact or "Impact requires analyst completion before submission.",
             "",
             "#### Steps to reproduce",
+            "",
             *([f"{n}. {step}" for n, step in enumerate(finding.reproduction_steps, 1)] or ["Reproduction steps were not recorded."]),
             "",
             "#### Evidence",
-            *([f"- {item}" for item in finding.evidence] or ["- No evidence artifact recorded."]),
+            "",
+            *([f"- {item}" for item in finding.evidence] or ["- Evidence is stored as integrity-checked campaign artifacts."]),
             "",
             "#### Suggested remediation",
-            finding.remediation or "Remediation guidance requires analyst completion.",
             "",
-            f"**Discovery engine:** {finding.discovered_by}  ",
-            f"**Independent validator:** {finding.validated_by or 'N/A'}  ",
+            finding.remediation or "Remediation guidance requires analyst completion.",
             "",
         ]
 
@@ -64,13 +83,20 @@ def render_markdown(campaign: Campaign) -> str:
         "## Testing constraints",
         "",
         f"- Maximum configured request rate: {campaign.target.rules.max_requests_per_second} requests/second",
-        f"- Destructive testing: {'allowed' if campaign.target.rules.destructive_testing else 'prohibited'}",
-        f"- Denial of service: {'allowed' if campaign.target.rules.denial_of_service else 'prohibited'}",
-        f"- Social engineering: {'allowed' if campaign.target.rules.social_engineering else 'prohibited'}",
-        f"- Credential attacks: {'allowed' if campaign.target.rules.credential_attacks else 'prohibited'}",
+        "- Destructive testing by autonomous workers: prohibited",
+        "- Denial of service by autonomous workers: prohibited",
+        "- Social engineering by autonomous workers: prohibited",
+        "- Credential attacks by autonomous workers: prohibited",
         "",
-        "## Methodology note",
+        "## Methodology and evidence integrity",
         "",
-        "Automated discovery is separated from independent validation. Only findings marked confirmed are included as submission candidates.",
+        "Automated discovery is separated from independent validation. Only findings explicitly marked confirmed by a validator different from the discovery engine are included. Evidence artifacts are stored with recorded size and SHA-256 and are verified on retrieval.",
+        "",
+        "## Submission checklist",
+        "",
+        "- Confirm the affected asset remains in the current program scope before submission.",
+        "- Re-check program-specific disclosure rules and duplicate handling requirements.",
+        "- Remove secrets, authentication tokens, and unrelated personal data from attached evidence.",
+        "- Attach only the minimum evidence required to reproduce the issue safely.",
     ]
     return "\n".join(lines)

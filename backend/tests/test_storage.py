@@ -1,4 +1,6 @@
-from app.storage import Storage
+import pytest
+
+from app.storage import ArtifactIntegrityError, Storage
 
 
 def test_campaign_roundtrip_and_artifact_hash(tmp_path):
@@ -21,13 +23,38 @@ def test_campaign_roundtrip_and_artifact_hash(tmp_path):
     assert listed[0]["id"] == artifact["id"]
     assert listed[0]["size_bytes"] == 8
 
+    metadata, content = store.read_artifact("c1", artifact["id"])
+    assert content == b"evidence"
+    assert metadata["sha256"] == artifact["sha256"]
+    assert "relative_path" not in metadata
+
 
 def test_artifact_kind_fails_closed(tmp_path):
     store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
     store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
-    try:
+    with pytest.raises(ValueError, match="unsupported"):
         store.put_artifact("c1", "arbitrary", b"x")
-    except ValueError as exc:
-        assert "unsupported" in str(exc)
-    else:
-        raise AssertionError("unknown artifact kinds must fail closed")
+
+
+def test_artifact_read_detects_tampering(tmp_path):
+    root = tmp_path / "artifacts"
+    store = Storage(str(tmp_path / "db.sqlite3"), str(root))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    artifact = store.put_artifact("c1", "validation", b"trusted")
+    metadata = store.get_artifact("c1", artifact["id"])
+    assert metadata is not None
+    (root / metadata["relative_path"]).write_bytes(b"tampered")
+
+    with pytest.raises(ArtifactIntegrityError, match="mismatch"):
+        store.read_artifact("c1", artifact["id"])
+
+
+def test_artifact_lookup_is_campaign_scoped(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    for campaign_id in ("c1", "c2"):
+        store.save_campaign({"id": campaign_id, "state": "ready", "created_at": "x", "updated_at": "x"})
+    artifact = store.put_artifact("c1", "validation", b"evidence", finding_id="f1")
+
+    assert store.has_artifact("c1", finding_id="f1", kind="validation") is True
+    assert store.has_artifact("c2", finding_id="f1", kind="validation") is False
+    assert store.get_artifact("c2", artifact["id"]) is None

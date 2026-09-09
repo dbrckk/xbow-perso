@@ -15,13 +15,26 @@ def utcnow() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-class Storage:
-    """Durable state and evidence store backed by the same SQLite database as jobs.
+class ArtifactIntegrityError(RuntimeError):
+    pass
 
-    The store is intentionally schema-light at this stage: campaign documents are
-    versioned Pydantic JSON snapshots, while evidence metadata is normalized and
-    content is written under a dedicated artifact root with SHA-256 integrity.
+
+class Storage:
+    """Durable campaign state plus content-addressed evidence metadata.
+
+    Campaign snapshots and artifact metadata live in SQLite. Artifact bytes are
+    stored below a dedicated root and are always verified against both recorded
+    size and SHA-256 before being returned to callers.
     """
+
+    ALLOWED_ARTIFACT_KINDS = {
+        "scanner_stdout",
+        "scanner_stderr",
+        "http_evidence",
+        "screenshot",
+        "validation",
+        "report",
+    }
 
     def __init__(self, db_path: str | None = None, artifact_root: str | None = None):
         self.db_path = db_path or os.getenv("XBOW_DB_PATH", "/data/xbow.sqlite3")
@@ -37,6 +50,7 @@ class Storage:
         try:
             db.execute("PRAGMA journal_mode=WAL")
             db.execute("PRAGMA busy_timeout=30000")
+            db.execute("PRAGMA foreign_keys=ON")
             yield db
         finally:
             db.close()
@@ -64,6 +78,7 @@ class Storage:
                 FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
             )""")
             db.execute("CREATE INDEX IF NOT EXISTS artifacts_campaign ON artifacts(campaign_id, created_at)")
+            db.execute("CREATE INDEX IF NOT EXISTS artifacts_finding ON artifacts(campaign_id, finding_id, kind)")
 
     def save_campaign(self, document: dict[str, Any]) -> None:
         required = {"id", "state", "created_at", "updated_at"}
@@ -100,7 +115,7 @@ class Storage:
         media_type: str = "application/octet-stream",
         finding_id: str | None = None,
     ) -> dict[str, Any]:
-        if kind not in {"scanner_stdout", "scanner_stderr", "http_evidence", "screenshot", "validation", "report"}:
+        if kind not in self.ALLOWED_ARTIFACT_KINDS:
             raise ValueError("unsupported artifact kind")
         max_bytes = int(os.getenv("XBOW_MAX_ARTIFACT_BYTES", str(10 * 1024 * 1024)))
         if len(content) > max_bytes:
@@ -143,3 +158,48 @@ class Storage:
                 (campaign_id,),
             ).fetchall()
         return [dict(row) for row in rows]
+
+    def get_artifact(self, campaign_id: str, artifact_id: str) -> dict[str, Any] | None:
+        with self.connect() as db:
+            row = db.execute(
+                """SELECT id,campaign_id,finding_id,kind,media_type,relative_path,sha256,size_bytes,created_at
+                   FROM artifacts WHERE id=? AND campaign_id=?""",
+                (artifact_id, campaign_id),
+            ).fetchone()
+        return dict(row) if row else None
+
+    def has_artifact(self, campaign_id: str, *, finding_id: str | None = None, kind: str | None = None) -> bool:
+        clauses = ["campaign_id=?"]
+        params: list[Any] = [campaign_id]
+        if finding_id is not None:
+            clauses.append("finding_id=?")
+            params.append(finding_id)
+        if kind is not None:
+            clauses.append("kind=?")
+            params.append(kind)
+        with self.connect() as db:
+            row = db.execute(f"SELECT 1 FROM artifacts WHERE {' AND '.join(clauses)} LIMIT 1", params).fetchone()
+        return bool(row)
+
+    def read_artifact(self, campaign_id: str, artifact_id: str) -> tuple[dict[str, Any], bytes]:
+        metadata = self.get_artifact(campaign_id, artifact_id)
+        if not metadata:
+            raise KeyError(artifact_id)
+
+        root = self.artifact_root.resolve()
+        path = (self.artifact_root / metadata["relative_path"]).resolve()
+        try:
+            path.relative_to(root)
+        except ValueError as exc:
+            raise ArtifactIntegrityError("artifact path escaped storage root") from exc
+        if not path.is_file():
+            raise ArtifactIntegrityError("artifact content is missing")
+
+        content = path.read_bytes()
+        if len(content) != metadata["size_bytes"]:
+            raise ArtifactIntegrityError("artifact size mismatch")
+        digest = hashlib.sha256(content).hexdigest()
+        if digest != metadata["sha256"]:
+            raise ArtifactIntegrityError("artifact sha256 mismatch")
+        public_metadata = {key: value for key, value in metadata.items() if key != "relative_path"}
+        return public_metadata, content
