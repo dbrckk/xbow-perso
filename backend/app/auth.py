@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hmac
 import os
+from pathlib import Path
 
 from fastapi import Request
 
@@ -13,12 +14,36 @@ class AuthError(RuntimeError):
         self.detail = detail
 
 
-def configured_api_token() -> str:
-    """Return the server API token or fail closed when it is unsafe/missing."""
-    token = os.getenv("XBOW_API_TOKEN", "").strip()
-    if len(token) < 32:
+def _validate_token(token: str) -> str:
+    token = token.strip()
+    if len(token) < 32 or len(token) > 4096:
+        raise AuthError(503, "API authentication is not configured")
+    if any(ord(ch) < 33 or ord(ch) == 127 for ch in token):
         raise AuthError(503, "API authentication is not configured")
     return token
+
+
+def configured_api_token() -> str:
+    """Return the server API token or fail closed when it is unsafe/missing.
+
+    Prefer XBOW_API_TOKEN_FILE for deployments so the token does not need to be
+    present in the process environment. Supplying both sources is rejected to
+    prevent ambiguous secret rotation and accidental fallback.
+    """
+    inline = os.getenv("XBOW_API_TOKEN", "").strip()
+    token_file = os.getenv("XBOW_API_TOKEN_FILE", "").strip()
+    if inline and token_file:
+        raise AuthError(503, "API authentication has conflicting secret sources")
+    if token_file:
+        path = Path(token_file)
+        try:
+            if not path.is_file():
+                raise OSError("not a regular file")
+            token = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise AuthError(503, "API authentication secret file is unavailable") from exc
+        return _validate_token(token)
+    return _validate_token(inline)
 
 
 def presented_api_token(request: Request) -> str | None:
