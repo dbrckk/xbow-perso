@@ -77,6 +77,11 @@ class ObservationGraph:
         return [item for item in self._observations.values() if item.kind == kind]
 
 
+def load_observation_graph(store: Any, campaign_id: str) -> ObservationGraph:
+    """Load the durable observation graph for a campaign from storage."""
+    return ObservationGraph.from_records(store.list_observations(campaign_id))
+
+
 class AdaptivePlanner:
     """Deterministic, bounded decision layer for authorized campaign progression."""
 
