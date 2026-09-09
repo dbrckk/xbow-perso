@@ -70,7 +70,7 @@ services:
         soft: 1024
         hard: 2048
     healthcheck:
-      test: ["CMD", "python", "-c", "from app.jobqueue import JobQueue; s=JobQueue().stats(); assert isinstance(s.get('total'), int)"]
+      test: ["CMD", "python", "-c", "from app.jobqueue import JobQueue; h=JobQueue().health(); assert h.get('ok') is True, h"]
       interval: 30s
       timeout: 5s
       retries: 3
