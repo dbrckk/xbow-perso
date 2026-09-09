@@ -20,6 +20,24 @@ def test_graph_rejects_unknown_parent():
         graph.add(Observation("e1", "endpoint", "/api", "test", parent_ids=("missing",)))
 
 
+def test_graph_restores_without_relying_on_row_order():
+    graph = ObservationGraph.from_records(
+        [
+            {"id": "e1", "kind": "endpoint", "value": "/api", "source": "crawler", "parent_ids": ("a1",)},
+            {"id": "a1", "kind": "asset", "value": "example.com", "source": "scope"},
+        ]
+    )
+    assert [item.id for item in graph.by_kind("asset")] == ["a1"]
+    assert [item.id for item in graph.by_kind("endpoint")] == ["e1"]
+
+
+def test_graph_restore_rejects_missing_or_cyclic_parents():
+    with pytest.raises(ValueError, match="missing or cyclic"):
+        ObservationGraph.from_records(
+            [{"id": "e1", "kind": "endpoint", "value": "/api", "source": "crawler", "parent_ids": ("missing",)}]
+        )
+
+
 def test_planner_starts_with_inventory():
     actions = AdaptivePlanner().plan(campaign(), ObservationGraph())
     assert actions[0].kind == "inventory"
