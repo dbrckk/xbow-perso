@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from dataclasses import dataclass
@@ -10,7 +11,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
 from .jobqueue import JobQueue
-from .storage import Storage
+from .storage import CampaignConflictError, Storage
 
 router = APIRouter()
 
@@ -58,10 +59,17 @@ def _bool_env(name: str, default: bool = False) -> bool:
 def _campaign(campaign_id: str):
     from .main import Campaign
 
-    raw = Storage().get_campaign(campaign_id)
-    if not raw:
+    record = Storage().get_campaign_record(campaign_id)
+    if not record:
         raise HTTPException(status_code=404, detail="Campaign not found")
-    return Campaign.model_validate(raw)
+    raw, version = record
+    return Campaign.model_validate(raw), version
+
+
+def _flow_dedupe_key(campaign_id: str, version: int, flow: BrowserFlowInput) -> str:
+    encoded = json.dumps(flow.model_dump(mode="json"), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    digest = hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:24]
+    return f"browser:v{version}:{campaign_id}:{digest}"
 
 
 def _allowed_url(campaign, candidate: str, base: str | None = None) -> str:
@@ -88,7 +96,7 @@ def validate_flow(campaign, flow: BrowserFlowInput) -> BrowserFlowInput:
 
 @router.post("/api/campaigns/{campaign_id}/browser-flows")
 def queue_browser_flow(campaign_id: str, flow: BrowserFlowInput):
-    campaign = _campaign(campaign_id)
+    campaign, version = _campaign(campaign_id)
     validate_flow(campaign, flow)
     if campaign.state.value in {"cancelled", "completed"}:
         raise HTTPException(status_code=409, detail=f"Cannot queue browser flow from {campaign.state}")
@@ -97,9 +105,13 @@ def queue_browser_flow(campaign_id: str, flow: BrowserFlowInput):
         "browser_flow",
         {"campaign_id": campaign.id, "steps": flow.model_dump(mode="json")["steps"]},
         max_attempts=2,
+        dedupe_key=_flow_dedupe_key(campaign.id, version, flow),
     )
     campaign.events.append({"type": "browser_flow_queued", "job_id": job["id"], "at": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()})
-    Storage().save_campaign(campaign.model_dump(mode="json"))
+    try:
+        Storage().save_campaign(campaign.model_dump(mode="json"), expected_version=version)
+    except CampaignConflictError as exc:
+        raise HTTPException(status_code=409, detail="Campaign changed concurrently; reload and retry") from exc
     return job
 
 
