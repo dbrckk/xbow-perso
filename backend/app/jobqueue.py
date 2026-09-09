@@ -48,13 +48,18 @@ class JobQueue:
                 payload TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'queued',
                 attempts INTEGER NOT NULL DEFAULT 0, max_attempts INTEGER NOT NULL DEFAULT 2,
                 created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
-                claimed_by TEXT, claimed_at TEXT, last_error TEXT
+                claimed_by TEXT, claimed_at TEXT, last_error TEXT, dedupe_key TEXT
             )""")
             columns = {row["name"] for row in db.execute("PRAGMA table_info(jobs)").fetchall()}
             if "claimed_at" not in columns:
                 db.execute("ALTER TABLE jobs ADD COLUMN claimed_at TEXT")
+            if "dedupe_key" not in columns:
+                db.execute("ALTER TABLE jobs ADD COLUMN dedupe_key TEXT")
             db.execute("CREATE INDEX IF NOT EXISTS jobs_status_created ON jobs(status, created_at)")
             db.execute("CREATE INDEX IF NOT EXISTS jobs_running_claimed ON jobs(status, claimed_at)")
+            db.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS jobs_dedupe ON jobs(campaign_id,kind,dedupe_key) WHERE dedupe_key IS NOT NULL"
+            )
 
     def health(self) -> dict[str, Any]:
         """Return minimal storage health without exposing job payloads."""
@@ -71,18 +76,66 @@ class JobQueue:
             "jobs": int(count),
         }
 
-    def enqueue(self, campaign_id: str, kind: str, payload: dict[str, Any], max_attempts: int = 2) -> dict[str, Any]:
+    def enqueue(
+        self,
+        campaign_id: str,
+        kind: str,
+        payload: dict[str, Any],
+        max_attempts: int = 2,
+        *,
+        dedupe_key: str | None = None,
+    ) -> dict[str, Any]:
         if kind not in {"strix_scan", "independent_validation", "browser_flow", "report"}:
             raise ValueError("unsupported job kind")
         if not 1 <= max_attempts <= 5:
             raise ValueError("max_attempts must be 1..5")
+        if dedupe_key is not None:
+            dedupe_key = dedupe_key.strip()
+            if not dedupe_key:
+                raise ValueError("dedupe_key must not be blank")
+            if len(dedupe_key) > 200:
+                raise ValueError("dedupe_key too long")
+
+        encoded_payload = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        if dedupe_key is not None:
+            with self.connect() as db:
+                existing = db.execute(
+                    "SELECT * FROM jobs WHERE campaign_id=? AND kind=? AND dedupe_key=?",
+                    (campaign_id, kind, dedupe_key),
+                ).fetchone()
+            if existing:
+                decoded = self._decode(existing)
+                if json.dumps(decoded["payload"], sort_keys=True, separators=(",", ":"), ensure_ascii=False) != encoded_payload:
+                    raise ValueError("dedupe_key reused with different job payload")
+                return decoded
+
         job_id, now = str(uuid4()), utcnow()
-        with self.connect() as db:
-            db.execute(
-                "INSERT INTO jobs(id,campaign_id,kind,payload,status,max_attempts,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)",
-                (job_id, campaign_id, kind, json.dumps(payload), "queued", max_attempts, now, now),
-            )
-        return self.get(job_id)
+        try:
+            with self.connect() as db:
+                db.execute(
+                    """INSERT INTO jobs(
+                           id,campaign_id,kind,payload,status,max_attempts,created_at,updated_at,dedupe_key
+                       ) VALUES(?,?,?,?,?,?,?,?,?)""",
+                    (job_id, campaign_id, kind, encoded_payload, "queued", max_attempts, now, now, dedupe_key),
+                )
+        except sqlite3.IntegrityError:
+            if dedupe_key is None:
+                raise
+            with self.connect() as db:
+                existing = db.execute(
+                    "SELECT * FROM jobs WHERE campaign_id=? AND kind=? AND dedupe_key=?",
+                    (campaign_id, kind, dedupe_key),
+                ).fetchone()
+            if not existing:
+                raise
+            decoded = self._decode(existing)
+            if json.dumps(decoded["payload"], sort_keys=True, separators=(",", ":"), ensure_ascii=False) != encoded_payload:
+                raise ValueError("dedupe_key reused with different job payload")
+            return decoded
+        result = self.get(job_id)
+        if result is None:
+            raise RuntimeError("queued job disappeared")
+        return result
 
     def get(self, job_id: str) -> dict[str, Any] | None:
         with self.connect() as db:
