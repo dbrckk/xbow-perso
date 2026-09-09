@@ -74,6 +74,22 @@ class JobQueue:
             row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
         return self._decode(row) if row else None
 
+    def stats(self) -> dict[str, Any]:
+        """Return bounded operational queue telemetry without exposing payloads."""
+        with self.connect() as db:
+            rows = db.execute("SELECT status, COUNT(*) AS count FROM jobs GROUP BY status").fetchall()
+            total = db.execute("SELECT COUNT(*) AS count FROM jobs").fetchone()["count"]
+            oldest = db.execute(
+                "SELECT created_at FROM jobs WHERE status='queued' ORDER BY created_at LIMIT 1"
+            ).fetchone()
+        counts = {status: 0 for status in ("queued", "running", "completed", "failed", "cancelled")}
+        counts.update({row["status"]: row["count"] for row in rows})
+        return {
+            "total": total,
+            "by_status": counts,
+            "oldest_queued_at": oldest["created_at"] if oldest else None,
+        }
+
     def _recover_expired_leases(self, db: sqlite3.Connection, now: datetime) -> int:
         lease_seconds = int(os.getenv("XBOW_JOB_LEASE_SECONDS", "21600"))
         if not 60 <= lease_seconds <= 86400:
