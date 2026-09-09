@@ -38,6 +38,32 @@ class ObservationGraph:
     def __init__(self) -> None:
         self._observations: dict[str, Observation] = {}
 
+    @classmethod
+    def from_records(cls, records: list[dict[str, Any]]) -> ObservationGraph:
+        """Rebuild a graph from durable records without relying on database row order."""
+        graph = cls()
+        pending = {
+            str(record["id"]): Observation(
+                id=str(record["id"]),
+                kind=record["kind"],
+                value=str(record["value"]),
+                source=str(record["source"]),
+                parent_ids=tuple(str(item) for item in record.get("parent_ids", ())),
+                metadata=dict(record.get("metadata", {})),
+            )
+            for record in records
+        }
+        while pending:
+            progressed = False
+            for observation_id, observation in list(pending.items()):
+                if all(parent in graph._observations for parent in observation.parent_ids):
+                    graph.add(observation)
+                    pending.pop(observation_id)
+                    progressed = True
+            if not progressed:
+                raise ValueError("persisted observation graph has missing or cyclic parents")
+        return graph
+
     def add(self, observation: Observation) -> None:
         missing = [parent for parent in observation.parent_ids if parent not in self._observations]
         if missing:
