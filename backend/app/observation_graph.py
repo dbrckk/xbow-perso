@@ -119,5 +119,11 @@ class AdaptivePlanner:
         if assets and not endpoints:
             return [PlannedAction("crawl", host, "known assets have no endpoint inventory", 90)]
         if endpoints and not findings:
+            scan_completed = any(
+                item.metadata.get("phase") == "scan" and item.metadata.get("status") == "completed"
+                for item in evidence
+            )
+            if scan_completed:
+                return [PlannedAction("stop", host, "scan completed without recorded findings", 100)]
             return [PlannedAction("scan", host, "endpoint inventory exists but no findings recorded", 80)]
         return [PlannedAction("stop", host, "no bounded next action available", 10)]
