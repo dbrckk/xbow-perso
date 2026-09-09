@@ -2,6 +2,8 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
+    init: true
+    stop_grace_period: 20s
     environment:
       DRY_RUN: ${DRY_RUN:-true}
       XBOW_API_TOKEN: ${XBOW_API_TOKEN:-}
@@ -16,13 +18,24 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    pids_limit: 256
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks: [control]
 
   worker:
     build: ./backend
     command: ["python", "-m", "app.worker_service"]
     restart: unless-stopped
-    depends_on: [backend]
+    init: true
+    stop_grace_period: 30s
+    depends_on:
+      backend:
+        condition: service_healthy
     environment:
       DRY_RUN: ${DRY_RUN:-true}
       XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
@@ -44,12 +57,17 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    pids_limit: 256
     networks: [control]
 
   frontend:
     build: ./frontend
     restart: unless-stopped
-    depends_on: [backend]
+    init: true
+    stop_grace_period: 15s
+    depends_on:
+      backend:
+        condition: service_healthy
     ports:
       - "${XBOW_PORT:-8080}:80"
     read_only: true
@@ -61,6 +79,7 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    pids_limit: 128
     networks: [control]
 
 volumes:
