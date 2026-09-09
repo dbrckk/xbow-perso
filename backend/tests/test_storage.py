@@ -65,6 +65,49 @@ def test_campaign_create_rejects_impossible_expected_version(tmp_path):
     assert store.get_campaign("c1") is None
 
 
+def test_observation_graph_roundtrip_and_parent_integrity(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    asset = store.put_observation(
+        "c1",
+        {"id": "asset:example.com", "kind": "asset", "value": "example.com", "source": "scope", "metadata": {"in_scope": True}},
+    )
+    endpoint = store.put_observation(
+        "c1",
+        {
+            "id": "endpoint:/api",
+            "kind": "endpoint",
+            "value": "/api",
+            "source": "browser",
+            "parent_ids": (asset["id"],),
+        },
+    )
+
+    rows = store.list_observations("c1")
+    assert [row["id"] for row in rows] == ["asset:example.com", "endpoint:/api"]
+    assert rows[1]["parent_ids"] == ("asset:example.com",)
+    assert rows[0]["metadata"] == {"in_scope": True}
+    assert endpoint["kind"] == "endpoint"
+
+
+def test_observation_rejects_unknown_parent_and_conflicting_identity(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    with pytest.raises(ValueError, match="unknown parent"):
+        store.put_observation(
+            "c1",
+            {"id": "e1", "kind": "endpoint", "value": "/api", "source": "browser", "parent_ids": ("missing",)},
+        )
+
+    first = {"id": "a1", "kind": "asset", "value": "example.com", "source": "scope"}
+    assert store.put_observation("c1", first)["id"] == "a1"
+    assert store.put_observation("c1", first)["id"] == "a1"
+    with pytest.raises(ValueError, match="different content"):
+        store.put_observation("c1", {**first, "value": "other.example.com"})
+
+
 def test_artifact_kind_fails_closed(tmp_path):
     store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
     store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
