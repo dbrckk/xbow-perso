@@ -69,6 +69,25 @@ def test_planner_progresses_through_bounded_phases():
     assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "stop"
 
 
+def test_planner_stops_after_completed_scan_without_findings():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "scope"))
+    graph.add(Observation("e1", "endpoint", "https://example.com", "scope", parent_ids=("a1",)))
+    graph.add(
+        Observation(
+            "scan:j1",
+            "evidence",
+            "completed",
+            "strix",
+            parent_ids=("e1",),
+            metadata={"phase": "scan", "status": "completed", "findings": 0},
+        )
+    )
+    action = AdaptivePlanner().plan(campaign(), graph)[0]
+    assert action.kind == "stop"
+    assert "without recorded findings" in action.reason
+
+
 def test_planner_counts_validations_by_finding_relationship():
     graph = ObservationGraph()
     graph.add(Observation("a1", "asset", "example.com", "recon"))
