@@ -8,13 +8,15 @@ ReportPlatform = Literal["generic", "hackerone", "bugcrowd"]
 
 
 def render_markdown(campaign: Campaign, platform: ReportPlatform = "generic") -> str:
-    """Render a submission-oriented report from independently confirmed findings only."""
+    """Render a human-review draft from independently confirmed findings only."""
     confirmed = [f for f in campaign.findings if f.status == "confirmed"]
     platform_name = {"generic": "Security program", "hackerone": "HackerOne", "bugcrowd": "Bugcrowd"}[platform]
     severity_counts = {level: sum(1 for f in confirmed if f.severity == level) for level in ("critical", "high", "medium", "low", "info")}
 
     lines = [
-        f"# Submission-ready security report — {campaign.target.name}",
+        f"# Security report draft — {campaign.target.name}",
+        "",
+        "> **Human approval required before external submission.**",
         "",
         f"**Submission format:** {platform_name}  ",
         f"**Campaign ID:** `{campaign.id}`  ",
@@ -23,7 +25,7 @@ def render_markdown(campaign: Campaign, platform: ReportPlatform = "generic") ->
         "",
         "## Executive summary",
         "",
-        f"{len(confirmed)} independently validated finding(s) are eligible for submission.",
+        f"{len(confirmed)} independently validated finding(s) are eligible for human review.",
         "",
         "| Severity | Count |",
         "| --- | ---: |",
@@ -94,6 +96,7 @@ def render_markdown(campaign: Campaign, platform: ReportPlatform = "generic") ->
         "",
         "## Submission checklist",
         "",
+        "- Obtain explicit human approval for the exact report artifact before any external submission.",
         "- Confirm the affected asset remains in the current program scope before submission.",
         "- Re-check program-specific disclosure rules and duplicate handling requirements.",
         "- Remove secrets, authentication tokens, and unrelated personal data from attached evidence.",
