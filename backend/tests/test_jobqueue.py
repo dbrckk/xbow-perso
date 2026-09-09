@@ -12,7 +12,8 @@ def test_queue_claim_and_complete(tmp_path):
     assert claimed["claimed_by"] == "worker-a"
     assert claimed["claimed_at"] is not None
     assert q.claim("worker-b") is None
-    done = q.finish(created["id"], True)
+    done = q.finish(created["id"], "worker-a", True)
+    assert done is not None
     assert done["status"] == "completed"
     assert done["claimed_by"] is None
     assert done["claimed_at"] is None
@@ -22,9 +23,12 @@ def test_failure_requeues_then_fails(tmp_path):
     q = JobQueue(str(tmp_path / "q.sqlite3"))
     job = q.enqueue("campaign-1", "independent_validation", {"finding_id": "f1"}, max_attempts=2)
     q.claim("worker-a")
-    assert q.finish(job["id"], False, "transient")["status"] == "queued"
+    requeued = q.finish(job["id"], "worker-a", False, "transient")
+    assert requeued is not None
+    assert requeued["status"] == "queued"
     q.claim("worker-b")
-    failed = q.finish(job["id"], False, "still broken")
+    failed = q.finish(job["id"], "worker-b", False, "still broken")
+    assert failed is not None
     assert failed["status"] == "failed"
     assert failed["last_error"] == "still broken"
 
@@ -96,7 +100,7 @@ def test_stats_expose_counts_without_payloads(tmp_path):
     first = q.enqueue("campaign-1", "strix_scan", {"secret": "must-not-leak"})
     q.enqueue("campaign-2", "report", {"campaign_id": "campaign-2"})
     q.claim("worker-a")
-    q.finish(first["id"], True)
+    q.finish(first["id"], "worker-a", True)
 
     stats = q.stats()
     assert stats["total"] == 2
@@ -127,5 +131,30 @@ def test_heartbeat_rejects_finished_job(tmp_path):
     q = JobQueue(str(tmp_path / "q.sqlite3"))
     job = q.enqueue("campaign-1", "report", {})
     q.claim("worker-a")
-    q.finish(job["id"], True)
+    q.finish(job["id"], "worker-a", True)
     assert q.heartbeat(job["id"], "worker-a") is False
+
+
+def test_stale_worker_cannot_finish_reclaimed_job(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_JOB_LEASE_SECONDS", "60")
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    job = q.enqueue("campaign-1", "report", {}, max_attempts=2)
+    q.claim("worker-a")
+    with q.connect() as db:
+        db.execute(
+            "UPDATE jobs SET claimed_at='2000-01-01T00:00:00+00:00' WHERE id=?",
+            (job["id"],),
+        )
+
+    reclaimed = q.claim("worker-b")
+    assert reclaimed is not None
+    assert reclaimed["claimed_by"] == "worker-b"
+    assert q.finish(job["id"], "worker-a", True) is None
+
+    current = q.get(job["id"])
+    assert current is not None
+    assert current["status"] == "running"
+    assert current["claimed_by"] == "worker-b"
+    completed = q.finish(job["id"], "worker-b", True)
+    assert completed is not None
+    assert completed["status"] == "completed"
