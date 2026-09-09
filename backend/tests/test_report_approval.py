@@ -1,5 +1,12 @@
 from app.main import Campaign, Finding, ProgramRules, TargetInput
-from app.report_approval import approval_event, approval_status, revocation_event
+from app.report_approval import (
+    approval_event,
+    approval_event_from_storage,
+    approval_status,
+    approval_status_from_storage,
+    revocation_event,
+)
+from app.storage import ArtifactIntegrityError, Storage
 
 
 def _campaign() -> Campaign:
@@ -37,6 +44,12 @@ def _artifact() -> dict:
         "kind": "report",
         "sha256": "a" * 64,
     }
+
+
+def _store(tmp_path, campaign: Campaign) -> Storage:
+    store = Storage(str(tmp_path / "xbow.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+    return store
 
 
 def test_exact_report_and_campaign_state_can_be_approved():
@@ -97,3 +110,69 @@ def test_non_report_artifact_cannot_be_approved():
         assert "only report artifacts" in str(exc)
     else:
         raise AssertionError("approval must reject non-report artifacts")
+
+
+def test_storage_backed_approval_verifies_report_bytes(tmp_path):
+    campaign = _campaign()
+    store = _store(tmp_path, campaign)
+    artifact = store.put_artifact(
+        campaign.id,
+        "report",
+        b"verified report draft",
+        media_type="text/markdown",
+    )
+
+    event = approval_event_from_storage(
+        campaign,
+        store,
+        artifact["id"],
+        "human-reviewer",
+        "2026-09-09T21:00:00Z",
+    )
+    campaign.events.append(event)
+
+    status = approval_status_from_storage(campaign, store, artifact["id"])
+
+    assert status.approved is True
+    assert status.artifact_sha256 == artifact["sha256"]
+
+
+def test_tampered_report_bytes_cannot_be_approved_or_reported_as_approved(tmp_path):
+    campaign = _campaign()
+    store = _store(tmp_path, campaign)
+    artifact = store.put_artifact(
+        campaign.id,
+        "report",
+        b"verified report draft",
+        media_type="text/markdown",
+    )
+    campaign.events.append(
+        approval_event_from_storage(
+            campaign,
+            store,
+            artifact["id"],
+            "human-reviewer",
+            "2026-09-09T21:00:00Z",
+        )
+    )
+
+    metadata = store.get_artifact(campaign.id, artifact["id"])
+    assert metadata is not None
+    (store.artifact_root / metadata["relative_path"]).write_bytes(b"tampered report draft")
+
+    for check in (
+        lambda: approval_event_from_storage(
+            campaign,
+            store,
+            artifact["id"],
+            "human-reviewer",
+            "2026-09-09T21:05:00Z",
+        ),
+        lambda: approval_status_from_storage(campaign, store, artifact["id"]),
+    ):
+        try:
+            check()
+        except ArtifactIntegrityError:
+            pass
+        else:
+            raise AssertionError("tampered report bytes must fail integrity verification")
