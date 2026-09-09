@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import os
 import socket
 import threading
@@ -10,6 +11,7 @@ from pathlib import Path
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .jobqueue import JobQueue
 from .main import Campaign, CampaignState, Finding, utcnow
+from .observation_graph import Observation
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
@@ -42,6 +44,63 @@ def _append_event_once(campaign: Campaign, event: dict) -> None:
     if job_id and any(e.get("type") == event_type and e.get("job_id") == job_id for e in campaign.events):
         return
     campaign.events.append(event)
+
+
+def _observation_id(prefix: str, value: str) -> str:
+    digest = hashlib.sha256(value.encode("utf-8")).hexdigest()[:24]
+    return f"{prefix}:{digest}"
+
+
+def _record_asset_observation(store: Storage, campaign: Campaign, asset: str, source: str) -> str:
+    observation = Observation(
+        id=_observation_id("asset", asset),
+        kind="asset",
+        value=asset,
+        source=source,
+    )
+    store.put_observation(campaign.id, observation.to_dict())
+    return observation.id
+
+
+def _record_finding_observation(store: Storage, campaign: Campaign, finding: Finding) -> str:
+    parent_id = _record_asset_observation(store, campaign, finding.asset, finding.discovered_by)
+    observation = Observation(
+        id=f"finding:{finding.id}",
+        kind="finding",
+        value=finding.id,
+        source=finding.discovered_by,
+        parent_ids=(parent_id,),
+        metadata={
+            "title": finding.title,
+            "severity": finding.severity,
+            "endpoint": finding.endpoint,
+        },
+    )
+    store.put_observation(campaign.id, observation.to_dict())
+    return observation.id
+
+
+def _record_artifact_observation(
+    store: Storage,
+    campaign: Campaign,
+    artifact: dict,
+    *,
+    source: str,
+    parent_ids: tuple[str, ...] = (),
+    kind: str = "evidence",
+    value: str | None = None,
+    metadata: dict | None = None,
+) -> str:
+    observation = Observation(
+        id=f"{kind}:{artifact['id']}",
+        kind=kind,
+        value=value or artifact["id"],
+        source=source,
+        parent_ids=parent_ids,
+        metadata={"artifact_id": artifact["id"], **(metadata or {})},
+    )
+    store.put_observation(campaign.id, observation.to_dict())
+    return observation.id
 
 
 @contextmanager
@@ -81,6 +140,7 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
     persist_execution_artifacts(store, campaign.id, result)
 
     if result["status"] == "dry_run":
+        _record_asset_observation(store, campaign, str(campaign.target.primary_url), "strix-dry-run")
         campaign.state = CampaignState.ready
         _append_event_once(campaign, {"type": "scan_dry_run", "job_id": job["id"], "at": utcnow()})
         _save(store, campaign, version)
@@ -93,6 +153,7 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
     existing = {f.id for f in campaign.findings}
     queued = 0
     for finding in findings:
+        _record_finding_observation(store, campaign, finding)
         if finding.id in existing:
             continue
         campaign.findings.append(finding)
@@ -121,6 +182,7 @@ def process_validation(job: dict, store: Storage) -> None:
     if finding.discovered_by == "independent-http-validator":
         raise ValidationPolicyError("discovery agent cannot validate its own finding")
 
+    finding_observation_id = _record_finding_observation(store, campaign, finding)
     result = safe_http_probe(campaign, finding)
     artifact = store.put_artifact(
         campaign.id,
@@ -129,6 +191,24 @@ def process_validation(job: dict, store: Storage) -> None:
         media_type="application/json",
         finding_id=finding.id,
         idempotency_key=f"{job['id']}:validation",
+    )
+    validation_observation_id = _record_artifact_observation(
+        store,
+        campaign,
+        artifact,
+        source="independent-http-validator",
+        parent_ids=(finding_observation_id,),
+        kind="validation",
+        value=result.status,
+        metadata={"http_status": result.http_status, "finding_id": finding.id},
+    )
+    _record_artifact_observation(
+        store,
+        campaign,
+        artifact,
+        source="independent-http-validator",
+        parent_ids=(validation_observation_id,),
+        metadata={"artifact_kind": "validation", "finding_id": finding.id},
     )
     _append_event_once(
         campaign,
@@ -161,8 +241,18 @@ def process_validation(job: dict, store: Storage) -> None:
 
 def process_browser_flow(job: dict, store: Storage) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
+    asset_id = _record_asset_observation(store, campaign, str(campaign.target.primary_url), "browser")
     result = execute_browser_flow(campaign, job["payload"])
     artifacts = persist_browser_result(store, campaign.id, result)
+    for artifact in artifacts:
+        _record_artifact_observation(
+            store,
+            campaign,
+            artifact,
+            source="browser",
+            parent_ids=(asset_id,),
+            metadata={"browser_status": result.status},
+        )
     _append_event_once(
         campaign,
         {
@@ -188,6 +278,13 @@ def process_report(job: dict, store: Storage) -> None:
         report,
         media_type="text/markdown",
         idempotency_key=f"{job['id']}:report:{platform}",
+    )
+    _record_artifact_observation(
+        store,
+        campaign,
+        artifact,
+        source="report-engine",
+        metadata={"platform": platform, "artifact_kind": "report"},
     )
     _append_event_once(
         campaign,
