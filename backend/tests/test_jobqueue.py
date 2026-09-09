@@ -89,3 +89,19 @@ def test_rejects_arbitrary_job_kind(tmp_path):
         assert "unsupported" in str(exc)
     else:
         raise AssertionError("arbitrary job kinds must fail closed")
+
+
+def test_stats_expose_counts_without_payloads(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    first = q.enqueue("campaign-1", "strix_scan", {"secret": "must-not-leak"})
+    q.enqueue("campaign-2", "report", {"campaign_id": "campaign-2"})
+    q.claim("worker-a")
+    q.finish(first["id"], True)
+
+    stats = q.stats()
+    assert stats["total"] == 2
+    assert stats["by_status"]["completed"] == 1
+    assert stats["by_status"]["queued"] == 1
+    assert stats["oldest_queued_at"] is not None
+    assert "secret" not in str(stats)
+    assert "must-not-leak" not in str(stats)
