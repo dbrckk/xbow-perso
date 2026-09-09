@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shlex
@@ -141,6 +142,17 @@ def locate_vulnerabilities_json(output_dir: str) -> Path | None:
     return safe_matches[0] if safe_matches else None
 
 
+def _finding_id(title: str, asset: str, endpoint: str | None, cwe: str | None, summary: str) -> str:
+    """Stable identity makes retries idempotent without trusting scanner-provided IDs."""
+    canonical = json.dumps(
+        [title.strip(), asset.strip(), endpoint or "", cwe or "", summary.strip()],
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return f"strix-{digest[:32]}"
+
+
 def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Finding]:
     """Parse bounded Strix JSON artifacts into xbow-perso's canonical model."""
     path = Path(path)
@@ -157,6 +169,7 @@ def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Fi
         raise ValueError("Strix findings collection must be a list")
 
     findings: list[Finding] = []
+    seen_ids: set[str] = set()
     for item in items:
         if not isinstance(item, dict):
             continue
@@ -177,18 +190,28 @@ def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Fi
         if isinstance(cwe, list):
             cwe = ", ".join(str(x) for x in cwe)
 
+        title = str(item.get("title") or item.get("name") or "Strix finding")
+        endpoint = _optional_str(item.get("endpoint"))
+        summary = str(item.get("summary") or item.get("description") or item.get("technical_analysis") or "")
+        cwe_text = _optional_str(cwe)
+        finding_id = _finding_id(title, asset, endpoint, cwe_text, summary)
+        if finding_id in seen_ids:
+            continue
+        seen_ids.add(finding_id)
+
         findings.append(
             Finding(
-                title=str(item.get("title") or item.get("name") or "Strix finding"),
+                id=finding_id,
+                title=title,
                 severity=severity,
                 asset=asset,
-                endpoint=_optional_str(item.get("endpoint")),
-                summary=str(item.get("summary") or item.get("description") or item.get("technical_analysis") or ""),
+                endpoint=endpoint,
+                summary=summary,
                 evidence=[str(x) for x in evidence][:50],
                 reproduction_steps=[str(x) for x in steps][:50],
                 impact=str(item.get("impact") or ""),
                 remediation=str(item.get("remediation") or item.get("recommendation") or ""),
-                cwe=_optional_str(cwe),
+                cwe=cwe_text,
                 cvss=_optional_cvss(item.get("cvss")),
                 status="validation_required",
                 discovered_by="strix",
