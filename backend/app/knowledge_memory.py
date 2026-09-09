@@ -18,6 +18,17 @@ class FindingConfidence:
 
 
 @dataclass(frozen=True)
+class FindingPriority:
+    finding_id: str
+    score: float
+    severity_weight: float
+    confidence: float
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class KnowledgeSnapshot:
     observations: int
     assets: int
@@ -74,6 +85,40 @@ def build_knowledge_snapshot(graph: ObservationGraph) -> KnowledgeSnapshot:
         evidence=len(evidence),
         finding_confidence=tuple(scores),
     )
+
+
+def rank_findings(findings: list[Any], graph: ObservationGraph) -> list[FindingPriority]:
+    """Rank findings for independent validation using impact and evidence gaps.
+
+    Higher severity raises priority while stronger existing evidence lowers the
+    urgency for another validation pass. Ties are deterministic by finding id.
+    """
+    severity_weights = {
+        "info": 0.10,
+        "low": 0.25,
+        "medium": 0.50,
+        "high": 0.75,
+        "critical": 1.00,
+    }
+    confidence = {
+        item.finding_id: item.score
+        for item in build_knowledge_snapshot(graph).finding_confidence
+    }
+    ranked = []
+    for finding in findings:
+        finding_id = f"finding:{finding.id}"
+        confidence_score = confidence.get(finding_id, 0.0)
+        severity_weight = severity_weights.get(str(finding.severity), 0.0)
+        score = round((severity_weight * 0.70) + ((1.0 - confidence_score) * 0.30), 4)
+        ranked.append(
+            FindingPriority(
+                finding_id=str(finding.id),
+                score=score,
+                severity_weight=severity_weight,
+                confidence=confidence_score,
+            )
+        )
+    return sorted(ranked, key=lambda item: (-item.score, item.finding_id))
 
 
 def decision_history(graph: ObservationGraph) -> list[dict[str, Any]]:
