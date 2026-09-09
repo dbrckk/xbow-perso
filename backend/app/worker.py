@@ -34,15 +34,27 @@ def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -
     if not rules.automated_scanning:
         raise WorkerPolicyError("Automated scanning is disabled by program rules")
     if rules.destructive_testing or rules.denial_of_service or rules.social_engineering or rules.credential_attacks:
-        # xbow-perso does not elevate to dangerous modes automatically even when a
-        # program happens to permit them. Such capabilities require a future,
-        # explicit per-action approval model.
         raise WorkerPolicyError("Unsafe campaign flags cannot be delegated to autonomous worker")
 
     cmd = ["strix", "-n", "--target", target]
     active_enabled = os.getenv("XBOW_ENABLE_ACTIVE_SCANS", "false").lower() == "true"
     dry_run = os.getenv("DRY_RUN", "true").lower() == "true" or not active_enabled
     return WorkerPlan(engine="strix", command=cmd, target=target, dry_run=dry_run, output_dir=output_dir)
+
+
+def _bounded_timeout() -> int:
+    timeout = int(os.getenv("WORKER_TIMEOUT_SECONDS", "7200"))
+    if not 30 <= timeout <= 86400:
+        raise WorkerPolicyError("WORKER_TIMEOUT_SECONDS must be between 30 and 86400")
+    return timeout
+
+
+def _text(value: str | bytes | None) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value
 
 
 def execute(plan: WorkerPlan) -> dict:
@@ -56,15 +68,26 @@ def execute(plan: WorkerPlan) -> dict:
 
     output = Path(plan.output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    result = subprocess.run(
-        plan.command,
-        cwd=output,
-        capture_output=True,
-        text=True,
-        timeout=int(os.getenv("WORKER_TIMEOUT_SECONDS", "7200")),
-        check=False,
-        env=_worker_env(),
-    )
+    try:
+        result = subprocess.run(
+            plan.command,
+            cwd=output,
+            capture_output=True,
+            text=True,
+            timeout=_bounded_timeout(),
+            check=False,
+            env=_worker_env(),
+        )
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "engine": plan.engine,
+            "status": "timed_out",
+            "returncode": None,
+            "stdout": _text(exc.stdout)[-20000:],
+            "stderr": _text(exc.stderr)[-20000:],
+            "output_dir": str(output),
+            "error": "worker execution timed out",
+        }
     return {
         "engine": plan.engine,
         "status": "completed" if result.returncode in {0, 2} else "failed",
@@ -92,22 +115,38 @@ def _worker_env() -> dict[str, str]:
     return {k: v for k, v in os.environ.items() if k in allowed}
 
 
+def _max_strix_json_bytes() -> int:
+    limit = int(os.getenv("XBOW_MAX_STRIX_JSON_BYTES", str(5 * 1024 * 1024)))
+    if not 1024 <= limit <= 20 * 1024 * 1024:
+        raise WorkerPolicyError("XBOW_MAX_STRIX_JSON_BYTES must be between 1 KiB and 20 MiB")
+    return limit
+
+
 def locate_vulnerabilities_json(output_dir: str) -> Path | None:
     root = Path(output_dir)
     if not root.exists():
         return None
-    matches = sorted(root.glob("**/vulnerabilities.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-    return matches[0] if matches else None
+    root_resolved = root.resolve()
+    safe_matches: list[Path] = []
+    for candidate in root.glob("**/vulnerabilities.json"):
+        try:
+            resolved = candidate.resolve(strict=True)
+            resolved.relative_to(root_resolved)
+        except (FileNotFoundError, ValueError, OSError):
+            continue
+        if not resolved.is_file() or resolved.stat().st_size > _max_strix_json_bytes():
+            continue
+        safe_matches.append(resolved)
+    safe_matches.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    return safe_matches[0] if safe_matches else None
 
 
 def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Finding]:
-    """Parse current Strix JSON artifacts into xbow-perso's canonical model.
-
-    Strix has evolved its artifact schema, so the parser accepts a top-level list
-    or common wrapper keys while still rejecting findings whose asset is outside
-    the immutable campaign scope.
-    """
-    raw = json.loads(Path(path).read_text(encoding="utf-8"))
+    """Parse bounded Strix JSON artifacts into xbow-perso's canonical model."""
+    path = Path(path)
+    if path.stat().st_size > _max_strix_json_bytes():
+        raise WorkerPolicyError("Strix vulnerabilities JSON exceeds configured size limit")
+    raw = json.loads(path.read_text(encoding="utf-8"))
     if isinstance(raw, list):
         items = raw
     elif isinstance(raw, dict):
