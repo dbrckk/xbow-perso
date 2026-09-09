@@ -36,7 +36,10 @@ def test_advance_bootstraps_target_and_queues_one_scan(tmp_path):
     assert len(first["job_ids"]) == 1
     assert second["job_ids"] == first["job_ids"]
     assert queue.stats()["total"] == 1
-    assert {item["kind"] for item in store.list_observations(campaign.id)} == {"asset", "endpoint"}
+    assert {item["kind"] for item in store.list_observations(campaign.id)} == {"asset", "endpoint", "evidence"}
+    assert first["memory"]["assets"] == 1
+    assert first["memory"]["endpoints"] == 1
+    assert first["decision_history"][0]["action"] == "scan"
 
 
 def test_advance_stops_when_automation_disabled(tmp_path):
@@ -51,6 +54,7 @@ def test_advance_stops_when_automation_disabled(tmp_path):
     assert result["action"]["kind"] == "stop"
     assert result["agent"]["role"] == "control"
     assert result["job_ids"] == []
+    assert result["decision_history"][0]["action"] == "stop"
     assert queue.stats()["total"] == 0
 
 
@@ -101,6 +105,9 @@ def test_advance_queues_only_unvalidated_findings_then_report(tmp_path):
     assert result["action"]["kind"] == "validate"
     assert result["agent"]["role"] == "validation"
     assert queued["payload"]["finding_id"] == "f2"
+    confidence = {item["finding_id"]: item["score"] for item in result["memory"]["finding_confidence"]}
+    assert confidence["finding:f1"] == 0.75
+    assert confidence["finding:f2"] == 0.35
 
     store.put_observation(
         campaign.id,
