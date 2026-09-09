@@ -34,6 +34,14 @@ class Storage:
         "validation",
         "report",
     }
+    ALLOWED_OBSERVATION_KINDS = {
+        "asset",
+        "endpoint",
+        "technology",
+        "finding",
+        "evidence",
+        "validation",
+    }
 
     def __init__(self, db_path: str | None = None, artifact_root: str | None = None):
         self.db_path = db_path or os.getenv("XBOW_DB_PATH", "/data/xbow.sqlite3")
@@ -89,6 +97,19 @@ class Storage:
             db.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS artifacts_idempotency ON artifacts(campaign_id, idempotency_key) WHERE idempotency_key IS NOT NULL"
             )
+            db.execute("""CREATE TABLE IF NOT EXISTS observations (
+                campaign_id TEXT NOT NULL,
+                id TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                value TEXT NOT NULL,
+                source TEXT NOT NULL,
+                parent_ids TEXT NOT NULL,
+                metadata TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                PRIMARY KEY(campaign_id, id),
+                FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
+            )""")
+            db.execute("CREATE INDEX IF NOT EXISTS observations_campaign_kind ON observations(campaign_id, kind, created_at)")
 
     def save_campaign(self, document: dict[str, Any], *, expected_version: int | None = None) -> int:
         """Persist a campaign and optionally reject stale snapshot writes.
@@ -142,6 +163,96 @@ class Storage:
         with self.connect() as db:
             rows = db.execute("SELECT document FROM campaigns ORDER BY created_at DESC").fetchall()
         return [json.loads(row["document"]) for row in rows]
+
+    def put_observation(self, campaign_id: str, observation: dict[str, Any]) -> dict[str, Any]:
+        required = {"id", "kind", "value", "source"}
+        if not required.issubset(observation):
+            raise ValueError("observation missing required fields")
+        kind = str(observation["kind"])
+        if kind not in self.ALLOWED_OBSERVATION_KINDS:
+            raise ValueError("unsupported observation kind")
+        parent_ids = tuple(str(item) for item in observation.get("parent_ids", ()))
+        metadata = observation.get("metadata", {})
+        if not isinstance(metadata, dict):
+            raise ValueError("observation metadata must be an object")
+        record = {
+            "campaign_id": campaign_id,
+            "id": str(observation["id"]),
+            "kind": kind,
+            "value": str(observation["value"]),
+            "source": str(observation["source"]),
+            "parent_ids": parent_ids,
+            "metadata": metadata,
+            "created_at": str(observation.get("created_at") or utcnow()),
+        }
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            if not db.execute("SELECT 1 FROM campaigns WHERE id=?", (campaign_id,)).fetchone():
+                db.execute("ROLLBACK")
+                raise KeyError(campaign_id)
+            if parent_ids:
+                placeholders = ",".join("?" for _ in parent_ids)
+                rows = db.execute(
+                    f"SELECT id FROM observations WHERE campaign_id=? AND id IN ({placeholders})",
+                    (campaign_id, *parent_ids),
+                ).fetchall()
+                if {row["id"] for row in rows} != set(parent_ids):
+                    db.execute("ROLLBACK")
+                    raise ValueError("observation references unknown parent")
+            existing = db.execute(
+                "SELECT kind,value,source,parent_ids,metadata,created_at FROM observations WHERE campaign_id=? AND id=?",
+                (campaign_id, record["id"]),
+            ).fetchone()
+            if existing:
+                comparable = {
+                    "kind": existing["kind"],
+                    "value": existing["value"],
+                    "source": existing["source"],
+                    "parent_ids": tuple(json.loads(existing["parent_ids"])),
+                    "metadata": json.loads(existing["metadata"]),
+                }
+                requested = {key: record[key] for key in ("kind", "value", "source", "parent_ids", "metadata")}
+                if comparable != requested:
+                    db.execute("ROLLBACK")
+                    raise ValueError("observation id reused with different content")
+                db.execute("COMMIT")
+                return {**record, "created_at": existing["created_at"]}
+            db.execute(
+                """INSERT INTO observations(campaign_id,id,kind,value,source,parent_ids,metadata,created_at)
+                   VALUES(?,?,?,?,?,?,?,?)""",
+                (
+                    campaign_id,
+                    record["id"],
+                    record["kind"],
+                    record["value"],
+                    record["source"],
+                    json.dumps(parent_ids, separators=(",", ":")),
+                    json.dumps(metadata, separators=(",", ":"), ensure_ascii=False),
+                    record["created_at"],
+                ),
+            )
+            db.execute("COMMIT")
+        return record
+
+    def list_observations(self, campaign_id: str) -> list[dict[str, Any]]:
+        with self.connect() as db:
+            rows = db.execute(
+                "SELECT campaign_id,id,kind,value,source,parent_ids,metadata,created_at FROM observations WHERE campaign_id=? ORDER BY created_at,id",
+                (campaign_id,),
+            ).fetchall()
+        return [
+            {
+                "campaign_id": row["campaign_id"],
+                "id": row["id"],
+                "kind": row["kind"],
+                "value": row["value"],
+                "source": row["source"],
+                "parent_ids": tuple(json.loads(row["parent_ids"])),
+                "metadata": json.loads(row["metadata"]),
+                "created_at": row["created_at"],
+            }
+            for row in rows
+        ]
 
     def put_artifact(
         self,
