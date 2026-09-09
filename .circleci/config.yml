@@ -1,0 +1,50 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.12
+    resource_class: small
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - pip-v1-{{ checksum "backend/requirements.txt" }}-{{ checksum "backend/requirements-dev.txt" }}
+      - run:
+          name: Install dependencies
+          command: pip install -r backend/requirements-dev.txt
+      - save_cache:
+          key: pip-v1-{{ checksum "backend/requirements.txt" }}-{{ checksum "backend/requirements-dev.txt" }}
+          paths:
+            - ~/.cache/pip
+      - run:
+          name: Compile
+          command: python -m compileall -q backend/app backend/tests
+      - run:
+          name: Lint
+          command: ruff check backend/app backend/tests
+      - run:
+          name: Test
+          command: PYTHONPATH=backend pytest -q backend/tests
+      - run:
+          name: Dependency audit
+          command: pip-audit -r backend/requirements.txt
+
+  compose-config:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Validate Compose configuration
+          command: docker compose config
+      - run:
+          name: Build containers
+          command: docker compose build --pull
+
+workflows:
+  validate:
+    jobs:
+      - test
+      - compose-config
