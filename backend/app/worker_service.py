@@ -11,7 +11,7 @@ from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_r
 from .jobqueue import JobQueue
 from .main import Campaign, CampaignState, Finding, utcnow
 from .report import render_markdown
-from .storage import Storage
+from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
 from .worker import (
     WorkerPolicyError,
@@ -23,16 +23,17 @@ from .worker import (
 )
 
 
-def _save(store: Storage, campaign: Campaign) -> None:
+def _save(store: Storage, campaign: Campaign, version: int) -> int:
     campaign.updated_at = utcnow()
-    store.save_campaign(campaign.model_dump(mode="json"))
+    return store.save_campaign(campaign.model_dump(mode="json"), expected_version=version)
 
 
-def _campaign(store: Storage, campaign_id: str) -> Campaign:
-    raw = store.get_campaign(campaign_id)
-    if not raw:
+def _campaign(store: Storage, campaign_id: str) -> tuple[Campaign, int]:
+    record = store.get_campaign_record(campaign_id)
+    if not record:
         raise KeyError(f"campaign {campaign_id} not found")
-    return Campaign.model_validate(raw)
+    raw, version = record
+    return Campaign.model_validate(raw), version
 
 
 def _append_event_once(campaign: Campaign, event: dict) -> None:
@@ -73,7 +74,7 @@ def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
 
 
 def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
-    campaign = _campaign(store, job["campaign_id"])
+    campaign, version = _campaign(store, job["campaign_id"])
     run_dir = str(Path(os.getenv("XBOW_STRIX_RUN_ROOT", "/data/strix_runs")) / job["id"])
     plan = build_strix_plan(campaign, run_dir)
     result = execute(plan)
@@ -82,7 +83,7 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
     if result["status"] == "dry_run":
         campaign.state = CampaignState.ready
         _append_event_once(campaign, {"type": "scan_dry_run", "job_id": job["id"], "at": utcnow()})
-        _save(store, campaign)
+        _save(store, campaign, version)
         return
     if result["status"] != "completed":
         raise RuntimeError(result.get("stderr") or "Strix execution failed")
@@ -107,12 +108,12 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
         campaign,
         {"type": "strix_results_ingested", "job_id": job["id"], "findings": len(findings), "validation_jobs": queued, "at": utcnow()},
     )
-    _save(store, campaign)
+    _save(store, campaign, version)
 
 
 def process_validation(job: dict, store: Storage) -> None:
     """Capture independent read-only HTTP evidence without self-confirming findings."""
-    campaign = _campaign(store, job["campaign_id"])
+    campaign, version = _campaign(store, job["campaign_id"])
     finding_id = str(job["payload"].get("finding_id") or "")
     finding = next((f for f in campaign.findings if f.id == finding_id), None)
     if not finding:
@@ -155,11 +156,11 @@ def process_validation(job: dict, store: Storage) -> None:
                 "at": utcnow(),
             },
         )
-    _save(store, campaign)
+    _save(store, campaign, version)
 
 
 def process_browser_flow(job: dict, store: Storage) -> None:
-    campaign = _campaign(store, job["campaign_id"])
+    campaign, version = _campaign(store, job["campaign_id"])
     result = execute_browser_flow(campaign, job["payload"])
     artifacts = persist_browser_result(store, campaign.id, result)
     _append_event_once(
@@ -172,11 +173,11 @@ def process_browser_flow(job: dict, store: Storage) -> None:
             "at": utcnow(),
         },
     )
-    _save(store, campaign)
+    _save(store, campaign, version)
 
 
 def process_report(job: dict, store: Storage) -> None:
-    campaign = _campaign(store, job["campaign_id"])
+    campaign, version = _campaign(store, job["campaign_id"])
     platform = str(job.get("payload", {}).get("platform") or "generic")
     if platform not in {"generic", "hackerone", "bugcrowd"}:
         raise ValueError("unsupported report platform")
@@ -198,7 +199,7 @@ def process_report(job: dict, store: Storage) -> None:
             "at": utcnow(),
         },
     )
-    _save(store, campaign)
+    _save(store, campaign, version)
 
 
 def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
@@ -217,6 +218,8 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
                 process_report(job, store)
             else:
                 raise ValueError("unsupported job kind")
+    except CampaignConflictError as exc:
+        queue.finish(job["id"], worker_id, False, f"campaign state changed concurrently: {exc}")
     except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ValueError, KeyError) as exc:
         queue.finish(job["id"], worker_id, False, str(exc))
     except Exception as exc:
