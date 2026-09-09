@@ -18,6 +18,9 @@ jobs:
           paths:
             - ~/.cache/pip
       - run:
+          name: Dependency consistency
+          command: python -m pip check
+      - run:
           name: Compile
           command: python -m compileall -q backend/app backend/tests
       - run:
@@ -25,7 +28,7 @@ jobs:
           command: ruff check backend/app backend/tests
       - run:
           name: Test
-          command: PYTHONPATH=backend pytest -q backend/tests
+          command: PYTHONPATH=backend pytest -q --strict-config --strict-markers backend/tests
       - run:
           name: Dependency audit
           command: pip-audit -r backend/requirements.txt
@@ -38,7 +41,7 @@ jobs:
       - checkout
       - run:
           name: Validate Compose configuration
-          command: docker compose config
+          command: docker compose config --quiet
       - run:
           name: Build containers
           command: docker compose build --pull
