@@ -97,11 +97,12 @@ def _enqueue_action(
         receipt = policy_receipt(campaign, host, "automated_scan")
         if not receipt["allowed"]:
             return []
+        stable_receipt = {key: value for key, value in receipt.items() if key != "timestamp"}
         return [
             queue.enqueue(
                 campaign.id,
                 "strix_scan",
-                sanitized_scan_payload(campaign, receipt),
+                sanitized_scan_payload(campaign, stable_receipt),
                 max_attempts=2,
                 dedupe_key=f"planner:scan:{fingerprint}",
             )
