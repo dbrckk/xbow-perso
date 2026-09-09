@@ -19,6 +19,10 @@ class ArtifactIntegrityError(RuntimeError):
     pass
 
 
+class CampaignConflictError(RuntimeError):
+    pass
+
+
 class Storage:
     """Durable campaign state plus content-addressed evidence metadata."""
 
@@ -57,8 +61,12 @@ class Storage:
                 document TEXT NOT NULL,
                 state TEXT NOT NULL,
                 created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL
+                updated_at TEXT NOT NULL,
+                version INTEGER NOT NULL DEFAULT 1
             )""")
+            campaign_columns = {row["name"] for row in db.execute("PRAGMA table_info(campaigns)").fetchall()}
+            if "version" not in campaign_columns:
+                db.execute("ALTER TABLE campaigns ADD COLUMN version INTEGER NOT NULL DEFAULT 1")
             db.execute("CREATE INDEX IF NOT EXISTS campaigns_updated ON campaigns(updated_at DESC)")
             db.execute("""CREATE TABLE IF NOT EXISTS artifacts (
                 id TEXT PRIMARY KEY,
@@ -82,26 +90,53 @@ class Storage:
                 "CREATE UNIQUE INDEX IF NOT EXISTS artifacts_idempotency ON artifacts(campaign_id, idempotency_key) WHERE idempotency_key IS NOT NULL"
             )
 
-    def save_campaign(self, document: dict[str, Any]) -> None:
+    def save_campaign(self, document: dict[str, Any], *, expected_version: int | None = None) -> int:
+        """Persist a campaign and optionally reject stale snapshot writes.
+
+        Callers that perform read-modify-write cycles can pass the version returned
+        by get_campaign_record(). A mismatch fails instead of silently overwriting
+        a newer campaign snapshot.
+        """
         required = {"id", "state", "created_at", "updated_at"}
         if not required.issubset(document):
             raise ValueError("campaign document missing required fields")
         encoded = json.dumps(document, separators=(",", ":"), ensure_ascii=False)
         with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            current = db.execute("SELECT version FROM campaigns WHERE id=?", (document["id"],)).fetchone()
+            if current is None:
+                if expected_version not in (None, 0):
+                    db.execute("ROLLBACK")
+                    raise CampaignConflictError("campaign version conflict")
+                db.execute(
+                    "INSERT INTO campaigns(id,document,state,created_at,updated_at,version) VALUES(?,?,?,?,?,1)",
+                    (document["id"], encoded, str(document["state"]), document["created_at"], document["updated_at"]),
+                )
+                db.execute("COMMIT")
+                return 1
+
+            current_version = int(current["version"])
+            if expected_version is not None and expected_version != current_version:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("campaign version conflict")
+            next_version = current_version + 1
             db.execute(
-                """INSERT INTO campaigns(id,document,state,created_at,updated_at)
-                   VALUES(?,?,?,?,?)
-                   ON CONFLICT(id) DO UPDATE SET
-                     document=excluded.document,
-                     state=excluded.state,
-                     updated_at=excluded.updated_at""",
-                (document["id"], encoded, str(document["state"]), document["created_at"], document["updated_at"]),
+                """UPDATE campaigns
+                   SET document=?, state=?, updated_at=?, version=?
+                   WHERE id=? AND version=?""",
+                (encoded, str(document["state"]), document["updated_at"], next_version, document["id"], current_version),
             )
+            db.execute("COMMIT")
+            return next_version
+
+    def get_campaign_record(self, campaign_id: str) -> tuple[dict[str, Any], int] | None:
+        with self.connect() as db:
+            row = db.execute("SELECT document,version FROM campaigns WHERE id=?", (campaign_id,)).fetchone()
+        return (json.loads(row["document"]), int(row["version"])) if row else None
 
     def get_campaign(self, campaign_id: str) -> dict[str, Any] | None:
-        with self.connect() as db:
-            row = db.execute("SELECT document FROM campaigns WHERE id=?", (campaign_id,)).fetchone()
-        return json.loads(row["document"]) if row else None
+        record = self.get_campaign_record(campaign_id)
+        return record[0] if record else None
 
     def list_campaigns(self) -> list[dict[str, Any]]:
         with self.connect() as db:
