@@ -1,4 +1,6 @@
-from app.knowledge_memory import build_knowledge_snapshot, decision_history
+from types import SimpleNamespace
+
+from app.knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
 from app.observation_graph import Observation, ObservationGraph
 
 
@@ -28,6 +30,36 @@ def test_confidence_increases_with_validation_and_evidence():
     assert evidenced.finding_confidence[0].score == 1.0
     assert evidenced.finding_confidence[0].validation_count == 1
     assert evidenced.finding_confidence[0].evidence_count == 1
+
+
+def test_rank_findings_prioritizes_severity():
+    graph = ObservationGraph()
+    findings = [
+        SimpleNamespace(id="low", severity="low"),
+        SimpleNamespace(id="critical", severity="critical"),
+        SimpleNamespace(id="medium", severity="medium"),
+    ]
+
+    ranked = rank_findings(findings, graph)
+
+    assert [item.finding_id for item in ranked] == ["critical", "medium", "low"]
+
+
+def test_rank_findings_uses_evidence_gap_as_tiebreaker():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.test", "recon"))
+    graph.add(Observation("finding:f1", "finding", "f1", "scanner", parent_ids=("a1",)))
+    graph.add(Observation("finding:f2", "finding", "f2", "scanner", parent_ids=("a1",)))
+    graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("finding:f1",)))
+
+    findings = [
+        SimpleNamespace(id="f1", severity="high"),
+        SimpleNamespace(id="f2", severity="high"),
+    ]
+    ranked = rank_findings(findings, graph)
+
+    assert ranked[0].finding_id == "f2"
+    assert ranked[0].confidence < ranked[1].confidence
 
 
 def test_decision_history_reads_only_planner_memory_records():
