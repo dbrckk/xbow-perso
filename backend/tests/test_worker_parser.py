@@ -51,6 +51,27 @@ def test_parser_normalizes_and_filters_scope(tmp_path):
     assert findings[0].reproduction_steps == ["Use the local fixture account"]
 
 
+def test_parser_uses_stable_ids_and_deduplicates_same_result(tmp_path):
+    path = tmp_path / "vulnerabilities.json"
+    item = {
+        "title": "Fixture authorization issue",
+        "severity": "medium",
+        "asset": "https://app.example.test",
+        "endpoint": "/fixture",
+        "summary": "Fixture-only observation",
+        "cwe": "CWE-284",
+    }
+    path.write_text(json.dumps({"vulnerabilities": [item, dict(item)]}), encoding="utf-8")
+
+    first = parse_strix_vulnerabilities(path, campaign())
+    second = parse_strix_vulnerabilities(path, campaign())
+
+    assert len(first) == 1
+    assert len(second) == 1
+    assert first[0].id == second[0].id
+    assert first[0].id.startswith("strix-")
+
+
 def test_locator_rejects_symlink_escape(tmp_path):
     run = tmp_path / "run"
     run.mkdir()
