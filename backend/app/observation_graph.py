@@ -95,13 +95,27 @@ class AdaptivePlanner:
         endpoints = graph.by_kind("endpoint")
         findings = graph.by_kind("finding")
         validations = graph.by_kind("validation")
+        evidence = graph.by_kind("evidence")
 
         if not observations:
             return [PlannedAction("inventory", host, "no observations collected yet", 100)]
-        if findings and len(validations) < len(findings):
+
+        finding_ids = {item.id for item in findings}
+        validated_finding_ids = {
+            parent_id
+            for validation in validations
+            for parent_id in validation.parent_ids
+            if parent_id in finding_ids
+        }
+        if findings and len(validated_finding_ids) < len(findings):
             return [PlannedAction("validate", host, "findings still require independent validation", 100)]
-        if findings and len(validations) >= len(findings):
-            return [PlannedAction("report", host, "all recorded findings have validation observations", 70)]
+
+        if findings and len(validated_finding_ids) >= len(findings):
+            report_exists = any(item.metadata.get("artifact_kind") == "report" for item in evidence)
+            if report_exists:
+                return [PlannedAction("stop", host, "validated findings already have a generated report", 100)]
+            return [PlannedAction("report", host, "all recorded findings have independent validation observations", 70)]
+
         if assets and not endpoints:
             return [PlannedAction("crawl", host, "known assets have no endpoint inventory", 90)]
         if endpoints and not findings:
