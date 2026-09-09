@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from datetime import datetime, timezone
 from enum import Enum
 from fnmatch import fnmatch
@@ -9,14 +8,14 @@ from urllib.parse import urlparse
 from uuid import uuid4
 
 from fastapi import Body, FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field, HttpUrl, model_validator
 
 from .auth import AuthError, require_api_token
 from .jobqueue import JobQueue
-from .storage import Storage
+from .storage import ArtifactIntegrityError, Storage
 
-app = FastAPI(title="xbow-perso", version="0.3.0")
+app = FastAPI(title="xbow-perso", version="0.4.0")
 
 
 @app.middleware("http")
@@ -281,8 +280,22 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
     finding.validated_by = validator
     campaign.updated_at = utcnow()
     campaign.events.append({"type": "finding_validated", "finding_id": finding.id, "confirmed": confirmed, "validator": validator, "at": utcnow()})
+    if campaign.findings and all(item.status in {"confirmed", "rejected"} for item in campaign.findings):
+        campaign.state = CampaignState.completed
+        report_job = queue().enqueue(campaign.id, "report", {"campaign_id": campaign.id, "platform": "generic"}, max_attempts=2)
+        campaign.events.append({"type": "campaign_completed", "report_job_id": report_job["id"], "at": utcnow()})
     save_campaign(campaign)
     return finding
+
+
+@app.post("/api/campaigns/{campaign_id}/reports")
+def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bugcrowd"] = "generic"):
+    campaign = assert_campaign_exists(campaign_id)
+    job = queue().enqueue(campaign.id, "report", {"campaign_id": campaign.id, "platform": platform}, max_attempts=2)
+    campaign.events.append({"type": "report_queued", "platform": platform, "job_id": job["id"], "at": utcnow()})
+    campaign.updated_at = utcnow()
+    save_campaign(campaign)
+    return job
 
 
 @app.post("/api/campaigns/{campaign_id}/artifacts")
@@ -310,3 +323,30 @@ def add_text_artifact(campaign_id: str, evidence: EvidenceInput = Body(...)):
 def list_artifacts(campaign_id: str):
     assert_campaign_exists(campaign_id)
     return storage().list_artifacts(campaign_id)
+
+
+@app.get("/api/campaigns/{campaign_id}/artifacts/{artifact_id}")
+def download_artifact(campaign_id: str, artifact_id: str):
+    assert_campaign_exists(campaign_id)
+    try:
+        metadata, content = storage().read_artifact(campaign_id, artifact_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Artifact not found") from exc
+    except ArtifactIntegrityError as exc:
+        raise HTTPException(status_code=409, detail=f"Artifact integrity verification failed: {exc}") from exc
+    return Response(
+        content=content,
+        media_type=metadata["media_type"],
+        headers={
+            "X-Content-SHA256": metadata["sha256"],
+            "X-Content-Type-Options": "nosniff",
+            "Content-Disposition": f'attachment; filename="{artifact_id}"',
+        },
+    )
+
+
+# Imported last to avoid circular imports: browser policy helpers intentionally
+# reuse the canonical Campaign and scope models defined above.
+from .browser import router as browser_router  # noqa: E402
+
+app.include_router(browser_router)
