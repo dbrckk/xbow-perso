@@ -9,6 +9,7 @@ from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
 from .main import Campaign, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
+from .planner_budget import PlannerBudget, apply_budget, budget_usage, validation_batch_limit
 from .storage import Storage
 
 
@@ -86,6 +87,8 @@ def _enqueue_action(
     campaign: Campaign,
     graph: ObservationGraph,
     queue: JobQueue,
+    *,
+    validation_limit: int | None = None,
 ) -> list[dict]:
     fingerprint = _graph_fingerprint(graph)
 
@@ -106,7 +109,10 @@ def _enqueue_action(
 
     if action.kind == "validate":
         jobs = []
-        for finding in _pending_findings(campaign, graph):
+        pending = _pending_findings(campaign, graph)
+        if validation_limit is not None:
+            pending = pending[:validation_limit]
+        for finding in pending:
             jobs.append(
                 queue.enqueue(
                     campaign.id,
@@ -164,43 +170,74 @@ def _result(
     campaign: Campaign,
     graph: ObservationGraph,
     store: Storage,
+    queue: JobQueue,
+    budget: PlannerBudget,
 ) -> dict:
     agent = agent_for_action(action.kind)
     _record_decision(store, campaign, graph, action, agent.name)
     refreshed_graph = _load_graph(store, campaign.id)
     memory = build_knowledge_snapshot(refreshed_graph)
+    usage = budget_usage(refreshed_graph, queue, campaign.id, budget)
+    if action.kind == "stop" and "budget exhausted" in action.reason:
+        usage = type(usage)(**{**usage.to_dict(), "exhausted": True, "reason": action.reason})
     return {
         "action": action.to_dict(),
         "agent": agent.to_dict(),
         "job_ids": [job["id"] for job in jobs],
         "memory": memory.to_dict(),
         "decision_history": decision_history(refreshed_graph),
+        "budget": {"limits": budget.to_dict(), "usage": usage.to_dict()},
     }
 
 
-def advance_campaign(campaign: Campaign, queue: JobQueue, store: Storage) -> dict:
+def advance_campaign(
+    campaign: Campaign,
+    queue: JobQueue,
+    store: Storage,
+    budget: PlannerBudget | None = None,
+) -> dict:
     """Advance one authorized campaign toward its next bounded planner action.
 
     Inventory/crawl bootstrap is local-only: it records the declared primary target
     as a known asset/endpoint. Network actions are delegated only through existing
     policy-checked queue job kinds and are attributed to a registered agent role.
-    Planner decisions are persisted as durable knowledge records for later scoring
-    and auditability.
+    Durable queue counts and planner history cap scans, validation fan-out, reports,
+    and total planner decisions so autonomous campaigns fail closed when exhausted.
     """
     planner = AdaptivePlanner()
+    limits = budget or PlannerBudget()
 
     for _ in range(3):
         graph = _load_graph(store, campaign.id)
         action = planner.plan(campaign, graph)[0]
+        action, usage = apply_budget(action, graph, queue, campaign.id, limits)
         if action.kind == "inventory":
             _seed_primary_target(store, campaign)
             continue
         if action.kind == "crawl":
             _seed_primary_target(store, campaign)
             continue
-        jobs = _enqueue_action(action, campaign, graph, queue)
-        return _result(action, jobs, campaign=campaign, graph=graph, store=store)
+        validation_limit = validation_batch_limit(usage, limits) if action.kind == "validate" else None
+        jobs = _enqueue_action(action, campaign, graph, queue, validation_limit=validation_limit)
+        return _result(
+            action,
+            jobs,
+            campaign=campaign,
+            graph=graph,
+            store=store,
+            queue=queue,
+            budget=limits,
+        )
 
     graph = _load_graph(store, campaign.id)
     action = planner.plan(campaign, graph)[0]
-    return _result(action, [], campaign=campaign, graph=graph, store=store)
+    action, _ = apply_budget(action, graph, queue, campaign.id, limits)
+    return _result(
+        action,
+        [],
+        campaign=campaign,
+        graph=graph,
+        store=store,
+        queue=queue,
+        budget=limits,
+    )
