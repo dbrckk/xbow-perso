@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 from .agent_registry import agent_for_action
 from .jobqueue import JobQueue
+from .knowledge_memory import build_knowledge_snapshot, decision_history
 from .main import Campaign, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .storage import Storage
@@ -125,12 +126,49 @@ def _enqueue_action(
     return []
 
 
-def _result(action: PlannedAction, jobs: list[dict]) -> dict:
+def _record_decision(
+    store: Storage,
+    campaign: Campaign,
+    graph: ObservationGraph,
+    action: PlannedAction,
+    agent_name: str,
+) -> None:
+    fingerprint = _graph_fingerprint(graph)
+    observation = Observation(
+        id=_stable_id("decision", action.kind, fingerprint),
+        kind="evidence",
+        value=action.kind,
+        source="orchestrator",
+        metadata={
+            "memory_type": "planner_decision",
+            "action": action.kind,
+            "agent": agent_name,
+            "reason": action.reason,
+            "priority": action.priority,
+            "graph_fingerprint": fingerprint,
+        },
+    )
+    store.put_observation(campaign.id, observation.to_dict())
+
+
+def _result(
+    action: PlannedAction,
+    jobs: list[dict],
+    *,
+    campaign: Campaign,
+    graph: ObservationGraph,
+    store: Storage,
+) -> dict:
     agent = agent_for_action(action.kind)
+    _record_decision(store, campaign, graph, action, agent.name)
+    refreshed_graph = _load_graph(store, campaign.id)
+    memory = build_knowledge_snapshot(refreshed_graph)
     return {
         "action": action.to_dict(),
         "agent": agent.to_dict(),
         "job_ids": [job["id"] for job in jobs],
+        "memory": memory.to_dict(),
+        "decision_history": decision_history(refreshed_graph),
     }
 
 
@@ -140,6 +178,8 @@ def advance_campaign(campaign: Campaign, queue: JobQueue, store: Storage) -> dic
     Inventory/crawl bootstrap is local-only: it records the declared primary target
     as a known asset/endpoint. Network actions are delegated only through existing
     policy-checked queue job kinds and are attributed to a registered agent role.
+    Planner decisions are persisted as durable knowledge records for later scoring
+    and auditability.
     """
     planner = AdaptivePlanner()
 
@@ -153,8 +193,8 @@ def advance_campaign(campaign: Campaign, queue: JobQueue, store: Storage) -> dic
             _seed_primary_target(store, campaign)
             continue
         jobs = _enqueue_action(action, campaign, graph, queue)
-        return _result(action, jobs)
+        return _result(action, jobs, campaign=campaign, graph=graph, store=store)
 
     graph = _load_graph(store, campaign.id)
     action = planner.plan(campaign, graph)[0]
-    return _result(action, [])
+    return _result(action, [], campaign=campaign, graph=graph, store=store)
