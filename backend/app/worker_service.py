@@ -278,7 +278,7 @@ def process_browser_flow(job: dict, store: Storage) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
     asset_id = _record_asset_observation(store, campaign, str(campaign.target.primary_url), "browser")
     result = execute_browser_flow(campaign, job["payload"])
-    artifacts = persist_browser_result(store, campaign.id, result)
+    artifacts = persist_browser_result(store, campaign.id, result, idempotency_prefix=job["id"])
     for observation in result.observations:
         if observation.get("operation") == "navigate" and observation.get("url"):
             _record_endpoint_observation(
