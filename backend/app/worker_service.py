@@ -197,11 +197,11 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
             else:
                 raise ValueError("unsupported job kind")
     except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ValueError, KeyError) as exc:
-        queue.finish(job["id"], False, str(exc))
+        queue.finish(job["id"], worker_id, False, str(exc))
     except Exception as exc:
-        queue.finish(job["id"], False, str(exc))
+        queue.finish(job["id"], worker_id, False, str(exc))
     else:
-        queue.finish(job["id"], True)
+        queue.finish(job["id"], worker_id, True)
     return True
 
 
