@@ -118,3 +118,46 @@ def test_advance_queues_only_unvalidated_findings_then_report(tmp_path):
     assert report["action"]["kind"] == "report"
     assert report["agent"]["role"] == "reporting"
     assert report_job["kind"] == "report"
+
+
+def test_validation_jobs_are_ordered_by_adaptive_priority(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    findings = [
+        Finding(
+            id="low",
+            title="low candidate",
+            severity="low",
+            asset="https://example.test",
+            summary="low",
+            discovered_by="scanner",
+        ),
+        Finding(
+            id="critical",
+            title="critical candidate",
+            severity="critical",
+            asset="https://example.test",
+            summary="critical",
+            discovered_by="scanner",
+        ),
+    ]
+    campaign = make_campaign(findings=findings)
+    store.save_campaign(campaign.model_dump(mode="json"))
+    store.put_observation(campaign.id, Observation("a1", "asset", "example.test", "scanner").to_dict())
+    for finding in findings:
+        store.put_observation(
+            campaign.id,
+            Observation(
+                f"finding:{finding.id}",
+                "finding",
+                finding.id,
+                "scanner",
+                parent_ids=("a1",),
+            ).to_dict(),
+        )
+
+    result = advance_campaign(campaign, queue, store)
+    queued = [queue.get(job_id) for job_id in result["job_ids"]]
+
+    assert [job["payload"]["finding_id"] for job in queued] == ["critical", "low"]
