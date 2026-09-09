@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field, HttpUrl, model_validator
 
 from .auth import AuthError, require_api_token
 from .jobqueue import JobQueue
-from .storage import ArtifactIntegrityError, Storage
+from .storage import ArtifactIntegrityError, CampaignConflictError, Storage
 
 app = FastAPI(title="xbow-perso", version="0.4.0")
 
@@ -131,15 +131,23 @@ def is_host_allowed(host: str, allowed: list[str], denied: list[str]) -> bool:
     return any(fnmatch(host, p) for p in allowed_patterns)
 
 
-def save_campaign(campaign: Campaign) -> None:
-    storage().save_campaign(campaign.model_dump(mode="json"))
+def save_campaign(campaign: Campaign, *, expected_version: int | None = None) -> int:
+    try:
+        return storage().save_campaign(campaign.model_dump(mode="json"), expected_version=expected_version)
+    except CampaignConflictError as exc:
+        raise HTTPException(status_code=409, detail="Campaign changed concurrently; reload and retry") from exc
+
+
+def assert_campaign_record(campaign_id: str) -> tuple[Campaign, int]:
+    record = storage().get_campaign_record(campaign_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    document, version = record
+    return Campaign.model_validate(document), version
 
 
 def assert_campaign_exists(campaign_id: str) -> Campaign:
-    document = storage().get_campaign(campaign_id)
-    if not document:
-        raise HTTPException(status_code=404, detail="Campaign not found")
-    return Campaign.model_validate(document)
+    return assert_campaign_record(campaign_id)[0]
 
 
 def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]:
@@ -199,7 +207,7 @@ def health():
 def create_campaign(target: TargetInput):
     campaign = Campaign(target=target, state=CampaignState.ready)
     campaign.events.append({"type": "campaign_created", "at": utcnow()})
-    save_campaign(campaign)
+    save_campaign(campaign, expected_version=0)
     return campaign
 
 
@@ -215,17 +223,17 @@ def get_campaign(campaign_id: str):
 
 @app.post("/api/campaigns/{campaign_id}/policy-check")
 def check_policy(campaign_id: str, host: str, action: str = "automated_scan"):
-    campaign = assert_campaign_exists(campaign_id)
+    campaign, version = assert_campaign_record(campaign_id)
     receipt = policy_receipt(campaign, host, action)
     campaign.events.append({"type": "policy_check", **receipt})
     campaign.updated_at = utcnow()
-    save_campaign(campaign)
+    save_campaign(campaign, expected_version=version)
     return receipt
 
 
 @app.post("/api/campaigns/{campaign_id}/start")
 def start_campaign(campaign_id: str):
-    campaign = assert_campaign_exists(campaign_id)
+    campaign, version = assert_campaign_record(campaign_id)
     if campaign.state not in {CampaignState.ready, CampaignState.failed}:
         raise HTTPException(status_code=409, detail=f"Cannot start from {campaign.state}")
     host = (urlparse(str(campaign.target.primary_url)).hostname or "").lower()
@@ -233,7 +241,7 @@ def start_campaign(campaign_id: str):
     if not receipt["allowed"]:
         campaign.events.append({"type": "campaign_blocked", "at": utcnow(), "policy": receipt})
         campaign.updated_at = utcnow()
-        save_campaign(campaign)
+        save_campaign(campaign, expected_version=version)
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
 
     payload = sanitized_scan_payload(campaign, receipt)
@@ -241,7 +249,7 @@ def start_campaign(campaign_id: str):
     campaign.state = CampaignState.running
     campaign.updated_at = utcnow()
     campaign.events.append({"type": "campaign_started", "at": utcnow(), "policy": receipt, "job_id": job["id"]})
-    save_campaign(campaign)
+    save_campaign(campaign, expected_version=version)
     return {"campaign_id": campaign.id, "state": campaign.state, "policy": receipt, "job": job}
 
 
@@ -255,7 +263,7 @@ def get_job(job_id: str):
 
 @app.post("/api/campaigns/{campaign_id}/findings", response_model=Finding)
 def add_finding(campaign_id: str, finding: Finding):
-    campaign = assert_campaign_exists(campaign_id)
+    campaign, version = assert_campaign_record(campaign_id)
     host = (urlparse(finding.asset).hostname or finding.asset.split(":")[0]).lower()
     if not is_host_allowed(host, campaign.target.rules.allowed_targets, campaign.target.rules.denied_targets):
         raise HTTPException(status_code=403, detail="Finding asset is outside campaign scope")
@@ -271,13 +279,13 @@ def add_finding(campaign_id: str, finding: Finding):
         max_attempts=2,
     )
     campaign.events.append({"type": "validation_queued", "finding_id": finding.id, "job_id": validation_job["id"], "at": utcnow()})
-    save_campaign(campaign)
+    save_campaign(campaign, expected_version=version)
     return finding
 
 
 @app.post("/api/campaigns/{campaign_id}/findings/{finding_id}/validate")
 def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validator: str = "independent-validator"):
-    campaign = assert_campaign_exists(campaign_id)
+    campaign, version = assert_campaign_record(campaign_id)
     finding = next((x for x in campaign.findings if x.id == finding_id), None)
     if not finding:
         raise HTTPException(status_code=404, detail="Finding not found")
@@ -291,23 +299,23 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
         campaign.state = CampaignState.completed
         report_job = queue().enqueue(campaign.id, "report", {"campaign_id": campaign.id, "platform": "generic"}, max_attempts=2)
         campaign.events.append({"type": "campaign_completed", "report_job_id": report_job["id"], "at": utcnow()})
-    save_campaign(campaign)
+    save_campaign(campaign, expected_version=version)
     return finding
 
 
 @app.post("/api/campaigns/{campaign_id}/reports")
 def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bugcrowd"] = "generic"):
-    campaign = assert_campaign_exists(campaign_id)
+    campaign, version = assert_campaign_record(campaign_id)
     job = queue().enqueue(campaign.id, "report", {"campaign_id": campaign.id, "platform": platform}, max_attempts=2)
     campaign.events.append({"type": "report_queued", "platform": platform, "job_id": job["id"], "at": utcnow()})
     campaign.updated_at = utcnow()
-    save_campaign(campaign)
+    save_campaign(campaign, expected_version=version)
     return job
 
 
 @app.post("/api/campaigns/{campaign_id}/artifacts")
 def add_text_artifact(campaign_id: str, evidence: EvidenceInput = Body(...)):
-    campaign = assert_campaign_exists(campaign_id)
+    campaign, version = assert_campaign_record(campaign_id)
     if evidence.finding_id and not any(f.id == evidence.finding_id for f in campaign.findings):
         raise HTTPException(status_code=404, detail="Finding not found")
     try:
@@ -322,7 +330,7 @@ def add_text_artifact(campaign_id: str, evidence: EvidenceInput = Body(...)):
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     campaign.events.append({"type": "artifact_stored", "artifact_id": artifact["id"], "kind": evidence.kind, "at": utcnow()})
     campaign.updated_at = utcnow()
-    save_campaign(campaign)
+    save_campaign(campaign, expected_version=version)
     return artifact
 
 
