@@ -67,6 +67,23 @@ def approval_event(campaign: Any, artifact: dict[str, Any], reviewer: str, at: s
     }
 
 
+def approval_event_from_storage(
+    campaign: Any,
+    store: Any,
+    artifact_id: str,
+    reviewer: str,
+    at: str,
+) -> dict[str, Any]:
+    """Create approval only after Storage has verified the exact report bytes.
+
+    ``read_artifact`` is intentionally used instead of trusting artifact metadata:
+    it verifies the file exists and that its size and SHA-256 still match the
+    durable database record before approval is recorded.
+    """
+    artifact, _content = store.read_artifact(campaign.id, artifact_id)
+    return approval_event(campaign, artifact, reviewer, at)
+
+
 def revocation_event(artifact_id: str, reviewer: str, at: str) -> dict[str, Any]:
     reviewer = reviewer.strip()
     if not reviewer:
@@ -123,3 +140,11 @@ def approval_status(campaign: Any, artifact: dict[str, Any]) -> ReportApprovalSt
         approved_at=latest.get("at"),
         basis_digest=current_digest,
     )
+
+
+def approval_status_from_storage(campaign: Any, store: Any, artifact_id: str) -> ReportApprovalStatus:
+    """Return approval status only for report bytes that still pass integrity checks."""
+    artifact, _content = store.read_artifact(campaign.id, artifact_id)
+    if artifact.get("kind") != "report":
+        raise ValueError("only report artifacts have approval status")
+    return approval_status(campaign, artifact)
