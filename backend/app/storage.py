@@ -20,12 +20,7 @@ class ArtifactIntegrityError(RuntimeError):
 
 
 class Storage:
-    """Durable campaign state plus content-addressed evidence metadata.
-
-    Campaign snapshots and artifact metadata live in SQLite. Artifact bytes are
-    stored below a dedicated root and are always verified against both recorded
-    size and SHA-256 before being returned to callers.
-    """
+    """Durable campaign state plus content-addressed evidence metadata."""
 
     ALLOWED_ARTIFACT_KINDS = {
         "scanner_stdout",
@@ -75,10 +70,17 @@ class Storage:
                 sha256 TEXT NOT NULL,
                 size_bytes INTEGER NOT NULL,
                 created_at TEXT NOT NULL,
+                idempotency_key TEXT,
                 FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
             )""")
+            columns = {row["name"] for row in db.execute("PRAGMA table_info(artifacts)").fetchall()}
+            if "idempotency_key" not in columns:
+                db.execute("ALTER TABLE artifacts ADD COLUMN idempotency_key TEXT")
             db.execute("CREATE INDEX IF NOT EXISTS artifacts_campaign ON artifacts(campaign_id, created_at)")
             db.execute("CREATE INDEX IF NOT EXISTS artifacts_finding ON artifacts(campaign_id, finding_id, kind)")
+            db.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS artifacts_idempotency ON artifacts(campaign_id, idempotency_key) WHERE idempotency_key IS NOT NULL"
+            )
 
     def save_campaign(self, document: dict[str, Any]) -> None:
         required = {"id", "state", "created_at", "updated_at"}
@@ -114,19 +116,33 @@ class Storage:
         *,
         media_type: str = "application/octet-stream",
         finding_id: str | None = None,
+        idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         if kind not in self.ALLOWED_ARTIFACT_KINDS:
             raise ValueError("unsupported artifact kind")
+        if idempotency_key is not None and not idempotency_key.strip():
+            raise ValueError("idempotency_key must not be blank")
         max_bytes = int(os.getenv("XBOW_MAX_ARTIFACT_BYTES", str(10 * 1024 * 1024)))
         if len(content) > max_bytes:
             raise ValueError("artifact exceeds size limit")
+        digest = hashlib.sha256(content).hexdigest()
+
         with self.connect() as db:
             exists = db.execute("SELECT 1 FROM campaigns WHERE id=?", (campaign_id,)).fetchone()
-        if not exists:
-            raise KeyError(campaign_id)
+            if not exists:
+                raise KeyError(campaign_id)
+            if idempotency_key is not None:
+                existing = db.execute(
+                    """SELECT id,campaign_id,finding_id,kind,media_type,sha256,size_bytes,created_at,idempotency_key
+                       FROM artifacts WHERE campaign_id=? AND idempotency_key=?""",
+                    (campaign_id, idempotency_key),
+                ).fetchone()
+                if existing:
+                    if existing["sha256"] != digest or existing["kind"] != kind:
+                        raise ArtifactIntegrityError("idempotency key reused with different artifact content")
+                    return dict(existing)
 
         artifact_id = str(uuid4())
-        digest = hashlib.sha256(content).hexdigest()
         campaign_dir = self.artifact_root / campaign_id
         campaign_dir.mkdir(parents=True, exist_ok=True)
         path = campaign_dir / f"{artifact_id}.bin"
@@ -135,11 +151,26 @@ class Storage:
         os.replace(tmp, path)
         now = utcnow()
         relative = str(path.relative_to(self.artifact_root))
-        with self.connect() as db:
-            db.execute(
-                "INSERT INTO artifacts(id,campaign_id,finding_id,kind,media_type,relative_path,sha256,size_bytes,created_at) VALUES(?,?,?,?,?,?,?,?,?)",
-                (artifact_id, campaign_id, finding_id, kind, media_type, relative, digest, len(content), now),
-            )
+        try:
+            with self.connect() as db:
+                db.execute(
+                    """INSERT INTO artifacts(id,campaign_id,finding_id,kind,media_type,relative_path,sha256,size_bytes,created_at,idempotency_key)
+                       VALUES(?,?,?,?,?,?,?,?,?,?)""",
+                    (artifact_id, campaign_id, finding_id, kind, media_type, relative, digest, len(content), now, idempotency_key),
+                )
+        except sqlite3.IntegrityError:
+            path.unlink(missing_ok=True)
+            if idempotency_key is None:
+                raise
+            with self.connect() as db:
+                existing = db.execute(
+                    """SELECT id,campaign_id,finding_id,kind,media_type,sha256,size_bytes,created_at,idempotency_key
+                       FROM artifacts WHERE campaign_id=? AND idempotency_key=?""",
+                    (campaign_id, idempotency_key),
+                ).fetchone()
+            if not existing or existing["sha256"] != digest or existing["kind"] != kind:
+                raise ArtifactIntegrityError("idempotent artifact write conflicted")
+            return dict(existing)
         return {
             "id": artifact_id,
             "campaign_id": campaign_id,
@@ -149,12 +180,13 @@ class Storage:
             "sha256": digest,
             "size_bytes": len(content),
             "created_at": now,
+            "idempotency_key": idempotency_key,
         }
 
     def list_artifacts(self, campaign_id: str) -> list[dict[str, Any]]:
         with self.connect() as db:
             rows = db.execute(
-                "SELECT id,campaign_id,finding_id,kind,media_type,sha256,size_bytes,created_at FROM artifacts WHERE campaign_id=? ORDER BY created_at",
+                "SELECT id,campaign_id,finding_id,kind,media_type,sha256,size_bytes,created_at,idempotency_key FROM artifacts WHERE campaign_id=? ORDER BY created_at",
                 (campaign_id,),
             ).fetchall()
         return [dict(row) for row in rows]
@@ -162,7 +194,7 @@ class Storage:
     def get_artifact(self, campaign_id: str, artifact_id: str) -> dict[str, Any] | None:
         with self.connect() as db:
             row = db.execute(
-                """SELECT id,campaign_id,finding_id,kind,media_type,relative_path,sha256,size_bytes,created_at
+                """SELECT id,campaign_id,finding_id,kind,media_type,relative_path,sha256,size_bytes,created_at,idempotency_key
                    FROM artifacts WHERE id=? AND campaign_id=?""",
                 (artifact_id, campaign_id),
             ).fetchone()
