@@ -5,6 +5,7 @@ import socket
 import time
 from pathlib import Path
 
+from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .jobqueue import JobQueue
 from .main import Campaign, CampaignState, Finding, utcnow
 from .report import render_markdown
@@ -115,11 +116,38 @@ def process_validation(job: dict, store: Storage) -> None:
     _save(store, campaign)
 
 
+def process_browser_flow(job: dict, store: Storage) -> None:
+    campaign = _campaign(store, job["campaign_id"])
+    result = execute_browser_flow(campaign, job["payload"])
+    artifacts = persist_browser_result(store, campaign.id, result)
+    campaign.events.append(
+        {
+            "type": "browser_flow_completed" if result.status == "completed" else "browser_flow_dry_run",
+            "job_id": job["id"],
+            "status": result.status,
+            "artifact_ids": [artifact["id"] for artifact in artifacts],
+            "at": utcnow(),
+        }
+    )
+    _save(store, campaign)
+
+
 def process_report(job: dict, store: Storage) -> None:
     campaign = _campaign(store, job["campaign_id"])
-    report = render_markdown(campaign).encode("utf-8")
+    platform = str(job.get("payload", {}).get("platform") or "generic")
+    if platform not in {"generic", "hackerone", "bugcrowd"}:
+        raise ValueError("unsupported report platform")
+    report = render_markdown(campaign, platform=platform).encode("utf-8")
     artifact = store.put_artifact(campaign.id, "report", report, media_type="text/markdown")
-    campaign.events.append({"type": "report_generated", "job_id": job["id"], "artifact_id": artifact["id"], "at": utcnow()})
+    campaign.events.append(
+        {
+            "type": "report_generated",
+            "job_id": job["id"],
+            "platform": platform,
+            "artifact_id": artifact["id"],
+            "at": utcnow(),
+        }
+    )
     _save(store, campaign)
 
 
@@ -132,11 +160,13 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
             process_strix_scan(job, queue, store)
         elif job["kind"] == "independent_validation":
             process_validation(job, store)
+        elif job["kind"] == "browser_flow":
+            process_browser_flow(job, store)
         elif job["kind"] == "report":
             process_report(job, store)
         else:
             raise ValueError("unsupported job kind")
-    except (WorkerPolicyError, ValidationPolicyError, ValueError, KeyError) as exc:
+    except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ValueError, KeyError) as exc:
         queue.finish(job["id"], False, str(exc))
     except Exception as exc:
         queue.finish(job["id"], False, str(exc))
