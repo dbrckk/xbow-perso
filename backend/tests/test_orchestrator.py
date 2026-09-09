@@ -32,6 +32,7 @@ def test_advance_bootstraps_target_and_queues_one_scan(tmp_path):
     second = advance_campaign(campaign, queue, store)
 
     assert first["action"]["kind"] == "scan"
+    assert first["agent"]["role"] == "analysis"
     assert len(first["job_ids"]) == 1
     assert second["job_ids"] == first["job_ids"]
     assert queue.stats()["total"] == 1
@@ -48,6 +49,7 @@ def test_advance_stops_when_automation_disabled(tmp_path):
     result = advance_campaign(campaign, queue, store)
 
     assert result["action"]["kind"] == "stop"
+    assert result["agent"]["role"] == "control"
     assert result["job_ids"] == []
     assert queue.stats()["total"] == 0
 
@@ -97,6 +99,7 @@ def test_advance_queues_only_unvalidated_findings_then_report(tmp_path):
     result = advance_campaign(campaign, queue, store)
     queued = queue.get(result["job_ids"][0])
     assert result["action"]["kind"] == "validate"
+    assert result["agent"]["role"] == "validation"
     assert queued["payload"]["finding_id"] == "f2"
 
     store.put_observation(
@@ -106,4 +109,5 @@ def test_advance_queues_only_unvalidated_findings_then_report(tmp_path):
     report = advance_campaign(campaign, queue, store)
     report_job = queue.get(report["job_ids"][0])
     assert report["action"]["kind"] == "report"
+    assert report["agent"]["role"] == "reporting"
     assert report_job["kind"] == "report"
