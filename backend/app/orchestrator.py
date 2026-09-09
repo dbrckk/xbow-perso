@@ -4,6 +4,7 @@ import hashlib
 import json
 from urllib.parse import urlparse
 
+from .agent_registry import agent_for_action
 from .jobqueue import JobQueue
 from .main import Campaign, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
@@ -124,12 +125,21 @@ def _enqueue_action(
     return []
 
 
+def _result(action: PlannedAction, jobs: list[dict]) -> dict:
+    agent = agent_for_action(action.kind)
+    return {
+        "action": action.to_dict(),
+        "agent": agent.to_dict(),
+        "job_ids": [job["id"] for job in jobs],
+    }
+
+
 def advance_campaign(campaign: Campaign, queue: JobQueue, store: Storage) -> dict:
     """Advance one authorized campaign toward its next bounded planner action.
 
     Inventory/crawl bootstrap is local-only: it records the declared primary target
     as a known asset/endpoint. Network actions are delegated only through existing
-    policy-checked queue job kinds.
+    policy-checked queue job kinds and are attributed to a registered agent role.
     """
     planner = AdaptivePlanner()
 
@@ -143,8 +153,8 @@ def advance_campaign(campaign: Campaign, queue: JobQueue, store: Storage) -> dic
             _seed_primary_target(store, campaign)
             continue
         jobs = _enqueue_action(action, campaign, graph, queue)
-        return {"action": action.to_dict(), "job_ids": [job["id"] for job in jobs]}
+        return _result(action, jobs)
 
     graph = _load_graph(store, campaign.id)
     action = planner.plan(campaign, graph)[0]
-    return {"action": action.to_dict(), "job_ids": []}
+    return _result(action, [])
