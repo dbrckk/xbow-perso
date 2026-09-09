@@ -172,15 +172,30 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
     return BrowserExecutionResult(status="completed", observations=observations, screenshots=screenshots)
 
 
-def persist_browser_result(store: Storage, campaign_id: str, result: BrowserExecutionResult) -> list[dict]:
+def persist_browser_result(
+    store: Storage,
+    campaign_id: str,
+    result: BrowserExecutionResult,
+    *,
+    idempotency_prefix: str | None = None,
+) -> list[dict]:
     artifacts = [
         store.put_artifact(
             campaign_id,
             "http_evidence",
             json.dumps({"status": result.status, "observations": result.observations}, ensure_ascii=False, sort_keys=True).encode("utf-8"),
             media_type="application/json",
+            idempotency_key=f"{idempotency_prefix}:browser:evidence" if idempotency_prefix else None,
         )
     ]
-    for _name, content in result.screenshots:
-        artifacts.append(store.put_artifact(campaign_id, "screenshot", content, media_type="image/png"))
+    for index, (_name, content) in enumerate(result.screenshots, 1):
+        artifacts.append(
+            store.put_artifact(
+                campaign_id,
+                "screenshot",
+                content,
+                media_type="image/png",
+                idempotency_key=f"{idempotency_prefix}:browser:screenshot:{index}" if idempotency_prefix else None,
+            )
+        )
     return artifacts
