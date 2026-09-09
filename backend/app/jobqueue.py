@@ -56,6 +56,21 @@ class JobQueue:
             db.execute("CREATE INDEX IF NOT EXISTS jobs_status_created ON jobs(status, created_at)")
             db.execute("CREATE INDEX IF NOT EXISTS jobs_running_claimed ON jobs(status, claimed_at)")
 
+    def health(self) -> dict[str, Any]:
+        """Return minimal storage health without exposing job payloads."""
+        try:
+            with self.connect() as db:
+                quick_check = db.execute("PRAGMA quick_check").fetchone()[0]
+                count = db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
+        except sqlite3.Error as exc:
+            return {"ok": False, "storage": "sqlite", "error": exc.__class__.__name__}
+        return {
+            "ok": quick_check == "ok",
+            "storage": "sqlite",
+            "integrity": quick_check,
+            "jobs": int(count),
+        }
+
     def enqueue(self, campaign_id: str, kind: str, payload: dict[str, Any], max_attempts: int = 2) -> dict[str, Any]:
         if kind not in {"strix_scan", "independent_validation", "browser_flow", "report"}:
             raise ValueError("unsupported job kind")
