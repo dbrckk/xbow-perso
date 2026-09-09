@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import os
 import socket
+import threading
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
@@ -31,6 +33,35 @@ def _campaign(store: Storage, campaign_id: str) -> Campaign:
     if not raw:
         raise KeyError(f"campaign {campaign_id} not found")
     return Campaign.model_validate(raw)
+
+
+@contextmanager
+def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
+    """Keep ownership of a long-running job without hiding lease loss."""
+    lease_seconds = int(os.getenv("XBOW_JOB_LEASE_SECONDS", "21600"))
+    interval = max(10.0, min(300.0, lease_seconds / 3))
+    stop = threading.Event()
+    lost = threading.Event()
+
+    def renew() -> None:
+        while not stop.wait(interval):
+            try:
+                if not queue.heartbeat(job_id, worker_id):
+                    lost.set()
+                    return
+            except Exception:
+                lost.set()
+                return
+
+    thread = threading.Thread(target=renew, name=f"lease-{job_id[:8]}", daemon=True)
+    thread.start()
+    try:
+        yield
+        if lost.is_set():
+            raise RuntimeError("worker lost job lease during execution")
+    finally:
+        stop.set()
+        thread.join(timeout=1.0)
 
 
 def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
@@ -100,8 +131,6 @@ def process_validation(job: dict, store: Storage) -> None:
     }
     campaign.events.append(event)
 
-    # A network observation is evidence, not a vulnerability verdict. Promotion to
-    # confirmed still requires an independent semantic validator or explicit review.
     finding.status = "validation_required"
     if result.status == "error":
         campaign.events.append(
@@ -156,16 +185,17 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
     if not job:
         return False
     try:
-        if job["kind"] == "strix_scan":
-            process_strix_scan(job, queue, store)
-        elif job["kind"] == "independent_validation":
-            process_validation(job, store)
-        elif job["kind"] == "browser_flow":
-            process_browser_flow(job, store)
-        elif job["kind"] == "report":
-            process_report(job, store)
-        else:
-            raise ValueError("unsupported job kind")
+        with _lease_heartbeat(queue, job["id"], worker_id):
+            if job["kind"] == "strix_scan":
+                process_strix_scan(job, queue, store)
+            elif job["kind"] == "independent_validation":
+                process_validation(job, store)
+            elif job["kind"] == "browser_flow":
+                process_browser_flow(job, store)
+            elif job["kind"] == "report":
+                process_report(job, store)
+            else:
+                raise ValueError("unsupported job kind")
     except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ValueError, KeyError) as exc:
         queue.finish(job["id"], False, str(exc))
     except Exception as exc:
