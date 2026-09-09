@@ -177,3 +177,42 @@ def test_stats_remain_healthy_after_expired_lease_recovery(tmp_path, monkeypatch
     assert stats["by_status"]["queued"] == 1
     assert stats["by_status"]["running"] == 0
     assert stats["oldest_queued_at"] is not None
+
+
+def test_enqueue_dedupe_key_returns_existing_job(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    payload = {"campaign_id": "campaign-1", "finding_id": "f1"}
+    first = q.enqueue("campaign-1", "independent_validation", payload, dedupe_key="validation:f1")
+    second = q.enqueue("campaign-1", "independent_validation", payload, dedupe_key="validation:f1")
+    assert first["id"] == second["id"]
+    assert first["dedupe_key"] == "validation:f1"
+    assert q.stats()["total"] == 1
+
+
+def test_enqueue_dedupe_key_rejects_payload_mismatch(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    q.enqueue("campaign-1", "report", {"platform": "generic"}, dedupe_key="report:v1")
+    try:
+        q.enqueue("campaign-1", "report", {"platform": "hackerone"}, dedupe_key="report:v1")
+    except ValueError as exc:
+        assert "different job payload" in str(exc)
+    else:
+        raise AssertionError("dedupe key payload mismatch must fail closed")
+
+
+def test_enqueue_dedupe_key_is_scoped_by_campaign_and_kind(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    a = q.enqueue("campaign-1", "report", {}, dedupe_key="same")
+    b = q.enqueue("campaign-2", "report", {}, dedupe_key="same")
+    c = q.enqueue("campaign-1", "browser_flow", {}, dedupe_key="same")
+    assert len({a["id"], b["id"], c["id"]}) == 3
+
+
+def test_enqueue_rejects_blank_dedupe_key(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    try:
+        q.enqueue("campaign-1", "report", {}, dedupe_key="  ")
+    except ValueError as exc:
+        assert "must not be blank" in str(exc)
+    else:
+        raise AssertionError("blank dedupe keys must be rejected")
