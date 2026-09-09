@@ -143,6 +143,23 @@ class JobQueue:
             db.execute("COMMIT")
         return self._decode(claimed)
 
+    def heartbeat(self, job_id: str, worker_id: str) -> bool:
+        """Renew a running job lease only when the caller still owns it.
+
+        Returning False is deliberate fail-closed behaviour: a worker that lost
+        ownership must not silently extend another worker's lease.
+        """
+        if not worker_id.strip():
+            raise ValueError("worker_id required")
+        now = utcnow()
+        with self.connect() as db:
+            cursor = db.execute(
+                """UPDATE jobs SET claimed_at=?, updated_at=?
+                   WHERE id=? AND status='running' AND claimed_by=?""",
+                (now, now, job_id, worker_id),
+            )
+        return cursor.rowcount == 1
+
     def finish(self, job_id: str, success: bool, error: str | None = None) -> dict[str, Any]:
         with self.connect() as db:
             row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
