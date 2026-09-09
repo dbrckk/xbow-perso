@@ -63,16 +63,7 @@ def budget_usage(
     scans = counts["strix_scan"]
     validations = counts["independent_validation"]
     reports = counts["report"]
-
-    reason = None
-    if actions >= limits.max_actions:
-        reason = "planner action budget exhausted"
-    elif scans >= limits.max_scans:
-        reason = "scan budget exhausted"
-    elif validations >= limits.max_validations:
-        reason = "validation budget exhausted"
-    elif reports >= limits.max_reports:
-        reason = "report budget exhausted"
+    exhausted = actions >= limits.max_actions
 
     return BudgetUsage(
         actions=actions,
@@ -83,8 +74,8 @@ def budget_usage(
         remaining_scans=max(0, limits.max_scans - scans),
         remaining_validations=max(0, limits.max_validations - validations),
         remaining_reports=max(0, limits.max_reports - reports),
-        exhausted=reason is not None,
-        reason=reason,
+        exhausted=exhausted,
+        reason="planner action budget exhausted" if exhausted else None,
     )
 
 
