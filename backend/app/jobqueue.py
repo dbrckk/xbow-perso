@@ -144,11 +144,7 @@ class JobQueue:
         return self._decode(claimed)
 
     def heartbeat(self, job_id: str, worker_id: str) -> bool:
-        """Renew a running job lease only when the caller still owns it.
-
-        Returning False is deliberate fail-closed behaviour: a worker that lost
-        ownership must not silently extend another worker's lease.
-        """
+        """Renew a running job lease only when the caller still owns it."""
         if not worker_id.strip():
             raise ValueError("worker_id required")
         now = utcnow()
@@ -160,21 +156,41 @@ class JobQueue:
             )
         return cursor.rowcount == 1
 
-    def finish(self, job_id: str, success: bool, error: str | None = None) -> dict[str, Any]:
+    def finish(
+        self,
+        job_id: str,
+        worker_id: str,
+        success: bool,
+        error: str | None = None,
+    ) -> dict[str, Any] | None:
+        """Finish a job only if the caller still owns its running lease.
+
+        Returns None when ownership has already been lost. This prevents a stale
+        worker from completing or requeueing work that another worker has claimed.
+        """
+        if not worker_id.strip():
+            raise ValueError("worker_id required")
         with self.connect() as db:
-            row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
+            db.execute("BEGIN IMMEDIATE")
+            row = db.execute(
+                "SELECT * FROM jobs WHERE id=? AND status='running' AND claimed_by=?",
+                (job_id, worker_id),
+            ).fetchone()
             if not row:
-                raise KeyError(job_id)
-            if row["status"] != "running":
-                raise ValueError("only running jobs can finish")
+                db.execute("COMMIT")
+                return None
             status = "completed" if success else ("queued" if row["attempts"] < row["max_attempts"] else "failed")
-            db.execute(
+            now = utcnow()
+            cursor = db.execute(
                 """UPDATE jobs
                    SET status=?, updated_at=?, last_error=?, claimed_by=NULL, claimed_at=NULL
-                   WHERE id=?""",
-                (status, utcnow(), (error or "")[-4000:] or None, job_id),
+                   WHERE id=? AND status='running' AND claimed_by=?""",
+                (status, now, (error or "")[-4000:] or None, job_id, worker_id),
             )
-        return self.get(job_id)  # type: ignore[return-value]
+            db.execute("COMMIT")
+        if cursor.rowcount != 1:
+            return None
+        return self.get(job_id)
 
     @staticmethod
     def _decode(row: sqlite3.Row) -> dict[str, Any]:
