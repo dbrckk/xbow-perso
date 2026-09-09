@@ -58,3 +58,23 @@ def test_artifact_lookup_is_campaign_scoped(tmp_path):
     assert store.has_artifact("c1", finding_id="f1", kind="validation") is True
     assert store.has_artifact("c2", finding_id="f1", kind="validation") is False
     assert store.get_artifact("c2", artifact["id"]) is None
+
+
+def test_idempotency_key_returns_existing_artifact(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    first = store.put_artifact("c1", "validation", b"same", idempotency_key="job-1:validation")
+    second = store.put_artifact("c1", "validation", b"same", idempotency_key="job-1:validation")
+
+    assert first["id"] == second["id"]
+    assert len(store.list_artifacts("c1")) == 1
+
+
+def test_idempotency_key_rejects_different_content(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    store.put_artifact("c1", "report", b"v1", idempotency_key="job-1:report")
+
+    with pytest.raises(ArtifactIntegrityError, match="idempotency"):
+        store.put_artifact("c1", "report", b"v2", idempotency_key="job-1:report")
