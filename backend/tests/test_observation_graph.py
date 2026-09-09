@@ -57,6 +57,28 @@ def test_planner_progresses_through_bounded_phases():
     graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
     assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "report"
 
+    graph.add(
+        Observation(
+            "r1",
+            "evidence",
+            "report-artifact",
+            "report-engine",
+            metadata={"artifact_kind": "report"},
+        )
+    )
+    assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "stop"
+
+
+def test_planner_counts_validations_by_finding_relationship():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "recon"))
+    graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+    graph.add(Observation("f1", "finding", "first", "scanner", parent_ids=("e1",)))
+    graph.add(Observation("f2", "finding", "second", "scanner", parent_ids=("e1",)))
+    graph.add(Observation("v1", "validation", "one", "validator-a", parent_ids=("f1",)))
+    graph.add(Observation("v2", "validation", "two", "validator-b", parent_ids=("f1",)))
+    assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "validate"
+
 
 def test_planner_stops_when_automation_is_disabled():
     graph = ObservationGraph()
