@@ -9,21 +9,63 @@ def request(headers: dict[str, str] | None = None) -> Request:
     return Request({"type": "http", "method": "GET", "path": "/api/campaigns", "headers": raw, "query_string": b"", "server": ("test", 80), "client": ("test", 1234), "scheme": "http"})
 
 
-def test_missing_server_token_fails_closed(monkeypatch):
+def clear_secret_env(monkeypatch):
     monkeypatch.delenv("XBOW_API_TOKEN", raising=False)
+    monkeypatch.delenv("XBOW_API_TOKEN_FILE", raising=False)
+
+
+def test_missing_server_token_fails_closed(monkeypatch):
+    clear_secret_env(monkeypatch)
     with pytest.raises(AuthError) as exc:
         configured_api_token()
     assert exc.value.status_code == 503
 
 
 def test_short_server_token_fails_closed(monkeypatch):
+    clear_secret_env(monkeypatch)
     monkeypatch.setenv("XBOW_API_TOKEN", "too-short")
     with pytest.raises(AuthError) as exc:
         configured_api_token()
     assert exc.value.status_code == 503
 
 
+def test_file_backed_secret_is_supported(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    token = "file-token-" + "z" * 32
+    path = tmp_path / "api-token"
+    path.write_text(token + "\n", encoding="utf-8")
+    monkeypatch.setenv("XBOW_API_TOKEN_FILE", str(path))
+    assert configured_api_token() == token
+
+
+def test_missing_secret_file_fails_closed(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    monkeypatch.setenv("XBOW_API_TOKEN_FILE", str(tmp_path / "missing"))
+    with pytest.raises(AuthError) as exc:
+        configured_api_token()
+    assert exc.value.status_code == 503
+
+
+def test_conflicting_secret_sources_fail_closed(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    path = tmp_path / "api-token"
+    path.write_text("f" * 32, encoding="utf-8")
+    monkeypatch.setenv("XBOW_API_TOKEN", "a" * 32)
+    monkeypatch.setenv("XBOW_API_TOKEN_FILE", str(path))
+    with pytest.raises(AuthError) as exc:
+        configured_api_token()
+    assert exc.value.status_code == 503
+
+
+def test_whitespace_inside_token_is_rejected(monkeypatch):
+    clear_secret_env(monkeypatch)
+    monkeypatch.setenv("XBOW_API_TOKEN", "a" * 20 + " " + "b" * 20)
+    with pytest.raises(AuthError):
+        configured_api_token()
+
+
 def test_missing_client_token_is_unauthorized(monkeypatch):
+    clear_secret_env(monkeypatch)
     monkeypatch.setenv("XBOW_API_TOKEN", "a" * 32)
     with pytest.raises(AuthError) as exc:
         require_api_token(request())
@@ -31,6 +73,7 @@ def test_missing_client_token_is_unauthorized(monkeypatch):
 
 
 def test_wrong_client_token_is_forbidden(monkeypatch):
+    clear_secret_env(monkeypatch)
     monkeypatch.setenv("XBOW_API_TOKEN", "a" * 32)
     with pytest.raises(AuthError) as exc:
         require_api_token(request({"Authorization": "Bearer " + "b" * 32}))
@@ -38,12 +81,14 @@ def test_wrong_client_token_is_forbidden(monkeypatch):
 
 
 def test_bearer_token_is_accepted(monkeypatch):
+    clear_secret_env(monkeypatch)
     token = "correct-token-" + "x" * 32
     monkeypatch.setenv("XBOW_API_TOKEN", token)
     require_api_token(request({"Authorization": f"Bearer {token}"}))
 
 
 def test_x_api_key_fallback_is_accepted(monkeypatch):
+    clear_secret_env(monkeypatch)
     token = "mobile-token-" + "y" * 32
     monkeypatch.setenv("XBOW_API_TOKEN", token)
     require_api_token(request({"X-API-Key": token}))
