@@ -158,6 +158,17 @@ class JobQueue:
             "oldest_queued_at": oldest["created_at"] if oldest else None,
         }
 
+    def campaign_job_counts(self, campaign_id: str) -> dict[str, int]:
+        """Return durable job counts for one campaign without exposing payloads."""
+        with self.connect() as db:
+            rows = db.execute(
+                "SELECT kind, COUNT(*) AS count FROM jobs WHERE campaign_id=? GROUP BY kind",
+                (campaign_id,),
+            ).fetchall()
+        counts = {kind: 0 for kind in ("strix_scan", "independent_validation", "browser_flow", "report")}
+        counts.update({row["kind"]: int(row["count"]) for row in rows})
+        return counts
+
     def _recover_expired_leases(self, db: sqlite3.Connection, now: datetime) -> int:
         lease_seconds = int(os.getenv("XBOW_JOB_LEASE_SECONDS", "21600"))
         if not 60 <= lease_seconds <= 86400:
