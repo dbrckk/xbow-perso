@@ -98,12 +98,12 @@ class AdaptivePlanner:
 
         if not observations:
             return [PlannedAction("inventory", host, "no observations collected yet", 100)]
-        if assets and not endpoints:
-            return [PlannedAction("crawl", host, "known assets have no endpoint inventory", 90)]
-        if endpoints and not findings:
-            return [PlannedAction("scan", host, "endpoint inventory exists but no findings recorded", 80)]
         if findings and len(validations) < len(findings):
             return [PlannedAction("validate", host, "findings still require independent validation", 100)]
         if findings and len(validations) >= len(findings):
             return [PlannedAction("report", host, "all recorded findings have validation observations", 70)]
+        if assets and not endpoints:
+            return [PlannedAction("crawl", host, "known assets have no endpoint inventory", 90)]
+        if endpoints and not findings:
+            return [PlannedAction("scan", host, "endpoint inventory exists but no findings recorded", 80)]
         return [PlannedAction("stop", host, "no bounded next action available", 10)]
