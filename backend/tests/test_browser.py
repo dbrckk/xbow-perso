@@ -1,7 +1,14 @@
 import pytest
 from pydantic import ValidationError
 
-from app.browser import BrowserFlowInput, BrowserPolicyError, BrowserStep, execute_browser_flow, validate_flow
+from app.browser import (
+    BrowserFlowInput,
+    BrowserPolicyError,
+    BrowserStep,
+    _flow_dedupe_key,
+    execute_browser_flow,
+    validate_flow,
+)
 from app.main import Campaign, ProgramRules, TargetInput
 
 
@@ -50,3 +57,23 @@ def test_browser_is_dry_run_by_default(monkeypatch):
     assert result.status == "dry_run"
     assert result.observations == [{"steps": 2}]
     assert result.screenshots == []
+
+
+def test_browser_flow_dedupe_key_is_stable_for_same_campaign_version_and_flow():
+    flow = BrowserFlowInput(
+        steps=[
+            BrowserStep(operation="navigate", url="https://app.test.local/login"),
+            BrowserStep(operation="screenshot"),
+        ]
+    )
+    first = _flow_dedupe_key("c1", 4, flow)
+    second = _flow_dedupe_key("c1", 4, flow)
+    assert first == second
+    assert first.startswith("browser:v4:c1:")
+
+
+def test_browser_flow_dedupe_key_changes_with_version_or_flow():
+    first_flow = BrowserFlowInput(steps=[BrowserStep(operation="navigate", url="https://app.test.local/a")])
+    second_flow = BrowserFlowInput(steps=[BrowserStep(operation="navigate", url="https://app.test.local/b")])
+    assert _flow_dedupe_key("c1", 1, first_flow) != _flow_dedupe_key("c1", 2, first_flow)
+    assert _flow_dedupe_key("c1", 1, first_flow) != _flow_dedupe_key("c1", 1, second_flow)
