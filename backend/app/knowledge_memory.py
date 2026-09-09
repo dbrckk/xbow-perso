@@ -44,6 +44,20 @@ class KnowledgeSnapshot:
         return payload
 
 
+def _validation_quality(value: str) -> float:
+    """Return bounded confidence credit for a validator outcome.
+
+    A dry run proves policy/plumbing only, an error proves nothing about the target,
+    and an observed response is useful evidence without self-confirming a finding.
+    Unknown outcomes fail closed and receive no validation credit.
+    """
+    return {
+        "observed": 0.40,
+        "dry_run": 0.05,
+        "error": 0.0,
+    }.get(str(value), 0.0)
+
+
 def build_knowledge_snapshot(graph: ObservationGraph) -> KnowledgeSnapshot:
     assets = graph.by_kind("asset")
     endpoints = graph.by_kind("endpoint")
@@ -60,12 +74,18 @@ def build_knowledge_snapshot(graph: ObservationGraph) -> KnowledgeSnapshot:
             for item in evidence
             if any(parent in validation_ids or parent == finding.id for parent in item.parent_ids)
         ]
-        score = 0.35
-        if linked_validations:
-            score += 0.40
-        if linked_evidence:
+        best_validation_credit = max((_validation_quality(item.value) for item in linked_validations), default=0.0)
+        observed_validation_ids = {
+            item.id for item in linked_validations if _validation_quality(item.value) >= 0.40
+        }
+        observed_evidence = [
+            item for item in linked_evidence if any(parent in observed_validation_ids for parent in item.parent_ids)
+        ]
+
+        score = 0.35 + best_validation_credit
+        if observed_evidence:
             score += 0.20
-        if any(item.metadata.get("artifact_kind") == "validation" for item in linked_evidence):
+        if any(item.metadata.get("artifact_kind") == "validation" for item in observed_evidence):
             score += 0.05
         scores.append(
             FindingConfidence(
