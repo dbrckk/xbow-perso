@@ -2,14 +2,17 @@ import pytest
 from pydantic import ValidationError
 
 from app.browser import (
+    BrowserExecutionResult,
     BrowserFlowInput,
     BrowserPolicyError,
     BrowserStep,
     _flow_dedupe_key,
     execute_browser_flow,
+    persist_browser_result,
     validate_flow,
 )
 from app.main import Campaign, ProgramRules, TargetInput
+from app.storage import Storage
 
 
 def _campaign() -> Campaign:
@@ -77,3 +80,21 @@ def test_browser_flow_dedupe_key_changes_with_version_or_flow():
     second_flow = BrowserFlowInput(steps=[BrowserStep(operation="navigate", url="https://app.test.local/b")])
     assert _flow_dedupe_key("c1", 1, first_flow) != _flow_dedupe_key("c1", 2, first_flow)
     assert _flow_dedupe_key("c1", 1, first_flow) != _flow_dedupe_key("c1", 1, second_flow)
+
+
+def test_browser_artifacts_are_idempotent_per_job(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    campaign = _campaign()
+    campaign.id = "c1"
+    store.save_campaign(campaign.model_dump(mode="json"))
+    result = BrowserExecutionResult(
+        status="completed",
+        observations=[{"step": 1, "operation": "navigate", "url": "https://app.test.local"}],
+        screenshots=[("shot.png", b"png-bytes")],
+    )
+
+    first = persist_browser_result(store, campaign.id, result, idempotency_prefix="job-1")
+    second = persist_browser_result(store, campaign.id, result, idempotency_prefix="job-1")
+
+    assert [item["id"] for item in second] == [item["id"] for item in first]
+    assert len(store.list_artifacts(campaign.id)) == 2
