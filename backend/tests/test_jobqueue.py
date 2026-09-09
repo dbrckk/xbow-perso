@@ -158,3 +158,22 @@ def test_stale_worker_cannot_finish_reclaimed_job(tmp_path, monkeypatch):
     completed = q.finish(job["id"], "worker-b", True)
     assert completed is not None
     assert completed["status"] == "completed"
+
+
+def test_stats_remain_healthy_after_expired_lease_recovery(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_JOB_LEASE_SECONDS", "60")
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    job = q.enqueue("campaign-1", "report", {}, max_attempts=2)
+    q.claim("dead-worker")
+    with q.connect() as db:
+        db.execute(
+            "UPDATE jobs SET claimed_at='2000-01-01T00:00:00+00:00' WHERE id=?",
+            (job["id"],),
+        )
+
+    assert q.recover_expired_leases() == 1
+    stats = q.stats()
+    assert stats["total"] == 1
+    assert stats["by_status"]["queued"] == 1
+    assert stats["by_status"]["running"] == 0
+    assert stats["oldest_queued_at"] is not None
