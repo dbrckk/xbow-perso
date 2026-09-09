@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from datetime import datetime, timezone
 from enum import Enum
 from fnmatch import fnmatch
@@ -39,6 +40,11 @@ def storage() -> Storage:
 
 def queue() -> JobQueue:
     return JobQueue()
+
+
+def _stable_key(prefix: str, *parts: str) -> str:
+    digest = hashlib.sha256("\x1f".join(parts).encode("utf-8")).hexdigest()[:24]
+    return f"{prefix}:{digest}"
 
 
 class CampaignState(str, Enum):
@@ -180,7 +186,6 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
 
 
 def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[str, Any]:
-    """Immutable worker input. Secrets/credential notes are intentionally excluded."""
     return {
         "campaign_id": campaign.id,
         "target": str(campaign.target.primary_url),
@@ -213,7 +218,6 @@ def health():
 @app.get("/api/agents")
 def list_agents():
     from .agent_registry import public_agent_catalog
-
     return public_agent_catalog()
 
 
@@ -244,7 +248,6 @@ def list_campaign_observations(campaign_id: str):
 @app.get("/api/campaigns/{campaign_id}/knowledge")
 def campaign_knowledge(campaign_id: str):
     from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
-
     campaign = assert_campaign_exists(campaign_id)
     graph = _campaign_graph(campaign_id)
     return {
@@ -259,7 +262,6 @@ def campaign_plan(campaign_id: str):
     from .agent_registry import agent_for_action
     from .knowledge_memory import build_knowledge_snapshot, rank_findings
     from .observation_graph import AdaptivePlanner
-
     campaign = assert_campaign_exists(campaign_id)
     graph = _campaign_graph(campaign_id)
     actions = AdaptivePlanner().plan(campaign, graph)
@@ -296,7 +298,13 @@ def start_campaign(campaign_id: str):
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
 
     payload = sanitized_scan_payload(campaign, receipt)
-    job = queue().enqueue(campaign.id, "strix_scan", payload, max_attempts=2)
+    job = queue().enqueue(
+        campaign.id,
+        "strix_scan",
+        payload,
+        max_attempts=2,
+        dedupe_key=f"api:start:v{version}",
+    )
     campaign.state = CampaignState.running
     campaign.updated_at = utcnow()
     campaign.events.append({"type": "campaign_started", "at": utcnow(), "policy": receipt, "job_id": job["id"]})
@@ -318,6 +326,14 @@ def add_finding(campaign_id: str, finding: Finding):
     host = (urlparse(finding.asset).hostname or finding.asset.split(":")[0]).lower()
     if not is_host_allowed(host, campaign.target.rules.allowed_targets, campaign.target.rules.denied_targets):
         raise HTTPException(status_code=403, detail="Finding asset is outside campaign scope")
+
+    existing = next((item for item in campaign.findings if item.id == finding.id), None)
+    if existing:
+        candidate = finding.model_copy(update={"status": existing.status, "validated_by": existing.validated_by})
+        if candidate.model_dump(mode="json") != existing.model_dump(mode="json"):
+            raise HTTPException(status_code=409, detail="Finding id already exists with different content")
+        return existing
+
     finding.status = "validation_required"
     campaign.findings.append(finding)
     campaign.state = CampaignState.validating
@@ -328,6 +344,7 @@ def add_finding(campaign_id: str, finding: Finding):
         "independent_validation",
         {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
         max_attempts=2,
+        dedupe_key=f"validation:{finding.id}",
     )
     campaign.events.append({"type": "validation_queued", "finding_id": finding.id, "job_id": validation_job["id"], "at": utcnow()})
     save_campaign(campaign, expected_version=version)
@@ -342,13 +359,26 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
         raise HTTPException(status_code=404, detail="Finding not found")
     if validator == finding.discovered_by:
         raise HTTPException(status_code=409, detail="Discovery agent cannot validate its own finding")
-    finding.status = "confirmed" if confirmed else "rejected"
+
+    desired_status = "confirmed" if confirmed else "rejected"
+    if finding.status == desired_status and finding.validated_by == validator:
+        return finding
+    if finding.status in {"confirmed", "rejected"} and finding.status != desired_status:
+        raise HTTPException(status_code=409, detail="Finding already has a conflicting validation result")
+
+    finding.status = desired_status
     finding.validated_by = validator
     campaign.updated_at = utcnow()
     campaign.events.append({"type": "finding_validated", "finding_id": finding.id, "confirmed": confirmed, "validator": validator, "at": utcnow()})
     if campaign.findings and all(item.status in {"confirmed", "rejected"} for item in campaign.findings):
         campaign.state = CampaignState.completed
-        report_job = queue().enqueue(campaign.id, "report", {"campaign_id": campaign.id, "platform": "generic"}, max_attempts=2)
+        report_job = queue().enqueue(
+            campaign.id,
+            "report",
+            {"campaign_id": campaign.id, "platform": "generic"},
+            max_attempts=2,
+            dedupe_key="report:generic:completed",
+        )
         campaign.events.append({"type": "campaign_completed", "report_job_id": report_job["id"], "at": utcnow()})
     save_campaign(campaign, expected_version=version)
     return finding
@@ -357,7 +387,13 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
 @app.post("/api/campaigns/{campaign_id}/reports")
 def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bugcrowd"] = "generic"):
     campaign, version = assert_campaign_record(campaign_id)
-    job = queue().enqueue(campaign.id, "report", {"campaign_id": campaign.id, "platform": platform}, max_attempts=2)
+    job = queue().enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": platform},
+        max_attempts=2,
+        dedupe_key=f"report:{platform}:v{version}",
+    )
     campaign.events.append({"type": "report_queued", "platform": platform, "job_id": job["id"], "at": utcnow()})
     campaign.updated_at = utcnow()
     save_campaign(campaign, expected_version=version)
@@ -369,19 +405,29 @@ def add_text_artifact(campaign_id: str, evidence: EvidenceInput = Body(...)):
     campaign, version = assert_campaign_record(campaign_id)
     if evidence.finding_id and not any(f.id == evidence.finding_id for f in campaign.findings):
         raise HTTPException(status_code=404, detail="Finding not found")
+    content = evidence.content.encode("utf-8")
+    idempotency_key = _stable_key(
+        "api-artifact",
+        evidence.kind,
+        evidence.finding_id or "",
+        evidence.media_type,
+        hashlib.sha256(content).hexdigest(),
+    )
     try:
         artifact = storage().put_artifact(
             campaign_id,
             evidence.kind,
-            evidence.content.encode("utf-8"),
+            content,
             media_type=evidence.media_type,
             finding_id=evidence.finding_id,
+            idempotency_key=idempotency_key,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    campaign.events.append({"type": "artifact_stored", "artifact_id": artifact["id"], "kind": evidence.kind, "at": utcnow()})
-    campaign.updated_at = utcnow()
-    save_campaign(campaign, expected_version=version)
+    if not any(event.get("type") == "artifact_stored" and event.get("artifact_id") == artifact["id"] for event in campaign.events):
+        campaign.events.append({"type": "artifact_stored", "artifact_id": artifact["id"], "kind": evidence.kind, "at": utcnow()})
+        campaign.updated_at = utcnow()
+        save_campaign(campaign, expected_version=version)
     return artifact
 
 
@@ -411,8 +457,6 @@ def download_artifact(campaign_id: str, artifact_id: str):
     )
 
 
-# Imported last to avoid circular imports: browser policy helpers intentionally
-# reuse the canonical Campaign and scope models defined above.
 from .browser import router as browser_router  # noqa: E402
 
 app.include_router(browser_router)
