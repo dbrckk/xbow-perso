@@ -150,6 +150,13 @@ def assert_campaign_exists(campaign_id: str) -> Campaign:
     return assert_campaign_record(campaign_id)[0]
 
 
+def _campaign_graph(campaign_id: str):
+    from .observation_graph import ObservationGraph
+
+    assert_campaign_exists(campaign_id)
+    return ObservationGraph.from_records(storage().list_observations(campaign_id))
+
+
 def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]:
     rules = campaign.target.rules
     allowed = is_host_allowed(host, rules.allowed_targets, rules.denied_targets)
@@ -203,6 +210,13 @@ def health():
     return payload
 
 
+@app.get("/api/agents")
+def list_agents():
+    from .agent_registry import public_agent_catalog
+
+    return public_agent_catalog()
+
+
 @app.post("/api/campaigns", response_model=Campaign)
 def create_campaign(target: TargetInput):
     campaign = Campaign(target=target, state=CampaignState.ready)
@@ -219,6 +233,43 @@ def list_campaigns():
 @app.get("/api/campaigns/{campaign_id}", response_model=Campaign)
 def get_campaign(campaign_id: str):
     return assert_campaign_exists(campaign_id)
+
+
+@app.get("/api/campaigns/{campaign_id}/observations")
+def list_campaign_observations(campaign_id: str):
+    assert_campaign_exists(campaign_id)
+    return storage().list_observations(campaign_id)
+
+
+@app.get("/api/campaigns/{campaign_id}/knowledge")
+def campaign_knowledge(campaign_id: str):
+    from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
+
+    campaign = assert_campaign_exists(campaign_id)
+    graph = _campaign_graph(campaign_id)
+    return {
+        "snapshot": build_knowledge_snapshot(graph).to_dict(),
+        "priorities": [item.to_dict() for item in rank_findings(campaign.findings, graph)],
+        "decision_history": decision_history(graph),
+    }
+
+
+@app.get("/api/campaigns/{campaign_id}/plan")
+def campaign_plan(campaign_id: str):
+    from .agent_registry import agent_for_action
+    from .knowledge_memory import build_knowledge_snapshot, rank_findings
+    from .observation_graph import AdaptivePlanner
+
+    campaign = assert_campaign_exists(campaign_id)
+    graph = _campaign_graph(campaign_id)
+    actions = AdaptivePlanner().plan(campaign, graph)
+    return {
+        "actions": [item.to_dict() for item in actions],
+        "agents": [agent_for_action(item.kind).to_dict() for item in actions],
+        "priorities": [item.to_dict() for item in rank_findings(campaign.findings, graph)],
+        "memory": build_knowledge_snapshot(graph).to_dict(),
+        "read_only": True,
+    }
 
 
 @app.post("/api/campaigns/{campaign_id}/policy-check")
