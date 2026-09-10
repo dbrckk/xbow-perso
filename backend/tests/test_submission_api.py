@@ -106,6 +106,27 @@ def test_revocation_reblocks_submission_state(tmp_path, monkeypatch):
     assert status["approved"] is False
 
 
+def test_reapproval_requires_new_manual_submission(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+    submission_api.approve_report(campaign.id, artifact["id"], "reviewer")
+    submission_api.mark_report_submitted(campaign.id, artifact["id"], "operator", "generic")
+    submission_api.revoke_report_approval(campaign.id, artifact["id"], "reviewer")
+    reapproved = submission_api.approve_report(campaign.id, artifact["id"], "reviewer")
+
+    assert reapproved["state"] == "approved"
+    assert reapproved["submitted_at"] is None
+
+    resubmitted = submission_api.mark_report_submitted(
+        campaign.id,
+        artifact["id"],
+        "operator-2",
+        "hackerone",
+    )
+    assert resubmitted["state"] == "submitted"
+    assert resubmitted["submitted_by"] == "operator-2"
+    assert resubmitted["platform"] == "hackerone"
+
+
 def test_non_report_artifact_is_rejected(tmp_path, monkeypatch):
     campaign, _artifact = _setup(tmp_path, monkeypatch)
     store = Storage()
