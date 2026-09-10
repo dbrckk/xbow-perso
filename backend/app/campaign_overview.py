@@ -10,6 +10,7 @@ from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .decision_consensus import build_decision_consensus, router as decision_consensus_router
 from .evidence_chain import build_evidence_chains
 from .finding_correlation import correlate_findings
+from .finding_lifecycle import build_finding_lifecycle, router as finding_lifecycle_router
 from .finding_triage import build_finding_triage, router as finding_triage_router
 from .hypothesis_engine import build_hypotheses
 from .knowledge_memory import build_knowledge_snapshot
@@ -19,6 +20,7 @@ from .planner_budget import PlannerBudget, budget_usage
 from .recon_swarm import build_recon_plan, router as recon_swarm_router
 from .red_team_coverage import build_red_team_coverage, router as red_team_coverage_router
 from .red_team_decision import build_red_team_decisions, router as red_team_decision_router
+from .report_readiness import build_report_readiness, router as report_readiness_router
 from .review_queue import build_review_queue, router as review_queue_router
 from .storage import ArtifactIntegrityError
 from .submission_state import submission_status
@@ -29,6 +31,8 @@ router.routes.extend(attack_surface_router.routes)
 router.routes.extend(red_team_coverage_router.routes)
 router.routes.extend(review_queue_router.routes)
 router.routes.extend(finding_triage_router.routes)
+router.routes.extend(finding_lifecycle_router.routes)
+router.routes.extend(report_readiness_router.routes)
 router.routes.extend(red_team_decision_router.routes)
 router.routes.extend(decision_consensus_router.routes)
 router.routes.extend(campaign_risk_router.routes)
@@ -57,6 +61,8 @@ def campaign_overview(campaign_id: str):
     chains = build_evidence_chains(graph)
     correlations = correlate_findings(campaign.findings)
     triage = build_finding_triage(campaign.findings, graph)
+    lifecycle = build_finding_lifecycle(campaign.findings, graph)
+    report_readiness = build_report_readiness(campaign.findings, graph)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
     review_tasks = build_review_queue(graph, scope_checker=scope_checker)
     decisions = build_red_team_decisions(
@@ -118,6 +124,10 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("out_of_scope_observations")
     if validation.unresolved_finding_ids:
         attention_reasons.append("unresolved_validation")
+    if any(not item.graph_observed for item in lifecycle):
+        attention_reasons.append("finding_graph_mismatch")
+    if any(not item.evidence_chain_integrity_ok and item.graph_observed for item in lifecycle):
+        attention_reasons.append("evidence_chain_integrity")
     if consensus.blocked:
         attention_reasons.append("decision_consensus_blocked")
     if consensus.contradictory:
@@ -186,6 +196,26 @@ def campaign_overview(campaign_id: str):
             "needs_validation": sum(item.recommended_state == "validate" for item in triage),
             "duplicate_review": sum(item.recommended_state == "review_duplicate" for item in triage),
             "report_review": sum(item.recommended_state == "review_for_report" for item in triage),
+            "read_only": True,
+        },
+        "finding_lifecycle": {
+            "total": len(lifecycle),
+            "transition_allowed": sum(item.transition_allowed for item in lifecycle),
+            "human_decision_required": sum(item.human_decision_required for item in lifecycle),
+            "graph_missing": sum(not item.graph_observed for item in lifecycle),
+            "evidence_chain_integrity_failures": sum(
+                item.graph_observed and not item.evidence_chain_integrity_ok for item in lifecycle
+            ),
+            "read_only": True,
+            "execution_authority": False,
+        },
+        "report_readiness": {
+            "total": len(report_readiness),
+            "ready_for_human_review": sum(item.ready_for_human_review for item in report_readiness),
+            "blocked": sum(not item.ready_for_human_review for item in report_readiness),
+            "highest_score": max((item.score for item in report_readiness), default=0.0),
+            "human_approval_required": True,
+            "execution_authority": False,
             "read_only": True,
         },
         "validation": {
