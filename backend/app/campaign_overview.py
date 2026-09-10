@@ -46,6 +46,15 @@ def campaign_overview(campaign_id: str):
     job_kinds = jobs.campaign_job_counts(campaign.id)
     job_statuses = jobs.campaign_job_status_counts(campaign.id)
     blocked = dict(budget.blocked_actions)
+    attention_reasons = []
+    if report_integrity_errors:
+        attention_reasons.append("report_integrity_error")
+    if blocked:
+        attention_reasons.append("budget_blocked")
+    if validation.unresolved_finding_ids:
+        attention_reasons.append("unresolved_validation")
+    if job_statuses["failed"]:
+        attention_reasons.append("failed_jobs")
 
     return {
         "campaign_id": campaign.id,
@@ -88,10 +97,6 @@ def campaign_overview(campaign_id: str):
                 for state in ("draft", "review_required", "approved", "submitted")
             },
         },
-        "attention_required": bool(
-            report_integrity_errors
-            or blocked
-            or validation.unresolved_finding_ids
-            or job_statuses["failed"]
-        ),
+        "attention_required": bool(attention_reasons),
+        "attention_reasons": attention_reasons,
     }
