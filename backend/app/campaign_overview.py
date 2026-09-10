@@ -8,6 +8,7 @@ from .attack_surface import build_attack_surface, router as attack_surface_route
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .evidence_chain import build_evidence_chains
 from .finding_correlation import correlate_findings
+from .finding_triage import build_finding_triage, router as finding_triage_router
 from .hypothesis_engine import build_hypotheses
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
@@ -22,6 +23,7 @@ router = APIRouter()
 router.routes.extend(attack_surface_router.routes)
 router.routes.extend(red_team_coverage_router.routes)
 router.routes.extend(review_queue_router.routes)
+router.routes.extend(finding_triage_router.routes)
 
 
 @router.get("/api/campaigns/{campaign_id}/overview")
@@ -38,6 +40,7 @@ def campaign_overview(campaign_id: str):
     hypotheses = build_hypotheses(graph)
     chains = build_evidence_chains(graph)
     correlations = correlate_findings(campaign.findings)
+    triage = build_finding_triage(campaign.findings, graph)
     coverage = build_red_team_coverage(graph)
     review_tasks = build_review_queue(graph)
     limits = PlannerBudget()
@@ -123,6 +126,14 @@ def campaign_overview(campaign_id: str):
                 state: finding_counts.get(state, 0)
                 for state in ("candidate", "validation_required", "confirmed", "rejected")
             },
+        },
+        "finding_triage": {
+            "total": len(triage),
+            "highest_score": max((item.score for item in triage), default=0.0),
+            "needs_validation": sum(item.recommended_state == "validate" for item in triage),
+            "duplicate_review": sum(item.recommended_state == "review_duplicate" for item in triage),
+            "report_review": sum(item.recommended_state == "review_for_report" for item in triage),
+            "read_only": True,
         },
         "validation": {
             "graph_findings": len(validation.finding_ids),
