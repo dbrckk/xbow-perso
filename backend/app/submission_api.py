@@ -6,6 +6,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException
 
 from .campaign_overview import router as overview_router
+from .campaign_review_state import router as review_state_router
 from .report_approval import (
     approval_event_from_storage,
     approval_status_from_storage,
@@ -16,6 +17,7 @@ from .submission_state import assert_submission_allowed, submission_event, submi
 
 router = APIRouter()
 router.routes.extend(overview_router.routes)
+router.routes.extend(review_state_router.routes)
 
 
 def _context(campaign_id: str):
