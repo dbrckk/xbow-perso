@@ -4,6 +4,8 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 from urllib.parse import urlparse
 
+from .validation_state import attempted_finding_ids, observed_independent_finding_ids
+
 ObservationKind = Literal["asset", "endpoint", "technology", "finding", "evidence", "validation"]
 ActionKind = Literal["inventory", "crawl", "scan", "validate", "report", "stop"]
 
@@ -112,7 +114,6 @@ class AdaptivePlanner:
         assets = graph.by_kind("asset")
         endpoints = graph.by_kind("endpoint")
         findings = graph.by_kind("finding")
-        validations = graph.by_kind("validation")
         evidence = graph.by_kind("evidence")
 
         if not observations:
@@ -133,22 +134,11 @@ class AdaptivePlanner:
                 ]
 
         finding_by_id = {item.id: item for item in findings}
-        attempted_finding_ids = {
-            parent_id
-            for validation in validations
-            for parent_id in validation.parent_ids
-            if parent_id in finding_by_id
-        }
-        observed_validated_finding_ids = {
-            parent_id
-            for validation in validations
-            if validation.value == "observed"
-            for parent_id in validation.parent_ids
-            if parent_id in finding_by_id and validation.source != finding_by_id[parent_id].source
-        }
+        attempted_ids = attempted_finding_ids(graph)
+        observed_validated_finding_ids = observed_independent_finding_ids(graph)
         if findings and len(observed_validated_finding_ids) < len(findings):
             unresolved = set(finding_by_id) - observed_validated_finding_ids
-            unattempted = unresolved - attempted_finding_ids
+            unattempted = unresolved - attempted_ids
             if unattempted:
                 return [PlannedAction("validate", host, "findings still require independent validation", 100)]
             return [
