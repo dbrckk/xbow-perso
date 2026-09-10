@@ -250,6 +250,48 @@ def health():
     return payload
 
 
+@app.get("/api/capabilities")
+def system_capabilities():
+    return {
+        "campaign_control": {
+            "scope_enforcement": True,
+            "durable_queue": True,
+            "artifact_integrity": "sha256",
+            "optimistic_campaign_versioning": True,
+        },
+        "execution": {
+            "strix_scanning": "gated",
+            "http_validation": "gated",
+            "browser_automation": "gated",
+            "default_mode": "dry_run",
+            "arbitrary_shell_jobs": False,
+        },
+        "reasoning": {
+            "adaptive_planning": "advisory",
+            "observation_graph": True,
+            "knowledge_memory": True,
+            "hypothesis_engine": "read_only",
+            "finding_triage": "read_only",
+            "review_queue": "read_only",
+            "decision_consensus": "read_only",
+        },
+        "reporting": {
+            "report_generation": True,
+            "human_approval_required": True,
+            "submission_state_tracking": True,
+            "external_platform_submission": False,
+        },
+        "safety": {
+            "destructive_testing": False,
+            "denial_of_service": False,
+            "social_engineering": False,
+            "credential_attacks": False,
+            "exploit_execution": False,
+            "out_of_scope_execution": False,
+        },
+    }
+
+
 @app.get("/api/agents")
 def list_agents():
     from .agent_registry import public_agent_catalog
