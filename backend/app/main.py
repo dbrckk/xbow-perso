@@ -262,14 +262,22 @@ def campaign_plan(campaign_id: str):
     from .agent_registry import agent_for_action
     from .knowledge_memory import build_knowledge_snapshot, rank_findings
     from .observation_graph import AdaptivePlanner
+    from .planner_budget import PlannerBudget, apply_budget, budget_usage
+
     campaign = assert_campaign_exists(campaign_id)
     graph = _campaign_graph(campaign_id)
-    actions = AdaptivePlanner().plan(campaign, graph)
+    jobs = queue()
+    limits = PlannerBudget()
+    planner_actions = AdaptivePlanner().plan(campaign, graph)
+    actions = [apply_budget(item, graph, jobs, campaign.id, limits)[0] for item in planner_actions]
+    usage = budget_usage(graph, jobs, campaign.id, limits)
     return {
         "actions": [item.to_dict() for item in actions],
+        "planner_actions": [item.to_dict() for item in planner_actions],
         "agents": [agent_for_action(item.kind).to_dict() for item in actions],
         "priorities": [item.to_dict() for item in rank_findings(campaign.findings, graph)],
         "memory": build_knowledge_snapshot(graph).to_dict(),
+        "budget": {"limits": limits.to_dict(), "usage": usage.to_dict()},
         "read_only": True,
     }
 
