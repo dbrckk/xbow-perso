@@ -6,6 +6,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 from fastapi import APIRouter
 
+from .adaptive_cycle import router as adaptive_cycle_router
 from .autonomy_gate import router as autonomy_gate_router
 from .observation_graph import ObservationGraph, load_observation_graph
 
@@ -19,6 +20,7 @@ ReconTaskKind = Literal[
 
 router = APIRouter()
 router.routes.extend(autonomy_gate_router.routes)
+router.routes.extend(adaptive_cycle_router.routes)
 
 
 @dataclass(frozen=True)
