@@ -11,10 +11,12 @@ from .finding_triage import build_finding_triage
 from .observation_graph import ObservationGraph, load_observation_graph
 from .red_team_coverage import build_red_team_coverage
 from .red_team_decision import build_red_team_decisions
+from .report_readiness import router as report_readiness_router
 
 RiskLevel = Literal["low", "moderate", "high", "critical"]
 
 router = APIRouter()
+router.routes.extend(report_readiness_router.routes)
 
 
 @dataclass(frozen=True)
