@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta, timezone
+
+from app.campaign_runtime import CampaignRuntimeLimit
 from app.jobqueue import JobQueue
 from app.main import Campaign, Finding, ProgramRules, TargetInput
 from app.observation_graph import Observation
@@ -55,6 +58,28 @@ def test_advance_stops_when_automation_disabled(tmp_path):
     assert result["agent"]["role"] == "control"
     assert result["job_ids"] == []
     assert result["decision_history"][0]["action"] == "stop"
+    assert queue.stats()["total"] == 0
+
+
+def test_advance_stops_when_runtime_budget_is_exhausted(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    campaign.created_at = (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    result = advance_campaign(
+        campaign,
+        queue,
+        store,
+        runtime_limit=CampaignRuntimeLimit(max_runtime_seconds=60),
+    )
+
+    assert result["action"]["kind"] == "stop"
+    assert result["action"]["reason"] == "campaign runtime budget exhausted"
+    assert result["agent"]["role"] == "control"
+    assert result["job_ids"] == []
     assert queue.stats()["total"] == 0
 
 
