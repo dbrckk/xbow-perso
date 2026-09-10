@@ -117,6 +117,34 @@ def test_planner_fails_closed_when_graph_findings_lack_campaign_state():
     assert "missing campaign finding state" in action.reason
 
 
+def test_planner_fails_closed_when_graph_and_campaign_finding_ids_differ_before_validation():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "recon"))
+    graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+    graph.add(Observation("finding:graph-f1", "finding", "graph-f1", "scanner", parent_ids=("e1",)))
+
+    action = AdaptivePlanner().plan(campaign(findings=(finding("campaign-f1"),)), graph)[0]
+
+    assert action.kind == "stop"
+    assert "inconsistent" in action.reason
+
+
+def test_planner_fails_closed_when_campaign_contains_untracked_finding_before_report():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "recon"))
+    graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+    graph.add(Observation("finding:f1", "finding", "f1", "scanner", parent_ids=("e1",)))
+    graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("finding:f1",)))
+
+    action = AdaptivePlanner().plan(
+        campaign(findings=(finding("f1", "confirmed"), finding("f2", "confirmed"))),
+        graph,
+    )[0]
+
+    assert action.kind == "stop"
+    assert "inconsistent" in action.reason
+
+
 def test_planner_stops_after_completed_scan_without_findings():
     graph = ObservationGraph()
     graph.add(Observation("a1", "asset", "example.com", "scope"))
