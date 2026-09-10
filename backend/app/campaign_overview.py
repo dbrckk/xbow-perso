@@ -15,6 +15,7 @@ from .hypothesis_engine import build_hypotheses
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
 from .planner_budget import PlannerBudget, budget_usage
+from .recon_swarm import build_recon_plan, router as recon_swarm_router
 from .red_team_coverage import build_red_team_coverage, router as red_team_coverage_router
 from .red_team_decision import build_red_team_decisions, router as red_team_decision_router
 from .review_queue import build_review_queue, router as review_queue_router
@@ -30,6 +31,7 @@ router.routes.extend(finding_triage_router.routes)
 router.routes.extend(red_team_decision_router.routes)
 router.routes.extend(decision_consensus_router.routes)
 router.routes.extend(campaign_risk_router.routes)
+router.routes.extend(recon_swarm_router.routes)
 
 
 @router.get("/api/campaigns/{campaign_id}/overview")
@@ -64,6 +66,12 @@ def campaign_overview(campaign_id: str):
         campaign.findings,
         graph,
         scope_checker=scope_checker,
+    )
+    recon_tasks = build_recon_plan(
+        str(campaign.target.primary_url),
+        graph,
+        scope_checker=scope_checker,
+        limit=10,
     )
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
@@ -149,6 +157,15 @@ def campaign_overview(campaign_id: str):
             "read_only": True,
             "advisory_only": True,
             "scope_aware": True,
+        },
+        "recon_swarm": {
+            "planned_tasks": len(recon_tasks),
+            "highest_priority": max((item.priority for item in recon_tasks), default=0),
+            "next_task": recon_tasks[0].kind if recon_tasks else None,
+            "allowed_methods": ["GET", "HEAD"],
+            "same_origin_only": True,
+            "bounded": True,
+            "advisory_only": True,
         },
         "findings": {
             "total": total_findings,
