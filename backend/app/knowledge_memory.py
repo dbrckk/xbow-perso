@@ -72,7 +72,6 @@ def build_knowledge_snapshot(graph: ObservationGraph) -> KnowledgeSnapshot:
         credited_validations = [
             item for item in independent_validations if _validation_quality(item.value) > 0.0
         ]
-        credited_validation_ids = {item.id for item in credited_validations}
         observed_validation_ids = {
             item.id for item in independent_validations if _validation_quality(item.value) >= 0.40
         }
