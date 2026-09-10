@@ -19,6 +19,9 @@ class EvidenceChain:
     ancestor_ids: tuple[str, ...]
     validation_ids: tuple[str, ...]
     evidence_ids: tuple[str, ...]
+    source_count: int
+    dangling_parent_ids: tuple[str, ...]
+    cycle_detected: bool
     independent_validation_observed: bool
     complete: bool
     issues: tuple[str, ...]
@@ -28,30 +31,45 @@ class EvidenceChain:
         payload["ancestor_ids"] = list(self.ancestor_ids)
         payload["validation_ids"] = list(self.validation_ids)
         payload["evidence_ids"] = list(self.evidence_ids)
+        payload["dangling_parent_ids"] = list(self.dangling_parent_ids)
         payload["issues"] = list(self.issues)
         return payload
 
 
-def _ancestors(graph: ObservationGraph, observation_id: str) -> tuple[str, ...]:
+def _ancestry_integrity(
+    graph: ObservationGraph,
+    observation_id: str,
+) -> tuple[tuple[str, ...], tuple[str, ...], bool]:
     by_id = {item.id: item for item in graph.values()}
-    seen: set[str] = set()
-    stack = list(by_id.get(observation_id).parent_ids if observation_id in by_id else ())
-    while stack:
-        current = stack.pop()
-        if current in seen:
-            continue
-        seen.add(current)
-        parent = by_id.get(current)
-        if parent is not None:
-            stack.extend(parent.parent_ids)
-    return tuple(sorted(seen))
+    ancestors: set[str] = set()
+    dangling: set[str] = set()
+    cycle_detected = False
+
+    def visit(current_id: str, path: tuple[str, ...]) -> None:
+        nonlocal cycle_detected
+        current = by_id.get(current_id)
+        if current is None:
+            dangling.add(current_id)
+            return
+        for parent_id in current.parent_ids:
+            if parent_id in path or parent_id == observation_id:
+                cycle_detected = True
+                ancestors.add(parent_id)
+                continue
+            ancestors.add(parent_id)
+            visit(parent_id, (*path, current_id))
+
+    if observation_id in by_id:
+        visit(observation_id, ())
+    return tuple(sorted(ancestors)), tuple(sorted(dangling)), cycle_detected
 
 
 def build_evidence_chains(graph: ObservationGraph) -> list[EvidenceChain]:
-    """Summarize support chains for findings without executing any target action."""
+    """Summarize support-chain integrity for findings without target actions."""
     validation_state = analyze_validation_state(graph)
     validations = graph.by_kind("validation")
     evidence = graph.by_kind("evidence")
+    by_id = {item.id: item for item in graph.values()}
     chains: list[EvidenceChain] = []
 
     for finding in graph.by_kind("finding"):
@@ -67,18 +85,31 @@ def build_evidence_chains(graph: ObservationGraph) -> list[EvidenceChain]:
                 or any(parent in validation_id_set for parent in item.parent_ids)
             )
         )
-        ancestors = _ancestors(graph, finding.id)
+        ancestors, dangling_parent_ids, cycle_detected = _ancestry_integrity(graph, finding.id)
         independent = finding.id in validation_state.observed_independent_finding_ids
+
+        related_ids = {finding.id, *ancestors, *validation_ids, *evidence_ids}
+        sources = {
+            str(by_id[item_id].source)
+            for item_id in related_ids
+            if item_id in by_id and str(by_id[item_id].source).strip()
+        }
 
         issues = []
         if not ancestors:
             issues.append("missing_upstream_context")
+        if dangling_parent_ids:
+            issues.append("dangling_parent_reference")
+        if cycle_detected:
+            issues.append("ancestry_cycle")
         if not validation_ids:
             issues.append("missing_validation")
         if not independent:
             issues.append("missing_independent_observed_validation")
         if not evidence_ids:
             issues.append("missing_evidence")
+        if len(sources) < 2:
+            issues.append("low_source_diversity")
 
         chains.append(
             EvidenceChain(
@@ -86,6 +117,9 @@ def build_evidence_chains(graph: ObservationGraph) -> list[EvidenceChain]:
                 ancestor_ids=ancestors,
                 validation_ids=validation_ids,
                 evidence_ids=evidence_ids,
+                source_count=len(sources),
+                dangling_parent_ids=dangling_parent_ids,
+                cycle_detected=cycle_detected,
                 independent_validation_observed=independent,
                 complete=not issues,
                 issues=tuple(issues),
@@ -110,6 +144,9 @@ def campaign_evidence_chains(campaign_id: str):
             "total": len(chains),
             "complete": complete,
             "incomplete": len(chains) - complete,
+            "cycles": sum(item.cycle_detected for item in chains),
+            "dangling_parent_references": sum(bool(item.dangling_parent_ids) for item in chains),
+            "low_source_diversity": sum(item.source_count < 2 for item in chains),
         },
         "read_only": True,
     }
