@@ -5,6 +5,7 @@ from collections import Counter
 from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface, router as attack_surface_router
+from .campaign_risk import build_campaign_risk, router as campaign_risk_router
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .decision_consensus import build_decision_consensus, router as decision_consensus_router
 from .evidence_chain import build_evidence_chains
@@ -28,6 +29,7 @@ router.routes.extend(review_queue_router.routes)
 router.routes.extend(finding_triage_router.routes)
 router.routes.extend(red_team_decision_router.routes)
 router.routes.extend(decision_consensus_router.routes)
+router.routes.extend(campaign_risk_router.routes)
 
 
 @router.get("/api/campaigns/{campaign_id}/overview")
@@ -58,6 +60,11 @@ def campaign_overview(campaign_id: str):
         scope_checker=scope_checker,
     )
     consensus = build_decision_consensus(decisions)
+    risk = build_campaign_risk(
+        campaign.findings,
+        graph,
+        scope_checker=scope_checker,
+    )
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
     runtime_limit = CampaignRuntimeLimit()
@@ -106,6 +113,8 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("decision_consensus_blocked")
     if consensus.contradictory:
         attention_reasons.append("decision_signal_conflict")
+    if risk.level in {"high", "critical"}:
+        attention_reasons.append("campaign_risk_elevated")
     if job_statuses["failed"]:
         attention_reasons.append("failed_jobs")
 
@@ -136,6 +145,12 @@ def campaign_overview(campaign_id: str):
             "limit": runtime_limit.to_dict(),
             "status": runtime.to_dict(),
             "terminal_campaign": terminal_campaign,
+        },
+        "campaign_risk": {
+            **risk.to_dict(),
+            "read_only": True,
+            "advisory_only": True,
+            "scope_aware": True,
         },
         "findings": {
             "total": total_findings,
