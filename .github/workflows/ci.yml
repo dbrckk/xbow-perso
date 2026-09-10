@@ -29,6 +29,11 @@ jobs:
       - run: python -m compileall -q backend/app backend/tests
       - run: ruff check backend/app backend/tests
       - run: PYTHONPATH=backend pytest -q --strict-config --strict-markers backend/tests
+      - run: |
+          PYTHONPATH=backend \
+          XBOW_DB_PATH=/tmp/xbow-ci.sqlite3 \
+          XBOW_ARTIFACT_ROOT=/tmp/xbow-ci-artifacts \
+          python -m app.readiness
       - run: pip-audit -r backend/requirements.txt
 
   build:
