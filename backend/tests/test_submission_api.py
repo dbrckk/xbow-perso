@@ -43,12 +43,24 @@ def _setup(tmp_path, monkeypatch):
 def test_submission_routes_are_mounted():
     paths = {route.path for route in app.routes}
     expected = {
+        "/api/campaigns/{campaign_id}/reports/submission-states",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/approve",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/revoke-approval",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/mark-submitted",
     }
     assert expected <= paths
+
+
+def test_campaign_submission_overview_counts_states(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+    before = submission_api.list_submission_states(campaign.id)
+    submission_api.approve_report(campaign.id, artifact["id"], "reviewer")
+    after = submission_api.list_submission_states(campaign.id)
+
+    assert before["total"] == 1
+    assert before["counts"] == {"draft": 1, "review_required": 0, "approved": 0, "submitted": 0}
+    assert after["counts"] == {"draft": 0, "review_required": 0, "approved": 1, "submitted": 0}
 
 
 def test_submission_api_requires_approval(tmp_path, monkeypatch):
