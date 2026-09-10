@@ -14,7 +14,9 @@ ReviewKind = Literal[
     "validate_finding",
     "review_authorization_surface",
     "review_input_surface",
+    "review_form_surface",
     "review_technology_surface",
+    "review_protection_surface",
 ]
 
 router = APIRouter()
@@ -80,6 +82,17 @@ def build_review_queue(
                     parameter_names=hypothesis.parameter_names,
                 )
             )
+        elif hypothesis.kind == "form_surface_review":
+            tasks.append(
+                ReviewTask(
+                    kind="review_form_surface",
+                    target=hypothesis.target,
+                    priority=0.64,
+                    reason="observed form surface requires bounded non-destructive review",
+                    evidence_ids=hypothesis.evidence_ids,
+                    parameter_names=hypothesis.parameter_names,
+                )
+            )
         elif hypothesis.kind == "input_surface_review":
             tasks.append(
                 ReviewTask(
@@ -89,6 +102,16 @@ def build_review_queue(
                     reason="named input surface requires bounded review",
                     evidence_ids=hypothesis.evidence_ids,
                     parameter_names=hypothesis.parameter_names,
+                )
+            )
+        elif hypothesis.kind == "protection_surface_review":
+            tasks.append(
+                ReviewTask(
+                    kind="review_protection_surface",
+                    target=hypothesis.target,
+                    priority=0.50,
+                    reason="observed protection layer should constrain review planning",
+                    evidence_ids=hypothesis.evidence_ids,
                 )
             )
         elif hypothesis.kind == "technology_surface_review":
