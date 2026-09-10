@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 from urllib.parse import parse_qsl, urlsplit, urlunsplit
 
 from fastapi import APIRouter
@@ -61,12 +61,55 @@ def _safe_endpoint(value: str) -> tuple[str, tuple[str, ...]]:
     return safe_url, parameter_names
 
 
-def build_hypotheses(graph: ObservationGraph, *, limit: int = 20) -> list[Hypothesis]:
-    """Derive bounded, read-only review hypotheses from existing observations.
+def _lineage_hosts(graph: ObservationGraph, observation_id: str) -> set[str]:
+    by_id = {item.id: item for item in graph.values()}
+    hosts: set[str] = set()
+    seen: set[str] = set()
+    stack = [observation_id]
+    while stack:
+        current_id = stack.pop()
+        if current_id in seen:
+            continue
+        seen.add(current_id)
+        current = by_id.get(current_id)
+        if current is None:
+            continue
+        if current.kind == "asset":
+            host = current.value.strip().lower().rstrip(".")
+            if "://" in host:
+                host = (urlsplit(host).hostname or "").lower().rstrip(".")
+            if host:
+                hosts.add(host)
+        elif current.kind == "endpoint":
+            host = (urlsplit(current.value).hostname or "").lower().rstrip(".")
+            if host:
+                hosts.add(host)
+        stack.extend(current.parent_ids)
+    return hosts
+
+
+def _scope_allows(
+    graph: ObservationGraph,
+    observation_id: str,
+    scope_checker: Callable[[str], bool] | None,
+) -> bool:
+    if scope_checker is None:
+        return True
+    hosts = _lineage_hosts(graph, observation_id)
+    return not hosts or any(scope_checker(host) for host in hosts)
+
+
+def build_hypotheses(
+    graph: ObservationGraph,
+    *,
+    limit: int = 20,
+    scope_checker: Callable[[str], bool] | None = None,
+) -> list[Hypothesis]:
+    """Derive bounded, scope-aware review hypotheses from existing observations.
 
     This layer never emits payloads, exploit instructions, shell commands, or new
-    network capabilities. It only ranks review opportunities and maps them onto
-    action kinds already controlled by the planner/policy layer.
+    network capabilities. When a scope checker is supplied, observations whose
+    known lineage is entirely outside scope are excluded from review suggestions.
     """
     if not 1 <= limit <= 100:
         raise ValueError("hypothesis limit must be between 1 and 100")
@@ -75,6 +118,8 @@ def build_hypotheses(graph: ObservationGraph, *, limit: int = 20) -> list[Hypoth
     validation_state = analyze_validation_state(graph)
 
     for endpoint in graph.by_kind("endpoint"):
+        if not _scope_allows(graph, endpoint.id, scope_checker):
+            continue
         safe_target, parameter_names = _safe_endpoint(endpoint.value)
         path = urlsplit(endpoint.value).path.lower()
         if parameter_names:
@@ -105,6 +150,8 @@ def build_hypotheses(graph: ObservationGraph, *, limit: int = 20) -> list[Hypoth
             )
 
     for technology in graph.by_kind("technology"):
+        if not _scope_allows(graph, technology.id, scope_checker):
+            continue
         hypotheses.append(
             Hypothesis(
                 kind="technology_surface_review",
@@ -118,6 +165,8 @@ def build_hypotheses(graph: ObservationGraph, *, limit: int = 20) -> list[Hypoth
         )
 
     for finding in graph.by_kind("finding"):
+        if not _scope_allows(graph, finding.id, scope_checker):
+            continue
         if finding.id not in validation_state.observed_independent_finding_ids:
             hypotheses.append(
                 Hypothesis(
@@ -146,11 +195,16 @@ def build_hypotheses(graph: ObservationGraph, *, limit: int = 20) -> list[Hypoth
 
 @router.get("/api/campaigns/{campaign_id}/hypotheses")
 def campaign_hypotheses(campaign_id: str, limit: int = 20):
-    from .main import assert_campaign_exists, storage
+    from .main import assert_campaign_exists, is_host_allowed, storage
 
     campaign = assert_campaign_exists(campaign_id)
     graph = load_observation_graph(storage(), campaign.id)
-    hypotheses = build_hypotheses(graph, limit=limit)
+    rules = campaign.target.rules
+    hypotheses = build_hypotheses(
+        graph,
+        limit=limit,
+        scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),
+    )
     counts: dict[str, int] = {}
     for item in hypotheses:
         counts[item.kind] = counts.get(item.kind, 0) + 1
@@ -163,4 +217,5 @@ def campaign_hypotheses(campaign_id: str, limit: int = 20):
         },
         "read_only": True,
         "safe_validation_only": True,
+        "scope_aware": True,
     }
