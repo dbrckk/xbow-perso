@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 from fastapi import APIRouter
 
@@ -36,12 +36,13 @@ class ReviewTask:
         return payload
 
 
-def build_review_queue(graph: ObservationGraph, *, limit: int = 25) -> list[ReviewTask]:
-    """Build a deterministic, bounded queue of safe review work.
-
-    Tasks are advisory only. They contain no payloads or executable instructions,
-    and they do not enqueue jobs or perform network requests.
-    """
+def build_review_queue(
+    graph: ObservationGraph,
+    *,
+    limit: int = 25,
+    scope_checker: Callable[[str], bool] | None = None,
+) -> list[ReviewTask]:
+    """Build a deterministic, bounded and optionally scope-aware review queue."""
     if not 1 <= limit <= 100:
         raise ValueError("review queue limit must be between 1 and 100")
 
@@ -52,7 +53,7 @@ def build_review_queue(graph: ObservationGraph, *, limit: int = 25) -> list[Revi
     chains = {item.finding_id: item for item in build_evidence_chains(graph)}
     tasks: list[ReviewTask] = []
 
-    for hypothesis in build_hypotheses(graph, limit=100):
+    for hypothesis in build_hypotheses(graph, limit=100, scope_checker=scope_checker):
         if hypothesis.kind == "validation_gap":
             graph_finding_id = hypothesis.evidence_ids[0]
             chain = chains.get(graph_finding_id)
@@ -116,11 +117,16 @@ def build_review_queue(graph: ObservationGraph, *, limit: int = 25) -> list[Revi
 
 @router.get("/api/campaigns/{campaign_id}/review-queue")
 def campaign_review_queue(campaign_id: str, limit: int = 25):
-    from .main import assert_campaign_exists, storage
+    from .main import assert_campaign_exists, is_host_allowed, storage
 
     campaign = assert_campaign_exists(campaign_id)
     graph = load_observation_graph(storage(), campaign.id)
-    tasks = build_review_queue(graph, limit=limit)
+    rules = campaign.target.rules
+    tasks = build_review_queue(
+        graph,
+        limit=limit,
+        scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),
+    )
     return {
         "campaign_id": campaign.id,
         "tasks": [item.to_dict() for item in tasks],
@@ -130,4 +136,5 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
         },
         "read_only": True,
         "advisory_only": True,
+        "scope_aware": True,
     }
