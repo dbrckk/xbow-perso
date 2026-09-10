@@ -31,12 +31,44 @@ def test_red_team_coverage_reports_gaps_without_executing_actions():
     assert result["read_only"] is True
     assert result["safe_validation_only"] is True
     assert result["summary"]["observed_endpoints"] == 1
+    assert result["summary"]["reviewed_endpoints"] == 0
     assert result["summary"]["observed_findings"] == 1
     assert result["summary"]["independently_validated_findings"] == 0
     assert "authorization_review_pending" in result["gaps"]
     assert "input_review_pending" in result["gaps"]
     assert "independent_validation_pending" in result["gaps"]
     assert "secret" not in str(result)
+
+
+def test_endpoint_review_credit_requires_recorded_review_evidence():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    before = build_red_team_coverage(graph)
+
+    graph.add(
+        Observation(
+            "evidence:review",
+            "evidence",
+            "review-recorded",
+            "review-agent",
+            parent_ids=("endpoint:e",),
+            metadata={"review_type": "authorization_surface_review"},
+        )
+    )
+    after = build_red_team_coverage(graph)
+
+    assert before["summary"]["reviewed_endpoints"] == 0
+    assert after["summary"]["reviewed_endpoints"] == 1
+    assert after["score"] > before["score"]
 
 
 def test_red_team_coverage_improves_after_independent_evidence():
