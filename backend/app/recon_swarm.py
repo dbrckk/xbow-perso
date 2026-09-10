@@ -73,6 +73,11 @@ def recon_capabilities() -> tuple[ReconCapability, ...]:
     return _CAPABILITIES
 
 
+def _asset_host(value: str) -> str:
+    parsed = urlsplit(value if "://" in value else f"//{value}")
+    return (parsed.hostname or "").lower().rstrip(".")
+
+
 def _safe_target(value: str) -> tuple[str, str]:
     parsed = urlsplit(value)
     scheme = parsed.scheme.lower()
@@ -106,9 +111,9 @@ def build_recon_plan(
         return []
 
     observed_assets = {
-        _safe_target(item.value)[1]
+        asset_host
         for item in graph.by_kind("asset")
-        if _safe_target(item.value)[1]
+        if (asset_host := _asset_host(item.value))
     }
     if observed_assets and host not in observed_assets:
         return []
