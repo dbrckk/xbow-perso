@@ -31,20 +31,33 @@ def _ratio(numerator: int, denominator: int) -> float:
     return round(numerator / denominator, 4) if denominator else 1.0
 
 
+def _reviewed_parent_ids(graph: ObservationGraph, review_types: set[str]) -> set[str]:
+    reviewed: set[str] = set()
+    for item in graph.by_kind("evidence"):
+        if item.metadata.get("review_type") not in review_types:
+            continue
+        reviewed.update(item.parent_ids)
+    return reviewed
+
+
 def build_red_team_coverage(graph: ObservationGraph) -> dict[str, Any]:
     """Summarize bounded red-team coverage from existing evidence only.
 
-    The model is deliberately read-only. It does not generate payloads, execute
-    requests, expand scope, or bypass policy. It measures how much of the already
-    observed surface has been reviewed and independently evidenced.
+    Hypotheses are pending work and never earn coverage credit by themselves.
+    Endpoint/technology review credit requires an evidence observation explicitly
+    tagged with a supported review_type. No requests or target actions occur here.
     """
     surface = build_attack_surface(graph)
     hypotheses = build_hypotheses(graph, limit=100)
     chains = build_evidence_chains(graph)
     validation = analyze_validation_state(graph)
 
-    endpoints = surface["summary"]["valid_endpoint_count"]
-    technologies = surface["summary"]["technology_count"]
+    valid_endpoint_ids = {
+        item["id"] for item in surface["endpoints"] if item["valid"]
+    }
+    technology_ids = {item["id"] for item in surface["technologies"]}
+    endpoints = len(valid_endpoint_ids)
+    technologies = len(technology_ids)
     findings = len(validation.finding_ids)
 
     input_reviews = sum(item.kind == "input_surface_review" for item in hypotheses)
@@ -53,18 +66,14 @@ def build_red_team_coverage(graph: ObservationGraph) -> dict[str, Any]:
     validation_gaps = sum(item.kind == "validation_gap" for item in hypotheses)
     complete_chains = sum(item.complete for item in chains)
 
-    endpoint_reviewed_ids = {
-        evidence_id
-        for item in hypotheses
-        if item.kind in {"input_surface_review", "authorization_surface_review"}
-        for evidence_id in item.evidence_ids
-    }
-    technology_reviewed_ids = {
-        evidence_id
-        for item in hypotheses
-        if item.kind == "technology_surface_review"
-        for evidence_id in item.evidence_ids
-    }
+    endpoint_reviewed_ids = _reviewed_parent_ids(
+        graph,
+        {"input_surface_review", "authorization_surface_review"},
+    ) & valid_endpoint_ids
+    technology_reviewed_ids = _reviewed_parent_ids(
+        graph,
+        {"technology_surface_review"},
+    ) & technology_ids
 
     domains = (
         CoverageDomain(
@@ -131,7 +140,9 @@ def build_red_team_coverage(graph: ObservationGraph) -> dict[str, Any]:
         "gaps": gaps,
         "summary": {
             "observed_endpoints": endpoints,
+            "reviewed_endpoints": len(endpoint_reviewed_ids),
             "observed_technologies": technologies,
+            "reviewed_technologies": len(technology_reviewed_ids),
             "observed_findings": findings,
             "independently_validated_findings": len(validation.observed_independent_finding_ids),
             "complete_evidence_chains": complete_chains,
