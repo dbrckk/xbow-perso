@@ -59,15 +59,55 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
 
     result = campaign_overview(campaign.id)
 
+    assert result["target"] == {"name": "fixture", "primary_url": "https://example.test/"}
+    assert result["policy"]["authorization_reference"] == "explicit-test-authorization"
+    assert result["policy"]["automated_scanning"] is True
+    assert result["policy"]["destructive_testing"] is False
     assert result["findings"]["total"] == 1
+    assert result["findings"]["resolved"] == 0
+    assert result["findings"]["unresolved"] == 1
+    assert result["findings"]["resolution_ratio"] == 0.0
     assert result["findings"]["by_status"]["validation_required"] == 1
     assert result["validation"]["observed_independent"] == 1
     assert result["validation"]["unresolved"] == 0
     assert result["jobs"]["inflight"] == 0
+    assert result["jobs"]["terminal"] == 0
     assert result["budget"]["blocked"] is False
     assert result["reports"]["total"] == 0
+    assert result["reports"]["submission_ready"] == 0
+    assert result["reports"]["submitted"] == 0
+    assert result["activity"]["event_count"] == 0
+    assert result["activity"]["latest_event_type"] is None
     assert result["attention_required"] is False
     assert result["attention_reasons"] == []
+
+
+def test_overview_resolution_progress_tracks_terminal_findings(tmp_path, monkeypatch):
+    campaign, store = _setup(tmp_path, monkeypatch)
+    campaign.findings.append(
+        Finding(
+            id="f2",
+            title="resolved fixture",
+            severity="low",
+            asset="https://example.test",
+            summary="bounded fixture",
+            status="rejected",
+            discovered_by="scanner",
+            validated_by="independent-validator",
+        )
+    )
+    campaign.events.append({"type": "finding_validated", "at": "2026-09-10T09:00:00Z"})
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
+
+    result = campaign_overview(campaign.id)
+
+    assert result["findings"]["total"] == 2
+    assert result["findings"]["resolved"] == 1
+    assert result["findings"]["unresolved"] == 1
+    assert result["findings"]["resolution_ratio"] == 0.5
+    assert result["activity"]["event_count"] == 1
+    assert result["activity"]["latest_event_type"] == "finding_validated"
+    assert result["activity"]["latest_event_at"] == "2026-09-10T09:00:00Z"
 
 
 def test_overview_flags_unresolved_findings(tmp_path, monkeypatch):
