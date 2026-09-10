@@ -5,6 +5,7 @@ from collections import Counter
 from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface, router as attack_surface_router
+from .campaign_review_state import build_campaign_review_state
 from .campaign_risk import build_campaign_risk, router as campaign_risk_router
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .decision_consensus import build_decision_consensus, router as decision_consensus_router
@@ -63,6 +64,7 @@ def campaign_overview(campaign_id: str):
     triage = build_finding_triage(campaign.findings, graph)
     lifecycle = build_finding_lifecycle(campaign.findings, graph)
     report_readiness = build_report_readiness(campaign.findings, graph)
+    review_state = build_campaign_review_state(campaign.findings, graph)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
     review_tasks = build_review_queue(graph, scope_checker=scope_checker)
     decisions = build_red_team_decisions(
@@ -198,6 +200,7 @@ def campaign_overview(campaign_id: str):
             "report_review": sum(item.recommended_state == "review_for_report" for item in triage),
             "read_only": True,
         },
+        "review_state": review_state,
         "finding_lifecycle": {
             "total": len(lifecycle),
             "transition_allowed": sum(item.transition_allowed for item in lifecycle),
