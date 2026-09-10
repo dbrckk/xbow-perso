@@ -13,6 +13,7 @@ from .finding_correlation import correlate_findings
 from .finding_triage import build_finding_triage, router as finding_triage_router
 from .hypothesis_engine import build_hypotheses
 from .knowledge_memory import build_knowledge_snapshot
+from .learning_memory import build_learning_memory, router as learning_memory_router
 from .observation_graph import load_observation_graph
 from .planner_budget import PlannerBudget, budget_usage
 from .recon_swarm import build_recon_plan, router as recon_swarm_router
@@ -32,6 +33,7 @@ router.routes.extend(red_team_decision_router.routes)
 router.routes.extend(decision_consensus_router.routes)
 router.routes.extend(campaign_risk_router.routes)
 router.routes.extend(recon_swarm_router.routes)
+router.routes.extend(learning_memory_router.routes)
 
 
 @router.get("/api/campaigns/{campaign_id}/overview")
@@ -49,6 +51,7 @@ def campaign_overview(campaign_id: str):
 
     validation = analyze_validation_state(graph)
     knowledge = build_knowledge_snapshot(graph)
+    learning = build_learning_memory(graph)
     surface = build_attack_surface(graph, scope_checker=scope_checker)
     hypotheses = build_hypotheses(graph, scope_checker=scope_checker)
     chains = build_evidence_chains(graph)
@@ -228,6 +231,15 @@ def campaign_overview(campaign_id: str):
             "findings_in_duplicate_groups": sum(len(item.finding_ids) for item in duplicate_groups),
             "auto_merge": False,
             "read_only": True,
+        },
+        "learning_memory": {
+            "techniques": len(learning),
+            "attempts": sum(item.attempts for item in learning),
+            "successes": sum(item.successes for item in learning),
+            "failures": sum(item.failures for item in learning),
+            "highest_confidence": max((item.confidence for item in learning), default=0.0),
+            "read_only": True,
+            "evidence_backed": True,
         },
         "red_team_coverage": coverage,
         "attack_surface": {
