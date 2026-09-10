@@ -15,8 +15,7 @@ router.routes.extend(hypothesis_router.routes)
 
 def canonical_host(value: str) -> str:
     parsed = urlsplit(value if "://" in value else f"//{value}")
-    host = (parsed.hostname or value).strip().lower().rstrip(".")
-    return host
+    return (parsed.hostname or value).strip().lower().rstrip(".")
 
 
 def canonical_endpoint(value: str) -> dict[str, Any]:
@@ -48,6 +47,26 @@ def canonical_endpoint(value: str) -> dict[str, Any]:
         "parameter_names": parameter_names,
         "valid": valid,
         "error": error,
+    }
+
+
+def _safe_form(item: Any, scope_checker: Callable[[str], bool] | None) -> dict[str, Any]:
+    action = canonical_endpoint(item.value)
+    method = str(item.metadata.get("method", "GET")).upper()
+    if method not in {"GET", "POST"}:
+        method = "OTHER"
+    input_names = sorted({str(name) for name in item.metadata.get("input_names", ()) if str(name).strip()})
+    host = action["host"]
+    return {
+        "id": item.id,
+        "action": action["url"],
+        "host": host,
+        "method": method,
+        "input_names": input_names,
+        "valid": action["valid"],
+        "in_scope": scope_checker(host) if scope_checker and action["valid"] else None,
+        "source": item.source,
+        "parent_ids": list(item.parent_ids),
     }
 
 
@@ -91,6 +110,7 @@ def build_attack_surface(
             }
         )
 
+    forms = [_safe_form(item, scope_checker) for item in graph.by_kind("form")]
     technologies = [
         {
             "id": item.id,
@@ -100,11 +120,23 @@ def build_attack_surface(
         }
         for item in graph.by_kind("technology")
     ]
+    wafs = [
+        {
+            "id": item.id,
+            "name": item.value,
+            "source": item.source,
+            "confidence": float(item.metadata.get("confidence", 0.5)),
+            "parent_ids": list(item.parent_ids),
+        }
+        for item in graph.by_kind("waf")
+    ]
 
     valid_endpoints = [item for item in endpoints if item["valid"]]
+    valid_forms = [item for item in forms if item["valid"]]
     hosts = Counter(item["host"] for item in valid_endpoints if item["host"])
     schemes = Counter(item["scheme"] for item in valid_endpoints if item["scheme"])
     parameter_names = sorted({name for item in valid_endpoints for name in item["parameter_names"]})
+    form_input_names = sorted({name for item in valid_forms for name in item["input_names"]})
     unique_urls = {item["url"] for item in valid_endpoints}
     endpoint_sources = Counter(item["source"] for item in valid_endpoints)
     orphan_endpoints = [item for item in endpoints if not item["asset_parent_ids"]]
@@ -112,11 +144,14 @@ def build_attack_surface(
 
     scoped_assets = [item for item in assets if item["in_scope"] is not None]
     scoped_endpoints = [item for item in valid_endpoints if item["in_scope"] is not None]
+    scoped_forms = [item for item in valid_forms if item["in_scope"] is not None]
 
     return {
         "assets": sorted(assets, key=lambda item: (item["host"], item["id"])),
         "endpoints": sorted(endpoints, key=lambda item: (not item["valid"], item["url"], item["id"])),
+        "forms": sorted(forms, key=lambda item: (not item["valid"], item["action"], item["id"])),
         "technologies": sorted(technologies, key=lambda item: (item["name"].lower(), item["id"])),
+        "wafs": sorted(wafs, key=lambda item: (item["name"].lower(), item["id"])),
         "summary": {
             "asset_count": len(assets),
             "endpoint_count": len(endpoints),
@@ -124,17 +159,23 @@ def build_attack_surface(
             "invalid_endpoint_count": len(endpoints) - len(valid_endpoints),
             "unique_endpoint_count": len(unique_urls),
             "duplicate_endpoint_count": max(0, len(valid_endpoints) - len(unique_urls)),
+            "form_count": len(forms),
+            "valid_form_count": len(valid_forms),
             "technology_count": len(technologies),
+            "waf_count": len(wafs),
             "orphan_endpoint_count": len(orphan_endpoints),
             "host_asset_mismatch_count": len(host_asset_mismatches),
             "in_scope_asset_count": sum(item["in_scope"] is True for item in scoped_assets),
             "out_of_scope_asset_count": sum(item["in_scope"] is False for item in scoped_assets),
             "in_scope_endpoint_count": sum(item["in_scope"] is True for item in scoped_endpoints),
             "out_of_scope_endpoint_count": sum(item["in_scope"] is False for item in scoped_endpoints),
+            "in_scope_form_count": sum(item["in_scope"] is True for item in scoped_forms),
+            "out_of_scope_form_count": sum(item["in_scope"] is False for item in scoped_forms),
             "hosts": dict(sorted(hosts.items())),
             "schemes": dict(sorted(schemes.items())),
             "endpoint_sources": dict(sorted(endpoint_sources.items())),
             "parameter_names": parameter_names,
+            "form_input_names": form_input_names,
         },
         "read_only": True,
     }
