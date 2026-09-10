@@ -14,11 +14,15 @@ def test_incomplete_chain_reports_missing_support():
     chain = chains[0]
     assert chain.complete is False
     assert chain.independent_validation_observed is False
+    assert chain.source_count == 1
+    assert chain.dangling_parent_ids == ()
+    assert chain.cycle_detected is False
     assert chain.issues == (
         "missing_upstream_context",
         "missing_validation",
         "missing_independent_observed_validation",
         "missing_evidence",
+        "low_source_diversity",
     )
 
 
@@ -68,6 +72,9 @@ def test_complete_chain_correlates_ancestors_validation_and_evidence():
     assert chain.ancestor_ids == ("asset:a", "endpoint:e")
     assert chain.validation_ids == ("validation:v1",)
     assert chain.evidence_ids == ("evidence:x1",)
+    assert chain.source_count == 3
+    assert chain.dangling_parent_ids == ()
+    assert chain.cycle_detected is False
     assert chain.independent_validation_observed is True
     assert chain.issues == ()
 
@@ -106,7 +113,67 @@ def test_self_validation_keeps_chain_incomplete():
     chain = build_evidence_chains(graph)[0]
 
     assert chain.complete is False
-    assert chain.issues == ("missing_independent_observed_validation",)
+    assert chain.source_count == 1
+    assert chain.issues == (
+        "missing_independent_observed_validation",
+        "low_source_diversity",
+    )
+
+
+def test_dangling_parent_reference_is_reported():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("endpoint:missing",),
+        )
+    )
+
+    chain = build_evidence_chains(graph)[0]
+
+    assert chain.dangling_parent_ids == ("endpoint:missing",)
+    assert "dangling_parent_reference" in chain.issues
+    assert chain.complete is False
+
+
+def test_ancestry_cycle_is_detected_without_recursion_loop():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "asset:a",
+            "asset",
+            "example.test",
+            "recon",
+            parent_ids=("endpoint:e",),
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/api",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("endpoint:e",),
+        )
+    )
+
+    chain = build_evidence_chains(graph)[0]
+
+    assert chain.cycle_detected is True
+    assert "ancestry_cycle" in chain.issues
+    assert chain.complete is False
 
 
 def test_evidence_chain_route_is_exposed_and_read_only(tmp_path, monkeypatch):
@@ -137,4 +204,11 @@ def test_evidence_chain_route_is_exposed_and_read_only(tmp_path, monkeypatch):
     assert "/api/campaigns/{campaign_id}/evidence-chains" in app.openapi()["paths"]
     assert result["campaign_id"] == campaign.id
     assert result["read_only"] is True
-    assert result["summary"] == {"total": 1, "complete": 0, "incomplete": 1}
+    assert result["summary"] == {
+        "total": 1,
+        "complete": 0,
+        "incomplete": 1,
+        "cycles": 0,
+        "dangling_parent_references": 0,
+        "low_source_diversity": 1,
+    }
