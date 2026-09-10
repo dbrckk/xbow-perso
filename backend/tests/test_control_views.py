@@ -1,3 +1,4 @@
+from app.jobqueue import JobQueue
 from app.main import (
     Campaign,
     Finding,
@@ -85,7 +86,35 @@ def test_plan_view_does_not_enqueue_or_persist_decisions(tmp_path, monkeypatch):
     plan = campaign_plan(campaign.id)
 
     assert plan["read_only"] is True
+    assert plan["planner_actions"][0]["kind"] == "validate"
     assert plan["actions"][0]["kind"] == "validate"
     assert plan["agents"][0]["role"] == "validation"
     assert plan["priorities"][0]["finding_id"] == "f1"
+    assert plan["budget"]["usage"]["validations"] == 0
+    assert plan["budget"]["limits"]["max_validations"] == 25
     assert len(store.list_observations(campaign.id)) == before
+
+
+def test_plan_view_matches_validation_budget_stop(tmp_path, monkeypatch):
+    store, campaign = _configure(tmp_path, monkeypatch)
+    jobs = JobQueue()
+    for index in range(25):
+        jobs.enqueue(
+            campaign.id,
+            "independent_validation",
+            {"campaign_id": campaign.id, "finding_id": f"historical-{index}", "asset": "https://example.test"},
+            dedupe_key=f"historical-validation:{index}",
+        )
+
+    before_observations = len(store.list_observations(campaign.id))
+    before_jobs = jobs.campaign_job_counts(campaign.id)
+
+    plan = campaign_plan(campaign.id)
+
+    assert plan["planner_actions"][0]["kind"] == "validate"
+    assert plan["actions"][0]["kind"] == "stop"
+    assert plan["actions"][0]["reason"] == "validation budget exhausted"
+    assert plan["agents"][0]["role"] == "control"
+    assert plan["budget"]["usage"]["validations"] == 25
+    assert jobs.campaign_job_counts(campaign.id) == before_jobs
+    assert len(store.list_observations(campaign.id)) == before_observations
