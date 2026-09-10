@@ -21,6 +21,8 @@ class FindingLifecycleAdvice:
     transition_allowed: bool
     prerequisites: tuple[str, ...]
     human_decision_required: bool
+    graph_observed: bool
+    evidence_chain_integrity_ok: bool
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -36,6 +38,7 @@ def build_finding_lifecycle(findings: list[Any], graph: ObservationGraph) -> lis
     """
     validation = analyze_validation_state(graph)
     chains = {item.finding_id: item for item in build_evidence_chains(graph)}
+    observed_finding_ids = {item.id for item in graph.by_kind("finding")}
     duplicate_ids = {
         finding_id
         for group in correlate_findings(findings)
@@ -48,9 +51,15 @@ def build_finding_lifecycle(findings: list[Any], graph: ObservationGraph) -> lis
         finding_id = str(finding.id)
         graph_id = f"finding:{finding_id}"
         current = str(finding.status)
+        graph_observed = graph_id in observed_finding_ids
         independent = graph_id in validation.observed_independent_finding_ids
         chain = chains.get(graph_id)
         chain_complete = bool(chain and chain.complete)
+        chain_integrity_ok = bool(
+            chain
+            and not chain.cycle_detected
+            and not chain.dangling_parent_ids
+        )
         duplicate = finding_id in duplicate_ids
 
         prerequisites: list[str] = []
@@ -95,6 +104,8 @@ def build_finding_lifecycle(findings: list[Any], graph: ObservationGraph) -> lis
                 transition_allowed=allowed,
                 prerequisites=tuple(prerequisites),
                 human_decision_required=human_required,
+                graph_observed=graph_observed,
+                evidence_chain_integrity_ok=chain_integrity_ok,
             )
         )
 
@@ -115,6 +126,11 @@ def campaign_finding_lifecycle(campaign_id: str):
             "total": len(advice),
             "transition_allowed": sum(item.transition_allowed for item in advice),
             "human_decision_required": sum(item.human_decision_required for item in advice),
+            "graph_observed": sum(item.graph_observed for item in advice),
+            "graph_missing": sum(not item.graph_observed for item in advice),
+            "evidence_chain_integrity_ok": sum(
+                item.evidence_chain_integrity_ok for item in advice
+            ),
         },
         "read_only": True,
         "advisory_only": True,
