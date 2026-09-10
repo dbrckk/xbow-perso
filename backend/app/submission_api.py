@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
@@ -38,6 +39,30 @@ def _save(campaign, version: int) -> None:
     from .main import save_campaign
 
     save_campaign(campaign, expected_version=version)
+
+
+@router.get("/api/campaigns/{campaign_id}/reports/submission-states")
+def list_submission_states(campaign_id: str):
+    campaign, _version, store = _context(campaign_id)
+    report_ids = [
+        artifact["id"]
+        for artifact in store.list_artifacts(campaign.id)
+        if artifact.get("kind") == "report"
+    ]
+    states = [
+        submission_status(campaign, _verified_report(campaign, store, artifact_id)).to_dict()
+        for artifact_id in report_ids
+    ]
+    counts = Counter(item["state"] for item in states)
+    return {
+        "campaign_id": campaign.id,
+        "reports": states,
+        "counts": {
+            state: counts.get(state, 0)
+            for state in ("draft", "review_required", "approved", "submitted")
+        },
+        "total": len(states),
+    }
 
 
 @router.get("/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state")
