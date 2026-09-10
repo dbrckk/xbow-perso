@@ -35,3 +35,21 @@ def test_core_control_routes_are_present_once_in_openapi():
         "/api/campaigns/{campaign_id}/report-readiness",
     }
     assert expected <= set(schema["paths"])
+
+
+def test_runtime_routes_do_not_duplicate_method_and_path():
+    seen = set()
+    duplicates = []
+
+    for route in app.routes:
+        path = getattr(route, "path", None)
+        methods = getattr(route, "methods", None)
+        if not path or not methods:
+            continue
+        for method in sorted(methods):
+            key = (method.upper(), path)
+            if key in seen:
+                duplicates.append(key)
+            seen.add(key)
+
+    assert duplicates == []
