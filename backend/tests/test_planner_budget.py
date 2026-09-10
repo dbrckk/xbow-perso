@@ -1,3 +1,5 @@
+import pytest
+
 from app.jobqueue import JobQueue
 from app.observation_graph import Observation, ObservationGraph, PlannedAction
 from app.planner_budget import PlannerBudget, apply_budget, budget_usage, validation_batch_limit
@@ -212,3 +214,47 @@ def test_stop_action_is_never_blocked_by_job_budgets(tmp_path):
 
     assert action == requested
     assert usage.blocked_actions["report"] == "in-flight job budget exhausted"
+
+
+def test_local_inventory_is_not_blocked_by_failed_job_budget(tmp_path):
+    queue = JobQueue(str(tmp_path / "db.sqlite3"))
+    graph = ObservationGraph()
+    limits = PlannerBudget(max_failed_jobs=1)
+    queued = queue.enqueue(
+        "c1",
+        "report",
+        {"campaign_id": "c1", "platform": "failed"},
+        max_attempts=1,
+        dedupe_key="failed:local-test",
+    )
+    claimed = queue.claim("worker-1")
+    assert claimed is not None and claimed["id"] == queued["id"]
+    queue.finish(claimed["id"], "worker-1", False, "expected test failure")
+
+    requested = PlannedAction("inventory", "example.test", "seed target", 100)
+    action, usage = apply_budget(requested, graph, queue, "c1", limits)
+
+    assert action == requested
+    assert usage.blocked_actions["scan"] == "failed job budget exhausted"
+
+
+def test_validation_batch_is_zero_when_no_inflight_capacity_remains(tmp_path):
+    queue = JobQueue(str(tmp_path / "db.sqlite3"))
+    graph = ObservationGraph()
+    limits = PlannerBudget(max_inflight_jobs=1)
+    queue.enqueue("c1", "report", {"platform": "generic"}, dedupe_key="report:capacity")
+
+    usage = budget_usage(graph, queue, "c1", limits)
+
+    assert usage.remaining_inflight_jobs == 0
+    assert validation_batch_limit(usage, limits) == 0
+
+
+def test_budget_rejects_non_positive_limits():
+    with pytest.raises(ValueError, match="positive"):
+        PlannerBudget(max_failed_jobs=0)
+
+
+def test_budget_rejects_validation_batch_larger_than_total_limit():
+    with pytest.raises(ValueError, match="max_validation_batch"):
+        PlannerBudget(max_validations=2, max_validation_batch=3)
