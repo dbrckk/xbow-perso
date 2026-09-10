@@ -186,10 +186,16 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
 
 
 def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[str, Any]:
+    """Return deterministic worker input suitable for queue idempotency.
+
+    The audit receipt keeps its timestamp in campaign events/API responses, but
+    transient timestamps must never enter a deduplicated queue payload.
+    """
+    stable_receipt = {key: value for key, value in receipt.items() if key != "timestamp"}
     return {
         "campaign_id": campaign.id,
         "target": str(campaign.target.primary_url),
-        "policy": receipt,
+        "policy": stable_receipt,
         "rules": {
             "allowed_targets": campaign.target.rules.allowed_targets,
             "denied_targets": campaign.target.rules.denied_targets,
