@@ -5,6 +5,7 @@ import json
 from urllib.parse import urlparse
 
 from .agent_registry import agent_for_action
+from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
 from .main import Campaign, policy_receipt, sanitized_scan_payload
@@ -195,6 +196,7 @@ def advance_campaign(
     queue: JobQueue,
     store: Storage,
     budget: PlannerBudget | None = None,
+    runtime_limit: CampaignRuntimeLimit | None = None,
 ) -> dict:
     """Advance one authorized campaign toward its next bounded planner action.
 
@@ -202,10 +204,23 @@ def advance_campaign(
     as a known asset/endpoint. Network actions are delegated only through existing
     policy-checked queue job kinds and are attributed to a registered agent role.
     Durable queue counts and planner history cap scans, validation fan-out, reports,
-    and total planner decisions so autonomous campaigns fail closed when exhausted.
+    total planner decisions, and wall-clock runtime so autonomous campaigns fail
+    closed when any configured budget is exhausted.
     """
     planner = AdaptivePlanner()
     limits = budget or PlannerBudget()
+    runtime = runtime_status(campaign.created_at, runtime_limit)
+    if runtime.exhausted:
+        graph = _load_graph(store, campaign.id)
+        return _result(
+            PlannedAction("stop", str(campaign.target.primary_url), runtime.reason or "campaign runtime budget exhausted", 100),
+            [],
+            campaign=campaign,
+            graph=graph,
+            store=store,
+            queue=queue,
+            budget=limits,
+        )
 
     for _ in range(3):
         graph = _load_graph(store, campaign.id)
