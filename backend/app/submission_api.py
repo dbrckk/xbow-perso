@@ -5,6 +5,7 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException
 
+from .campaign_overview import router as overview_router
 from .report_approval import (
     approval_event_from_storage,
     approval_status_from_storage,
@@ -14,6 +15,7 @@ from .storage import ArtifactIntegrityError
 from .submission_state import assert_submission_allowed, submission_event, submission_status
 
 router = APIRouter()
+router.routes.extend(overview_router.routes)
 
 
 def _context(campaign_id: str):
