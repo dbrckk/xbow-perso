@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, Callable
 
 from fastapi import APIRouter
 
@@ -40,31 +40,52 @@ def _reviewed_parent_ids(graph: ObservationGraph, review_types: set[str]) -> set
     return reviewed
 
 
-def build_red_team_coverage(graph: ObservationGraph) -> dict[str, Any]:
-    """Summarize bounded red-team coverage from existing evidence only.
-
-    Hypotheses are pending work and never earn coverage credit by themselves.
-    Endpoint/technology review credit requires an evidence observation explicitly
-    tagged with a supported review_type. No requests or target actions occur here.
-    """
-    surface = build_attack_surface(graph)
-    hypotheses = build_hypotheses(graph, limit=100)
+def build_red_team_coverage(
+    graph: ObservationGraph,
+    *,
+    scope_checker: Callable[[str], bool] | None = None,
+) -> dict[str, Any]:
+    """Summarize bounded, evidence-backed and optionally scope-aware coverage."""
+    surface = build_attack_surface(graph, scope_checker=scope_checker)
+    hypotheses = build_hypotheses(graph, limit=100, scope_checker=scope_checker)
     chains = build_evidence_chains(graph)
     validation = analyze_validation_state(graph)
 
     valid_endpoint_ids = {
-        item["id"] for item in surface["endpoints"] if item["valid"]
+        item["id"]
+        for item in surface["endpoints"]
+        if item["valid"] and item["in_scope"] is not False
     }
-    technology_ids = {item["id"] for item in surface["technologies"]}
+    technology_ids = {
+        item["id"]
+        for item in surface["technologies"]
+        if scope_checker is None
+        or any(
+            hypothesis.evidence_ids == (item["id"],)
+            for hypothesis in hypotheses
+            if hypothesis.kind == "technology_surface_review"
+        )
+    }
     endpoints = len(valid_endpoint_ids)
     technologies = len(technology_ids)
-    findings = len(validation.finding_ids)
+
+    in_scope_finding_ids = {
+        hypothesis.evidence_ids[0]
+        for hypothesis in hypotheses
+        if hypothesis.kind == "validation_gap"
+    }
+    if scope_checker is None:
+        finding_ids = set(validation.finding_ids)
+    else:
+        finding_ids = set(validation.observed_independent_finding_ids) | in_scope_finding_ids
+    findings = len(finding_ids)
 
     input_reviews = sum(item.kind == "input_surface_review" for item in hypotheses)
     authorization_reviews = sum(item.kind == "authorization_surface_review" for item in hypotheses)
     technology_reviews = sum(item.kind == "technology_surface_review" for item in hypotheses)
     validation_gaps = sum(item.kind == "validation_gap" for item in hypotheses)
-    complete_chains = sum(item.complete for item in chains)
+    complete_chain_ids = {item.finding_id for item in chains if item.complete}
+    complete_chains = len(complete_chain_ids & finding_ids)
 
     endpoint_reviewed_ids = _reviewed_parent_ids(
         graph,
@@ -74,6 +95,8 @@ def build_red_team_coverage(graph: ObservationGraph) -> dict[str, Any]:
         graph,
         {"technology_surface_review"},
     ) & technology_ids
+    validated_finding_ids = set(validation.observed_independent_finding_ids) & finding_ids
+    attempted_finding_ids = set(validation.attempted_finding_ids) & finding_ids
 
     domains = (
         CoverageDomain(
@@ -95,18 +118,18 @@ def build_red_team_coverage(graph: ObservationGraph) -> dict[str, Any]:
         CoverageDomain(
             name="finding_validation",
             observed=findings,
-            reviewed=len(validation.attempted_finding_ids),
-            validated=len(validation.observed_independent_finding_ids),
+            reviewed=len(attempted_finding_ids),
+            validated=len(validated_finding_ids),
             gaps=validation_gaps,
-            score=_ratio(len(validation.observed_independent_finding_ids), findings),
+            score=_ratio(len(validated_finding_ids), findings),
         ),
         CoverageDomain(
             name="evidence_quality",
-            observed=len(chains),
-            reviewed=len(chains),
+            observed=findings,
+            reviewed=findings,
             validated=complete_chains,
-            gaps=max(0, len(chains) - complete_chains),
-            score=_ratio(complete_chains, len(chains)),
+            gaps=max(0, findings - complete_chains),
+            score=_ratio(complete_chains, findings),
         ),
     )
 
@@ -131,7 +154,7 @@ def build_red_team_coverage(graph: ObservationGraph) -> dict[str, Any]:
         gaps.append("technology_review_pending")
     if validation_gaps:
         gaps.append("independent_validation_pending")
-    if len(chains) - complete_chains:
+    if findings - complete_chains:
         gaps.append("evidence_chain_incomplete")
 
     return {
@@ -144,22 +167,27 @@ def build_red_team_coverage(graph: ObservationGraph) -> dict[str, Any]:
             "observed_technologies": technologies,
             "reviewed_technologies": len(technology_reviewed_ids),
             "observed_findings": findings,
-            "independently_validated_findings": len(validation.observed_independent_finding_ids),
+            "independently_validated_findings": len(validated_finding_ids),
             "complete_evidence_chains": complete_chains,
             "pending_hypotheses": len(hypotheses),
         },
         "read_only": True,
         "safe_validation_only": True,
+        "scope_aware": scope_checker is not None,
     }
 
 
 @router.get("/api/campaigns/{campaign_id}/red-team-coverage")
 def campaign_red_team_coverage(campaign_id: str):
-    from .main import assert_campaign_exists, storage
+    from .main import assert_campaign_exists, is_host_allowed, storage
 
     campaign = assert_campaign_exists(campaign_id)
     graph = load_observation_graph(storage(), campaign.id)
+    rules = campaign.target.rules
     return {
         "campaign_id": campaign.id,
-        **build_red_team_coverage(graph),
+        **build_red_team_coverage(
+            graph,
+            scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),
+        ),
     }
