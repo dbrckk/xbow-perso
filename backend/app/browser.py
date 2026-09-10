@@ -15,7 +15,7 @@ from .storage import CampaignConflictError, Storage
 from .submission_api import router as submission_router
 
 router = APIRouter()
-router.include_router(submission_router)
+router.routes.extend(submission_router.routes)
 
 
 class BrowserPolicyError(RuntimeError):
