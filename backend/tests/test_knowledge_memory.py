@@ -81,6 +81,27 @@ def test_unknown_validation_outcome_fails_closed():
     assert confidence.score == 0.35
 
 
+def test_self_validation_receives_no_confidence_credit():
+    graph = _finding_graph()
+    graph.add(Observation("v1", "validation", "observed", "scanner", parent_ids=("f1",)))
+    graph.add(
+        Observation(
+            "e1",
+            "evidence",
+            "artifact-1",
+            "scanner",
+            parent_ids=("v1",),
+            metadata={"artifact_kind": "validation"},
+        )
+    )
+
+    confidence = build_knowledge_snapshot(graph).finding_confidence[0]
+
+    assert confidence.score == 0.35
+    assert confidence.validation_count == 1
+    assert confidence.evidence_count == 0
+
+
 def test_rank_findings_prioritizes_severity():
     graph = ObservationGraph()
     findings = [
