@@ -48,11 +48,17 @@ def configured_api_token() -> str:
 
 def presented_api_token(request: Request) -> str | None:
     authorization = request.headers.get("authorization", "").strip()
+    fallback = request.headers.get("x-api-key", "").strip()
+
+    if authorization and fallback:
+        raise AuthError(400, "Multiple authentication mechanisms are not allowed")
+
     if authorization:
         scheme, separator, value = authorization.partition(" ")
         if separator and scheme.lower() == "bearer" and value.strip():
             return value.strip()
-    fallback = request.headers.get("x-api-key", "").strip()
+        return None
+
     return fallback or None
 
 
