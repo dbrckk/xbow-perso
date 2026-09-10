@@ -4,6 +4,7 @@ from collections import Counter
 
 from fastapi import APIRouter
 
+from .attack_surface import router as attack_surface_router
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
@@ -13,6 +14,7 @@ from .submission_state import submission_status
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
+router.routes.extend(attack_surface_router.routes)
 
 
 @router.get("/api/campaigns/{campaign_id}/overview")
