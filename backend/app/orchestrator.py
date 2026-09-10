@@ -11,6 +11,7 @@ from .main import Campaign, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .planner_budget import PlannerBudget, apply_budget, budget_usage, validation_batch_limit
 from .storage import Storage
+from .validation_state import observed_independent_finding_ids
 
 
 def _stable_id(prefix: str, *parts: str) -> str:
@@ -67,14 +68,7 @@ def _seed_primary_target(store: Storage, campaign: Campaign) -> None:
 
 
 def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
-    finding_by_id = {item.id: item for item in graph.by_kind("finding")}
-    observed_validated = {
-        parent_id
-        for validation in graph.by_kind("validation")
-        if validation.value == "observed"
-        for parent_id in validation.parent_ids
-        if parent_id in finding_by_id and validation.source != finding_by_id[parent_id].source
-    }
+    observed_validated = observed_independent_finding_ids(graph)
     pending = [
         finding
         for finding in campaign.findings
