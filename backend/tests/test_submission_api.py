@@ -102,7 +102,7 @@ def test_revocation_reblocks_submission_state(tmp_path, monkeypatch):
 
     status = submission_api.get_submission_state(campaign.id, artifact["id"])
 
-    assert status["state"] == "draft"
+    assert status["state"] == "review_required"
     assert status["approved"] is False
 
 
