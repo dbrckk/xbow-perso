@@ -5,10 +5,12 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .finding_correlation import router as correlation_router
 from .observation_graph import ObservationGraph, load_observation_graph
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
+router.routes.extend(correlation_router.routes)
 
 
 @dataclass(frozen=True)
