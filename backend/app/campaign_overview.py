@@ -107,8 +107,6 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("out_of_scope_observations")
     if validation.unresolved_finding_ids:
         attention_reasons.append("unresolved_validation")
-    if coverage["gaps"]:
-        attention_reasons.append("coverage_gaps")
     if consensus.blocked:
         attention_reasons.append("decision_consensus_blocked")
     if consensus.contradictory:
