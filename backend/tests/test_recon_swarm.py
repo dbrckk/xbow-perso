@@ -116,3 +116,16 @@ def test_recon_plan_route_is_exposed_and_scope_aware(tmp_path, monkeypatch):
     assert result["bounded"] is True
     assert result["scope_aware"] is True
     assert result["execution"] == "advisory_only"
+
+
+def test_recon_plan_refuses_unobserved_host_when_asset_inventory_exists():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+
+    tasks = build_recon_plan(
+        "https://other.test",
+        graph,
+        scope_checker=lambda host: host in {"example.test", "other.test"},
+    )
+
+    assert tasks == []
