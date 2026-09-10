@@ -170,3 +170,39 @@ def test_health_endpoints_bypass_control_api_auth(monkeypatch):
 
     assert result is sentinel
     assert called is True
+
+
+def test_multiple_authentication_headers_fail_closed(monkeypatch):
+    clear_secret_env(monkeypatch)
+    token = "ambiguous-token-" + "x" * 32
+    monkeypatch.setenv("XBOW_API_TOKEN", token)
+
+    with pytest.raises(AuthError) as exc:
+        require_api_token(
+            request(
+                {
+                    "Authorization": f"Bearer {token}",
+                    "X-API-Key": token,
+                }
+            )
+        )
+
+    assert exc.value.status_code == 400
+
+
+def test_malformed_authorization_does_not_fall_back_to_api_key(monkeypatch):
+    clear_secret_env(monkeypatch)
+    token = "fallback-token-" + "y" * 32
+    monkeypatch.setenv("XBOW_API_TOKEN", token)
+
+    with pytest.raises(AuthError) as exc:
+        require_api_token(
+            request(
+                {
+                    "Authorization": "Basic ignored",
+                    "X-API-Key": token,
+                }
+            )
+        )
+
+    assert exc.value.status_code == 400
