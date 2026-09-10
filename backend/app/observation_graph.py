@@ -134,10 +134,42 @@ class AdaptivePlanner:
             ]
 
         if findings and len(observed_validated_finding_ids) >= len(findings):
+            campaign_findings = list(getattr(campaign, "findings", ()))
+            if not campaign_findings:
+                return [
+                    PlannedAction(
+                        "stop",
+                        host,
+                        "observation findings are missing campaign finding state",
+                        100,
+                    )
+                ]
+
+            unresolved_findings = [
+                item
+                for item in campaign_findings
+                if getattr(item, "status", None) not in {"confirmed", "rejected"}
+            ]
+            if unresolved_findings:
+                return [
+                    PlannedAction(
+                        "stop",
+                        host,
+                        "observed findings await explicit confirmation or rejection",
+                        100,
+                    )
+                ]
+
+            confirmed_findings = [
+                item for item in campaign_findings if getattr(item, "status", None) == "confirmed"
+            ]
+            if not confirmed_findings:
+                return [PlannedAction("stop", host, "all findings were rejected; no report required", 100)]
+
             report_exists = any(item.metadata.get("artifact_kind") == "report" for item in evidence)
             if report_exists:
-                return [PlannedAction("stop", host, "validated findings already have a generated report", 100)]
-            return [PlannedAction("report", host, "all recorded findings have observed independent validation", 70)]
+                return [PlannedAction("stop", host, "confirmed findings already have a generated report", 100)]
+            return [PlannedAction("report", host, "confirmed findings have observed independent validation", 70)]
 
         if assets and not endpoints:
             return [PlannedAction("crawl", host, "known assets have no endpoint inventory", 90)]
