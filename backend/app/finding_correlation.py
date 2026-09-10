@@ -55,22 +55,25 @@ class FindingCorrelation:
 
 
 def correlate_findings(findings: list[Any]) -> list[FindingCorrelation]:
-    """Group likely duplicate findings without mutating or auto-merging them."""
-    grouped: dict[tuple[str, str | None, str | None], list[Any]] = {}
+    """Group likely duplicates conservatively without auto-merging records."""
+    grouped: dict[tuple[str, str | None, str | None, str | None], list[Any]] = {}
     for finding in findings:
         asset = _canonical_url(str(finding.asset)) or str(finding.asset).strip().lower()
         endpoint = _canonical_url(finding.endpoint)
         cwe = str(finding.cwe).strip().upper() if finding.cwe else None
-        grouped.setdefault((asset, endpoint, cwe), []).append(finding)
+        title = str(finding.title).strip().lower() if finding.title else None
+        strong_identity = cwe or title
+        grouped.setdefault((asset, endpoint, cwe, strong_identity), []).append(finding)
 
     correlations = []
-    for (asset, endpoint, cwe), items in grouped.items():
+    for (asset, endpoint, cwe, strong_identity), items in grouped.items():
         ordered = sorted(items, key=lambda item: str(item.id))
         highest = max(
             (str(item.severity) for item in ordered),
             key=lambda value: _SEVERITY_ORDER.get(value, -1),
         )
-        key = "|".join((asset, endpoint or "-", cwe or "-"))
+        key = "|".join((asset, endpoint or "-", cwe or "-", strong_identity or "-"))
+        duplicate_candidate = len(ordered) > 1 and bool(endpoint or cwe)
         correlations.append(
             FindingCorrelation(
                 key=key,
@@ -79,13 +82,17 @@ def correlate_findings(findings: list[Any]) -> list[FindingCorrelation]:
                 endpoint=endpoint,
                 cwe=cwe,
                 highest_severity=highest,
-                duplicate_candidate=len(ordered) > 1,
+                duplicate_candidate=duplicate_candidate,
             )
         )
 
     return sorted(
         correlations,
-        key=lambda item: (not item.duplicate_candidate, -_SEVERITY_ORDER.get(item.highest_severity, -1), item.key),
+        key=lambda item: (
+            not item.duplicate_candidate,
+            -_SEVERITY_ORDER.get(item.highest_severity, -1),
+            item.key,
+        ),
     )
 
 
