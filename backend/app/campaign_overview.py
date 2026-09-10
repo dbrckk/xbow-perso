@@ -28,6 +28,7 @@ def campaign_overview(campaign_id: str):
     budget = budget_usage(graph, jobs, campaign.id, limits)
 
     finding_counts = Counter(str(item.status) for item in campaign.findings)
+    resolved_findings = finding_counts.get("confirmed", 0) + finding_counts.get("rejected", 0)
     report_states = Counter()
     report_integrity_errors = 0
     reports = []
@@ -56,13 +57,35 @@ def campaign_overview(campaign_id: str):
     if job_statuses["failed"]:
         attention_reasons.append("failed_jobs")
 
+    latest_event = campaign.events[-1] if campaign.events else None
+    rules = campaign.target.rules
+    total_findings = len(campaign.findings)
+
     return {
         "campaign_id": campaign.id,
         "version": version,
         "state": campaign.state.value,
         "updated_at": campaign.updated_at,
+        "target": {
+            "name": campaign.target.name,
+            "primary_url": str(campaign.target.primary_url),
+        },
+        "policy": {
+            "authorization_reference": rules.authorization_reference,
+            "automated_scanning": rules.automated_scanning,
+            "max_requests_per_second": rules.max_requests_per_second,
+            "allowed_target_count": len(rules.allowed_targets),
+            "denied_target_count": len(rules.denied_targets),
+            "destructive_testing": rules.destructive_testing,
+            "denial_of_service": rules.denial_of_service,
+            "social_engineering": rules.social_engineering,
+            "credential_attacks": rules.credential_attacks,
+        },
         "findings": {
-            "total": len(campaign.findings),
+            "total": total_findings,
+            "resolved": resolved_findings,
+            "unresolved": max(0, total_findings - resolved_findings),
+            "resolution_ratio": round(resolved_findings / total_findings, 4) if total_findings else 1.0,
             "by_status": {
                 state: finding_counts.get(state, 0)
                 for state in ("candidate", "validation_required", "confirmed", "rejected")
@@ -81,6 +104,7 @@ def campaign_overview(campaign_id: str):
             "by_kind": job_kinds,
             "by_status": job_statuses,
             "inflight": job_statuses["queued"] + job_statuses["running"],
+            "terminal": job_statuses["completed"] + job_statuses["failed"] + job_statuses["cancelled"],
         },
         "budget": {
             "limits": limits.to_dict(),
@@ -92,10 +116,17 @@ def campaign_overview(campaign_id: str):
             "total": len(reports) + report_integrity_errors,
             "verified": len(reports),
             "integrity_errors": report_integrity_errors,
+            "submission_ready": report_states.get("approved", 0),
+            "submitted": report_states.get("submitted", 0),
             "by_state": {
                 state: report_states.get(state, 0)
                 for state in ("draft", "review_required", "approved", "submitted")
             },
+        },
+        "activity": {
+            "event_count": len(campaign.events),
+            "latest_event_type": latest_event.get("type") if latest_event else None,
+            "latest_event_at": latest_event.get("at") if latest_event else None,
         },
         "attention_required": bool(attention_reasons),
         "attention_reasons": attention_reasons,
