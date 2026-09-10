@@ -23,16 +23,18 @@ def test_live_is_dependency_independent():
     assert result == {"ok": True, "service": "xbow-perso", "version": main.app.version}
 
 
-def test_ready_reports_all_dependencies(monkeypatch):
+def test_ready_reports_status_without_dependency_details(monkeypatch):
     monkeypatch.setattr(
         main,
         "dependency_readiness",
-        lambda: {"ok": True, "database": {"ok": True}, "artifacts": {"ok": True}},
+        lambda: {
+            "ok": True,
+            "database": {"ok": True, "jobs": 42},
+            "artifacts": {"ok": True, "path": "/sensitive/internal/path"},
+        },
     )
     result = main.ready()
-    assert result["ok"] is True
-    assert result["database"]["ok"] is True
-    assert result["artifacts"]["ok"] is True
+    assert result == {"ok": True, "service": "xbow-perso", "version": main.app.version}
 
 
 def test_ready_returns_503_when_dependency_unhealthy(monkeypatch):
@@ -46,11 +48,10 @@ def test_ready_returns_503_when_dependency_unhealthy(monkeypatch):
     assert result.status_code == 503
 
 
-def test_health_reports_database_ok(monkeypatch):
+def test_health_reports_status_without_database_details(monkeypatch):
     monkeypatch.setattr(main, "queue", lambda: HealthyQueue())
     result = main.health()
-    assert result["ok"] is True
-    assert result["database"]["database"] == "ok"
+    assert result == {"ok": True, "service": "xbow-perso", "version": main.app.version}
 
 
 def test_health_returns_503_when_database_unhealthy(monkeypatch):
