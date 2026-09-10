@@ -17,6 +17,7 @@ def test_budget_usage_reads_durable_campaign_jobs(tmp_path):
     assert usage.scans == 0
     assert usage.inflight_jobs == 2
     assert usage.remaining_validations == 24
+    assert usage.blocked_actions == {}
 
 
 def test_validate_action_stops_when_validation_budget_is_exhausted(tmp_path):
@@ -43,6 +44,7 @@ def test_validate_action_stops_when_validation_budget_is_exhausted(tmp_path):
     assert action.reason == "validation budget exhausted"
     assert usage.exhausted is True
     assert usage.remaining_validations == 0
+    assert usage.blocked_actions["validate"] == "validation budget exhausted"
 
 
 def test_scan_limit_does_not_block_unrelated_report_action(tmp_path):
@@ -62,6 +64,7 @@ def test_scan_limit_does_not_block_unrelated_report_action(tmp_path):
     assert action.kind == "report"
     assert usage.remaining_scans == 0
     assert usage.exhausted is False
+    assert usage.blocked_actions == {"scan": "scan budget exhausted"}
 
 
 def test_total_action_budget_fails_closed(tmp_path):
@@ -97,6 +100,7 @@ def test_total_action_budget_fails_closed(tmp_path):
     assert action.reason == "planner action budget exhausted"
     assert usage.actions == 1
     assert usage.exhausted is True
+    assert set(usage.blocked_actions) == {"inventory", "crawl", "scan", "validate", "report"}
 
 
 def test_validation_batch_is_bounded_by_batch_and_remaining_budget(tmp_path):
@@ -135,6 +139,11 @@ def test_inflight_budget_stops_new_network_work(tmp_path):
     assert action.reason == "in-flight job budget exhausted"
     assert usage.inflight_jobs == 2
     assert usage.remaining_inflight_jobs == 0
+    assert usage.blocked_actions == {
+        "scan": "in-flight job budget exhausted",
+        "validate": "in-flight job budget exhausted",
+        "report": "in-flight job budget exhausted",
+    }
 
 
 def test_validation_batch_respects_inflight_capacity(tmp_path):
