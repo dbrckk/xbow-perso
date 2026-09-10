@@ -129,3 +129,17 @@ def test_recon_plan_refuses_unobserved_host_when_asset_inventory_exists():
     )
 
     assert tasks == []
+
+
+def test_recon_plan_accepts_matching_bare_asset_host():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "Example.TEST.", "inventory"))
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert tasks
+    assert all(item.target == "https://example.test/" for item in tasks)
