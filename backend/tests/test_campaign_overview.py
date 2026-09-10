@@ -149,3 +149,26 @@ def test_overview_does_not_flag_runtime_exhaustion_for_terminal_campaign(tmp_pat
     assert result["runtime"]["status"]["exhausted"] is True
     assert result["runtime"]["terminal_campaign"] is True
     assert "runtime_exhausted" not in result["attention_reasons"]
+
+
+def test_overview_flags_campaign_finding_missing_from_graph(tmp_path, monkeypatch):
+    campaign, _store = _setup(tmp_path, monkeypatch)
+    result = campaign_overview(campaign.id)
+    assert result["finding_lifecycle"]["graph_missing"] == 1
+    assert "finding_graph_mismatch" in result["attention_reasons"]
+
+
+def test_overview_reports_human_review_readiness_after_complete_validation(tmp_path, monkeypatch):
+    campaign, store = _setup(tmp_path, monkeypatch)
+    campaign.findings[0].status = "confirmed"
+    campaign.findings[0].validated_by = "human-reviewer"
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
+    store.put_observation(campaign.id, Observation("asset:a", "asset", "example.test", "recon").to_dict())
+    store.put_observation(campaign.id, Observation("finding:f1", "finding", "f1", "scanner", parent_ids=("asset:a",)).to_dict())
+    store.put_observation(campaign.id, Observation("validation:v1", "validation", "observed", "independent-validator", parent_ids=("finding:f1",)).to_dict())
+    store.put_observation(campaign.id, Observation("evidence:e1", "evidence", "artifact-reference", "independent-validator", parent_ids=("validation:v1",)).to_dict())
+    result = campaign_overview(campaign.id)
+    assert result["finding_lifecycle"]["transition_allowed"] == 1
+    assert result["finding_lifecycle"]["human_decision_required"] == 1
+    assert result["report_readiness"]["ready_for_human_review"] == 1
+    assert result["report_readiness"]["blocked"] == 0
