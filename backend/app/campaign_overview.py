@@ -35,7 +35,9 @@ def campaign_overview(campaign_id: str):
     jobs = queue()
     graph = load_observation_graph(store, campaign.id)
     rules = campaign.target.rules
-    scope_checker = lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets)
+
+    def scope_checker(host: str) -> bool:
+        return is_host_allowed(host, rules.allowed_targets, rules.denied_targets)
 
     validation = analyze_validation_state(graph)
     knowledge = build_knowledge_snapshot(graph)
