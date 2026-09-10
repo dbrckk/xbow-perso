@@ -4,6 +4,7 @@ from collections import Counter
 
 from fastapi import APIRouter
 
+from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
 from .planner_budget import PlannerBudget, budget_usage
@@ -26,6 +27,8 @@ def campaign_overview(campaign_id: str):
     knowledge = build_knowledge_snapshot(graph)
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
+    runtime_limit = CampaignRuntimeLimit()
+    runtime = runtime_status(campaign.created_at, runtime_limit)
 
     finding_counts = Counter(str(item.status) for item in campaign.findings)
     resolved_findings = finding_counts.get("confirmed", 0) + finding_counts.get("rejected", 0)
@@ -47,11 +50,14 @@ def campaign_overview(campaign_id: str):
     job_kinds = jobs.campaign_job_counts(campaign.id)
     job_statuses = jobs.campaign_job_status_counts(campaign.id)
     blocked = dict(budget.blocked_actions)
+    terminal_campaign = campaign.state.value in {"completed", "failed", "cancelled"}
     attention_reasons = []
     if report_integrity_errors:
         attention_reasons.append("report_integrity_error")
     if blocked:
         attention_reasons.append("budget_blocked")
+    if runtime.exhausted and not terminal_campaign:
+        attention_reasons.append("runtime_exhausted")
     if validation.unresolved_finding_ids:
         attention_reasons.append("unresolved_validation")
     if job_statuses["failed"]:
@@ -80,6 +86,11 @@ def campaign_overview(campaign_id: str):
             "denial_of_service": rules.denial_of_service,
             "social_engineering": rules.social_engineering,
             "credential_attacks": rules.credential_attacks,
+        },
+        "runtime": {
+            "limit": runtime_limit.to_dict(),
+            "status": runtime.to_dict(),
+            "terminal_campaign": terminal_campaign,
         },
         "findings": {
             "total": total_findings,
