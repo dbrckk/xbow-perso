@@ -53,7 +53,7 @@ def test_dry_run_and_error_do_not_masquerade_as_strong_validation():
     dry_run_confidence = build_knowledge_snapshot(dry_run_graph).finding_confidence[0]
     assert dry_run_confidence.score == 0.40
     assert dry_run_confidence.validation_count == 1
-    assert dry_run_confidence.evidence_count == 1
+    assert dry_run_confidence.evidence_count == 0
 
     error_graph = _finding_graph()
     error_graph.add(Observation("v-error", "validation", "error", "validator", parent_ids=("f1",)))
@@ -69,8 +69,8 @@ def test_dry_run_and_error_do_not_masquerade_as_strong_validation():
     )
     error_confidence = build_knowledge_snapshot(error_graph).finding_confidence[0]
     assert error_confidence.score == 0.35
-    assert error_confidence.validation_count == 1
-    assert error_confidence.evidence_count == 1
+    assert error_confidence.validation_count == 0
+    assert error_confidence.evidence_count == 0
 
 
 def test_unknown_validation_outcome_fails_closed():
@@ -79,6 +79,8 @@ def test_unknown_validation_outcome_fails_closed():
 
     confidence = build_knowledge_snapshot(graph).finding_confidence[0]
     assert confidence.score == 0.35
+    assert confidence.validation_count == 0
+    assert confidence.evidence_count == 0
 
 
 def test_self_validation_receives_no_confidence_credit():
@@ -98,7 +100,7 @@ def test_self_validation_receives_no_confidence_credit():
     confidence = build_knowledge_snapshot(graph).finding_confidence[0]
 
     assert confidence.score == 0.35
-    assert confidence.validation_count == 1
+    assert confidence.validation_count == 0
     assert confidence.evidence_count == 0
 
 
