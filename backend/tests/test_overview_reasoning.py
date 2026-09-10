@@ -76,6 +76,13 @@ def test_overview_surfaces_hypothesis_and_evidence_chain_state(tmp_path, monkeyp
         "incomplete": 1,
         "read_only": True,
     }
+    assert result["correlations"] == {
+        "groups": 1,
+        "duplicate_groups": 0,
+        "findings_in_duplicate_groups": 0,
+        "auto_merge": False,
+        "read_only": True,
+    }
     assert "secret" not in str(result["hypotheses"])
 
 
@@ -118,3 +125,34 @@ def test_overview_chain_becomes_complete_after_independent_evidence(tmp_path, mo
     assert result["evidence_chains"]["complete"] == 1
     assert result["evidence_chains"]["incomplete"] == 0
     assert result["hypotheses"]["by_kind"].get("validation_gap", 0) == 0
+
+
+def test_overview_counts_duplicate_candidate_groups(tmp_path, monkeypatch):
+    db = str(tmp_path / "db.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    campaign = _campaign()
+    campaign.findings[0].cwe = "CWE-79"
+    campaign.findings.append(
+        Finding(
+            id="f2",
+            title="duplicate candidate",
+            severity="medium",
+            asset="https://EXAMPLE.test:443",
+            endpoint="https://example.test/account?id=2",
+            summary="bounded duplicate fixture",
+            cwe="cwe-79",
+            status="validation_required",
+            discovered_by="scanner-2",
+        )
+    )
+    store = Storage(db, artifacts)
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+
+    result = campaign_overview(campaign.id)
+
+    assert result["correlations"]["groups"] == 1
+    assert result["correlations"]["duplicate_groups"] == 1
+    assert result["correlations"]["findings_in_duplicate_groups"] == 2
+    assert result["correlations"]["auto_merge"] is False
