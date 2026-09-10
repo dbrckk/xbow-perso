@@ -56,6 +56,11 @@ def build_red_team_coverage(
         for item in surface["endpoints"]
         if item["valid"] and item["in_scope"] is not False
     }
+    valid_form_ids = {
+        item["id"]
+        for item in surface["forms"]
+        if item["valid"] and item["in_scope"] is not False
+    }
     technology_ids = {
         item["id"]
         for item in surface["technologies"]
@@ -66,8 +71,20 @@ def build_red_team_coverage(
             if hypothesis.kind == "technology_surface_review"
         )
     }
+    waf_ids = {
+        item["id"]
+        for item in surface["wafs"]
+        if scope_checker is None
+        or any(
+            hypothesis.evidence_ids == (item["id"],)
+            for hypothesis in hypotheses
+            if hypothesis.kind == "protection_surface_review"
+        )
+    }
     endpoints = len(valid_endpoint_ids)
+    forms = len(valid_form_ids)
     technologies = len(technology_ids)
+    wafs = len(waf_ids)
 
     in_scope_finding_ids = {
         hypothesis.evidence_ids[0]
@@ -82,7 +99,9 @@ def build_red_team_coverage(
 
     input_reviews = sum(item.kind == "input_surface_review" for item in hypotheses)
     authorization_reviews = sum(item.kind == "authorization_surface_review" for item in hypotheses)
+    form_reviews = sum(item.kind == "form_surface_review" for item in hypotheses)
     technology_reviews = sum(item.kind == "technology_surface_review" for item in hypotheses)
+    protection_reviews = sum(item.kind == "protection_surface_review" for item in hypotheses)
     validation_gaps = sum(item.kind == "validation_gap" for item in hypotheses)
     complete_chain_ids = {item.finding_id for item in chains if item.complete}
     complete_chains = len(complete_chain_ids & finding_ids)
@@ -91,10 +110,12 @@ def build_red_team_coverage(
         graph,
         {"input_surface_review", "authorization_surface_review"},
     ) & valid_endpoint_ids
+    form_reviewed_ids = _reviewed_parent_ids(graph, {"form_surface_review"}) & valid_form_ids
     technology_reviewed_ids = _reviewed_parent_ids(
         graph,
         {"technology_surface_review"},
     ) & technology_ids
+    waf_reviewed_ids = _reviewed_parent_ids(graph, {"protection_surface_review"}) & waf_ids
     validated_finding_ids = set(validation.observed_independent_finding_ids) & finding_ids
     attempted_finding_ids = set(validation.attempted_finding_ids) & finding_ids
 
@@ -108,12 +129,28 @@ def build_red_team_coverage(
             score=_ratio(len(endpoint_reviewed_ids), endpoints),
         ),
         CoverageDomain(
+            name="form_surface",
+            observed=forms,
+            reviewed=len(form_reviewed_ids),
+            validated=0,
+            gaps=max(0, forms - len(form_reviewed_ids)),
+            score=_ratio(len(form_reviewed_ids), forms),
+        ),
+        CoverageDomain(
             name="technology_surface",
             observed=technologies,
             reviewed=len(technology_reviewed_ids),
             validated=0,
             gaps=max(0, technologies - len(technology_reviewed_ids)),
             score=_ratio(len(technology_reviewed_ids), technologies),
+        ),
+        CoverageDomain(
+            name="protection_surface",
+            observed=wafs,
+            reviewed=len(waf_reviewed_ids),
+            validated=0,
+            gaps=max(0, wafs - len(waf_reviewed_ids)),
+            score=_ratio(len(waf_reviewed_ids), wafs),
         ),
         CoverageDomain(
             name="finding_validation",
@@ -150,8 +187,12 @@ def build_red_team_coverage(
         gaps.append("input_review_pending")
     if authorization_reviews:
         gaps.append("authorization_review_pending")
+    if form_reviews:
+        gaps.append("form_review_pending")
     if technology_reviews:
         gaps.append("technology_review_pending")
+    if protection_reviews:
+        gaps.append("protection_review_pending")
     if validation_gaps:
         gaps.append("independent_validation_pending")
     if findings - complete_chains:
@@ -164,8 +205,12 @@ def build_red_team_coverage(
         "summary": {
             "observed_endpoints": endpoints,
             "reviewed_endpoints": len(endpoint_reviewed_ids),
+            "observed_forms": forms,
+            "reviewed_forms": len(form_reviewed_ids),
             "observed_technologies": technologies,
             "reviewed_technologies": len(technology_reviewed_ids),
+            "observed_wafs": wafs,
+            "reviewed_wafs": len(waf_reviewed_ids),
             "observed_findings": findings,
             "independently_validated_findings": len(validated_finding_ids),
             "complete_evidence_chains": complete_chains,
