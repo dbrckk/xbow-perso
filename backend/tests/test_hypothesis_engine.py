@@ -51,6 +51,40 @@ def test_hypothesis_redacts_query_values_and_keeps_parameter_names():
     assert "private" not in str(payload)
 
 
+def test_scope_checker_filters_out_of_scope_lineage():
+    graph = ObservationGraph()
+    graph.add(Observation("inside", "asset", "example.test", "recon"))
+    graph.add(Observation("outside", "asset", "outside.test", "recon"))
+    graph.add(
+        Observation(
+            "e-in",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "recon",
+            parent_ids=("inside",),
+        )
+    )
+    graph.add(
+        Observation(
+            "e-out",
+            "endpoint",
+            "https://outside.test/account?id=2",
+            "recon",
+            parent_ids=("outside",),
+        )
+    )
+
+    hypotheses = build_hypotheses(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    payload = [item.to_dict() for item in hypotheses]
+
+    assert payload
+    assert all(item["target"].startswith("https://example.test/") for item in payload)
+    assert "outside.test" not in str(payload)
+
+
 def test_unvalidated_finding_gets_high_priority_validation_gap():
     graph = ObservationGraph()
     graph.add(Observation("a1", "asset", "example.test", "scanner"))
@@ -134,6 +168,7 @@ def test_hypothesis_route_is_exposed_and_reads_durable_graph(tmp_path, monkeypat
     assert result["campaign_id"] == campaign.id
     assert result["read_only"] is True
     assert result["safe_validation_only"] is True
+    assert result["scope_aware"] is True
     assert result["summary"]["total"] == 2
     assert result["summary"]["by_kind"] == {
         "authorization_surface_review": 1,
