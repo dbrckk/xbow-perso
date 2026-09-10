@@ -67,6 +67,7 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
     assert result["budget"]["blocked"] is False
     assert result["reports"]["total"] == 0
     assert result["attention_required"] is False
+    assert result["attention_reasons"] == []
 
 
 def test_overview_flags_unresolved_findings(tmp_path, monkeypatch):
@@ -80,6 +81,7 @@ def test_overview_flags_unresolved_findings(tmp_path, monkeypatch):
 
     assert result["validation"]["unresolved"] == 1
     assert result["attention_required"] is True
+    assert result["attention_reasons"] == ["unresolved_validation"]
 
 
 def test_overview_surfaces_report_integrity_failure_without_exposing_bytes(tmp_path, monkeypatch):
@@ -95,3 +97,4 @@ def test_overview_surfaces_report_integrity_failure_without_exposing_bytes(tmp_p
     assert result["reports"]["verified"] == 0
     assert result["reports"]["integrity_errors"] == 1
     assert result["attention_required"] is True
+    assert result["attention_reasons"] == ["report_integrity_error"]
