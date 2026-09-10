@@ -37,3 +37,32 @@ def test_non_observed_attempt_counts_only_as_attempt():
     graph = _graph(validation_value="dry_run")
     assert attempted_finding_ids(graph) == {"finding:f1"}
     assert observed_independent_finding_ids(graph) == set()
+
+
+def test_mixed_validation_states_remain_finding_specific():
+    graph = ObservationGraph()
+    graph.add(Observation(id="finding:f1", kind="finding", value="candidate", source="scanner-a"))
+    graph.add(Observation(id="finding:f2", kind="finding", value="candidate", source="scanner-b"))
+    graph.add(
+        Observation(
+            id="validation:v1",
+            kind="validation",
+            value="observed",
+            source="validator-a",
+            parent_ids=("finding:f1",),
+        )
+    )
+    graph.add(
+        Observation(
+            id="validation:v2",
+            kind="validation",
+            value="error",
+            source="validator-b",
+            parent_ids=("finding:f2",),
+        )
+    )
+
+    assert attempted_finding_ids(graph) == {"finding:f1", "finding:f2"}
+    assert observed_independent_finding_ids(graph) == {"finding:f1"}
+    assert has_observed_independent_validation(graph, "finding:f1") is True
+    assert has_observed_independent_validation(graph, "finding:f2") is False
