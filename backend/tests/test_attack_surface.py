@@ -83,6 +83,53 @@ def test_attack_surface_snapshot_is_deterministic_and_read_only():
     assert "secret" not in str(result)
 
 
+def test_attack_surface_models_forms_and_waf_without_secrets():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:1", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "form:1",
+            "form",
+            "https://example.test/login?csrf=secret-value",
+            "browser",
+            parent_ids=("asset:1",),
+            metadata={"method": "POST", "input_names": ["username", "password", "username"]},
+        )
+    )
+    graph.add(
+        Observation(
+            "waf:1",
+            "waf",
+            "cloud-edge-waf",
+            "fingerprint",
+            parent_ids=("asset:1",),
+            metadata={"confidence": 0.8},
+        )
+    )
+
+    result = build_attack_surface(graph, scope_checker=lambda host: host == "example.test")
+
+    assert result["forms"] == [
+        {
+            "id": "form:1",
+            "action": "https://example.test/login",
+            "host": "example.test",
+            "method": "POST",
+            "input_names": ["password", "username"],
+            "valid": True,
+            "in_scope": True,
+            "source": "browser",
+            "parent_ids": ["asset:1"],
+        }
+    ]
+    assert result["wafs"][0]["name"] == "cloud-edge-waf"
+    assert result["wafs"][0]["confidence"] == 0.8
+    assert result["summary"]["form_count"] == 1
+    assert result["summary"]["waf_count"] == 1
+    assert result["summary"]["form_input_names"] == ["password", "username"]
+    assert "secret-value" not in str(result)
+
+
 def test_attack_surface_counts_canonical_duplicates_and_invalid_entries():
     graph = ObservationGraph()
     graph.add(Observation("asset:1", "asset", "example.test", "recon"))
