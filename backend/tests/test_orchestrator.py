@@ -58,7 +58,7 @@ def test_advance_stops_when_automation_disabled(tmp_path):
     assert queue.stats()["total"] == 0
 
 
-def test_advance_queues_only_unvalidated_findings_then_report(tmp_path):
+def test_advance_queues_only_unvalidated_findings_then_waits_for_resolution_and_reports(tmp_path):
     db = str(tmp_path / "db.sqlite3")
     store = Storage(db, str(tmp_path / "artifacts"))
     queue = JobQueue(db)
@@ -113,6 +113,14 @@ def test_advance_queues_only_unvalidated_findings_then_report(tmp_path):
         campaign.id,
         Observation("v2", "validation", "observed", "validator", parent_ids=("finding:f2",)).to_dict(),
     )
+    waiting = advance_campaign(campaign, queue, store)
+    assert waiting["action"]["kind"] == "stop"
+    assert "explicit confirmation or rejection" in waiting["action"]["reason"]
+    assert waiting["job_ids"] == []
+
+    for item in campaign.findings:
+        item.status = "confirmed"
+        item.validated_by = "validator"
     report = advance_campaign(campaign, queue, store)
     report_job = queue.get(report["job_ids"][0])
     assert report["action"]["kind"] == "report"
