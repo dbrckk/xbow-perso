@@ -14,6 +14,7 @@ from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
 from .planner_budget import PlannerBudget, budget_usage
 from .red_team_coverage import build_red_team_coverage, router as red_team_coverage_router
+from .red_team_decision import build_red_team_decisions, router as red_team_decision_router
 from .review_queue import build_review_queue, router as review_queue_router
 from .storage import ArtifactIntegrityError
 from .submission_state import submission_status
@@ -24,6 +25,7 @@ router.routes.extend(attack_surface_router.routes)
 router.routes.extend(red_team_coverage_router.routes)
 router.routes.extend(review_queue_router.routes)
 router.routes.extend(finding_triage_router.routes)
+router.routes.extend(red_team_decision_router.routes)
 
 
 @router.get("/api/campaigns/{campaign_id}/overview")
@@ -48,6 +50,11 @@ def campaign_overview(campaign_id: str):
     triage = build_finding_triage(campaign.findings, graph)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
     review_tasks = build_review_queue(graph, scope_checker=scope_checker)
+    decisions = build_red_team_decisions(
+        campaign.findings,
+        graph,
+        scope_checker=scope_checker,
+    )
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
     runtime_limit = CampaignRuntimeLimit()
@@ -160,6 +167,14 @@ def campaign_overview(campaign_id: str):
             "total": len(review_tasks),
             "highest_priority": max((item.priority for item in review_tasks), default=0.0),
             "advisory_only": True,
+            "read_only": True,
+            "scope_aware": True,
+        },
+        "red_team_decisions": {
+            "total": len(decisions),
+            "highest_priority": max((item.priority for item in decisions), default=0.0),
+            "next_focus": decisions[0].kind if decisions else "idle",
+            "blocked_from_execution": all(item.blocked_from_execution for item in decisions),
             "read_only": True,
             "scope_aware": True,
         },
