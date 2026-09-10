@@ -163,6 +163,20 @@ def _campaign_graph(campaign_id: str):
     return ObservationGraph.from_records(storage().list_observations(campaign_id))
 
 
+def _has_observed_independent_validation(campaign_id: str, finding: Finding) -> bool:
+    graph = _campaign_graph(campaign_id)
+    finding_id = f"finding:{finding.id}"
+    finding_observation = next((item for item in graph.by_kind("finding") if item.id == finding_id), None)
+    if finding_observation is None:
+        return False
+    return any(
+        validation.value == "observed"
+        and finding_id in validation.parent_ids
+        and validation.source != finding_observation.source
+        for validation in graph.by_kind("validation")
+    )
+
+
 def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]:
     rules = campaign.target.rules
     allowed = is_host_allowed(host, rules.allowed_targets, rules.denied_targets)
@@ -373,6 +387,8 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
         raise HTTPException(status_code=404, detail="Finding not found")
     if validator == finding.discovered_by:
         raise HTTPException(status_code=409, detail="Discovery agent cannot validate its own finding")
+    if not _has_observed_independent_validation(campaign_id, finding):
+        raise HTTPException(status_code=409, detail="Finding requires observed independent validation evidence before resolution")
 
     desired_status = "confirmed" if confirmed else "rejected"
     if finding.status == desired_status and finding.validated_by == validator:
