@@ -28,21 +28,24 @@ router.routes.extend(finding_triage_router.routes)
 
 @router.get("/api/campaigns/{campaign_id}/overview")
 def campaign_overview(campaign_id: str):
-    from .main import assert_campaign_record, queue, storage
+    from .main import assert_campaign_record, is_host_allowed, queue, storage
 
     campaign, version = assert_campaign_record(campaign_id)
     store = storage()
     jobs = queue()
     graph = load_observation_graph(store, campaign.id)
+    rules = campaign.target.rules
+    scope_checker = lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets)
+
     validation = analyze_validation_state(graph)
     knowledge = build_knowledge_snapshot(graph)
-    surface = build_attack_surface(graph)
-    hypotheses = build_hypotheses(graph)
+    surface = build_attack_surface(graph, scope_checker=scope_checker)
+    hypotheses = build_hypotheses(graph, scope_checker=scope_checker)
     chains = build_evidence_chains(graph)
     correlations = correlate_findings(campaign.findings)
     triage = build_finding_triage(campaign.findings, graph)
-    coverage = build_red_team_coverage(graph)
-    review_tasks = build_review_queue(graph)
+    coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
+    review_tasks = build_review_queue(graph, scope_checker=scope_checker)
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
     runtime_limit = CampaignRuntimeLimit()
@@ -81,6 +84,8 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("runtime_exhausted")
     if surface["summary"]["invalid_endpoint_count"]:
         attention_reasons.append("invalid_attack_surface_endpoint")
+    if surface["summary"]["out_of_scope_endpoint_count"]:
+        attention_reasons.append("out_of_scope_observations")
     if validation.unresolved_finding_ids:
         attention_reasons.append("unresolved_validation")
     if coverage["gaps"]:
@@ -89,7 +94,6 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("failed_jobs")
 
     latest_event = campaign.events[-1] if campaign.events else None
-    rules = campaign.target.rules
     total_findings = len(campaign.findings)
 
     return {
@@ -148,12 +152,14 @@ def campaign_overview(campaign_id: str):
             "by_kind": dict(sorted(hypothesis_counts.items())),
             "highest_confidence": max((item.confidence for item in hypotheses), default=0.0),
             "read_only": True,
+            "scope_aware": True,
         },
         "review_queue": {
             "total": len(review_tasks),
             "highest_priority": max((item.priority for item in review_tasks), default=0.0),
             "advisory_only": True,
             "read_only": True,
+            "scope_aware": True,
         },
         "evidence_chains": {
             "total": len(chains),
@@ -172,6 +178,7 @@ def campaign_overview(campaign_id: str):
         "attack_surface": {
             "summary": surface["summary"],
             "read_only": surface["read_only"],
+            "scope_aware": True,
         },
         "observations": knowledge.to_dict(),
         "jobs": {
