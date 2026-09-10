@@ -55,6 +55,7 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
         for item in build_finding_consensus(graph)
     }
     chains = {item.finding_id: item for item in build_evidence_chains(graph)}
+    observed_finding_ids = {item.id for item in graph.by_kind("finding")}
     duplicate_size: dict[str, int] = {}
     for group in correlate_findings(findings):
         size = len(group.finding_ids)
@@ -75,6 +76,7 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
         chain_complete = bool(chain and chain.complete)
         group_size = duplicate_size.get(finding_id, 1)
         duplicate = group_size > 1
+        observed = graph_id in observed_finding_ids
 
         evidence_gap = 1.0 - confidence
         chain_gap = 0.0 if chain_complete else 1.0
@@ -95,6 +97,8 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
 
         if str(finding.status) in {"confirmed", "rejected"} and chain_complete:
             recommended = "resolved"
+        elif duplicate and not observed:
+            recommended = "review_duplicate"
         elif not chain_complete or confidence < 0.75 or not corroborated:
             recommended = "validate"
         elif duplicate:
