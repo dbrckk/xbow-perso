@@ -12,8 +12,10 @@ from pydantic import BaseModel, Field, model_validator
 
 from .jobqueue import JobQueue
 from .storage import CampaignConflictError, Storage
+from .submission_api import router as submission_router
 
 router = APIRouter()
+router.include_router(submission_router)
 
 
 class BrowserPolicyError(RuntimeError):
