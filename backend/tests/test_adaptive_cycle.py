@@ -1,6 +1,7 @@
 from app.adaptive_cycle import build_adaptive_cycle
 from app.autonomy_gate import AutonomyGate
 from app.learning_memory import TechniqueMemory
+from app.main import app
 from app.observation_graph import PlannedAction
 
 
@@ -65,3 +66,7 @@ def test_cycle_suppresses_repeated_failed_techniques():
     )
     assert cycle.retry_suppressed_techniques == ("bounded-review",)
     assert cycle.state == "review"
+
+
+def test_adaptive_cycle_route_is_exposed():
+    assert "/api/campaigns/{campaign_id}/adaptive-cycle" in app.openapi()["paths"]
