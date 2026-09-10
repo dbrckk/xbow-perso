@@ -15,6 +15,7 @@ def test_budget_usage_reads_durable_campaign_jobs(tmp_path):
     assert usage.validations == 1
     assert usage.reports == 1
     assert usage.scans == 0
+    assert usage.inflight_jobs == 2
     assert usage.remaining_validations == 24
 
 
@@ -113,3 +114,42 @@ def test_validation_batch_is_bounded_by_batch_and_remaining_budget(tmp_path):
     usage = budget_usage(graph, queue, "c1", limits)
 
     assert validation_batch_limit(usage, limits) == 7
+
+
+def test_inflight_budget_stops_new_network_work(tmp_path):
+    queue = JobQueue(str(tmp_path / "db.sqlite3"))
+    graph = ObservationGraph()
+    limits = PlannerBudget(max_inflight_jobs=2)
+    queue.enqueue("c1", "report", {"platform": "generic"}, dedupe_key="report:1")
+    queue.enqueue("c1", "report", {"platform": "bugcrowd"}, dedupe_key="report:2")
+
+    action, usage = apply_budget(
+        PlannedAction("scan", "example.test", "scan next", 80),
+        graph,
+        queue,
+        "c1",
+        limits,
+    )
+
+    assert action.kind == "stop"
+    assert action.reason == "in-flight job budget exhausted"
+    assert usage.inflight_jobs == 2
+    assert usage.remaining_inflight_jobs == 0
+
+
+def test_validation_batch_respects_inflight_capacity(tmp_path):
+    queue = JobQueue(str(tmp_path / "db.sqlite3"))
+    graph = ObservationGraph()
+    limits = PlannerBudget(max_validations=20, max_validation_batch=10, max_inflight_jobs=6)
+    for index in range(4):
+        queue.enqueue(
+            "c1",
+            "report",
+            {"campaign_id": "c1", "platform": f"generic-{index}"},
+            dedupe_key=f"report:{index}",
+        )
+
+    usage = budget_usage(graph, queue, "c1", limits)
+
+    assert usage.inflight_jobs == 4
+    assert validation_batch_limit(usage, limits) == 2
