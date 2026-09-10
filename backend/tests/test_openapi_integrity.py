@@ -53,3 +53,16 @@ def test_runtime_routes_do_not_duplicate_method_and_path():
             seen.add(key)
 
     assert duplicates == []
+
+
+def test_mutating_routes_are_confined_to_authenticated_api_namespace():
+    schema = app.openapi()
+    mutating = {"post", "put", "patch", "delete"}
+
+    exposed = []
+    for path, path_item in schema["paths"].items():
+        for method in path_item:
+            if method.lower() in mutating and not path.startswith("/api"):
+                exposed.append((method.upper(), path))
+
+    assert exposed == []
