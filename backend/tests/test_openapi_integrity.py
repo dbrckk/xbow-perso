@@ -66,3 +66,20 @@ def test_mutating_routes_are_confined_to_authenticated_api_namespace():
                 exposed.append((method.upper(), path))
 
     assert exposed == []
+
+
+def test_capability_manifest_is_authenticated_and_conservative():
+    from app.main import system_capabilities
+
+    schema = app.openapi()
+    assert "/api/capabilities" in schema["paths"]
+
+    capabilities = system_capabilities()
+    assert capabilities["execution"]["default_mode"] == "dry_run"
+    assert capabilities["execution"]["arbitrary_shell_jobs"] is False
+    assert capabilities["reporting"]["human_approval_required"] is True
+    assert capabilities["reporting"]["external_platform_submission"] is False
+    assert capabilities["safety"]["destructive_testing"] is False
+    assert capabilities["safety"]["denial_of_service"] is False
+    assert capabilities["safety"]["credential_attacks"] is False
+    assert capabilities["safety"]["exploit_execution"] is False
