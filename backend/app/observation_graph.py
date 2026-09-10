@@ -6,7 +6,16 @@ from urllib.parse import urlparse
 
 from .validation_state import analyze_validation_state
 
-ObservationKind = Literal["asset", "endpoint", "technology", "finding", "evidence", "validation"]
+ObservationKind = Literal[
+    "asset",
+    "endpoint",
+    "form",
+    "technology",
+    "waf",
+    "finding",
+    "evidence",
+    "validation",
+]
 ActionKind = Literal["inventory", "crawl", "scan", "validate", "report", "stop"]
 
 
