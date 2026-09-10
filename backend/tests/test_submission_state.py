@@ -64,6 +64,18 @@ def test_submission_is_recorded_only_after_approval():
     assert status.platform == "generic"
 
 
+def test_revocation_without_submission_requires_review():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(approval_event(campaign, artifact, "reviewer", "2026-09-10T08:00:00Z"))
+    campaign.events.append(revocation_event(artifact["id"], "reviewer", "2026-09-10T08:01:00Z"))
+
+    status = submission_status(campaign, artifact)
+
+    assert status.state == "review_required"
+    assert status.approved is False
+
+
 def test_revocation_reblocks_previously_submitted_report():
     campaign = _campaign()
     artifact = _artifact()
@@ -76,6 +88,36 @@ def test_revocation_reblocks_previously_submitted_report():
     assert status.state == "review_required"
     assert status.approved is False
     assert status.submitted_at is None
+
+
+def test_reapproval_does_not_resurrect_old_submission():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(approval_event(campaign, artifact, "reviewer", "2026-09-10T08:00:00Z"))
+    campaign.events.append(submission_event(artifact["id"], "operator", "generic", "2026-09-10T08:05:00Z"))
+    campaign.events.append(revocation_event(artifact["id"], "reviewer", "2026-09-10T08:06:00Z"))
+    campaign.events.append(approval_event(campaign, artifact, "reviewer", "2026-09-10T08:07:00Z"))
+
+    status = submission_status(campaign, artifact)
+
+    assert status.state == "approved"
+    assert status.submitted_at is None
+
+
+def test_new_submission_after_reapproval_counts_for_current_cycle():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(approval_event(campaign, artifact, "reviewer", "2026-09-10T08:00:00Z"))
+    campaign.events.append(submission_event(artifact["id"], "operator", "generic", "2026-09-10T08:05:00Z"))
+    campaign.events.append(revocation_event(artifact["id"], "reviewer", "2026-09-10T08:06:00Z"))
+    campaign.events.append(approval_event(campaign, artifact, "reviewer", "2026-09-10T08:07:00Z"))
+    campaign.events.append(submission_event(artifact["id"], "operator-2", "hackerone", "2026-09-10T08:08:00Z"))
+
+    status = submission_status(campaign, artifact)
+
+    assert status.state == "submitted"
+    assert status.submitted_by == "operator-2"
+    assert status.platform == "hackerone"
 
 
 def test_campaign_change_makes_approval_stale_and_reblocks_submission():
@@ -99,10 +141,16 @@ def test_unapproved_submission_attempt_is_rejected():
         raise AssertionError("unapproved reports must not be submission-ready")
 
 
-def test_submission_event_requires_actor_and_platform():
-    for actor, platform in (("", "generic"), ("operator", "")):
+def test_submission_event_requires_complete_metadata():
+    invalid = (
+        ("", "operator", "generic", "2026-09-10T08:05:00Z"),
+        ("report-1", "", "generic", "2026-09-10T08:05:00Z"),
+        ("report-1", "operator", "", "2026-09-10T08:05:00Z"),
+        ("report-1", "operator", "generic", ""),
+    )
+    for artifact_id, actor, platform, at in invalid:
         try:
-            submission_event("report-1", actor, platform, "2026-09-10T08:05:00Z")
+            submission_event(artifact_id, actor, platform, at)
         except ValueError:
             pass
         else:
