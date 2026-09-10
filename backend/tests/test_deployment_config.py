@@ -4,9 +4,7 @@ from pathlib import Path
 def test_compose_declares_backend_and_worker_healthchecks():
     compose = (Path(__file__).resolve().parents[2] / "docker-compose.yml").read_text(encoding="utf-8")
     assert compose.count("healthcheck:") >= 2
-    assert "http://127.0.0.1:8000/health" in compose
-    assert "JobQueue().health()" in compose
-    assert "h.get('ok') is True" in compose
+    assert compose.count('["CMD", "python", "-m", "app.readiness"]') >= 2
 
 
 def test_compose_keeps_services_hardened():
