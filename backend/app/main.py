@@ -223,7 +223,12 @@ def live():
 
 @app.get("/ready")
 def ready():
-    payload = {**dependency_readiness(), "service": "xbow-perso", "version": app.version}
+    dependencies = dependency_readiness()
+    payload = {
+        "ok": bool(dependencies.get("ok")),
+        "service": "xbow-perso",
+        "version": app.version,
+    }
     if not payload["ok"]:
         return JSONResponse(status_code=503, content=payload)
     return payload
@@ -232,10 +237,14 @@ def ready():
 @app.get("/health")
 def health():
     try:
-        database = queue().health()
+        database_ok = bool(queue().health().get("ok"))
     except Exception:
-        database = {"ok": False, "database": "unavailable"}
-    payload = {"ok": bool(database.get("ok")), "service": "xbow-perso", "version": app.version, "database": database}
+        database_ok = False
+    payload = {
+        "ok": database_ok,
+        "service": "xbow-perso",
+        "version": app.version,
+    }
     if not payload["ok"]:
         return JSONResponse(status_code=503, content=payload)
     return payload
