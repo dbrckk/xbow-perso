@@ -5,13 +5,18 @@ import pytest
 from app.observation_graph import AdaptivePlanner, Observation, ObservationGraph
 
 
-def campaign(*, automated_scanning=True):
+def campaign(*, automated_scanning=True, findings=()):
     return SimpleNamespace(
         target=SimpleNamespace(
             primary_url="https://example.com",
             rules=SimpleNamespace(automated_scanning=automated_scanning),
-        )
+        ),
+        findings=list(findings),
     )
+
+
+def finding(finding_id="f1", status="validation_required"):
+    return SimpleNamespace(id=finding_id, status=status)
 
 
 def test_graph_rejects_unknown_parent():
@@ -52,10 +57,14 @@ def test_planner_progresses_through_bounded_phases():
     assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "scan"
 
     graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
-    assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "validate"
+    active_campaign = campaign(findings=(finding(status="validation_required"),))
+    assert AdaptivePlanner().plan(active_campaign, graph)[0].kind == "validate"
 
     graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
-    assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "report"
+    assert AdaptivePlanner().plan(active_campaign, graph)[0].kind == "stop"
+
+    active_campaign.findings[0].status = "confirmed"
+    assert AdaptivePlanner().plan(active_campaign, graph)[0].kind == "report"
 
     graph.add(
         Observation(
@@ -66,7 +75,46 @@ def test_planner_progresses_through_bounded_phases():
             metadata={"artifact_kind": "report"},
         )
     )
-    assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "stop"
+    assert AdaptivePlanner().plan(active_campaign, graph)[0].kind == "stop"
+
+
+def test_planner_waits_for_explicit_resolution_after_observed_validation():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "recon"))
+    graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+    graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
+    graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+
+    action = AdaptivePlanner().plan(campaign(findings=(finding(),)), graph)[0]
+
+    assert action.kind == "stop"
+    assert "explicit confirmation or rejection" in action.reason
+
+
+def test_planner_does_not_generate_report_when_all_findings_are_rejected():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "recon"))
+    graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+    graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
+    graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+
+    action = AdaptivePlanner().plan(campaign(findings=(finding(status="rejected"),)), graph)[0]
+
+    assert action.kind == "stop"
+    assert "no report required" in action.reason
+
+
+def test_planner_fails_closed_when_graph_findings_lack_campaign_state():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "recon"))
+    graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+    graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
+    graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+
+    action = AdaptivePlanner().plan(campaign(), graph)[0]
+
+    assert action.kind == "stop"
+    assert "missing campaign finding state" in action.reason
 
 
 def test_planner_stops_after_completed_scan_without_findings():
@@ -96,7 +144,7 @@ def test_planner_counts_validations_by_finding_relationship():
     graph.add(Observation("f2", "finding", "second", "scanner", parent_ids=("e1",)))
     graph.add(Observation("v1", "validation", "one", "validator-a", parent_ids=("f1",)))
     graph.add(Observation("v2", "validation", "two", "validator-b", parent_ids=("f1",)))
-    assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "validate"
+    assert AdaptivePlanner().plan(campaign(findings=(finding("f1"), finding("f2"))), graph)[0].kind == "validate"
 
 
 def test_planner_does_not_report_after_dry_run_or_error_validation():
@@ -107,7 +155,7 @@ def test_planner_does_not_report_after_dry_run_or_error_validation():
         graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
         graph.add(Observation("v1", "validation", status, "validator", parent_ids=("f1",)))
 
-        action = AdaptivePlanner().plan(campaign(), graph)[0]
+        action = AdaptivePlanner().plan(campaign(findings=(finding(),)), graph)[0]
 
         assert action.kind == "stop"
         assert "did not produce observed evidence" in action.reason
@@ -120,7 +168,7 @@ def test_planner_requires_validation_source_independence():
     graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
     graph.add(Observation("v1", "validation", "observed", "scanner", parent_ids=("f1",)))
 
-    action = AdaptivePlanner().plan(campaign(), graph)[0]
+    action = AdaptivePlanner().plan(campaign(findings=(finding(),)), graph)[0]
 
     assert action.kind == "stop"
     assert "did not produce observed evidence" in action.reason
