@@ -67,14 +67,19 @@ def _seed_primary_target(store: Storage, campaign: Campaign) -> None:
 
 
 def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
-    finding_observations = {item.id for item in graph.by_kind("finding")}
-    validated = {
+    finding_by_id = {item.id: item for item in graph.by_kind("finding")}
+    observed_validated = {
         parent_id
         for validation in graph.by_kind("validation")
+        if validation.value == "observed"
         for parent_id in validation.parent_ids
-        if parent_id in finding_observations
+        if parent_id in finding_by_id and validation.source != finding_by_id[parent_id].source
     }
-    pending = [finding for finding in campaign.findings if f"finding:{finding.id}" not in validated]
+    pending = [
+        finding
+        for finding in campaign.findings
+        if f"finding:{finding.id}" not in observed_validated
+    ]
     priorities = {item.finding_id: item for item in rank_findings(pending, graph)}
     return sorted(
         pending,
