@@ -12,12 +12,14 @@ from .hypothesis_engine import build_hypotheses
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
 from .planner_budget import PlannerBudget, budget_usage
+from .red_team_coverage import build_red_team_coverage, router as red_team_coverage_router
 from .storage import ArtifactIntegrityError
 from .submission_state import submission_status
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
 router.routes.extend(attack_surface_router.routes)
+router.routes.extend(red_team_coverage_router.routes)
 
 
 @router.get("/api/campaigns/{campaign_id}/overview")
@@ -34,6 +36,7 @@ def campaign_overview(campaign_id: str):
     hypotheses = build_hypotheses(graph)
     chains = build_evidence_chains(graph)
     correlations = correlate_findings(campaign.findings)
+    coverage = build_red_team_coverage(graph)
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
     runtime_limit = CampaignRuntimeLimit()
@@ -74,6 +77,8 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("invalid_attack_surface_endpoint")
     if validation.unresolved_finding_ids:
         attention_reasons.append("unresolved_validation")
+    if coverage["gaps"]:
+        attention_reasons.append("coverage_gaps")
     if job_statuses["failed"]:
         attention_reasons.append("failed_jobs")
 
@@ -143,6 +148,7 @@ def campaign_overview(campaign_id: str):
             "auto_merge": False,
             "read_only": True,
         },
+        "red_team_coverage": coverage,
         "attack_surface": {
             "summary": surface["summary"],
             "read_only": surface["read_only"],
