@@ -44,23 +44,12 @@ def test_overview_route_is_exposed():
 
 def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monkeypatch):
     campaign, store = _setup(tmp_path, monkeypatch)
+    store.put_observation(campaign.id, Observation("finding:f1", "finding", "fixture", "scanner").to_dict())
     store.put_observation(
         campaign.id,
-        Observation("finding:f1", "finding", "fixture", "scanner").to_dict(),
+        Observation("validation:f1", "validation", "observed", "independent-validator", parent_ids=("finding:f1",)).to_dict(),
     )
-    store.put_observation(
-        campaign.id,
-        Observation(
-            "validation:f1",
-            "validation",
-            "observed",
-            "independent-validator",
-            parent_ids=("finding:f1",),
-        ).to_dict(),
-    )
-
     result = campaign_overview(campaign.id)
-
     assert result["target"] == {"name": "fixture", "primary_url": "https://example.test/"}
     assert result["policy"]["authorization_reference"] == "explicit-test-authorization"
     assert result["policy"]["automated_scanning"] is True
@@ -69,6 +58,8 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
     assert result["runtime"]["status"]["exhausted"] is False
     assert result["runtime"]["status"]["remaining_seconds"] > 0
     assert result["runtime"]["terminal_campaign"] is False
+    assert result["attack_surface"]["read_only"] is True
+    assert result["attack_surface"]["summary"]["invalid_endpoint_count"] == 0
     assert result["findings"]["total"] == 1
     assert result["findings"]["resolved"] == 0
     assert result["findings"]["unresolved"] == 1
@@ -90,23 +81,10 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
 
 def test_overview_resolution_progress_tracks_terminal_findings(tmp_path, monkeypatch):
     campaign, store = _setup(tmp_path, monkeypatch)
-    campaign.findings.append(
-        Finding(
-            id="f2",
-            title="resolved fixture",
-            severity="low",
-            asset="https://example.test",
-            summary="bounded fixture",
-            status="rejected",
-            discovered_by="scanner",
-            validated_by="independent-validator",
-        )
-    )
+    campaign.findings.append(Finding(id="f2", title="resolved fixture", severity="low", asset="https://example.test", summary="bounded fixture", status="rejected", discovered_by="scanner", validated_by="independent-validator"))
     campaign.events.append({"type": "finding_validated", "at": "2026-09-10T09:00:00Z"})
     store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
-
     result = campaign_overview(campaign.id)
-
     assert result["findings"]["total"] == 2
     assert result["findings"]["resolved"] == 1
     assert result["findings"]["unresolved"] == 1
@@ -118,16 +96,21 @@ def test_overview_resolution_progress_tracks_terminal_findings(tmp_path, monkeyp
 
 def test_overview_flags_unresolved_findings(tmp_path, monkeypatch):
     campaign, store = _setup(tmp_path, monkeypatch)
-    store.put_observation(
-        campaign.id,
-        Observation("finding:f1", "finding", "fixture", "scanner").to_dict(),
-    )
-
+    store.put_observation(campaign.id, Observation("finding:f1", "finding", "fixture", "scanner").to_dict())
     result = campaign_overview(campaign.id)
-
     assert result["validation"]["unresolved"] == 1
     assert result["attention_required"] is True
     assert result["attention_reasons"] == ["unresolved_validation"]
+
+
+def test_overview_flags_invalid_attack_surface_endpoint(tmp_path, monkeypatch):
+    campaign, store = _setup(tmp_path, monkeypatch)
+    store.put_observation(campaign.id, Observation("asset:1", "asset", "example.test", "recon").to_dict())
+    store.put_observation(campaign.id, Observation("endpoint:1", "endpoint", "https://example.test:bad/api?token=secret", "recon", parent_ids=("asset:1",)).to_dict())
+    result = campaign_overview(campaign.id)
+    assert result["attack_surface"]["summary"]["invalid_endpoint_count"] == 1
+    assert "invalid_attack_surface_endpoint" in result["attention_reasons"]
+    assert "secret" not in str(result["attack_surface"])
 
 
 def test_overview_surfaces_report_integrity_failure_without_exposing_bytes(tmp_path, monkeypatch):
@@ -136,9 +119,7 @@ def test_overview_surfaces_report_integrity_failure_without_exposing_bytes(tmp_p
     metadata = store.get_artifact(campaign.id, artifact["id"])
     assert metadata is not None
     (store.artifact_root / metadata["relative_path"]).write_bytes(b"tampered")
-
     result = campaign_overview(campaign.id)
-
     assert result["reports"]["total"] == 1
     assert result["reports"]["verified"] == 0
     assert result["reports"]["integrity_errors"] == 1
@@ -150,9 +131,7 @@ def test_overview_flags_runtime_exhaustion_for_active_campaign(tmp_path, monkeyp
     campaign, store = _setup(tmp_path, monkeypatch)
     campaign.created_at = (datetime.now(timezone.utc) - timedelta(hours=7)).isoformat()
     store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
-
     result = campaign_overview(campaign.id)
-
     assert result["runtime"]["status"]["exhausted"] is True
     assert result["runtime"]["status"]["remaining_seconds"] == 0
     assert result["attention_required"] is True
@@ -166,9 +145,7 @@ def test_overview_does_not_flag_runtime_exhaustion_for_terminal_campaign(tmp_pat
     campaign.findings[0].status = "rejected"
     campaign.findings[0].validated_by = "independent-validator"
     store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
-
     result = campaign_overview(campaign.id)
-
     assert result["runtime"]["status"]["exhausted"] is True
     assert result["runtime"]["terminal_campaign"] is True
     assert "runtime_exhausted" not in result["attention_reasons"]
