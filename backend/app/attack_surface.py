@@ -6,9 +6,11 @@ from urllib.parse import parse_qsl, urlsplit, urlunsplit
 
 from fastapi import APIRouter
 
+from .hypothesis_engine import router as hypothesis_router
 from .observation_graph import ObservationGraph, load_observation_graph
 
 router = APIRouter()
+router.routes.extend(hypothesis_router.routes)
 
 
 def canonical_host(value: str) -> str:
