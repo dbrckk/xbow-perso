@@ -71,19 +71,18 @@ def build_campaign_risk(
     if high_value:
         factors.append("high_impact_findings")
 
-    duplicate_review = sum(
-        item.recommended_state == "review_duplicate" for item in triage
-    )
+    duplicate_review = sum(item.recommended_state == "review_duplicate" for item in triage)
     if duplicate_review:
         factors.append("duplicate_pressure")
 
-    if float(coverage["score"]) < 0.5:
+    coverage_score = float(coverage["score"])
+    if coverage_score < 0.5 or integrity_count:
         factors.append("low_review_coverage")
     if consensus.blocked:
         factors.append("decision_consensus_blocked")
 
     highest_triage = max((item.score for item in triage), default=0.0)
-    coverage_gap = 1.0 - float(coverage["score"])
+    coverage_gap = max(1.0 - coverage_score, 0.5 if integrity_count else 0.0)
     integrity_pressure = min(1.0, integrity_count / 3)
     consensus_pressure = 1.0 if consensus.blocked else 0.0
     score = round(
@@ -111,8 +110,7 @@ def build_campaign_risk(
             0.0,
             min(
                 1.0,
-                (float(coverage["score"]) * 0.60)
-                + (consensus.confidence * 0.40),
+                (coverage_score * 0.60) + (consensus.confidence * 0.40),
             ),
         ),
         4,
