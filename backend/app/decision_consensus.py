@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Any, Callable
+from typing import Any
 
 from fastapi import APIRouter
 
@@ -11,7 +11,12 @@ from .red_team_decision import RedTeamDecision, build_red_team_decisions
 router = APIRouter()
 
 _BLOCKING_KINDS = {"scope_integrity"}
-_ACTIONABLE_KINDS = {"validate_findings", "strengthen_evidence", "review_surface", "review_for_report"}
+_ACTIONABLE_KINDS = {
+    "validate_findings",
+    "strengthen_evidence",
+    "review_surface",
+    "review_for_report",
+}
 
 
 @dataclass(frozen=True)
@@ -52,10 +57,15 @@ def build_decision_consensus(decisions: list[RedTeamDecision]) -> DecisionConsen
     ranked = sorted(decisions, key=lambda item: (-item.priority, item.kind))
     top = ranked[0]
     close_competitors = [
-        item for item in ranked[1:] if top.priority - item.priority <= 0.05 and item.kind != top.kind
+        item
+        for item in ranked[1:]
+        if top.priority - item.priority <= 0.05 and item.kind != top.kind
     ]
     contradictory = bool(close_competitors)
-    confidence = round(max(0.0, min(1.0, top.priority - (0.15 if contradictory else 0.0))), 4)
+    confidence = round(
+        max(0.0, min(1.0, top.priority - (0.15 if contradictory else 0.0))),
+        4,
+    )
     reasons = [top.reason]
     if contradictory:
         reasons.append("multiple near-equal decision signals require conservative review")
