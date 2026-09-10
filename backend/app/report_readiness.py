@@ -7,12 +7,10 @@ from fastapi import APIRouter
 
 from .evidence_chain import build_evidence_chains
 from .finding_correlation import correlate_findings
-from .finding_lifecycle import router as finding_lifecycle_router
 from .observation_graph import ObservationGraph, load_observation_graph
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
-router.routes.extend(finding_lifecycle_router.routes)
 
 
 @dataclass(frozen=True)
