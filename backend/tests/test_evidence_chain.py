@@ -120,16 +120,14 @@ def test_self_validation_keeps_chain_incomplete():
     )
 
 
-def test_dangling_parent_reference_is_reported():
+def test_dangling_parent_reference_is_reported_for_corrupted_graph_fixture():
     graph = ObservationGraph()
-    graph.add(
-        Observation(
-            "finding:f1",
-            "finding",
-            "f1",
-            "scanner",
-            parent_ids=("endpoint:missing",),
-        )
+    graph._items["finding:f1"] = Observation(
+        "finding:f1",
+        "finding",
+        "f1",
+        "scanner",
+        parent_ids=("endpoint:missing",),
     )
 
     chain = build_evidence_chains(graph)[0]
@@ -139,34 +137,32 @@ def test_dangling_parent_reference_is_reported():
     assert chain.complete is False
 
 
-def test_ancestry_cycle_is_detected_without_recursion_loop():
+def test_ancestry_cycle_is_detected_for_corrupted_graph_fixture():
     graph = ObservationGraph()
-    graph.add(
-        Observation(
-            "asset:a",
-            "asset",
-            "example.test",
-            "recon",
-            parent_ids=("endpoint:e",),
-        )
-    )
-    graph.add(
-        Observation(
-            "endpoint:e",
-            "endpoint",
-            "https://example.test/api",
-            "recon",
-            parent_ids=("asset:a",),
-        )
-    )
-    graph.add(
-        Observation(
-            "finding:f1",
-            "finding",
-            "f1",
-            "scanner",
-            parent_ids=("endpoint:e",),
-        )
+    graph._items.update(
+        {
+            "asset:a": Observation(
+                "asset:a",
+                "asset",
+                "example.test",
+                "recon",
+                parent_ids=("endpoint:e",),
+            ),
+            "endpoint:e": Observation(
+                "endpoint:e",
+                "endpoint",
+                "https://example.test/api",
+                "recon",
+                parent_ids=("asset:a",),
+            ),
+            "finding:f1": Observation(
+                "finding:f1",
+                "finding",
+                "f1",
+                "scanner",
+                parent_ids=("endpoint:e",),
+            ),
+        }
     )
 
     chain = build_evidence_chains(graph)[0]
