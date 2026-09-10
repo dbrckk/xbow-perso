@@ -44,6 +44,13 @@ def submission_status(campaign: Any, artifact: dict[str, Any]) -> SubmissionStat
         raise ValueError("only report artifacts have submission state")
 
     approval = approval_status(campaign, artifact)
+    relevant_approval_events = [
+        event
+        for event in campaign.events
+        if event.get("artifact_id") == artifact["id"]
+        and event.get("type") in {"report_approved", "report_approval_revoked"}
+    ]
+    revoked = bool(relevant_approval_events) and relevant_approval_events[-1].get("type") == "report_approval_revoked"
     submissions = [
         event
         for event in campaign.events
@@ -51,7 +58,7 @@ def submission_status(campaign: Any, artifact: dict[str, Any]) -> SubmissionStat
     ]
 
     if not approval.approved:
-        state: SubmissionState = "review_required" if submissions or approval.stale else "draft"
+        state: SubmissionState = "review_required" if submissions or approval.stale or revoked else "draft"
         return SubmissionStatus(
             artifact_id=artifact["id"],
             state=state,
