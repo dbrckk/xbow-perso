@@ -4,7 +4,7 @@ from collections import Counter
 
 from fastapi import APIRouter
 
-from .attack_surface import router as attack_surface_router
+from .attack_surface import build_attack_surface, router as attack_surface_router
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
@@ -27,6 +27,7 @@ def campaign_overview(campaign_id: str):
     graph = load_observation_graph(store, campaign.id)
     validation = analyze_validation_state(graph)
     knowledge = build_knowledge_snapshot(graph)
+    surface = build_attack_surface(graph)
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
     runtime_limit = CampaignRuntimeLimit()
@@ -60,6 +61,8 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("budget_blocked")
     if runtime.exhausted and not terminal_campaign:
         attention_reasons.append("runtime_exhausted")
+    if surface["summary"]["invalid_endpoint_count"]:
+        attention_reasons.append("invalid_attack_surface_endpoint")
     if validation.unresolved_finding_ids:
         attention_reasons.append("unresolved_validation")
     if job_statuses["failed"]:
@@ -111,6 +114,10 @@ def campaign_overview(campaign_id: str):
             "unresolved": len(validation.unresolved_finding_ids),
             "unattempted": len(validation.unattempted_finding_ids),
             "all_observed_independently": validation.all_observed_independently,
+        },
+        "attack_surface": {
+            "summary": surface["summary"],
+            "read_only": surface["read_only"],
         },
         "observations": knowledge.to_dict(),
         "jobs": {
