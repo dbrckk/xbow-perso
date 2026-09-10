@@ -41,7 +41,7 @@ def _setup(tmp_path, monkeypatch):
 
 
 def test_submission_routes_are_mounted():
-    paths = {path for route in app.routes if (path := getattr(route, "path", None))}
+    paths = set(app.openapi()["paths"])
     expected = {
         "/api/campaigns/{campaign_id}/reports/submission-states",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state",
