@@ -18,9 +18,21 @@ def test_canonical_endpoint_redacts_query_values_and_default_port():
         "host": "example.test",
         "path": "/api/items",
         "parameter_names": ["id", "token"],
+        "valid": True,
+        "error": None,
     }
     assert "secret" not in str(result)
     assert "42" not in str(result)
+
+
+def test_canonical_endpoint_flags_invalid_port_without_leaking_query_values():
+    result = canonical_endpoint("https://example.test:not-a-port/api?token=secret")
+
+    assert result["valid"] is False
+    assert result["error"] == "invalid_port"
+    assert result["url"] == ""
+    assert result["parameter_names"] == ["token"]
+    assert "secret" not in str(result)
 
 
 def test_attack_surface_snapshot_is_deterministic_and_read_only():
@@ -63,8 +75,30 @@ def test_attack_surface_snapshot_is_deterministic_and_read_only():
     ]
     assert result["summary"]["hosts"] == {"example.test": 2}
     assert result["summary"]["schemes"] == {"https": 2}
+    assert result["summary"]["endpoint_sources"] == {"recon": 2}
+    assert result["summary"]["unique_endpoint_count"] == 2
+    assert result["summary"]["duplicate_endpoint_count"] == 0
+    assert result["summary"]["invalid_endpoint_count"] == 0
     assert result["summary"]["parameter_names"] == ["x", "z"]
     assert "secret" not in str(result)
+
+
+def test_attack_surface_counts_canonical_duplicates_and_invalid_entries():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:1", "asset", "example.test", "recon"))
+    graph.add(Observation("endpoint:1", "endpoint", "https://example.test:443/api?a=1", "recon", parent_ids=("asset:1",)))
+    graph.add(Observation("endpoint:2", "endpoint", "HTTPS://EXAMPLE.TEST/api?a=2", "browser", parent_ids=("asset:1",)))
+    graph.add(Observation("endpoint:3", "endpoint", "https://example.test:bad/api?secret=value", "recon", parent_ids=("asset:1",)))
+
+    result = build_attack_surface(graph)
+
+    assert result["summary"]["endpoint_count"] == 3
+    assert result["summary"]["valid_endpoint_count"] == 2
+    assert result["summary"]["invalid_endpoint_count"] == 1
+    assert result["summary"]["unique_endpoint_count"] == 1
+    assert result["summary"]["duplicate_endpoint_count"] == 1
+    assert result["summary"]["endpoint_sources"] == {"browser": 1, "recon": 1}
+    assert "value" not in str(result)
 
 
 def test_attack_surface_route_is_exposed_and_reads_durable_graph(tmp_path, monkeypatch):
@@ -104,5 +138,6 @@ def test_attack_surface_route_is_exposed_and_reads_durable_graph(tmp_path, monke
     assert "/api/campaigns/{campaign_id}/attack-surface" in app.openapi()["paths"]
     assert result["campaign_id"] == campaign.id
     assert result["summary"]["endpoint_count"] == 1
+    assert result["summary"]["valid_endpoint_count"] == 1
     assert result["endpoints"][0]["parameter_names"] == ["token"]
     assert "redacted" not in str(result)
