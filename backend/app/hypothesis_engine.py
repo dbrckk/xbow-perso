@@ -13,7 +13,9 @@ from .validation_state import analyze_validation_state
 HypothesisKind = Literal[
     "input_surface_review",
     "authorization_surface_review",
+    "form_surface_review",
     "technology_surface_review",
+    "protection_surface_review",
     "validation_gap",
 ]
 NextAction = Literal["scan", "validate", "stop"]
@@ -80,7 +82,7 @@ def _lineage_hosts(graph: ObservationGraph, observation_id: str) -> set[str]:
                 host = (urlsplit(host).hostname or "").lower().rstrip(".")
             if host:
                 hosts.add(host)
-        elif current.kind == "endpoint":
+        elif current.kind in {"endpoint", "form"}:
             host = (urlsplit(current.value).hostname or "").lower().rstrip(".")
             if host:
                 hosts.add(host)
@@ -149,6 +151,26 @@ def build_hypotheses(
                 )
             )
 
+    for form in graph.by_kind("form"):
+        if not _scope_allows(graph, form.id, scope_checker):
+            continue
+        safe_target, _query_names = _safe_endpoint(form.value)
+        input_names = tuple(
+            sorted({str(name).strip() for name in form.metadata.get("input_names", ()) if str(name).strip()})
+        )
+        hypotheses.append(
+            Hypothesis(
+                kind="form_surface_review",
+                target=safe_target,
+                reason="observed form surface merits bounded, non-destructive review",
+                confidence=0.58 if input_names else 0.50,
+                evidence_ids=(form.id,),
+                next_action="scan",
+                parameter_names=input_names,
+                dependency_depth=len(form.parent_ids),
+            )
+        )
+
     for technology in graph.by_kind("technology"):
         if not _scope_allows(graph, technology.id, scope_checker):
             continue
@@ -161,6 +183,23 @@ def build_hypotheses(
                 evidence_ids=(technology.id,),
                 next_action="scan",
                 dependency_depth=len(technology.parent_ids),
+            )
+        )
+
+    for waf in graph.by_kind("waf"):
+        if not _scope_allows(graph, waf.id, scope_checker):
+            continue
+        confidence = float(waf.metadata.get("confidence", 0.5))
+        confidence = max(0.0, min(1.0, confidence))
+        hypotheses.append(
+            Hypothesis(
+                kind="protection_surface_review",
+                target=waf.value,
+                reason="observed protection layer should inform conservative review planning",
+                confidence=round(0.35 + confidence * 0.20, 4),
+                evidence_ids=(waf.id,),
+                next_action="scan",
+                dependency_depth=len(waf.parent_ids),
             )
         )
 
