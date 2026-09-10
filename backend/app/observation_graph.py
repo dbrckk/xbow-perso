@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 from urllib.parse import urlparse
 
-from .validation_state import attempted_finding_ids, observed_independent_finding_ids
+from .validation_state import analyze_validation_state
 
 ObservationKind = Literal["asset", "endpoint", "technology", "finding", "evidence", "validation"]
 ActionKind = Literal["inventory", "crawl", "scan", "validate", "report", "stop"]
@@ -133,13 +133,9 @@ class AdaptivePlanner:
                     )
                 ]
 
-        finding_by_id = {item.id: item for item in findings}
-        attempted_ids = attempted_finding_ids(graph)
-        observed_validated_finding_ids = observed_independent_finding_ids(graph)
-        if findings and len(observed_validated_finding_ids) < len(findings):
-            unresolved = set(finding_by_id) - observed_validated_finding_ids
-            unattempted = unresolved - attempted_ids
-            if unattempted:
+        validation_state = analyze_validation_state(graph)
+        if findings and validation_state.unresolved_finding_ids:
+            if validation_state.unattempted_finding_ids:
                 return [PlannedAction("validate", host, "findings still require independent validation", 100)]
             return [
                 PlannedAction(
@@ -150,7 +146,7 @@ class AdaptivePlanner:
                 )
             ]
 
-        if findings and len(observed_validated_finding_ids) >= len(findings):
+        if findings and validation_state.all_observed_independently:
             unresolved_findings = [
                 item
                 for item in campaign_findings
