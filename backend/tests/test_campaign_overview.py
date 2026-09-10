@@ -124,7 +124,8 @@ def test_overview_surfaces_report_integrity_failure_without_exposing_bytes(tmp_p
     assert result["reports"]["verified"] == 0
     assert result["reports"]["integrity_errors"] == 1
     assert result["attention_required"] is True
-    assert result["attention_reasons"] == ["report_integrity_error"]
+    assert "report_integrity_error" in result["attention_reasons"]
+    assert "finding_graph_mismatch" in result["attention_reasons"]
 
 
 def test_overview_flags_runtime_exhaustion_for_active_campaign(tmp_path, monkeypatch):
