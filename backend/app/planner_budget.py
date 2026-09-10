@@ -16,6 +16,7 @@ class PlannerBudget:
     max_validation_batch: int = 10
     max_reports: int = 5
     max_inflight_jobs: int = 12
+    max_failed_jobs: int = 5
 
     def __post_init__(self) -> None:
         values = (
@@ -25,6 +26,7 @@ class PlannerBudget:
             self.max_validation_batch,
             self.max_reports,
             self.max_inflight_jobs,
+            self.max_failed_jobs,
         )
         if any(value < 1 for value in values):
             raise ValueError("planner budget limits must be positive")
@@ -42,11 +44,13 @@ class BudgetUsage:
     validations: int
     reports: int
     inflight_jobs: int
+    failed_jobs: int
     remaining_actions: int
     remaining_scans: int
     remaining_validations: int
     remaining_reports: int
     remaining_inflight_jobs: int
+    remaining_failed_jobs: int
     blocked_actions: dict[str, str]
     exhausted: bool
     reason: str | None = None
@@ -62,6 +66,7 @@ def _blocked_actions(
     validations: int,
     reports: int,
     inflight_jobs: int,
+    failed_jobs: int,
     limits: PlannerBudget,
 ) -> dict[str, str]:
     if actions >= limits.max_actions:
@@ -71,6 +76,9 @@ def _blocked_actions(
         }
 
     blocked: dict[str, str] = {}
+    if failed_jobs >= limits.max_failed_jobs:
+        for kind in ("scan", "validate", "report"):
+            blocked[kind] = "failed job budget exhausted"
     if inflight_jobs >= limits.max_inflight_jobs:
         for kind in ("scan", "validate", "report"):
             blocked[kind] = "in-flight job budget exhausted"
@@ -98,12 +106,14 @@ def budget_usage(
     validations = counts["independent_validation"]
     reports = counts["report"]
     inflight_jobs = status_counts["queued"] + status_counts["running"]
+    failed_jobs = status_counts["failed"]
     blocked_actions = _blocked_actions(
         actions=actions,
         scans=scans,
         validations=validations,
         reports=reports,
         inflight_jobs=inflight_jobs,
+        failed_jobs=failed_jobs,
         limits=limits,
     )
     exhausted = actions >= limits.max_actions
@@ -114,11 +124,13 @@ def budget_usage(
         validations=validations,
         reports=reports,
         inflight_jobs=inflight_jobs,
+        failed_jobs=failed_jobs,
         remaining_actions=max(0, limits.max_actions - actions),
         remaining_scans=max(0, limits.max_scans - scans),
         remaining_validations=max(0, limits.max_validations - validations),
         remaining_reports=max(0, limits.max_reports - reports),
         remaining_inflight_jobs=max(0, limits.max_inflight_jobs - inflight_jobs),
+        remaining_failed_jobs=max(0, limits.max_failed_jobs - failed_jobs),
         blocked_actions=blocked_actions,
         exhausted=exhausted,
         reason="planner action budget exhausted" if exhausted else None,
