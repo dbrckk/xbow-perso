@@ -16,6 +16,7 @@ def test_budget_usage_reads_durable_campaign_jobs(tmp_path):
     assert usage.reports == 1
     assert usage.scans == 0
     assert usage.inflight_jobs == 2
+    assert usage.failed_jobs == 0
     assert usage.remaining_validations == 24
     assert usage.blocked_actions == {}
 
@@ -162,3 +163,52 @@ def test_validation_batch_respects_inflight_capacity(tmp_path):
 
     assert usage.inflight_jobs == 4
     assert validation_batch_limit(usage, limits) == 2
+
+
+def test_repeated_failed_jobs_stop_new_network_work(tmp_path):
+    queue = JobQueue(str(tmp_path / "db.sqlite3"))
+    graph = ObservationGraph()
+    limits = PlannerBudget(max_failed_jobs=2)
+
+    for index in range(2):
+        queued = queue.enqueue(
+            "c1",
+            "report",
+            {"campaign_id": "c1", "platform": f"failed-{index}"},
+            max_attempts=1,
+            dedupe_key=f"failed:{index}",
+        )
+        claimed = queue.claim("worker-1")
+        assert claimed is not None and claimed["id"] == queued["id"]
+        queue.finish(claimed["id"], "worker-1", False, "expected test failure")
+
+    action, usage = apply_budget(
+        PlannedAction("validate", "example.test", "validate next", 80),
+        graph,
+        queue,
+        "c1",
+        limits,
+    )
+
+    assert action.kind == "stop"
+    assert action.reason == "failed job budget exhausted"
+    assert usage.failed_jobs == 2
+    assert usage.remaining_failed_jobs == 0
+    assert usage.blocked_actions == {
+        "scan": "failed job budget exhausted",
+        "validate": "failed job budget exhausted",
+        "report": "failed job budget exhausted",
+    }
+
+
+def test_stop_action_is_never_blocked_by_job_budgets(tmp_path):
+    queue = JobQueue(str(tmp_path / "db.sqlite3"))
+    graph = ObservationGraph()
+    limits = PlannerBudget(max_inflight_jobs=1)
+    queue.enqueue("c1", "report", {"platform": "generic"}, dedupe_key="report:1")
+
+    requested = PlannedAction("stop", "example.test", "policy stop", 100)
+    action, usage = apply_budget(requested, graph, queue, "c1", limits)
+
+    assert action == requested
+    assert usage.blocked_actions["report"] == "in-flight job budget exhausted"
