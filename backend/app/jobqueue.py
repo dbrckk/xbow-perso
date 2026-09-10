@@ -169,6 +169,17 @@ class JobQueue:
         counts.update({row["kind"]: int(row["count"]) for row in rows})
         return counts
 
+    def campaign_job_status_counts(self, campaign_id: str) -> dict[str, int]:
+        """Return per-status job counts for one campaign without exposing payloads."""
+        with self.connect() as db:
+            rows = db.execute(
+                "SELECT status, COUNT(*) AS count FROM jobs WHERE campaign_id=? GROUP BY status",
+                (campaign_id,),
+            ).fetchall()
+        counts = {status: 0 for status in ("queued", "running", "completed", "failed", "cancelled")}
+        counts.update({row["status"]: int(row["count"]) for row in rows})
+        return counts
+
     def _recover_expired_leases(self, db: sqlite3.Connection, now: datetime) -> int:
         lease_seconds = int(os.getenv("XBOW_JOB_LEASE_SECONDS", "21600"))
         if not 60 <= lease_seconds <= 86400:
