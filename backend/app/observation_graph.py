@@ -18,7 +18,9 @@ class Observation:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        payload = asdict(self)
+        payload["parent_ids"] = list(self.parent_ids)
+        return payload
 
 
 @dataclass(frozen=True)
@@ -33,48 +35,53 @@ class PlannedAction:
 
 
 class ObservationGraph:
-    """Small deterministic graph used by the planner; it never executes network actions."""
+    """Small deterministic observation graph used by the planner and tests."""
 
     def __init__(self) -> None:
-        self._observations: dict[str, Observation] = {}
+        self._items: dict[str, Observation] = {}
+
+    def add(self, observation: Observation) -> None:
+        missing = [parent for parent in observation.parent_ids if parent not in self._items]
+        if missing:
+            raise ValueError(f"unknown parent observation(s): {', '.join(missing)}")
+        existing = self._items.get(observation.id)
+        if existing and existing != observation:
+            raise ValueError(f"observation id already exists with different content: {observation.id}")
+        self._items[observation.id] = observation
 
     @classmethod
     def from_records(cls, records: list[dict[str, Any]]) -> ObservationGraph:
-        """Rebuild a graph from durable records without relying on database row order."""
         graph = cls()
-        pending = {
-            str(record["id"]): Observation(
-                id=str(record["id"]),
-                kind=record["kind"],
-                value=str(record["value"]),
-                source=str(record["source"]),
-                parent_ids=tuple(str(item) for item in record.get("parent_ids", ())),
-                metadata=dict(record.get("metadata", {})),
+        pending = [
+            Observation(
+                id=str(item["id"]),
+                kind=item["kind"],
+                value=str(item["value"]),
+                source=str(item["source"]),
+                parent_ids=tuple(item.get("parent_ids", ())),
+                metadata=dict(item.get("metadata", {})),
             )
-            for record in records
-        }
+            for item in records
+        ]
         while pending:
+            remaining = []
             progressed = False
-            for observation_id, observation in list(pending.items()):
-                if all(parent in graph._observations for parent in observation.parent_ids):
+            for observation in pending:
+                if all(parent in graph._items for parent in observation.parent_ids):
                     graph.add(observation)
-                    pending.pop(observation_id)
                     progressed = True
+                else:
+                    remaining.append(observation)
             if not progressed:
-                raise ValueError("persisted observation graph has missing or cyclic parents")
+                raise ValueError("observation records contain missing or cyclic parents")
+            pending = remaining
         return graph
 
-    def add(self, observation: Observation) -> None:
-        missing = [parent for parent in observation.parent_ids if parent not in self._observations]
-        if missing:
-            raise ValueError("observation references unknown parent")
-        self._observations[observation.id] = observation
-
     def values(self) -> list[Observation]:
-        return list(self._observations.values())
+        return list(self._items.values())
 
     def by_kind(self, kind: ObservationKind) -> list[Observation]:
-        return [item for item in self._observations.values() if item.kind == kind]
+        return [item for item in self._items.values() if item.kind == kind]
 
 
 def load_observation_graph(store: Any, campaign_id: str) -> ObservationGraph:
@@ -112,7 +119,7 @@ class AdaptivePlanner:
             return [PlannedAction("inventory", host, "no observations collected yet", 100)]
 
         campaign_findings = list(getattr(campaign, "findings", ()))
-        if findings and campaign_findings:
+        if findings or campaign_findings:
             graph_finding_ids = {_campaign_finding_id(item) for item in findings}
             campaign_finding_ids = {str(item.id) for item in campaign_findings}
             if graph_finding_ids != campaign_finding_ids:
@@ -154,16 +161,6 @@ class AdaptivePlanner:
             ]
 
         if findings and len(observed_validated_finding_ids) >= len(findings):
-            if not campaign_findings:
-                return [
-                    PlannedAction(
-                        "stop",
-                        host,
-                        "observation findings are missing campaign finding state",
-                        100,
-                    )
-                ]
-
             unresolved_findings = [
                 item
                 for item in campaign_findings
@@ -183,15 +180,13 @@ class AdaptivePlanner:
                 item for item in campaign_findings if getattr(item, "status", None) == "confirmed"
             ]
             if not confirmed_findings:
-                return [PlannedAction("stop", host, "all findings were rejected; no report required", 100)]
+                return [PlannedAction("stop", host, "all findings rejected; no report required", 100)]
 
             report_exists = any(item.metadata.get("artifact_kind") == "report" for item in evidence)
             if report_exists:
-                return [PlannedAction("stop", host, "confirmed findings already have a generated report", 100)]
-            return [PlannedAction("report", host, "confirmed findings have observed independent validation", 70)]
+                return [PlannedAction("stop", host, "report artifact already exists", 100)]
+            return [PlannedAction("report", host, "confirmed findings are independently validated", 70)]
 
-        if assets and not endpoints:
-            return [PlannedAction("crawl", host, "known assets have no endpoint inventory", 90)]
         if endpoints and not findings:
             scan_completed = any(
                 item.metadata.get("phase") == "scan" and item.metadata.get("status") == "completed"
@@ -200,4 +195,8 @@ class AdaptivePlanner:
             if scan_completed:
                 return [PlannedAction("stop", host, "scan completed without recorded findings", 100)]
             return [PlannedAction("scan", host, "endpoint inventory exists but no findings recorded", 80)]
-        return [PlannedAction("stop", host, "no bounded next action available", 10)]
+
+        if assets and not endpoints:
+            return [PlannedAction("crawl", host, "asset inventory exists but endpoints are missing", 90)]
+
+        return [PlannedAction("stop", host, "no safe planner transition available", 100)]
