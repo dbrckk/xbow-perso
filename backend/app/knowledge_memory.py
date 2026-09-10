@@ -68,15 +68,16 @@ def build_knowledge_snapshot(graph: ObservationGraph) -> KnowledgeSnapshot:
     scores: list[FindingConfidence] = []
     for finding in findings:
         linked_validations = [item for item in validations if finding.id in item.parent_ids]
-        validation_ids = {item.id for item in linked_validations}
+        independent_validations = [item for item in linked_validations if item.source != finding.source]
+        validation_ids = {item.id for item in independent_validations}
         linked_evidence = [
             item
             for item in evidence
             if any(parent in validation_ids or parent == finding.id for parent in item.parent_ids)
         ]
-        best_validation_credit = max((_validation_quality(item.value) for item in linked_validations), default=0.0)
+        best_validation_credit = max((_validation_quality(item.value) for item in independent_validations), default=0.0)
         observed_validation_ids = {
-            item.id for item in linked_validations if _validation_quality(item.value) >= 0.40
+            item.id for item in independent_validations if _validation_quality(item.value) >= 0.40
         }
         observed_evidence = [
             item for item in linked_evidence if any(parent in observed_validation_ids for parent in item.parent_ids)
