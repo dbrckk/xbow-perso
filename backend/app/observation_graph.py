@@ -105,21 +105,39 @@ class AdaptivePlanner:
         if not observations:
             return [PlannedAction("inventory", host, "no observations collected yet", 100)]
 
-        finding_ids = {item.id for item in findings}
-        validated_finding_ids = {
+        finding_by_id = {item.id: item for item in findings}
+        attempted_finding_ids = {
             parent_id
             for validation in validations
             for parent_id in validation.parent_ids
-            if parent_id in finding_ids
+            if parent_id in finding_by_id
         }
-        if findings and len(validated_finding_ids) < len(findings):
-            return [PlannedAction("validate", host, "findings still require independent validation", 100)]
+        observed_validated_finding_ids = {
+            parent_id
+            for validation in validations
+            if validation.value == "observed"
+            for parent_id in validation.parent_ids
+            if parent_id in finding_by_id and validation.source != finding_by_id[parent_id].source
+        }
+        if findings and len(observed_validated_finding_ids) < len(findings):
+            unresolved = set(finding_by_id) - observed_validated_finding_ids
+            unattempted = unresolved - attempted_finding_ids
+            if unattempted:
+                return [PlannedAction("validate", host, "findings still require independent validation", 100)]
+            return [
+                PlannedAction(
+                    "stop",
+                    host,
+                    "independent validation did not produce observed evidence for all findings",
+                    100,
+                )
+            ]
 
-        if findings and len(validated_finding_ids) >= len(findings):
+        if findings and len(observed_validated_finding_ids) >= len(findings):
             report_exists = any(item.metadata.get("artifact_kind") == "report" for item in evidence)
             if report_exists:
                 return [PlannedAction("stop", host, "validated findings already have a generated report", 100)]
-            return [PlannedAction("report", host, "all recorded findings have independent validation observations", 70)]
+            return [PlannedAction("report", host, "all recorded findings have observed independent validation", 70)]
 
         if assets and not endpoints:
             return [PlannedAction("crawl", host, "known assets have no endpoint inventory", 90)]
