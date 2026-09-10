@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from .attack_surface import build_attack_surface, router as attack_surface_router
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .evidence_chain import build_evidence_chains
+from .finding_correlation import correlate_findings
 from .hypothesis_engine import build_hypotheses
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
@@ -32,6 +33,7 @@ def campaign_overview(campaign_id: str):
     surface = build_attack_surface(graph)
     hypotheses = build_hypotheses(graph)
     chains = build_evidence_chains(graph)
+    correlations = correlate_findings(campaign.findings)
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
     runtime_limit = CampaignRuntimeLimit()
@@ -41,6 +43,7 @@ def campaign_overview(campaign_id: str):
     resolved_findings = finding_counts.get("confirmed", 0) + finding_counts.get("rejected", 0)
     hypothesis_counts = Counter(item.kind for item in hypotheses)
     complete_chains = sum(item.complete for item in chains)
+    duplicate_groups = [item for item in correlations if item.duplicate_candidate]
     report_states = Counter()
     report_integrity_errors = 0
     reports = []
@@ -131,6 +134,13 @@ def campaign_overview(campaign_id: str):
             "total": len(chains),
             "complete": complete_chains,
             "incomplete": len(chains) - complete_chains,
+            "read_only": True,
+        },
+        "correlations": {
+            "groups": len(correlations),
+            "duplicate_groups": len(duplicate_groups),
+            "findings_in_duplicate_groups": sum(len(item.finding_ids) for item in duplicate_groups),
+            "auto_merge": False,
             "read_only": True,
         },
         "attack_surface": {
