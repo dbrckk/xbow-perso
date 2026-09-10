@@ -34,6 +34,39 @@ def test_review_queue_prioritizes_validation_gap_over_surface_review():
     assert "secret" not in str([item.to_dict() for item in tasks])
 
 
+def test_review_queue_filters_out_of_scope_work():
+    graph = ObservationGraph()
+    graph.add(Observation("inside", "asset", "example.test", "recon"))
+    graph.add(Observation("outside", "asset", "outside.test", "recon"))
+    graph.add(
+        Observation(
+            "inside:e",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "recon",
+            parent_ids=("inside",),
+        )
+    )
+    graph.add(
+        Observation(
+            "outside:e",
+            "endpoint",
+            "https://outside.test/admin?id=2",
+            "recon",
+            parent_ids=("outside",),
+        )
+    )
+
+    tasks = build_review_queue(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert tasks
+    assert all(item.target.startswith("https://example.test/") for item in tasks)
+    assert "outside.test" not in str([item.to_dict() for item in tasks])
+
+
 def test_review_queue_is_bounded_and_deterministic():
     graph = ObservationGraph()
     graph.add(Observation("asset:a", "asset", "example.test", "recon"))
@@ -81,6 +114,7 @@ def test_review_queue_route_is_exposed_and_advisory(tmp_path, monkeypatch):
     assert result["campaign_id"] == campaign.id
     assert result["read_only"] is True
     assert result["advisory_only"] is True
+    assert result["scope_aware"] is True
 
 
 def test_review_queue_rejects_unbounded_limits():
