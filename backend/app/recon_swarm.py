@@ -105,6 +105,14 @@ def build_recon_plan(
     if not safe_target or not scope_checker(host):
         return []
 
+    observed_assets = {
+        _safe_target(item.value)[1]
+        for item in graph.by_kind("asset")
+        if _safe_target(item.value)[1]
+    }
+    if observed_assets and host not in observed_assets:
+        return []
+
     endpoints = graph.by_kind("endpoint")
     forms = graph.by_kind("form")
     technologies = graph.by_kind("technology")
