@@ -6,6 +6,7 @@ from urllib.parse import parse_qsl, urlsplit, urlunsplit
 
 from fastapi import APIRouter
 
+from .evidence_chain import router as evidence_chain_router
 from .observation_graph import ObservationGraph, load_observation_graph
 from .validation_state import analyze_validation_state
 
@@ -18,6 +19,7 @@ HypothesisKind = Literal[
 NextAction = Literal["scan", "validate", "stop"]
 
 router = APIRouter()
+router.routes.extend(evidence_chain_router.routes)
 
 
 @dataclass(frozen=True)
