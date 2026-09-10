@@ -99,6 +99,33 @@ def test_planner_counts_validations_by_finding_relationship():
     assert AdaptivePlanner().plan(campaign(), graph)[0].kind == "validate"
 
 
+def test_planner_does_not_report_after_dry_run_or_error_validation():
+    for status in ("dry_run", "error"):
+        graph = ObservationGraph()
+        graph.add(Observation("a1", "asset", "example.com", "recon"))
+        graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+        graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
+        graph.add(Observation("v1", "validation", status, "validator", parent_ids=("f1",)))
+
+        action = AdaptivePlanner().plan(campaign(), graph)[0]
+
+        assert action.kind == "stop"
+        assert "did not produce observed evidence" in action.reason
+
+
+def test_planner_requires_validation_source_independence():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "recon"))
+    graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+    graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
+    graph.add(Observation("v1", "validation", "observed", "scanner", parent_ids=("f1",)))
+
+    action = AdaptivePlanner().plan(campaign(), graph)[0]
+
+    assert action.kind == "stop"
+    assert "did not produce observed evidence" in action.reason
+
+
 def test_planner_stops_when_automation_is_disabled():
     graph = ObservationGraph()
     action = AdaptivePlanner().plan(campaign(automated_scanning=False), graph)[0]
