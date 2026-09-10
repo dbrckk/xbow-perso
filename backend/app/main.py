@@ -14,7 +14,9 @@ from pydantic import BaseModel, Field, HttpUrl, model_validator
 
 from .auth import AuthError, require_api_token
 from .jobqueue import JobQueue
+from .readiness import readiness as dependency_readiness
 from .storage import ArtifactIntegrityError, CampaignConflictError, Storage
+from .validation_state import has_observed_independent_validation
 
 app = FastAPI(title="xbow-perso", version="0.4.0")
 
@@ -165,16 +167,7 @@ def _campaign_graph(campaign_id: str):
 
 def _has_observed_independent_validation(campaign_id: str, finding: Finding) -> bool:
     graph = _campaign_graph(campaign_id)
-    finding_id = f"finding:{finding.id}"
-    finding_observation = next((item for item in graph.by_kind("finding") if item.id == finding_id), None)
-    if finding_observation is None:
-        return False
-    return any(
-        validation.value == "observed"
-        and finding_id in validation.parent_ids
-        and validation.source != finding_observation.source
-        for validation in graph.by_kind("validation")
-    )
+    return has_observed_independent_validation(graph, f"finding:{finding.id}")
 
 
 def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]:
@@ -221,6 +214,19 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
             "automated_scanning": campaign.target.rules.automated_scanning,
         },
     }
+
+
+@app.get("/live")
+def live():
+    return {"ok": True, "service": "xbow-perso", "version": app.version}
+
+
+@app.get("/ready")
+def ready():
+    payload = {**dependency_readiness(), "service": "xbow-perso", "version": app.version}
+    if not payload["ok"]:
+        return JSONResponse(status_code=503, content=payload)
+    return payload
 
 
 @app.get("/health")
