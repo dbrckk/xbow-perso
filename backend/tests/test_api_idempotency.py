@@ -1,3 +1,6 @@
+import pytest
+from fastapi import HTTPException
+
 from app.jobqueue import JobQueue
 from app.main import (
     Campaign,
@@ -9,6 +12,7 @@ from app.main import (
     add_text_artifact,
     validate_finding,
 )
+from app.observation_graph import Observation
 from app.storage import Storage
 
 
@@ -33,6 +37,31 @@ def _setup(tmp_path, monkeypatch, *, findings=None):
     return db, artifacts
 
 
+def _record_observed_validation(db, artifacts, finding_id="f1"):
+    store = Storage(db, artifacts)
+    store.put_observation("c1", Observation("a1", "asset", "example.test", "scanner").to_dict())
+    store.put_observation(
+        "c1",
+        Observation(
+            f"finding:{finding_id}",
+            "finding",
+            finding_id,
+            "scanner",
+            parent_ids=("a1",),
+        ).to_dict(),
+    )
+    store.put_observation(
+        "c1",
+        Observation(
+            "v1",
+            "validation",
+            "observed",
+            "independent-http-validator",
+            parent_ids=(f"finding:{finding_id}",),
+        ).to_dict(),
+    )
+
+
 def test_duplicate_finding_retry_returns_existing_and_keeps_one_job(tmp_path, monkeypatch):
     db, _ = _setup(tmp_path, monkeypatch)
     finding = Finding(
@@ -53,7 +82,7 @@ def test_duplicate_finding_retry_returns_existing_and_keeps_one_job(tmp_path, mo
     assert JobQueue(db).stats()["total"] == 1
 
 
-def test_repeated_validation_does_not_queue_duplicate_report(tmp_path, monkeypatch):
+def test_resolution_requires_observed_independent_validation(tmp_path, monkeypatch):
     finding = Finding(
         id="f1",
         title="candidate",
@@ -65,11 +94,62 @@ def test_repeated_validation_does_not_queue_duplicate_report(tmp_path, monkeypat
     )
     db, _ = _setup(tmp_path, monkeypatch, findings=[finding])
 
+    with pytest.raises(HTTPException) as exc:
+        validate_finding("c1", "f1", True, "human-reviewer")
+
+    assert exc.value.status_code == 409
+    stored = Storage(db).get_campaign("c1")
+    assert stored["findings"][0]["status"] == "validation_required"
+    assert JobQueue(db).stats()["total"] == 0
+
+
+def test_repeated_validation_does_not_queue_duplicate_report(tmp_path, monkeypatch):
+    finding = Finding(
+        id="f1",
+        title="candidate",
+        severity="low",
+        asset="https://example.test",
+        summary="fixture",
+        status="validation_required",
+        discovered_by="scanner",
+    )
+    db, artifacts = _setup(tmp_path, monkeypatch, findings=[finding])
+    _record_observed_validation(db, artifacts)
+
     first = validate_finding("c1", "f1", True, "human-reviewer")
     second = validate_finding("c1", "f1", True, "human-reviewer")
 
     assert first.status == second.status == "confirmed"
     assert JobQueue(db).stats()["total"] == 1
+
+
+def test_self_sourced_observation_cannot_unlock_resolution(tmp_path, monkeypatch):
+    finding = Finding(
+        id="f1",
+        title="candidate",
+        severity="low",
+        asset="https://example.test",
+        summary="fixture",
+        status="validation_required",
+        discovered_by="scanner",
+    )
+    db, artifacts = _setup(tmp_path, monkeypatch, findings=[finding])
+    store = Storage(db, artifacts)
+    store.put_observation("c1", Observation("a1", "asset", "example.test", "scanner").to_dict())
+    store.put_observation(
+        "c1",
+        Observation("finding:f1", "finding", "f1", "scanner", parent_ids=("a1",)).to_dict(),
+    )
+    store.put_observation(
+        "c1",
+        Observation("v1", "validation", "observed", "scanner", parent_ids=("finding:f1",)).to_dict(),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        validate_finding("c1", "f1", False, "human-reviewer")
+
+    assert exc.value.status_code == 409
+    assert Storage(db).get_campaign("c1")["findings"][0]["status"] == "validation_required"
 
 
 def test_duplicate_text_artifact_retry_reuses_artifact_and_event(tmp_path, monkeypatch):
