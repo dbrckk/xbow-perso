@@ -2,7 +2,7 @@ import pytest
 from fastapi import HTTPException
 
 import app.submission_api as submission_api
-from app.main import Campaign, Finding, ProgramRules, TargetInput
+from app.main import Campaign, Finding, ProgramRules, TargetInput, app
 from app.storage import Storage
 
 
@@ -38,6 +38,17 @@ def _setup(tmp_path, monkeypatch):
     store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
     artifact = store.put_artifact(campaign.id, "report", b"report", media_type="text/markdown")
     return campaign, artifact
+
+
+def test_submission_routes_are_mounted():
+    paths = {route.path for route in app.routes}
+    expected = {
+        "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state",
+        "/api/campaigns/{campaign_id}/reports/{artifact_id}/approve",
+        "/api/campaigns/{campaign_id}/reports/{artifact_id}/revoke-approval",
+        "/api/campaigns/{campaign_id}/reports/{artifact_id}/mark-submitted",
+    }
+    assert expected <= paths
 
 
 def test_submission_api_requires_approval(tmp_path, monkeypatch):
