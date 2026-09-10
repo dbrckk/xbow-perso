@@ -8,6 +8,7 @@ from app.report_readiness import build_report_readiness
 def _finding(finding_id: str, status: str = "validation_required"):
     return SimpleNamespace(
         id=finding_id,
+        title=f"Finding {finding_id}",
         status=status,
         severity="high",
         asset="example.test",
