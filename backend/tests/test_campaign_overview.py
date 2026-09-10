@@ -1,5 +1,7 @@
+from datetime import datetime, timedelta, timezone
+
 from app.campaign_overview import campaign_overview
-from app.main import Campaign, Finding, ProgramRules, TargetInput, app
+from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput, app
 from app.observation_graph import Observation
 from app.storage import Storage
 
@@ -63,6 +65,10 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
     assert result["policy"]["authorization_reference"] == "explicit-test-authorization"
     assert result["policy"]["automated_scanning"] is True
     assert result["policy"]["destructive_testing"] is False
+    assert result["runtime"]["limit"]["max_runtime_seconds"] == 21600
+    assert result["runtime"]["status"]["exhausted"] is False
+    assert result["runtime"]["status"]["remaining_seconds"] > 0
+    assert result["runtime"]["terminal_campaign"] is False
     assert result["findings"]["total"] == 1
     assert result["findings"]["resolved"] == 0
     assert result["findings"]["unresolved"] == 1
@@ -138,3 +144,31 @@ def test_overview_surfaces_report_integrity_failure_without_exposing_bytes(tmp_p
     assert result["reports"]["integrity_errors"] == 1
     assert result["attention_required"] is True
     assert result["attention_reasons"] == ["report_integrity_error"]
+
+
+def test_overview_flags_runtime_exhaustion_for_active_campaign(tmp_path, monkeypatch):
+    campaign, store = _setup(tmp_path, monkeypatch)
+    campaign.created_at = (datetime.now(timezone.utc) - timedelta(hours=7)).isoformat()
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
+
+    result = campaign_overview(campaign.id)
+
+    assert result["runtime"]["status"]["exhausted"] is True
+    assert result["runtime"]["status"]["remaining_seconds"] == 0
+    assert result["attention_required"] is True
+    assert "runtime_exhausted" in result["attention_reasons"]
+
+
+def test_overview_does_not_flag_runtime_exhaustion_for_terminal_campaign(tmp_path, monkeypatch):
+    campaign, store = _setup(tmp_path, monkeypatch)
+    campaign.created_at = (datetime.now(timezone.utc) - timedelta(hours=7)).isoformat()
+    campaign.state = CampaignState.completed
+    campaign.findings[0].status = "rejected"
+    campaign.findings[0].validated_by = "independent-validator"
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
+
+    result = campaign_overview(campaign.id)
+
+    assert result["runtime"]["status"]["exhausted"] is True
+    assert result["runtime"]["terminal_campaign"] is True
+    assert "runtime_exhausted" not in result["attention_reasons"]
