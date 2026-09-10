@@ -82,6 +82,12 @@ def load_observation_graph(store: Any, campaign_id: str) -> ObservationGraph:
     return ObservationGraph.from_records(store.list_observations(campaign_id))
 
 
+def _campaign_finding_id(observation: Observation) -> str:
+    """Map canonical graph finding IDs to campaign IDs while preserving old fixtures."""
+    prefix = "finding:"
+    return observation.id[len(prefix) :] if observation.id.startswith(prefix) else observation.id
+
+
 class AdaptivePlanner:
     """Deterministic, bounded decision layer for authorized campaign progression."""
 
@@ -104,6 +110,20 @@ class AdaptivePlanner:
 
         if not observations:
             return [PlannedAction("inventory", host, "no observations collected yet", 100)]
+
+        campaign_findings = list(getattr(campaign, "findings", ()))
+        if findings and campaign_findings:
+            graph_finding_ids = {_campaign_finding_id(item) for item in findings}
+            campaign_finding_ids = {str(item.id) for item in campaign_findings}
+            if graph_finding_ids != campaign_finding_ids:
+                return [
+                    PlannedAction(
+                        "stop",
+                        host,
+                        "observation graph and campaign finding state are inconsistent",
+                        100,
+                    )
+                ]
 
         finding_by_id = {item.id: item for item in findings}
         attempted_finding_ids = {
@@ -134,7 +154,6 @@ class AdaptivePlanner:
             ]
 
         if findings and len(observed_validated_finding_ids) >= len(findings):
-            campaign_findings = list(getattr(campaign, "findings", ()))
             if not campaign_findings:
                 return [
                     PlannedAction(
