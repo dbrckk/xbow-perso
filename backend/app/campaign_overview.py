@@ -6,6 +6,8 @@ from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface, router as attack_surface_router
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
+from .evidence_chain import build_evidence_chains
+from .hypothesis_engine import build_hypotheses
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import load_observation_graph
 from .planner_budget import PlannerBudget, budget_usage
@@ -28,6 +30,8 @@ def campaign_overview(campaign_id: str):
     validation = analyze_validation_state(graph)
     knowledge = build_knowledge_snapshot(graph)
     surface = build_attack_surface(graph)
+    hypotheses = build_hypotheses(graph)
+    chains = build_evidence_chains(graph)
     limits = PlannerBudget()
     budget = budget_usage(graph, jobs, campaign.id, limits)
     runtime_limit = CampaignRuntimeLimit()
@@ -35,6 +39,8 @@ def campaign_overview(campaign_id: str):
 
     finding_counts = Counter(str(item.status) for item in campaign.findings)
     resolved_findings = finding_counts.get("confirmed", 0) + finding_counts.get("rejected", 0)
+    hypothesis_counts = Counter(item.kind for item in hypotheses)
+    complete_chains = sum(item.complete for item in chains)
     report_states = Counter()
     report_integrity_errors = 0
     reports = []
@@ -114,6 +120,18 @@ def campaign_overview(campaign_id: str):
             "unresolved": len(validation.unresolved_finding_ids),
             "unattempted": len(validation.unattempted_finding_ids),
             "all_observed_independently": validation.all_observed_independently,
+        },
+        "hypotheses": {
+            "total": len(hypotheses),
+            "by_kind": dict(sorted(hypothesis_counts.items())),
+            "highest_confidence": max((item.confidence for item in hypotheses), default=0.0),
+            "read_only": True,
+        },
+        "evidence_chains": {
+            "total": len(chains),
+            "complete": complete_chains,
+            "incomplete": len(chains) - complete_chains,
+            "read_only": True,
         },
         "attack_surface": {
             "summary": surface["summary"],
