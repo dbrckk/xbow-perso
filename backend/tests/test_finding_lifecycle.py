@@ -23,6 +23,8 @@ def test_candidate_recommends_validation_without_execution_authority():
     assert item.recommended_state == "validation_required"
     assert item.transition_allowed is True
     assert item.human_decision_required is False
+    assert item.graph_observed is False
+    assert item.evidence_chain_integrity_ok is False
 
 
 def test_validation_required_blocks_until_independent_complete_evidence():
@@ -43,6 +45,8 @@ def test_validation_required_blocks_until_independent_complete_evidence():
     assert item.recommended_state == "human_confirm_or_reject"
     assert item.transition_allowed is False
     assert item.human_decision_required is True
+    assert item.graph_observed is True
+    assert item.evidence_chain_integrity_ok is True
     assert "independent_validation" in item.prerequisites
     assert "complete_evidence_chain" in item.prerequisites
 
@@ -84,6 +88,8 @@ def test_confirmed_finding_with_complete_chain_is_ready_for_human_report_review(
     assert item.transition_allowed is True
     assert item.prerequisites == ()
     assert item.human_decision_required is True
+    assert item.graph_observed is True
+    assert item.evidence_chain_integrity_ok is True
 
 
 def test_rejected_finding_is_terminal():
@@ -91,6 +97,8 @@ def test_rejected_finding_is_terminal():
 
     assert item.recommended_state == "terminal"
     assert item.transition_allowed is False
+    assert item.graph_observed is False
+    assert item.evidence_chain_integrity_ok is False
 
 
 def test_finding_lifecycle_route_is_exposed():
