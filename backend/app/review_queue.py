@@ -54,9 +54,10 @@ def build_review_queue(graph: ObservationGraph, *, limit: int = 25) -> list[Revi
 
     for hypothesis in build_hypotheses(graph, limit=100):
         if hypothesis.kind == "validation_gap":
-            chain = chains.get(hypothesis.target)
+            graph_finding_id = hypothesis.evidence_ids[0]
+            chain = chains.get(graph_finding_id)
             chain_penalty = 0.0 if chain and chain.complete else 0.08
-            current_confidence = confidence.get(hypothesis.target, 0.35)
+            current_confidence = confidence.get(graph_finding_id, 0.35)
             priority = min(1.0, round(0.75 + (1.0 - current_confidence) * 0.17 + chain_penalty, 4))
             tasks.append(
                 ReviewTask(
