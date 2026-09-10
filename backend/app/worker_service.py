@@ -136,6 +136,12 @@ def _record_scan_observation(store: Storage, campaign: Campaign, job_id: str, fi
     )
 
 
+def _state_after_scan(campaign: Campaign) -> CampaignState:
+    """Derive scan completion state from durable finding resolution, not queue fan-out."""
+    unresolved = any(finding.status not in {"confirmed", "rejected"} for finding in campaign.findings)
+    return CampaignState.validating if unresolved else CampaignState.completed
+
+
 @contextmanager
 def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
     """Keep ownership of a long-running job without hiding lease loss."""
@@ -199,7 +205,7 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
             dedupe_key=f"validation:{finding.id}",
         )
         queued += 1
-    campaign.state = CampaignState.validating if queued else CampaignState.completed
+    campaign.state = _state_after_scan(campaign)
     _append_event_once(
         campaign,
         {"type": "strix_results_ingested", "job_id": job["id"], "findings": len(findings), "validation_jobs": queued, "at": utcnow()},
