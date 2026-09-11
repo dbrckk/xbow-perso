@@ -373,3 +373,28 @@ def test_invalid_observation_size_limit_fails_closed(tmp_path, monkeypatch):
                 "c1",
                 {"id": "obs:test", "kind": "asset", "value": "example.test", "source": "fixture"},
             )
+
+
+def test_campaign_document_persistence_is_bounded(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES", "65536")
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    document = {
+        "id": "c1",
+        "state": "ready",
+        "created_at": "x",
+        "updated_at": "x",
+        "events": [{"message": "x" * 70000}],
+    }
+
+    with pytest.raises(ValueError, match="campaign document exceeds size limit"):
+        store.save_campaign(document)
+
+
+def test_invalid_campaign_document_limit_fails_closed(tmp_path, monkeypatch):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    document = {"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"}
+
+    for value in ("bad", "1000", str(20 * 1024 * 1024)):
+        monkeypatch.setenv("XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES", value)
+        with pytest.raises(ValueError, match="XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES"):
+            store.save_campaign(document)
