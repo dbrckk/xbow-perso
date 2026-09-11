@@ -4,13 +4,18 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from .jobqueue import JobQueue
+from .queue_backend import create_queue
 from .storage_backend import create_storage
 
 
 # Backward-compatible test seam; runtime still resolves through create_storage().
 def Storage():
     return create_storage()
+
+
+# Backward-compatible test seam; runtime resolves through create_queue().
+def JobQueue():
+    return create_queue()
 
 
 def _artifact_store_ready(root: Path) -> dict[str, Any]:

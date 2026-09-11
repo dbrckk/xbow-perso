@@ -8,6 +8,7 @@ from contextlib import contextmanager
 
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .jobqueue import JobQueue
+from .queue_backend import create_queue
 from .main import Campaign, CampaignState, utcnow
 from .observation_writer import (
     observation_id,
@@ -399,7 +400,7 @@ def _worker_poll_seconds() -> float:
 
 
 def main() -> None:
-    queue = JobQueue()
+    queue = create_queue()
     store = create_storage()
     worker_id = os.getenv("XBOW_WORKER_ID", f"{socket.gethostname()}:{os.getpid()}")
     poll = _worker_poll_seconds()
