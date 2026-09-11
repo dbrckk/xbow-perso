@@ -259,14 +259,3 @@ def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) 
         )
     return artifacts
 
-
-def _optional_str(value) -> str | None:
-    return None if value in {None, ""} else str(value)
-
-
-def _optional_cvss(value) -> float | None:
-    try:
-        score = float(value)
-    except (TypeError, ValueError):
-        return None
-    return score if 0 <= score <= 10 else None
