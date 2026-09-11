@@ -262,3 +262,28 @@ def test_queue_rejects_invalid_campaign_and_worker_identifiers(tmp_path):
             assert "worker_id" in str(exc)
         else:
             raise AssertionError("invalid worker_id must fail closed")
+
+
+def test_non_integer_lease_configuration_fails_closed(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_JOB_LEASE_SECONDS", "NaN")
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    q.enqueue("campaign-1", "report", {})
+
+    try:
+        q.claim("worker-a")
+    except ValueError as exc:
+        assert "must be an integer" in str(exc)
+    else:
+        raise AssertionError("non-integer lease configuration must fail closed")
+
+
+def test_queue_rejects_unsafe_dedupe_identifiers(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+
+    for dedupe_key in ("", " " * 3, "x" * 201, "bad\nkey", "bad\tkey"):
+        try:
+            q.enqueue("campaign-1", "report", {}, dedupe_key=dedupe_key)
+        except ValueError as exc:
+            assert "dedupe_key" in str(exc)
+        else:
+            raise AssertionError("unsafe dedupe_key must fail closed")
