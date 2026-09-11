@@ -267,3 +267,33 @@ def test_artifact_idempotency_key_rejects_unsafe_values(tmp_path):
     for key in invalid:
         with pytest.raises(ValueError, match="idempotency_key"):
             store.put_artifact("c1", "validation", b"x", idempotency_key=key)
+
+
+def test_storage_rejects_invalid_identifiers(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+
+    for campaign_id in ("", "bad\nvalue", "x" * 201):
+        with pytest.raises(ValueError, match="campaign_id"):
+            store.save_campaign(
+                {"id": campaign_id, "state": "ready", "created_at": "x", "updated_at": "x"}
+            )
+
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    with pytest.raises(ValueError, match="observation_id"):
+        store.put_observation(
+            "c1",
+            {"id": "bad\nobservation", "kind": "asset", "value": "example.test", "source": "test"},
+        )
+
+    with pytest.raises(ValueError, match="finding_id"):
+        store.put_artifact(
+            "c1",
+            "validation",
+            b"x",
+            finding_id="bad\nfinding",
+        )
+
+    for artifact_id in ("", "bad\nartifact", "x" * 201):
+        with pytest.raises(ValueError, match="artifact_id"):
+            store.get_artifact("c1", artifact_id)
