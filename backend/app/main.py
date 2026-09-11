@@ -357,6 +357,15 @@ def campaign_knowledge(campaign_id: str):
     }
 
 
+@app.get("/api/campaigns/{campaign_id}/hypotheses/history")
+def campaign_hypothesis_history(campaign_id: str, limit: int = 50):
+    assert_campaign_exists(campaign_id)
+    try:
+        return storage().list_hypothesis_snapshots(campaign_id, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/api/campaigns/{campaign_id}/plan")
 def campaign_plan(campaign_id: str):
     from .agent_registry import agent_for_action
