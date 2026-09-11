@@ -404,6 +404,18 @@ def campaign_advisory_delta(campaign_id: str):
     return diff_advisory_focus_snapshots(previous, current)
 
 
+@app.get("/api/campaigns/{campaign_id}/advisory/journal")
+def campaign_advisory_journal(campaign_id: str, limit: int = 100):
+    from .planner_advisory import build_advisory_decision_journal
+
+    assert_campaign_exists(campaign_id)
+    try:
+        snapshots = storage().list_advisory_focus_snapshots(campaign_id, limit=min(limit + 1, 500))
+        return build_advisory_decision_journal(snapshots, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/api/campaigns/{campaign_id}/hypotheses/history")
 def campaign_hypothesis_history(campaign_id: str, limit: int = 50):
     assert_campaign_exists(campaign_id)
