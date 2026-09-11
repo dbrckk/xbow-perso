@@ -2,7 +2,7 @@ import pytest
 
 from app.main import Campaign, CampaignState, ProgramRules, TargetInput
 from app.storage import CampaignConflictError, Storage
-from app.worker_service import _campaign, _save
+from app.worker_service import _campaign, _save, _worker_poll_seconds
 
 
 def make_campaign() -> Campaign:
@@ -39,3 +39,16 @@ def test_worker_save_rejects_stale_campaign_snapshot(tmp_path):
     current, version = _campaign(store, campaign.id)
     assert version == 2
     assert current.state == CampaignState.running
+
+
+def test_worker_poll_interval_is_bounded(monkeypatch):
+    for value in ("invalid", "0.1", "61"):
+        monkeypatch.setenv("XBOW_WORKER_POLL_SECONDS", value)
+        with pytest.raises(ValueError, match="XBOW_WORKER_POLL_SECONDS"):
+            _worker_poll_seconds()
+
+    monkeypatch.setenv("XBOW_WORKER_POLL_SECONDS", "0.2")
+    assert _worker_poll_seconds() == 0.2
+
+    monkeypatch.setenv("XBOW_WORKER_POLL_SECONDS", "60")
+    assert _worker_poll_seconds() == 60.0
