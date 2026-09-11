@@ -95,6 +95,12 @@ def _allowed_url(campaign, candidate: str, base: str | None = None) -> str:
     return resolved
 
 
+def _assert_read_only_browser_method(method: str) -> None:
+    normalized = method.strip().upper()
+    if normalized not in {"GET", "HEAD", "OPTIONS"}:
+        raise BrowserPolicyError("browser request method is not allowed in read-only mode")
+
+
 def _assert_browser_policy(campaign) -> None:
     rules = campaign.target.rules
     if not rules.automated_scanning:
@@ -159,7 +165,12 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
 
         def route_guard(route):
             try:
-                _allowed_url(campaign, route.request.url, page.url if page.url != "about:blank" else None)
+                _allowed_url(
+                    campaign,
+                    route.request.url,
+                    page.url if page.url != "about:blank" else None,
+                )
+                _assert_read_only_browser_method(route.request.method)
             except BrowserPolicyError:
                 route.abort("blockedbyclient")
             else:
