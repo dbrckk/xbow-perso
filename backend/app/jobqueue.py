@@ -16,6 +16,17 @@ def utcnow() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _bounded_identifier(value: str, name: str, *, max_length: int = 200) -> str:
+    normalized = value.strip()
+    if not normalized:
+        raise ValueError(f"{name} required")
+    if len(normalized) > max_length:
+        raise ValueError(f"{name} too long")
+    if any(ord(ch) < 33 or ord(ch) == 127 for ch in normalized):
+        raise ValueError(f"{name} contains invalid characters")
+    return normalized
+
+
 def _max_job_payload_bytes() -> int:
     raw = os.getenv("XBOW_MAX_JOB_PAYLOAD_BYTES", "65536")
     try:
@@ -96,6 +107,7 @@ class JobQueue:
         *,
         dedupe_key: str | None = None,
     ) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         if kind not in {"strix_scan", "independent_validation", "browser_flow", "report"}:
             raise ValueError("unsupported job kind")
         if not 1 <= max_attempts <= 5:
@@ -236,8 +248,7 @@ class JobQueue:
         return count
 
     def claim(self, worker_id: str) -> dict[str, Any] | None:
-        if not worker_id.strip():
-            raise ValueError("worker_id required")
+        worker_id = _bounded_identifier(worker_id, "worker_id")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             now_dt = datetime.now(timezone.utc)
@@ -261,8 +272,7 @@ class JobQueue:
 
     def heartbeat(self, job_id: str, worker_id: str) -> bool:
         """Renew a running job lease only when the caller still owns it."""
-        if not worker_id.strip():
-            raise ValueError("worker_id required")
+        worker_id = _bounded_identifier(worker_id, "worker_id")
         now = utcnow()
         with self.connect() as db:
             cursor = db.execute(
@@ -284,8 +294,7 @@ class JobQueue:
         Returns None when ownership has already been lost. This prevents a stale
         worker from completing or requeueing work that another worker has claimed.
         """
-        if not worker_id.strip():
-            raise ValueError("worker_id required")
+        worker_id = _bounded_identifier(worker_id, "worker_id")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             row = db.execute(
