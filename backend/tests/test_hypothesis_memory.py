@@ -1,4 +1,4 @@
-from app.hypothesis_memory import build_hypotheses
+from app.hypothesis_memory import build_hypotheses, hypothesis_snapshot_is_current
 from app.observation_graph import Observation, ObservationGraph
 
 
@@ -97,3 +97,43 @@ def test_self_validation_never_supports_hypothesis():
     assert item.status == "unvalidated"
     assert item.confidence == 0.35
     assert item.evidence_ids == ()
+
+
+def test_hypothesis_snapshot_becomes_stale_when_graph_changes():
+    graph = _graph()
+    item = build_hypotheses(graph)[0]
+
+    assert hypothesis_snapshot_is_current(item, graph) is True
+
+    graph.add(
+        Observation(
+            "v-new",
+            "validation",
+            "observed",
+            "validator",
+            parent_ids=("finding:f1",),
+        )
+    )
+
+    assert hypothesis_snapshot_is_current(item, graph) is False
+
+
+def test_hypothesis_fingerprint_ignores_planner_decision_memory():
+    graph = _graph()
+    item = build_hypotheses(graph)[0]
+
+    graph.add(
+        Observation(
+            "decision:1",
+            "evidence",
+            "scan",
+            "orchestrator",
+            metadata={
+                "memory_type": "planner_decision",
+                "action": "scan",
+                "agent": "analysis-agent",
+            },
+        )
+    )
+
+    assert hypothesis_snapshot_is_current(item, graph) is True
