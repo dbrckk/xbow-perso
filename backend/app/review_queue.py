@@ -7,6 +7,7 @@ from fastapi import APIRouter
 
 from .evidence_chain import build_evidence_chains
 from .hypothesis_engine import build_hypotheses
+from .hypothesis_memory import summarize_hypothesis_stability
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import ObservationGraph, load_observation_graph
 
@@ -43,6 +44,7 @@ def build_review_queue(
     *,
     limit: int = 25,
     scope_checker: Callable[[str], bool] | None = None,
+    stability: dict[str, dict[str, Any]] | None = None,
 ) -> list[ReviewTask]:
     """Build a deterministic, bounded and optionally scope-aware review queue."""
     if not 1 <= limit <= 100:
@@ -61,13 +63,32 @@ def build_review_queue(
             chain = chains.get(graph_finding_id)
             chain_penalty = 0.0 if chain and chain.complete else 0.08
             current_confidence = confidence.get(graph_finding_id, 0.35)
-            priority = min(1.0, round(0.75 + (1.0 - current_confidence) * 0.17 + chain_penalty, 4))
+            temporal = (stability or {}).get(graph_finding_id.removeprefix("finding:"), {})
+            temporal_state = temporal.get("stability")
+            temporal_bonus = 0.0
+            temporal_reason = ""
+            if temporal_state == "contradictory":
+                temporal_bonus = 0.10
+                temporal_reason = "; temporal evidence is contradictory"
+            elif temporal_state == "evolving":
+                temporal_bonus = 0.04
+                temporal_reason = "; hypothesis is still evolving"
+            priority = min(
+                1.0,
+                round(
+                    0.75
+                    + (1.0 - current_confidence) * 0.17
+                    + chain_penalty
+                    + temporal_bonus,
+                    4,
+                ),
+            )
             tasks.append(
                 ReviewTask(
                     kind="validate_finding",
                     target=hypothesis.target,
                     priority=priority,
-                    reason="independent validation evidence is incomplete",
+                    reason="independent validation evidence is incomplete" + temporal_reason,
                     evidence_ids=hypothesis.evidence_ids,
                 )
             )
@@ -145,10 +166,16 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
     campaign = assert_campaign_exists(campaign_id)
     graph = load_observation_graph(storage(), campaign.id)
     rules = campaign.target.rules
+    snapshots = storage().list_hypothesis_snapshots(campaign.id, limit=50)
+    stability = {
+        item["finding_id"]: item
+        for item in summarize_hypothesis_stability(snapshots)
+    }
     tasks = build_review_queue(
         graph,
         limit=limit,
         scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),
+        stability=stability,
     )
     return {
         "campaign_id": campaign.id,
