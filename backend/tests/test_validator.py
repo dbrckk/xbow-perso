@@ -86,3 +86,19 @@ def test_explicit_false_http_validation_flag_remains_dry_run(monkeypatch):
     result = safe_http_probe(campaign(), finding())
 
     assert result.status == "dry_run"
+
+
+def test_validation_evidence_redacts_query_values(monkeypatch):
+    monkeypatch.delenv("XBOW_ENABLE_HTTP_VALIDATION", raising=False)
+    result = safe_http_probe(
+        campaign(),
+        finding(endpoint="https://app.example.test/account?token=super-secret&id=42#private"),
+    )
+
+    payload = json.loads(result.json_bytes())
+
+    assert payload["url"] == "https://app.example.test/account"
+    assert payload["parameter_names"] == ["id", "token"]
+    assert "super-secret" not in str(payload)
+    assert "42" not in str(payload)
+    assert "private" not in str(payload)
