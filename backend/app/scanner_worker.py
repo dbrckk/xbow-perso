@@ -7,6 +7,7 @@ from pathlib import Path
 from .jobqueue import JobQueue
 from .main import Campaign, CampaignState, utcnow
 from .observation_graph import Observation
+from .observation_writer import record_asset
 from .scanner_ingestion import ScannerIngestionResult, ingest_scanner_run
 from .storage import Storage
 from .worker import build_strix_plan, execute, persist_execution_artifacts
@@ -18,26 +19,6 @@ class ScannerJobResult:
     status: str
     ingestion: ScannerIngestionResult | None
     event: dict
-
-
-def _record_asset_observation(
-    store: Storage,
-    campaign: Campaign,
-    asset: str,
-    source: str,
-) -> None:
-    import hashlib
-
-    digest = hashlib.sha256(f"{source}\x1f{asset}".encode("utf-8")).hexdigest()[:24]
-    store.put_observation(
-        campaign.id,
-        Observation(
-            id=f"asset:{digest}",
-            kind="asset",
-            value=asset,
-            source=source,
-        ).to_dict(),
-    )
 
 
 def _record_scan_observation(
@@ -88,7 +69,7 @@ def run_strix_job(
     persist_execution_artifacts(store, campaign.id, execution)
 
     if execution["status"] == "dry_run":
-        _record_asset_observation(
+        record_asset(
             store,
             campaign,
             str(campaign.target.primary_url),
