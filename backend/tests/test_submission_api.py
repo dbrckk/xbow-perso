@@ -3,10 +3,11 @@ from fastapi import HTTPException
 
 import app.submission_api as submission_api
 from app.main import Campaign, Finding, ProgramRules, TargetInput, app
+from app.observation_graph import Observation
 from app.storage import Storage
 
 
-def _setup(tmp_path, monkeypatch):
+def _setup(tmp_path, monkeypatch, *, report_ready=True):
     db = str(tmp_path / "db.sqlite3")
     artifacts = str(tmp_path / "artifacts")
     monkeypatch.setenv("XBOW_DB_PATH", db)
@@ -36,6 +37,41 @@ def _setup(tmp_path, monkeypatch):
     )
     store = Storage(db, artifacts)
     store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+    if report_ready:
+        store.put_observation(
+            campaign.id,
+            Observation("asset:a", "asset", "example.test", "recon").to_dict(),
+        )
+        store.put_observation(
+            campaign.id,
+            Observation(
+                "finding:f1",
+                "finding",
+                "f1",
+                "scanner",
+                parent_ids=("asset:a",),
+            ).to_dict(),
+        )
+        store.put_observation(
+            campaign.id,
+            Observation(
+                "validation:v1",
+                "validation",
+                "observed",
+                "independent-validator",
+                parent_ids=("finding:f1",),
+            ).to_dict(),
+        )
+        store.put_observation(
+            campaign.id,
+            Observation(
+                "evidence:e1",
+                "evidence",
+                "artifact-reference",
+                "independent-validator",
+                parent_ids=("validation:v1",),
+            ).to_dict(),
+        )
     artifact = store.put_artifact(campaign.id, "report", b"report", media_type="text/markdown")
     return campaign, artifact
 
@@ -149,3 +185,13 @@ def test_tampered_report_is_rejected(tmp_path, monkeypatch):
         submission_api.get_submission_state(campaign.id, artifact["id"])
 
     assert exc.value.status_code == 409
+
+
+def test_report_approval_rejects_confirmed_finding_without_ready_evidence(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch, report_ready=False)
+
+    with pytest.raises(HTTPException) as exc:
+        submission_api.approve_report(campaign.id, artifact["id"], "reviewer")
+
+    assert exc.value.status_code == 400
+    assert "report-ready" in str(exc.value.detail)
