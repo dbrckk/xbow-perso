@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .jobqueue import JobQueue
+from .storage import Storage
 from .storage_backend import create_storage
 
 
@@ -27,7 +28,8 @@ def readiness() -> dict[str, Any]:
         database = {"ok": False, "error": exc.__class__.__name__}
 
     try:
-        store = create_storage()
+        store_factory = Storage if Storage is not None else create_storage
+        store = store_factory()
         artifacts = _artifact_store_ready(store.artifact_root)
     except Exception as exc:  # pragma: no cover - defensive boundary for container probes
         artifacts = {"ok": False, "error": exc.__class__.__name__}
