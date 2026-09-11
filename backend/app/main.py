@@ -80,9 +80,12 @@ class TargetInput(BaseModel):
 
     @model_validator(mode="after")
     def primary_target_must_be_allowed(self):
-        host = (urlparse(str(self.primary_url)).hostname or "").lower()
+        parsed = urlparse(str(self.primary_url))
+        host = (parsed.hostname or "").lower()
         if not host:
             raise ValueError("primary_url has no hostname")
+        if parsed.username or parsed.password:
+            raise ValueError("userinfo in primary_url is forbidden")
         if not is_host_allowed(host, self.rules.allowed_targets, self.rules.denied_targets):
             raise ValueError("primary_url is outside the declared scope")
         return self
