@@ -127,3 +127,78 @@ def test_review_queue_rejects_unbounded_limits():
             assert "between 1 and 100" in str(exc)
         else:
             raise AssertionError("invalid review queue limit should fail")
+
+
+def test_review_queue_boosts_contradictory_hypothesis_validation():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "scanner"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("endpoint:e",),
+        )
+    )
+
+    baseline = build_review_queue(graph)
+    boosted = build_review_queue(
+        graph,
+        stability={
+            "f1": {
+                "finding_id": "f1",
+                "stability": "contradictory",
+                "stability_score": 0.2,
+            }
+        },
+    )
+
+    assert baseline[0].kind == "validate_finding"
+    assert boosted[0].kind == "validate_finding"
+    assert boosted[0].priority > baseline[0].priority
+    assert "contradictory" in boosted[0].reason
+
+
+def test_review_queue_evolving_hypothesis_gets_smaller_bonus():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "scanner"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("endpoint:e",),
+        )
+    )
+
+    evolving = build_review_queue(
+        graph,
+        stability={"f1": {"finding_id": "f1", "stability": "evolving"}},
+    )
+    contradictory = build_review_queue(
+        graph,
+        stability={"f1": {"finding_id": "f1", "stability": "contradictory"}},
+    )
+
+    assert evolving[0].priority < contradictory[0].priority
+    assert "evolving" in evolving[0].reason
