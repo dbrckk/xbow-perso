@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field, HttpUrl, model_validator
 
 from .auth import AuthError, require_api_token
-from .jobqueue import JobQueue
+from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
 from .storage import ArtifactIntegrityError, CampaignConflictError
 from .storage_backend import StorageBackend, create_storage
@@ -41,8 +41,8 @@ def storage() -> StorageBackend:
     return create_storage()
 
 
-def queue() -> JobQueue:
-    return JobQueue()
+def queue() -> QueueBackend:
+    return create_queue()
 
 
 def _stable_key(prefix: str, *parts: str) -> str:
