@@ -64,16 +64,6 @@ def _seed_primary_target(store: Storage, campaign: Campaign) -> None:
             source="planner-seed",
         ).to_dict(),
     )
-    store.put_observation(
-        campaign.id,
-        Observation(
-            id=_stable_id("endpoint", target, "planner-seed"),
-            kind="endpoint",
-            value=target,
-            source="planner-seed",
-            parent_ids=(asset_id,),
-        ).to_dict(),
-    )
 
 
 def _intelligence_context(
@@ -153,6 +143,58 @@ def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
             str(finding.id),
         ),
     )
+
+
+def _enqueue_recon_tasks(
+    campaign: Campaign,
+    graph: ObservationGraph,
+    queue: JobQueue,
+    tasks: list,
+) -> list[dict]:
+    fingerprint = _graph_fingerprint(graph)
+    jobs: list[dict] = []
+    for task in tasks:
+        if task.kind == "browser_observe":
+            jobs.append(
+                queue.enqueue(
+                    campaign.id,
+                    "browser_flow",
+                    {
+                        "campaign_id": campaign.id,
+                        "steps": [
+                            {
+                                "operation": "navigate",
+                                "url": task.target,
+                                "timeout_ms": 10000,
+                            },
+                            {
+                                "operation": "screenshot",
+                                "timeout_ms": 10000,
+                            },
+                        ],
+                    },
+                    max_attempts=2,
+                    dedupe_key=f"recon:browser:{fingerprint}:{task.target}",
+                )
+            )
+            continue
+        jobs.append(
+            queue.enqueue(
+                campaign.id,
+                "recon_task",
+                {
+                    "campaign_id": campaign.id,
+                    "kind": task.kind,
+                    "target": task.target,
+                    "max_requests": task.max_requests,
+                    "allowed_methods": list(task.allowed_methods),
+                    "same_origin_only": task.same_origin_only,
+                },
+                max_attempts=2,
+                dedupe_key=f"recon:{task.kind}:{fingerprint}:{task.target}",
+            )
+        )
+    return jobs
 
 
 def _enqueue_action(
@@ -359,8 +401,22 @@ def advance_campaign(
             _seed_primary_target(store, campaign)
             continue
         if action.kind == "crawl":
-            _seed_primary_target(store, campaign)
-            continue
+            recon_jobs = _enqueue_recon_tasks(
+                campaign,
+                graph,
+                queue,
+                intelligence["recon"],
+            )
+            return _result(
+                action,
+                recon_jobs,
+                campaign=campaign,
+                graph=graph,
+                store=store,
+                queue=queue,
+                budget=limits,
+                intelligence=intelligence,
+            )
         validation_limit = validation_batch_limit(usage, limits) if action.kind == "validate" else None
         jobs = _enqueue_action(action, campaign, graph, queue, validation_limit=validation_limit)
         return _result(
