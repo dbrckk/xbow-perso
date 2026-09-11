@@ -5,8 +5,12 @@ from pathlib import Path
 from typing import Any
 
 from .jobqueue import JobQueue
-from .storage import Storage
 from .storage_backend import create_storage
+
+
+# Backward-compatible test seam; runtime still resolves through create_storage().
+def Storage():
+    return create_storage()
 
 
 def _artifact_store_ready(root: Path) -> dict[str, Any]:
@@ -28,8 +32,7 @@ def readiness() -> dict[str, Any]:
         database = {"ok": False, "error": exc.__class__.__name__}
 
     try:
-        store_factory = Storage if Storage is not None else create_storage
-        store = store_factory()
+        store = Storage()
         artifacts = _artifact_store_ready(store.artifact_root)
     except Exception as exc:  # pragma: no cover - defensive boundary for container probes
         artifacts = {"ok": False, "error": exc.__class__.__name__}
