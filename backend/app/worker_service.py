@@ -22,6 +22,7 @@ from .recon_worker import ReconPolicyError, execute_recon_task
 from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_strix_job
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
+from .storage_backend import create_storage
 from .validator import ValidationPolicyError, safe_http_probe
 from .worker import WorkerPolicyError
 
@@ -399,7 +400,7 @@ def _worker_poll_seconds() -> float:
 
 def main() -> None:
     queue = JobQueue()
-    store = Storage()
+    store = create_storage()
     worker_id = os.getenv("XBOW_WORKER_ID", f"{socket.gethostname()}:{os.getpid()}")
     poll = _worker_poll_seconds()
     while True:
