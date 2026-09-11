@@ -34,6 +34,17 @@ def _max_artifact_bytes() -> int:
     return limit
 
 
+def _bounded_identifier(value: str, name: str, *, max_length: int = 200) -> str:
+    normalized = value.strip()
+    if not normalized:
+        raise ValueError(f"{name} required")
+    if len(normalized) > max_length:
+        raise ValueError(f"{name} too long")
+    if any(ord(ch) < 33 or ord(ch) == 127 for ch in normalized):
+        raise ValueError(f"{name} contains invalid characters")
+    return normalized
+
+
 def _validate_media_type(media_type: str) -> str:
     value = media_type.strip()
     if not value or len(value) > 120 or "/" not in value:
@@ -141,6 +152,8 @@ class Storage:
         required = {"id", "state", "created_at", "updated_at"}
         if not required.issubset(document):
             raise ValueError("campaign document missing required fields")
+        document = dict(document)
+        document["id"] = _bounded_identifier(str(document["id"]), "campaign_id")
         encoded = json.dumps(document, separators=(",", ":"), ensure_ascii=False)
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
@@ -171,6 +184,7 @@ class Storage:
             return next_version
 
     def get_campaign_record(self, campaign_id: str) -> tuple[dict[str, Any], int] | None:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         with self.connect() as db:
             row = db.execute("SELECT document,version FROM campaigns WHERE id=?", (campaign_id,)).fetchone()
         return (json.loads(row["document"]), int(row["version"])) if row else None
@@ -185,6 +199,7 @@ class Storage:
         return [json.loads(row["document"]) for row in rows]
 
     def put_observation(self, campaign_id: str, observation: dict[str, Any]) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         required = {"id", "kind", "value", "source"}
         if not required.issubset(observation):
             raise ValueError("observation missing required fields")
@@ -197,7 +212,7 @@ class Storage:
             raise ValueError("observation metadata must be an object")
         record = {
             "campaign_id": campaign_id,
-            "id": str(observation["id"]),
+            "id": _bounded_identifier(str(observation["id"]), "observation_id"),
             "kind": kind,
             "value": str(observation["value"]),
             "source": str(observation["source"]),
@@ -255,6 +270,7 @@ class Storage:
         return record
 
     def list_observations(self, campaign_id: str) -> list[dict[str, Any]]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         with self.connect() as db:
             rows = db.execute(
                 "SELECT campaign_id,id,kind,value,source,parent_ids,metadata,created_at FROM observations WHERE campaign_id=? ORDER BY created_at,id",
@@ -302,6 +318,9 @@ class Storage:
         finding_id: str | None = None,
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        if finding_id is not None:
+            finding_id = _bounded_identifier(finding_id, "finding_id")
         if kind not in self.ALLOWED_ARTIFACT_KINDS:
             raise ValueError("unsupported artifact kind")
         if idempotency_key is not None:
@@ -382,6 +401,7 @@ class Storage:
         }
 
     def list_artifacts(self, campaign_id: str) -> list[dict[str, Any]]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         with self.connect() as db:
             rows = db.execute(
                 "SELECT id,campaign_id,finding_id,kind,media_type,sha256,size_bytes,created_at,idempotency_key FROM artifacts WHERE campaign_id=? ORDER BY created_at",
@@ -390,6 +410,8 @@ class Storage:
         return [dict(row) for row in rows]
 
     def get_artifact(self, campaign_id: str, artifact_id: str) -> dict[str, Any] | None:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        artifact_id = _bounded_identifier(artifact_id, "artifact_id")
         with self.connect() as db:
             row = db.execute(
                 """SELECT id,campaign_id,finding_id,kind,media_type,relative_path,sha256,size_bytes,created_at,idempotency_key
