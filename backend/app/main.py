@@ -15,7 +15,8 @@ from pydantic import BaseModel, Field, HttpUrl, model_validator
 from .auth import AuthError, require_api_token
 from .jobqueue import JobQueue
 from .readiness import readiness as dependency_readiness
-from .storage import ArtifactIntegrityError, CampaignConflictError, Storage
+from .storage import ArtifactIntegrityError, CampaignConflictError
+from .storage_backend import StorageBackend, create_storage
 from .validation_state import has_observed_independent_validation
 
 app = FastAPI(title="xbow-perso", version="0.4.0")
@@ -36,8 +37,8 @@ def utcnow() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def storage() -> Storage:
-    return Storage()
+def storage() -> StorageBackend:
+    return create_storage()
 
 
 def queue() -> JobQueue:
