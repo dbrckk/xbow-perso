@@ -241,3 +241,24 @@ def test_invalid_job_payload_limit_configuration_fails_closed(tmp_path, monkeypa
             assert "XBOW_MAX_JOB_PAYLOAD_BYTES" in str(exc)
         else:
             raise AssertionError("invalid job payload limit must fail closed")
+
+
+def test_queue_rejects_invalid_campaign_and_worker_identifiers(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+
+    for campaign_id in ("", " " * 3, "x" * 201, "bad\nvalue"):
+        try:
+            q.enqueue(campaign_id, "report", {})
+        except ValueError as exc:
+            assert "campaign_id" in str(exc)
+        else:
+            raise AssertionError("invalid campaign_id must fail closed")
+
+    q.enqueue("campaign-1", "report", {})
+    for worker_id in ("", " " * 3, "x" * 201, "bad\tworker"):
+        try:
+            q.claim(worker_id)
+        except ValueError as exc:
+            assert "worker_id" in str(exc)
+        else:
+            raise AssertionError("invalid worker_id must fail closed")
