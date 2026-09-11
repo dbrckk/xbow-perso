@@ -95,7 +95,23 @@ def _allowed_url(campaign, candidate: str, base: str | None = None) -> str:
     return resolved
 
 
+def _assert_browser_policy(campaign) -> None:
+    rules = campaign.target.rules
+    if not rules.automated_scanning:
+        raise BrowserPolicyError("browser automation is disabled by program rules")
+    if (
+        rules.destructive_testing
+        or rules.denial_of_service
+        or rules.social_engineering
+        or rules.credential_attacks
+    ):
+        raise BrowserPolicyError(
+            "unsafe campaign flags cannot be delegated to browser automation"
+        )
+
+
 def validate_flow(campaign, flow: BrowserFlowInput) -> BrowserFlowInput:
+    _assert_browser_policy(campaign)
     base = str(campaign.target.primary_url)
     for step in flow.steps:
         if step.operation == "navigate":
