@@ -4,14 +4,21 @@ import hashlib
 import json
 from urllib.parse import urlparse
 
+from .adaptive_cycle import build_adaptive_cycle
 from .agent_registry import agent_for_action
+from .autonomy_gate import build_autonomy_gate
+from .campaign_risk import build_campaign_risk
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
+from .decision_consensus import build_decision_consensus
 from .hypothesis_memory import build_hypotheses
 from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
-from .main import Campaign, policy_receipt, sanitized_scan_payload
+from .learning_memory import build_learning_memory
+from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .planner_budget import PlannerBudget, apply_budget, budget_usage, validation_batch_limit
+from .recon_swarm import build_recon_plan
+from .red_team_decision import build_red_team_decisions
 from .storage import Storage
 from .validation_state import observed_independent_finding_ids
 
@@ -67,6 +74,64 @@ def _seed_primary_target(store: Storage, campaign: Campaign) -> None:
             parent_ids=(asset_id,),
         ).to_dict(),
     )
+
+
+def _intelligence_context(
+    campaign: Campaign,
+    graph: ObservationGraph,
+    queue: JobQueue,
+    budget: PlannerBudget,
+    runtime: object,
+    planned_actions: list[PlannedAction],
+) -> dict:
+    rules = campaign.target.rules
+
+    def scope_checker(host: str) -> bool:
+        return is_host_allowed(host, rules.allowed_targets, rules.denied_targets)
+
+    decisions = build_red_team_decisions(
+        campaign.findings,
+        graph,
+        scope_checker=scope_checker,
+        limit=10,
+    )
+    consensus = build_decision_consensus(decisions)
+    risk = build_campaign_risk(
+        campaign.findings,
+        graph,
+        scope_checker=scope_checker,
+    )
+    usage = budget_usage(graph, queue, campaign.id, budget)
+    job_statuses = queue.campaign_job_status_counts(campaign.id)
+    gate = build_autonomy_gate(
+        automated_scanning=rules.automated_scanning,
+        destructive_testing=rules.destructive_testing,
+        denial_of_service=rules.denial_of_service,
+        social_engineering=rules.social_engineering,
+        credential_attacks=rules.credential_attacks,
+        runtime_exhausted=bool(getattr(runtime, "exhausted", False)),
+        budget_blocked=bool(usage.blocked_actions),
+        failed_jobs=job_statuses["failed"],
+        risk=risk,
+        consensus=consensus,
+    )
+    memories = build_learning_memory(graph)
+    cycle = build_adaptive_cycle(gate, planned_actions, memories)
+    recon = build_recon_plan(
+        str(campaign.target.primary_url),
+        graph,
+        scope_checker=scope_checker,
+        limit=10,
+    )
+    return {
+        "decisions": decisions,
+        "consensus": consensus,
+        "risk": risk,
+        "gate": gate,
+        "memory": memories,
+        "cycle": cycle,
+        "recon": recon,
+    }
 
 
 def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
@@ -156,7 +221,7 @@ def _record_decision(
 ) -> None:
     fingerprint = _graph_fingerprint(graph)
     observation = Observation(
-        id=_stable_id("decision", action.kind, fingerprint),
+        id=_stable_id("decision", action.kind, action.reason, fingerprint),
         kind="evidence",
         value=action.kind,
         source="orchestrator",
@@ -181,6 +246,7 @@ def _result(
     store: Storage,
     queue: JobQueue,
     budget: PlannerBudget,
+    intelligence: dict | None = None,
 ) -> dict:
     agent = agent_for_action(action.kind)
     _record_decision(store, campaign, graph, action, agent.name)
@@ -196,6 +262,18 @@ def _result(
     usage = budget_usage(refreshed_graph, queue, campaign.id, budget)
     if action.kind == "stop" and "budget exhausted" in action.reason:
         usage = type(usage)(**{**usage.to_dict(), "exhausted": True, "reason": action.reason})
+    intelligence_payload = None
+    if intelligence is not None:
+        intelligence_payload = {
+            "cycle": intelligence["cycle"].to_dict(),
+            "gate": intelligence["gate"].to_dict(),
+            "risk": intelligence["risk"].to_dict(),
+            "consensus": intelligence["consensus"].to_dict(),
+            "decisions": [item.to_dict() for item in intelligence["decisions"]],
+            "learning_memory": [item.to_dict() for item in intelligence["memory"]],
+            "recon_plan": [item.to_dict() for item in intelligence["recon"]],
+            "read_only_context": True,
+        }
     return {
         "action": action.to_dict(),
         "agent": agent.to_dict(),
@@ -204,6 +282,7 @@ def _result(
         "hypotheses": [item.to_dict() for item in hypotheses],
         "decision_history": decision_history(refreshed_graph),
         "budget": {"limits": budget.to_dict(), "usage": usage.to_dict()},
+        "intelligence": intelligence_payload,
     }
 
 
@@ -236,12 +315,46 @@ def advance_campaign(
             store=store,
             queue=queue,
             budget=limits,
+            intelligence=None,
         )
 
     for _ in range(3):
         graph = _load_graph(store, campaign.id)
-        action = planner.plan(campaign, graph)[0]
+        planned_actions = planner.plan(campaign, graph)
+        action = planned_actions[0]
         action, usage = apply_budget(action, graph, queue, campaign.id, limits)
+        runtime = runtime_status(campaign.created_at, runtime_limit)
+        intelligence = _intelligence_context(
+            campaign,
+            graph,
+            queue,
+            limits,
+            runtime,
+            [action],
+        )
+        cycle = intelligence["cycle"]
+
+        if cycle.next_action == "stop" or not cycle.safe_to_progress:
+            stop_reason = cycle.reason
+            if cycle.requires_human:
+                stop_reason = f"human review required: {cycle.reason}"
+            stop_action = PlannedAction(
+                "stop",
+                str(campaign.target.primary_url),
+                stop_reason,
+                100,
+            )
+            return _result(
+                stop_action,
+                [],
+                campaign=campaign,
+                graph=graph,
+                store=store,
+                queue=queue,
+                budget=limits,
+                intelligence=intelligence,
+            )
+
         if action.kind == "inventory":
             _seed_primary_target(store, campaign)
             continue
@@ -258,11 +371,21 @@ def advance_campaign(
             store=store,
             queue=queue,
             budget=limits,
+            intelligence=intelligence,
         )
 
     graph = _load_graph(store, campaign.id)
     action = planner.plan(campaign, graph)[0]
     action, _ = apply_budget(action, graph, queue, campaign.id, limits)
+    runtime = runtime_status(campaign.created_at, runtime_limit)
+    intelligence = _intelligence_context(
+        campaign,
+        graph,
+        queue,
+        limits,
+        runtime,
+        [action],
+    )
     return _result(
         action,
         [],
@@ -271,4 +394,5 @@ def advance_campaign(
         store=store,
         queue=queue,
         budget=limits,
+        intelligence=intelligence,
     )
