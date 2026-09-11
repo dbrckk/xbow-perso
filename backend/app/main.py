@@ -430,7 +430,19 @@ def campaign_plan(campaign_id: str):
     planner_actions = AdaptivePlanner().plan(campaign, graph)
     actions = [apply_budget(item, graph, jobs, campaign.id, limits)[0] for item in planner_actions]
     usage = budget_usage(graph, jobs, campaign.id, limits)
-    from .hypothesis_memory import build_hypotheses
+    from .hypothesis_memory import build_hypotheses, summarize_hypothesis_stability
+    from .planner_advisory import build_advisory_planner_context
+
+    snapshots = storage().list_hypothesis_snapshots(campaign.id, limit=50)
+    stability = {
+        item["finding_id"]: item
+        for item in summarize_hypothesis_stability(snapshots)
+    }
+    advisory = build_advisory_planner_context(
+        campaign,
+        graph,
+        stability=stability,
+    )
 
     return {
         "actions": [item.to_dict() for item in actions],
@@ -438,6 +450,7 @@ def campaign_plan(campaign_id: str):
         "agents": [agent_for_action(item.kind).to_dict() for item in actions],
         "priorities": [item.to_dict() for item in rank_findings(campaign.findings, graph)],
         "hypotheses": [item.to_dict() for item in build_hypotheses(graph)],
+        "advisory": advisory,
         "memory": build_knowledge_snapshot(graph).to_dict(),
         "budget": {"limits": limits.to_dict(), "usage": usage.to_dict()},
         "read_only": True,
