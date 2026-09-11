@@ -278,7 +278,6 @@ class JobQueue:
         return count
 
     def claim(self, worker_id: str) -> dict[str, Any] | None:
-        job_id = _bounded_identifier(job_id, "job_id")
         worker_id = _bounded_identifier(worker_id, "worker_id")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
@@ -326,6 +325,7 @@ class JobQueue:
         Returns None when ownership has already been lost. This prevents a stale
         worker from completing or requeueing work that another worker has claimed.
         """
+        job_id = _bounded_identifier(job_id, "job_id")
         worker_id = _bounded_identifier(worker_id, "worker_id")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
