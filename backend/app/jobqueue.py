@@ -27,6 +27,17 @@ def _bounded_identifier(value: str, name: str, *, max_length: int = 200) -> str:
     return normalized
 
 
+def _job_lease_seconds() -> int:
+    raw = os.getenv("XBOW_JOB_LEASE_SECONDS", "21600")
+    try:
+        lease_seconds = int(raw)
+    except ValueError as exc:
+        raise ValueError("XBOW_JOB_LEASE_SECONDS must be an integer") from exc
+    if not 60 <= lease_seconds <= 86400:
+        raise ValueError("XBOW_JOB_LEASE_SECONDS must be between 60 and 86400")
+    return lease_seconds
+
+
 def _max_job_payload_bytes() -> int:
     raw = os.getenv("XBOW_MAX_JOB_PAYLOAD_BYTES", "65536")
     try:
@@ -113,11 +124,7 @@ class JobQueue:
         if not 1 <= max_attempts <= 5:
             raise ValueError("max_attempts must be 1..5")
         if dedupe_key is not None:
-            dedupe_key = dedupe_key.strip()
-            if not dedupe_key:
-                raise ValueError("dedupe_key must not be blank")
-            if len(dedupe_key) > 200:
-                raise ValueError("dedupe_key too long")
+            dedupe_key = _bounded_identifier(dedupe_key, "dedupe_key")
 
         encoded_payload = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
         if len(encoded_payload.encode("utf-8")) > _max_job_payload_bytes():
@@ -236,9 +243,7 @@ class JobQueue:
         return self.get(job_id)
 
     def _recover_expired_leases(self, db: sqlite3.Connection, now: datetime) -> int:
-        lease_seconds = int(os.getenv("XBOW_JOB_LEASE_SECONDS", "21600"))
-        if not 60 <= lease_seconds <= 86400:
-            raise ValueError("XBOW_JOB_LEASE_SECONDS must be between 60 and 86400")
+        lease_seconds = _job_lease_seconds()
         cutoff = (now - timedelta(seconds=lease_seconds)).isoformat()
         stale = db.execute(
             "SELECT id,attempts,max_attempts FROM jobs WHERE status='running' AND claimed_at IS NOT NULL AND claimed_at < ?",
