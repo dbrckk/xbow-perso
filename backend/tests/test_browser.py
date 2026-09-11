@@ -160,3 +160,37 @@ def test_browser_request_methods_are_read_only():
     for method in ("POST", "PUT", "PATCH", "DELETE", "CONNECT"):
         with pytest.raises(BrowserPolicyError, match="read-only"):
             _assert_read_only_browser_method(method)
+
+
+def test_browser_surface_observations_are_persistable_shape():
+    result = BrowserExecutionResult(
+        status="completed",
+        observations=[
+            {
+                "step": 1,
+                "operation": "surface_links",
+                "urls": ["https://app.test.local/a", "https://app.test.local/b"],
+            },
+            {
+                "step": 1,
+                "operation": "surface_forms",
+                "forms": [
+                    {
+                        "action": "https://app.test.local/search",
+                        "method": "GET",
+                        "input_names": ["q"],
+                    }
+                ],
+            },
+            {
+                "step": 1,
+                "operation": "surface_technologies",
+                "technologies": ["next", "generator:fixture"],
+            },
+        ],
+        screenshots=[],
+    )
+
+    assert result.observations[0]["operation"] == "surface_links"
+    assert result.observations[1]["forms"][0]["method"] == "GET"
+    assert "next" in result.observations[2]["technologies"]
