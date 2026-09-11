@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import stat
 from contextlib import contextmanager
@@ -311,3 +312,16 @@ def test_has_artifact_validates_filters(tmp_path):
 
     with pytest.raises(ValueError, match="unsupported artifact kind"):
         store.has_artifact("c1", kind="arbitrary")
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX permissions only")
+def test_storage_permissions_are_private_on_posix(tmp_path):
+    db = tmp_path / "db.sqlite3"
+    root = tmp_path / "artifacts"
+    store = Storage(str(db), str(root))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    store.put_artifact("c1", "validation", b"private")
+
+    assert stat.S_IMODE(db.stat().st_mode) == 0o600
+    assert stat.S_IMODE(root.stat().st_mode) == 0o700
+    assert stat.S_IMODE((root / "c1").stat().st_mode) == 0o700
