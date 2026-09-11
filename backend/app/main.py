@@ -357,6 +357,33 @@ def campaign_knowledge(campaign_id: str):
     }
 
 
+@app.get("/api/campaigns/{campaign_id}/findings/ranking")
+def campaign_finding_ranking(campaign_id: str, history_limit: int = 50):
+    from .hypothesis_memory import summarize_hypothesis_stability
+    from .knowledge_memory import rank_findings_explainable
+
+    campaign = assert_campaign_exists(campaign_id)
+    graph = _campaign_graph(campaign_id)
+    try:
+        snapshots = storage().list_hypothesis_snapshots(campaign_id, limit=history_limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    stability = {
+        item["finding_id"]: item
+        for item in summarize_hypothesis_stability(snapshots)
+    }
+    return {
+        "campaign_id": campaign.id,
+        "findings": rank_findings_explainable(
+            campaign.findings,
+            graph,
+            stability=stability,
+        ),
+        "read_only": True,
+        "advisory_only": True,
+    }
+
+
 @app.get("/api/campaigns/{campaign_id}/hypotheses/history")
 def campaign_hypothesis_history(campaign_id: str, limit: int = 50):
     assert_campaign_exists(campaign_id)
