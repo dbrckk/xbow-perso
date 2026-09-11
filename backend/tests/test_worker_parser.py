@@ -210,3 +210,29 @@ def test_strix_output_dir_accepts_child_of_run_root(tmp_path, monkeypatch):
     plan = build_strix_plan(campaign(), str(root / "job-1"))
 
     assert plan.output_dir == str((root / "job-1").resolve())
+
+
+@pytest.mark.parametrize(
+    ("name", "value", "message"),
+    (
+        ("WORKER_TIMEOUT_SECONDS", "NaN", "must be an integer"),
+        ("XBOW_MAX_STRIX_JSON_BYTES", "NaN", "must be an integer"),
+    ),
+)
+def test_non_integer_worker_limits_fail_closed(monkeypatch, tmp_path, name, value, message):
+    monkeypatch.setenv(name, value)
+
+    if name == "WORKER_TIMEOUT_SECONDS":
+        monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+        monkeypatch.setenv("DRY_RUN", "false")
+        monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0")
+        plan = build_strix_plan(campaign())
+        from app.worker import execute
+
+        with pytest.raises(WorkerPolicyError, match=message):
+            execute(plan)
+    else:
+        path = tmp_path / "vulnerabilities.json"
+        path.write_text('{"vulnerabilities": []}', encoding="utf-8")
+        with pytest.raises(WorkerPolicyError, match=message):
+            parse_strix_vulnerabilities(path, campaign())
