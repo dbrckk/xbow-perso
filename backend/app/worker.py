@@ -28,6 +28,18 @@ class WorkerPolicyError(RuntimeError):
     pass
 
 
+def _strict_bool_env(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True
+    if value in {"0", "false", "no", "off"}:
+        return False
+    raise WorkerPolicyError(f"{name} must be a boolean")
+
+
 def _max_autonomous_rps() -> float:
     try:
         limit = float(os.getenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0"))
@@ -50,8 +62,8 @@ def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -
         raise WorkerPolicyError("Unsafe campaign flags cannot be delegated to autonomous worker")
 
     cmd = ["strix", "-n", "--target", target]
-    active_enabled = os.getenv("XBOW_ENABLE_ACTIVE_SCANS", "false").lower() == "true"
-    dry_run_requested = os.getenv("DRY_RUN", "true").lower() == "true"
+    active_enabled = _strict_bool_env("XBOW_ENABLE_ACTIVE_SCANS", False)
+    dry_run_requested = _strict_bool_env("DRY_RUN", True)
     autonomous_cap = None
     if active_enabled and not dry_run_requested:
         autonomous_cap = _max_autonomous_rps()
