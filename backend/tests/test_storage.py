@@ -431,3 +431,20 @@ def test_idempotency_key_rejects_metadata_mismatch(tmp_path):
             finding_id="f2",
             idempotency_key="job-1:validation",
         )
+
+
+def test_observation_rejects_non_serializable_metadata(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    with pytest.raises(ValueError, match="not JSON serializable"):
+        store.put_observation(
+            "c1",
+            {
+                "id": "obs:bad-metadata",
+                "kind": "evidence",
+                "value": "fixture",
+                "source": "fixture",
+                "metadata": {"bad": object()},
+            },
+        )
