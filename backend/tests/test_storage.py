@@ -325,3 +325,51 @@ def test_storage_permissions_are_private_on_posix(tmp_path):
     assert stat.S_IMODE(db.stat().st_mode) == 0o600
     assert stat.S_IMODE(root.stat().st_mode) == 0o700
     assert stat.S_IMODE((root / "c1").stat().st_mode) == 0o700
+
+
+def test_observation_persistence_is_bounded(tmp_path, monkeypatch):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    monkeypatch.setenv("XBOW_MAX_OBSERVATION_BYTES", "1024")
+
+    with pytest.raises(ValueError, match="observation exceeds size limit"):
+        store.put_observation(
+            "c1",
+            {
+                "id": "obs:large",
+                "kind": "evidence",
+                "value": "x" * 2000,
+                "source": "fixture",
+            },
+        )
+
+
+def test_observation_parent_count_is_bounded(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    parents = tuple(f"p:{index}" for index in range(65))
+
+    with pytest.raises(ValueError, match="parent_ids exceed limit"):
+        store.put_observation(
+            "c1",
+            {
+                "id": "obs:fanout",
+                "kind": "evidence",
+                "value": "fixture",
+                "source": "fixture",
+                "parent_ids": parents,
+            },
+        )
+
+
+def test_invalid_observation_size_limit_fails_closed(tmp_path, monkeypatch):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    for value in ("bad", "100", str(2 * 1024 * 1024)):
+        monkeypatch.setenv("XBOW_MAX_OBSERVATION_BYTES", value)
+        with pytest.raises(ValueError, match="XBOW_MAX_OBSERVATION_BYTES"):
+            store.put_observation(
+                "c1",
+                {"id": "obs:test", "kind": "asset", "value": "example.test", "source": "fixture"},
+            )
