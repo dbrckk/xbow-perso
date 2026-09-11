@@ -137,3 +137,20 @@ def test_hypothesis_fingerprint_ignores_planner_decision_memory():
     )
 
     assert hypothesis_snapshot_is_current(item, graph) is True
+
+
+def test_hypothesis_fingerprint_ignores_unrelated_evidence():
+    graph = _graph()
+    item = build_hypotheses(graph)[0]
+
+    graph.add(
+        Observation(
+            "e-unrelated",
+            "evidence",
+            "artifact-other",
+            "report-engine",
+            metadata={"artifact_kind": "report"},
+        )
+    )
+
+    assert hypothesis_snapshot_is_current(item, graph) is True
