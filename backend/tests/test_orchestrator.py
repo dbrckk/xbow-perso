@@ -24,7 +24,7 @@ def make_campaign(*, automated_scanning=True, findings=None):
     )
 
 
-def test_advance_bootstraps_target_and_queues_one_scan(tmp_path):
+def test_advance_bootstraps_asset_and_queues_bounded_recon(tmp_path):
     db = str(tmp_path / "db.sqlite3")
     store = Storage(db, str(tmp_path / "artifacts"))
     queue = JobQueue(db)
@@ -34,15 +34,19 @@ def test_advance_bootstraps_target_and_queues_one_scan(tmp_path):
     first = advance_campaign(campaign, queue, store)
     second = advance_campaign(campaign, queue, store)
 
-    assert first["action"]["kind"] == "scan"
-    assert first["agent"]["role"] == "analysis"
-    assert len(first["job_ids"]) == 1
+    assert first["action"]["kind"] == "crawl"
+    assert first["agent"]["role"] == "recon"
+    assert len(first["job_ids"]) == 2
     assert second["job_ids"] == first["job_ids"]
-    assert queue.stats()["total"] == 1
-    assert {item["kind"] for item in store.list_observations(campaign.id)} == {"asset", "endpoint", "evidence"}
+    assert queue.stats()["total"] == 2
+    jobs = [queue.get(job_id) for job_id in first["job_ids"]]
+    assert {job["kind"] for job in jobs} == {"recon_task"}
+    assert {job["payload"]["kind"] for job in jobs} == {"crawl", "detect_technology"}
+    kinds = {item["kind"] for item in store.list_observations(campaign.id)}
+    assert kinds == {"asset", "evidence"}
     assert first["memory"]["assets"] == 1
-    assert first["memory"]["endpoints"] == 1
-    assert first["decision_history"][0]["action"] == "scan"
+    assert first["memory"]["endpoints"] == 0
+    assert first["decision_history"][0]["action"] == "crawl"
 
 
 def test_advance_stops_when_automation_disabled(tmp_path):
