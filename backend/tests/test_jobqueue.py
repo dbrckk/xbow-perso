@@ -216,3 +216,28 @@ def test_enqueue_rejects_blank_dedupe_key(tmp_path):
         assert "must not be blank" in str(exc)
     else:
         raise AssertionError("blank dedupe keys must be rejected")
+
+
+def test_enqueue_rejects_oversized_payload(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_MAX_JOB_PAYLOAD_BYTES", "1024")
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+
+    try:
+        q.enqueue("campaign-1", "report", {"blob": "x" * 2000})
+    except ValueError as exc:
+        assert "payload exceeds size limit" in str(exc)
+    else:
+        raise AssertionError("oversized job payload must fail closed")
+
+
+def test_invalid_job_payload_limit_configuration_fails_closed(tmp_path, monkeypatch):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+
+    for value in ("not-an-int", "100", str(2 * 1024 * 1024)):
+        monkeypatch.setenv("XBOW_MAX_JOB_PAYLOAD_BYTES", value)
+        try:
+            q.enqueue("campaign-1", "report", {})
+        except ValueError as exc:
+            assert "XBOW_MAX_JOB_PAYLOAD_BYTES" in str(exc)
+        else:
+            raise AssertionError("invalid job payload limit must fail closed")
