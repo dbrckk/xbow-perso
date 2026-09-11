@@ -13,7 +13,7 @@ from .main import Campaign, CampaignState, Finding, utcnow
 from .observation_graph import Observation
 from .orchestrator import advance_campaign
 from .recon_worker import ReconPolicyError, execute_recon_task
-from .scanner_worker import run_strix_job
+from .scanner_worker import _state_after_scan, run_strix_job
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
