@@ -23,6 +23,7 @@ def test_compose_keeps_services_hardened():
     assert "XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}" in compose
     assert "XBOW_ENABLE_HTTP_VALIDATION: ${XBOW_ENABLE_HTTP_VALIDATION:-false}" in compose
     assert "XBOW_ENABLE_BROWSER_AUTOMATION: ${XBOW_ENABLE_BROWSER_AUTOMATION:-false}" in compose
+    assert "XBOW_VALIDATION_PREVIEW_CHARS: ${XBOW_VALIDATION_PREVIEW_CHARS:-4096}" in compose
     assert compose.count("XBOW_MAX_JOB_PAYLOAD_BYTES: ${XBOW_MAX_JOB_PAYLOAD_BYTES:-65536}") == 2
     assert "XBOW_MAX_AUTONOMOUS_RPS: ${XBOW_MAX_AUTONOMOUS_RPS:-2.0}" in compose
 
