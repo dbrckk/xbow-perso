@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import os
 import socket
 import threading
@@ -11,6 +10,14 @@ from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_r
 from .jobqueue import JobQueue
 from .main import Campaign, CampaignState, Finding, utcnow
 from .observation_graph import Observation
+from .observation_writer import (
+    observation_id,
+    record_artifact,
+    record_asset,
+    record_endpoint,
+    record_finding_chain,
+    record_typed_child,
+)
 from .orchestrator import advance_campaign
 from .recon_worker import ReconPolicyError, execute_recon_task
 from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_strix_job
@@ -52,119 +59,12 @@ def _append_event_once(campaign: Campaign, event: dict) -> None:
     campaign.events.append(event)
 
 
-def _observation_id(prefix: str, value: str) -> str:
-    digest = hashlib.sha256(value.encode("utf-8")).hexdigest()[:24]
-    return f"{prefix}:{digest}"
-
-
-def _record_asset_observation(store: Storage, campaign: Campaign, asset: str, source: str) -> str:
-    observation = Observation(
-        id=_observation_id("asset", f"{source}\x1f{asset}"),
-        kind="asset",
-        value=asset,
-        source=source,
-    )
-    store.put_observation(campaign.id, observation.to_dict())
-    return observation.id
-
-
-def _record_endpoint_observation(
-    store: Storage,
-    campaign: Campaign,
-    endpoint: str,
-    *,
-    source: str,
-    parent_id: str,
-) -> str:
-    observation = Observation(
-        id=_observation_id("endpoint", f"{source}\x1f{endpoint}"),
-        kind="endpoint",
-        value=endpoint,
-        source=source,
-        parent_ids=(parent_id,),
-    )
-    store.put_observation(campaign.id, observation.to_dict())
-    return observation.id
-
-
-def _record_finding_observation(store: Storage, campaign: Campaign, finding: Finding) -> str:
-    asset_id = _record_asset_observation(
-        store,
-        campaign,
-        finding.asset,
-        finding.discovered_by,
-    )
-    parent_id = asset_id
-    if finding.endpoint:
-        endpoint_value = str(finding.endpoint)
-        if endpoint_value.startswith("/"):
-            endpoint_value = str(finding.asset).rstrip("/") + endpoint_value
-        parent_id = _record_endpoint_observation(
-            store,
-            campaign,
-            endpoint_value,
-            source=finding.discovered_by,
-            parent_id=asset_id,
-        )
-
-    observation = Observation(
-        id=f"finding:{finding.id}",
-        kind="finding",
-        value=finding.id,
-        source=finding.discovered_by,
-        parent_ids=(parent_id,),
-        metadata={
-            "title": finding.title,
-            "severity": finding.severity,
-            "endpoint": finding.endpoint,
-            "cwe": finding.cwe,
-            "cvss": finding.cvss,
-        },
-    )
-    store.put_observation(campaign.id, observation.to_dict())
-
-    for index, evidence in enumerate(finding.evidence[:50], start=1):
-        evidence_observation = Observation(
-            id=_observation_id(
-                "evidence",
-                f"{finding.discovered_by}\x1f{finding.id}\x1f{index}\x1f{evidence}",
-            ),
-            kind="evidence",
-            value=str(evidence),
-            source=finding.discovered_by,
-            parent_ids=(observation.id,),
-            metadata={
-                "finding_id": finding.id,
-                "scanner_evidence": True,
-                "ordinal": index,
-            },
-        )
-        store.put_observation(campaign.id, evidence_observation.to_dict())
-
-    return observation.id
-
-
-def _record_artifact_observation(
-    store: Storage,
-    campaign: Campaign,
-    artifact: dict,
-    *,
-    source: str,
-    parent_ids: tuple[str, ...] = (),
-    kind: str = "evidence",
-    value: str | None = None,
-    metadata: dict | None = None,
-) -> str:
-    observation = Observation(
-        id=f"{kind}:{artifact['id']}",
-        kind=kind,
-        value=value or artifact["id"],
-        source=source,
-        parent_ids=parent_ids,
-        metadata={"artifact_id": artifact["id"], **(metadata or {})},
-    )
-    store.put_observation(campaign.id, observation.to_dict())
-    return observation.id
+# Backward-compatible aliases for historical imports/tests.
+_observation_id = observation_id
+_record_asset_observation = record_asset
+_record_endpoint_observation = record_endpoint
+_record_finding_observation = record_finding_chain
+_record_artifact_observation = record_artifact
 
 
 @contextmanager
@@ -213,7 +113,7 @@ def process_validation(job: dict, store: Storage) -> None:
     if finding.discovered_by == "independent-http-validator":
         raise ValidationPolicyError("discovery agent cannot validate its own finding")
 
-    finding_observation_id = _record_finding_observation(store, campaign, finding)
+    finding_observation_id = record_finding_chain(store, campaign, finding)
     result = safe_http_probe(campaign, finding)
     artifact = store.put_artifact(
         campaign.id,
@@ -223,7 +123,7 @@ def process_validation(job: dict, store: Storage) -> None:
         finding_id=finding.id,
         idempotency_key=f"{job['id']}:validation",
     )
-    validation_observation_id = _record_artifact_observation(
+    validation_observation_id = record_artifact(
         store,
         campaign,
         artifact,
@@ -233,7 +133,7 @@ def process_validation(job: dict, store: Storage) -> None:
         value=result.status,
         metadata={"http_status": result.http_status, "finding_id": finding.id},
     )
-    _record_artifact_observation(
+    record_artifact(
         store,
         campaign,
         artifact,
@@ -272,13 +172,13 @@ def process_validation(job: dict, store: Storage) -> None:
 
 def process_browser_flow(job: dict, store: Storage) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
-    asset_id = _record_asset_observation(store, campaign, str(campaign.target.primary_url), "browser")
+    asset_id = record_asset(store, campaign, str(campaign.target.primary_url), "browser")
     result = execute_browser_flow(campaign, job["payload"])
     artifacts = persist_browser_result(store, campaign.id, result, idempotency_prefix=job["id"])
     for observation in result.observations:
         operation = observation.get("operation")
         if operation == "navigate" and observation.get("url"):
-            _record_endpoint_observation(
+            record_endpoint(
                 store,
                 campaign,
                 str(observation["url"]),
@@ -287,7 +187,7 @@ def process_browser_flow(job: dict, store: Storage) -> None:
             )
         elif operation == "surface_links":
             for endpoint in observation.get("urls", [])[:100]:
-                _record_endpoint_observation(
+                record_endpoint(
                     store,
                     campaign,
                     str(endpoint),
@@ -299,34 +199,34 @@ def process_browser_flow(job: dict, store: Storage) -> None:
                 action = str(form.get("action") or "")
                 if not action:
                     continue
-                form_observation = Observation(
-                    id=_observation_id(
-                        "form",
-                        f"browser\x1f{action}\x1f{form.get('method', 'GET')}\x1f"
-                        + ",".join(str(name) for name in form.get("input_names", [])),
-                    ),
+                record_typed_child(
+                    store,
+                    campaign,
                     kind="form",
                     value=action,
                     source="browser",
-                    parent_ids=(asset_id,),
+                    parent_id=asset_id,
                     metadata={
                         "method": str(form.get("method") or "GET"),
                         "input_names": list(form.get("input_names", []))[:100],
                     },
+                    identity=(
+                        f"browser\x1f{action}\x1f{form.get('method', 'GET')}\x1f"
+                        + ",".join(str(name) for name in form.get("input_names", []))
+                    ),
                 )
-                store.put_observation(campaign.id, form_observation.to_dict())
         elif operation == "surface_technologies":
             for technology in observation.get("technologies", [])[:20]:
-                technology_observation = Observation(
-                    id=_observation_id("technology", f"browser\x1f{technology}"),
+                record_typed_child(
+                    store,
+                    campaign,
                     kind="technology",
                     value=str(technology),
                     source="browser",
-                    parent_ids=(asset_id,),
+                    parent_id=asset_id,
                 )
-                store.put_observation(campaign.id, technology_observation.to_dict())
     for artifact in artifacts:
-        _record_artifact_observation(
+        record_artifact(
             store,
             campaign,
             artifact,
@@ -351,7 +251,7 @@ def process_recon_task(job: dict, store: Storage) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
     result = execute_recon_task(campaign, job["payload"])
     source = f"recon:{job['payload'].get('kind', 'unknown')}"
-    asset_id = _record_asset_observation(
+    asset_id = record_asset(
         store,
         campaign,
         str(campaign.target.primary_url),
@@ -359,7 +259,7 @@ def process_recon_task(job: dict, store: Storage) -> None:
     )
 
     for endpoint in result.endpoints:
-        _record_endpoint_observation(
+        record_endpoint(
             store,
             campaign,
             endpoint,
@@ -368,38 +268,39 @@ def process_recon_task(job: dict, store: Storage) -> None:
         )
 
     for form in result.forms:
-        observation = Observation(
-            id=_observation_id("form", f"{source}\x1f{form['action']}\x1f{','.join(form['input_names'])}"),
+        record_typed_child(
+            store,
+            campaign,
             kind="form",
             value=form["action"],
             source=source,
-            parent_ids=(asset_id,),
+            parent_id=asset_id,
             metadata={
                 "method": form["method"],
                 "input_names": form["input_names"],
             },
+            identity=f"{source}\x1f{form['action']}\x1f{','.join(form['input_names'])}",
         )
-        store.put_observation(campaign.id, observation.to_dict())
 
     for technology in result.technologies:
-        observation = Observation(
-            id=_observation_id("technology", f"{source}\x1f{technology}"),
+        record_typed_child(
+            store,
+            campaign,
             kind="technology",
             value=technology,
             source=source,
-            parent_ids=(asset_id,),
+            parent_id=asset_id,
         )
-        store.put_observation(campaign.id, observation.to_dict())
 
     for waf in result.waf:
-        observation = Observation(
-            id=_observation_id("waf", f"{source}\x1f{waf}"),
+        record_typed_child(
+            store,
+            campaign,
             kind="waf",
             value=waf,
             source=source,
-            parent_ids=(asset_id,),
+            parent_id=asset_id,
         )
-        store.put_observation(campaign.id, observation.to_dict())
 
     _append_event_once(
         campaign,
@@ -432,7 +333,7 @@ def process_report(job: dict, store: Storage) -> None:
         media_type="text/markdown",
         idempotency_key=f"{job['id']}:report:{platform}",
     )
-    _record_artifact_observation(
+    record_artifact(
         store,
         campaign,
         artifact,
