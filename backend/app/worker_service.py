@@ -6,7 +6,6 @@ import socket
 import threading
 import time
 from contextlib import contextmanager
-from pathlib import Path
 
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .jobqueue import JobQueue
@@ -14,16 +13,11 @@ from .main import Campaign, CampaignState, Finding, utcnow
 from .observation_graph import Observation
 from .orchestrator import advance_campaign
 from .recon_worker import ReconPolicyError, execute_recon_task
-from .scanner_ingestion import ingest_scanner_run
+from .scanner_worker import run_strix_job
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
-from .worker import (
-    WorkerPolicyError,
-    build_strix_plan,
-    execute,
-    persist_execution_artifacts,
-)
+from .worker import WorkerPolicyError
 
 
 class CampaignCancelledError(ValueError):
@@ -169,25 +163,6 @@ def _record_artifact_observation(
     return observation.id
 
 
-def _record_scan_observation(store: Storage, campaign: Campaign, job_id: str, findings: int) -> None:
-    store.put_observation(
-        campaign.id,
-        Observation(
-            id=f"scan:{job_id}",
-            kind="evidence",
-            value="completed",
-            source="strix",
-            metadata={"phase": "scan", "status": "completed", "findings": findings, "job_id": job_id},
-        ).to_dict(),
-    )
-
-
-def _state_after_scan(campaign: Campaign) -> CampaignState:
-    """Derive scan completion state from durable finding resolution, not queue fan-out."""
-    unresolved = any(finding.status not in {"confirmed", "rejected"} for finding in campaign.findings)
-    return CampaignState.validating if unresolved else CampaignState.completed
-
-
 @contextmanager
 def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
     """Keep ownership of a long-running job without hiding lease loss."""
@@ -219,46 +194,8 @@ def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
 
 def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
-    run_dir = str(Path(os.getenv("XBOW_STRIX_RUN_ROOT", "/data/strix_runs")) / job["id"])
-    plan = build_strix_plan(campaign, run_dir)
-    result = execute(plan)
-    persist_execution_artifacts(store, campaign.id, result)
-
-    if result["status"] == "dry_run":
-        _record_asset_observation(store, campaign, str(campaign.target.primary_url), "strix-dry-run")
-        campaign.state = CampaignState.ready
-        _append_event_once(campaign, {"type": "scan_dry_run", "job_id": job["id"], "at": utcnow()})
-        _save(store, campaign, version)
-        return
-    if result["status"] != "completed":
-        raise RuntimeError(result.get("stderr") or "Strix execution failed")
-
-    ingestion = ingest_scanner_run(
-        "strix",
-        run_dir,
-        campaign,
-        queue,
-        store,
-    )
-    _record_scan_observation(
-        store,
-        campaign,
-        job["id"],
-        ingestion.findings_seen,
-    )
-    campaign.state = _state_after_scan(campaign)
-    _append_event_once(
-        campaign,
-        {
-            "type": "scanner_results_ingested",
-            "engine": ingestion.engine,
-            "job_id": job["id"],
-            "findings": ingestion.findings_seen,
-            "findings_added": ingestion.findings_added,
-            "validation_jobs": ingestion.validation_jobs,
-            "at": utcnow(),
-        },
-    )
+    result = run_strix_job(job, campaign, queue, store)
+    _append_event_once(campaign, result.event)
     _save(store, campaign, version)
 
 
