@@ -6,7 +6,7 @@ from typing import Callable
 
 from .main import Campaign, Finding
 from .nuclei_parser import parse_nuclei_jsonl
-from .worker import parse_strix_vulnerabilities
+from .strix_parser import parse_strix_json
 
 
 Parser = Callable[[str | Path, Campaign], list[Finding]]
@@ -24,7 +24,7 @@ _ADAPTERS: dict[str, ScannerAdapter] = {
     "strix": ScannerAdapter(
         engine="strix",
         format="json",
-        parser=parse_strix_vulnerabilities,
+        parser=parse_strix_json,
         artifact_globs=("**/vulnerabilities.json",),
     ),
     "nuclei": ScannerAdapter(
