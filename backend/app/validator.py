@@ -54,6 +54,32 @@ def _validation_timeout_seconds() -> float:
     return timeout
 
 
+def _validation_preview_chars() -> int:
+    raw = os.getenv("XBOW_VALIDATION_PREVIEW_CHARS", "4096")
+    try:
+        limit = int(raw)
+    except ValueError as exc:
+        raise ValidationPolicyError("XBOW_VALIDATION_PREVIEW_CHARS must be an integer") from exc
+    if not 0 <= limit <= 16384:
+        raise ValidationPolicyError("XBOW_VALIDATION_PREVIEW_CHARS must be between 0 and 16384")
+    return limit
+
+
+def _preview_body(body: bytes, content_type: str | None) -> str:
+    if not body:
+        return ""
+    media_type = (content_type or "").split(";", 1)[0].strip().lower()
+    text_like = (
+        media_type.startswith("text/")
+        or media_type in {"application/json", "application/xml", "application/xhtml+xml"}
+        or media_type.endswith("+json")
+        or media_type.endswith("+xml")
+    )
+    if not text_like:
+        return ""
+    return body.decode("utf-8", errors="replace")[:_validation_preview_chars()]
+
+
 def _validation_max_bytes() -> int:
     raw = os.getenv("XBOW_VALIDATION_MAX_BYTES", "262144")
     try:
@@ -130,24 +156,26 @@ def safe_http_probe(campaign, finding) -> ProbeResult:
     try:
         with opener.open(request, timeout=timeout) as response:
             body = response.read(max_bytes + 1)[:max_bytes]
+            content_type = response.headers.get("Content-Type")
             return ProbeResult(
                 status="observed",
                 url=evidence_url,
                 parameter_names=parameter_names,
                 http_status=int(response.status),
-                content_type=response.headers.get("Content-Type"),
-                body_preview=body.decode("utf-8", errors="replace"),
+                content_type=content_type,
+                body_preview=_preview_body(body, content_type),
             )
     except HTTPError as exc:
         # Redirects and non-2xx responses are observations, not execution failures.
         body = exc.read(max_bytes + 1)[:max_bytes] if exc.fp else b""
+        content_type = exc.headers.get("Content-Type") if exc.headers else None
         return ProbeResult(
             status="observed",
             url=evidence_url,
             parameter_names=parameter_names,
             http_status=int(exc.code),
-            content_type=exc.headers.get("Content-Type") if exc.headers else None,
-            body_preview=body.decode("utf-8", errors="replace"),
+            content_type=content_type,
+            body_preview=_preview_body(body, content_type),
         )
     except (URLError, TimeoutError, OSError) as exc:
         return ProbeResult(
