@@ -1,7 +1,9 @@
 import json
 
+import pytest
+
 from app.main import Campaign, ProgramRules, TargetInput
-from app.worker import WorkerPolicyError, locate_vulnerabilities_json, parse_strix_vulnerabilities
+from app.worker import WorkerPolicyError, build_strix_plan, locate_vulnerabilities_json, parse_strix_vulnerabilities
 
 
 def campaign():
@@ -103,3 +105,30 @@ def test_invalid_strix_size_limit_fails_closed(tmp_path, monkeypatch):
         assert "XBOW_MAX_STRIX_JSON_BYTES" in str(exc)
     else:
         raise AssertionError("unsafe artifact limit configuration must fail closed")
+
+
+def test_active_scan_rejects_campaign_rate_above_autonomous_cap(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "1.0")
+
+    with pytest.raises(WorkerPolicyError, match="request-rate"):
+        build_strix_plan(campaign())
+
+
+def test_dry_run_does_not_require_active_rate_admission(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("DRY_RUN", "true")
+    monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "not-a-number")
+
+    plan = build_strix_plan(campaign())
+    assert plan.dry_run is True
+
+
+def test_invalid_active_rate_cap_fails_closed(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "not-a-number")
+
+    with pytest.raises(WorkerPolicyError, match="must be a number"):
+        build_strix_plan(campaign())
