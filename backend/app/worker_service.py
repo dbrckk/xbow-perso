@@ -16,10 +16,6 @@ from .orchestrator import advance_campaign
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
-class CampaignCancelledError(ValueError):
-    pass
-
-
 from .worker import (
     WorkerPolicyError,
     build_strix_plan,
