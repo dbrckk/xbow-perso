@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 import shlex
 import subprocess
@@ -10,11 +9,7 @@ from urllib.parse import urlparse
 
 from .main import Campaign, Finding, is_host_allowed
 from .scanner_registry import latest_scanner_artifact
-from .scanner_normalization import (
-    dedupe_normalized,
-    normalize_strix_item,
-    to_campaign_finding,
-)
+from .strix_parser import StrixParserError, max_strix_json_bytes, parse_strix_json
 from .storage import Storage
 
 
@@ -187,58 +182,27 @@ def _worker_env() -> dict[str, str]:
 
 
 def _max_strix_json_bytes() -> int:
-    raw = os.getenv("XBOW_MAX_STRIX_JSON_BYTES", str(5 * 1024 * 1024))
     try:
-        limit = int(raw)
-    except ValueError as exc:
-        raise WorkerPolicyError("XBOW_MAX_STRIX_JSON_BYTES must be an integer") from exc
-    if not 1024 <= limit <= 20 * 1024 * 1024:
-        raise WorkerPolicyError("XBOW_MAX_STRIX_JSON_BYTES must be between 1 KiB and 20 MiB")
-    return limit
+        return max_strix_json_bytes()
+    except StrixParserError as exc:
+        raise WorkerPolicyError(str(exc)) from exc
 
 
 def locate_vulnerabilities_json(output_dir: str) -> Path | None:
-    root = Path(output_dir)
-    if not root.exists():
+    candidate = latest_scanner_artifact("strix", output_dir)
+    if candidate is None:
         return None
-    root_resolved = root.resolve()
-    safe_matches: list[Path] = []
-    for candidate in root.glob("**/vulnerabilities.json"):
-        try:
-            resolved = candidate.resolve(strict=True)
-            resolved.relative_to(root_resolved)
-        except (FileNotFoundError, ValueError, OSError):
-            continue
-        if not resolved.is_file() or resolved.stat().st_size > _max_strix_json_bytes():
-            continue
-        safe_matches.append(resolved)
-    safe_matches.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    return safe_matches[0] if safe_matches else None
+    if candidate.stat().st_size > _max_strix_json_bytes():
+        return None
+    return candidate
 
 
 def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Finding]:
-    """Parse bounded Strix JSON through the canonical scanner normalization layer."""
-    path = Path(path)
-    if path.stat().st_size > _max_strix_json_bytes():
-        raise WorkerPolicyError("Strix vulnerabilities JSON exceeds configured size limit")
-    raw = json.loads(path.read_text(encoding="utf-8"))
-    if isinstance(raw, list):
-        items = raw
-    elif isinstance(raw, dict):
-        items = raw.get("vulnerabilities") or raw.get("findings") or raw.get("results") or []
-    else:
-        raise ValueError("unsupported Strix vulnerabilities JSON")
-    if not isinstance(items, list):
-        raise ValueError("Strix findings collection must be a list")
-
-    normalized = []
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        finding = normalize_strix_item(item, campaign)
-        if finding is not None:
-            normalized.append(finding)
-    return [to_campaign_finding(item) for item in dedupe_normalized(normalized)]
+    """Compatibility wrapper around the isolated Strix parser."""
+    try:
+        return parse_strix_json(path, campaign)
+    except StrixParserError as exc:
+        raise WorkerPolicyError(str(exc)) from exc
 
 
 def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) -> list[dict]:
@@ -247,7 +211,7 @@ def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) 
         content = result.get(key)
         if content:
             artifacts.append(store.put_artifact(campaign_id, kind, str(content).encode(), media_type="text/plain"))
-    vuln_path = latest_scanner_artifact("strix", str(result.get("output_dir") or ""))
+    vuln_path = locate_vulnerabilities_json(str(result.get("output_dir") or ""))
     if vuln_path:
         artifacts.append(
             store.put_artifact(
