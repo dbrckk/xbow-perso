@@ -6,6 +6,7 @@ from app.browser import (
     BrowserFlowInput,
     BrowserPolicyError,
     BrowserStep,
+    _assert_read_only_browser_method,
     _flow_dedupe_key,
     execute_browser_flow,
     persist_browser_result,
@@ -150,3 +151,12 @@ def test_browser_automation_rejects_unsafe_campaign_flags(flag):
 
     with pytest.raises(BrowserPolicyError, match="unsafe campaign flags"):
         validate_flow(campaign, flow)
+
+
+def test_browser_request_methods_are_read_only():
+    for method in ("GET", "HEAD", "OPTIONS", " get "):
+        _assert_read_only_browser_method(method)
+
+    for method in ("POST", "PUT", "PATCH", "DELETE", "CONNECT"):
+        with pytest.raises(BrowserPolicyError, match="read-only"):
+            _assert_read_only_browser_method(method)
