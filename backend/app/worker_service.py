@@ -26,6 +26,10 @@ from .worker import (
 )
 
 
+class CampaignCancelledError(ValueError):
+    pass
+
+
 def _save(store: Storage, campaign: Campaign, version: int) -> int:
     campaign.updated_at = utcnow()
     return store.save_campaign(campaign.model_dump(mode="json"), expected_version=version)
