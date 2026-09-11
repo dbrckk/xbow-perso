@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -13,6 +15,7 @@ class Hypothesis:
     statement: str
     confidence: float
     status: str
+    graph_fingerprint: str
     evidence_ids: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
@@ -21,12 +24,34 @@ class Hypothesis:
         return payload
 
 
+def hypothesis_graph_fingerprint(graph: ObservationGraph) -> str:
+    payload = [
+        {
+            "id": item.id,
+            "kind": item.kind,
+            "value": item.value,
+            "source": item.source,
+            "parent_ids": list(item.parent_ids),
+            "metadata": item.metadata,
+        }
+        for item in sorted(graph.values(), key=lambda item: item.id)
+        if item.metadata.get("memory_type") != "planner_decision"
+    ]
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:20]
+
+
+def hypothesis_snapshot_is_current(hypothesis: Hypothesis, graph: ObservationGraph) -> bool:
+    return hypothesis.graph_fingerprint == hypothesis_graph_fingerprint(graph)
+
+
 def build_hypotheses(graph: ObservationGraph) -> list[Hypothesis]:
     """Build deterministic, read-only hypotheses from recorded findings.
 
     Hypotheses never authorize execution. They summarize evidence gaps for the
     bounded planner and preserve the existing policy/validation boundary.
     """
+    fingerprint = hypothesis_graph_fingerprint(graph)
     validations = graph.by_kind("validation")
     evidence = graph.by_kind("evidence")
     result: list[Hypothesis] = []
@@ -53,6 +78,7 @@ def build_hypotheses(graph: ObservationGraph) -> list[Hypothesis]:
                 statement=f"Recorded finding {finding.value} requires independent evidence correlation.",
                 confidence=min(0.95, round(confidence, 2)),
                 status=status,
+                graph_fingerprint=fingerprint,
                 evidence_ids=tuple(sorted(item.id for item in linked_evidence)),
             )
         )
