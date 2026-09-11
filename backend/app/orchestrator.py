@@ -221,7 +221,7 @@ def _record_decision(
 ) -> None:
     fingerprint = _graph_fingerprint(graph)
     observation = Observation(
-        id=_stable_id("decision", action.kind, fingerprint),
+        id=_stable_id("decision", action.kind, action.reason, fingerprint),
         kind="evidence",
         value=action.kind,
         source="orchestrator",
