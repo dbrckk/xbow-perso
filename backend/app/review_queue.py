@@ -8,7 +8,7 @@ from fastapi import APIRouter
 from .evidence_chain import build_evidence_chains
 from .hypothesis_engine import build_hypotheses
 from .hypothesis_memory import summarize_hypothesis_stability
-from .knowledge_memory import build_knowledge_snapshot
+from .knowledge_memory import build_knowledge_snapshot, review_severity_bonus
 from .observation_graph import ObservationGraph, load_observation_graph
 
 ReviewKind = Literal[
@@ -78,13 +78,7 @@ def build_review_queue(
                 temporal_reason = "; hypothesis is still evolving"
             finding_id = graph_finding_id.removeprefix("finding:")
             severity = (severities or {}).get(finding_id, "info")
-            severity_bonus = {
-                "info": 0.00,
-                "low": 0.02,
-                "medium": 0.05,
-                "high": 0.08,
-                "critical": 0.12,
-            }.get(severity, 0.00)
+            severity_bonus = review_severity_bonus(severity)
             base_score = 0.75
             confidence_gap = round((1.0 - current_confidence) * 0.17, 4)
             components = {
