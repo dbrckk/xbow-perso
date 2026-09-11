@@ -3,7 +3,7 @@ import pytest
 from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, ProgramRules, TargetInput, cancel_campaign
 from app.storage import Storage
-from app.worker_service import _campaign as load_worker_campaign
+from app.worker_service import _campaign as load_worker_campaign, process_one
 
 
 def _setup(tmp_path, monkeypatch):
@@ -92,3 +92,29 @@ def test_completed_campaign_cannot_be_cancelled(tmp_path, monkeypatch):
         cancel_campaign(campaign.id)
 
     assert exc.value.status_code == 409
+
+
+def test_running_job_becomes_cancelled_when_worker_observes_cancelled_campaign(tmp_path, monkeypatch):
+    db, store, campaign = _setup(tmp_path, monkeypatch)
+    jobs = JobQueue(db)
+    job = jobs.enqueue(campaign.id, "report", {"campaign_id": campaign.id}, max_attempts=2)
+    claimed = jobs.claim("worker-a")
+    assert claimed is not None and claimed["id"] == job["id"]
+
+    document, version = store.get_campaign_record(campaign.id)
+    document["state"] = "cancelled"
+    store.save_campaign(document, expected_version=version)
+
+    # Put the claimed job back into the worker path without allowing a retry loop.
+    with jobs.connect() as conn:
+        conn.execute(
+            "UPDATE jobs SET status='queued', claimed_by=NULL, claimed_at=NULL, attempts=0 WHERE id=?",
+            (job["id"],),
+        )
+
+    assert process_one(jobs, store, "worker-a") is True
+    final = jobs.get(job["id"])
+    assert final is not None
+    assert final["status"] == "cancelled"
+    assert final["attempts"] == 1
+    assert final["claimed_by"] is None
