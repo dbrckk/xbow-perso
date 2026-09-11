@@ -6,6 +6,42 @@ from typing import Any
 from .observation_graph import ObservationGraph
 
 
+SEVERITY_WEIGHTS = {
+    "info": 0.10,
+    "low": 0.25,
+    "medium": 0.50,
+    "high": 0.75,
+    "critical": 1.00,
+}
+
+REVIEW_SEVERITY_BONUS = {
+    "info": 0.00,
+    "low": 0.02,
+    "medium": 0.05,
+    "high": 0.08,
+    "critical": 0.12,
+}
+
+TEMPORAL_NEED = {
+    "contradictory": 1.00,
+    "evolving": 0.65,
+    "fresh": 0.40,
+    "stable": 0.10,
+}
+
+
+def severity_weight(value: Any) -> float:
+    return SEVERITY_WEIGHTS.get(str(value), 0.0)
+
+
+def review_severity_bonus(value: Any) -> float:
+    return REVIEW_SEVERITY_BONUS.get(str(value), 0.0)
+
+
+def temporal_need(value: Any) -> float:
+    return TEMPORAL_NEED.get(str(value), 0.25)
+
+
 @dataclass(frozen=True)
 class FindingConfidence:
     finding_id: str
@@ -116,13 +152,6 @@ def rank_findings(findings: list[Any], graph: ObservationGraph) -> list[FindingP
     Higher severity raises priority while stronger existing evidence lowers the
     urgency for another validation pass. Ties are deterministic by finding id.
     """
-    severity_weights = {
-        "info": 0.10,
-        "low": 0.25,
-        "medium": 0.50,
-        "high": 0.75,
-        "critical": 1.00,
-    }
     confidence = {
         item.finding_id: item.score
         for item in build_knowledge_snapshot(graph).finding_confidence
@@ -131,13 +160,13 @@ def rank_findings(findings: list[Any], graph: ObservationGraph) -> list[FindingP
     for finding in findings:
         finding_id = f"finding:{finding.id}"
         confidence_score = confidence.get(finding_id, 0.0)
-        severity_weight = severity_weights.get(str(finding.severity), 0.0)
-        score = round((severity_weight * 0.70) + ((1.0 - confidence_score) * 0.30), 4)
+        severity_weight_value = severity_weight(finding.severity)
+        score = round((severity_weight_value * 0.70) + ((1.0 - confidence_score) * 0.30), 4)
         ranked.append(
             FindingPriority(
                 finding_id=str(finding.id),
                 score=score,
-                severity_weight=severity_weight,
+                severity_weight=severity_weight_value,
                 confidence=confidence_score,
             )
         )
@@ -155,31 +184,19 @@ def rank_findings_explainable(
         item.finding_id.removeprefix("finding:"): item.score
         for item in build_knowledge_snapshot(graph).finding_confidence
     }
-    severity_weights = {
-        "info": 0.10,
-        "low": 0.25,
-        "medium": 0.50,
-        "high": 0.75,
-        "critical": 1.00,
-    }
     ranked = []
     for finding in findings:
         finding_id = str(finding.id)
-        severity_weight = severity_weights.get(str(finding.severity), 0.0)
+        severity_weight_value = severity_weight(finding.severity)
         confidence_score = confidence.get(finding_id, 0.0)
         temporal = (stability or {}).get(finding_id, {})
         temporal_state = temporal.get("stability")
-        temporal_need = {
-            "contradictory": 1.00,
-            "evolving": 0.65,
-            "fresh": 0.40,
-            "stable": 0.10,
-        }.get(temporal_state, 0.25)
+        temporal_need_value = temporal_need(temporal_state)
         evidence_gap = 1.0 - confidence_score
         components = {
-            "severity": round(severity_weight * 0.55, 4),
+            "severity": round(severity_weight_value * 0.55, 4),
             "evidence_gap": round(evidence_gap * 0.30, 4),
-            "temporal_need": round(temporal_need * 0.15, 4),
+            "temporal_need": round(temporal_need_value * 0.15, 4),
         }
         score = round(sum(components.values()), 4)
         ranked.append(
