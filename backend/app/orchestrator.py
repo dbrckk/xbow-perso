@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+import os
 from urllib.parse import urlparse
 
 from .adaptive_cycle import build_adaptive_cycle
+from .attack_surface import build_attack_surface
 from .agent_registry import agent_for_action
 from .autonomy_gate import build_autonomy_gate
 from .campaign_risk import build_campaign_risk
@@ -66,6 +69,41 @@ def _seed_primary_target(store: Storage, campaign: Campaign) -> None:
     )
 
 
+def _minimum_enrichment_score() -> float:
+    raw = os.getenv("XBOW_MIN_RECON_ENRICHMENT_SCORE", "0.40")
+    try:
+        value = float(raw)
+    except ValueError as exc:
+        raise ValueError("XBOW_MIN_RECON_ENRICHMENT_SCORE must be a number") from exc
+    if not math.isfinite(value) or not 0.0 <= value <= 1.0:
+        raise ValueError("XBOW_MIN_RECON_ENRICHMENT_SCORE must be between 0 and 1")
+    return value
+
+
+def _surface_enrichment(
+    campaign: Campaign,
+    graph: ObservationGraph,
+) -> dict:
+    rules = campaign.target.rules
+    surface = build_attack_surface(
+        graph,
+        scope_checker=lambda host: is_host_allowed(
+            host,
+            rules.allowed_targets,
+            rules.denied_targets,
+        ),
+    )
+    score = float(surface["summary"]["enrichment_score"])
+    threshold = _minimum_enrichment_score()
+    return {
+        "score": score,
+        "threshold": threshold,
+        "ready": score >= threshold,
+        "source_diversity": int(surface["summary"]["source_diversity"]),
+        "surface_sources": list(surface["summary"]["surface_sources"]),
+    }
+
+
 def _intelligence_context(
     campaign: Campaign,
     graph: ObservationGraph,
@@ -121,6 +159,7 @@ def _intelligence_context(
         "memory": memories,
         "cycle": cycle,
         "recon": recon,
+        "surface_enrichment": _surface_enrichment(campaign, graph),
     }
 
 
@@ -314,6 +353,7 @@ def _result(
             "decisions": [item.to_dict() for item in intelligence["decisions"]],
             "learning_memory": [item.to_dict() for item in intelligence["memory"]],
             "recon_plan": [item.to_dict() for item in intelligence["recon"]],
+            "surface_enrichment": dict(intelligence["surface_enrichment"]),
             "read_only_context": True,
         }
     return {
@@ -409,6 +449,33 @@ def advance_campaign(
             )
             return _result(
                 action,
+                recon_jobs,
+                campaign=campaign,
+                graph=graph,
+                store=store,
+                queue=queue,
+                budget=limits,
+                intelligence=intelligence,
+            )
+        if action.kind == "scan" and not intelligence["surface_enrichment"]["ready"]:
+            recon_jobs = _enqueue_recon_tasks(
+                campaign,
+                graph,
+                queue,
+                intelligence["recon"],
+            )
+            enrichment = intelligence["surface_enrichment"]
+            recon_action = PlannedAction(
+                "crawl",
+                str(campaign.target.primary_url),
+                (
+                    "attack surface enrichment below scan threshold "
+                    f"({enrichment['score']:.4f} < {enrichment['threshold']:.4f})"
+                ),
+                95,
+            )
+            return _result(
+                recon_action,
                 recon_jobs,
                 campaign=campaign,
                 graph=graph,

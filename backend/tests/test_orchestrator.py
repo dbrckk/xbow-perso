@@ -338,3 +338,89 @@ def test_orchestrator_learning_memory_reaches_adaptive_cycle(tmp_path):
         for item in result["intelligence"]["learning_memory"]
     }
     assert memory["bounded-review"]["failures"] == 2
+
+
+
+def test_orchestrator_blocks_scan_below_surface_enrichment_threshold(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    asset = Observation("a1", "asset", "example.test", "recon")
+    endpoint = Observation(
+        "e1",
+        "endpoint",
+        "https://example.test/",
+        "recon:crawl",
+        parent_ids=("a1",),
+    )
+    store.put_observation(campaign.id, asset.to_dict())
+    store.put_observation(campaign.id, endpoint.to_dict())
+
+    result = advance_campaign(campaign, queue, store)
+
+    assert result["action"]["kind"] == "crawl"
+    assert "enrichment below scan threshold" in result["action"]["reason"]
+    assert result["intelligence"]["surface_enrichment"]["score"] < 0.40
+    assert result["intelligence"]["surface_enrichment"]["ready"] is False
+    jobs = [queue.get(job_id) for job_id in result["job_ids"]]
+    assert {job["kind"] for job in jobs} == {"recon_task", "browser_flow"}
+
+
+def test_orchestrator_allows_scan_after_surface_enrichment_threshold(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    store.put_observation(
+        campaign.id,
+        Observation("a1", "asset", "example.test", "recon").to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "e1",
+            "endpoint",
+            "https://example.test/",
+            "recon:crawl",
+            parent_ids=("a1",),
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "t1",
+            "technology",
+            "Server:fixture",
+            "recon:detect_technology",
+            parent_ids=("a1",),
+        ).to_dict(),
+    )
+
+    result = advance_campaign(campaign, queue, store)
+
+    assert result["intelligence"]["surface_enrichment"]["score"] >= 0.40
+    assert result["intelligence"]["surface_enrichment"]["ready"] is True
+    assert result["action"]["kind"] == "scan"
+    assert len(result["job_ids"]) == 1
+    assert queue.get(result["job_ids"][0])["kind"] == "strix_scan"
+
+
+def test_orchestrator_rejects_invalid_surface_enrichment_threshold(tmp_path, monkeypatch):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    monkeypatch.setenv("XBOW_MIN_RECON_ENRICHMENT_SCORE", "NaN")
+
+    try:
+        advance_campaign(campaign, queue, store)
+    except ValueError as exc:
+        assert "XBOW_MIN_RECON_ENRICHMENT_SCORE" in str(exc)
+    else:
+        raise AssertionError("invalid enrichment threshold must fail closed")
