@@ -36,7 +36,10 @@ def _campaign(store: Storage, campaign_id: str) -> tuple[Campaign, int]:
     if not record:
         raise KeyError(f"campaign {campaign_id} not found")
     raw, version = record
-    return Campaign.model_validate(raw), version
+    campaign = Campaign.model_validate(raw)
+    if campaign.state == CampaignState.cancelled:
+        raise ValueError("campaign is cancelled")
+    return campaign, version
 
 
 def _append_event_once(campaign: Campaign, event: dict) -> None:
