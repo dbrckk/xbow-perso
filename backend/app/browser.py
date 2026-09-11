@@ -184,6 +184,97 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
                     response = page.goto(target, wait_until="domcontentloaded", timeout=step.timeout_ms)
                     final_url = _allowed_url(campaign, page.url, target)
                     observations.append({"step": index, "operation": "navigate", "url": final_url, "status": response.status if response else None})
+
+                    links = []
+                    for href in page.locator("a[href]").evaluate_all(
+                        "(els) => els.map((el) => el.href)"
+                    ):
+                        try:
+                            safe = _allowed_url(campaign, str(href), final_url)
+                        except BrowserPolicyError:
+                            continue
+                        if safe not in links:
+                            links.append(safe)
+                        if len(links) >= 100:
+                            break
+                    if links:
+                        observations.append(
+                            {
+                                "step": index,
+                                "operation": "surface_links",
+                                "urls": links,
+                            }
+                        )
+
+                    forms = []
+                    raw_forms = page.locator("form").evaluate_all(
+                        """(forms) => forms.map((form) => ({
+                          action: form.action || window.location.href,
+                          method: (form.method || 'GET').toUpperCase(),
+                          input_names: Array.from(
+                            form.querySelectorAll('input[name], textarea[name], select[name]')
+                          ).map((el) => el.name).filter(Boolean)
+                        }))"""
+                    )
+                    for raw_form in raw_forms:
+                        method = str(raw_form.get("method") or "GET").upper()
+                        if method not in {"GET", "HEAD"}:
+                            continue
+                        try:
+                            action_url = _allowed_url(
+                                campaign,
+                                str(raw_form.get("action") or final_url),
+                                final_url,
+                            )
+                        except BrowserPolicyError:
+                            continue
+                        forms.append(
+                            {
+                                "action": action_url,
+                                "method": method,
+                                "input_names": sorted(
+                                    {
+                                        str(name).strip()
+                                        for name in raw_form.get("input_names", [])
+                                        if str(name).strip()
+                                    }
+                                )[:100],
+                            }
+                        )
+                        if len(forms) >= 50:
+                            break
+                    if forms:
+                        observations.append(
+                            {
+                                "step": index,
+                                "operation": "surface_forms",
+                                "forms": forms,
+                            }
+                        )
+
+                    technologies = []
+                    generator = page.locator('meta[name="generator"]').get_attribute("content")
+                    if generator:
+                        technologies.append(f"generator:{generator}"[:200])
+                    framework_markers = page.evaluate(
+                        """() => ({
+                          next: Boolean(document.querySelector('#__NEXT_DATA__')),
+                          nuxt: Boolean(window.__NUXT__),
+                          react: Boolean(document.querySelector('[data-reactroot], [data-reactid]')),
+                          angular: Boolean(document.querySelector('[ng-version]'))
+                        })"""
+                    )
+                    for name, present in sorted(framework_markers.items()):
+                        if present:
+                            technologies.append(name)
+                    if technologies:
+                        observations.append(
+                            {
+                                "step": index,
+                                "operation": "surface_technologies",
+                                "technologies": sorted(set(technologies))[:20],
+                            }
+                        )
                 elif step.operation == "click":
                     page.locator(step.selector or "").click(timeout=step.timeout_ms)
                     if page.url != "about:blank":
