@@ -1,7 +1,7 @@
 import pytest
 
 from app.jobqueue import JobQueue
-from app.main import Campaign, CampaignState, ProgramRules, TargetInput, cancel_campaign
+from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput, add_finding, cancel_campaign, queue_report, validate_finding
 from app.storage import Storage
 from app.worker_service import _campaign as load_worker_campaign, process_one
 
@@ -118,3 +118,29 @@ def test_running_job_becomes_cancelled_when_worker_observes_cancelled_campaign(t
     assert final["status"] == "cancelled"
     assert final["attempts"] == 1
     assert final["claimed_by"] is None
+
+
+def test_cancelled_campaign_rejects_new_mutations(tmp_path, monkeypatch):
+    _db, _store, campaign = _setup(tmp_path, monkeypatch)
+    cancel_campaign(campaign.id)
+
+    candidate = Finding(
+        id="f1",
+        title="candidate",
+        severity="low",
+        asset="https://example.test",
+        summary="fixture",
+        discovered_by="scanner",
+    )
+
+    from fastapi import HTTPException
+
+    for operation in (
+        lambda: add_finding(campaign.id, candidate),
+        lambda: validate_finding(campaign.id, "f1", True, "human-reviewer"),
+        lambda: queue_report(campaign.id),
+    ):
+        with pytest.raises(HTTPException) as exc:
+            operation()
+        assert exc.value.status_code == 409
+        assert "cancelled" in str(exc.value.detail).lower()
