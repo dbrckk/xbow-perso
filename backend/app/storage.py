@@ -254,6 +254,24 @@ class Storage:
             for row in rows
         ]
 
+    def _safe_campaign_artifact_dir(self, campaign_id: str) -> Path:
+        root = self.artifact_root.resolve()
+        candidate = self.artifact_root / campaign_id
+        if candidate.is_symlink():
+            raise ArtifactIntegrityError("campaign artifact directory must not be a symlink")
+        resolved = candidate.resolve(strict=False)
+        try:
+            resolved.relative_to(root)
+        except ValueError as exc:
+            raise ArtifactIntegrityError("campaign artifact path escaped storage root") from exc
+        resolved.mkdir(parents=True, exist_ok=True)
+        final = resolved.resolve()
+        try:
+            final.relative_to(root)
+        except ValueError as exc:
+            raise ArtifactIntegrityError("campaign artifact path escaped storage root") from exc
+        return final
+
     def put_artifact(
         self,
         campaign_id: str,
@@ -289,14 +307,14 @@ class Storage:
                     return dict(existing)
 
         artifact_id = str(uuid4())
-        campaign_dir = self.artifact_root / campaign_id
-        campaign_dir.mkdir(parents=True, exist_ok=True)
+        root = self.artifact_root.resolve()
+        campaign_dir = self._safe_campaign_artifact_dir(campaign_id)
         path = campaign_dir / f"{artifact_id}.bin"
         tmp = path.with_suffix(".tmp")
         tmp.write_bytes(content)
         os.replace(tmp, path)
         now = utcnow()
-        relative = str(path.relative_to(self.artifact_root))
+        relative = str(path.relative_to(root))
         try:
             with self.connect() as db:
                 db.execute(
