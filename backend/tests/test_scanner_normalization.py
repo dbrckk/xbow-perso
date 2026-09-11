@@ -4,7 +4,13 @@ import pytest
 
 from app.main import Campaign, ProgramRules, TargetInput
 from app.nuclei_parser import NucleiParserError, parse_nuclei_jsonl
-from app.scanner_registry import parse_scanner_artifact, scanner_adapter, scanner_adapters
+from app.scanner_registry import (
+    discover_scanner_artifacts,
+    latest_scanner_artifact,
+    parse_scanner_artifact,
+    scanner_adapter,
+    scanner_adapters,
+)
 from app.scanner_normalization import (
     normalize_nuclei_item,
     normalize_strix_item,
@@ -208,3 +214,53 @@ def test_scanner_registry_dispatches_nuclei_parser(tmp_path):
 
     assert len(findings) == 1
     assert findings[0].discovered_by == "nuclei"
+
+
+
+def test_scanner_registry_discovers_artifacts_by_adapter_glob(tmp_path):
+    run = tmp_path / "run"
+    nested = run / "nested"
+    nested.mkdir(parents=True)
+    strix = nested / "vulnerabilities.json"
+    nuclei = nested / "nuclei-results.jsonl"
+    strix.write_text('{"vulnerabilities": []}', encoding="utf-8")
+    nuclei.write_text("", encoding="utf-8")
+
+    assert discover_scanner_artifacts("strix", run) == [strix.resolve()]
+    assert discover_scanner_artifacts("nuclei", run) == [nuclei.resolve()]
+
+
+def test_scanner_registry_rejects_symlinked_artifacts(tmp_path):
+    run = tmp_path / "run"
+    run.mkdir()
+    outside = tmp_path / "outside.json"
+    outside.write_text('{"vulnerabilities": []}', encoding="utf-8")
+    (run / "vulnerabilities.json").symlink_to(outside)
+
+    assert discover_scanner_artifacts("strix", run) == []
+    assert latest_scanner_artifact("strix", run) is None
+
+
+def test_scanner_registry_selects_latest_artifact(tmp_path):
+    import os
+
+    run = tmp_path / "run"
+    run.mkdir()
+    first = run / "a.jsonl"
+    second = run / "b.jsonl"
+    first.write_text("", encoding="utf-8")
+    second.write_text("", encoding="utf-8")
+    os.utime(first, (1, 1))
+    os.utime(second, (2, 2))
+
+    artifacts = discover_scanner_artifacts("nuclei", run)
+
+    assert artifacts == [second.resolve(), first.resolve()]
+    assert latest_scanner_artifact("nuclei", run) == second.resolve()
+
+
+def test_scanner_registry_missing_run_directory_is_empty(tmp_path):
+    missing = tmp_path / "missing"
+
+    assert discover_scanner_artifacts("strix", missing) == []
+    assert latest_scanner_artifact("strix", missing) is None
