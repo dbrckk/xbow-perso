@@ -3,7 +3,7 @@ import json
 import pytest
 
 from app.main import Campaign, Finding, ProgramRules, TargetInput
-from app.validator import ValidationPolicyError, build_probe_url, safe_http_probe
+from app.validator import ValidationPolicyError, _preview_body, build_probe_url, safe_http_probe
 
 
 def campaign() -> Campaign:
@@ -102,3 +102,18 @@ def test_validation_evidence_redacts_query_values(monkeypatch):
     assert "super-secret" not in str(payload)
     assert "42" not in str(payload)
     assert "private" not in str(payload)
+
+
+def test_validation_preview_is_text_only_and_bounded(monkeypatch):
+    monkeypatch.setenv("XBOW_VALIDATION_PREVIEW_CHARS", "5")
+
+    assert _preview_body(b"abcdefgh", "text/plain; charset=utf-8") == "abcde"
+    assert _preview_body(b'{"x":1}', "application/json") == '{"x":'
+    assert _preview_body(b"\x89PNGbinary", "image/png") == ""
+
+
+def test_invalid_validation_preview_limit_fails_closed(monkeypatch):
+    for value in ("not-an-int", "-1", "20000"):
+        monkeypatch.setenv("XBOW_VALIDATION_PREVIEW_CHARS", value)
+        with pytest.raises(ValidationPolicyError, match="XBOW_VALIDATION_PREVIEW_CHARS"):
+            _preview_body(b"text", "text/plain")
