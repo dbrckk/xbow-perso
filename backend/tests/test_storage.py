@@ -448,3 +448,46 @@ def test_observation_rejects_non_serializable_metadata(tmp_path):
                 "metadata": {"bad": object()},
             },
         )
+
+
+def test_hypothesis_snapshot_persistence_is_idempotent(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    snapshot = [{"id": "hypothesis:f1", "finding_id": "f1", "confidence": 0.35}]
+
+    first = store.put_hypothesis_snapshot("c1", "abc123", snapshot)
+    second = store.put_hypothesis_snapshot("c1", "abc123", snapshot)
+
+    assert first["graph_fingerprint"] == "abc123"
+    assert second["created_at"] == first["created_at"]
+    assert len(store.list_hypothesis_snapshots("c1")) == 1
+
+
+def test_hypothesis_snapshot_rejects_fingerprint_collision(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    store.put_hypothesis_snapshot(
+        "c1",
+        "abc123",
+        [{"id": "hypothesis:f1", "finding_id": "f1", "confidence": 0.35}],
+    )
+
+    with pytest.raises(ValueError, match="fingerprint reused"):
+        store.put_hypothesis_snapshot(
+            "c1",
+            "abc123",
+            [{"id": "hypothesis:f1", "finding_id": "f1", "confidence": 0.75}],
+        )
+
+
+def test_hypothesis_snapshot_history_is_campaign_scoped(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    for campaign_id in ("c1", "c2"):
+        store.save_campaign(
+            {"id": campaign_id, "state": "ready", "created_at": "x", "updated_at": "x"}
+        )
+    store.put_hypothesis_snapshot("c1", "fp1", [{"id": "h1"}])
+    store.put_hypothesis_snapshot("c2", "fp2", [{"id": "h2"}])
+
+    assert [x["graph_fingerprint"] for x in store.list_hypothesis_snapshots("c1")] == ["fp1"]
+    assert [x["graph_fingerprint"] for x in store.list_hypothesis_snapshots("c2")] == ["fp2"]
