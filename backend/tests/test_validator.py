@@ -54,3 +54,35 @@ def test_http_validation_is_dry_run_by_default(monkeypatch):
     payload = json.loads(result.json_bytes())
     assert payload["url"] == "https://app.example.test/account"
     assert payload["http_status"] is None
+
+
+def test_invalid_http_validation_flag_fails_closed(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "sometimes")
+
+    with pytest.raises(ValidationPolicyError, match="must be a boolean"):
+        safe_http_probe(campaign(), finding())
+
+
+@pytest.mark.parametrize(
+    ("name", "value", "message"),
+    (
+        ("XBOW_VALIDATION_TIMEOUT_SECONDS", "NaN", "must be a number"),
+        ("XBOW_VALIDATION_TIMEOUT_SECONDS", "0.5", "between 1 and 30"),
+        ("XBOW_VALIDATION_MAX_BYTES", "NaN", "must be an integer"),
+        ("XBOW_VALIDATION_MAX_BYTES", "512", "between 1 KiB and 1 MiB"),
+    ),
+)
+def test_invalid_http_validator_limits_fail_closed(monkeypatch, name, value, message):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv(name, value)
+
+    with pytest.raises(ValidationPolicyError, match=message):
+        safe_http_probe(campaign(), finding())
+
+
+def test_explicit_false_http_validation_flag_remains_dry_run(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "OFF")
+
+    result = safe_http_probe(campaign(), finding())
+
+    assert result.status == "dry_run"
