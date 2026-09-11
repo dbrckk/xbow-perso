@@ -4,6 +4,7 @@ import pytest
 
 from app.main import Campaign, ProgramRules, TargetInput
 from app.nuclei_parser import NucleiParserError, parse_nuclei_jsonl
+from app.scanner_registry import parse_scanner_artifact, scanner_adapter, scanner_adapters
 from app.scanner_normalization import (
     normalize_nuclei_item,
     normalize_strix_item,
@@ -151,3 +152,59 @@ def test_nuclei_jsonl_parser_rejects_oversized_file(tmp_path, monkeypatch):
 
     with pytest.raises(NucleiParserError, match="size limit"):
         parse_nuclei_jsonl(path, _campaign())
+
+
+
+def test_scanner_registry_exposes_supported_engines():
+    adapters = scanner_adapters()
+
+    assert [adapter.engine for adapter in adapters] == ["nuclei", "strix"]
+    assert scanner_adapter("STRIX").format == "json"
+    assert scanner_adapter("nuclei").format == "jsonl"
+
+
+def test_scanner_registry_rejects_unknown_engine():
+    with pytest.raises(ValueError, match="unsupported scanner engine"):
+        scanner_adapter("unknown")
+
+
+def test_scanner_registry_dispatches_strix_parser(tmp_path):
+    path = tmp_path / "vulnerabilities.json"
+    path.write_text(
+        json.dumps(
+            {
+                "vulnerabilities": [
+                    {
+                        "title": "Registry fixture",
+                        "severity": "low",
+                        "asset": "https://app.example.test",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    findings = parse_scanner_artifact("strix", path, _campaign())
+
+    assert len(findings) == 1
+    assert findings[0].discovered_by == "strix"
+
+
+def test_scanner_registry_dispatches_nuclei_parser(tmp_path):
+    path = tmp_path / "nuclei.jsonl"
+    path.write_text(
+        json.dumps(
+            {
+                "template-id": "registry-fixture",
+                "matched-at": "https://app.example.test/profile",
+                "info": {"name": "Registry fixture", "severity": "info"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    findings = parse_scanner_artifact("nuclei", path, _campaign())
+
+    assert len(findings) == 1
+    assert findings[0].discovered_by == "nuclei"
