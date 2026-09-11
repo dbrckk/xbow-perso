@@ -1,4 +1,8 @@
-from app.hypothesis_memory import build_hypotheses, hypothesis_snapshot_is_current
+from app.hypothesis_memory import (
+    build_hypotheses,
+    diff_hypothesis_snapshots,
+    hypothesis_snapshot_is_current,
+)
 from app.observation_graph import Observation, ObservationGraph
 
 
@@ -154,3 +158,78 @@ def test_hypothesis_fingerprint_ignores_unrelated_evidence():
     )
 
     assert hypothesis_snapshot_is_current(item, graph) is True
+
+
+def test_hypothesis_delta_explains_confidence_status_and_evidence_changes():
+    previous = {
+        "graph_fingerprint": "old",
+        "hypotheses": [
+            {
+                "finding_id": "f1",
+                "confidence": 0.35,
+                "status": "unvalidated",
+                "evidence_ids": [],
+            }
+        ],
+    }
+    current = {
+        "graph_fingerprint": "new",
+        "hypotheses": [
+            {
+                "finding_id": "f1",
+                "confidence": 0.95,
+                "status": "supported",
+                "evidence_ids": ["e1"],
+            }
+        ],
+    }
+
+    delta = diff_hypothesis_snapshots(previous, current)
+
+    assert delta["changed"] is True
+    assert delta["from_fingerprint"] == "old"
+    assert delta["to_fingerprint"] == "new"
+    change = delta["changes"][0]
+    assert change["confidence_delta"] == 0.6
+    assert change["status_before"] == "unvalidated"
+    assert change["status_after"] == "supported"
+    assert change["evidence_added"] == ["e1"]
+    assert change["evidence_removed"] == []
+
+
+def test_hypothesis_delta_tracks_added_and_removed_findings():
+    previous = {
+        "graph_fingerprint": "old",
+        "hypotheses": [{"finding_id": "removed", "confidence": 0.35}],
+    }
+    current = {
+        "graph_fingerprint": "new",
+        "hypotheses": [{"finding_id": "added", "confidence": 0.35}],
+    }
+
+    changes = {
+        item["finding_id"]: item
+        for item in diff_hypothesis_snapshots(previous, current)["changes"]
+    }
+
+    assert changes["added"]["change"] == "added"
+    assert changes["removed"]["change"] == "removed"
+
+
+def test_hypothesis_delta_is_empty_for_equivalent_snapshots():
+    snapshot = {
+        "graph_fingerprint": "same",
+        "hypotheses": [
+            {
+                "finding_id": "f1",
+                "confidence": 0.35,
+                "status": "unvalidated",
+                "evidence_ids": [],
+            }
+        ],
+    }
+
+    delta = diff_hypothesis_snapshots(snapshot, snapshot)
+
+    assert delta["changed"] is False
+    assert delta["changes"] == []
