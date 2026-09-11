@@ -318,3 +318,23 @@ def test_cancel_operations_validate_identifiers_and_reason(tmp_path):
         assert "cancel reason" in str(exc)
     else:
         raise AssertionError("invalid cancellation reason must fail closed")
+
+
+def test_job_id_inputs_fail_closed_consistently(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    job = q.enqueue("campaign-1", "report", {})
+    claimed = q.claim("worker-a")
+    assert claimed is not None and claimed["id"] == job["id"]
+
+    for invalid_job_id in ("", "bad\njob", "x" * 201):
+        for operation in (
+            lambda value: q.get(value),
+            lambda value: q.heartbeat(value, "worker-a"),
+            lambda value: q.finish(value, "worker-a", True),
+        ):
+            try:
+                operation(invalid_job_id)
+            except ValueError as exc:
+                assert "job_id" in str(exc)
+            else:
+                raise AssertionError("invalid job_id must fail closed")
