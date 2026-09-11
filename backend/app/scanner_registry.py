@@ -54,3 +54,47 @@ def parse_scanner_artifact(
     campaign: Campaign,
 ) -> list[Finding]:
     return scanner_adapter(engine).parser(path, campaign)
+
+
+
+def discover_scanner_artifacts(
+    engine: str,
+    output_dir: str | Path,
+) -> list[Path]:
+    adapter = scanner_adapter(engine)
+    root = Path(output_dir)
+    if not root.exists() or not root.is_dir():
+        return []
+
+    try:
+        root_resolved = root.resolve(strict=True)
+    except (FileNotFoundError, OSError):
+        return []
+
+    matches: dict[str, Path] = {}
+    for pattern in adapter.artifact_globs:
+        for candidate in root.glob(pattern):
+            if candidate.is_symlink():
+                continue
+            try:
+                resolved = candidate.resolve(strict=True)
+                resolved.relative_to(root_resolved)
+            except (FileNotFoundError, ValueError, OSError):
+                continue
+            if not resolved.is_file():
+                continue
+            matches[str(resolved)] = resolved
+
+    return sorted(
+        matches.values(),
+        key=lambda path: (path.stat().st_mtime, str(path)),
+        reverse=True,
+    )
+
+
+def latest_scanner_artifact(
+    engine: str,
+    output_dir: str | Path,
+) -> Path | None:
+    artifacts = discover_scanner_artifacts(engine, output_dir)
+    return artifacts[0] if artifacts else None
