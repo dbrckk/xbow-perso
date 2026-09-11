@@ -5,6 +5,9 @@ from app.knowledge_memory import (
     decision_history,
     rank_findings,
     rank_findings_explainable,
+    review_severity_bonus,
+    severity_weight,
+    temporal_need,
 )
 from app.observation_graph import Observation, ObservationGraph
 
@@ -216,3 +219,55 @@ def test_explainable_ranking_unknown_severity_fails_closed():
 
     assert ranked[0]["components"]["severity"] == 0.0
     assert ranked[0]["stability"] == "unknown"
+
+
+def test_shared_scoring_tables_are_monotonic_and_fail_closed():
+    severities = ["info", "low", "medium", "high", "critical"]
+
+    severity_values = [severity_weight(item) for item in severities]
+    review_values = [review_severity_bonus(item) for item in severities]
+
+    assert severity_values == sorted(severity_values)
+    assert review_values == sorted(review_values)
+    assert severity_weight("unexpected") == 0.0
+    assert review_severity_bonus("unexpected") == 0.0
+
+
+def test_temporal_need_prioritizes_contradiction_over_stability():
+    assert temporal_need("contradictory") > temporal_need("evolving")
+    assert temporal_need("evolving") > temporal_need("fresh")
+    assert temporal_need("fresh") > temporal_need("stable")
+    assert temporal_need("unexpected") == 0.25
+
+
+def test_classic_and_explainable_rankings_share_severity_order():
+    graph = ObservationGraph()
+    findings = [
+        SimpleNamespace(id="info", severity="info"),
+        SimpleNamespace(id="low", severity="low"),
+        SimpleNamespace(id="medium", severity="medium"),
+        SimpleNamespace(id="high", severity="high"),
+        SimpleNamespace(id="critical", severity="critical"),
+    ]
+
+    classic = rank_findings(findings, graph)
+    explainable = rank_findings_explainable(
+        findings,
+        graph,
+        stability={item.id: {"stability": "stable"} for item in findings},
+    )
+
+    assert [item.finding_id for item in classic] == [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "info",
+    ]
+    assert [item["finding_id"] for item in explainable] == [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "info",
+    ]
