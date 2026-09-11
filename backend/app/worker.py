@@ -40,6 +40,19 @@ def _strict_bool_env(name: str, default: bool) -> bool:
     raise WorkerPolicyError(f"{name} must be a boolean")
 
 
+def _safe_strix_output_dir(output_dir: str) -> str:
+    root = Path(os.getenv("XBOW_STRIX_RUN_ROOT", "/data/strix_runs")).resolve()
+    candidate = Path(output_dir)
+    if candidate.is_symlink():
+        raise WorkerPolicyError("Strix output directory must not be a symlink")
+    resolved = candidate.resolve(strict=False)
+    try:
+        resolved.relative_to(root)
+    except ValueError as exc:
+        raise WorkerPolicyError("Strix output directory escaped configured run root") from exc
+    return str(resolved)
+
+
 def _max_autonomous_rps() -> float:
     try:
         limit = float(os.getenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0"))
@@ -51,6 +64,7 @@ def _max_autonomous_rps() -> float:
 
 
 def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -> WorkerPlan:
+    output_dir = _safe_strix_output_dir(output_dir)
     target = str(campaign.target.primary_url)
     host = (urlparse(target).hostname or "").lower()
     rules = campaign.target.rules
