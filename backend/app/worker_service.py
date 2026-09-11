@@ -13,6 +13,7 @@ from .jobqueue import JobQueue
 from .main import Campaign, CampaignState, Finding, utcnow
 from .observation_graph import Observation
 from .orchestrator import advance_campaign
+from .recon_worker import ReconPolicyError, execute_recon_task
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
@@ -323,6 +324,78 @@ def process_browser_flow(job: dict, store: Storage) -> None:
     _save(store, campaign, version)
 
 
+def process_recon_task(job: dict, store: Storage) -> None:
+    campaign, version = _campaign(store, job["campaign_id"])
+    result = execute_recon_task(campaign, job["payload"])
+    source = f"recon:{job['payload'].get('kind', 'unknown')}"
+    asset_id = _record_asset_observation(
+        store,
+        campaign,
+        str(campaign.target.primary_url),
+        source,
+    )
+
+    for endpoint in result.endpoints:
+        _record_endpoint_observation(
+            store,
+            campaign,
+            endpoint,
+            source=source,
+            parent_id=asset_id,
+        )
+
+    for form in result.forms:
+        observation = Observation(
+            id=_observation_id("form", f"{source}\x1f{form['action']}\x1f{','.join(form['input_names'])}"),
+            kind="form",
+            value=form["action"],
+            source=source,
+            parent_ids=(asset_id,),
+            metadata={
+                "method": form["method"],
+                "input_names": form["input_names"],
+            },
+        )
+        store.put_observation(campaign.id, observation.to_dict())
+
+    for technology in result.technologies:
+        observation = Observation(
+            id=_observation_id("technology", f"{source}\x1f{technology}"),
+            kind="technology",
+            value=technology,
+            source=source,
+            parent_ids=(asset_id,),
+        )
+        store.put_observation(campaign.id, observation.to_dict())
+
+    for waf in result.waf:
+        observation = Observation(
+            id=_observation_id("waf", f"{source}\x1f{waf}"),
+            kind="waf",
+            value=waf,
+            source=source,
+            parent_ids=(asset_id,),
+        )
+        store.put_observation(campaign.id, observation.to_dict())
+
+    _append_event_once(
+        campaign,
+        {
+            "type": "recon_task_completed" if result.status == "observed" else "recon_task_dry_run",
+            "job_id": job["id"],
+            "task_kind": job["payload"].get("kind"),
+            "status": result.status,
+            "http_status": result.http_status,
+            "endpoints": len(result.endpoints),
+            "forms": len(result.forms),
+            "technologies": len(result.technologies),
+            "waf": len(result.waf),
+            "at": utcnow(),
+        },
+    )
+    _save(store, campaign, version)
+
+
 def process_report(job: dict, store: Storage) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
     platform = str(job.get("payload", {}).get("platform") or "generic")
@@ -368,6 +441,8 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
                 process_validation(job, store)
             elif job["kind"] == "browser_flow":
                 process_browser_flow(job, store)
+            elif job["kind"] == "recon_task":
+                process_recon_task(job, store)
             elif job["kind"] == "report":
                 process_report(job, store)
             else:
@@ -379,7 +454,7 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
         queue.cancel_owned(job["id"], worker_id, str(exc))
     except CampaignConflictError as exc:
         queue.finish(job["id"], worker_id, False, f"campaign state changed concurrently: {exc}")
-    except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ValueError, KeyError) as exc:
+    except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ReconPolicyError, ValueError, KeyError) as exc:
         queue.finish(job["id"], worker_id, False, str(exc))
     except Exception as exc:
         queue.finish(job["id"], worker_id, False, str(exc))
