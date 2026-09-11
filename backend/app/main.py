@@ -377,6 +377,18 @@ def campaign_hypothesis_delta(campaign_id: str):
     return diff_hypothesis_snapshots(previous, current)
 
 
+@app.get("/api/campaigns/{campaign_id}/hypotheses/stability")
+def campaign_hypothesis_stability(campaign_id: str, limit: int = 50):
+    from .hypothesis_memory import summarize_hypothesis_stability
+
+    assert_campaign_exists(campaign_id)
+    try:
+        snapshots = storage().list_hypothesis_snapshots(campaign_id, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return summarize_hypothesis_stability(snapshots)
+
+
 @app.get("/api/campaigns/{campaign_id}/plan")
 def campaign_plan(campaign_id: str):
     from .agent_registry import agent_for_action
