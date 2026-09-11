@@ -156,3 +156,27 @@ def test_dry_run_rate_telemetry_does_not_claim_active_cap(monkeypatch):
     assert plan.dry_run is True
     assert plan.campaign_rps == 2.0
     assert plan.admission_cap_rps is None
+
+
+@pytest.mark.parametrize(
+    ("name", "value"),
+    (
+        ("XBOW_ENABLE_ACTIVE_SCANS", "TRUEE"),
+        ("DRY_RUN", "sometimes"),
+    ),
+)
+def test_invalid_worker_boolean_fails_closed(monkeypatch, name, value):
+    monkeypatch.setenv(name, value)
+
+    with pytest.raises(WorkerPolicyError, match=f"{name} must be a boolean"):
+        build_strix_plan(campaign())
+
+
+def test_worker_boolean_parser_accepts_explicit_common_values(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "YES")
+    monkeypatch.setenv("DRY_RUN", "OFF")
+    monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0")
+
+    plan = build_strix_plan(campaign())
+
+    assert plan.dry_run is False
