@@ -163,6 +163,11 @@ def assert_campaign_exists(campaign_id: str) -> Campaign:
     return assert_campaign_record(campaign_id)[0]
 
 
+def _reject_cancelled_campaign(campaign: Campaign) -> None:
+    if campaign.state == CampaignState.cancelled:
+        raise HTTPException(status_code=409, detail="Campaign is cancelled")
+
+
 def _campaign_graph(campaign_id: str):
     from .observation_graph import ObservationGraph
 
@@ -446,6 +451,7 @@ def get_job(job_id: str):
 @app.post("/api/campaigns/{campaign_id}/findings", response_model=Finding)
 def add_finding(campaign_id: str, finding: Finding):
     campaign, version = assert_campaign_record(campaign_id)
+    _reject_cancelled_campaign(campaign)
     host = (urlparse(finding.asset).hostname or finding.asset.split(":")[0]).lower()
     if not is_host_allowed(host, campaign.target.rules.allowed_targets, campaign.target.rules.denied_targets):
         raise HTTPException(status_code=403, detail="Finding asset is outside campaign scope")
@@ -477,6 +483,7 @@ def add_finding(campaign_id: str, finding: Finding):
 @app.post("/api/campaigns/{campaign_id}/findings/{finding_id}/validate")
 def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validator: str = "independent-validator"):
     campaign, version = assert_campaign_record(campaign_id)
+    _reject_cancelled_campaign(campaign)
     finding = next((x for x in campaign.findings if x.id == finding_id), None)
     if not finding:
         raise HTTPException(status_code=404, detail="Finding not found")
@@ -512,6 +519,7 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
 @app.post("/api/campaigns/{campaign_id}/reports")
 def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bugcrowd"] = "generic"):
     campaign, version = assert_campaign_record(campaign_id)
+    _reject_cancelled_campaign(campaign)
     job = queue().enqueue(
         campaign.id,
         "report",
