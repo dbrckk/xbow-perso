@@ -214,6 +214,7 @@ class JobQueue:
 
     def cancel_queued(self, campaign_id: str) -> int:
         """Cancel queued jobs for a campaign without stealing running leases."""
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         now = utcnow()
         with self.connect() as db:
             cursor = db.execute(
@@ -227,7 +228,13 @@ class JobQueue:
 
     def cancel_owned(self, job_id: str, worker_id: str, reason: str = "campaign cancelled") -> dict[str, Any] | None:
         """Cancel a running job only when the caller still owns its lease."""
+        job_id = _bounded_identifier(job_id, "job_id")
         worker_id = _bounded_identifier(worker_id, "worker_id")
+        reason = reason.strip()
+        if len(reason) > 4000:
+            reason = reason[-4000:]
+        if any(ord(ch) < 32 and ch not in "\t" for ch in reason):
+            raise ValueError("cancel reason contains invalid characters")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             cursor = db.execute(
