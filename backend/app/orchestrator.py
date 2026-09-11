@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 from .agent_registry import agent_for_action
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
+from .hypothesis_memory import build_hypotheses
 from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
 from .main import Campaign, policy_receipt, sanitized_scan_payload
@@ -76,9 +77,16 @@ def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
         if f"finding:{finding.id}" not in observed_validated
     ]
     priorities = {item.finding_id: item for item in rank_findings(pending, graph)}
+    hypotheses = {item.finding_id: item for item in build_hypotheses(graph)}
     return sorted(
         pending,
-        key=lambda finding: (-priorities[str(finding.id)].score, str(finding.id)),
+        key=lambda finding: (
+            -priorities[str(finding.id)].score,
+            hypotheses.get(str(finding.id)).confidence
+            if hypotheses.get(str(finding.id)) is not None
+            else 0.0,
+            str(finding.id),
+        ),
     )
 
 
@@ -186,6 +194,7 @@ def _result(
         "agent": agent.to_dict(),
         "job_ids": [job["id"] for job in jobs],
         "memory": memory.to_dict(),
+        "hypotheses": [item.to_dict() for item in build_hypotheses(refreshed_graph)],
         "decision_history": decision_history(refreshed_graph),
         "budget": {"limits": budget.to_dict(), "usage": usage.to_dict()},
     }
