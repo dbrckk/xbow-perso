@@ -26,6 +26,16 @@ class WorkerPolicyError(RuntimeError):
     pass
 
 
+def _max_autonomous_rps() -> float:
+    try:
+        limit = float(os.getenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0"))
+    except ValueError as exc:
+        raise WorkerPolicyError("XBOW_MAX_AUTONOMOUS_RPS must be a number") from exc
+    if not 0.1 <= limit <= 20.0:
+        raise WorkerPolicyError("XBOW_MAX_AUTONOMOUS_RPS must be between 0.1 and 20")
+    return limit
+
+
 def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -> WorkerPlan:
     target = str(campaign.target.primary_url)
     host = (urlparse(target).hostname or "").lower()
@@ -39,7 +49,14 @@ def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -
 
     cmd = ["strix", "-n", "--target", target]
     active_enabled = os.getenv("XBOW_ENABLE_ACTIVE_SCANS", "false").lower() == "true"
-    dry_run = os.getenv("DRY_RUN", "true").lower() == "true" or not active_enabled
+    dry_run_requested = os.getenv("DRY_RUN", "true").lower() == "true"
+    if active_enabled and not dry_run_requested:
+        autonomous_cap = _max_autonomous_rps()
+        if rules.max_requests_per_second > autonomous_cap:
+            raise WorkerPolicyError(
+                "Campaign request-rate limit exceeds autonomous worker admission cap"
+            )
+    dry_run = dry_run_requested or not active_enabled
     return WorkerPlan(engine="strix", command=cmd, target=target, dry_run=dry_run, output_dir=output_dir)
 
 
