@@ -9,6 +9,7 @@ services:
       XBOW_API_TOKEN: ${XBOW_API_TOKEN:-}
       XBOW_DB_PATH: /data/xbow.sqlite3
       XBOW_ARTIFACT_ROOT: /data/artifacts
+      XBOW_MAX_JOB_PAYLOAD_BYTES: ${XBOW_MAX_JOB_PAYLOAD_BYTES:-65536}
     volumes:
       - xbow-data:/data
     read_only: true
@@ -47,6 +48,7 @@ services:
       XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
       XBOW_MAX_STRIX_JSON_BYTES: ${XBOW_MAX_STRIX_JSON_BYTES:-5242880}
       XBOW_MAX_AUTONOMOUS_RPS: ${XBOW_MAX_AUTONOMOUS_RPS:-2.0}
+      XBOW_MAX_JOB_PAYLOAD_BYTES: ${XBOW_MAX_JOB_PAYLOAD_BYTES:-65536}
       XBOW_DB_PATH: /data/xbow.sqlite3
       XBOW_ARTIFACT_ROOT: /data/artifacts
       XBOW_STRIX_RUN_ROOT: /data/strix_runs
