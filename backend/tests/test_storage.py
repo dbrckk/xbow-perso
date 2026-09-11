@@ -184,3 +184,30 @@ def test_artifact_write_rejects_symlinked_campaign_directory(tmp_path):
         store.put_artifact("c1", "validation", b"blocked")
 
     assert list(outside.iterdir()) == []
+
+
+def test_invalid_artifact_size_configuration_fails_closed(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_MAX_ARTIFACT_BYTES", "not-an-integer")
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    with pytest.raises(ValueError, match="must be an integer"):
+        store.put_artifact("c1", "validation", b"x")
+
+
+def test_artifact_size_configuration_rejects_unsafe_bounds(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_MAX_ARTIFACT_BYTES", "10")
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    with pytest.raises(ValueError, match="between 1 KiB and 100 MiB"):
+        store.put_artifact("c1", "validation", b"x")
+
+
+def test_artifact_media_type_rejects_header_controls(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    for media_type in ("", "textplain", "text/plain\r\nX-Test: injected"):
+        with pytest.raises(ValueError, match="invalid artifact media type"):
+            store.put_artifact("c1", "validation", b"x", media_type=media_type)
