@@ -20,6 +20,8 @@ class WorkerPlan:
     target: str
     dry_run: bool
     output_dir: str
+    campaign_rps: float
+    admission_cap_rps: float | None
 
 
 class WorkerPolicyError(RuntimeError):
@@ -50,6 +52,7 @@ def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -
     cmd = ["strix", "-n", "--target", target]
     active_enabled = os.getenv("XBOW_ENABLE_ACTIVE_SCANS", "false").lower() == "true"
     dry_run_requested = os.getenv("DRY_RUN", "true").lower() == "true"
+    autonomous_cap = None
     if active_enabled and not dry_run_requested:
         autonomous_cap = _max_autonomous_rps()
         if rules.max_requests_per_second > autonomous_cap:
@@ -57,7 +60,15 @@ def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -
                 "Campaign request-rate limit exceeds autonomous worker admission cap"
             )
     dry_run = dry_run_requested or not active_enabled
-    return WorkerPlan(engine="strix", command=cmd, target=target, dry_run=dry_run, output_dir=output_dir)
+    return WorkerPlan(
+        engine="strix",
+        command=cmd,
+        target=target,
+        dry_run=dry_run,
+        output_dir=output_dir,
+        campaign_rps=float(rules.max_requests_per_second),
+        admission_cap_rps=autonomous_cap,
+    )
 
 
 def _bounded_timeout() -> int:
@@ -82,6 +93,8 @@ def execute(plan: WorkerPlan) -> dict:
             "status": "dry_run",
             "command": shlex.join(plan.command),
             "reason": "active scanning requires DRY_RUN=false and XBOW_ENABLE_ACTIVE_SCANS=true",
+            "campaign_rps": plan.campaign_rps,
+            "admission_cap_rps": plan.admission_cap_rps,
         }
 
     output = Path(plan.output_dir)
@@ -105,6 +118,8 @@ def execute(plan: WorkerPlan) -> dict:
             "stderr": _text(exc.stderr)[-20000:],
             "output_dir": str(output),
             "error": "worker execution timed out",
+            "campaign_rps": plan.campaign_rps,
+            "admission_cap_rps": plan.admission_cap_rps,
         }
     return {
         "engine": plan.engine,
@@ -113,6 +128,8 @@ def execute(plan: WorkerPlan) -> dict:
         "stdout": result.stdout[-20000:],
         "stderr": result.stderr[-20000:],
         "output_dir": str(output),
+        "campaign_rps": plan.campaign_rps,
+        "admission_cap_rps": plan.admission_cap_rps,
     }
 
 
