@@ -50,7 +50,11 @@ def test_worker_observation_lineage_roundtrips(tmp_path):
 
     graph = load_observation_graph(store, "c1")
     assert len(graph.by_kind("asset")) == 1
-    assert graph.by_kind("finding")[0].parent_ids == (graph.by_kind("asset")[0].id,)
+    assert len(graph.by_kind("endpoint")) == 1
+    endpoint_id = graph.by_kind("endpoint")[0].id
+    asset_id = graph.by_kind("asset")[0].id
+    assert graph.by_kind("endpoint")[0].parent_ids == (asset_id,)
+    assert graph.by_kind("finding")[0].parent_ids == (endpoint_id,)
     assert graph.by_kind("validation")[0].parent_ids == (finding_observation_id,)
     assert graph.by_kind("evidence")[0].id == evidence_id
     assert graph.by_kind("evidence")[0].parent_ids == (validation_id,)
