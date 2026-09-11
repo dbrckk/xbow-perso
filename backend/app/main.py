@@ -168,6 +168,14 @@ def _reject_cancelled_campaign(campaign: Campaign) -> None:
         raise HTTPException(status_code=409, detail="Campaign is cancelled")
 
 
+def _reject_new_findings_for_closed_campaign(campaign: Campaign) -> None:
+    if campaign.state in {CampaignState.cancelled, CampaignState.completed}:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Cannot add findings to {campaign.state.value} campaign",
+        )
+
+
 def _campaign_graph(campaign_id: str):
     from .observation_graph import ObservationGraph
 
@@ -451,7 +459,7 @@ def get_job(job_id: str):
 @app.post("/api/campaigns/{campaign_id}/findings", response_model=Finding)
 def add_finding(campaign_id: str, finding: Finding):
     campaign, version = assert_campaign_record(campaign_id)
-    _reject_cancelled_campaign(campaign)
+    _reject_new_findings_for_closed_campaign(campaign)
     host = (urlparse(finding.asset).hostname or finding.asset.split(":")[0]).lower()
     if not is_host_allowed(host, campaign.target.rules.allowed_targets, campaign.target.rules.denied_targets):
         raise HTTPException(status_code=403, detail="Finding asset is outside campaign scope")
