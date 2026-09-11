@@ -398,3 +398,36 @@ def test_invalid_campaign_document_limit_fails_closed(tmp_path, monkeypatch):
         monkeypatch.setenv("XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES", value)
         with pytest.raises(ValueError, match="XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES"):
             store.save_campaign(document)
+
+
+def test_idempotency_key_rejects_metadata_mismatch(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    store.put_artifact(
+        "c1",
+        "validation",
+        b"same",
+        media_type="application/json",
+        finding_id="f1",
+        idempotency_key="job-1:validation",
+    )
+
+    with pytest.raises(ArtifactIntegrityError, match="metadata or content"):
+        store.put_artifact(
+            "c1",
+            "validation",
+            b"same",
+            media_type="text/plain",
+            finding_id="f1",
+            idempotency_key="job-1:validation",
+        )
+
+    with pytest.raises(ArtifactIntegrityError, match="metadata or content"):
+        store.put_artifact(
+            "c1",
+            "validation",
+            b"same",
+            media_type="application/json",
+            finding_id="f2",
+            idempotency_key="job-1:validation",
+        )
