@@ -165,3 +165,28 @@ def test_duplicate_text_artifact_retry_reuses_artifact_and_event(tmp_path, monke
     campaign = store.get_campaign("c1")
     events = [event for event in campaign["events"] if event.get("type") == "artifact_stored"]
     assert len(events) == 1
+
+
+def test_completed_campaign_rejects_new_findings(tmp_path, monkeypatch):
+    db, artifacts = _setup(tmp_path, monkeypatch)
+    store = Storage(db, artifacts)
+    document, version = store.get_campaign_record("c1")
+    document["state"] = "completed"
+    store.save_campaign(document, expected_version=version)
+
+    candidate = Finding(
+        id="f-new",
+        title="new candidate",
+        severity="low",
+        asset="https://example.test",
+        summary="fixture",
+        discovered_by="scanner",
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        add_finding("c1", candidate)
+
+    assert exc.value.status_code == 409
+    assert "completed" in str(exc.value.detail)
+    assert Storage(db).get_campaign("c1")["findings"] == []
+    assert JobQueue(db).stats()["total"] == 0
