@@ -16,6 +16,10 @@ from .orchestrator import advance_campaign
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
+class CampaignCancelledError(ValueError):
+    pass
+
+
 from .worker import (
     WorkerPolicyError,
     build_strix_plan,
@@ -38,7 +42,7 @@ def _campaign(store: Storage, campaign_id: str) -> tuple[Campaign, int]:
     raw, version = record
     campaign = Campaign.model_validate(raw)
     if campaign.state == CampaignState.cancelled:
-        raise ValueError("campaign is cancelled")
+        raise CampaignCancelledError("campaign is cancelled")
     return campaign, version
 
 
@@ -371,6 +375,8 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
 
             latest_campaign, _ = _campaign(store, job["campaign_id"])
             advance_campaign(latest_campaign, queue, store)
+    except CampaignCancelledError as exc:
+        queue.cancel_owned(job["id"], worker_id, str(exc))
     except CampaignConflictError as exc:
         queue.finish(job["id"], worker_id, False, f"campaign state changed concurrently: {exc}")
     except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ValueError, KeyError) as exc:
