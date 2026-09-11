@@ -202,3 +202,63 @@ def test_review_queue_evolving_hypothesis_gets_smaller_bonus():
 
     assert evolving[0].priority < contradictory[0].priority
     assert "evolving" in evolving[0].reason
+
+
+def test_review_queue_exposes_score_components_for_validation_tasks():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "scanner"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("endpoint:e",),
+        )
+    )
+
+    task = build_review_queue(
+        graph,
+        stability={"f1": {"finding_id": "f1", "stability": "contradictory"}},
+    )[0]
+
+    components = task.to_dict()["score_components"]
+    assert set(components) == {
+        "base",
+        "confidence_gap",
+        "evidence_chain_gap",
+        "temporal_instability",
+        "raw_total",
+        "capped_total",
+    }
+    assert components["base"] == 0.75
+    assert components["temporal_instability"] == 0.10
+    assert components["raw_total"] >= task.priority
+    assert components["capped_total"] == task.priority
+
+
+def test_surface_review_tasks_expose_empty_score_components():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "scanner"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+
+    task = next(item for item in build_review_queue(graph) if item.kind != "validate_finding")
+
+    assert task.to_dict()["score_components"] == {}
