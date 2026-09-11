@@ -86,6 +86,8 @@ class TargetInput(BaseModel):
             raise ValueError("primary_url has no hostname")
         if parsed.username or parsed.password:
             raise ValueError("userinfo in primary_url is forbidden")
+        if parsed.query or parsed.fragment:
+            raise ValueError("query strings and fragments in primary_url are forbidden")
         if not is_host_allowed(host, self.rules.allowed_targets, self.rules.denied_targets):
             raise ValueError("primary_url is outside the declared scope")
         return self
