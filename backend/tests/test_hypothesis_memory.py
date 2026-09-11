@@ -2,6 +2,7 @@ from app.hypothesis_memory import (
     build_hypotheses,
     diff_hypothesis_snapshots,
     hypothesis_snapshot_is_current,
+    summarize_hypothesis_stability,
 )
 from app.observation_graph import Observation, ObservationGraph
 
@@ -233,3 +234,85 @@ def test_hypothesis_delta_is_empty_for_equivalent_snapshots():
 
     assert delta["changed"] is False
     assert delta["changes"] == []
+
+
+def test_stability_marks_single_snapshot_as_fresh():
+    snapshots = [
+        {
+            "graph_fingerprint": "a",
+            "created_at": "2026-09-11T10:00:00+00:00",
+            "hypotheses": [
+                {"finding_id": "f1", "confidence": 0.35, "status": "unvalidated"}
+            ],
+        }
+    ]
+
+    item = summarize_hypothesis_stability(snapshots)[0]
+
+    assert item["stability"] == "fresh"
+    assert item["observed_snapshots"] == 1
+    assert item["stable_streak"] == 1
+
+
+def test_stability_marks_three_identical_snapshots_as_stable():
+    snapshots = [
+        {
+            "graph_fingerprint": "c",
+            "created_at": "2026-09-11T12:00:00+00:00",
+            "hypotheses": [
+                {"finding_id": "f1", "confidence": 0.95, "status": "supported"}
+            ],
+        },
+        {
+            "graph_fingerprint": "b",
+            "created_at": "2026-09-11T11:00:00+00:00",
+            "hypotheses": [
+                {"finding_id": "f1", "confidence": 0.95, "status": "supported"}
+            ],
+        },
+        {
+            "graph_fingerprint": "a",
+            "created_at": "2026-09-11T10:00:00+00:00",
+            "hypotheses": [
+                {"finding_id": "f1", "confidence": 0.95, "status": "supported"}
+            ],
+        },
+    ]
+
+    item = summarize_hypothesis_stability(snapshots)[0]
+
+    assert item["stability"] == "stable"
+    assert item["stable_streak"] == 3
+    assert item["stability_score"] > 0.5
+
+
+def test_stability_detects_confidence_reversal_as_contradictory():
+    snapshots = [
+        {
+            "graph_fingerprint": "c",
+            "created_at": "2026-09-11T12:00:00+00:00",
+            "hypotheses": [
+                {"finding_id": "f1", "confidence": 0.75, "status": "partially_supported"}
+            ],
+        },
+        {
+            "graph_fingerprint": "b",
+            "created_at": "2026-09-11T11:00:00+00:00",
+            "hypotheses": [
+                {"finding_id": "f1", "confidence": 0.95, "status": "supported"}
+            ],
+        },
+        {
+            "graph_fingerprint": "a",
+            "created_at": "2026-09-11T10:00:00+00:00",
+            "hypotheses": [
+                {"finding_id": "f1", "confidence": 0.35, "status": "unvalidated"}
+            ],
+        },
+    ]
+
+    item = summarize_hypothesis_stability(snapshots)[0]
+
+    assert item["stability"] == "contradictory"
+    assert item["confidence_reversals"] == 1
+    assert item["status_transitions"] == 2
