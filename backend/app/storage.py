@@ -34,6 +34,19 @@ def _max_artifact_bytes() -> int:
     return limit
 
 
+def _max_campaign_document_bytes() -> int:
+    raw = os.getenv("XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES", str(2 * 1024 * 1024))
+    try:
+        limit = int(raw)
+    except ValueError as exc:
+        raise ValueError("XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES must be an integer") from exc
+    if not 65536 <= limit <= 10 * 1024 * 1024:
+        raise ValueError(
+            "XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES must be between 64 KiB and 10 MiB"
+        )
+    return limit
+
+
 def _max_observation_bytes() -> int:
     raw = os.getenv("XBOW_MAX_OBSERVATION_BYTES", "65536")
     try:
@@ -177,6 +190,8 @@ class Storage:
         document = dict(document)
         document["id"] = _bounded_identifier(str(document["id"]), "campaign_id")
         encoded = json.dumps(document, separators=(",", ":"), ensure_ascii=False)
+        if len(encoded.encode("utf-8")) > _max_campaign_document_bytes():
+            raise ValueError("campaign document exceeds size limit")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             current = db.execute("SELECT version FROM campaigns WHERE id=?", (document["id"],)).fetchone()
