@@ -30,10 +30,12 @@ def test_storage_backend_normalizes_postgres_alias(monkeypatch):
     assert storage_backend_name() == "postgresql"
 
 
-def test_storage_backend_fails_closed_for_uninstalled_postgres(monkeypatch):
+def test_storage_backend_requires_postgres_url(monkeypatch):
     monkeypatch.setenv("XBOW_STORAGE_BACKEND", "postgresql")
+    monkeypatch.delenv("XBOW_DATABASE_URL", raising=False)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
 
-    with pytest.raises(RuntimeError, match="PostgreSQL storage backend is selected but not installed"):
+    with pytest.raises(ValueError, match="XBOW_DATABASE_URL is required"):
         create_storage()
 
 
