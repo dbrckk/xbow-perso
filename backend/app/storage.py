@@ -34,6 +34,17 @@ def _max_artifact_bytes() -> int:
     return limit
 
 
+def _max_observation_bytes() -> int:
+    raw = os.getenv("XBOW_MAX_OBSERVATION_BYTES", "65536")
+    try:
+        limit = int(raw)
+    except ValueError as exc:
+        raise ValueError("XBOW_MAX_OBSERVATION_BYTES must be an integer") from exc
+    if not 1024 <= limit <= 1024 * 1024:
+        raise ValueError("XBOW_MAX_OBSERVATION_BYTES must be between 1 KiB and 1 MiB")
+    return limit
+
+
 def _bounded_identifier(value: str, name: str, *, max_length: int = 200) -> str:
     normalized = value.strip()
     if not normalized:
@@ -218,6 +229,11 @@ class Storage:
         if kind not in self.ALLOWED_OBSERVATION_KINDS:
             raise ValueError("unsupported observation kind")
         parent_ids = tuple(str(item) for item in observation.get("parent_ids", ()))
+        if len(parent_ids) > 64:
+            raise ValueError("observation parent_ids exceed limit")
+        parent_ids = tuple(
+            _bounded_identifier(item, "parent_id") for item in parent_ids
+        )
         metadata = observation.get("metadata", {})
         if not isinstance(metadata, dict):
             raise ValueError("observation metadata must be an object")
@@ -231,6 +247,20 @@ class Storage:
             "metadata": metadata,
             "created_at": str(observation.get("created_at") or utcnow()),
         }
+        encoded_observation = json.dumps(
+            {
+                "id": record["id"],
+                "kind": record["kind"],
+                "value": record["value"],
+                "source": record["source"],
+                "parent_ids": record["parent_ids"],
+                "metadata": record["metadata"],
+            },
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+        if len(encoded_observation) > _max_observation_bytes():
+            raise ValueError("observation exceeds size limit")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             if not db.execute("SELECT 1 FROM campaigns WHERE id=?", (campaign_id,)).fetchone():
