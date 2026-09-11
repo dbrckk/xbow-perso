@@ -294,7 +294,8 @@ def process_browser_flow(job: dict, store: Storage) -> None:
     result = execute_browser_flow(campaign, job["payload"])
     artifacts = persist_browser_result(store, campaign.id, result, idempotency_prefix=job["id"])
     for observation in result.observations:
-        if observation.get("operation") == "navigate" and observation.get("url"):
+        operation = observation.get("operation")
+        if operation == "navigate" and observation.get("url"):
             _record_endpoint_observation(
                 store,
                 campaign,
@@ -302,6 +303,46 @@ def process_browser_flow(job: dict, store: Storage) -> None:
                 source="browser",
                 parent_id=asset_id,
             )
+        elif operation == "surface_links":
+            for endpoint in observation.get("urls", [])[:100]:
+                _record_endpoint_observation(
+                    store,
+                    campaign,
+                    str(endpoint),
+                    source="browser",
+                    parent_id=asset_id,
+                )
+        elif operation == "surface_forms":
+            for form in observation.get("forms", [])[:50]:
+                action = str(form.get("action") or "")
+                if not action:
+                    continue
+                form_observation = Observation(
+                    id=_observation_id(
+                        "form",
+                        f"browser\x1f{action}\x1f{form.get('method', 'GET')}\x1f"
+                        + ",".join(str(name) for name in form.get("input_names", [])),
+                    ),
+                    kind="form",
+                    value=action,
+                    source="browser",
+                    parent_ids=(asset_id,),
+                    metadata={
+                        "method": str(form.get("method") or "GET"),
+                        "input_names": list(form.get("input_names", []))[:100],
+                    },
+                )
+                store.put_observation(campaign.id, form_observation.to_dict())
+        elif operation == "surface_technologies":
+            for technology in observation.get("technologies", [])[:20]:
+                technology_observation = Observation(
+                    id=_observation_id("technology", f"browser\x1f{technology}"),
+                    kind="technology",
+                    value=str(technology),
+                    source="browser",
+                    parent_ids=(asset_id,),
+                )
+                store.put_observation(campaign.id, technology_observation.to_dict())
     for artifact in artifacts:
         _record_artifact_observation(
             store,

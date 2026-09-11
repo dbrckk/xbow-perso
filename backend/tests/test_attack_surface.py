@@ -188,3 +188,42 @@ def test_attack_surface_route_is_exposed_and_reads_durable_graph(tmp_path, monke
     assert result["summary"]["valid_endpoint_count"] == 1
     assert result["endpoints"][0]["parameter_names"] == ["token"]
     assert "redacted" not in str(result)
+
+
+def test_attack_surface_enrichment_score_rewards_cross_source_context():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:1", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:1",
+            "endpoint",
+            "https://example.test/a",
+            "recon:crawl",
+            parent_ids=("asset:1",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:1",
+            "form",
+            "https://example.test/search",
+            "browser",
+            parent_ids=("asset:1",),
+            metadata={"method": "GET", "input_names": ["q"]},
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:1",
+            "technology",
+            "next",
+            "browser",
+            parent_ids=("asset:1",),
+        )
+    )
+
+    result = build_attack_surface(graph)
+
+    assert result["summary"]["surface_sources"] == ["browser", "recon:crawl"]
+    assert result["summary"]["source_diversity"] == 2
+    assert result["summary"]["enrichment_score"] > 0.7

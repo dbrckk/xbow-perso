@@ -139,6 +139,23 @@ def build_attack_surface(
     form_input_names = sorted({name for item in valid_forms for name in item["input_names"]})
     unique_urls = {item["url"] for item in valid_endpoints}
     endpoint_sources = Counter(item["source"] for item in valid_endpoints)
+    surface_sources = {
+        str(item["source"])
+        for item in [*endpoints, *forms, *technologies, *wafs]
+        if str(item.get("source", "")).strip()
+    }
+    source_diversity = len(surface_sources)
+    enrichment_score = round(
+        min(
+            1.0,
+            (0.34 if valid_endpoints else 0.0)
+            + (0.21 if valid_forms else 0.0)
+            + (0.21 if technologies else 0.0)
+            + (0.09 if wafs else 0.0)
+            + min(0.15, max(0, source_diversity - 1) * 0.075),
+        ),
+        4,
+    )
     orphan_endpoints = [item for item in endpoints if not item["asset_parent_ids"]]
     host_asset_mismatches = [item for item in valid_endpoints if item["host_asset_mismatch"]]
 
@@ -174,6 +191,9 @@ def build_attack_surface(
             "hosts": dict(sorted(hosts.items())),
             "schemes": dict(sorted(schemes.items())),
             "endpoint_sources": dict(sorted(endpoint_sources.items())),
+            "surface_sources": sorted(surface_sources),
+            "source_diversity": source_diversity,
+            "enrichment_score": enrichment_score,
             "parameter_names": parameter_names,
             "form_input_names": form_input_names,
         },
