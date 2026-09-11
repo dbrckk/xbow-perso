@@ -4,7 +4,6 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from .jobqueue import JobQueue as SQLiteJobQueue
 from .queue_backend import create_queue
 from .storage_backend import create_storage
 
