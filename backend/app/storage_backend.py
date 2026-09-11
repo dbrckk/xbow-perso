@@ -44,7 +44,6 @@ def create_storage() -> StorageBackend:
     backend = storage_backend_name()
     if backend == "sqlite":
         return Storage()
-    raise RuntimeError(
-        "PostgreSQL storage backend is selected but not installed; "
-        "use XBOW_STORAGE_BACKEND=sqlite until the PostgreSQL adapter is configured"
-    )
+    from .postgres_storage import PostgresStorage
+
+    return PostgresStorage()
