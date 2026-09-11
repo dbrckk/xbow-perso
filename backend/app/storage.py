@@ -421,12 +421,16 @@ class Storage:
         return dict(row) if row else None
 
     def has_artifact(self, campaign_id: str, *, finding_id: str | None = None, kind: str | None = None) -> bool:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         clauses = ["campaign_id=?"]
         params: list[Any] = [campaign_id]
         if finding_id is not None:
+            finding_id = _bounded_identifier(finding_id, "finding_id")
             clauses.append("finding_id=?")
             params.append(finding_id)
         if kind is not None:
+            if kind not in self.ALLOWED_ARTIFACT_KINDS:
+                raise ValueError("unsupported artifact kind")
             clauses.append("kind=?")
             params.append(kind)
         with self.connect() as db:
