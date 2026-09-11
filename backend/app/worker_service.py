@@ -14,7 +14,7 @@ from .main import Campaign, CampaignState, Finding, utcnow
 from .observation_graph import Observation
 from .orchestrator import advance_campaign
 from .recon_worker import ReconPolicyError, execute_recon_task
-from .scanner_registry import parse_scanner_artifact
+from .scanner_registry import latest_scanner_artifact, parse_scanner_artifact
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
@@ -22,7 +22,6 @@ from .worker import (
     WorkerPolicyError,
     build_strix_plan,
     execute,
-    locate_vulnerabilities_json,
     persist_execution_artifacts,
 )
 
@@ -234,7 +233,7 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
     if result["status"] != "completed":
         raise RuntimeError(result.get("stderr") or "Strix execution failed")
 
-    vuln_path = locate_vulnerabilities_json(run_dir)
+    vuln_path = latest_scanner_artifact("strix", run_dir)
     findings: list[Finding] = parse_scanner_artifact("strix", vuln_path, campaign) if vuln_path else []
     _record_scan_observation(store, campaign, job["id"], len(findings))
     existing = {f.id for f in campaign.findings}
