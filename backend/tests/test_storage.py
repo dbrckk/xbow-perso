@@ -252,3 +252,18 @@ def test_artifact_file_is_removed_when_metadata_insert_fails(tmp_path, monkeypat
 
     campaign_dir = root / "c1"
     assert not campaign_dir.exists() or list(campaign_dir.iterdir()) == []
+
+
+def test_artifact_idempotency_key_rejects_unsafe_values(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    invalid = (
+        " ",
+        "x" * 201,
+        "safe-prefix\nunsafe",
+        "safe-prefix\tunsafe",
+    )
+    for key in invalid:
+        with pytest.raises(ValueError, match="idempotency_key"):
+            store.put_artifact("c1", "validation", b"x", idempotency_key=key)
