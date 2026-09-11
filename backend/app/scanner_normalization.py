@@ -54,9 +54,14 @@ def _severity(value: Any) -> str:
 
 
 def _string_list(value: Any, *, limit: int = 50) -> tuple[str, ...]:
-    if value in {None, ""}:
+    if value is None or value == "":
         return ()
-    items = [value] if isinstance(value, str) else list(value) if isinstance(value, (list, tuple)) else [value]
+    if isinstance(value, str):
+        items = [value]
+    elif isinstance(value, (list, tuple)):
+        items = list(value)
+    else:
+        items = [value]
     return tuple(str(item) for item in items[:limit])
 
 
