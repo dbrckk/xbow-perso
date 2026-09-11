@@ -32,3 +32,24 @@ def test_target_input_rejects_url_userinfo():
             primary_url="https://user:password@example.com/path",
             rules=rules,
         )
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://example.com/path?token=secret",
+        "https://example.com/path#private",
+    ],
+)
+def test_target_input_rejects_query_and_fragment(url):
+    rules = ProgramRules(
+        authorization_reference="AUTH-1",
+        allowed_targets=["example.com"],
+    )
+
+    with pytest.raises(ValidationError, match="query strings and fragments"):
+        TargetInput(
+            name="fixture",
+            primary_url=url,
+            rules=rules,
+        )
