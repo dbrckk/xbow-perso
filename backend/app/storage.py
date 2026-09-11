@@ -45,6 +45,15 @@ def _bounded_identifier(value: str, name: str, *, max_length: int = 200) -> str:
     return normalized
 
 
+def _harden_private_path(path: Path, mode: int) -> None:
+    if os.name != "posix" or not path.exists():
+        return
+    try:
+        path.chmod(mode)
+    except OSError as exc:
+        raise ArtifactIntegrityError(f"unable to enforce private permissions on {path.name}") from exc
+
+
 def _validate_media_type(media_type: str) -> str:
     value = media_type.strip()
     if not value or len(value) > 120 or "/" not in value:
@@ -79,7 +88,9 @@ class Storage:
         self.artifact_root = Path(artifact_root or os.getenv("XBOW_ARTIFACT_ROOT", "/data/artifacts"))
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
         self.artifact_root.mkdir(parents=True, exist_ok=True)
+        _harden_private_path(self.artifact_root, 0o700)
         self._init()
+        _harden_private_path(Path(self.db_path), 0o600)
 
     @contextmanager
     def connect(self):
@@ -301,6 +312,7 @@ class Storage:
         except ValueError as exc:
             raise ArtifactIntegrityError("campaign artifact path escaped storage root") from exc
         resolved.mkdir(parents=True, exist_ok=True)
+        _harden_private_path(resolved, 0o700)
         final = resolved.resolve()
         try:
             final.relative_to(root)
