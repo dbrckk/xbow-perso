@@ -180,3 +180,33 @@ def test_worker_boolean_parser_accepts_explicit_common_values(monkeypatch):
     plan = build_strix_plan(campaign())
 
     assert plan.dry_run is False
+
+
+def test_strix_output_dir_must_stay_under_run_root(tmp_path, monkeypatch):
+    root = tmp_path / "runs"
+    monkeypatch.setenv("XBOW_STRIX_RUN_ROOT", str(root))
+
+    with pytest.raises(WorkerPolicyError, match="escaped configured run root"):
+        build_strix_plan(campaign(), str(tmp_path / "outside"))
+
+
+def test_strix_output_dir_rejects_symlink(tmp_path, monkeypatch):
+    root = tmp_path / "runs"
+    root.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    link = root / "job"
+    link.symlink_to(outside, target_is_directory=True)
+    monkeypatch.setenv("XBOW_STRIX_RUN_ROOT", str(root))
+
+    with pytest.raises(WorkerPolicyError, match="must not be a symlink"):
+        build_strix_plan(campaign(), str(link))
+
+
+def test_strix_output_dir_accepts_child_of_run_root(tmp_path, monkeypatch):
+    root = tmp_path / "runs"
+    monkeypatch.setenv("XBOW_STRIX_RUN_ROOT", str(root))
+
+    plan = build_strix_plan(campaign(), str(root / "job-1"))
+
+    assert plan.output_dir == str((root / "job-1").resolve())
