@@ -55,3 +55,39 @@ def test_advisory_context_handles_no_findings():
     assert context["focus_finding_id"] is None
     assert context["ranking"] == []
     assert "no findings" in context["rationale"]
+
+
+def test_advisory_context_returns_bounded_top_n_focus():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.test", "recon"))
+    findings = []
+    for index, severity in enumerate(("critical", "high", "medium", "low"), start=1):
+        finding_id = f"f{index}"
+        graph.add(
+            Observation(
+                f"finding:{finding_id}",
+                "finding",
+                finding_id,
+                "scanner",
+                parent_ids=("a1",),
+            )
+        )
+        findings.append(SimpleNamespace(id=finding_id, severity=severity))
+
+    context = build_advisory_planner_context(_campaign(findings), graph, top_n=2)
+
+    assert context["focus_count"] == 2
+    assert context["top_n"] == 2
+    assert [item["rank"] for item in context["focus"]] == [1, 2]
+    assert [item["finding_id"] for item in context["focus"]] == ["f1", "f2"]
+    assert context["focus"][0]["components"]["total"] == context["focus"][0]["score"]
+
+
+def test_advisory_context_rejects_unbounded_top_n():
+    for invalid in (0, 11):
+        try:
+            build_advisory_planner_context(_campaign([]), ObservationGraph(), top_n=invalid)
+        except ValueError as exc:
+            assert "between 1 and 10" in str(exc)
+        else:
+            raise AssertionError("invalid top_n must fail closed")
