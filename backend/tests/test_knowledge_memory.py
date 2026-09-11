@@ -1,6 +1,14 @@
 from types import SimpleNamespace
 
-from app.knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
+from app.knowledge_memory import (
+    build_knowledge_snapshot,
+    decision_history,
+    rank_findings,
+    rank_findings_explainable,
+    review_severity_bonus,
+    severity_weight,
+    temporal_need,
+)
 from app.observation_graph import Observation, ObservationGraph
 
 
@@ -158,3 +166,108 @@ def test_decision_history_reads_only_planner_memory_records():
     assert len(history) == 1
     assert history[0]["action"] == "scan"
     assert history[0]["agent"] == "analysis-agent"
+
+
+def test_explainable_ranking_combines_severity_evidence_and_stability():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.test", "recon"))
+    graph.add(Observation("finding:critical", "finding", "critical", "scanner", parent_ids=("a1",)))
+    graph.add(Observation("finding:low", "finding", "low", "scanner", parent_ids=("a1",)))
+    findings = [
+        SimpleNamespace(id="critical", severity="critical"),
+        SimpleNamespace(id="low", severity="low"),
+    ]
+
+    ranked = rank_findings_explainable(
+        findings,
+        graph,
+        stability={
+            "critical": {"stability": "contradictory"},
+            "low": {"stability": "stable"},
+        },
+    )
+
+    assert [item["finding_id"] for item in ranked] == ["critical", "low"]
+    assert ranked[0]["components"]["severity"] == 0.55
+    assert ranked[0]["components"]["temporal_need"] == 0.15
+    assert ranked[0]["components"]["total"] == ranked[0]["score"]
+    assert ranked[0]["advisory_only"] is True
+
+
+def test_explainable_ranking_rewards_evidence_gap_for_equal_severity():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.test", "recon"))
+    graph.add(Observation("finding:f1", "finding", "f1", "scanner", parent_ids=("a1",)))
+    graph.add(Observation("finding:f2", "finding", "f2", "scanner", parent_ids=("a1",)))
+    graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("finding:f1",)))
+    findings = [
+        SimpleNamespace(id="f1", severity="high"),
+        SimpleNamespace(id="f2", severity="high"),
+    ]
+
+    ranked = rank_findings_explainable(findings, graph)
+
+    assert ranked[0]["finding_id"] == "f2"
+    assert ranked[0]["components"]["evidence_gap"] > ranked[1]["components"]["evidence_gap"]
+
+
+def test_explainable_ranking_unknown_severity_fails_closed():
+    graph = ObservationGraph()
+    findings = [SimpleNamespace(id="f1", severity="unexpected")]
+
+    ranked = rank_findings_explainable(findings, graph)
+
+    assert ranked[0]["components"]["severity"] == 0.0
+    assert ranked[0]["stability"] == "unknown"
+
+
+def test_shared_scoring_tables_are_monotonic_and_fail_closed():
+    severities = ["info", "low", "medium", "high", "critical"]
+
+    severity_values = [severity_weight(item) for item in severities]
+    review_values = [review_severity_bonus(item) for item in severities]
+
+    assert severity_values == sorted(severity_values)
+    assert review_values == sorted(review_values)
+    assert severity_weight("unexpected") == 0.0
+    assert review_severity_bonus("unexpected") == 0.0
+
+
+def test_temporal_need_prioritizes_contradiction_over_stability():
+    assert temporal_need("contradictory") > temporal_need("evolving")
+    assert temporal_need("evolving") > temporal_need("fresh")
+    assert temporal_need("fresh") > temporal_need("stable")
+    assert temporal_need("unexpected") == 0.25
+
+
+def test_classic_and_explainable_rankings_share_severity_order():
+    graph = ObservationGraph()
+    findings = [
+        SimpleNamespace(id="info", severity="info"),
+        SimpleNamespace(id="low", severity="low"),
+        SimpleNamespace(id="medium", severity="medium"),
+        SimpleNamespace(id="high", severity="high"),
+        SimpleNamespace(id="critical", severity="critical"),
+    ]
+
+    classic = rank_findings(findings, graph)
+    explainable = rank_findings_explainable(
+        findings,
+        graph,
+        stability={item.id: {"stability": "stable"} for item in findings},
+    )
+
+    assert [item.finding_id for item in classic] == [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "info",
+    ]
+    assert [item["finding_id"] for item in explainable] == [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "info",
+    ]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 from dataclasses import asdict, dataclass
 from urllib.error import HTTPError, URLError
@@ -49,6 +50,8 @@ def _validation_timeout_seconds() -> float:
         timeout = float(raw)
     except ValueError as exc:
         raise ValidationPolicyError("XBOW_VALIDATION_TIMEOUT_SECONDS must be a number") from exc
+    if not math.isfinite(timeout):
+        raise ValidationPolicyError("XBOW_VALIDATION_TIMEOUT_SECONDS must be a number")
     if not 1.0 <= timeout <= 30.0:
         raise ValidationPolicyError("XBOW_VALIDATION_TIMEOUT_SECONDS must be between 1 and 30")
     return timeout

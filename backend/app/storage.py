@@ -176,6 +176,18 @@ class Storage:
                 FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
             )""")
             db.execute("CREATE INDEX IF NOT EXISTS observations_campaign_kind ON observations(campaign_id, kind, created_at)")
+            db.execute("""CREATE TABLE IF NOT EXISTS hypothesis_snapshots (
+                campaign_id TEXT NOT NULL,
+                graph_fingerprint TEXT NOT NULL,
+                document TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                PRIMARY KEY(campaign_id, graph_fingerprint),
+                FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS hypothesis_snapshots_campaign_created "
+                "ON hypothesis_snapshots(campaign_id, created_at DESC)"
+            )
 
     def save_campaign(self, document: dict[str, Any], *, expected_version: int | None = None) -> int:
         """Persist a campaign and optionally reject stale snapshot writes.
@@ -346,6 +358,78 @@ class Storage:
                 "metadata": json.loads(row["metadata"]),
                 "created_at": row["created_at"],
             }
+            for row in rows
+        ]
+
+    def put_hypothesis_snapshot(
+        self,
+        campaign_id: str,
+        graph_fingerprint: str,
+        hypotheses: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        graph_fingerprint = _bounded_identifier(
+            graph_fingerprint, "graph_fingerprint", max_length=64
+        )
+        payload = {
+            "graph_fingerprint": graph_fingerprint,
+            "hypotheses": hypotheses,
+        }
+        try:
+            encoded = json.dumps(
+                payload, separators=(",", ":"), ensure_ascii=False, sort_keys=True
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError("hypothesis snapshot is not JSON serializable") from exc
+        if len(encoded.encode("utf-8")) > _max_campaign_document_bytes():
+            raise ValueError("hypothesis snapshot exceeds size limit")
+        now = utcnow()
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            if not db.execute(
+                "SELECT 1 FROM campaigns WHERE id=?", (campaign_id,)
+            ).fetchone():
+                db.execute("ROLLBACK")
+                raise KeyError(campaign_id)
+            existing = db.execute(
+                """SELECT document,created_at FROM hypothesis_snapshots
+                   WHERE campaign_id=? AND graph_fingerprint=?""",
+                (campaign_id, graph_fingerprint),
+            ).fetchone()
+            if existing:
+                if existing["document"] != encoded:
+                    db.execute("ROLLBACK")
+                    raise ValueError(
+                        "graph fingerprint reused with different hypothesis snapshot"
+                    )
+                db.execute("COMMIT")
+                return {
+                    **json.loads(existing["document"]),
+                    "created_at": existing["created_at"],
+                }
+            db.execute(
+                """INSERT INTO hypothesis_snapshots(
+                       campaign_id,graph_fingerprint,document,created_at
+                   ) VALUES(?,?,?,?)""",
+                (campaign_id, graph_fingerprint, encoded, now),
+            )
+            db.execute("COMMIT")
+        return {**payload, "created_at": now}
+
+    def list_hypothesis_snapshots(
+        self, campaign_id: str, *, limit: int = 50
+    ) -> list[dict[str, Any]]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        if not 1 <= limit <= 500:
+            raise ValueError("hypothesis snapshot limit must be between 1 and 500")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT document,created_at FROM hypothesis_snapshots
+                   WHERE campaign_id=? ORDER BY created_at DESC LIMIT ?""",
+                (campaign_id, limit),
+            ).fetchall()
+        return [
+            {**json.loads(row["document"]), "created_at": row["created_at"]}
             for row in rows
         ]
 

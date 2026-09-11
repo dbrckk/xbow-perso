@@ -347,11 +347,73 @@ def campaign_knowledge(campaign_id: str):
     from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
     campaign = assert_campaign_exists(campaign_id)
     graph = _campaign_graph(campaign_id)
+    from .hypothesis_memory import build_hypotheses
+
     return {
         "snapshot": build_knowledge_snapshot(graph).to_dict(),
         "priorities": [item.to_dict() for item in rank_findings(campaign.findings, graph)],
+        "hypotheses": [item.to_dict() for item in build_hypotheses(graph)],
         "decision_history": decision_history(graph),
     }
+
+
+@app.get("/api/campaigns/{campaign_id}/findings/ranking")
+def campaign_finding_ranking(campaign_id: str, history_limit: int = 50):
+    from .hypothesis_memory import summarize_hypothesis_stability
+    from .knowledge_memory import rank_findings_explainable
+
+    campaign = assert_campaign_exists(campaign_id)
+    graph = _campaign_graph(campaign_id)
+    try:
+        snapshots = storage().list_hypothesis_snapshots(campaign_id, limit=history_limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    stability = {
+        item["finding_id"]: item
+        for item in summarize_hypothesis_stability(snapshots)
+    }
+    return {
+        "campaign_id": campaign.id,
+        "findings": rank_findings_explainable(
+            campaign.findings,
+            graph,
+            stability=stability,
+        ),
+        "read_only": True,
+        "advisory_only": True,
+    }
+
+
+@app.get("/api/campaigns/{campaign_id}/hypotheses/history")
+def campaign_hypothesis_history(campaign_id: str, limit: int = 50):
+    assert_campaign_exists(campaign_id)
+    try:
+        return storage().list_hypothesis_snapshots(campaign_id, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/campaigns/{campaign_id}/hypotheses/delta")
+def campaign_hypothesis_delta(campaign_id: str):
+    from .hypothesis_memory import diff_hypothesis_snapshots
+
+    assert_campaign_exists(campaign_id)
+    snapshots = storage().list_hypothesis_snapshots(campaign_id, limit=2)
+    current = snapshots[0] if snapshots else None
+    previous = snapshots[1] if len(snapshots) > 1 else None
+    return diff_hypothesis_snapshots(previous, current)
+
+
+@app.get("/api/campaigns/{campaign_id}/hypotheses/stability")
+def campaign_hypothesis_stability(campaign_id: str, limit: int = 50):
+    from .hypothesis_memory import summarize_hypothesis_stability
+
+    assert_campaign_exists(campaign_id)
+    try:
+        snapshots = storage().list_hypothesis_snapshots(campaign_id, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return summarize_hypothesis_stability(snapshots)
 
 
 @app.get("/api/campaigns/{campaign_id}/plan")
@@ -368,11 +430,14 @@ def campaign_plan(campaign_id: str):
     planner_actions = AdaptivePlanner().plan(campaign, graph)
     actions = [apply_budget(item, graph, jobs, campaign.id, limits)[0] for item in planner_actions]
     usage = budget_usage(graph, jobs, campaign.id, limits)
+    from .hypothesis_memory import build_hypotheses
+
     return {
         "actions": [item.to_dict() for item in actions],
         "planner_actions": [item.to_dict() for item in planner_actions],
         "agents": [agent_for_action(item.kind).to_dict() for item in actions],
         "priorities": [item.to_dict() for item in rank_findings(campaign.findings, graph)],
+        "hypotheses": [item.to_dict() for item in build_hypotheses(graph)],
         "memory": build_knowledge_snapshot(graph).to_dict(),
         "budget": {"limits": limits.to_dict(), "usage": usage.to_dict()},
         "read_only": True,

@@ -194,3 +194,60 @@ def test_validation_jobs_are_ordered_by_adaptive_priority(tmp_path):
     queued = [queue.get(job_id) for job_id in result["job_ids"]]
 
     assert [job["payload"]["finding_id"] for job in queued] == ["critical", "low"]
+
+
+def test_validation_priority_prefers_less_supported_hypothesis_on_tie(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    findings = [
+        Finding(
+            id="f1",
+            title="candidate one",
+            severity="high",
+            asset="https://example.test",
+            summary="one",
+            discovered_by="scanner",
+        ),
+        Finding(
+            id="f2",
+            title="candidate two",
+            severity="high",
+            asset="https://example.test",
+            summary="two",
+            discovered_by="scanner",
+        ),
+    ]
+    campaign = make_campaign(findings=findings)
+    store.save_campaign(campaign.model_dump(mode="json"))
+    store.put_observation(campaign.id, Observation("a1", "asset", "example.test", "scanner").to_dict())
+    for finding in findings:
+        store.put_observation(
+            campaign.id,
+            Observation(
+                f"finding:{finding.id}",
+                "finding",
+                finding.id,
+                "scanner",
+                parent_ids=("a1",),
+            ).to_dict(),
+        )
+
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "v1",
+            "validation",
+            "dry_run",
+            "validator",
+            parent_ids=("finding:f1",),
+        ).to_dict(),
+    )
+
+    result = advance_campaign(campaign, queue, store)
+    queued = [queue.get(job_id) for job_id in result["job_ids"]]
+
+    assert [job["payload"]["finding_id"] for job in queued] == ["f2", "f1"]
+    hypotheses = {item["finding_id"]: item for item in result["hypotheses"]}
+    assert hypotheses["f1"]["status"] == "partially_supported"
+    assert hypotheses["f2"]["status"] == "unvalidated"

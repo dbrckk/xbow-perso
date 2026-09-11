@@ -19,7 +19,7 @@ def utcnow() -> str:
 def _bounded_identifier(value: str, name: str, *, max_length: int = 200) -> str:
     normalized = value.strip()
     if not normalized:
-        raise ValueError(f"{name} required")
+        raise ValueError(f"{name} must not be blank")
     if len(normalized) > max_length:
         raise ValueError(f"{name} too long")
     if any(ord(ch) < 33 or ord(ch) == 127 for ch in normalized):
