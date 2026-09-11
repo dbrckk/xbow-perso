@@ -347,9 +347,12 @@ def campaign_knowledge(campaign_id: str):
     from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
     campaign = assert_campaign_exists(campaign_id)
     graph = _campaign_graph(campaign_id)
+    from .hypothesis_memory import build_hypotheses
+
     return {
         "snapshot": build_knowledge_snapshot(graph).to_dict(),
         "priorities": [item.to_dict() for item in rank_findings(campaign.findings, graph)],
+        "hypotheses": [item.to_dict() for item in build_hypotheses(graph)],
         "decision_history": decision_history(graph),
     }
 
