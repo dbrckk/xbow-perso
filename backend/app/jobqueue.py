@@ -38,6 +38,15 @@ def _job_lease_seconds() -> int:
     return lease_seconds
 
 
+def _harden_db_permissions(path: Path) -> None:
+    if os.name != "posix" or not path.exists():
+        return
+    try:
+        path.chmod(0o600)
+    except OSError as exc:
+        raise RuntimeError("unable to enforce private queue database permissions") from exc
+
+
 def _max_job_payload_bytes() -> int:
     raw = os.getenv("XBOW_MAX_JOB_PAYLOAD_BYTES", "65536")
     try:
@@ -62,6 +71,7 @@ class JobQueue:
         self.path = path or os.getenv("XBOW_DB_PATH", "/data/xbow.sqlite3")
         Path(self.path).parent.mkdir(parents=True, exist_ok=True)
         self._init()
+        _harden_db_permissions(Path(self.path))
 
     @contextmanager
     def connect(self):
