@@ -95,3 +95,85 @@ def build_hypotheses(graph: ObservationGraph) -> list[Hypothesis]:
         )
 
     return sorted(result, key=lambda item: (-item.confidence, item.id))
+
+
+def diff_hypothesis_snapshots(
+    previous: dict[str, Any] | None,
+    current: dict[str, Any] | None,
+) -> dict[str, Any]:
+    previous_items = {
+        str(item.get("finding_id")): item
+        for item in (previous or {}).get("hypotheses", [])
+        if item.get("finding_id") is not None
+    }
+    current_items = {
+        str(item.get("finding_id")): item
+        for item in (current or {}).get("hypotheses", [])
+        if item.get("finding_id") is not None
+    }
+
+    changes = []
+    for finding_id in sorted(set(previous_items) | set(current_items)):
+        before = previous_items.get(finding_id)
+        after = current_items.get(finding_id)
+
+        if before is None:
+            changes.append(
+                {
+                    "finding_id": finding_id,
+                    "change": "added",
+                    "before": None,
+                    "after": after,
+                }
+            )
+            continue
+        if after is None:
+            changes.append(
+                {
+                    "finding_id": finding_id,
+                    "change": "removed",
+                    "before": before,
+                    "after": None,
+                }
+            )
+            continue
+
+        before_evidence = set(before.get("evidence_ids", []))
+        after_evidence = set(after.get("evidence_ids", []))
+        confidence_before = float(before.get("confidence", 0.0))
+        confidence_after = float(after.get("confidence", 0.0))
+        status_before = str(before.get("status", ""))
+        status_after = str(after.get("status", ""))
+
+        evidence_added = sorted(after_evidence - before_evidence)
+        evidence_removed = sorted(before_evidence - after_evidence)
+        confidence_delta = round(confidence_after - confidence_before, 4)
+
+        if (
+            confidence_delta == 0.0
+            and status_before == status_after
+            and not evidence_added
+            and not evidence_removed
+        ):
+            continue
+
+        changes.append(
+            {
+                "finding_id": finding_id,
+                "change": "updated",
+                "confidence_before": confidence_before,
+                "confidence_after": confidence_after,
+                "confidence_delta": confidence_delta,
+                "status_before": status_before,
+                "status_after": status_after,
+                "evidence_added": evidence_added,
+                "evidence_removed": evidence_removed,
+            }
+        )
+
+    return {
+        "from_fingerprint": (previous or {}).get("graph_fingerprint"),
+        "to_fingerprint": (current or {}).get("graph_fingerprint"),
+        "changes": changes,
+        "changed": bool(changes),
+    }
