@@ -37,8 +37,11 @@ def configured_api_token() -> str:
     if token_file:
         path = Path(token_file)
         try:
-            if not path.is_file():
-                raise OSError("not a regular file")
+            if path.is_symlink() or not path.is_file():
+                raise OSError("not a regular non-symlink file")
+            size = path.stat().st_size
+            if not 32 <= size <= 4097:
+                raise OSError("secret file size is unsafe")
             token = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as exc:
             raise AuthError(503, "API authentication secret file is unavailable") from exc
