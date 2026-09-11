@@ -180,6 +180,19 @@ class JobQueue:
         counts.update({row["status"]: int(row["count"]) for row in rows})
         return counts
 
+    def cancel_queued(self, campaign_id: str) -> int:
+        """Cancel queued jobs for a campaign without stealing running leases."""
+        now = utcnow()
+        with self.connect() as db:
+            cursor = db.execute(
+                """UPDATE jobs
+                   SET status='cancelled', updated_at=?, claimed_by=NULL, claimed_at=NULL,
+                       last_error='campaign cancelled before execution'
+                   WHERE campaign_id=? AND status='queued'""",
+                (now, campaign_id),
+            )
+        return int(cursor.rowcount)
+
     def _recover_expired_leases(self, db: sqlite3.Connection, now: datetime) -> int:
         lease_seconds = int(os.getenv("XBOW_JOB_LEASE_SECONDS", "21600"))
         if not 60 <= lease_seconds <= 86400:
