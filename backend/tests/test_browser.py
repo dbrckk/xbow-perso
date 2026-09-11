@@ -119,3 +119,34 @@ def test_browser_automation_flag_accepts_explicit_false_values(monkeypatch):
     result = execute_browser_flow(_campaign(), flow.model_dump(mode="json"))
 
     assert result.status == "dry_run"
+
+
+def test_browser_automation_respects_program_disable():
+    campaign = _campaign()
+    campaign.target.rules.automated_scanning = False
+    flow = BrowserFlowInput(
+        steps=[BrowserStep(operation="navigate", url="https://app.test.local/login")]
+    )
+
+    with pytest.raises(BrowserPolicyError, match="disabled by program rules"):
+        validate_flow(campaign, flow)
+
+
+@pytest.mark.parametrize(
+    "flag",
+    (
+        "destructive_testing",
+        "denial_of_service",
+        "social_engineering",
+        "credential_attacks",
+    ),
+)
+def test_browser_automation_rejects_unsafe_campaign_flags(flag):
+    campaign = _campaign()
+    setattr(campaign.target.rules, flag, True)
+    flow = BrowserFlowInput(
+        steps=[BrowserStep(operation="navigate", url="https://app.test.local/login")]
+    )
+
+    with pytest.raises(BrowserPolicyError, match="unsafe campaign flags"):
+        validate_flow(campaign, flow)
