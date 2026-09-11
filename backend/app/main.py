@@ -198,11 +198,13 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
         "credential_attack": rules.credential_attacks is False,
         "automated_scan": rules.automated_scanning is False,
     }
-    action_blocked = blocked_actions.get(action, False)
+    action_known = action in blocked_actions
+    action_blocked = blocked_actions.get(action, True)
     return {
         "allowed": allowed and not action_blocked,
         "host": host,
         "action": action,
+        "action_known": action_known,
         "scope_allowed": allowed,
         "action_blocked": action_blocked,
         "authorization_reference": rules.authorization_reference,
