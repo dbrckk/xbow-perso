@@ -297,3 +297,17 @@ def test_storage_rejects_invalid_identifiers(tmp_path):
     for artifact_id in ("", "bad\nartifact", "x" * 201):
         with pytest.raises(ValueError, match="artifact_id"):
             store.get_artifact("c1", artifact_id)
+
+
+def test_has_artifact_validates_filters(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    with pytest.raises(ValueError, match="campaign_id"):
+        store.has_artifact("bad\ncampaign")
+
+    with pytest.raises(ValueError, match="finding_id"):
+        store.has_artifact("c1", finding_id="bad\nfinding")
+
+    with pytest.raises(ValueError, match="unsupported artifact kind"):
+        store.has_artifact("c1", kind="arbitrary")
