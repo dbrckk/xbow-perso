@@ -9,6 +9,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from .main import Campaign, Finding, is_host_allowed
+from .scanner_registry import latest_scanner_artifact
 from .scanner_normalization import (
     dedupe_normalized,
     normalize_strix_item,
@@ -246,7 +247,7 @@ def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) 
         content = result.get(key)
         if content:
             artifacts.append(store.put_artifact(campaign_id, kind, str(content).encode(), media_type="text/plain"))
-    vuln_path = locate_vulnerabilities_json(str(result.get("output_dir") or ""))
+    vuln_path = latest_scanner_artifact("strix", str(result.get("output_dir") or ""))
     if vuln_path:
         artifacts.append(
             store.put_artifact(
