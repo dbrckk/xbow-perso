@@ -19,3 +19,10 @@ class RedisJobQueue:
             socket_timeout=5,
             health_check_interval=30,
         )
+
+    def health(self) -> dict:
+        try:
+            pong = bool(self.redis.ping())
+        except redis.RedisError as exc:
+            return {"ok": False, "storage": "redis", "error": exc.__class__.__name__}
+        return {"ok": pong, "storage": "redis"}
