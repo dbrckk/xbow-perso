@@ -7,6 +7,8 @@ from fastapi import APIRouter, HTTPException
 
 from .campaign_overview import router as overview_router
 from .campaign_review_state import router as review_state_router
+from .report_readiness import build_report_readiness
+from .observation_graph import load_observation_graph
 from .report_approval import (
     approval_event_from_storage,
     approval_status_from_storage,
@@ -43,6 +45,28 @@ def _save(campaign, version: int) -> None:
     from .main import save_campaign
 
     save_campaign(campaign, expected_version=version)
+
+
+def _assert_report_review_ready(campaign, store) -> None:
+    confirmed = [item for item in campaign.findings if str(item.status) == "confirmed"]
+    if not confirmed:
+        raise ValueError("report approval requires at least one confirmed finding")
+
+    graph = load_observation_graph(store, campaign.id)
+    readiness = {
+        item.finding_id: item
+        for item in build_report_readiness(campaign.findings, graph)
+    }
+    blocked = [
+        finding.id
+        for finding in confirmed
+        if not readiness.get(str(finding.id))
+        or not readiness[str(finding.id)].ready_for_human_review
+    ]
+    if blocked:
+        raise ValueError(
+            "report approval requires all confirmed findings to be report-ready"
+        )
 
 
 @router.get("/api/campaigns/{campaign_id}/reports/submission-states")
@@ -83,6 +107,7 @@ def approve_report(campaign_id: str, artifact_id: str, reviewer: str):
     campaign, version, store = _context(campaign_id)
     artifact = _verified_report(campaign, store, artifact_id)
     try:
+        _assert_report_review_ready(campaign, store)
         current = approval_status_from_storage(campaign, store, artifact_id)
         reviewer = reviewer.strip()
         if not reviewer:
