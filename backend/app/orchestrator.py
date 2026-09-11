@@ -185,6 +185,13 @@ def _result(
     agent = agent_for_action(action.kind)
     _record_decision(store, campaign, graph, action, agent.name)
     refreshed_graph = _load_graph(store, campaign.id)
+    hypotheses = build_hypotheses(refreshed_graph)
+    if hypotheses:
+        store.put_hypothesis_snapshot(
+            campaign.id,
+            hypotheses[0].graph_fingerprint,
+            [item.to_dict() for item in hypotheses],
+        )
     memory = build_knowledge_snapshot(refreshed_graph)
     usage = budget_usage(refreshed_graph, queue, campaign.id, budget)
     if action.kind == "stop" and "budget exhausted" in action.reason:
@@ -194,7 +201,7 @@ def _result(
         "agent": agent.to_dict(),
         "job_ids": [job["id"] for job in jobs],
         "memory": memory.to_dict(),
-        "hypotheses": [item.to_dict() for item in build_hypotheses(refreshed_graph)],
+        "hypotheses": [item.to_dict() for item in hypotheses],
         "decision_history": decision_history(refreshed_graph),
         "budget": {"limits": budget.to_dict(), "usage": usage.to_dict()},
     }
