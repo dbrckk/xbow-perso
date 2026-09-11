@@ -101,7 +101,7 @@ def _record_finding_observation(store: Storage, campaign: Campaign, finding: Fin
     if finding.endpoint:
         endpoint_value = str(finding.endpoint)
         if endpoint_value.startswith("/"):
-            endpoint_value = str(campaign.target.primary_url).rstrip("/") + endpoint_value
+            endpoint_value = str(finding.asset).rstrip("/") + endpoint_value
         parent_id = _record_endpoint_observation(
             store,
             campaign,
