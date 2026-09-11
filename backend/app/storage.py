@@ -262,18 +262,21 @@ class Storage:
             "metadata": metadata,
             "created_at": str(observation.get("created_at") or utcnow()),
         }
-        encoded_observation = json.dumps(
-            {
-                "id": record["id"],
-                "kind": record["kind"],
-                "value": record["value"],
-                "source": record["source"],
-                "parent_ids": record["parent_ids"],
-                "metadata": record["metadata"],
-            },
-            separators=(",", ":"),
-            ensure_ascii=False,
-        ).encode("utf-8")
+        try:
+            encoded_observation = json.dumps(
+                {
+                    "id": record["id"],
+                    "kind": record["kind"],
+                    "value": record["value"],
+                    "source": record["source"],
+                    "parent_ids": record["parent_ids"],
+                    "metadata": record["metadata"],
+                },
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode("utf-8")
+        except (TypeError, ValueError) as exc:
+            raise ValueError("observation metadata is not JSON serializable") from exc
         if len(encoded_observation) > _max_observation_bytes():
             raise ValueError("observation exceeds size limit")
         with self.connect() as db:
