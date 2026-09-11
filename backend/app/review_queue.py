@@ -47,6 +47,7 @@ def build_review_queue(
     limit: int = 25,
     scope_checker: Callable[[str], bool] | None = None,
     stability: dict[str, dict[str, Any]] | None = None,
+    severities: dict[str, str] | None = None,
 ) -> list[ReviewTask]:
     """Build a deterministic, bounded and optionally scope-aware review queue."""
     if not 1 <= limit <= 100:
@@ -75,10 +76,20 @@ def build_review_queue(
             elif temporal_state == "evolving":
                 temporal_bonus = 0.04
                 temporal_reason = "; hypothesis is still evolving"
+            finding_id = graph_finding_id.removeprefix("finding:")
+            severity = (severities or {}).get(finding_id, "info")
+            severity_bonus = {
+                "info": 0.00,
+                "low": 0.02,
+                "medium": 0.05,
+                "high": 0.08,
+                "critical": 0.12,
+            }.get(severity, 0.00)
             base_score = 0.75
             confidence_gap = round((1.0 - current_confidence) * 0.17, 4)
             components = {
                 "base": base_score,
+                "severity": severity_bonus,
                 "confidence_gap": confidence_gap,
                 "evidence_chain_gap": chain_penalty,
                 "temporal_instability": temporal_bonus,
@@ -176,11 +187,13 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
         item["finding_id"]: item
         for item in summarize_hypothesis_stability(snapshots)
     }
+    severities = {str(item.id): str(item.severity) for item in campaign.findings}
     tasks = build_review_queue(
         graph,
         limit=limit,
         scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),
         stability=stability,
+        severities=severities,
     )
     return {
         "campaign_id": campaign.id,
