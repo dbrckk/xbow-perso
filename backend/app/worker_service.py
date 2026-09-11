@@ -91,7 +91,25 @@ def _record_endpoint_observation(
 
 
 def _record_finding_observation(store: Storage, campaign: Campaign, finding: Finding) -> str:
-    parent_id = _record_asset_observation(store, campaign, finding.asset, finding.discovered_by)
+    asset_id = _record_asset_observation(
+        store,
+        campaign,
+        finding.asset,
+        finding.discovered_by,
+    )
+    parent_id = asset_id
+    if finding.endpoint:
+        endpoint_value = str(finding.endpoint)
+        if endpoint_value.startswith("/"):
+            endpoint_value = str(campaign.target.primary_url).rstrip("/") + endpoint_value
+        parent_id = _record_endpoint_observation(
+            store,
+            campaign,
+            endpoint_value,
+            source=finding.discovered_by,
+            parent_id=asset_id,
+        )
+
     observation = Observation(
         id=f"finding:{finding.id}",
         kind="finding",
@@ -102,9 +120,30 @@ def _record_finding_observation(store: Storage, campaign: Campaign, finding: Fin
             "title": finding.title,
             "severity": finding.severity,
             "endpoint": finding.endpoint,
+            "cwe": finding.cwe,
+            "cvss": finding.cvss,
         },
     )
     store.put_observation(campaign.id, observation.to_dict())
+
+    for index, evidence in enumerate(finding.evidence[:50], start=1):
+        evidence_observation = Observation(
+            id=_observation_id(
+                "evidence",
+                f"{finding.discovered_by}\x1f{finding.id}\x1f{index}\x1f{evidence}",
+            ),
+            kind="evidence",
+            value=str(evidence),
+            source=finding.discovered_by,
+            parent_ids=(observation.id,),
+            metadata={
+                "finding_id": finding.id,
+                "scanner_evidence": True,
+                "ordinal": index,
+            },
+        )
+        store.put_observation(campaign.id, evidence_observation.to_dict())
+
     return observation.id
 
 
