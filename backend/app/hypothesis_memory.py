@@ -25,6 +25,17 @@ class Hypothesis:
 
 
 def hypothesis_graph_fingerprint(graph: ObservationGraph) -> str:
+    relevant_ids = {item.id for item in graph.by_kind("finding")}
+    relevant_ids.update(
+        item.id
+        for item in graph.by_kind("validation")
+        if any(parent in relevant_ids for parent in item.parent_ids)
+    )
+    relevant_ids.update(
+        item.id
+        for item in graph.by_kind("evidence")
+        if any(parent in relevant_ids for parent in item.parent_ids)
+    )
     payload = [
         {
             "id": item.id,
@@ -35,7 +46,7 @@ def hypothesis_graph_fingerprint(graph: ObservationGraph) -> str:
             "metadata": item.metadata,
         }
         for item in sorted(graph.values(), key=lambda item: item.id)
-        if item.metadata.get("memory_type") != "planner_decision"
+        if item.id in relevant_ids
     ]
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:20]
