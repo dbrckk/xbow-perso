@@ -4,7 +4,7 @@ import json
 import os
 from dataclasses import asdict, dataclass
 from urllib.error import HTTPError, URLError
-from urllib.parse import urljoin, urlparse
+from urllib.parse import parse_qsl, urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
@@ -21,6 +21,7 @@ class _NoRedirect(HTTPRedirectHandler):
 class ProbeResult:
     status: str
     url: str
+    parameter_names: tuple[str, ...] = ()
     http_status: int | None = None
     content_type: str | None = None
     body_preview: str = ""
@@ -64,6 +65,15 @@ def _validation_max_bytes() -> int:
     return max_bytes
 
 
+def _evidence_url(url: str) -> tuple[str, tuple[str, ...]]:
+    parsed = urlparse(url)
+    parameter_names = tuple(
+        sorted({key for key, _value in parse_qsl(parsed.query, keep_blank_values=True)})
+    )
+    safe_url = parsed._replace(query="", fragment="").geturl()
+    return safe_url, parameter_names
+
+
 def build_probe_url(campaign, finding) -> str:
     """Resolve one read-only validation URL and fail closed on scope ambiguity."""
     from .main import is_host_allowed
@@ -97,8 +107,13 @@ def safe_http_probe(campaign, finding) -> ProbeResult:
     observes a target; it never decides that a vulnerability is confirmed.
     """
     url = build_probe_url(campaign, finding)
+    evidence_url, parameter_names = _evidence_url(url)
     if not _bool_env("XBOW_ENABLE_HTTP_VALIDATION", False):
-        return ProbeResult(status="dry_run", url=url)
+        return ProbeResult(
+            status="dry_run",
+            url=evidence_url,
+            parameter_names=parameter_names,
+        )
 
     timeout = _validation_timeout_seconds()
     max_bytes = _validation_max_bytes()
@@ -117,7 +132,8 @@ def safe_http_probe(campaign, finding) -> ProbeResult:
             body = response.read(max_bytes + 1)[:max_bytes]
             return ProbeResult(
                 status="observed",
-                url=url,
+                url=evidence_url,
+                parameter_names=parameter_names,
                 http_status=int(response.status),
                 content_type=response.headers.get("Content-Type"),
                 body_preview=body.decode("utf-8", errors="replace"),
@@ -127,10 +143,16 @@ def safe_http_probe(campaign, finding) -> ProbeResult:
         body = exc.read(max_bytes + 1)[:max_bytes] if exc.fp else b""
         return ProbeResult(
             status="observed",
-            url=url,
+            url=evidence_url,
+            parameter_names=parameter_names,
             http_status=int(exc.code),
             content_type=exc.headers.get("Content-Type") if exc.headers else None,
             body_preview=body.decode("utf-8", errors="replace"),
         )
     except (URLError, TimeoutError, OSError) as exc:
-        return ProbeResult(status="error", url=url, error=str(exc))
+        return ProbeResult(
+            status="error",
+            url=evidence_url,
+            parameter_names=parameter_names,
+            error=str(exc),
+        )
