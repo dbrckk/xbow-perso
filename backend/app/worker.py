@@ -127,6 +127,7 @@ def execute(plan: WorkerPlan) -> dict:
             "admission_cap_rps": plan.admission_cap_rps,
         }
 
+    timeout = _bounded_timeout()
     output = Path(plan.output_dir)
     output.mkdir(parents=True, exist_ok=True)
     try:
@@ -135,7 +136,7 @@ def execute(plan: WorkerPlan) -> dict:
             cwd=output,
             capture_output=True,
             text=True,
-            timeout=_bounded_timeout(),
+            timeout=timeout,
             check=False,
             env=_worker_env(),
         )
