@@ -23,6 +23,26 @@ class CampaignConflictError(RuntimeError):
     pass
 
 
+def _max_artifact_bytes() -> int:
+    raw = os.getenv("XBOW_MAX_ARTIFACT_BYTES", str(10 * 1024 * 1024))
+    try:
+        limit = int(raw)
+    except ValueError as exc:
+        raise ValueError("XBOW_MAX_ARTIFACT_BYTES must be an integer") from exc
+    if not 1024 <= limit <= 100 * 1024 * 1024:
+        raise ValueError("XBOW_MAX_ARTIFACT_BYTES must be between 1 KiB and 100 MiB")
+    return limit
+
+
+def _validate_media_type(media_type: str) -> str:
+    value = media_type.strip()
+    if not value or len(value) > 120 or "/" not in value:
+        raise ValueError("invalid artifact media type")
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in value):
+        raise ValueError("invalid artifact media type")
+    return value
+
+
 class Storage:
     """Durable campaign state plus content-addressed evidence metadata."""
 
@@ -286,9 +306,10 @@ class Storage:
             raise ValueError("unsupported artifact kind")
         if idempotency_key is not None and not idempotency_key.strip():
             raise ValueError("idempotency_key must not be blank")
-        max_bytes = int(os.getenv("XBOW_MAX_ARTIFACT_BYTES", str(10 * 1024 * 1024)))
+        max_bytes = _max_artifact_bytes()
         if len(content) > max_bytes:
             raise ValueError("artifact exceeds size limit")
+        media_type = _validate_media_type(media_type)
         digest = hashlib.sha256(content).hexdigest()
 
         with self.connect() as db:
