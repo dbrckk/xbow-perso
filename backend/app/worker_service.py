@@ -14,7 +14,7 @@ from .main import Campaign, CampaignState, Finding, utcnow
 from .observation_graph import Observation
 from .orchestrator import advance_campaign
 from .recon_worker import ReconPolicyError, execute_recon_task
-from .scanner_registry import latest_scanner_artifact, parse_scanner_artifact
+from .scanner_ingestion import ingest_scanner_run
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .validator import ValidationPolicyError, safe_http_probe
@@ -233,28 +233,31 @@ def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
     if result["status"] != "completed":
         raise RuntimeError(result.get("stderr") or "Strix execution failed")
 
-    vuln_path = latest_scanner_artifact("strix", run_dir)
-    findings: list[Finding] = parse_scanner_artifact("strix", vuln_path, campaign) if vuln_path else []
-    _record_scan_observation(store, campaign, job["id"], len(findings))
-    existing = {f.id for f in campaign.findings}
-    queued = 0
-    for finding in findings:
-        _record_finding_observation(store, campaign, finding)
-        if finding.id in existing:
-            continue
-        campaign.findings.append(finding)
-        queue.enqueue(
-            campaign.id,
-            "independent_validation",
-            {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
-            max_attempts=2,
-            dedupe_key=f"validation:{finding.id}",
-        )
-        queued += 1
+    ingestion = ingest_scanner_run(
+        "strix",
+        run_dir,
+        campaign,
+        queue,
+        store,
+    )
+    _record_scan_observation(
+        store,
+        campaign,
+        job["id"],
+        ingestion.findings_seen,
+    )
     campaign.state = _state_after_scan(campaign)
     _append_event_once(
         campaign,
-        {"type": "strix_results_ingested", "job_id": job["id"], "findings": len(findings), "validation_jobs": queued, "at": utcnow()},
+        {
+            "type": "scanner_results_ingested",
+            "engine": ingestion.engine,
+            "job_id": job["id"],
+            "findings": ingestion.findings_seen,
+            "findings_added": ingestion.findings_added,
+            "validation_jobs": ingestion.validation_jobs,
+            "at": utcnow(),
+        },
     )
     _save(store, campaign, version)
 
