@@ -177,3 +177,113 @@ def diff_hypothesis_snapshots(
         "changes": changes,
         "changed": bool(changes),
     }
+
+
+def summarize_hypothesis_stability(
+    snapshots: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Summarize temporal stability from newest-first persisted snapshots."""
+    if not snapshots:
+        return []
+
+    ordered = list(reversed(snapshots))
+    finding_ids = sorted(
+        {
+            str(item.get("finding_id"))
+            for snapshot in ordered
+            for item in snapshot.get("hypotheses", [])
+            if item.get("finding_id") is not None
+        }
+    )
+    result = []
+
+    for finding_id in finding_ids:
+        timeline = []
+        for snapshot in ordered:
+            match = next(
+                (
+                    item
+                    for item in snapshot.get("hypotheses", [])
+                    if str(item.get("finding_id")) == finding_id
+                ),
+                None,
+            )
+            if match is not None:
+                timeline.append(
+                    {
+                        "graph_fingerprint": snapshot.get("graph_fingerprint"),
+                        "created_at": snapshot.get("created_at"),
+                        "status": str(match.get("status", "")),
+                        "confidence": float(match.get("confidence", 0.0)),
+                    }
+                )
+
+        if not timeline:
+            continue
+
+        latest = timeline[-1]
+        stable_streak = 1
+        for item in reversed(timeline[:-1]):
+            if (
+                item["status"] == latest["status"]
+                and item["confidence"] == latest["confidence"]
+            ):
+                stable_streak += 1
+            else:
+                break
+
+        status_transitions = sum(
+            1
+            for before, after in zip(timeline, timeline[1:])
+            if before["status"] != after["status"]
+        )
+        confidence_reversals = 0
+        previous_direction = 0
+        for before, after in zip(timeline, timeline[1:]):
+            delta = round(after["confidence"] - before["confidence"], 4)
+            direction = 1 if delta > 0 else (-1 if delta < 0 else 0)
+            if direction and previous_direction and direction != previous_direction:
+                confidence_reversals += 1
+            if direction:
+                previous_direction = direction
+
+        contradictory = confidence_reversals > 0 or status_transitions >= 2
+        if contradictory:
+            stability = "contradictory"
+        elif stable_streak >= 3:
+            stability = "stable"
+        elif len(timeline) == 1:
+            stability = "fresh"
+        else:
+            stability = "evolving"
+
+        score = 0.40
+        score += min(0.35, max(0, stable_streak - 1) * 0.15)
+        score += min(0.20, max(0, len(timeline) - 1) * 0.05)
+        score -= min(0.50, confidence_reversals * 0.25 + max(0, status_transitions - 1) * 0.15)
+        score = round(max(0.0, min(1.0, score)), 2)
+
+        result.append(
+            {
+                "finding_id": finding_id,
+                "stability": stability,
+                "stability_score": score,
+                "observed_snapshots": len(timeline),
+                "stable_streak": stable_streak,
+                "status_transitions": status_transitions,
+                "confidence_reversals": confidence_reversals,
+                "latest_status": latest["status"],
+                "latest_confidence": latest["confidence"],
+                "first_seen_at": timeline[0]["created_at"],
+                "last_seen_at": latest["created_at"],
+            }
+        )
+
+    return sorted(
+        result,
+        key=lambda item: (
+            item["stability"] == "contradictory",
+            -item["stability_score"],
+            item["finding_id"],
+        ),
+    )
