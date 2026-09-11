@@ -1,3 +1,6 @@
+import os
+import stat
+
 from app.jobqueue import JobQueue
 
 
@@ -354,3 +357,11 @@ def test_queue_telemetry_validates_campaign_ids(tmp_path):
                 assert "campaign_id" in str(exc)
             else:
                 raise AssertionError("invalid campaign_id must fail closed")
+
+
+def test_queue_database_permissions_are_private_on_posix(tmp_path):
+    if os.name != "posix":
+        return
+    db = tmp_path / "q.sqlite3"
+    JobQueue(str(db))
+    assert stat.S_IMODE(db.stat().st_mode) == 0o600
