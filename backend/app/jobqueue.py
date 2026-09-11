@@ -218,6 +218,23 @@ class JobQueue:
             )
         return int(cursor.rowcount)
 
+    def cancel_owned(self, job_id: str, worker_id: str, reason: str = "campaign cancelled") -> dict[str, Any] | None:
+        """Cancel a running job only when the caller still owns its lease."""
+        worker_id = _bounded_identifier(worker_id, "worker_id")
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            cursor = db.execute(
+                """UPDATE jobs
+                   SET status='cancelled', updated_at=?, last_error=?,
+                       claimed_by=NULL, claimed_at=NULL
+                   WHERE id=? AND status='running' AND claimed_by=?""",
+                (utcnow(), reason[-4000:] or None, job_id, worker_id),
+            )
+            db.execute("COMMIT")
+        if cursor.rowcount != 1:
+            return None
+        return self.get(job_id)
+
     def _recover_expired_leases(self, db: sqlite3.Connection, now: datetime) -> int:
         lease_seconds = int(os.getenv("XBOW_JOB_LEASE_SECONDS", "21600"))
         if not 60 <= lease_seconds <= 86400:
