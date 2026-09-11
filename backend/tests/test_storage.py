@@ -157,3 +157,30 @@ def test_idempotency_key_rejects_different_content(tmp_path):
 
     with pytest.raises(ArtifactIntegrityError, match="idempotency"):
         store.put_artifact("c1", "report", b"v2", idempotency_key="job-1:report")
+
+
+def test_artifact_write_rejects_path_traversal_campaign_id(tmp_path):
+    root = tmp_path / "artifacts"
+    store = Storage(str(tmp_path / "db.sqlite3"), str(root))
+    campaign_id = "../escape"
+    store.save_campaign({"id": campaign_id, "state": "ready", "created_at": "x", "updated_at": "x"})
+
+    with pytest.raises(ArtifactIntegrityError, match="escaped storage root"):
+        store.put_artifact(campaign_id, "validation", b"blocked")
+
+    assert not (tmp_path / "escape").exists()
+
+
+def test_artifact_write_rejects_symlinked_campaign_directory(tmp_path):
+    root = tmp_path / "artifacts"
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    store = Storage(str(tmp_path / "db.sqlite3"), str(root))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    campaign_dir = root / "c1"
+    campaign_dir.symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(ArtifactIntegrityError, match="must not be a symlink"):
+        store.put_artifact("c1", "validation", b"blocked")
+
+    assert list(outside.iterdir()) == []
