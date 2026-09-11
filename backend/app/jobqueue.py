@@ -193,6 +193,7 @@ class JobQueue:
 
     def campaign_job_counts(self, campaign_id: str) -> dict[str, int]:
         """Return durable job counts for one campaign without exposing payloads."""
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         with self.connect() as db:
             rows = db.execute(
                 "SELECT kind, COUNT(*) AS count FROM jobs WHERE campaign_id=? GROUP BY kind",
@@ -204,6 +205,7 @@ class JobQueue:
 
     def campaign_job_status_counts(self, campaign_id: str) -> dict[str, int]:
         """Return per-status job counts for one campaign without exposing payloads."""
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         with self.connect() as db:
             rows = db.execute(
                 "SELECT status, COUNT(*) AS count FROM jobs WHERE campaign_id=? GROUP BY status",
