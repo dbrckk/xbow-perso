@@ -384,6 +384,26 @@ def campaign_finding_ranking(campaign_id: str, history_limit: int = 50):
     }
 
 
+@app.get("/api/campaigns/{campaign_id}/advisory/history")
+def campaign_advisory_history(campaign_id: str, limit: int = 50):
+    assert_campaign_exists(campaign_id)
+    try:
+        return storage().list_advisory_focus_snapshots(campaign_id, limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/campaigns/{campaign_id}/advisory/delta")
+def campaign_advisory_delta(campaign_id: str):
+    from .planner_advisory import diff_advisory_focus_snapshots
+
+    assert_campaign_exists(campaign_id)
+    snapshots = storage().list_advisory_focus_snapshots(campaign_id, limit=2)
+    current = snapshots[0] if snapshots else None
+    previous = snapshots[1] if len(snapshots) > 1 else None
+    return diff_advisory_focus_snapshots(previous, current)
+
+
 @app.get("/api/campaigns/{campaign_id}/hypotheses/history")
 def campaign_hypothesis_history(campaign_id: str, limit: int = 50):
     assert_campaign_exists(campaign_id)
@@ -431,7 +451,7 @@ def campaign_plan(campaign_id: str):
     actions = [apply_budget(item, graph, jobs, campaign.id, limits)[0] for item in planner_actions]
     usage = budget_usage(graph, jobs, campaign.id, limits)
     from .hypothesis_memory import build_hypotheses, summarize_hypothesis_stability
-    from .planner_advisory import build_advisory_planner_context
+    from .planner_advisory import advisory_focus_fingerprint, build_advisory_planner_context
 
     snapshots = storage().list_hypothesis_snapshots(campaign.id, limit=50)
     stability = {
@@ -443,6 +463,12 @@ def campaign_plan(campaign_id: str):
         graph,
         stability=stability,
     )
+    advisory_fingerprint = advisory_focus_fingerprint(advisory)
+    storage().put_advisory_focus_snapshot(
+        campaign.id,
+        advisory_fingerprint,
+        advisory,
+    )
 
     return {
         "actions": [item.to_dict() for item in actions],
@@ -451,6 +477,7 @@ def campaign_plan(campaign_id: str):
         "priorities": [item.to_dict() for item in rank_findings(campaign.findings, graph)],
         "hypotheses": [item.to_dict() for item in build_hypotheses(graph)],
         "advisory": advisory,
+        "advisory_fingerprint": advisory_fingerprint,
         "memory": build_knowledge_snapshot(graph).to_dict(),
         "budget": {"limits": limits.to_dict(), "usage": usage.to_dict()},
         "read_only": True,
