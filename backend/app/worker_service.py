@@ -388,11 +388,22 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
     return True
 
 
+def _worker_poll_seconds() -> float:
+    raw = os.getenv("XBOW_WORKER_POLL_SECONDS", "1")
+    try:
+        poll = float(raw)
+    except ValueError as exc:
+        raise ValueError("XBOW_WORKER_POLL_SECONDS must be a number") from exc
+    if not 0.2 <= poll <= 60.0:
+        raise ValueError("XBOW_WORKER_POLL_SECONDS must be between 0.2 and 60")
+    return poll
+
+
 def main() -> None:
     queue = JobQueue()
     store = Storage()
     worker_id = os.getenv("XBOW_WORKER_ID", f"{socket.gethostname()}:{os.getpid()}")
-    poll = max(0.2, float(os.getenv("XBOW_WORKER_POLL_SECONDS", "1")))
+    poll = _worker_poll_seconds()
     while True:
         worked = process_one(queue, store, worker_id)
         if not worked:
