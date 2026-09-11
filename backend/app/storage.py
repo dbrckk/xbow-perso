@@ -304,8 +304,14 @@ class Storage:
     ) -> dict[str, Any]:
         if kind not in self.ALLOWED_ARTIFACT_KINDS:
             raise ValueError("unsupported artifact kind")
-        if idempotency_key is not None and not idempotency_key.strip():
-            raise ValueError("idempotency_key must not be blank")
+        if idempotency_key is not None:
+            idempotency_key = idempotency_key.strip()
+            if not idempotency_key:
+                raise ValueError("idempotency_key must not be blank")
+            if len(idempotency_key) > 200:
+                raise ValueError("idempotency_key too long")
+            if any(ord(ch) < 33 or ord(ch) == 127 for ch in idempotency_key):
+                raise ValueError("idempotency_key contains invalid characters")
         max_bytes = _max_artifact_bytes()
         if len(content) > max_bytes:
             raise ValueError("artifact exceeds size limit")
