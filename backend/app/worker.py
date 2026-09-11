@@ -98,7 +98,11 @@ def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -
 
 
 def _bounded_timeout() -> int:
-    timeout = int(os.getenv("WORKER_TIMEOUT_SECONDS", "7200"))
+    raw = os.getenv("WORKER_TIMEOUT_SECONDS", "7200")
+    try:
+        timeout = int(raw)
+    except ValueError as exc:
+        raise WorkerPolicyError("WORKER_TIMEOUT_SECONDS must be an integer") from exc
     if not 30 <= timeout <= 86400:
         raise WorkerPolicyError("WORKER_TIMEOUT_SECONDS must be between 30 and 86400")
     return timeout
@@ -177,7 +181,11 @@ def _worker_env() -> dict[str, str]:
 
 
 def _max_strix_json_bytes() -> int:
-    limit = int(os.getenv("XBOW_MAX_STRIX_JSON_BYTES", str(5 * 1024 * 1024)))
+    raw = os.getenv("XBOW_MAX_STRIX_JSON_BYTES", str(5 * 1024 * 1024))
+    try:
+        limit = int(raw)
+    except ValueError as exc:
+        raise WorkerPolicyError("XBOW_MAX_STRIX_JSON_BYTES must be an integer") from exc
     if not 1024 <= limit <= 20 * 1024 * 1024:
         raise WorkerPolicyError("XBOW_MAX_STRIX_JSON_BYTES must be between 1 KiB and 20 MiB")
     return limit
