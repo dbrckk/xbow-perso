@@ -23,6 +23,7 @@ def test_compose_keeps_services_hardened():
     assert "XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}" in compose
     assert "XBOW_ENABLE_HTTP_VALIDATION: ${XBOW_ENABLE_HTTP_VALIDATION:-false}" in compose
     assert "XBOW_ENABLE_BROWSER_AUTOMATION: ${XBOW_ENABLE_BROWSER_AUTOMATION:-false}" in compose
+    assert "XBOW_MAX_AUTONOMOUS_RPS: ${XBOW_MAX_AUTONOMOUS_RPS:-2.0}" in compose
 
 
 def test_compose_keeps_state_private_and_shared_only_where_needed():
