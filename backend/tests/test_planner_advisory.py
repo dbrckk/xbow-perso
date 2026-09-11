@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from app.observation_graph import Observation, ObservationGraph
 from app.planner_advisory import (
     advisory_focus_fingerprint,
+    build_advisory_decision_journal,
     build_advisory_planner_context,
     diff_advisory_focus_snapshots,
 )
@@ -191,3 +192,76 @@ def test_advisory_delta_is_empty_for_equivalent_focus():
     assert delta["changed"] is False
     assert delta["significant"] is False
     assert delta["significance_score"] == 0.0
+
+
+def test_advisory_journal_emits_top_change_and_priority_shift():
+    snapshots = [
+        {
+            "fingerprint": "new",
+            "created_at": "2026-09-11T12:02:00+00:00",
+            "advisory": {
+                "focus": [
+                    {"rank": 1, "finding_id": "f2"},
+                    {"rank": 2, "finding_id": "f1"},
+                ]
+            },
+        },
+        {
+            "fingerprint": "old",
+            "created_at": "2026-09-11T12:01:00+00:00",
+            "advisory": {
+                "focus": [
+                    {"rank": 1, "finding_id": "f1"},
+                    {"rank": 2, "finding_id": "f2"},
+                ]
+            },
+        },
+    ]
+
+    events = build_advisory_decision_journal(snapshots)
+
+    assert [event["type"] for event in events] == [
+        "focus_initialized",
+        "new_top_finding",
+        "priority_shift",
+    ]
+    assert events[1]["previous_finding_id"] == "f1"
+    assert events[1]["finding_id"] == "f2"
+
+
+def test_advisory_journal_emits_focus_stabilized_after_three_equal_snapshots():
+    snapshots = [
+        {
+            "fingerprint": "c",
+            "created_at": "2026-09-11T12:03:00+00:00",
+            "advisory": {"focus": [{"rank": 1, "finding_id": "f1"}]},
+        },
+        {
+            "fingerprint": "b",
+            "created_at": "2026-09-11T12:02:00+00:00",
+            "advisory": {"focus": [{"rank": 1, "finding_id": "f1"}]},
+        },
+        {
+            "fingerprint": "a",
+            "created_at": "2026-09-11T12:01:00+00:00",
+            "advisory": {"focus": [{"rank": 1, "finding_id": "f1"}]},
+        },
+    ]
+
+    events = build_advisory_decision_journal(snapshots)
+
+    assert [event["type"] for event in events] == [
+        "focus_initialized",
+        "focus_stabilized",
+    ]
+    assert events[-1]["finding_id"] == "f1"
+
+
+def test_advisory_journal_limit_is_bounded():
+    for invalid in (0, 501):
+        try:
+            build_advisory_decision_journal([], limit=invalid)
+        except ValueError as exc:
+            assert "between 1 and 500" in str(exc)
+        else:
+            raise AssertionError("invalid journal limit must fail closed")

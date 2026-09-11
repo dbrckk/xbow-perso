@@ -141,3 +141,99 @@ def diff_advisory_focus_snapshots(
         "read_only": True,
         "advisory_only": True,
     }
+
+
+def build_advisory_decision_journal(
+    snapshots: list[dict[str, Any]],
+    *,
+    limit: int = 100,
+) -> list[dict[str, Any]]:
+    if not 1 <= limit <= 500:
+        raise ValueError("advisory journal limit must be between 1 and 500")
+    if not snapshots:
+        return []
+
+    ordered = list(reversed(snapshots))
+    events: list[dict[str, Any]] = []
+
+    first = ordered[0]
+    first_focus = first.get("advisory", {}).get("focus", [])
+    first_top = first_focus[0]["finding_id"] if first_focus else None
+    events.append(
+        {
+            "type": "focus_initialized",
+            "at": first.get("created_at"),
+            "finding_id": first_top,
+            "fingerprint": first.get("fingerprint"),
+            "message": (
+                f"Initial advisory focus set to {first_top}"
+                if first_top
+                else "Initial advisory focus contains no findings"
+            ),
+            "read_only": True,
+            "advisory_only": True,
+        }
+    )
+
+    unchanged_streak = 0
+    previous = first
+    for current in ordered[1:]:
+        delta = diff_advisory_focus_snapshots(previous, current)
+
+        if not delta["changed"]:
+            unchanged_streak += 1
+            if unchanged_streak == 2:
+                events.append(
+                    {
+                        "type": "focus_stabilized",
+                        "at": current.get("created_at"),
+                        "finding_id": delta["current_top_finding_id"],
+                        "fingerprint": current.get("fingerprint"),
+                        "message": "Advisory focus remained unchanged across three snapshots",
+                        "read_only": True,
+                        "advisory_only": True,
+                    }
+                )
+            previous = current
+            continue
+
+        unchanged_streak = 0
+
+        if delta["top_changed"]:
+            events.append(
+                {
+                    "type": "new_top_finding",
+                    "at": current.get("created_at"),
+                    "finding_id": delta["current_top_finding_id"],
+                    "previous_finding_id": delta["previous_top_finding_id"],
+                    "fingerprint": current.get("fingerprint"),
+                    "significance_score": delta["significance_score"],
+                    "message": (
+                        f"Top advisory finding changed from "
+                        f"{delta['previous_top_finding_id']} to {delta['current_top_finding_id']}"
+                    ),
+                    "read_only": True,
+                    "advisory_only": True,
+                }
+            )
+
+        if delta["entered"] or delta["exited"] or delta["rank_changes"]:
+            events.append(
+                {
+                    "type": "priority_shift",
+                    "at": current.get("created_at"),
+                    "fingerprint": current.get("fingerprint"),
+                    "entered": delta["entered"],
+                    "exited": delta["exited"],
+                    "rank_changes": delta["rank_changes"],
+                    "significance_score": delta["significance_score"],
+                    "significant": delta["significant"],
+                    "message": "Advisory priority ordering changed",
+                    "read_only": True,
+                    "advisory_only": True,
+                }
+            )
+
+        previous = current
+
+    return events[-limit:]
