@@ -98,3 +98,24 @@ def test_browser_artifacts_are_idempotent_per_job(tmp_path):
 
     assert [item["id"] for item in second] == [item["id"] for item in first]
     assert len(store.list_artifacts(campaign.id)) == 2
+
+
+def test_invalid_browser_automation_flag_fails_closed(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "sometimes")
+    flow = BrowserFlowInput(
+        steps=[BrowserStep(operation="navigate", url="https://app.test.local/login")]
+    )
+
+    with pytest.raises(BrowserPolicyError, match="must be a boolean"):
+        execute_browser_flow(_campaign(), flow.model_dump(mode="json"))
+
+
+def test_browser_automation_flag_accepts_explicit_false_values(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "OFF")
+    flow = BrowserFlowInput(
+        steps=[BrowserStep(operation="navigate", url="https://app.test.local/login")]
+    )
+
+    result = execute_browser_flow(_campaign(), flow.model_dump(mode="json"))
+
+    assert result.status == "dry_run"
