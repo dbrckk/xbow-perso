@@ -338,3 +338,19 @@ def test_job_id_inputs_fail_closed_consistently(tmp_path):
                 assert "job_id" in str(exc)
             else:
                 raise AssertionError("invalid job_id must fail closed")
+
+
+def test_queue_telemetry_validates_campaign_ids(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+
+    for invalid_campaign_id in ("", "bad\nvalue", "x" * 201):
+        for operation in (
+            q.campaign_job_counts,
+            q.campaign_job_status_counts,
+        ):
+            try:
+                operation(invalid_campaign_id)
+            except ValueError as exc:
+                assert "campaign_id" in str(exc)
+            else:
+                raise AssertionError("invalid campaign_id must fail closed")
