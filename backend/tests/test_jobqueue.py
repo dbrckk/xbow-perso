@@ -287,3 +287,34 @@ def test_queue_rejects_unsafe_dedupe_identifiers(tmp_path):
             assert "dedupe_key" in str(exc)
         else:
             raise AssertionError("unsafe dedupe_key must fail closed")
+
+
+def test_cancel_operations_validate_identifiers_and_reason(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    q.enqueue("campaign-1", "report", {})
+
+    for invalid_campaign_id in ("", "bad\nvalue", "x" * 201):
+        try:
+            q.cancel_queued(invalid_campaign_id)
+        except ValueError as exc:
+            assert "campaign_id" in str(exc)
+        else:
+            raise AssertionError("invalid campaign_id must fail closed")
+
+    job = q.claim("worker-a")
+    assert job is not None
+
+    for invalid_job_id in ("", "bad\njob", "x" * 201):
+        try:
+            q.cancel_owned(invalid_job_id, "worker-a")
+        except ValueError as exc:
+            assert "job_id" in str(exc)
+        else:
+            raise AssertionError("invalid job_id must fail closed")
+
+    try:
+        q.cancel_owned(job["id"], "worker-a", "bad\nreason")
+    except ValueError as exc:
+        assert "cancel reason" in str(exc)
+    else:
+        raise AssertionError("invalid cancellation reason must fail closed")
