@@ -144,6 +144,58 @@ def rank_findings(findings: list[Any], graph: ObservationGraph) -> list[FindingP
     return sorted(ranked, key=lambda item: (-item.score, item.finding_id))
 
 
+def rank_findings_explainable(
+    findings: list[Any],
+    graph: ObservationGraph,
+    *,
+    stability: dict[str, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """Return a read-only global ranking with auditable score components."""
+    confidence = {
+        item.finding_id.removeprefix("finding:"): item.score
+        for item in build_knowledge_snapshot(graph).finding_confidence
+    }
+    severity_weights = {
+        "info": 0.10,
+        "low": 0.25,
+        "medium": 0.50,
+        "high": 0.75,
+        "critical": 1.00,
+    }
+    ranked = []
+    for finding in findings:
+        finding_id = str(finding.id)
+        severity_weight = severity_weights.get(str(finding.severity), 0.0)
+        confidence_score = confidence.get(finding_id, 0.0)
+        temporal = (stability or {}).get(finding_id, {})
+        temporal_state = temporal.get("stability")
+        temporal_need = {
+            "contradictory": 1.00,
+            "evolving": 0.65,
+            "fresh": 0.40,
+            "stable": 0.10,
+        }.get(temporal_state, 0.25)
+        evidence_gap = 1.0 - confidence_score
+        components = {
+            "severity": round(severity_weight * 0.55, 4),
+            "evidence_gap": round(evidence_gap * 0.30, 4),
+            "temporal_need": round(temporal_need * 0.15, 4),
+        }
+        score = round(sum(components.values()), 4)
+        ranked.append(
+            {
+                "finding_id": finding_id,
+                "score": score,
+                "severity": str(finding.severity),
+                "confidence": confidence_score,
+                "stability": temporal_state or "unknown",
+                "components": {**components, "total": score},
+                "advisory_only": True,
+            }
+        )
+    return sorted(ranked, key=lambda item: (-item["score"], item["finding_id"]))
+
+
 def decision_history(graph: ObservationGraph) -> list[dict[str, Any]]:
     history = []
     for item in graph.by_kind("evidence"):
