@@ -405,8 +405,15 @@ class Storage:
                     (campaign_id, idempotency_key),
                 ).fetchone()
                 if existing:
-                    if existing["sha256"] != digest or existing["kind"] != kind:
-                        raise ArtifactIntegrityError("idempotency key reused with different artifact content")
+                    if (
+                        existing["sha256"] != digest
+                        or existing["kind"] != kind
+                        or existing["media_type"] != media_type
+                        or existing["finding_id"] != finding_id
+                    ):
+                        raise ArtifactIntegrityError(
+                            "idempotency key reused with different artifact metadata or content"
+                        )
                     return dict(existing)
 
         artifact_id = str(uuid4())
@@ -439,7 +446,13 @@ class Storage:
                        FROM artifacts WHERE campaign_id=? AND idempotency_key=?""",
                     (campaign_id, idempotency_key),
                 ).fetchone()
-            if not existing or existing["sha256"] != digest or existing["kind"] != kind:
+            if (
+                not existing
+                or existing["sha256"] != digest
+                or existing["kind"] != kind
+                or existing["media_type"] != media_type
+                or existing["finding_id"] != finding_id
+            ):
                 raise ArtifactIntegrityError("idempotent artifact write conflicted")
             return dict(existing)
         except sqlite3.Error:
