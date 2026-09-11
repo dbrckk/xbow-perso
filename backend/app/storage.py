@@ -333,6 +333,10 @@ class Storage:
         path = campaign_dir / f"{artifact_id}.bin"
         tmp = path.with_suffix(".tmp")
         tmp.write_bytes(content)
+        try:
+            tmp.chmod(0o600)
+        except OSError:
+            pass
         os.replace(tmp, path)
         now = utcnow()
         relative = str(path.relative_to(root))
@@ -356,6 +360,9 @@ class Storage:
             if not existing or existing["sha256"] != digest or existing["kind"] != kind:
                 raise ArtifactIntegrityError("idempotent artifact write conflicted")
             return dict(existing)
+        except sqlite3.Error:
+            path.unlink(missing_ok=True)
+            raise
         return {
             "id": artifact_id,
             "campaign_id": campaign_id,
