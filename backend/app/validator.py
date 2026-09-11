@@ -34,7 +34,34 @@ def _bool_env(name: str, default: bool = False) -> bool:
     value = os.getenv(name)
     if value is None:
         return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
+    normalized = value.strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    raise ValidationPolicyError(f"{name} must be a boolean")
+
+
+def _validation_timeout_seconds() -> float:
+    raw = os.getenv("XBOW_VALIDATION_TIMEOUT_SECONDS", "10")
+    try:
+        timeout = float(raw)
+    except ValueError as exc:
+        raise ValidationPolicyError("XBOW_VALIDATION_TIMEOUT_SECONDS must be a number") from exc
+    if not 1.0 <= timeout <= 30.0:
+        raise ValidationPolicyError("XBOW_VALIDATION_TIMEOUT_SECONDS must be between 1 and 30")
+    return timeout
+
+
+def _validation_max_bytes() -> int:
+    raw = os.getenv("XBOW_VALIDATION_MAX_BYTES", "262144")
+    try:
+        max_bytes = int(raw)
+    except ValueError as exc:
+        raise ValidationPolicyError("XBOW_VALIDATION_MAX_BYTES must be an integer") from exc
+    if not 1024 <= max_bytes <= 1_048_576:
+        raise ValidationPolicyError("XBOW_VALIDATION_MAX_BYTES must be between 1 KiB and 1 MiB")
+    return max_bytes
 
 
 def build_probe_url(campaign, finding) -> str:
@@ -73,8 +100,8 @@ def safe_http_probe(campaign, finding) -> ProbeResult:
     if not _bool_env("XBOW_ENABLE_HTTP_VALIDATION", False):
         return ProbeResult(status="dry_run", url=url)
 
-    timeout = min(max(float(os.getenv("XBOW_VALIDATION_TIMEOUT_SECONDS", "10")), 1.0), 30.0)
-    max_bytes = min(max(int(os.getenv("XBOW_VALIDATION_MAX_BYTES", "262144")), 1024), 1_048_576)
+    timeout = _validation_timeout_seconds()
+    max_bytes = _validation_max_bytes()
     request = Request(
         url,
         method="GET",
