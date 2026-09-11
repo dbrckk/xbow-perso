@@ -1,3 +1,7 @@
+import sqlite3
+import stat
+from contextlib import contextmanager
+
 import pytest
 
 from app.storage import ArtifactIntegrityError, CampaignConflictError, Storage
@@ -211,3 +215,40 @@ def test_artifact_media_type_rejects_header_controls(tmp_path):
     for media_type in ("", "textplain", "text/plain\r\nX-Test: injected"):
         with pytest.raises(ValueError, match="invalid artifact media type"):
             store.put_artifact("c1", "validation", b"x", media_type=media_type)
+
+
+def test_artifact_file_permissions_are_private(tmp_path):
+    root = tmp_path / "artifacts"
+    store = Storage(str(tmp_path / "db.sqlite3"), str(root))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    artifact = store.put_artifact("c1", "validation", b"private")
+    metadata = store.get_artifact("c1", artifact["id"])
+    assert metadata is not None
+
+    mode = stat.S_IMODE((root / metadata["relative_path"]).stat().st_mode)
+    assert mode & 0o077 == 0
+
+
+def test_artifact_file_is_removed_when_metadata_insert_fails(tmp_path, monkeypatch):
+    root = tmp_path / "artifacts"
+    store = Storage(str(tmp_path / "db.sqlite3"), str(root))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    original_connect = store.connect
+    calls = 0
+
+    @contextmanager
+    def flaky_connect():
+        nonlocal calls
+        calls += 1
+        if calls >= 2:
+            raise sqlite3.OperationalError("forced metadata failure")
+        with original_connect() as db:
+            yield db
+
+    monkeypatch.setattr(store, "connect", flaky_connect)
+
+    with pytest.raises(sqlite3.OperationalError, match="forced metadata failure"):
+        store.put_artifact("c1", "validation", b"cleanup")
+
+    campaign_dir = root / "c1"
+    assert not campaign_dir.exists() or list(campaign_dir.iterdir()) == []
