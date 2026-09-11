@@ -206,3 +206,29 @@ def test_malformed_authorization_does_not_fall_back_to_api_key(monkeypatch):
         )
 
     assert exc.value.status_code == 400
+
+
+def test_symlinked_secret_file_fails_closed(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    target = tmp_path / "real-token"
+    target.write_text("z" * 32, encoding="utf-8")
+    link = tmp_path / "api-token"
+    link.symlink_to(target)
+    monkeypatch.setenv("XBOW_API_TOKEN_FILE", str(link))
+
+    with pytest.raises(AuthError) as exc:
+        configured_api_token()
+
+    assert exc.value.status_code == 503
+
+
+def test_oversized_secret_file_fails_closed(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    path = tmp_path / "api-token"
+    path.write_text("z" * 5000, encoding="utf-8")
+    monkeypatch.setenv("XBOW_API_TOKEN_FILE", str(path))
+
+    with pytest.raises(AuthError) as exc:
+        configured_api_token()
+
+    assert exc.value.status_code == 503
