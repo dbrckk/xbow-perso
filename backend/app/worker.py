@@ -10,6 +10,11 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from .main import Campaign, Finding, is_host_allowed
+from .scanner_normalization import (
+    dedupe_normalized,
+    normalize_strix_item,
+    to_campaign_finding,
+)
 from .storage import Storage
 
 
@@ -211,19 +216,8 @@ def locate_vulnerabilities_json(output_dir: str) -> Path | None:
     return safe_matches[0] if safe_matches else None
 
 
-def _finding_id(title: str, asset: str, endpoint: str | None, cwe: str | None, summary: str) -> str:
-    """Stable identity makes retries idempotent without trusting scanner-provided IDs."""
-    canonical = json.dumps(
-        [title.strip(), asset.strip(), endpoint or "", cwe or "", summary.strip()],
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-    return f"strix-{digest[:32]}"
-
-
 def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Finding]:
-    """Parse bounded Strix JSON artifacts into xbow-perso's canonical model."""
+    """Parse bounded Strix JSON through the canonical scanner normalization layer."""
     path = Path(path)
     if path.stat().st_size > _max_strix_json_bytes():
         raise WorkerPolicyError("Strix vulnerabilities JSON exceeds configured size limit")
@@ -237,56 +231,14 @@ def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Fi
     if not isinstance(items, list):
         raise ValueError("Strix findings collection must be a list")
 
-    findings: list[Finding] = []
-    seen_ids: set[str] = set()
+    normalized = []
     for item in items:
         if not isinstance(item, dict):
             continue
-        asset = str(item.get("asset") or item.get("target") or campaign.target.primary_url)
-        host = (urlparse(asset).hostname or asset.split(":")[0]).lower()
-        if not is_host_allowed(host, campaign.target.rules.allowed_targets, campaign.target.rules.denied_targets):
-            continue
-        severity = str(item.get("severity") or "info").lower()
-        if severity not in {"info", "low", "medium", "high", "critical"}:
-            severity = "info"
-        steps = item.get("reproduction_steps") or item.get("poc_steps") or item.get("poc_description") or []
-        if isinstance(steps, str):
-            steps = [steps]
-        evidence = item.get("evidence") or []
-        if isinstance(evidence, str):
-            evidence = [evidence]
-        cwe = item.get("cwe")
-        if isinstance(cwe, list):
-            cwe = ", ".join(str(x) for x in cwe)
-
-        title = str(item.get("title") or item.get("name") or "Strix finding")
-        endpoint = _optional_str(item.get("endpoint"))
-        summary = str(item.get("summary") or item.get("description") or item.get("technical_analysis") or "")
-        cwe_text = _optional_str(cwe)
-        finding_id = _finding_id(title, asset, endpoint, cwe_text, summary)
-        if finding_id in seen_ids:
-            continue
-        seen_ids.add(finding_id)
-
-        findings.append(
-            Finding(
-                id=finding_id,
-                title=title,
-                severity=severity,
-                asset=asset,
-                endpoint=endpoint,
-                summary=summary,
-                evidence=[str(x) for x in evidence][:50],
-                reproduction_steps=[str(x) for x in steps][:50],
-                impact=str(item.get("impact") or ""),
-                remediation=str(item.get("remediation") or item.get("recommendation") or ""),
-                cwe=cwe_text,
-                cvss=_optional_cvss(item.get("cvss")),
-                status="validation_required",
-                discovered_by="strix",
-            )
-        )
-    return findings
+        finding = normalize_strix_item(item, campaign)
+        if finding is not None:
+            normalized.append(finding)
+    return [to_campaign_finding(item) for item in dedupe_normalized(normalized)]
 
 
 def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) -> list[dict]:
