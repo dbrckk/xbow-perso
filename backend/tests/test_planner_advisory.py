@@ -1,7 +1,11 @@
 from types import SimpleNamespace
 
 from app.observation_graph import Observation, ObservationGraph
-from app.planner_advisory import build_advisory_planner_context
+from app.planner_advisory import (
+    advisory_focus_fingerprint,
+    build_advisory_planner_context,
+    diff_advisory_focus_snapshots,
+)
 
 
 def _campaign(findings):
@@ -91,3 +95,99 @@ def test_advisory_context_rejects_unbounded_top_n():
             assert "between 1 and 10" in str(exc)
         else:
             raise AssertionError("invalid top_n must fail closed")
+
+
+def test_advisory_focus_fingerprint_is_deterministic():
+    advisory = {
+        "focus": [
+            {"rank": 1, "finding_id": "f1", "score": 0.9},
+            {"rank": 2, "finding_id": "f2", "score": 0.7},
+        ],
+        "top_n": 2,
+        "rationale": "ignored for identity",
+    }
+
+    first = advisory_focus_fingerprint(advisory)
+    second = advisory_focus_fingerprint(dict(reversed(list(advisory.items()))))
+
+    assert first == second
+    assert len(first) == 20
+
+
+def test_advisory_delta_detects_top_change_as_significant():
+    previous = {
+        "fingerprint": "old",
+        "advisory": {
+            "focus": [
+                {"rank": 1, "finding_id": "f1"},
+                {"rank": 2, "finding_id": "f2"},
+            ]
+        },
+    }
+    current = {
+        "fingerprint": "new",
+        "advisory": {
+            "focus": [
+                {"rank": 1, "finding_id": "f2"},
+                {"rank": 2, "finding_id": "f1"},
+            ]
+        },
+    }
+
+    delta = diff_advisory_focus_snapshots(previous, current)
+
+    assert delta["top_changed"] is True
+    assert delta["previous_top_finding_id"] == "f1"
+    assert delta["current_top_finding_id"] == "f2"
+    assert delta["significant"] is True
+    assert delta["changed"] is True
+
+
+def test_advisory_delta_tracks_entries_exits_and_rank_changes():
+    previous = {
+        "fingerprint": "old",
+        "advisory": {
+            "focus": [
+                {"rank": 1, "finding_id": "f1"},
+                {"rank": 2, "finding_id": "f2"},
+                {"rank": 3, "finding_id": "f3"},
+            ]
+        },
+    }
+    current = {
+        "fingerprint": "new",
+        "advisory": {
+            "focus": [
+                {"rank": 1, "finding_id": "f1"},
+                {"rank": 2, "finding_id": "f3"},
+                {"rank": 3, "finding_id": "f4"},
+            ]
+        },
+    }
+
+    delta = diff_advisory_focus_snapshots(previous, current)
+
+    assert delta["entered"] == ["f4"]
+    assert delta["exited"] == ["f2"]
+    assert delta["rank_changes"] == [
+        {"finding_id": "f3", "from_rank": 3, "to_rank": 2, "delta": 1}
+    ]
+    assert delta["changed"] is True
+
+
+def test_advisory_delta_is_empty_for_equivalent_focus():
+    snapshot = {
+        "fingerprint": "same",
+        "advisory": {
+            "focus": [
+                {"rank": 1, "finding_id": "f1"},
+                {"rank": 2, "finding_id": "f2"},
+            ]
+        },
+    }
+
+    delta = diff_advisory_focus_snapshots(snapshot, snapshot)
+
+    assert delta["changed"] is False
+    assert delta["significant"] is False
+    assert delta["significance_score"] == 0.0

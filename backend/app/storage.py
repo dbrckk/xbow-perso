@@ -188,6 +188,18 @@ class Storage:
                 "CREATE INDEX IF NOT EXISTS hypothesis_snapshots_campaign_created "
                 "ON hypothesis_snapshots(campaign_id, created_at DESC)"
             )
+            db.execute("""CREATE TABLE IF NOT EXISTS advisory_focus_snapshots (
+                campaign_id TEXT NOT NULL,
+                fingerprint TEXT NOT NULL,
+                document TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                PRIMARY KEY(campaign_id, fingerprint),
+                FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS advisory_focus_snapshots_campaign_created "
+                "ON advisory_focus_snapshots(campaign_id, created_at DESC)"
+            )
 
     def save_campaign(self, document: dict[str, Any], *, expected_version: int | None = None) -> int:
         """Persist a campaign and optionally reject stale snapshot writes.
@@ -356,6 +368,73 @@ class Storage:
                 "source": row["source"],
                 "parent_ids": tuple(json.loads(row["parent_ids"])),
                 "metadata": json.loads(row["metadata"]),
+                "created_at": row["created_at"],
+            }
+            for row in rows
+        ]
+
+    def put_advisory_focus_snapshot(
+        self,
+        campaign_id: str,
+        fingerprint: str,
+        advisory: dict[str, Any],
+    ) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        fingerprint = _bounded_identifier(fingerprint, "advisory_fingerprint", max_length=64)
+        try:
+            encoded = json.dumps(
+                advisory, separators=(",", ":"), ensure_ascii=False, sort_keys=True
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError("advisory snapshot is not JSON serializable") from exc
+        if len(encoded.encode("utf-8")) > _max_campaign_document_bytes():
+            raise ValueError("advisory snapshot exceeds size limit")
+        now = utcnow()
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            if not db.execute("SELECT 1 FROM campaigns WHERE id=?", (campaign_id,)).fetchone():
+                db.execute("ROLLBACK")
+                raise KeyError(campaign_id)
+            existing = db.execute(
+                """SELECT document,created_at FROM advisory_focus_snapshots
+                   WHERE campaign_id=? AND fingerprint=?""",
+                (campaign_id, fingerprint),
+            ).fetchone()
+            if existing:
+                if existing["document"] != encoded:
+                    db.execute("ROLLBACK")
+                    raise ValueError("advisory fingerprint reused with different snapshot")
+                db.execute("COMMIT")
+                return {
+                    "fingerprint": fingerprint,
+                    "advisory": json.loads(existing["document"]),
+                    "created_at": existing["created_at"],
+                }
+            db.execute(
+                """INSERT INTO advisory_focus_snapshots(
+                       campaign_id,fingerprint,document,created_at
+                   ) VALUES(?,?,?,?)""",
+                (campaign_id, fingerprint, encoded, now),
+            )
+            db.execute("COMMIT")
+        return {"fingerprint": fingerprint, "advisory": advisory, "created_at": now}
+
+    def list_advisory_focus_snapshots(
+        self, campaign_id: str, *, limit: int = 50
+    ) -> list[dict[str, Any]]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        if not 1 <= limit <= 500:
+            raise ValueError("advisory snapshot limit must be between 1 and 500")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT fingerprint,document,created_at FROM advisory_focus_snapshots
+                   WHERE campaign_id=? ORDER BY created_at DESC LIMIT ?""",
+                (campaign_id, limit),
+            ).fetchall()
+        return [
+            {
+                "fingerprint": row["fingerprint"],
+                "advisory": json.loads(row["document"]),
                 "created_at": row["created_at"],
             }
             for row in rows

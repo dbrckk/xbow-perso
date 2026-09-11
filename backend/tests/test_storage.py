@@ -491,3 +491,47 @@ def test_hypothesis_snapshot_history_is_campaign_scoped(tmp_path):
 
     assert [x["graph_fingerprint"] for x in store.list_hypothesis_snapshots("c1")] == ["fp1"]
     assert [x["graph_fingerprint"] for x in store.list_hypothesis_snapshots("c2")] == ["fp2"]
+
+
+def test_advisory_focus_snapshot_persistence_is_idempotent(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    advisory = {"focus_finding_id": "f1", "focus": [{"rank": 1, "finding_id": "f1"}]}
+
+    first = store.put_advisory_focus_snapshot("c1", "fp1", advisory)
+    second = store.put_advisory_focus_snapshot("c1", "fp1", advisory)
+
+    assert first["fingerprint"] == "fp1"
+    assert second["created_at"] == first["created_at"]
+    assert len(store.list_advisory_focus_snapshots("c1")) == 1
+
+
+def test_advisory_focus_snapshot_rejects_fingerprint_collision(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign({"id": "c1", "state": "ready", "created_at": "x", "updated_at": "x"})
+    store.put_advisory_focus_snapshot(
+        "c1",
+        "fp1",
+        {"focus_finding_id": "f1", "focus": [{"rank": 1, "finding_id": "f1"}]},
+    )
+
+    with pytest.raises(ValueError, match="fingerprint reused"):
+        store.put_advisory_focus_snapshot(
+            "c1",
+            "fp1",
+            {"focus_finding_id": "f2", "focus": [{"rank": 1, "finding_id": "f2"}]},
+        )
+
+
+def test_advisory_focus_history_is_campaign_scoped(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    for campaign_id in ("c1", "c2"):
+        store.save_campaign(
+            {"id": campaign_id, "state": "ready", "created_at": "x", "updated_at": "x"}
+        )
+
+    store.put_advisory_focus_snapshot("c1", "fp1", {"focus": [{"rank": 1, "finding_id": "f1"}]})
+    store.put_advisory_focus_snapshot("c2", "fp2", {"focus": [{"rank": 1, "finding_id": "f2"}]})
+
+    assert [x["fingerprint"] for x in store.list_advisory_focus_snapshots("c1")] == ["fp1"]
+    assert [x["fingerprint"] for x in store.list_advisory_focus_snapshots("c2")] == ["fp2"]
