@@ -31,11 +31,13 @@ class ReviewTask:
     reason: str
     evidence_ids: tuple[str, ...]
     parameter_names: tuple[str, ...] = ()
+    score_components: dict[str, float] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["evidence_ids"] = list(self.evidence_ids)
         payload["parameter_names"] = list(self.parameter_names)
+        payload["score_components"] = dict(self.score_components or {})
         return payload
 
 
@@ -73,16 +75,18 @@ def build_review_queue(
             elif temporal_state == "evolving":
                 temporal_bonus = 0.04
                 temporal_reason = "; hypothesis is still evolving"
-            priority = min(
-                1.0,
-                round(
-                    0.75
-                    + (1.0 - current_confidence) * 0.17
-                    + chain_penalty
-                    + temporal_bonus,
-                    4,
-                ),
-            )
+            base_score = 0.75
+            confidence_gap = round((1.0 - current_confidence) * 0.17, 4)
+            components = {
+                "base": base_score,
+                "confidence_gap": confidence_gap,
+                "evidence_chain_gap": chain_penalty,
+                "temporal_instability": temporal_bonus,
+            }
+            raw_priority = round(sum(components.values()), 4)
+            priority = min(1.0, raw_priority)
+            components["raw_total"] = raw_priority
+            components["capped_total"] = priority
             tasks.append(
                 ReviewTask(
                     kind="validate_finding",
@@ -90,6 +94,7 @@ def build_review_queue(
                     priority=priority,
                     reason="independent validation evidence is incomplete" + temporal_reason,
                     evidence_ids=hypothesis.evidence_ids,
+                    score_components=components,
                 )
             )
         elif hypothesis.kind == "authorization_surface_review":
