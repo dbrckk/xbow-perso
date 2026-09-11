@@ -55,7 +55,14 @@ class BrowserExecutionResult:
 
 def _bool_env(name: str, default: bool = False) -> bool:
     raw = os.getenv(name)
-    return default if raw is None else raw.strip().lower() in {"1", "true", "yes", "on"}
+    if raw is None:
+        return default
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True
+    if value in {"0", "false", "no", "off"}:
+        return False
+    raise BrowserPolicyError(f"{name} must be a boolean")
 
 
 def _campaign(campaign_id: str):
