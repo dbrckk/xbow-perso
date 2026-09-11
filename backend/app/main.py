@@ -402,6 +402,39 @@ def start_campaign(campaign_id: str):
     return {"campaign_id": campaign.id, "state": campaign.state, "policy": receipt, "job": job}
 
 
+@app.post("/api/campaigns/{campaign_id}/cancel")
+def cancel_campaign(campaign_id: str):
+    campaign, version = assert_campaign_record(campaign_id)
+    jobs = queue()
+
+    if campaign.state == CampaignState.completed:
+        raise HTTPException(status_code=409, detail="Completed campaign cannot be cancelled")
+    if campaign.state == CampaignState.cancelled:
+        statuses = jobs.campaign_job_status_counts(campaign.id)
+        return {
+            "campaign_id": campaign.id,
+            "state": campaign.state,
+            "cancelled_queued_jobs": 0,
+            "running_jobs": statuses["running"],
+            "running_jobs_not_forcibly_terminated": bool(statuses["running"]),
+        }
+
+    campaign.state = CampaignState.cancelled
+    campaign.updated_at = utcnow()
+    campaign.events.append({"type": "campaign_cancelled", "at": utcnow()})
+    save_campaign(campaign, expected_version=version)
+
+    cancelled = jobs.cancel_queued(campaign.id)
+    statuses = jobs.campaign_job_status_counts(campaign.id)
+    return {
+        "campaign_id": campaign.id,
+        "state": campaign.state,
+        "cancelled_queued_jobs": cancelled,
+        "running_jobs": statuses["running"],
+        "running_jobs_not_forcibly_terminated": bool(statuses["running"]),
+    }
+
+
 @app.get("/api/jobs/{job_id}")
 def get_job(job_id: str):
     job = queue().get(job_id)
