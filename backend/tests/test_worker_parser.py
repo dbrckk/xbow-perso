@@ -132,3 +132,27 @@ def test_invalid_active_rate_cap_fails_closed(monkeypatch):
 
     with pytest.raises(WorkerPolicyError, match="must be a number"):
         build_strix_plan(campaign())
+
+
+def test_strix_plan_exposes_rate_admission_telemetry(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0")
+
+    plan = build_strix_plan(campaign())
+
+    assert plan.dry_run is False
+    assert plan.campaign_rps == 2.0
+    assert plan.admission_cap_rps == 2.0
+
+
+def test_dry_run_rate_telemetry_does_not_claim_active_cap(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "false")
+    monkeypatch.setenv("DRY_RUN", "true")
+    monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "1.0")
+
+    plan = build_strix_plan(campaign())
+
+    assert plan.dry_run is True
+    assert plan.campaign_rps == 2.0
+    assert plan.admission_cap_rps is None
