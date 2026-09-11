@@ -16,6 +16,17 @@ def utcnow() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _max_job_payload_bytes() -> int:
+    raw = os.getenv("XBOW_MAX_JOB_PAYLOAD_BYTES", "65536")
+    try:
+        limit = int(raw)
+    except ValueError as exc:
+        raise ValueError("XBOW_MAX_JOB_PAYLOAD_BYTES must be an integer") from exc
+    if not 1024 <= limit <= 1024 * 1024:
+        raise ValueError("XBOW_MAX_JOB_PAYLOAD_BYTES must be between 1 KiB and 1 MiB")
+    return limit
+
+
 class JobQueue:
     """Small durable SQLite queue for self-hosted single-node deployments.
 
@@ -97,6 +108,8 @@ class JobQueue:
                 raise ValueError("dedupe_key too long")
 
         encoded_payload = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        if len(encoded_payload.encode("utf-8")) > _max_job_payload_bytes():
+            raise ValueError("job payload exceeds size limit")
         if dedupe_key is not None:
             with self.connect() as db:
                 existing = db.execute(
