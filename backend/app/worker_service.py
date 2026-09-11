@@ -8,8 +8,7 @@ from contextlib import contextmanager
 
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .jobqueue import JobQueue
-from .main import Campaign, CampaignState, Finding, utcnow
-from .observation_graph import Observation
+from .main import Campaign, CampaignState, utcnow
 from .observation_writer import (
     observation_id,
     record_artifact,
