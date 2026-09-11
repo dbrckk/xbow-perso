@@ -170,6 +170,7 @@ class JobQueue:
         return result
 
     def get(self, job_id: str) -> dict[str, Any] | None:
+        job_id = _bounded_identifier(job_id, "job_id")
         with self.connect() as db:
             row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
         return self._decode(row) if row else None
@@ -277,6 +278,7 @@ class JobQueue:
         return count
 
     def claim(self, worker_id: str) -> dict[str, Any] | None:
+        job_id = _bounded_identifier(job_id, "job_id")
         worker_id = _bounded_identifier(worker_id, "worker_id")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
@@ -301,6 +303,7 @@ class JobQueue:
 
     def heartbeat(self, job_id: str, worker_id: str) -> bool:
         """Renew a running job lease only when the caller still owns it."""
+        job_id = _bounded_identifier(job_id, "job_id")
         worker_id = _bounded_identifier(worker_id, "worker_id")
         now = utcnow()
         with self.connect() as db:
