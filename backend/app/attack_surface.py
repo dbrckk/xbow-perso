@@ -148,10 +148,10 @@ def build_attack_surface(
     enrichment_score = round(
         min(
             1.0,
-            (0.35 if valid_endpoints else 0.0)
-            + (0.20 if valid_forms else 0.0)
-            + (0.20 if technologies else 0.0)
-            + (0.10 if wafs else 0.0)
+            (0.34 if valid_endpoints else 0.0)
+            + (0.21 if valid_forms else 0.0)
+            + (0.21 if technologies else 0.0)
+            + (0.09 if wafs else 0.0)
             + min(0.15, max(0, source_diversity - 1) * 0.075),
         ),
         4,
