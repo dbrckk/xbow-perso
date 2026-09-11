@@ -234,6 +234,7 @@ def test_review_queue_exposes_score_components_for_validation_tasks():
     components = task.to_dict()["score_components"]
     assert set(components) == {
         "base",
+        "severity",
         "confidence_gap",
         "evidence_chain_gap",
         "temporal_instability",
@@ -262,3 +263,60 @@ def test_surface_review_tasks_expose_empty_score_components():
     task = next(item for item in build_review_queue(graph) if item.kind != "validate_finding")
 
     assert task.to_dict()["score_components"] == {}
+
+
+def test_review_queue_severity_component_increases_validation_priority():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "scanner"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("endpoint:e",),
+        )
+    )
+
+    info = build_review_queue(graph, severities={"f1": "info"})[0]
+    critical = build_review_queue(graph, severities={"f1": "critical"})[0]
+
+    assert critical.priority > info.priority
+    assert info.score_components["severity"] == 0.00
+    assert critical.score_components["severity"] == 0.12
+
+
+def test_review_queue_unknown_severity_fails_closed_to_zero_bonus():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "scanner"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("endpoint:e",),
+        )
+    )
+
+    task = build_review_queue(graph, severities={"f1": "unexpected"})[0]
+
+    assert task.score_components["severity"] == 0.00
