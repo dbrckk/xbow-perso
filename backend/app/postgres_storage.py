@@ -30,6 +30,8 @@ class _PostgresCompatConnection:
 class PostgresStorage(Storage):
     """PostgreSQL-backed campaign metadata with the same artifact semantics as Storage."""
 
+    storage_name = "postgresql"
+
     def __init__(
         self,
         database_url: str | None = None,
