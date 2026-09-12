@@ -12,6 +12,7 @@ from .agent_registry import agent_for_action
 from .autonomy_gate import build_autonomy_gate
 from .campaign_risk import build_campaign_risk
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
+from .coverage import build_coverage_guidance, build_evidence_coverage
 from .decision_consensus import build_decision_consensus
 from .hypothesis_memory import build_hypotheses
 from .jobqueue import JobQueue
@@ -154,6 +155,8 @@ def _intelligence_context(
         limit=10,
     )
     swarm = coordinate_recon_swarm(recon_plan)
+    coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
+    coverage_guidance = build_coverage_guidance(coverage)
     return {
         "decisions": decisions,
         "consensus": consensus,
@@ -164,6 +167,8 @@ def _intelligence_context(
         "cycle": cycle,
         "recon": list(swarm.tasks),
         "swarm": swarm,
+        "coverage": coverage,
+        "coverage_guidance": coverage_guidance,
         "surface_enrichment": _surface_enrichment(campaign, graph),
     }
 
@@ -376,6 +381,8 @@ def _result(
             "worker_outcomes": dict(intelligence["worker_outcomes"]),
             "recon_plan": [item.to_dict() for item in intelligence["recon"]],
             "swarm_coordination": intelligence["swarm"].to_dict(),
+            "coverage": dict(intelligence["coverage"]),
+            "coverage_guidance": dict(intelligence["coverage_guidance"]),
             "surface_enrichment": dict(intelligence["surface_enrichment"]),
             "read_only_context": True,
         }
