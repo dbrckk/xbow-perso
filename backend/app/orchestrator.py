@@ -13,6 +13,7 @@ from .autonomy_gate import build_autonomy_gate
 from .campaign_risk import build_campaign_risk
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .coverage import build_coverage_guidance, build_evidence_coverage
+from .decision_audit import next_audit_link, seal_decision_metadata
 from .decision_consensus import build_decision_consensus
 from .hypothesis_memory import build_hypotheses
 from .jobqueue import JobQueue
@@ -336,19 +337,27 @@ def _record_decision(
     agent_name: str,
 ) -> None:
     fingerprint = _graph_fingerprint(graph)
-    observation = Observation(
-        id=_stable_id("decision", action.kind, action.reason, fingerprint),
-        kind="evidence",
-        value=action.kind,
-        source="orchestrator",
-        metadata={
+    observation_id = _stable_id("decision", action.kind, action.reason, fingerprint)
+    audit_seq, previous_hash = next_audit_link(graph)
+    metadata = seal_decision_metadata(
+        observation_id,
+        {
             "memory_type": "planner_decision",
             "action": action.kind,
             "agent": agent_name,
             "reason": action.reason,
             "priority": action.priority,
             "graph_fingerprint": fingerprint,
+            "audit_seq": audit_seq,
+            "previous_decision_hash": previous_hash,
         },
+    )
+    observation = Observation(
+        id=observation_id,
+        kind="evidence",
+        value=action.kind,
+        source="orchestrator",
+        metadata=metadata,
     )
     store.put_observation(campaign.id, observation.to_dict())
 
