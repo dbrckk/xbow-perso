@@ -7,7 +7,14 @@ from starlette.requests import Request
 from app.auth import AuthError
 from app.main import authenticate_control_api
 from app.secret_vault import set_secret
-from app.totp_auth import _totp, configured_totp_secret, require_totp_for_mutation, verify_totp_code
+from app.totp_auth import (
+    _totp,
+    _used_totp,
+    configured_totp_secret,
+    consume_totp_code,
+    require_totp_for_mutation,
+    verify_totp_code,
+)
 
 
 RFC_SECRET = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
@@ -39,8 +46,11 @@ def _clear(monkeypatch):
         "XBOW_VAULT_MASTER_KEY",
         "XBOW_VAULT_MASTER_KEY_FILE",
         "XBOW_VAULT_PATH",
+        "XBOW_TOTP_REPLAY_BACKEND",
+        "XBOW_TOTP_REPLAY_REDIS_URL",
     ):
         monkeypatch.delenv(name, raising=False)
+    _used_totp.clear()
 
 
 def test_totp_matches_rfc6238_sha1_vector(monkeypatch):
@@ -167,5 +177,39 @@ def test_invalid_totp_configuration_fails_closed(monkeypatch):
 
     with pytest.raises(AuthError) as exc:
         require_totp_for_mutation(_request("POST", {"X-TOTP-Code": "123456"}))
+
+    assert exc.value.status_code == 503
+
+
+def test_totp_code_is_single_use_in_memory_backend(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_TOTP_SECRET", RFC_SECRET)
+    monkeypatch.setenv("XBOW_TOTP_REPLAY_BACKEND", "memory")
+    secret = configured_totp_secret()
+    code = _totp(secret, 1)
+
+    assert consume_totp_code(code, now=30.0) is True
+    assert consume_totp_code(code, now=30.0) is False
+
+
+def test_totp_replay_state_expires_after_window(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_TOTP_SECRET", RFC_SECRET)
+    monkeypatch.setenv("XBOW_TOTP_REPLAY_BACKEND", "memory")
+    first = _totp(configured_totp_secret(), 1)
+    later = _totp(configured_totp_secret(), 5)
+
+    assert consume_totp_code(first, now=30.0) is True
+    assert consume_totp_code(later, now=150.0) is True
+
+
+def test_totp_replay_backend_invalid_fails_closed(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_TOTP_SECRET", RFC_SECRET)
+    monkeypatch.setenv("XBOW_TOTP_REPLAY_BACKEND", "sqlite")
+    code = _totp(configured_totp_secret(), 1)
+
+    with pytest.raises(AuthError) as exc:
+        consume_totp_code(code, now=30.0)
 
     assert exc.value.status_code == 503
