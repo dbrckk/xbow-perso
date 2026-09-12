@@ -9,6 +9,7 @@ from psycopg.rows import dict_row
 
 from app.postgres_storage import PostgresStorage, _PostgresCompatConnection
 from app.redis_jobqueue import RedisJobQueue
+from app.planner_lock import campaign_planner_lock
 from app.storage import CampaignConflictError
 
 
@@ -135,3 +136,72 @@ def test_redis_dedupe_is_atomic_under_concurrent_enqueue(monkeypatch):
         keys = list(queue.redis.scan_iter(f"{prefix}:*"))
         if keys:
             queue.redis.delete(*keys)
+
+
+@pytest.mark.skipif(not _redis_url(), reason="Redis integration URL unavailable")
+def test_redis_campaign_planner_lock_has_single_concurrent_owner(monkeypatch):
+    prefix = f"xbow:test:{uuid4().hex}"
+    monkeypatch.setenv("XBOW_REDIS_PREFIX", prefix)
+    queue = RedisJobQueue(_redis_url())
+    campaign_id = f"campaign-{uuid4()}"
+    barrier = threading.Barrier(8)
+    release = threading.Event()
+    owners = []
+    contenders = []
+    lock = threading.Lock()
+
+    def compete():
+        barrier.wait(timeout=5)
+        with campaign_planner_lock(queue, campaign_id) as acquired:
+            with lock:
+                (owners if acquired else contenders).append(threading.current_thread().name)
+            if acquired:
+                release.wait(timeout=5)
+
+    threads = [threading.Thread(target=compete, name=f"planner-{i}") for i in range(8)]
+    for thread in threads:
+        thread.start()
+
+    for _ in range(50):
+        with lock:
+            if len(owners) == 1 and len(contenders) == 7:
+                break
+        threading.Event().wait(0.02)
+    release.set()
+
+    for thread in threads:
+        thread.join(timeout=10)
+        assert not thread.is_alive()
+
+    try:
+        assert len(owners) == 1
+        assert len(contenders) == 7
+        with campaign_planner_lock(queue, campaign_id) as acquired_after_release:
+            assert acquired_after_release is True
+    finally:
+        keys = list(queue.redis.scan_iter(f"{prefix}:*"))
+        if keys:
+            queue.redis.delete(*keys)
+
+
+def test_planner_lock_configuration_fails_closed(monkeypatch, tmp_path):
+    from app.jobqueue import JobQueue
+
+    queue = JobQueue(str(tmp_path / "queue.sqlite3"))
+    monkeypatch.setenv("XBOW_PLANNER_LOCK_SECONDS", "not-an-int")
+
+    # Local SQLite mode does not depend on the distributed lease configuration.
+    with campaign_planner_lock(queue, "campaign-local") as acquired:
+        assert acquired is True
+
+
+@pytest.mark.skipif(not _redis_url(), reason="Redis integration URL unavailable")
+def test_redis_planner_lock_rejects_invalid_lease(monkeypatch):
+    prefix = f"xbow:test:{uuid4().hex}"
+    monkeypatch.setenv("XBOW_REDIS_PREFIX", prefix)
+    monkeypatch.setenv("XBOW_PLANNER_LOCK_SECONDS", "301")
+    queue = RedisJobQueue(_redis_url())
+
+    with pytest.raises(ValueError, match="XBOW_PLANNER_LOCK_SECONDS"):
+        with campaign_planner_lock(queue, "campaign-invalid"):
+            pass
