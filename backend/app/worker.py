@@ -212,6 +212,31 @@ def _text(value: str | bytes | None) -> str:
     return value
 
 
+def _verify_nuclei_runtime(environment: dict[str, str]) -> str:
+    expected = (os.getenv("XBOW_NUCLEI_ALLOWED_VERSION") or "").strip()
+    if not expected:
+        raise WorkerPolicyError(
+            "XBOW_NUCLEI_ALLOWED_VERSION is required for active Nuclei execution"
+        )
+    if any(ord(ch) < 33 or ord(ch) == 127 for ch in expected) or len(expected) > 64:
+        raise WorkerPolicyError("XBOW_NUCLEI_ALLOWED_VERSION is invalid")
+    try:
+        result = subprocess.run(
+            ["nuclei", "-version"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+            env=environment,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise WorkerPolicyError("Nuclei runtime attestation failed") from exc
+    output = f"{result.stdout}\n{result.stderr}".strip()
+    if result.returncode != 0 or expected not in output:
+        raise WorkerPolicyError("Nuclei runtime version is not allowlisted")
+    return expected
+
+
 def execute(plan: WorkerPlan) -> dict:
     if plan.dry_run:
         return {
@@ -236,6 +261,7 @@ def execute(plan: WorkerPlan) -> dict:
             if key in {"PATH", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}
         }
         environment["HOME"] = str(isolated_home)
+        _verify_nuclei_runtime(environment)
 
     try:
         result = subprocess.run(
