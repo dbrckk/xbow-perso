@@ -363,6 +363,18 @@ def campaign_decision_audit(campaign_id: str):
     }
 
 
+@app.get("/api/campaigns/{campaign_id}/audit/workers")
+def campaign_worker_audit(campaign_id: str):
+    from .worker_audit import verify_worker_audit_chain
+
+    campaign = assert_campaign_exists(campaign_id)
+    return {
+        "campaign_id": campaign_id,
+        **verify_worker_audit_chain(campaign.events),
+        "read_only": True,
+    }
+
+
 @app.get("/api/campaigns/{campaign_id}/knowledge")
 def campaign_knowledge(campaign_id: str):
     from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
