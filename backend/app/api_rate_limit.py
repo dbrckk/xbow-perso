@@ -4,8 +4,6 @@ import os
 import time
 from dataclasses import dataclass
 from threading import Lock
-from typing import Any
-
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
