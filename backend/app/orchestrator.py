@@ -23,6 +23,7 @@ from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, P
 from .planner_budget import PlannerBudget, apply_budget, budget_usage, validation_batch_limit
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
+from .scanner_adaptation import adapt_scanner_engines
 from .storage import Storage
 from .swarm_coordinator import coordinate_recon_swarm
 from .validation_state import observed_independent_finding_ids
@@ -157,6 +158,11 @@ def _intelligence_context(
     swarm = coordinate_recon_swarm(recon_plan)
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)
+    scanner_adaptation = adapt_scanner_engines(
+        _scan_engines(),
+        memories,
+        worker_outcomes,
+    )
     return {
         "decisions": decisions,
         "consensus": consensus,
@@ -169,6 +175,7 @@ def _intelligence_context(
         "swarm": swarm,
         "coverage": coverage,
         "coverage_guidance": coverage_guidance,
+        "scanner_adaptation": scanner_adaptation,
         "surface_enrichment": _surface_enrichment(campaign, graph),
     }
 
@@ -264,6 +271,7 @@ def _enqueue_action(
     queue: JobQueue,
     *,
     validation_limit: int | None = None,
+    scan_engines: tuple[str, ...] | None = None,
 ) -> list[dict]:
     fingerprint = _graph_fingerprint(graph)
 
@@ -275,7 +283,8 @@ def _enqueue_action(
         stable_receipt = {key: value for key, value in receipt.items() if key != "timestamp"}
         payload = sanitized_scan_payload(campaign, stable_receipt)
         jobs = []
-        for engine in _scan_engines():
+        engines = scan_engines if scan_engines is not None else _scan_engines()
+        for engine in engines:
             kind = "strix_scan" if engine == "strix" else "nuclei_scan"
             jobs.append(
                 queue.enqueue(
@@ -383,6 +392,7 @@ def _result(
             "swarm_coordination": intelligence["swarm"].to_dict(),
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
+            "scanner_adaptation": intelligence["scanner_adaptation"].to_dict(),
             "surface_enrichment": dict(intelligence["surface_enrichment"]),
             "read_only_context": True,
         }
@@ -515,7 +525,19 @@ def advance_campaign(
                 intelligence=intelligence,
             )
         validation_limit = validation_batch_limit(usage, limits) if action.kind == "validate" else None
-        jobs = _enqueue_action(action, campaign, graph, queue, validation_limit=validation_limit)
+        scan_engines = (
+            intelligence["scanner_adaptation"].selected_engines
+            if action.kind == "scan"
+            else None
+        )
+        jobs = _enqueue_action(
+            action,
+            campaign,
+            graph,
+            queue,
+            validation_limit=validation_limit,
+            scan_engines=scan_engines,
+        )
         return _result(
             action,
             jobs,

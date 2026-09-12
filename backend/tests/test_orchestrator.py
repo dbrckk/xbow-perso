@@ -478,3 +478,63 @@ def test_orchestrator_exposes_advisory_only_coverage_guidance(tmp_path):
     assert guidance["advisory_only"] is True
     assert guidance["may_unlock_actions"] is False
     assert coverage["interpretation"] == "evidence_coverage_not_unknown_surface_completeness"
+
+
+def test_orchestrator_scanner_memory_can_only_reduce_configured_engines(tmp_path, monkeypatch):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    monkeypatch.setenv("XBOW_SCAN_ENGINES", "strix,nuclei")
+
+    store.put_observation(
+        campaign.id,
+        Observation("a1", "asset", "example.test", "recon").to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "e1",
+            "endpoint",
+            "https://example.test/",
+            "recon:crawl",
+            parent_ids=("a1",),
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "t1",
+            "technology",
+            "Server:fixture",
+            "recon:detect_technology",
+            parent_ids=("a1",),
+        ).to_dict(),
+    )
+    for index, source in enumerate(("memory-a", "memory-b")):
+        store.put_observation(
+            campaign.id,
+            Observation(
+                f"m{index}",
+                "evidence",
+                f"nuclei-failure-{index}",
+                source,
+                parent_ids=("a1",),
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": "failure",
+                },
+            ).to_dict(),
+        )
+
+    result = advance_campaign(campaign, queue, store)
+
+    assert result["action"]["kind"] == "scan"
+    adaptation = result["intelligence"]["scanner_adaptation"]
+    assert adaptation["configured_engines"] == ["strix", "nuclei"]
+    assert adaptation["selected_engines"] == ["strix"]
+    assert adaptation["suppressed_engines"] == ["nuclei"]
+    assert adaptation["may_expand_configuration"] is False
+    jobs = [queue.get(job_id) for job_id in result["job_ids"]]
+    assert [job["kind"] for job in jobs] == ["strix_scan"]
