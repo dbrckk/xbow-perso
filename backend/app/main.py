@@ -19,6 +19,7 @@ from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
 from .storage import ArtifactIntegrityError, CampaignConflictError
 from .storage_backend import StorageBackend, create_storage
+from .totp_auth import require_totp_for_mutation
 from .validation_state import has_observed_independent_validation
 
 app = FastAPI(title="xbow-perso", version="0.4.0")
@@ -29,6 +30,7 @@ async def authenticate_control_api(request: Request, call_next):
     if request.url.path.startswith("/api/") or request.url.path == "/api":
         try:
             require_api_token(request)
+            require_totp_for_mutation(request)
         except AuthError as exc:
             headers = {"WWW-Authenticate": "Bearer"} if exc.status_code == 401 else None
             return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=headers)
