@@ -351,6 +351,18 @@ def list_campaign_observations(campaign_id: str):
     return storage().list_observations(campaign_id)
 
 
+@app.get("/api/campaigns/{campaign_id}/audit/decisions")
+def campaign_decision_audit(campaign_id: str):
+    from .decision_audit import verify_decision_audit_chain
+
+    graph = _campaign_graph(campaign_id)
+    return {
+        "campaign_id": campaign_id,
+        **verify_decision_audit_chain(graph),
+        "read_only": True,
+    }
+
+
 @app.get("/api/campaigns/{campaign_id}/knowledge")
 def campaign_knowledge(campaign_id: str):
     from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
