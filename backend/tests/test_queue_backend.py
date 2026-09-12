@@ -28,10 +28,21 @@ def test_queue_backend_accepts_redis(monkeypatch):
     assert queue_backend_name() == "redis"
 
 
-def test_queue_backend_fails_closed_for_uninstalled_redis(monkeypatch):
+def test_queue_backend_builds_redis_adapter(monkeypatch):
     monkeypatch.setenv("XBOW_QUEUE_BACKEND", "redis")
+    monkeypatch.setenv("XBOW_REDIS_URL", "redis://localhost:6379/0")
 
-    with pytest.raises(RuntimeError, match="Redis queue backend is selected but not installed"):
+    backend = create_queue()
+
+    assert backend.__class__.__name__ == "RedisJobQueue"
+    assert backend.url == "redis://localhost:6379/0"
+
+
+def test_queue_backend_redis_requires_explicit_url(monkeypatch):
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "redis")
+    monkeypatch.delenv("XBOW_REDIS_URL", raising=False)
+
+    with pytest.raises(ValueError, match="XBOW_REDIS_URL is required"):
         create_queue()
 
 
