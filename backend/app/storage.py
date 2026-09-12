@@ -90,6 +90,8 @@ def _validate_media_type(media_type: str) -> str:
 class Storage:
     """Durable campaign state plus content-addressed evidence metadata."""
 
+    storage_name = "sqlite"
+
     ALLOWED_ARTIFACT_KINDS = {
         "scanner_stdout",
         "scanner_stderr",
@@ -200,6 +202,21 @@ class Storage:
                 "CREATE INDEX IF NOT EXISTS advisory_focus_snapshots_campaign_created "
                 "ON advisory_focus_snapshots(campaign_id, created_at DESC)"
             )
+
+    def health(self) -> dict[str, Any]:
+        try:
+            with self.connect() as db:
+                row = db.execute("SELECT 1").fetchone()
+        except Exception as exc:
+            return {
+                "ok": False,
+                "storage": self.storage_name,
+                "error": exc.__class__.__name__,
+            }
+        return {
+            "ok": row is not None,
+            "storage": self.storage_name,
+        }
 
     def save_campaign(self, document: dict[str, Any], *, expected_version: int | None = None) -> int:
         """Persist a campaign and optionally reject stale snapshot writes.
