@@ -195,3 +195,68 @@ def test_rate_limit_config_rejects_unknown_backend(monkeypatch):
 
     with pytest.raises(RateLimitConfigError, match="memory or redis"):
         load_api_rate_limit_config()
+
+
+def test_client_key_uses_forwarded_ip_only_from_trusted_proxy(monkeypatch):
+    monkeypatch.setenv("XBOW_TRUSTED_PROXY_CIDRS", "172.30.0.10/32,172.30.0.11/32")
+    request = Request(
+        {
+            "type": "http",
+            "method": "GET",
+            "path": "/api/test",
+            "headers": [(b"x-forwarded-for", b"203.0.113.25, 172.30.0.11")],
+            "client": ("172.30.0.10", 12345),
+            "server": ("testserver", 80),
+            "scheme": "http",
+            "query_string": b"",
+            "http_version": "1.1",
+        }
+    )
+
+    assert _client_key(request) == "203.0.113.25"
+
+
+def test_client_key_ignores_forwarded_ip_from_untrusted_peer(monkeypatch):
+    monkeypatch.setenv("XBOW_TRUSTED_PROXY_CIDRS", "172.30.0.10/32")
+    request = Request(
+        {
+            "type": "http",
+            "method": "GET",
+            "path": "/api/test",
+            "headers": [(b"x-forwarded-for", b"203.0.113.25")],
+            "client": ("198.51.100.9", 12345),
+            "server": ("testserver", 80),
+            "scheme": "http",
+            "query_string": b"",
+            "http_version": "1.1",
+        }
+    )
+
+    assert _client_key(request) == "198.51.100.9"
+
+
+def test_client_key_fails_closed_on_invalid_forwarded_chain(monkeypatch):
+    monkeypatch.setenv("XBOW_TRUSTED_PROXY_CIDRS", "172.30.0.10/32")
+    request = Request(
+        {
+            "type": "http",
+            "method": "GET",
+            "path": "/api/test",
+            "headers": [(b"x-forwarded-for", b"not-an-ip")],
+            "client": ("172.30.0.10", 12345),
+            "server": ("testserver", 80),
+            "scheme": "http",
+            "query_string": b"",
+            "http_version": "1.1",
+        }
+    )
+
+    with pytest.raises(RateLimitConfigError, match="invalid IP"):
+        _client_key(request)
+
+
+def test_client_key_rejects_invalid_trusted_proxy_cidr(monkeypatch):
+    monkeypatch.setenv("XBOW_TRUSTED_PROXY_CIDRS", "not-a-cidr")
+
+    with pytest.raises(RateLimitConfigError, match="invalid CIDR"):
+        _client_key(_request())
