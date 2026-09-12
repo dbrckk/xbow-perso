@@ -273,7 +273,7 @@ def _enqueue_action(
                     kind,
                     payload,
                     max_attempts=2,
-                    dedupe_key=f"planner:scan:{engine}:{fingerprint}",
+                    dedupe_key=(f"planner:scan:{fingerprint}" if engine == "strix" else f"planner:scan:nuclei:{fingerprint}"),
                 )
             )
         return jobs
