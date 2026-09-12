@@ -42,6 +42,8 @@ def _record_scan_observation(
                 "findings": findings,
                 "job_id": job_id,
                 "engine": engine,
+                "technique": f"scanner:{engine}",
+                "outcome": "success",
             },
         ).to_dict(),
     )
