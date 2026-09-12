@@ -33,7 +33,10 @@ def load_master_key() -> bytes:
         try:
             if path.is_symlink() or not path.is_file():
                 raise OSError("not a regular non-symlink file")
-            if path.stat().st_size > 256:
+            stat = path.stat()
+            if stat.st_mode & 0o077:
+                raise OSError("master key file permissions are too broad")
+            if stat.st_size > 256:
                 raise OSError("master key file too large")
             inline = path.read_text(encoding="utf-8").strip()
         except (OSError, UnicodeError) as exc:
@@ -55,7 +58,12 @@ def _load_document(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {"version": 1, "secrets": {}}
     try:
-        if not path.is_file() or path.stat().st_size > 1_048_576:
+        stat = path.stat()
+        if (
+            not path.is_file()
+            or stat.st_size > 1_048_576
+            or stat.st_mode & 0o077
+        ):
             raise OSError("unsafe vault file")
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
