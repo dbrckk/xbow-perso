@@ -1,14 +1,79 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
 from typing import Any
 
+from .secret_vault import SecretVaultError, resolve_secret
+
+
+_SIGNATURE_FIELDS = {"manifest_signature", "manifest_signature_alg", "integrity_mode"}
+
 
 class DisasterRecoveryError(RuntimeError):
     pass
+
+
+
+def _canonical_manifest(manifest: dict[str, Any]) -> bytes:
+    payload = {
+        key: value
+        for key, value in manifest.items()
+        if key not in _SIGNATURE_FIELDS
+    }
+    return json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+
+
+def _seal_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
+    sealed = dict(manifest)
+    try:
+        secret = resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
+    except SecretVaultError as exc:
+        raise DisasterRecoveryError("DR manifest signing key is unavailable") from exc
+    if not secret:
+        sealed["manifest_signature_alg"] = None
+        sealed["manifest_signature"] = None
+        sealed["integrity_mode"] = "sha256-artifacts"
+        return sealed
+
+    canonical = _canonical_manifest(sealed)
+    sealed["manifest_signature_alg"] = "hmac-sha256"
+    sealed["manifest_signature"] = hmac.new(
+        secret.encode("utf-8"),
+        canonical,
+        hashlib.sha256,
+    ).hexdigest()
+    sealed["integrity_mode"] = "sha256-artifacts+hmac-sha256-manifest"
+    return sealed
+
+
+def _verify_manifest_signature(manifest: dict[str, Any]) -> bool | None:
+    signature = manifest.get("manifest_signature")
+    algorithm = manifest.get("manifest_signature_alg")
+    if signature is None:
+        return None
+    if algorithm != "hmac-sha256":
+        raise DisasterRecoveryError("unsupported DR manifest signature algorithm")
+    try:
+        secret = resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
+    except SecretVaultError as exc:
+        raise DisasterRecoveryError("DR manifest verification key is unavailable") from exc
+    if not secret:
+        raise DisasterRecoveryError("DR manifest verification key is unavailable")
+    expected = hmac.new(
+        secret.encode("utf-8"),
+        _canonical_manifest(manifest),
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(str(signature), expected)
 
 
 def _safe_backup_file(path_value: str, label: str) -> Path:
@@ -73,7 +138,8 @@ def write_backup_manifest(manifest: dict[str, Any], destination: str) -> None:
         raise DisasterRecoveryError("manifest path must not be a symlink")
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
-    encoded = json.dumps(manifest, sort_keys=True, indent=2)
+    sealed = _seal_manifest(manifest)
+    encoded = json.dumps(sealed, sort_keys=True, indent=2)
     try:
         with tmp.open("x", encoding="utf-8") as handle:
             os.chmod(tmp, 0o600)
@@ -107,6 +173,16 @@ def verify_backup_manifest(
 
     if manifest.get("version") != 1 or not isinstance(manifest.get("artifacts"), list):
         raise DisasterRecoveryError("unsupported manifest format")
+
+    signature_valid = _verify_manifest_signature(manifest)
+    if signature_valid is False:
+        return {
+            "valid": False,
+            "artifacts": {},
+            "manifest_signature_valid": False,
+            "contains_secrets": False,
+            "contains_backup_contents": False,
+        }
 
     current = build_backup_manifest(
         postgres_dump=postgres_dump,
@@ -144,6 +220,7 @@ def verify_backup_manifest(
     return {
         "valid": valid,
         "artifacts": results,
+        "manifest_signature_valid": signature_valid,
         "contains_secrets": False,
         "contains_backup_contents": False,
     }
