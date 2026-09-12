@@ -226,6 +226,17 @@ def execute(plan: WorkerPlan) -> dict:
     timeout = _bounded_timeout()
     output = Path(plan.output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    environment = _worker_env()
+    if plan.engine == "nuclei":
+        isolated_home = output / ".nuclei-home"
+        isolated_home.mkdir(parents=True, exist_ok=True)
+        environment = {
+            key: value
+            for key, value in environment.items()
+            if key in {"PATH", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}
+        }
+        environment["HOME"] = str(isolated_home)
+
     try:
         result = subprocess.run(
             plan.command,
@@ -234,7 +245,7 @@ def execute(plan: WorkerPlan) -> dict:
             text=True,
             timeout=timeout,
             check=False,
-            env=_worker_env(),
+            env=environment,
         )
     except subprocess.TimeoutExpired as exc:
         return {
