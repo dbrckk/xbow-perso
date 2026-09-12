@@ -96,3 +96,37 @@ def test_swarm_coordinator_rejects_capability_escalation():
 def test_swarm_budget_validation_is_fail_closed():
     with pytest.raises(ValueError, match="max_total_requests"):
         SwarmBudget(max_total_requests=0)
+
+
+def test_swarm_coordinator_uses_central_agent_registry(monkeypatch):
+    from app import swarm_coordinator
+
+    original = swarm_coordinator.agent_by_name
+
+    def fake_agent_by_name(name):
+        profile = original(name)
+        if name == "crawler-agent":
+            return type(profile)(
+                name=profile.name,
+                role="analysis",
+                actions=profile.actions,
+                description=profile.description,
+                network_access=profile.network_access,
+            )
+        return profile
+
+    monkeypatch.setattr(swarm_coordinator, "agent_by_name", fake_agent_by_name)
+
+    with pytest.raises(ValueError, match="must have recon role"):
+        coordinate_recon_swarm(
+            [
+                ReconTask(
+                    "crawl",
+                    "crawler-agent",
+                    "https://example.test/",
+                    100,
+                    "fixture",
+                    10,
+                )
+            ]
+        )
