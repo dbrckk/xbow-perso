@@ -1,6 +1,6 @@
 services:
   tls-proxy:
-    image: caddy:2.10.2-alpine
+    image: caddy:2.11.4-alpine
     restart: unless-stopped
     environment:
       XBOW_PUBLIC_HOST: ${XBOW_PUBLIC_HOST:?set XBOW_PUBLIC_HOST}
@@ -32,6 +32,7 @@ services:
         ipv4_address: 172.30.0.11
 
   frontend:
+    ports: !override []
     networks:
       control:
         ipv4_address: 172.30.0.10
