@@ -109,3 +109,50 @@ def test_learning_memory_rejects_unbounded_limits():
             assert "between 1 and 100" in str(exc)
         else:
             raise AssertionError("invalid learning memory limit should fail")
+
+
+def test_worker_outcome_memory_excludes_payloads_and_errors():
+    from app.learning_memory import summarize_worker_outcomes, worker_outcome_event
+
+    event = worker_outcome_event(
+        {
+            "id": "job-1",
+            "kind": "recon_task",
+            "attempts": 2,
+            "payload": {"secret": "must-not-be-recorded"},
+            "last_error": "sensitive detail",
+        },
+        success=False,
+        status="queued",
+    )
+
+    assert "payload" not in event
+    assert "last_error" not in event
+    summary = summarize_worker_outcomes([{**event, "at": "t1"}])
+    assert summary["totals"]["requeued"] == 1
+    assert summary["by_job_kind"]["recon_task"]["requeued"] == 1
+    assert summary["contains_job_payloads"] is False
+    assert "must-not-be-recorded" not in str(summary)
+    assert "sensitive detail" not in str(summary)
+
+
+def test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits():
+    from app.learning_memory import summarize_worker_outcomes, worker_outcome_event
+
+    try:
+        worker_outcome_event(
+            {"id": "job-1", "kind": "shell", "attempts": 1},
+            success=False,
+            status="failed",
+        )
+    except ValueError as exc:
+        assert "unsupported job kind" in str(exc)
+    else:
+        raise AssertionError("unknown worker outcome kinds must fail closed")
+
+    try:
+        summarize_worker_outcomes([], recent_limit=201)
+    except ValueError as exc:
+        assert "recent_limit" in str(exc)
+    else:
+        raise AssertionError("unbounded outcome history must fail closed")
