@@ -235,12 +235,15 @@ class Storage:
                 db.execute("ROLLBACK")
                 raise CampaignConflictError("campaign version conflict")
             next_version = current_version + 1
-            db.execute(
+            cursor = db.execute(
                 """UPDATE campaigns
                    SET document=?, state=?, updated_at=?, version=?
                    WHERE id=? AND version=?""",
                 (encoded, str(document["state"]), document["updated_at"], next_version, document["id"], current_version),
             )
+            if getattr(cursor, "rowcount", 0) != 1:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("campaign version conflict")
             db.execute("COMMIT")
             return next_version
 
