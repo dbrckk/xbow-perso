@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import os
+import time
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from urllib.error import HTTPError, URLError
@@ -96,6 +97,45 @@ def _max_bytes() -> int:
     return value
 
 
+def _max_crawl_requests() -> int:
+    raw = os.getenv("XBOW_RECON_MAX_REQUESTS", "40")
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ReconPolicyError("XBOW_RECON_MAX_REQUESTS must be an integer") from exc
+    if not 1 <= value <= 100:
+        raise ReconPolicyError("XBOW_RECON_MAX_REQUESTS must be between 1 and 100")
+    return value
+
+
+def _max_crawl_depth() -> int:
+    raw = os.getenv("XBOW_RECON_MAX_DEPTH", "2")
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ReconPolicyError("XBOW_RECON_MAX_DEPTH must be an integer") from exc
+    if not 0 <= value <= 5:
+        raise ReconPolicyError("XBOW_RECON_MAX_DEPTH must be between 0 and 5")
+    return value
+
+
+def _recon_rps(campaign) -> float:
+    try:
+        campaign_rps = float(campaign.target.rules.max_requests_per_second)
+    except (TypeError, ValueError) as exc:
+        raise ReconPolicyError("campaign recon rate limit must be a number") from exc
+    raw = os.getenv("XBOW_RECON_MAX_RPS", "2.0")
+    try:
+        local_cap = float(raw)
+    except ValueError as exc:
+        raise ReconPolicyError("XBOW_RECON_MAX_RPS must be a number") from exc
+    if not math.isfinite(campaign_rps) or campaign_rps <= 0:
+        raise ReconPolicyError("campaign recon rate limit must be positive")
+    if not math.isfinite(local_cap) or not 0.1 <= local_cap <= 10.0:
+        raise ReconPolicyError("XBOW_RECON_MAX_RPS must be between 0.1 and 10")
+    return min(campaign_rps, local_cap)
+
+
 def _enabled() -> bool:
     raw = os.getenv("XBOW_ENABLE_RECON", "0").strip().lower()
     if raw in {"1", "true", "yes", "on"}:
@@ -133,6 +173,35 @@ def _same_origin(base: str, candidate: str) -> bool:
     )
 
 
+def _fetch_page(opener, target: str, max_bytes: int):
+    request = Request(
+        target,
+        method="GET",
+        headers={
+            "User-Agent": "xbow-perso-recon/1.0",
+            "Accept": "text/html,application/xhtml+xml,*/*;q=0.1",
+            "Cache-Control": "no-cache",
+        },
+    )
+    try:
+        with opener.open(request, timeout=_timeout_seconds()) as response:
+            return (
+                response.read(max_bytes + 1)[:max_bytes],
+                int(response.status),
+                response.headers,
+                None,
+            )
+    except HTTPError as exc:
+        return (
+            exc.read(max_bytes + 1)[:max_bytes] if exc.fp else b"",
+            int(exc.code),
+            exc.headers,
+            None,
+        )
+    except (URLError, TimeoutError, OSError) as exc:
+        return b"", None, None, str(exc)
+
+
 def execute_recon_task(campaign, payload: dict) -> ReconResult:
     kind = str(payload.get("kind") or "")
     if kind not in {"crawl", "map_endpoints", "detect_technology", "map_forms"}:
@@ -152,80 +221,119 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     if not _enabled():
         return ReconResult(status="dry_run", target=target)
 
-    request = Request(
-        target,
-        method="GET",
-        headers={
-            "User-Agent": "xbow-perso-recon/1.0",
-            "Accept": "text/html,application/xhtml+xml,*/*;q=0.1",
-            "Cache-Control": "no-cache",
-        },
-    )
-    opener = build_opener(_NoRedirect())
-    max_bytes = _max_bytes()
+    requested = payload.get("max_requests", 1)
     try:
-        with opener.open(request, timeout=_timeout_seconds()) as response:
-            body = response.read(max_bytes + 1)[:max_bytes]
-            status = int(response.status)
-            headers = response.headers
-    except HTTPError as exc:
-        body = exc.read(max_bytes + 1)[:max_bytes] if exc.fp else b""
-        status = int(exc.code)
-        headers = exc.headers
-    except (URLError, TimeoutError, OSError) as exc:
-        return ReconResult(status="error", target=target, error=str(exc))
+        requested = int(requested)
+    except (TypeError, ValueError) as exc:
+        raise ReconPolicyError("max_requests must be an integer") from exc
+    if not 1 <= requested <= 100:
+        raise ReconPolicyError("max_requests must be between 1 and 100")
 
-    content_type = (headers.get("Content-Type") or "").lower() if headers else ""
-    text = body.decode("utf-8", errors="replace") if "html" in content_type else ""
-    parser = _SurfaceParser(target)
-    if text:
-        parser.feed(text)
+    request_budget = min(requested, _max_crawl_requests())
+    max_depth = _max_crawl_depth()
+    min_interval = 1.0 / _recon_rps(campaign)
+    max_bytes = _max_bytes()
+    opener = build_opener(_NoRedirect())
 
-    endpoints = []
-    if kind in {"crawl", "map_endpoints"}:
-        for candidate in sorted(parser.links):
-            try:
-                safe = _safe_url(campaign, candidate)
-            except ReconPolicyError:
-                continue
-            if _same_origin(target, safe):
-                endpoints.append(safe)
+    pending: list[tuple[str, int]] = [(target, 0)]
+    visited: set[str] = set()
+    endpoints: set[str] = set()
+    forms: list[dict] = []
+    technologies: set[str] = set()
+    waf: set[str] = set()
+    first_status: int | None = None
+    first_error: str | None = None
+    last_request_at: float | None = None
 
-    forms = []
-    if kind in {"crawl", "map_forms"}:
-        for form in parser.forms:
-            if form["method"] not in {"GET", "HEAD"}:
-                continue
-            try:
-                action = _safe_url(campaign, form["action"])
-            except ReconPolicyError:
-                continue
-            if _same_origin(target, action):
-                forms.append(
-                    {
-                        "action": action,
-                        "method": form["method"],
-                        "input_names": sorted(set(form["input_names"])),
-                    }
-                )
+    while pending and len(visited) < request_budget:
+        current, depth = pending.pop(0)
+        if current in visited:
+            continue
+        if not _same_origin(target, current):
+            continue
+        try:
+            current = _safe_url(campaign, current)
+        except ReconPolicyError:
+            continue
 
-    technologies = []
-    waf = []
-    if kind == "detect_technology" and headers:
-        for header in ("Server", "X-Powered-By"):
-            value = headers.get(header)
-            if value:
-                technologies.append(f"{header}:{value}"[:200])
-        for header in ("CF-Ray", "X-Sucuri-ID", "X-Akamai-Transformed"):
-            if headers.get(header):
-                waf.append(header)
+        if last_request_at is not None:
+            delay = min_interval - (time.monotonic() - last_request_at)
+            if delay > 0:
+                time.sleep(delay)
+
+        body, status, headers, error = _fetch_page(opener, current, max_bytes)
+        last_request_at = time.monotonic()
+        visited.add(current)
+        if first_status is None and status is not None:
+            first_status = status
+        if error:
+            first_error = first_error or error
+            continue
+
+        content_type = (headers.get("Content-Type") or "").lower() if headers else ""
+        text = body.decode("utf-8", errors="replace") if "html" in content_type else ""
+        parser = _SurfaceParser(current)
+        if text:
+            parser.feed(text)
+
+        if kind in {"crawl", "map_endpoints"}:
+            for candidate in sorted(parser.links):
+                try:
+                    safe = _safe_url(campaign, candidate)
+                except ReconPolicyError:
+                    continue
+                if not _same_origin(target, safe):
+                    continue
+                endpoints.add(safe)
+                if (
+                    kind == "crawl"
+                    and depth < max_depth
+                    and safe not in visited
+                    and all(item[0] != safe for item in pending)
+                    and len(pending) + len(visited) < request_budget
+                ):
+                    pending.append((safe, depth + 1))
+
+        if kind in {"crawl", "map_forms"}:
+            for form in parser.forms:
+                if form["method"] not in {"GET", "HEAD"}:
+                    continue
+                try:
+                    action = _safe_url(campaign, form["action"])
+                except ReconPolicyError:
+                    continue
+                if not _same_origin(target, action):
+                    continue
+                normalized = {
+                    "action": action,
+                    "method": form["method"],
+                    "input_names": sorted(set(form["input_names"])),
+                }
+                if normalized not in forms:
+                    forms.append(normalized)
+
+        if kind == "detect_technology" and headers:
+            for header in ("Server", "X-Powered-By"):
+                value = headers.get(header)
+                if value:
+                    technologies.add(f"{header}:{value}"[:200])
+            for header in ("CF-Ray", "X-Sucuri-ID", "X-Akamai-Transformed"):
+                if headers.get(header):
+                    waf.add(header)
+
+        if kind != "crawl":
+            break
+
+    if not visited:
+        return ReconResult(status="error", target=target, error=first_error or "recon request failed")
 
     return ReconResult(
         status="observed",
         target=target,
-        endpoints=tuple(endpoints[:100]),
+        endpoints=tuple(sorted(endpoints)[:100]),
         forms=tuple(forms[:50]),
-        technologies=tuple(sorted(set(technologies))[:20]),
-        waf=tuple(sorted(set(waf))[:20]),
-        http_status=status,
+        technologies=tuple(sorted(technologies)[:20]),
+        waf=tuple(sorted(waf)[:20]),
+        http_status=first_status,
+        error=first_error if first_status is None else None,
     )

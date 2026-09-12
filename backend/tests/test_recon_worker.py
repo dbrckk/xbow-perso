@@ -200,3 +200,144 @@ def test_recon_surface_parser_bounds_discovered_links_and_form_inputs(monkeypatc
     assert len(result.endpoints) == 100
     assert len(result.forms) == 1
     assert len(result.forms[0]["input_names"]) == 100
+
+
+class _RoutingOpener:
+    def __init__(self, routes):
+        self.routes = routes
+        self.calls = []
+
+    def open(self, request, timeout):
+        assert timeout > 0
+        url = request.full_url
+        self.calls.append(url)
+        return self.routes[url]
+
+
+def test_recon_worker_crawls_multiple_pages_with_explicit_budget(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "4")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": _Response(
+                b'<a href="/one">one</a><a href="https://outside.test/nope">outside</a>',
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/one": _Response(
+                b'<a href="/two">two</a><form action="/search" method="get"><input name="q"></form>',
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/two": _Response(
+                b'<a href="/three">three</a>',
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/three": _Response(
+                b"<html></html>",
+                {"Content-Type": "text/html"},
+            ),
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 4,
+        },
+    )
+
+    assert opener.calls == [
+        "https://example.test/",
+        "https://example.test/one",
+        "https://example.test/two",
+    ]
+    assert set(result.endpoints) == {
+        "https://example.test/one",
+        "https://example.test/two",
+        "https://example.test/three",
+    }
+    assert result.forms == (
+        {
+            "action": "https://example.test/search",
+            "method": "GET",
+            "input_names": ["q"],
+        },
+    )
+    assert "outside.test" not in str(result)
+
+
+def test_recon_worker_respects_local_request_cap(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "5")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": _Response(
+                b'<a href="/one">one</a>',
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/one": _Response(
+                b'<a href="/two">two</a>',
+                {"Content-Type": "text/html"},
+            ),
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 40,
+        },
+    )
+
+    assert opener.calls == ["https://example.test/", "https://example.test/one"]
+    assert "https://example.test/two" in result.endpoints
+
+
+def test_recon_worker_rejects_invalid_request_budget(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+
+    try:
+        execute_recon_task(
+            _campaign(),
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "max_requests": 0,
+            },
+        )
+    except Exception as exc:
+        assert "max_requests must be between 1 and 100" in str(exc)
+    else:
+        raise AssertionError("invalid crawl budget must fail closed")
+
+
+def test_recon_worker_rejects_invalid_local_depth(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "99")
+
+    try:
+        execute_recon_task(
+            _campaign(),
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "max_requests": 2,
+            },
+        )
+    except Exception as exc:
+        assert "XBOW_RECON_MAX_DEPTH" in str(exc)
+    else:
+        raise AssertionError("invalid crawl depth must fail closed")
