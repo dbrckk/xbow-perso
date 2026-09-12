@@ -94,20 +94,21 @@ class FixedWindowLimiter:
 
 class RedisFixedWindowLimiter:
     _SCRIPT = """
-local window_seconds = tonumber(ARGV[1])
+local ttl_seconds = tonumber(ARGV[1])
 local window = tonumber(ARGV[2])
 local member = ARGV[3]
 local max_keys = tonumber(ARGV[4])
+local window_seconds = tonumber(ARGV[5])
 
 redis.call('ZREMRANGEBYSCORE', KEYS[2], '-inf', window - 1)
 if redis.call('EXISTS', KEYS[1]) == 0 and redis.call('ZCARD', KEYS[2]) >= max_keys then
-  return {-1, window_seconds}
+  return {-1, ttl_seconds}
 end
 
 redis.call('ZADD', KEYS[2], window, member)
 local current = redis.call('INCR', KEYS[1])
 if current == 1 then
-  redis.call('EXPIRE', KEYS[1], window_seconds)
+  redis.call('EXPIRE', KEYS[1], ttl_seconds)
 end
 redis.call('EXPIRE', KEYS[2], window_seconds * 2)
 local ttl = redis.call('TTL', KEYS[1])
@@ -136,6 +137,10 @@ return {current, ttl}
     def check(self, key: str, config: ApiRateLimitConfig, *, now: float | None = None) -> tuple[bool, int]:
         timestamp = time.time() if now is None else now
         window = int(timestamp // config.window_seconds)
+        retry_after = max(
+            1,
+            config.window_seconds - int(timestamp % config.window_seconds),
+        )
         digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
         redis_key = self._key(key, config.window_seconds, timestamp)
         active_key = f"{self.prefix}:active"
@@ -145,10 +150,11 @@ return {current, ttl}
                 2,
                 redis_key,
                 active_key,
-                config.window_seconds,
+                retry_after,
                 window,
                 digest,
                 config.max_keys,
+                config.window_seconds,
             )
         except redis.RedisError as exc:
             raise RuntimeError("distributed API rate limiter unavailable") from exc
