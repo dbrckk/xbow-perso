@@ -27,6 +27,7 @@ from .storage import CampaignConflictError, Storage
 from .storage_backend import create_storage
 from .validator import ValidationPolicyError, safe_http_probe
 from .worker import WorkerPolicyError
+from .worker_audit import seal_worker_outcome_event
 
 
 class CampaignCancelledError(ValueError):
@@ -379,7 +380,11 @@ def _record_worker_outcome(store: Storage, job: dict, *, success: bool, status: 
             for item in campaign.events
         ):
             return True
-        campaign.events.append({**event, "at": utcnow()})
+        sealed = seal_worker_outcome_event(
+            {**event, "at": utcnow()},
+            campaign.events,
+        )
+        campaign.events.append(sealed)
         campaign.updated_at = utcnow()
         try:
             store.save_campaign(campaign.model_dump(mode="json"), expected_version=version)
