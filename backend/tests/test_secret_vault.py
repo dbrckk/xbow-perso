@@ -106,3 +106,25 @@ def test_resolve_secret_uses_vault_and_refuses_env_fallback(monkeypatch, tmp_pat
 
     with pytest.raises(SecretVaultError, match="refusing environment fallback"):
         resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
+
+
+def test_vault_rejects_broad_master_key_permissions(monkeypatch, tmp_path):
+    key_file = tmp_path / "master.key"
+    key_file.write_text(_master_key(), encoding="utf-8")
+    os.chmod(key_file, 0o644)
+    monkeypatch.delenv("XBOW_VAULT_MASTER_KEY", raising=False)
+    monkeypatch.setenv("XBOW_VAULT_MASTER_KEY_FILE", str(key_file))
+    monkeypatch.setenv("XBOW_VAULT_PATH", str(tmp_path / "vault.json"))
+
+    with pytest.raises(SecretVaultError, match="master key file is unavailable"):
+        set_secret("audit_hmac_key", "secret")
+
+
+def test_vault_rejects_broad_existing_vault_permissions(monkeypatch, tmp_path):
+    _configure(monkeypatch, tmp_path)
+    set_secret("audit_hmac_key", "secret")
+    path = tmp_path / "secrets.vault.json"
+    os.chmod(path, 0o644)
+
+    with pytest.raises(SecretVaultError, match="vault file is invalid"):
+        get_secret("audit_hmac_key")
