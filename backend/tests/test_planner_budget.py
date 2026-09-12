@@ -2,7 +2,7 @@ import pytest
 
 from app.jobqueue import JobQueue
 from app.observation_graph import Observation, ObservationGraph, PlannedAction
-from app.planner_budget import PlannerBudget, apply_budget, budget_usage, validation_batch_limit
+from app.planner_budget import PlannerBudget, apply_budget, budget_usage, scan_batch_limit, validation_batch_limit
 
 
 def test_budget_usage_reads_durable_campaign_jobs(tmp_path):
@@ -258,3 +258,41 @@ def test_budget_rejects_non_positive_limits():
 def test_budget_rejects_validation_batch_larger_than_total_limit():
     with pytest.raises(ValueError, match="max_validation_batch"):
         PlannerBudget(max_validations=2, max_validation_batch=3)
+
+
+def test_scan_budget_counts_strix_and_nuclei_jobs(tmp_path):
+    queue = JobQueue(str(tmp_path / "db.sqlite3"))
+    graph = ObservationGraph()
+    queue.enqueue("c1", "strix_scan", {"target": "https://example.test"}, dedupe_key="scan:strix")
+    queue.enqueue("c1", "nuclei_scan", {"target": "https://example.test"}, dedupe_key="scan:nuclei")
+
+    usage = budget_usage(graph, queue, "c1", PlannerBudget(max_scans=3))
+
+    assert usage.scans == 2
+    assert usage.remaining_scans == 1
+
+
+def test_scan_batch_limit_respects_scan_and_inflight_capacity(tmp_path):
+    queue = JobQueue(str(tmp_path / "db.sqlite3"))
+    graph = ObservationGraph()
+    limits = PlannerBudget(max_scans=3, max_inflight_jobs=3)
+    queue.enqueue("c1", "strix_scan", {"target": "https://example.test"}, dedupe_key="scan:1")
+    queue.enqueue("c1", "report", {"platform": "generic"}, dedupe_key="report:1")
+
+    usage = budget_usage(graph, queue, "c1", limits)
+
+    assert usage.remaining_scans == 2
+    assert usage.remaining_inflight_jobs == 1
+    assert scan_batch_limit(usage, 2, limits) == 1
+
+
+def test_scan_batch_limit_rejects_negative_request(tmp_path):
+    with pytest.raises(ValueError, match="non-negative"):
+        scan_batch_limit(
+            budget_usage(
+                ObservationGraph(),
+                JobQueue(str(tmp_path / "negative.sqlite3")),
+                "c1",
+            ),
+            -1,
+        )

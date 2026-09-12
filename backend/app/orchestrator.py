@@ -20,7 +20,7 @@ from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_f
 from .learning_memory import build_learning_memory, summarize_worker_outcomes
 from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
-from .planner_budget import PlannerBudget, apply_budget, budget_usage, validation_batch_limit
+from .planner_budget import PlannerBudget, apply_budget, budget_usage, scan_batch_limit, validation_batch_limit
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
 from .scanner_adaptation import adapt_scanner_engines
@@ -525,11 +525,11 @@ def advance_campaign(
                 intelligence=intelligence,
             )
         validation_limit = validation_batch_limit(usage, limits) if action.kind == "validate" else None
-        scan_engines = (
-            intelligence["scanner_adaptation"].selected_engines
-            if action.kind == "scan"
-            else None
-        )
+        scan_engines = None
+        if action.kind == "scan":
+            selected = intelligence["scanner_adaptation"].selected_engines
+            allowed_scan_count = scan_batch_limit(usage, len(selected), limits)
+            scan_engines = selected[:allowed_scan_count]
         jobs = _enqueue_action(
             action,
             campaign,
