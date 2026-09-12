@@ -1,0 +1,51 @@
+services:
+  tls-proxy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    environment:
+      XBOW_PUBLIC_HOST: ${XBOW_PUBLIC_HOST:?set XBOW_PUBLIC_HOST}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - xbow-caddy-data:/data
+      - xbow-caddy-config:/config
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    pids_limit: 128
+    mem_limit: 256m
+    cpus: 0.5
+    depends_on:
+      frontend:
+        condition: service_started
+    networks:
+      control:
+        ipv4_address: 172.30.0.11
+
+  frontend:
+    networks:
+      control:
+        ipv4_address: 172.30.0.10
+
+  backend:
+    environment:
+      XBOW_TRUSTED_PROXY_CIDRS: 172.30.0.10/32,172.30.0.11/32
+
+volumes:
+  xbow-caddy-data:
+  xbow-caddy-config:
+
+networks:
+  control:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
