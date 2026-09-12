@@ -29,7 +29,42 @@ AGENTS: tuple[AgentProfile, ...] = (
         name="recon-agent",
         role="recon",
         actions=("crawl",),
-        description="Builds the authorized asset and endpoint inventory.",
+        description="Coordinates authorized reconnaissance.",
+        network_access=True,
+    ),
+    AgentProfile(
+        name="crawler-agent",
+        role="recon",
+        actions=("recon:crawl",),
+        description="Performs bounded same-origin multi-page crawling.",
+        network_access=True,
+    ),
+    AgentProfile(
+        name="endpoint-agent",
+        role="recon",
+        actions=("recon:map_endpoints",),
+        description="Refreshes bounded endpoint inventory.",
+        network_access=True,
+    ),
+    AgentProfile(
+        name="tech-agent",
+        role="recon",
+        actions=("recon:detect_technology",),
+        description="Collects bounded technology and edge-protection observations.",
+        network_access=True,
+    ),
+    AgentProfile(
+        name="form-agent",
+        role="recon",
+        actions=("recon:map_forms",),
+        description="Maps read-only form metadata within the declared origin.",
+        network_access=True,
+    ),
+    AgentProfile(
+        name="browser-agent",
+        role="recon",
+        actions=("recon:browser_observe",),
+        description="Collects bounded browser-rendered observations.",
         network_access=True,
     ),
     AgentProfile(
@@ -64,3 +99,10 @@ def agent_for_action(action: str) -> AgentProfile:
 
 def public_agent_catalog() -> list[dict]:
     return [agent.to_dict() for agent in AGENTS]
+
+
+def agent_by_name(name: str) -> AgentProfile:
+    matches = [agent for agent in AGENTS if agent.name == name]
+    if len(matches) != 1:
+        raise ValueError(f"no unique agent registered by name: {name}")
+    return matches[0]
