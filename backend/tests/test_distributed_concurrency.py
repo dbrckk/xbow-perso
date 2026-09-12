@@ -236,3 +236,134 @@ def test_redis_totp_replay_is_atomic_across_concurrent_consumers(monkeypatch):
 
     assert results.count(True) == 1
     assert results.count(False) == 7
+
+
+@pytest.mark.skipif(not _postgres_url(), reason="PostgreSQL integration URL unavailable")
+def test_postgres_cas_stress_has_exactly_one_winner(tmp_path):
+    campaign_id = f"stress-cas-{uuid4()}"
+    store = PostgresStorage(
+        database_url=_postgres_url(),
+        artifact_root=str(tmp_path / "artifacts-stress"),
+    )
+    original = {
+        "id": campaign_id,
+        "state": "ready",
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "updated_at": "2026-01-01T00:00:00+00:00",
+    }
+    assert store.save_campaign(original, expected_version=0) == 1
+
+    contenders = 16
+    barrier = threading.Barrier(contenders)
+    original_connect = store.connect
+
+    @contextmanager
+    def synchronized_connect():
+        with original_connect() as base:
+            class BarrierConnection:
+                def execute(self, statement, params=()):
+                    cursor = base.execute(statement, params)
+                    if statement.strip().startswith("SELECT version FROM campaigns WHERE id="):
+                        barrier.wait(timeout=10)
+                    return cursor
+
+            yield BarrierConnection()
+
+    store.connect = synchronized_connect
+    outcomes = []
+    errors = []
+    lock = threading.Lock()
+
+    def write(index):
+        document = {
+            **original,
+            "state": "running",
+            "updated_at": f"2026-01-01T00:00:{index:02d}+00:00",
+        }
+        try:
+            version = store.save_campaign(document, expected_version=1)
+            result = ("ok", version)
+        except CampaignConflictError:
+            result = ("conflict", None)
+        except Exception as exc:
+            with lock:
+                errors.append(exc)
+            return
+        with lock:
+            outcomes.append(result)
+
+    threads = [
+        threading.Thread(target=write, args=(index,), name=f"pg-writer-{index}")
+        for index in range(contenders)
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=20)
+        assert not thread.is_alive()
+
+    assert errors == []
+    assert sum(kind == "ok" for kind, _version in outcomes) == 1
+    assert sum(kind == "conflict" for kind, _version in outcomes) == contenders - 1
+    assert [version for kind, version in outcomes if kind == "ok"] == [2]
+    saved, version = store.get_campaign_record(campaign_id)
+    assert version == 2
+    assert saved["state"] == "running"
+
+
+@pytest.mark.skipif(not _redis_url(), reason="Redis integration URL unavailable")
+def test_redis_claim_stress_has_no_duplicate_or_lost_jobs(monkeypatch):
+    prefix = f"xbow:stress:{uuid4().hex}"
+    monkeypatch.setenv("XBOW_REDIS_PREFIX", prefix)
+    queue = RedisJobQueue(_redis_url())
+    campaign_id = f"campaign-{uuid4()}"
+    workers = 32
+
+    created_ids = []
+    for index in range(workers):
+        job = queue.enqueue(
+            campaign_id,
+            "report",
+            {"campaign_id": campaign_id, "platform": f"generic-{index}"},
+        )
+        created_ids.append(job["id"])
+
+    barrier = threading.Barrier(workers)
+    claimed = []
+    errors = []
+    lock = threading.Lock()
+
+    def claim(index):
+        try:
+            barrier.wait(timeout=10)
+            job = queue.claim(f"worker-{index}")
+            with lock:
+                claimed.append(job)
+        except Exception as exc:
+            with lock:
+                errors.append(exc)
+
+    threads = [
+        threading.Thread(target=claim, args=(index,), name=f"redis-worker-{index}")
+        for index in range(workers)
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=20)
+        assert not thread.is_alive()
+
+    try:
+        assert errors == []
+        assert all(job is not None for job in claimed)
+        claimed_ids = [job["id"] for job in claimed]
+        assert len(claimed_ids) == workers
+        assert len(set(claimed_ids)) == workers
+        assert set(claimed_ids) == set(created_ids)
+        stats = queue.stats()
+        assert stats["by_status"]["queued"] == 0
+        assert stats["by_status"]["running"] == workers
+    finally:
+        keys = list(queue.redis.scan_iter(f"{prefix}:*"))
+        if keys:
+            queue.redis.delete(*keys)
