@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${XBOW_POSTGRES_DB:-xbow}
+      POSTGRES_USER: ${XBOW_POSTGRES_USER:-xbow}
+      POSTGRES_PASSWORD: ${XBOW_POSTGRES_PASSWORD:?set XBOW_POSTGRES_PASSWORD}
+    volumes:
+      - xbow-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${XBOW_POSTGRES_USER:-xbow} -d ${XBOW_POSTGRES_DB:-xbow}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks: [control]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${XBOW_REDIS_PASSWORD:?set XBOW_REDIS_PASSWORD}
+    command:
+      - sh
+      - -c
+      - exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"
+    volumes:
+      - xbow-redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    networks: [control]
+
+  backend:
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      XBOW_STORAGE_BACKEND: postgresql
+      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
+      XBOW_QUEUE_BACKEND: redis
+      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
+
+  worker:
+    depends_on:
+      backend:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      XBOW_STORAGE_BACKEND: postgresql
+      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
+      XBOW_QUEUE_BACKEND: redis
+      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
+
+volumes:
+  xbow-postgres:
+  xbow-redis:
