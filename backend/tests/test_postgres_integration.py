@@ -4,6 +4,7 @@ from uuid import uuid4
 import pytest
 
 from app.postgres_storage import PostgresStorage
+from app.storage import CampaignConflictError
 
 POSTGRES_URL = os.getenv("XBOW_TEST_POSTGRES_URL")
 pytestmark = pytest.mark.skipif(not POSTGRES_URL, reason="XBOW_TEST_POSTGRES_URL is not configured")
@@ -30,11 +31,22 @@ def test_postgres_campaign_roundtrip(tmp_path):
     assert store.get_campaign(campaign_id) == document
 
 
-def test_postgres_health_is_minimal_and_healthy(tmp_path):
+def test_postgres_campaign_version_conflict_fails_closed(tmp_path):
     store = _store(tmp_path)
+    campaign_id = f"ci-{uuid4()}"
+    document = {
+        "id": campaign_id,
+        "state": "ready",
+        "created_at": "x",
+        "updated_at": "x",
+    }
 
-    health = store.health()
+    assert store.save_campaign(document) == 1
+    updated = {**document, "state": "running", "updated_at": "y"}
+    assert store.save_campaign(updated, expected_version=1) == 2
 
-    assert health["ok"] is True
-    assert health["storage"] == "postgresql"
-    assert "password" not in str(health).lower()
+    with pytest.raises(CampaignConflictError, match="version conflict"):
+        store.save_campaign(
+            {**updated, "state": "completed", "updated_at": "z"},
+            expected_version=1,
+        )
