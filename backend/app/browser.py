@@ -11,6 +11,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
 from .jobqueue import JobQueue
+from .secret_vault import SecretVaultError, get_secret, vault_enabled
 from .storage import CampaignConflictError, Storage
 from .submission_api import router as submission_router
 
@@ -63,6 +64,31 @@ def _bool_env(name: str, default: bool = False) -> bool:
     if value in {"0", "false", "no", "off"}:
         return False
     raise BrowserPolicyError(f"{name} must be a boolean")
+
+
+def _browser_secret(secret_env: str) -> str:
+    try:
+        use_vault = vault_enabled()
+    except SecretVaultError as exc:
+        raise BrowserPolicyError("browser vault configuration is invalid") from exc
+
+    if use_vault:
+        if os.getenv(secret_env):
+            raise BrowserPolicyError(
+                f"vault enabled but legacy {secret_env} fallback is forbidden"
+            )
+        vault_name = "browser." + secret_env.removeprefix("XBOW_BROWSER_SECRET_").lower()
+        try:
+            return get_secret(vault_name)
+        except SecretVaultError as exc:
+            raise BrowserPolicyError(
+                f"required browser secret is unavailable: {secret_env}"
+            ) from exc
+
+    secret = os.getenv(secret_env)
+    if secret is None:
+        raise BrowserPolicyError(f"required browser secret is unavailable: {secret_env}")
+    return secret
 
 
 def _campaign(campaign_id: str):
@@ -281,9 +307,7 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
                         _allowed_url(campaign, page.url)
                     observations.append({"step": index, "operation": "click", "selector": step.selector})
                 elif step.operation == "fill":
-                    secret = os.getenv(step.secret_env or "")
-                    if secret is None:
-                        raise BrowserPolicyError(f"required browser secret is unavailable: {step.secret_env}")
+                    secret = _browser_secret(step.secret_env or "")
                     page.locator(step.selector or "").fill(secret, timeout=step.timeout_ms)
                     observations.append({"step": index, "operation": "fill", "selector": step.selector, "secret_env": step.secret_env})
                 elif step.operation == "wait_for":
