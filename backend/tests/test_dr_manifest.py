@@ -144,3 +144,25 @@ def test_manifest_rejects_invalid_artifact_size_schema(tmp_path):
             redis_snapshot=str(redis),
             vault_copy=str(vault),
         )
+
+
+def test_manifest_verify_handles_invalid_size_schema(tmp_path):
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    manifest = build_backup_manifest(
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+    manifest["artifacts"][0]["size_bytes"] = {"bad": "schema"}
+    manifest_path.write_text(__import__("json").dumps(manifest), encoding="utf-8")
+
+    result = verify_backup_manifest(
+        str(manifest_path),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+
+    assert result["valid"] is False
+    assert result["artifacts"]["postgres"]["valid"] is False
