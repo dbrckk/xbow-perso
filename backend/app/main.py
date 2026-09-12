@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, HttpUrl, model_validator
 
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
+from .policy_integrity import seal_policy_receipt, verify_policy_receipt
 from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
 from .storage import ArtifactIntegrityError, CampaignConflictError
@@ -205,16 +206,18 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
     }
     action_known = action in blocked_actions
     action_blocked = blocked_actions.get(action, True)
-    return {
-        "allowed": allowed and not action_blocked,
-        "host": host,
-        "action": action,
-        "action_known": action_known,
-        "scope_allowed": allowed,
-        "action_blocked": action_blocked,
-        "authorization_reference": rules.authorization_reference,
-        "timestamp": utcnow(),
-    }
+    return seal_policy_receipt(
+        {
+            "allowed": allowed and not action_blocked,
+            "host": host,
+            "action": action,
+            "action_known": action_known,
+            "scope_allowed": allowed,
+            "action_blocked": action_blocked,
+            "authorization_reference": rules.authorization_reference,
+            "timestamp": utcnow(),
+        }
+    )
 
 
 def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[str, Any]:
@@ -509,6 +512,12 @@ def check_policy(campaign_id: str, host: str, action: str = "automated_scan"):
     campaign.updated_at = utcnow()
     save_campaign(campaign, expected_version=version)
     return receipt
+
+
+@app.post("/api/campaigns/{campaign_id}/policy-verify")
+def verify_campaign_policy_receipt(campaign_id: str, receipt: dict[str, Any] = Body(...)):
+    assert_campaign_exists(campaign_id)
+    return verify_policy_receipt(receipt)
 
 
 @app.post("/api/campaigns/{campaign_id}/start")
