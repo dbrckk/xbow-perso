@@ -87,7 +87,7 @@ PYTHONPATH=backend python -m app.dr_cli verify \
   --vault-copy /backups/secrets.vault.json
 ```
 
-The manifest stores only filenames, sizes, and SHA-256 hashes; it never embeds backup contents or decrypted secrets.
+The manifest stores only filenames, sizes, and SHA-256 hashes; it never embeds backup contents or decrypted secrets. When `XBOW_AUDIT_HMAC_KEY` (or the `audit_hmac_key` vault entry) is available, the manifest is also authenticated with HMAC-SHA256 so manifest rewriting is detectable.
 
 ## Safety model
 

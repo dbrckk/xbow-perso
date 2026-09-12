@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from app.dr_manifest import (
@@ -127,8 +129,6 @@ def test_manifest_rejects_symlink_destination(tmp_path):
 
 
 def test_manifest_rejects_invalid_artifact_size_schema(tmp_path):
-    import json
-
     postgres, redis, vault = _files(tmp_path)
     manifest_path = tmp_path / "manifest.json"
     manifest = build_backup_manifest(
@@ -140,6 +140,114 @@ def test_manifest_rejects_invalid_artifact_size_schema(tmp_path):
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
     with pytest.raises(DisasterRecoveryError, match="artifact size is invalid"):
+        verify_backup_manifest(
+            str(manifest_path),
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        )
+
+
+def test_signed_manifest_detects_manifest_rewrite(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "dr-signing-key")
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    manifest = build_backup_manifest(
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+    write_backup_manifest(manifest, str(manifest_path))
+
+    saved = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert saved["manifest_signature_alg"] == "hmac-sha256"
+    assert len(saved["manifest_signature"]) == 64
+
+    saved["artifacts"][0]["sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(saved), encoding="utf-8")
+
+    result = verify_backup_manifest(
+        str(manifest_path),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+
+    assert result["valid"] is False
+    assert result["manifest_signature_valid"] is False
+
+
+def test_signed_manifest_requires_matching_verification_key(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "correct-key")
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    write_backup_manifest(
+        build_backup_manifest(
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        ),
+        str(manifest_path),
+    )
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "wrong-key")
+
+    result = verify_backup_manifest(
+        str(manifest_path),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+
+    assert result["valid"] is False
+    assert result["manifest_signature_valid"] is False
+
+
+def test_unsigned_manifest_remains_backward_compatible(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    write_backup_manifest(
+        build_backup_manifest(
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        ),
+        str(manifest_path),
+    )
+
+    saved = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert saved["manifest_signature"] is None
+
+    result = verify_backup_manifest(
+        str(manifest_path),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+
+    assert result["valid"] is True
+    assert result["manifest_signature_valid"] is None
+
+
+def test_signed_manifest_fails_closed_when_key_becomes_unavailable(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "correct-key")
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    write_backup_manifest(
+        build_backup_manifest(
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        ),
+        str(manifest_path),
+    )
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+
+    with pytest.raises(DisasterRecoveryError, match="verification key is unavailable"):
         verify_backup_manifest(
             str(manifest_path),
             postgres_dump=str(postgres),
