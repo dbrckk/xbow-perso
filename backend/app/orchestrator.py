@@ -23,6 +23,7 @@ from .planner_budget import PlannerBudget, apply_budget, budget_usage, validatio
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
 from .storage import Storage
+from .swarm_coordinator import coordinate_recon_swarm
 from .validation_state import observed_independent_finding_ids
 
 
@@ -146,12 +147,13 @@ def _intelligence_context(
     memories = build_learning_memory(graph)
     worker_outcomes = summarize_worker_outcomes(campaign.events)
     cycle = build_adaptive_cycle(gate, planned_actions, memories, worker_outcomes)
-    recon = build_recon_plan(
+    recon_plan = build_recon_plan(
         str(campaign.target.primary_url),
         graph,
         scope_checker=scope_checker,
         limit=10,
     )
+    swarm = coordinate_recon_swarm(recon_plan)
     return {
         "decisions": decisions,
         "consensus": consensus,
@@ -160,7 +162,8 @@ def _intelligence_context(
         "memory": memories,
         "worker_outcomes": worker_outcomes,
         "cycle": cycle,
-        "recon": recon,
+        "recon": list(swarm.tasks),
+        "swarm": swarm,
         "surface_enrichment": _surface_enrichment(campaign, graph),
     }
 
@@ -372,6 +375,7 @@ def _result(
             "learning_memory": [item.to_dict() for item in intelligence["memory"]],
             "worker_outcomes": dict(intelligence["worker_outcomes"]),
             "recon_plan": [item.to_dict() for item in intelligence["recon"]],
+            "swarm_coordination": intelligence["swarm"].to_dict(),
             "surface_enrichment": dict(intelligence["surface_enrichment"]),
             "read_only_context": True,
         }
