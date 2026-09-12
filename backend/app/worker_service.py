@@ -21,7 +21,7 @@ from .observation_writer import (
 )
 from .orchestrator import advance_campaign
 from .recon_worker import ReconPolicyError, execute_recon_task
-from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_strix_job
+from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_nuclei_job, run_strix_job
 from .report import render_markdown
 from .storage import CampaignConflictError, Storage
 from .storage_backend import create_storage
@@ -98,11 +98,19 @@ def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
         thread.join(timeout=1.0)
 
 
-def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
+def _process_scanner_job(job: dict, queue: JobQueue, store: Storage, runner) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
-    result = run_strix_job(job, campaign, queue, store)
+    result = runner(job, campaign, queue, store)
     _append_event_once(campaign, result.event)
     _save(store, campaign, version)
+
+
+def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:
+    _process_scanner_job(job, queue, store, run_strix_job)
+
+
+def process_nuclei_scan(job: dict, queue: JobQueue, store: Storage) -> None:
+    _process_scanner_job(job, queue, store, run_nuclei_job)
 
 
 def process_validation(job: dict, store: Storage) -> None:
@@ -389,6 +397,8 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
         with _lease_heartbeat(queue, job["id"], worker_id):
             if job["kind"] == "strix_scan":
                 process_strix_scan(job, queue, store)
+            elif job["kind"] == "nuclei_scan":
+                process_nuclei_scan(job, queue, store)
             elif job["kind"] == "independent_validation":
                 process_validation(job, store)
             elif job["kind"] == "browser_flow":
