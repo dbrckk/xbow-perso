@@ -25,11 +25,13 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     failed_limit = _threshold("XBOW_ALERT_FAILED_JOBS", 1, 1, 100000)
     queued_limit = _threshold("XBOW_ALERT_QUEUED_JOBS", 20, 1, 100000)
     running_limit = _threshold("XBOW_ALERT_RUNNING_JOBS", 20, 1, 100000)
+    queue_age_limit = _threshold("XBOW_ALERT_QUEUE_AGE_SECONDS", 300, 30, 86400)
 
     statuses = metrics.get("jobs_by_status") or {}
     failed = int(statuses.get("failed") or 0)
     queued = int(statuses.get("queued") or 0)
     running = int(statuses.get("running") or 0)
+    queue_age = metrics.get("oldest_queued_age_seconds")
 
     alerts: list[dict[str, Any]] = []
     if failed >= failed_limit:
@@ -48,6 +50,15 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
                 "severity": "warning",
                 "value": queued,
                 "threshold": queued_limit,
+            }
+        )
+    if queue_age is not None and int(queue_age) >= queue_age_limit:
+        alerts.append(
+            {
+                "code": "queue_stalled",
+                "severity": "critical",
+                "value": int(queue_age),
+                "threshold": queue_age_limit,
             }
         )
     if running >= running_limit:
