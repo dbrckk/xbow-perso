@@ -26,7 +26,7 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
                 0,
                 int((datetime.now(timezone.utc) - created.astimezone(timezone.utc)).total_seconds()),
             )
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
             oldest_queued_age_seconds = None
     metrics = {
         "campaigns_total": len(campaigns),
