@@ -12,6 +12,7 @@ from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field, HttpUrl, model_validator
 
+from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
@@ -31,6 +32,9 @@ async def authenticate_control_api(request: Request, call_next):
             headers = {"WWW-Authenticate": "Bearer"} if exc.status_code == 401 else None
             return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=headers)
     return await call_next(request)
+
+
+app.middleware("http")(api_rate_limit_middleware)
 
 
 def utcnow() -> str:
