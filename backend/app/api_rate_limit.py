@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 import os
 import time
 from dataclasses import dataclass
 from threading import Lock
+
+import redis
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
@@ -18,6 +21,7 @@ class ApiRateLimitConfig:
     requests: int
     window_seconds: int
     max_keys: int
+    backend: str
 
 
 def _strict_bool(name: str, default: bool = False) -> bool:
@@ -44,11 +48,15 @@ def _bounded_int(name: str, default: int, low: int, high: int) -> int:
 
 
 def load_api_rate_limit_config() -> ApiRateLimitConfig:
+    backend = os.getenv("XBOW_API_RATE_LIMIT_BACKEND", "memory").strip().lower()
+    if backend not in {"memory", "redis"}:
+        raise RateLimitConfigError("XBOW_API_RATE_LIMIT_BACKEND must be memory or redis")
     return ApiRateLimitConfig(
         enabled=_strict_bool("XBOW_API_RATE_LIMIT_ENABLED", False),
         requests=_bounded_int("XBOW_API_RATE_LIMIT_REQUESTS", 120, 1, 10_000),
         window_seconds=_bounded_int("XBOW_API_RATE_LIMIT_WINDOW_SECONDS", 60, 1, 3600),
         max_keys=_bounded_int("XBOW_API_RATE_LIMIT_MAX_KEYS", 10_000, 100, 100_000),
+        backend=backend,
     )
 
 
@@ -84,7 +92,69 @@ class FixedWindowLimiter:
             return True, retry_after
 
 
+class RedisFixedWindowLimiter:
+    _SCRIPT = """
+local current = redis.call('INCR', KEYS[1])
+if current == 1 then
+  redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+local ttl = redis.call('TTL', KEYS[1])
+return {current, ttl}
+"""
+
+    def __init__(self, url: str, prefix: str = "xbow:ratelimit") -> None:
+        if not url.startswith(("redis://", "rediss://")):
+            raise RateLimitConfigError("XBOW_API_RATE_LIMIT_REDIS_URL must be a Redis URL")
+        if not prefix or len(prefix) > 100 or any(ord(ch) < 33 or ord(ch) == 127 for ch in prefix):
+            raise RateLimitConfigError("XBOW_API_RATE_LIMIT_REDIS_PREFIX is invalid")
+        self.prefix = prefix
+        self.redis = redis.Redis.from_url(
+            url,
+            decode_responses=True,
+            socket_connect_timeout=2,
+            socket_timeout=2,
+            health_check_interval=30,
+        )
+
+    def _key(self, client_key: str, window_seconds: int, now: float) -> str:
+        window = int(now // window_seconds)
+        digest = hashlib.sha256(client_key.encode("utf-8")).hexdigest()
+        return f"{self.prefix}:{window}:{digest}"
+
+    def check(self, key: str, config: ApiRateLimitConfig, *, now: float | None = None) -> tuple[bool, int]:
+        timestamp = time.time() if now is None else now
+        redis_key = self._key(key, config.window_seconds, timestamp)
+        try:
+            count, ttl = self.redis.eval(
+                self._SCRIPT,
+                1,
+                redis_key,
+                config.window_seconds,
+            )
+        except redis.RedisError as exc:
+            raise RuntimeError("distributed API rate limiter unavailable") from exc
+        retry_after = max(1, int(ttl) if int(ttl) > 0 else config.window_seconds)
+        return int(count) <= config.requests, retry_after
+
+
 _limiter = FixedWindowLimiter()
+_distributed_limiter: RedisFixedWindowLimiter | None = None
+
+
+def _active_limiter(config: ApiRateLimitConfig):
+    global _distributed_limiter
+    if config.backend == "memory":
+        return _limiter
+
+    url = os.getenv("XBOW_API_RATE_LIMIT_REDIS_URL", "").strip()
+    if not url:
+        raise RateLimitConfigError(
+            "XBOW_API_RATE_LIMIT_REDIS_URL is required for redis rate limiting"
+        )
+    prefix = os.getenv("XBOW_API_RATE_LIMIT_REDIS_PREFIX", "xbow:ratelimit").strip()
+    if _distributed_limiter is None:
+        _distributed_limiter = RedisFixedWindowLimiter(url, prefix)
+    return _distributed_limiter
 
 
 def _client_key(request: Request) -> str:
@@ -111,11 +181,17 @@ async def api_rate_limit_middleware(request: Request, call_next):
         return await call_next(request)
 
     try:
-        allowed, retry_after = _limiter.check(_client_key(request), config)
+        limiter = _active_limiter(config)
+        allowed, retry_after = limiter.check(_client_key(request), config)
+    except RateLimitConfigError:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "API rate limiter configuration is invalid"},
+        )
     except RuntimeError:
         return JSONResponse(
             status_code=503,
-            content={"detail": "API rate limiter capacity exhausted"},
+            content={"detail": "API rate limiter unavailable"},
         )
 
     if not allowed:
