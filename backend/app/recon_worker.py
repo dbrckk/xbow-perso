@@ -30,6 +30,11 @@ class ReconResult:
     error: str | None = None
 
 
+_MAX_DISCOVERED_LINKS = 500
+_MAX_DISCOVERED_FORMS = 100
+_MAX_FORM_INPUT_NAMES = 100
+
+
 class _SurfaceParser(HTMLParser):
     def __init__(self, base_url: str) -> None:
         super().__init__(convert_charrefs=True)
@@ -41,9 +46,17 @@ class _SurfaceParser(HTMLParser):
     def handle_starttag(self, tag: str, attrs):
         values = {str(k).lower(): str(v or "") for k, v in attrs}
         tag = tag.lower()
-        if tag == "a" and values.get("href"):
-            self.links.add(urljoin(self.base_url, values["href"]))
-        elif tag == "form":
+        candidate = ""
+        if tag == "a":
+            candidate = values.get("href", "")
+        elif tag in {"script", "iframe"}:
+            candidate = values.get("src", "")
+        elif tag == "link":
+            candidate = values.get("href", "")
+        if candidate and len(self.links) < _MAX_DISCOVERED_LINKS:
+            self.links.add(urljoin(self.base_url, candidate))
+
+        if tag == "form" and len(self.forms) < _MAX_DISCOVERED_FORMS:
             action = urljoin(self.base_url, values.get("action") or self.base_url)
             self._current_form = {
                 "action": action,
@@ -53,7 +66,7 @@ class _SurfaceParser(HTMLParser):
             self.forms.append(self._current_form)
         elif tag in {"input", "textarea", "select"} and self._current_form is not None:
             name = values.get("name", "").strip()
-            if name:
+            if name and len(self._current_form["input_names"]) < _MAX_FORM_INPUT_NAMES:
                 self._current_form["input_names"].append(name)
 
     def handle_endtag(self, tag: str):
