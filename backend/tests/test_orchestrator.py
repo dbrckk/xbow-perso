@@ -4,6 +4,7 @@ from app.campaign_runtime import CampaignRuntimeLimit
 from app.jobqueue import JobQueue
 from app.main import Campaign, Finding, ProgramRules, TargetInput
 from app.observation_graph import Observation
+from app.planner_budget import PlannerBudget
 from app.orchestrator import advance_campaign
 from app.storage import Storage
 
@@ -577,7 +578,7 @@ def test_orchestrator_caps_multi_engine_scan_fanout_to_remaining_budget(tmp_path
         campaign,
         queue,
         store,
-        budget=__import__("app.planner_budget", fromlist=["PlannerBudget"]).PlannerBudget(max_scans=1),
+        budget=PlannerBudget(max_scans=1),
     )
 
     assert result["action"]["kind"] == "scan"
