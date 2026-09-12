@@ -424,3 +424,41 @@ def test_orchestrator_rejects_invalid_surface_enrichment_threshold(tmp_path, mon
         assert "XBOW_MIN_RECON_ENRICHMENT_SCORE" in str(exc)
     else:
         raise AssertionError("invalid enrichment threshold must fail closed")
+
+
+def test_orchestrator_halts_after_repeated_requeues_without_success(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    campaign.events.extend(
+        [
+            {
+                "type": "worker_outcome",
+                "job_id": "r1",
+                "job_kind": "recon_task",
+                "success": False,
+                "status": "queued",
+                "attempts": 1,
+                "at": "t1",
+            },
+            {
+                "type": "worker_outcome",
+                "job_id": "r2",
+                "job_kind": "recon_task",
+                "success": False,
+                "status": "queued",
+                "attempts": 1,
+                "at": "t2",
+            },
+        ]
+    )
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    result = advance_campaign(campaign, queue, store)
+
+    assert result["action"]["kind"] == "stop"
+    assert "human review required" in result["action"]["reason"]
+    assert result["job_ids"] == []
+    assert result["intelligence"]["worker_outcomes"]["totals"]["requeued"] == 2
+    assert result["intelligence"]["cycle"]["retry_suppressed_job_kinds"] == ["recon_task"]
