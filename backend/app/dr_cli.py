@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
 from .dr_manifest import (
     DisasterRecoveryError,
@@ -37,6 +38,16 @@ def main() -> int:
     args = _parser().parse_args()
     try:
         if args.command == "manifest":
+            output_path = Path(args.output).resolve(strict=False)
+            backup_paths = {
+                Path(args.postgres_dump).resolve(strict=False),
+                Path(args.redis_snapshot).resolve(strict=False),
+                Path(args.vault_copy).resolve(strict=False),
+            }
+            if output_path in backup_paths:
+                raise DisasterRecoveryError(
+                    "manifest output must not overwrite a backup artifact"
+                )
             manifest = build_backup_manifest(
                 postgres_dump=args.postgres_dump,
                 redis_snapshot=args.redis_snapshot,
