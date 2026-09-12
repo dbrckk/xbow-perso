@@ -221,84 +221,6 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     if not _enabled():
         return ReconResult(status="dry_run", target=target)
 
-    request = Request(
-        target,
-        method="GET",
-        headers={
-            "User-Agent": "xbow-perso-recon/1.0",
-            "Accept": "text/html,application/xhtml+xml,*/*;q=0.1",
-            "Cache-Control": "no-cache",
-        },
-    )
-    opener = build_opener(_NoRedirect())
-    max_bytes = _max_bytes()
-    try:
-        with opener.open(request, timeout=_timeout_seconds()) as response:
-            body = response.read(max_bytes + 1)[:max_bytes]
-            status = int(response.status)
-            headers = response.headers
-    except HTTPError as exc:
-        body = exc.read(max_bytes + 1)[:max_bytes] if exc.fp else b""
-        status = int(exc.code)
-        headers = exc.headers
-    except (URLError, TimeoutError, OSError) as exc:
-        return ReconResult(status="error", target=target, error=str(exc))
-
-    content_type = (headers.get("Content-Type") or "").lower() if headers else ""
-    text = body.decode("utf-8", errors="replace") if "html" in content_type else ""
-    parser = _SurfaceParser(target)
-    if text:
-        parser.feed(text)
-
-    endpoints = []
-    if kind in {"crawl", "map_endpoints"}:
-        for candidate in sorted(parser.links):
-            try:
-                safe = _safe_url(campaign, candidate)
-            except ReconPolicyError:
-                continue
-            if _same_origin(target, safe):
-                endpoints.append(safe)
-
-    forms = []
-    if kind in {"crawl", "map_forms"}:
-        for form in parser.forms:
-            if form["method"] not in {"GET", "HEAD"}:
-                continue
-            try:
-                action = _safe_url(campaign, form["action"])
-            except ReconPolicyError:
-                continue
-            if _same_origin(target, action):
-                forms.append(
-                    {
-                        "action": action,
-                        "method": form["method"],
-                        "input_names": sorted(set(form["input_names"])),
-                    }
-                )
-
-    technologies = []
-    waf = []
-    if kind == "detect_technology" and headers:
-        for header in ("Server", "X-Powered-By"):
-            value = headers.get(header)
-            if value:
-                technologies.append(f"{header}:{value}"[:200])
-        for header in ("CF-Ray", "X-Sucuri-ID", "X-Akamai-Transformed"):
-            if headers.get(header):
-                waf.append(header)
-
-    return ReconResult(
-        status="observed",
-        target=target,
-        endpoints=tuple(endpoints[:100]),
-        forms=tuple(forms[:50]),
-        technologies=tuple(sorted(technologies)[:20]),
-        waf=tuple(sorted(waf)[:20]),
-        http_status=first_status,
-    )    opener = build_opener(_NoRedirect())
-    max_bytes = _max_bytes()
     requested = payload.get("max_requests", 1)
     try:
         requested = int(requested)
@@ -306,20 +228,22 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         raise ReconPolicyError("max_requests must be an integer") from exc
     if not 1 <= requested <= 100:
         raise ReconPolicyError("max_requests must be between 1 and 100")
+
     request_budget = min(requested, _max_crawl_requests())
     max_depth = _max_crawl_depth()
-    rps = _recon_rps(campaign)
-    min_interval = 1.0 / rps
+    min_interval = 1.0 / _recon_rps(campaign)
+    max_bytes = _max_bytes()
+    opener = build_opener(_NoRedirect())
 
     pending: list[tuple[str, int]] = [(target, 0)]
     visited: set[str] = set()
-    discovered_endpoints: set[str] = set()
-    discovered_forms: list[dict] = []
+    endpoints: set[str] = set()
+    forms: list[dict] = []
     technologies: set[str] = set()
     waf: set[str] = set()
     first_status: int | None = None
+    first_error: str | None = None
     last_request_at: float | None = None
-    errors = 0
 
     while pending and len(visited) < request_budget:
         current, depth = pending.pop(0)
@@ -343,7 +267,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         if first_status is None and status is not None:
             first_status = status
         if error:
-            errors += 1
+            first_error = first_error or error
             continue
 
         content_type = (headers.get("Content-Type") or "").lower() if headers else ""
@@ -360,11 +284,12 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                     continue
                 if not _same_origin(target, safe):
                     continue
-                discovered_endpoints.add(safe)
+                endpoints.add(safe)
                 if (
                     kind == "crawl"
                     and depth < max_depth
                     and safe not in visited
+                    and all(item[0] != safe for item in pending)
                     and len(pending) + len(visited) < request_budget
                 ):
                     pending.append((safe, depth + 1))
@@ -377,14 +302,15 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                     action = _safe_url(campaign, form["action"])
                 except ReconPolicyError:
                     continue
-                if _same_origin(target, action):
-                    normalized = {
-                        "action": action,
-                        "method": form["method"],
-                        "input_names": sorted(set(form["input_names"])),
-                    }
-                    if normalized not in discovered_forms:
-                        discovered_forms.append(normalized)
+                if not _same_origin(target, action):
+                    continue
+                normalized = {
+                    "action": action,
+                    "method": form["method"],
+                    "input_names": sorted(set(form["input_names"])),
+                }
+                if normalized not in forms:
+                    forms.append(normalized)
 
         if kind == "detect_technology" and headers:
             for header in ("Server", "X-Powered-By"):
@@ -398,9 +324,16 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         if kind != "crawl":
             break
 
-    if not visited and errors:
-        return ReconResult(status="error", target=target, error="recon request failed")
+    if not visited:
+        return ReconResult(status="error", target=target, error=first_error or "recon request failed")
 
-    endpoints = sorted(discovered_endpoints)[:100]
-    forms = discovered_forms[:50]
-
+    return ReconResult(
+        status="observed",
+        target=target,
+        endpoints=tuple(sorted(endpoints)[:100]),
+        forms=tuple(forms[:50]),
+        technologies=tuple(sorted(technologies)[:20]),
+        waf=tuple(sorted(waf)[:20]),
+        http_status=first_status,
+        error=first_error if first_status is None else None,
+    )
