@@ -535,3 +535,11 @@ def test_advisory_focus_history_is_campaign_scoped(tmp_path):
 
     assert [x["fingerprint"] for x in store.list_advisory_focus_snapshots("c1")] == ["fp1"]
     assert [x["fingerprint"] for x in store.list_advisory_focus_snapshots("c2")] == ["fp2"]
+
+
+def test_storage_health_reports_sqlite_ready(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+
+    result = store.health()
+
+    assert result == {"ok": True, "storage": "sqlite"}

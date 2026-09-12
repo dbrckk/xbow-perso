@@ -21,8 +21,12 @@ class ExplodingQueue:
 
 
 class FakeStorage:
-    def __init__(self, root: Path):
+    def __init__(self, root: Path, *, healthy: bool = True):
         self.artifact_root = root
+        self.healthy = healthy
+
+    def health(self):
+        return {"ok": self.healthy, "storage": "fixture"}
 
 
 def test_readiness_requires_database_and_artifact_store(tmp_path, monkeypatch):
@@ -32,7 +36,8 @@ def test_readiness_requires_database_and_artifact_store(tmp_path, monkeypatch):
     result = readiness.readiness()
 
     assert result["ok"] is True
-    assert result["database"]["ok"] is True
+    assert result["queue"]["ok"] is True
+    assert result["metadata"]["ok"] is True
     assert result["artifacts"]["ok"] is True
 
 
@@ -52,7 +57,7 @@ def test_readiness_sanitizes_queue_probe_exceptions(tmp_path, monkeypatch):
     result = readiness.readiness()
 
     assert result["ok"] is False
-    assert result["database"] == {"ok": False, "error": "RuntimeError"}
+    assert result["queue"] == {"ok": False, "error": "RuntimeError"}
 
 
 def test_readiness_sanitizes_storage_probe_exceptions(monkeypatch):
@@ -66,7 +71,24 @@ def test_readiness_sanitizes_storage_probe_exceptions(monkeypatch):
     result = readiness.readiness()
 
     assert result["ok"] is False
-    assert result["artifacts"] == {"ok": False, "error": "PermissionError"}
+    assert result["metadata"] == {"ok": False, "error": "PermissionError"}
+    assert result["artifacts"] == {"ok": False, "error": "StorageUnavailable"}
+
+
+def test_readiness_fails_when_metadata_storage_is_unhealthy(tmp_path, monkeypatch):
+    monkeypatch.setattr(readiness, "JobQueue", HealthyQueue)
+    monkeypatch.setattr(
+        readiness,
+        "Storage",
+        lambda: FakeStorage(tmp_path / "artifacts", healthy=False),
+    )
+
+    result = readiness.readiness()
+
+    assert result["ok"] is False
+    assert result["queue"]["ok"] is True
+    assert result["metadata"]["ok"] is False
+    assert result["artifacts"]["ok"] is True
 
 
 def test_artifact_store_probe_fails_for_non_directory(tmp_path):
