@@ -226,7 +226,8 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
     The audit receipt keeps its timestamp in campaign events/API responses, but
     transient timestamps must never enter a deduplicated queue payload.
     """
-    stable_receipt = {key: value for key, value in receipt.items() if key != "timestamp"}
+    transient = {"timestamp", "receipt_hash", "signature", "signature_alg", "integrity_mode"}
+    stable_receipt = {key: value for key, value in receipt.items() if key not in transient}
     return {
         "campaign_id": campaign.id,
         "target": str(campaign.target.primary_url),
