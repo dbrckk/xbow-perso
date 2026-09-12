@@ -21,7 +21,7 @@ class ApiRateLimitConfig:
     requests: int
     window_seconds: int
     max_keys: int
-    backend: str
+    backend: str = "memory"
 
 
 def _strict_bool(name: str, default: bool = False) -> bool:
@@ -94,10 +94,22 @@ class FixedWindowLimiter:
 
 class RedisFixedWindowLimiter:
     _SCRIPT = """
+local window_seconds = tonumber(ARGV[1])
+local window = tonumber(ARGV[2])
+local member = ARGV[3]
+local max_keys = tonumber(ARGV[4])
+
+redis.call('ZREMRANGEBYSCORE', KEYS[2], '-inf', window - 1)
+if redis.call('EXISTS', KEYS[1]) == 0 and redis.call('ZCARD', KEYS[2]) >= max_keys then
+  return {-1, window_seconds}
+end
+
+redis.call('ZADD', KEYS[2], window, member)
 local current = redis.call('INCR', KEYS[1])
 if current == 1 then
-  redis.call('EXPIRE', KEYS[1], ARGV[1])
+  redis.call('EXPIRE', KEYS[1], window_seconds)
 end
+redis.call('EXPIRE', KEYS[2], window_seconds * 2)
 local ttl = redis.call('TTL', KEYS[1])
 return {current, ttl}
 """
@@ -123,16 +135,25 @@ return {current, ttl}
 
     def check(self, key: str, config: ApiRateLimitConfig, *, now: float | None = None) -> tuple[bool, int]:
         timestamp = time.time() if now is None else now
+        window = int(timestamp // config.window_seconds)
+        digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
         redis_key = self._key(key, config.window_seconds, timestamp)
+        active_key = f"{self.prefix}:active"
         try:
             count, ttl = self.redis.eval(
                 self._SCRIPT,
-                1,
+                2,
                 redis_key,
+                active_key,
                 config.window_seconds,
+                window,
+                digest,
+                config.max_keys,
             )
         except redis.RedisError as exc:
             raise RuntimeError("distributed API rate limiter unavailable") from exc
+        if int(count) < 0:
+            raise RuntimeError("distributed API rate limiter capacity exhausted")
         retry_after = max(1, int(ttl) if int(ttl) > 0 else config.window_seconds)
         return int(count) <= config.requests, retry_after
 
