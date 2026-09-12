@@ -106,3 +106,74 @@ def campaign_learning_memory(campaign_id: str, limit: int = 50):
         "read_only": True,
         "evidence_backed": True,
     }
+
+
+_ALLOWED_JOB_KINDS = {
+    "strix_scan",
+    "independent_validation",
+    "browser_flow",
+    "recon_task",
+    "report",
+}
+_ALLOWED_JOB_STATUSES = {"queued", "completed", "failed", "cancelled"}
+
+
+def worker_outcome_event(job: dict[str, Any], *, success: bool, status: str) -> dict[str, Any]:
+    """Build a bounded learning event without persisting job payloads or errors."""
+    kind = str(job.get("kind") or "")
+    if kind not in _ALLOWED_JOB_KINDS:
+        raise ValueError("unsupported job kind")
+    if status not in _ALLOWED_JOB_STATUSES:
+        raise ValueError("unsupported job status")
+    attempts = int(job.get("attempts") or 0)
+    if not 0 <= attempts <= 5:
+        raise ValueError("invalid job attempts")
+    return {
+        "type": "worker_outcome",
+        "job_id": str(job["id"]),
+        "job_kind": kind,
+        "success": bool(success),
+        "status": status,
+        "attempts": attempts,
+    }
+
+
+def summarize_worker_outcomes(
+    events: list[dict[str, Any]], *, recent_limit: int = 50
+) -> dict[str, Any]:
+    if not 1 <= recent_limit <= 200:
+        raise ValueError("recent_limit must be between 1 and 200")
+
+    totals = {"completed": 0, "failed": 0, "cancelled": 0, "requeued": 0}
+    by_kind: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"completed": 0, "failed": 0, "cancelled": 0, "requeued": 0}
+    )
+    recent: list[dict[str, Any]] = []
+
+    for event in events:
+        if event.get("type") != "worker_outcome":
+            continue
+        kind = str(event.get("job_kind") or "")
+        status = str(event.get("status") or "")
+        if kind not in _ALLOWED_JOB_KINDS or status not in _ALLOWED_JOB_STATUSES:
+            continue
+        bucket = "requeued" if status == "queued" else status
+        totals[bucket] += 1
+        by_kind[kind][bucket] += 1
+        recent.append(
+            {
+                "job_id": str(event.get("job_id") or ""),
+                "job_kind": kind,
+                "success": bool(event.get("success")),
+                "status": status,
+                "attempts": int(event.get("attempts") or 0),
+                "at": event.get("at"),
+            }
+        )
+
+    return {
+        "totals": totals,
+        "by_job_kind": {key: dict(value) for key, value in sorted(by_kind.items())},
+        "recent_outcomes": recent[-recent_limit:],
+        "contains_job_payloads": False,
+    }
