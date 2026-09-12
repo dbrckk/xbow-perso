@@ -131,6 +131,7 @@ def build_adaptive_cycle(
         next_action=action.kind,
         reason=action.reason,
         retry_suppressed_techniques=suppressed,
+        retry_suppressed_job_kinds=unstable_jobs,
         safe_to_progress=not requires_human,
         requires_human=requires_human,
     )
