@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import os
 import time
 from dataclasses import dataclass
@@ -184,12 +185,53 @@ def _active_limiter(config: ApiRateLimitConfig):
     return _distributed_limiter
 
 
+def _trusted_proxy_networks():
+    raw = os.getenv("XBOW_TRUSTED_PROXY_CIDRS", "").strip()
+    if not raw:
+        return ()
+    networks = []
+    for value in raw.split(","):
+        candidate = value.strip()
+        if not candidate:
+            continue
+        try:
+            networks.append(ipaddress.ip_network(candidate, strict=False))
+        except ValueError as exc:
+            raise RateLimitConfigError("XBOW_TRUSTED_PROXY_CIDRS contains an invalid CIDR") from exc
+    if len(networks) > 32:
+        raise RateLimitConfigError("XBOW_TRUSTED_PROXY_CIDRS exceeds 32 entries")
+    return tuple(networks)
+
+
+def _parse_client_ip(value: str):
+    try:
+        return ipaddress.ip_address(value.strip())
+    except ValueError:
+        return None
+
+
 def _client_key(request: Request) -> str:
-    # Deliberately ignore X-Forwarded-For/X-Real-IP unless a trusted proxy layer rewrites
-    # request.client itself. This avoids spoofable-header bypasses.
     client = request.client
-    host = client.host if client and client.host else "unknown"
-    return str(host)
+    peer = _parse_client_ip(client.host) if client and client.host else None
+    networks = _trusted_proxy_networks()
+    if peer is None or not any(peer in network for network in networks):
+        return str(client.host if client and client.host else "unknown")
+
+    forwarded = request.headers.get("x-forwarded-for", "")
+    hops = [item.strip() for item in forwarded.split(",") if item.strip()]
+    if not hops:
+        return str(peer)
+
+    parsed = [_parse_client_ip(item) for item in hops]
+    if any(item is None for item in parsed):
+        raise RateLimitConfigError("X-Forwarded-For contains an invalid IP")
+
+    # Walk from the nearest hop backwards. Trusted proxy hops are discarded;
+    # the first untrusted address is the effective client.
+    for address in reversed(parsed):
+        if not any(address in network for network in networks):
+            return str(address)
+    return str(parsed[0])
 
 
 async def api_rate_limit_middleware(request: Request, call_next):
