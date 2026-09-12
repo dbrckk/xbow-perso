@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 from .main import Campaign, Finding, is_host_allowed
 from .scanner_registry import latest_scanner_artifact
+from .secret_vault import SecretVaultError, resolve_secret, vault_enabled
 from .strix_parser import StrixParserError, max_strix_json_bytes, parse_strix_json
 from .storage import Storage
 
@@ -303,15 +304,37 @@ def _worker_env() -> dict[str, str]:
         "PATH",
         "HOME",
         "STRIX_LLM",
-        "LLM_API_KEY",
         "LLM_API_BASE",
         "STRIX_REASONING_EFFORT",
-        "PERPLEXITY_API_KEY",
         "HTTP_PROXY",
         "HTTPS_PROXY",
         "NO_PROXY",
     }
-    return {k: v for k, v in os.environ.items() if k in allowed}
+    environment = {k: v for k, v in os.environ.items() if k in allowed}
+
+    try:
+        use_vault = vault_enabled()
+    except SecretVaultError as exc:
+        raise WorkerPolicyError("scanner vault configuration is invalid") from exc
+
+    for vault_name, env_name in (
+        ("llm_api_key", "LLM_API_KEY"),
+        ("perplexity_api_key", "PERPLEXITY_API_KEY"),
+    ):
+        try:
+            secret = resolve_secret(vault_name, env_name)
+        except SecretVaultError as exc:
+            if use_vault and os.getenv(env_name):
+                raise WorkerPolicyError(
+                    f"vault enabled but legacy {env_name} fallback is forbidden"
+                ) from exc
+            raise WorkerPolicyError(
+                f"scanner secret {vault_name} is unavailable"
+            ) from exc
+        if secret:
+            environment[env_name] = secret
+
+    return environment
 
 
 def _max_strix_json_bytes() -> int:
