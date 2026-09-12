@@ -7,8 +7,6 @@ from typing import Any
 
 from .secret_vault import resolve_secret
 
-from .secret_vault import resolve_secret
-
 
 _INTEGRITY_FIELDS = {"receipt_hash", "signature", "signature_alg", "integrity_mode"}
 
