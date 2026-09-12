@@ -38,7 +38,5 @@ def create_queue() -> QueueBackend:
     backend = queue_backend_name()
     if backend == "sqlite":
         return JobQueue()
-    raise RuntimeError(
-        "Redis queue backend is selected but not installed; "
-        "use XBOW_QUEUE_BACKEND=sqlite until the Redis adapter is configured"
-    )
+    from .redis_jobqueue import RedisJobQueue
+    return RedisJobQueue()
