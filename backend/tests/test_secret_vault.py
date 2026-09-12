@@ -7,6 +7,7 @@ import pytest
 from app.secret_vault import (
     SecretVaultError,
     get_secret,
+    rekey_vault,
     resolve_secret,
     set_secret,
 )
@@ -128,3 +129,69 @@ def test_vault_rejects_broad_existing_vault_permissions(monkeypatch, tmp_path):
 
     with pytest.raises(SecretVaultError, match="vault file is invalid"):
         get_secret("audit_hmac_key")
+
+
+def _new_master_key():
+    return base64.urlsafe_b64encode(b"n" * 32).decode("ascii")
+
+
+def test_vault_rekey_rotates_all_secrets_atomically(monkeypatch, tmp_path):
+    _configure(monkeypatch, tmp_path)
+    set_secret("api_token", "token-" + "a" * 32)
+    set_secret("audit_hmac_key", "audit-secret")
+    old_document = (tmp_path / "secrets.vault.json").read_text(encoding="utf-8")
+    monkeypatch.setenv("XBOW_VAULT_NEW_MASTER_KEY", _new_master_key())
+
+    result = rekey_vault()
+
+    assert result == {"secrets_rotated": 2}
+    new_document = (tmp_path / "secrets.vault.json").read_text(encoding="utf-8")
+    assert new_document != old_document
+    assert "token-" not in new_document
+    assert "audit-secret" not in new_document
+
+    with pytest.raises(SecretVaultError, match="decryption failed"):
+        get_secret("api_token")
+
+    monkeypatch.setenv("XBOW_VAULT_MASTER_KEY", _new_master_key())
+    monkeypatch.delenv("XBOW_VAULT_NEW_MASTER_KEY", raising=False)
+    assert get_secret("api_token") == "token-" + "a" * 32
+    assert get_secret("audit_hmac_key") == "audit-secret"
+
+
+def test_vault_rekey_rolls_back_if_any_entry_is_corrupt(monkeypatch, tmp_path):
+    _configure(monkeypatch, tmp_path)
+    set_secret("api_token", "token-" + "b" * 32)
+    set_secret("audit_hmac_key", "audit-secret")
+    path = tmp_path / "secrets.vault.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    document["secrets"]["audit_hmac_key"]["ciphertext"] = "corrupt"
+    path.write_text(json.dumps(document), encoding="utf-8")
+    os.chmod(path, 0o600)
+    before = path.read_bytes()
+    monkeypatch.setenv("XBOW_VAULT_NEW_MASTER_KEY", _new_master_key())
+
+    with pytest.raises(SecretVaultError, match="rekey validation failed"):
+        rekey_vault()
+
+    assert path.read_bytes() == before
+
+
+def test_vault_rekey_rejects_same_key(monkeypatch, tmp_path):
+    _configure(monkeypatch, tmp_path)
+    set_secret("api_token", "token-" + "c" * 32)
+    monkeypatch.setenv("XBOW_VAULT_NEW_MASTER_KEY", _master_key())
+
+    with pytest.raises(SecretVaultError, match="must differ"):
+        rekey_vault()
+
+
+def test_vault_rekey_supports_private_new_key_file(monkeypatch, tmp_path):
+    _configure(monkeypatch, tmp_path)
+    set_secret("api_token", "token-" + "d" * 32)
+    key_file = tmp_path / "new-master.key"
+    key_file.write_text(_new_master_key(), encoding="utf-8")
+    os.chmod(key_file, 0o600)
+    monkeypatch.setenv("XBOW_VAULT_NEW_MASTER_KEY_FILE", str(key_file))
+
+    assert rekey_vault() == {"secrets_rotated": 1}

@@ -23,11 +23,11 @@ def _decode_master_key(value: str) -> bytes:
     return key
 
 
-def load_master_key() -> bytes:
-    inline = os.getenv("XBOW_VAULT_MASTER_KEY", "").strip()
-    key_file = os.getenv("XBOW_VAULT_MASTER_KEY_FILE", "").strip()
+def _load_key_sources(inline_name: str, file_name: str, label: str) -> bytes:
+    inline = os.getenv(inline_name, "").strip()
+    key_file = os.getenv(file_name, "").strip()
     if inline and key_file:
-        raise SecretVaultError("vault master key has conflicting sources")
+        raise SecretVaultError(f"{label} has conflicting sources")
     if key_file:
         path = Path(key_file)
         try:
@@ -40,10 +40,26 @@ def load_master_key() -> bytes:
                 raise OSError("master key file too large")
             inline = path.read_text(encoding="utf-8").strip()
         except (OSError, UnicodeError) as exc:
-            raise SecretVaultError("vault master key file is unavailable") from exc
+            raise SecretVaultError(f"{label} file is unavailable") from exc
     if not inline:
-        raise SecretVaultError("vault master key is not configured")
+        raise SecretVaultError(f"{label} is not configured")
     return _decode_master_key(inline)
+
+
+def load_master_key() -> bytes:
+    return _load_key_sources(
+        "XBOW_VAULT_MASTER_KEY",
+        "XBOW_VAULT_MASTER_KEY_FILE",
+        "vault master key",
+    )
+
+
+def load_new_master_key() -> bytes:
+    return _load_key_sources(
+        "XBOW_VAULT_NEW_MASTER_KEY",
+        "XBOW_VAULT_NEW_MASTER_KEY_FILE",
+        "new vault master key",
+    )
 
 
 def _vault_path() -> Path:
@@ -146,3 +162,46 @@ def resolve_secret(vault_name: str, env_name: str) -> str | None:
                 f"vault enabled but {vault_name} unavailable; refusing environment fallback"
             ) from exc
         raise
+
+
+
+def rekey_vault() -> dict[str, int]:
+    old_key = load_master_key()
+    new_key = load_new_master_key()
+    if old_key == new_key:
+        raise SecretVaultError("new vault master key must differ from current key")
+
+    path = _vault_path()
+    doc = _load_document(path)
+    plaintexts: dict[str, bytes] = {}
+
+    # Decrypt everything before writing anything. Any corrupt entry aborts the rotation.
+    for name, record in doc["secrets"].items():
+        if not isinstance(name, str) or not isinstance(record, dict):
+            raise SecretVaultError("vault file is invalid")
+        try:
+            nonce = base64.urlsafe_b64decode(record["nonce"].encode("ascii"))
+            ciphertext = base64.urlsafe_b64decode(record["ciphertext"].encode("ascii"))
+            plaintexts[name] = AESGCM(old_key).decrypt(
+                nonce,
+                ciphertext,
+                name.encode("utf-8"),
+            )
+        except Exception as exc:
+            raise SecretVaultError("vault rekey validation failed") from exc
+
+    rotated = {"version": 1, "secrets": {}}
+    for name, plaintext in plaintexts.items():
+        nonce = os.urandom(12)
+        ciphertext = AESGCM(new_key).encrypt(
+            nonce,
+            plaintext,
+            name.encode("utf-8"),
+        )
+        rotated["secrets"][name] = {
+            "nonce": base64.urlsafe_b64encode(nonce).decode("ascii"),
+            "ciphertext": base64.urlsafe_b64encode(ciphertext).decode("ascii"),
+        }
+
+    _atomic_write(path, rotated)
+    return {"secrets_rotated": len(plaintexts)}
