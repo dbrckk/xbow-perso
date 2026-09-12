@@ -70,3 +70,53 @@ def test_cycle_suppresses_repeated_failed_techniques():
 
 def test_adaptive_cycle_route_is_exposed():
     assert "/api/campaigns/{campaign_id}/adaptive-cycle" in app.openapi()["paths"]
+
+
+def test_cycle_halts_for_human_review_after_repeated_requeues_without_success():
+    worker_outcomes = {
+        "by_job_kind": {
+            "recon_task": {
+                "completed": 0,
+                "failed": 0,
+                "cancelled": 0,
+                "requeued": 2,
+            }
+        }
+    }
+
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("crawl", "example.test", "crawl", 90)],
+        [],
+        worker_outcomes,
+    )
+
+    assert cycle.state == "human_review"
+    assert cycle.next_action == "stop"
+    assert cycle.safe_to_progress is False
+    assert cycle.requires_human is True
+    assert cycle.retry_suppressed_job_kinds == ("recon_task",)
+
+
+def test_cycle_does_not_suppress_recovered_worker_kind():
+    worker_outcomes = {
+        "by_job_kind": {
+            "recon_task": {
+                "completed": 1,
+                "failed": 0,
+                "cancelled": 0,
+                "requeued": 2,
+            }
+        }
+    }
+
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("crawl", "example.test", "crawl", 90)],
+        [],
+        worker_outcomes,
+    )
+
+    assert cycle.state == "recon"
+    assert cycle.safe_to_progress is True
+    assert cycle.retry_suppressed_job_kinds == ()

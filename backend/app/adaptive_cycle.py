@@ -9,7 +9,7 @@ from .autonomy_gate import AutonomyGate, build_autonomy_gate
 from .campaign_risk import build_campaign_risk
 from .campaign_runtime import CampaignRuntimeLimit, runtime_status
 from .decision_consensus import build_decision_consensus
-from .learning_memory import TechniqueMemory, build_learning_memory
+from .learning_memory import TechniqueMemory, build_learning_memory, summarize_worker_outcomes
 from .observation_graph import AdaptivePlanner, PlannedAction, load_observation_graph
 from .planner_budget import PlannerBudget, budget_usage
 from .red_team_decision import build_red_team_decisions
@@ -25,12 +25,14 @@ class AdaptiveCycle:
     next_action: str
     reason: str
     retry_suppressed_techniques: tuple[str, ...]
+    retry_suppressed_job_kinds: tuple[str, ...]
     safe_to_progress: bool
     requires_human: bool
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["retry_suppressed_techniques"] = list(self.retry_suppressed_techniques)
+        payload["retry_suppressed_job_kinds"] = list(self.retry_suppressed_job_kinds)
         return payload
 
 
@@ -44,13 +46,32 @@ def _suppressed_techniques(memories: list[TechniqueMemory]) -> tuple[str, ...]:
     )
 
 
+def _unstable_job_kinds(worker_outcomes: dict[str, Any] | None) -> tuple[str, ...]:
+    if not worker_outcomes:
+        return ()
+    by_kind = worker_outcomes.get("by_job_kind")
+    if not isinstance(by_kind, dict):
+        return ()
+    unstable = []
+    for kind, values in by_kind.items():
+        if not isinstance(values, dict):
+            continue
+        requeued = int(values.get("requeued") or 0)
+        completed = int(values.get("completed") or 0)
+        if requeued >= 2 and completed == 0:
+            unstable.append(str(kind))
+    return tuple(sorted(set(unstable)))
+
+
 def build_adaptive_cycle(
     gate: AutonomyGate,
     planned_actions: list[PlannedAction],
     memories: list[TechniqueMemory],
+    worker_outcomes: dict[str, Any] | None = None,
 ) -> AdaptiveCycle:
     """Resolve one bounded campaign cycle without executing target actions."""
     suppressed = _suppressed_techniques(memories)
+    unstable_jobs = _unstable_job_kinds(worker_outcomes)
 
     if gate.blockers:
         return AdaptiveCycle(
@@ -58,8 +79,19 @@ def build_adaptive_cycle(
             next_action="stop",
             reason="autonomy gate is blocked",
             retry_suppressed_techniques=suppressed,
+            retry_suppressed_job_kinds=unstable_jobs,
             safe_to_progress=False,
             requires_human=gate.human_review_required,
+        )
+    if unstable_jobs:
+        return AdaptiveCycle(
+            state="human_review",
+            next_action="stop",
+            reason="worker outcome feedback indicates unstable execution",
+            retry_suppressed_techniques=suppressed,
+            retry_suppressed_job_kinds=unstable_jobs,
+            safe_to_progress=False,
+            requires_human=True,
         )
     if gate.human_review_required:
         return AdaptiveCycle(
@@ -67,6 +99,7 @@ def build_adaptive_cycle(
             next_action=gate.next_focus,
             reason="campaign requires explicit human review",
             retry_suppressed_techniques=suppressed,
+            retry_suppressed_job_kinds=unstable_jobs,
             safe_to_progress=False,
             requires_human=True,
         )
@@ -79,6 +112,7 @@ def build_adaptive_cycle(
             next_action="stop",
             reason=action.reason,
             retry_suppressed_techniques=suppressed,
+            retry_suppressed_job_kinds=unstable_jobs,
             safe_to_progress=False,
             requires_human=False,
         )
@@ -97,6 +131,7 @@ def build_adaptive_cycle(
         next_action=action.kind,
         reason=action.reason,
         retry_suppressed_techniques=suppressed,
+        retry_suppressed_job_kinds=unstable_jobs,
         safe_to_progress=not requires_human,
         requires_human=requires_human,
     )
@@ -135,7 +170,8 @@ def campaign_adaptive_cycle(campaign_id: str):
     )
     planned = AdaptivePlanner().plan(campaign, graph)
     memories = build_learning_memory(graph)
-    cycle = build_adaptive_cycle(gate, planned, memories)
+    worker_outcomes = summarize_worker_outcomes(campaign.events)
+    cycle = build_adaptive_cycle(gate, planned, memories, worker_outcomes)
     return {
         "campaign_id": campaign.id,
         "cycle": cycle.to_dict(),
