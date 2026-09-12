@@ -338,6 +338,12 @@ def _record_decision(
 ) -> None:
     fingerprint = _graph_fingerprint(graph)
     observation_id = _stable_id("decision", action.kind, action.reason, fingerprint)
+    if any(
+        item.id == observation_id
+        and item.metadata.get("memory_type") == "planner_decision"
+        for item in graph.by_kind("evidence")
+    ):
+        return
     audit_seq, previous_hash = next_audit_link(graph)
     metadata = seal_decision_metadata(
         observation_id,
