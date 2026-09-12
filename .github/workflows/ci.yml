@@ -15,6 +15,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,7 +38,7 @@ jobs:
       - run: python -m pip check
       - run: python -m compileall -q backend/app backend/tests
       - run: ruff check backend/app backend/tests
-      - run: PYTHONPATH=backend pytest -q --strict-config --strict-markers backend/tests
+      - run: PYTHONPATH=backend XBOW_REDIS_URL=redis://localhost:6379/15 pytest -q --strict-config --strict-markers backend/tests
       - run: |
           PYTHONPATH=backend \
           XBOW_DB_PATH=/tmp/xbow-ci.sqlite3 \
