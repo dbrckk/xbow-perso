@@ -21,7 +21,8 @@ from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_f
 from .learning_memory import build_learning_memory, summarize_worker_outcomes
 from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
-from .planner_budget import PlannerBudget, apply_budget, budget_usage, scan_batch_limit, validation_batch_limit
+from .planner_budget import PlannerBudget, apply_budget, budget_usage
+from .pipeline_swarm import coordinate_pipeline_action
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
 from .scanner_adaptation import adapt_scanner_engines
@@ -408,6 +409,11 @@ def _result(
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
             "scanner_adaptation": intelligence["scanner_adaptation"].to_dict(),
+            "pipeline_coordination": (
+                intelligence["pipeline_coordination"].to_dict()
+                if intelligence.get("pipeline_coordination") is not None
+                else None
+            ),
             "surface_enrichment": dict(intelligence["surface_enrichment"]),
             "read_only_context": True,
         }
@@ -539,12 +545,36 @@ def advance_campaign(
                 budget=limits,
                 intelligence=intelligence,
             )
-        validation_limit = validation_batch_limit(usage, limits) if action.kind == "validate" else None
+        validation_limit = None
         scan_engines = None
         if action.kind == "scan":
             selected = intelligence["scanner_adaptation"].selected_engines
-            allowed_scan_count = scan_batch_limit(usage, len(selected), limits)
-            scan_engines = selected[:allowed_scan_count]
+            coordination = coordinate_pipeline_action(
+                "scan",
+                len(selected),
+                usage,
+                limits,
+            )
+            scan_engines = selected[:coordination.allocated_items]
+            intelligence["pipeline_coordination"] = coordination
+        elif action.kind == "validate":
+            pending_count = len(_pending_findings(campaign, graph))
+            coordination = coordinate_pipeline_action(
+                "validate",
+                pending_count,
+                usage,
+                limits,
+            )
+            validation_limit = coordination.allocated_items
+            intelligence["pipeline_coordination"] = coordination
+        elif action.kind == "report":
+            coordination = coordinate_pipeline_action(
+                "report",
+                1,
+                usage,
+                limits,
+            )
+            intelligence["pipeline_coordination"] = coordination
         jobs = _enqueue_action(
             action,
             campaign,
