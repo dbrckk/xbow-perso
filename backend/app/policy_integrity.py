@@ -3,8 +3,9 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
-import os
 from typing import Any
+
+from .secret_vault import resolve_secret
 
 
 _INTEGRITY_FIELDS = {"receipt_hash", "signature", "signature_alg", "integrity_mode"}
@@ -29,7 +30,7 @@ def seal_policy_receipt(receipt: dict[str, Any]) -> dict[str, Any]:
     canonical = canonical_policy_receipt(sealed)
     sealed["receipt_hash"] = hashlib.sha256(canonical).hexdigest()
 
-    secret = os.getenv("XBOW_AUDIT_HMAC_KEY")
+    secret = resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
     if secret:
         sealed["signature_alg"] = "hmac-sha256"
         sealed["signature"] = hmac.new(
@@ -81,7 +82,7 @@ def verify_policy_receipt(receipt: dict[str, Any]) -> dict[str, Any]:
             "reason": "unsupported signature algorithm",
         }
 
-    secret = os.getenv("XBOW_AUDIT_HMAC_KEY")
+    secret = resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
     if not secret:
         return {
             "valid": False,

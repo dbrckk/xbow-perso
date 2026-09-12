@@ -3,10 +3,10 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
-import os
 from typing import Any
 
 from .observation_graph import ObservationGraph
+from .secret_vault import resolve_secret
 
 
 _AUDIT_FIELDS = {
@@ -44,7 +44,7 @@ def seal_decision_metadata(
     canonical = _canonical_decision_payload(observation_id, sealed)
     sealed["decision_hash"] = hashlib.sha256(canonical).hexdigest()
 
-    secret = os.getenv("XBOW_AUDIT_HMAC_KEY")
+    secret = resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
     if secret:
         sealed["decision_signature_alg"] = "hmac-sha256"
         sealed["decision_signature"] = hmac.new(
@@ -139,7 +139,7 @@ def verify_decision_audit_chain(graph: ObservationGraph) -> dict[str, Any]:
                     "legacy_unsealed": legacy,
                     "reason": "unsupported decision signature algorithm",
                 }
-            secret = os.getenv("XBOW_AUDIT_HMAC_KEY")
+            secret = resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
             if not secret:
                 return {
                     "valid": False,
