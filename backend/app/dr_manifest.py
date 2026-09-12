@@ -125,11 +125,17 @@ def verify_backup_manifest(
     for kind in ("postgres", "redis", "vault"):
         left = expected.get(kind)
         right = actual.get(kind)
+        if left is not None:
+            size_value = left.get("size_bytes")
+            if not isinstance(size_value, int) or isinstance(size_value, bool) or size_value < 0:
+                raise DisasterRecoveryError("manifest artifact size is invalid")
+            if not isinstance(left.get("filename"), str) or not isinstance(left.get("sha256"), str):
+                raise DisasterRecoveryError("manifest artifact metadata is invalid")
         match = bool(
             left
             and right
             and left.get("filename") == right.get("filename")
-            and int(left.get("size_bytes") or -1) == right.get("size_bytes")
+            and left.get("size_bytes") == right.get("size_bytes")
             and left.get("sha256") == right.get("sha256")
         )
         results[kind] = {"valid": match}
