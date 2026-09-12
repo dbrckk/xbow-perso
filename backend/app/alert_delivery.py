@@ -8,7 +8,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-from .secret_vault import SecretVaultError, resolve_secret
+from .secret_vault import SecretVaultError, get_secret, vault_enabled
 
 
 class AlertDeliveryError(RuntimeError):
@@ -64,10 +64,24 @@ def _redacted_payload(alerts: dict) -> dict:
 
 
 def _signature(body: bytes) -> str | None:
+    inline = os.getenv("XBOW_ALERT_WEBHOOK_HMAC_KEY")
     try:
-        secret = resolve_secret("alert_webhook_hmac_key", "XBOW_ALERT_WEBHOOK_HMAC_KEY")
+        use_vault = vault_enabled()
     except SecretVaultError as exc:
-        raise AlertDeliveryError("alert webhook signing secret is unavailable") from exc
+        raise AlertDeliveryError("alert webhook vault configuration is invalid") from exc
+    if use_vault:
+        if inline:
+            raise AlertDeliveryError(
+                "vault enabled but legacy alert webhook signing secret is forbidden"
+            )
+        try:
+            secret = get_secret("alert_webhook_hmac_key")
+        except SecretVaultError as exc:
+            if str(exc) == "secret not found":
+                return None
+            raise AlertDeliveryError("alert webhook signing secret is unavailable") from exc
+    else:
+        secret = inline
     if not secret:
         return None
     return hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
