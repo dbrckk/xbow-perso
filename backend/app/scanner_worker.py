@@ -10,7 +10,7 @@ from .observation_graph import Observation
 from .observation_writer import record_asset
 from .scanner_ingestion import ScannerIngestionResult, ingest_scanner_run
 from .storage import Storage
-from .worker import build_strix_plan, execute, persist_execution_artifacts
+from .worker import build_nuclei_plan, build_strix_plan, execute, persist_execution_artifacts
 
 
 @dataclass(frozen=True)
@@ -118,6 +118,75 @@ def run_strix_job(
     }
     return ScannerJobResult(
         engine="strix",
+        status="completed",
+        ingestion=ingestion,
+        event=event,
+    )
+
+
+def run_nuclei_job(
+    job: dict,
+    campaign: Campaign,
+    queue: JobQueue,
+    store: Storage,
+) -> ScannerJobResult:
+    run_dir = str(
+        Path(os.getenv("XBOW_NUCLEI_RUN_ROOT", "/data/nuclei_runs")) / job["id"]
+    )
+    plan = build_nuclei_plan(campaign, run_dir)
+    execution = execute(plan)
+    persist_execution_artifacts(store, campaign.id, execution)
+
+    if execution["status"] == "dry_run":
+        record_asset(
+            store,
+            campaign,
+            str(campaign.target.primary_url),
+            "nuclei-dry-run",
+        )
+        campaign.state = CampaignState.ready
+        event = {
+            "type": "scan_dry_run",
+            "engine": "nuclei",
+            "job_id": job["id"],
+            "at": utcnow(),
+        }
+        return ScannerJobResult(
+            engine="nuclei",
+            status="dry_run",
+            ingestion=None,
+            event=event,
+        )
+
+    if execution["status"] != "completed":
+        raise RuntimeError(execution.get("stderr") or "Nuclei execution failed")
+
+    ingestion = ingest_scanner_run(
+        "nuclei",
+        run_dir,
+        campaign,
+        queue,
+        store,
+    )
+    _record_scan_observation(
+        store,
+        campaign,
+        engine="nuclei",
+        job_id=job["id"],
+        findings=ingestion.findings_seen,
+    )
+    campaign.state = _state_after_scan(campaign)
+    event = {
+        "type": "scanner_results_ingested",
+        "engine": ingestion.engine,
+        "job_id": job["id"],
+        "findings": ingestion.findings_seen,
+        "findings_added": ingestion.findings_added,
+        "validation_jobs": ingestion.validation_jobs,
+        "at": utcnow(),
+    }
+    return ScannerJobResult(
+        engine="nuclei",
         status="completed",
         ingestion=ingestion,
         event=event,
