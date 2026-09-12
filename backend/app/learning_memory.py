@@ -103,6 +103,7 @@ def campaign_learning_memory(campaign_id: str, limit: int = 50):
             "successes": sum(item.successes for item in memories),
             "failures": sum(item.failures for item in memories),
         },
+        "worker_outcomes": summarize_worker_outcomes(campaign.events),
         "read_only": True,
         "evidence_backed": True,
     }
