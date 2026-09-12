@@ -1,4 +1,4 @@
-from app.coverage import build_evidence_coverage
+from app.coverage import build_coverage_guidance, build_evidence_coverage
 from app.main import app
 from app.observation_graph import Observation, ObservationGraph
 
@@ -75,3 +75,36 @@ def test_coverage_counts_scan_and_independent_validation():
 
 def test_coverage_route_is_exposed():
     assert "/api/campaigns/{campaign_id}/coverage" in app.openapi()["paths"]
+
+
+def test_coverage_guidance_is_advisory_only():
+    guidance = build_coverage_guidance(
+        {
+            "score": 0.2,
+            "dimensions": {
+                "surface_discovery": 0.2,
+                "scanner_execution": 0.0,
+                "independent_validation": None,
+            },
+        }
+    )
+
+    assert guidance["focus"] == "surface_discovery"
+    assert guidance["advisory_only"] is True
+    assert guidance["may_unlock_actions"] is False
+    assert guidance["interpretation"] == "evidence_guidance_not_security_assurance"
+
+
+def test_coverage_guidance_prioritizes_validation_after_scan():
+    guidance = build_coverage_guidance(
+        {
+            "score": 0.8,
+            "dimensions": {
+                "surface_discovery": 0.8,
+                "scanner_execution": 1.0,
+                "independent_validation": 0.5,
+            },
+        }
+    )
+
+    assert guidance["focus"] == "independent_validation"
