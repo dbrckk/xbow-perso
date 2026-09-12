@@ -20,6 +20,7 @@ from .observation_writer import (
     record_typed_child,
 )
 from .orchestrator import advance_campaign
+from .planner_lock import campaign_planner_lock
 from .recon_worker import ReconPolicyError, execute_recon_task
 from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_nuclei_job, run_strix_job
 from .report import render_markdown
@@ -415,8 +416,10 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
             else:
                 raise ValueError("unsupported job kind")
 
-            latest_campaign, _ = _campaign(store, job["campaign_id"])
-            advance_campaign(latest_campaign, queue, store)
+            with campaign_planner_lock(queue, job["campaign_id"]) as planner_acquired:
+                if planner_acquired:
+                    latest_campaign, _ = _campaign(store, job["campaign_id"])
+                    advance_campaign(latest_campaign, queue, store)
     except CampaignCancelledError as exc:
         finished = queue.cancel_owned(job["id"], worker_id, str(exc))
         if finished is not None:
