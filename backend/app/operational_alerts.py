@@ -5,6 +5,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .alert_delivery import deliver_alerts
 from .metrics import build_operational_metrics
 
 router = APIRouter()
@@ -85,3 +86,12 @@ def operational_alerts():
 
     metrics = build_operational_metrics(queue(), storage())
     return build_operational_alerts(metrics)
+
+
+@router.post("/api/alerts/deliver")
+def deliver_operational_alerts():
+    from .main import queue, storage
+
+    metrics = build_operational_metrics(queue(), storage())
+    alerts = build_operational_alerts(metrics)
+    return deliver_alerts(alerts)
