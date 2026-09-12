@@ -585,3 +585,8 @@ def test_orchestrator_caps_multi_engine_scan_fanout_to_remaining_budget(tmp_path
     assert len(result["job_ids"]) == 1
     assert result["budget"]["usage"]["scans"] == 1
     assert result["budget"]["usage"]["remaining_scans"] == 0
+    coordination = result["intelligence"]["pipeline_coordination"]
+    assert coordination["action"] == "scan"
+    assert coordination["agent"] == "analysis-agent"
+    assert coordination["allocated_items"] == 1
+    assert coordination["bounded"] is True
