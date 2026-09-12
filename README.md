@@ -63,6 +63,32 @@ Open `http://SERVER_IP:8080` from your phone.
 
 The default configuration uses `DRY_RUN=true`; external testing engines are not launched until you explicitly configure them.
 
+## Disaster recovery integrity
+
+Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
+
+After producing trusted copies of the PostgreSQL dump, Redis snapshot, and encrypted vault, create an integrity manifest:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli manifest \
+  --postgres-dump /backups/postgres.dump \
+  --redis-snapshot /backups/dump.rdb \
+  --vault-copy /backups/secrets.vault.json \
+  --output /backups/xbow-manifest.json
+```
+
+Before any restore operation, verify the copies non-destructively:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli verify \
+  --manifest /backups/xbow-manifest.json \
+  --postgres-dump /backups/postgres.dump \
+  --redis-snapshot /backups/dump.rdb \
+  --vault-copy /backups/secrets.vault.json
+```
+
+The manifest stores only filenames, sizes, and SHA-256 hashes; it never embeds backup contents or decrypted secrets.
+
 ## Safety model
 
 A campaign must include written authorization metadata, allowed targets and prohibited actions. Requests outside the declared scope are rejected by the API before reaching a worker. This is an engineering control, not a substitute for the rules of the bug bounty program.
