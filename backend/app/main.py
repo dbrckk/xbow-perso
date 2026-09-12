@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, HttpUrl, model_validator
 
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
+from .campaign_audit import append_campaign_event, verify_campaign_event_chain
 from .policy_integrity import seal_policy_receipt, verify_policy_receipt
 from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
@@ -332,7 +333,7 @@ def list_agents():
 @app.post("/api/campaigns", response_model=Campaign)
 def create_campaign(target: TargetInput):
     campaign = Campaign(target=target, state=CampaignState.ready)
-    campaign.events.append({"type": "campaign_created", "at": utcnow()})
+    append_campaign_event(campaign.events, {"type": "campaign_created", "at": utcnow()})
     save_campaign(campaign, expected_version=0)
     return campaign
 
@@ -361,6 +362,16 @@ def campaign_decision_audit(campaign_id: str):
     return {
         "campaign_id": campaign_id,
         **verify_decision_audit_chain(graph),
+        "read_only": True,
+    }
+
+
+@app.get("/api/campaigns/{campaign_id}/audit/events")
+def campaign_event_audit(campaign_id: str):
+    campaign = assert_campaign_exists(campaign_id)
+    return {
+        "campaign_id": campaign_id,
+        **verify_campaign_event_chain(campaign.events),
         "read_only": True,
     }
 
@@ -535,7 +546,7 @@ def campaign_plan(campaign_id: str):
 def check_policy(campaign_id: str, host: str, action: str = "automated_scan"):
     campaign, version = assert_campaign_record(campaign_id)
     receipt = policy_receipt(campaign, host, action)
-    campaign.events.append({"type": "policy_check", **receipt})
+    append_campaign_event(campaign.events, {"type": "policy_check", **receipt})
     campaign.updated_at = utcnow()
     save_campaign(campaign, expected_version=version)
     return receipt
@@ -555,7 +566,7 @@ def start_campaign(campaign_id: str):
     host = (urlparse(str(campaign.target.primary_url)).hostname or "").lower()
     receipt = policy_receipt(campaign, host, "automated_scan")
     if not receipt["allowed"]:
-        campaign.events.append({"type": "campaign_blocked", "at": utcnow(), "policy": receipt})
+        append_campaign_event(campaign.events, {"type": "campaign_blocked", "at": utcnow(), "policy": receipt})
         campaign.updated_at = utcnow()
         save_campaign(campaign, expected_version=version)
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
@@ -570,7 +581,7 @@ def start_campaign(campaign_id: str):
     )
     campaign.state = CampaignState.running
     campaign.updated_at = utcnow()
-    campaign.events.append({"type": "campaign_started", "at": utcnow(), "policy": receipt, "job_id": job["id"]})
+    append_campaign_event(campaign.events, {"type": "campaign_started", "at": utcnow(), "policy": receipt, "job_id": job["id"]})
     save_campaign(campaign, expected_version=version)
     return {"campaign_id": campaign.id, "state": campaign.state, "policy": receipt, "job": job}
 
@@ -594,7 +605,7 @@ def cancel_campaign(campaign_id: str):
 
     campaign.state = CampaignState.cancelled
     campaign.updated_at = utcnow()
-    campaign.events.append({"type": "campaign_cancelled", "at": utcnow()})
+    append_campaign_event(campaign.events, {"type": "campaign_cancelled", "at": utcnow()})
     save_campaign(campaign, expected_version=version)
 
     cancelled = jobs.cancel_queued(campaign.id)
@@ -635,7 +646,7 @@ def add_finding(campaign_id: str, finding: Finding):
     campaign.findings.append(finding)
     campaign.state = CampaignState.validating
     campaign.updated_at = utcnow()
-    campaign.events.append({"type": "finding_received", "finding_id": finding.id, "at": utcnow()})
+    append_campaign_event(campaign.events, {"type": "finding_received", "finding_id": finding.id, "at": utcnow()})
     validation_job = queue().enqueue(
         campaign.id,
         "independent_validation",
@@ -643,7 +654,7 @@ def add_finding(campaign_id: str, finding: Finding):
         max_attempts=2,
         dedupe_key=f"validation:{finding.id}",
     )
-    campaign.events.append({"type": "validation_queued", "finding_id": finding.id, "job_id": validation_job["id"], "at": utcnow()})
+    append_campaign_event(campaign.events, {"type": "validation_queued", "finding_id": finding.id, "job_id": validation_job["id"], "at": utcnow()})
     save_campaign(campaign, expected_version=version)
     return finding
 
@@ -669,7 +680,7 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
     finding.status = desired_status
     finding.validated_by = validator
     campaign.updated_at = utcnow()
-    campaign.events.append({"type": "finding_validated", "finding_id": finding.id, "confirmed": confirmed, "validator": validator, "at": utcnow()})
+    append_campaign_event(campaign.events, {"type": "finding_validated", "finding_id": finding.id, "confirmed": confirmed, "validator": validator, "at": utcnow()})
     if campaign.findings and all(item.status in {"confirmed", "rejected"} for item in campaign.findings):
         campaign.state = CampaignState.completed
         report_job = queue().enqueue(
@@ -679,7 +690,7 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
             max_attempts=2,
             dedupe_key="report:generic:completed",
         )
-        campaign.events.append({"type": "campaign_completed", "report_job_id": report_job["id"], "at": utcnow()})
+        append_campaign_event(campaign.events, {"type": "campaign_completed", "report_job_id": report_job["id"], "at": utcnow()})
     save_campaign(campaign, expected_version=version)
     return finding
 
@@ -695,7 +706,7 @@ def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bu
         max_attempts=2,
         dedupe_key=f"report:{platform}:v{version}",
     )
-    campaign.events.append({"type": "report_queued", "platform": platform, "job_id": job["id"], "at": utcnow()})
+    append_campaign_event(campaign.events, {"type": "report_queued", "platform": platform, "job_id": job["id"], "at": utcnow()})
     campaign.updated_at = utcnow()
     save_campaign(campaign, expected_version=version)
     return job
@@ -726,7 +737,7 @@ def add_text_artifact(campaign_id: str, evidence: EvidenceInput = Body(...)):
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     if not any(event.get("type") == "artifact_stored" and event.get("artifact_id") == artifact["id"] for event in campaign.events):
-        campaign.events.append({"type": "artifact_stored", "artifact_id": artifact["id"], "kind": evidence.kind, "at": utcnow()})
+        append_campaign_event(campaign.events, {"type": "artifact_stored", "artifact_id": artifact["id"], "kind": evidence.kind, "at": utcnow()})
         campaign.updated_at = utcnow()
         save_campaign(campaign, expected_version=version)
     return artifact
