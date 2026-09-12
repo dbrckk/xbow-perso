@@ -124,3 +124,23 @@ def test_manifest_rejects_symlink_destination(tmp_path):
 
     with pytest.raises(DisasterRecoveryError, match="must not be a symlink"):
         write_backup_manifest(manifest, str(link))
+
+
+def test_manifest_rejects_invalid_artifact_size_schema(tmp_path):
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    manifest = build_backup_manifest(
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+    manifest["artifacts"][0]["size_bytes"] = "not-an-int"
+    manifest_path.write_text(__import__("json").dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(DisasterRecoveryError, match="artifact size is invalid"):
+        verify_backup_manifest(
+            str(manifest_path),
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        )
