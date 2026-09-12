@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 from .main import Campaign, Finding, is_host_allowed
 from .scanner_registry import latest_scanner_artifact
-from .secret_vault import SecretVaultError, resolve_secret, vault_enabled
+from .secret_vault import SecretVaultError, get_secret, vault_enabled
 from .strix_parser import StrixParserError, max_strix_json_bytes, parse_strix_json
 from .storage import Storage
 
@@ -321,16 +321,21 @@ def _worker_env() -> dict[str, str]:
         ("llm_api_key", "LLM_API_KEY"),
         ("perplexity_api_key", "PERPLEXITY_API_KEY"),
     ):
-        try:
-            secret = resolve_secret(vault_name, env_name)
-        except SecretVaultError as exc:
-            if use_vault and os.getenv(env_name):
+        if use_vault:
+            if os.getenv(env_name):
                 raise WorkerPolicyError(
                     f"vault enabled but legacy {env_name} fallback is forbidden"
+                )
+            try:
+                secret = get_secret(vault_name)
+            except SecretVaultError as exc:
+                if str(exc) == "secret not found":
+                    continue
+                raise WorkerPolicyError(
+                    f"scanner secret {vault_name} is unavailable"
                 ) from exc
-            raise WorkerPolicyError(
-                f"scanner secret {vault_name} is unavailable"
-            ) from exc
+        else:
+            secret = os.getenv(env_name)
         if secret:
             environment[env_name] = secret
 
