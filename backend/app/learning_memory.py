@@ -111,6 +111,7 @@ def campaign_learning_memory(campaign_id: str, limit: int = 50):
 
 _ALLOWED_JOB_KINDS = {
     "strix_scan",
+    "nuclei_scan",
     "independent_validation",
     "browser_flow",
     "recon_task",

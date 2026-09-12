@@ -11,7 +11,7 @@ import redis
 
 from .jobqueue import _bounded_identifier, _job_lease_seconds, _max_job_payload_bytes, utcnow
 
-_ALLOWED_KINDS = {"strix_scan", "independent_validation", "browser_flow", "recon_task", "report"}
+_ALLOWED_KINDS = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report"}
 _STATUSES = ("queued", "running", "completed", "failed", "cancelled")
 
 
