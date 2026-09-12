@@ -1,7 +1,10 @@
-import pytest
-from fastapi import FastAPI, Request
-from fastapi.testclient import TestClient
+import asyncio
 
+import pytest
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+import app.api_rate_limit as rate_limit
 from app.api_rate_limit import (
     ApiRateLimitConfig,
     FixedWindowLimiter,
@@ -10,6 +13,26 @@ from app.api_rate_limit import (
     api_rate_limit_middleware,
     load_api_rate_limit_config,
 )
+
+
+def _request(path="/api/test", headers=()):
+    return Request(
+        {
+            "type": "http",
+            "method": "GET",
+            "path": path,
+            "headers": list(headers),
+            "client": ("127.0.0.1", 12345),
+            "server": ("testserver", 80),
+            "scheme": "http",
+            "query_string": b"",
+            "http_version": "1.1",
+        }
+    )
+
+
+async def _ok(_request):
+    return JSONResponse({"ok": True})
 
 
 def test_rate_limit_defaults_disabled(monkeypatch):
@@ -57,18 +80,7 @@ def test_fixed_window_limiter_fails_closed_at_key_capacity():
 
 
 def test_client_key_ignores_forwarded_headers():
-    scope = {
-        "type": "http",
-        "method": "GET",
-        "path": "/api/test",
-        "headers": [(b"x-forwarded-for", b"203.0.113.99")],
-        "client": ("127.0.0.1", 12345),
-        "server": ("testserver", 80),
-        "scheme": "http",
-        "query_string": b"",
-        "http_version": "1.1",
-    }
-    request = Request(scope)
+    request = _request(headers=[(b"x-forwarded-for", b"203.0.113.99")])
 
     assert _client_key(request) == "127.0.0.1"
 
@@ -78,17 +90,10 @@ def test_rate_limit_middleware_returns_429(monkeypatch):
     monkeypatch.setenv("XBOW_API_RATE_LIMIT_REQUESTS", "1")
     monkeypatch.setenv("XBOW_API_RATE_LIMIT_WINDOW_SECONDS", "60")
     monkeypatch.setenv("XBOW_API_RATE_LIMIT_MAX_KEYS", "100")
+    monkeypatch.setattr(rate_limit, "_limiter", FixedWindowLimiter())
 
-    app = FastAPI()
-    app.middleware("http")(api_rate_limit_middleware)
-
-    @app.get("/api/test")
-    def route():
-        return {"ok": True}
-
-    client = TestClient(app)
-    first = client.get("/api/test")
-    second = client.get("/api/test")
+    first = asyncio.run(api_rate_limit_middleware(_request(), _ok))
+    second = asyncio.run(api_rate_limit_middleware(_request(), _ok))
 
     assert first.status_code == 200
     assert first.headers["X-RateLimit-Limit"] == "1"
@@ -99,14 +104,10 @@ def test_rate_limit_middleware_returns_429(monkeypatch):
 def test_non_api_paths_are_not_rate_limited(monkeypatch):
     monkeypatch.setenv("XBOW_API_RATE_LIMIT_ENABLED", "true")
     monkeypatch.setenv("XBOW_API_RATE_LIMIT_REQUESTS", "1")
+    monkeypatch.setattr(rate_limit, "_limiter", FixedWindowLimiter())
 
-    app = FastAPI()
-    app.middleware("http")(api_rate_limit_middleware)
+    first = asyncio.run(api_rate_limit_middleware(_request("/healthz"), _ok))
+    second = asyncio.run(api_rate_limit_middleware(_request("/healthz"), _ok))
 
-    @app.get("/healthz")
-    def route():
-        return {"ok": True}
-
-    client = TestClient(app)
-    assert client.get("/healthz").status_code == 200
-    assert client.get("/healthz").status_code == 200
+    assert first.status_code == 200
+    assert second.status_code == 200
