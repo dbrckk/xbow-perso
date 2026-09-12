@@ -136,3 +136,67 @@ def test_recon_worker_rejects_out_of_scope_target(monkeypatch):
         assert "outside declared scope" in str(exc)
     else:
         raise AssertionError("out-of-scope recon must fail closed")
+
+
+def test_recon_worker_enriches_same_origin_resources_without_extra_requests(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    html = b"""
+    <html>
+      <a href="/page">page</a>
+      <script src="/assets/app.js"></script>
+      <link rel="stylesheet" href="/assets/app.css">
+      <iframe src="/frame"></iframe>
+      <script src="https://outside.test/escape.js"></script>
+      <script src="data:text/javascript,alert(1)"></script>
+    </html>
+    """
+    response = _Response(html, {"Content-Type": "text/html"})
+    opener = _Opener(response)
+    calls = {"count": 0}
+
+    def _open(_request, timeout):
+        calls["count"] += 1
+        assert timeout > 0
+        return response
+
+    opener.open = _open
+    monkeypatch.setattr(
+        "app.recon_worker.build_opener",
+        lambda *_args, **_kwargs: opener,
+    )
+
+    result = execute_recon_task(
+        _campaign(),
+        {"kind": "crawl", "target": "https://example.test"},
+    )
+
+    assert calls["count"] == 1
+    assert set(result.endpoints) == {
+        "https://example.test/page",
+        "https://example.test/assets/app.js",
+        "https://example.test/assets/app.css",
+        "https://example.test/frame",
+    }
+    assert "outside.test" not in str(result)
+    assert "data:text" not in str(result)
+
+
+def test_recon_surface_parser_bounds_discovered_links_and_form_inputs(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    links = "".join(f'<a href="/p/{index}">x</a>' for index in range(700))
+    inputs = "".join(f'<input name="field-{index}">' for index in range(150))
+    html = f"<html>{links}<form action='/search' method='get'>{inputs}</form></html>".encode()
+    response = _Response(html, {"Content-Type": "text/html"})
+    monkeypatch.setattr(
+        "app.recon_worker.build_opener",
+        lambda *_args, **_kwargs: _Opener(response),
+    )
+
+    result = execute_recon_task(
+        _campaign(),
+        {"kind": "crawl", "target": "https://example.test"},
+    )
+
+    assert len(result.endpoints) == 100
+    assert len(result.forms) == 1
+    assert len(result.forms[0]["input_names"]) == 100
