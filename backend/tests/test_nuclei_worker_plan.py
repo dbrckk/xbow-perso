@@ -108,8 +108,9 @@ def test_nuclei_execution_uses_isolated_home(monkeypatch, tmp_path):
     monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
     monkeypatch.setenv("LLM_API_KEY", "must-not-leak")
     monkeypatch.setenv("HOME", "/tmp/untrusted-home")
+    monkeypatch.setenv("XBOW_NUCLEI_ALLOWED_VERSION", "3.99.0")
 
-    captured = {}
+    captured = {"calls": []}
 
     class Result:
         returncode = 0
@@ -117,9 +118,13 @@ def test_nuclei_execution_uses_isolated_home(monkeypatch, tmp_path):
         stderr = ""
 
     def fake_run(command, **kwargs):
+        captured["calls"].append(command)
         captured["command"] = command
         captured["env"] = kwargs["env"]
-        return Result()
+        result = Result()
+        if command == ["nuclei", "-version"]:
+            result.stdout = "Nuclei Engine Version: v3.99.0"
+        return result
 
     monkeypatch.setattr("app.worker.subprocess.run", fake_run)
 
@@ -131,3 +136,36 @@ def test_nuclei_execution_uses_isolated_home(monkeypatch, tmp_path):
     assert captured["env"]["HOME"] != "/tmp/untrusted-home"
     assert "LLM_API_KEY" not in captured["env"]
     assert os.path.isdir(captured["env"]["HOME"])
+
+
+def test_nuclei_active_execution_requires_allowlisted_runtime(monkeypatch, tmp_path):
+    root = _configure_run_root(monkeypatch, tmp_path)
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
+    monkeypatch.delenv("XBOW_NUCLEI_ALLOWED_VERSION", raising=False)
+
+    plan = build_nuclei_plan(_campaign(), str(root / "job-attest"))
+
+    with pytest.raises(WorkerPolicyError, match="XBOW_NUCLEI_ALLOWED_VERSION is required"):
+        execute(plan)
+
+
+def test_nuclei_active_execution_rejects_version_mismatch(monkeypatch, tmp_path):
+    root = _configure_run_root(monkeypatch, tmp_path)
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
+    monkeypatch.setenv("XBOW_NUCLEI_ALLOWED_VERSION", "3.99.0")
+
+    class Result:
+        returncode = 0
+        stdout = "Nuclei Engine Version: v3.98.0"
+        stderr = ""
+
+    monkeypatch.setattr("app.worker.subprocess.run", lambda *args, **kwargs: Result())
+
+    plan = build_nuclei_plan(_campaign(), str(root / "job-mismatch"))
+
+    with pytest.raises(WorkerPolicyError, match="version is not allowlisted"):
+        execute(plan)
