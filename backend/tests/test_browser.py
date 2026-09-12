@@ -1,3 +1,5 @@
+import base64
+
 import pytest
 from pydantic import ValidationError
 
@@ -7,6 +9,7 @@ from app.browser import (
     BrowserPolicyError,
     BrowserStep,
     _assert_read_only_browser_method,
+    _browser_secret,
     _flow_dedupe_key,
     execute_browser_flow,
     persist_browser_result,
@@ -194,3 +197,65 @@ def test_browser_surface_observations_are_persistable_shape():
     assert result.observations[0]["operation"] == "surface_links"
     assert result.observations[1]["forms"][0]["method"] == "GET"
     assert "next" in result.observations[2]["technologies"]
+
+
+def _clear_browser_secret_env(monkeypatch):
+    for name in (
+        "XBOW_VAULT_ENABLED",
+        "XBOW_VAULT_MASTER_KEY",
+        "XBOW_VAULT_MASTER_KEY_FILE",
+        "XBOW_VAULT_PATH",
+        "XBOW_BROWSER_SECRET_TEST_LOGIN",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+
+def _configure_browser_vault(monkeypatch, tmp_path):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "true")
+    monkeypatch.setenv(
+        "XBOW_VAULT_MASTER_KEY",
+        base64.urlsafe_b64encode(b"k" * 32).decode("ascii"),
+    )
+    monkeypatch.setenv("XBOW_VAULT_PATH", str(tmp_path / "vault.json"))
+
+
+def test_browser_secret_preserves_legacy_env_when_vault_disabled(monkeypatch):
+    _clear_browser_secret_env(monkeypatch)
+    monkeypatch.setenv("XBOW_BROWSER_SECRET_TEST_LOGIN", "legacy-value")
+
+    assert _browser_secret("XBOW_BROWSER_SECRET_TEST_LOGIN") == "legacy-value"
+
+
+def test_browser_secret_loads_from_vault(monkeypatch, tmp_path):
+    from app.secret_vault import set_secret
+
+    _clear_browser_secret_env(monkeypatch)
+    _configure_browser_vault(monkeypatch, tmp_path)
+    set_secret("browser.test_login", "vault-value")
+
+    assert _browser_secret("XBOW_BROWSER_SECRET_TEST_LOGIN") == "vault-value"
+
+
+def test_browser_secret_refuses_env_fallback_when_vault_enabled(monkeypatch, tmp_path):
+    _clear_browser_secret_env(monkeypatch)
+    _configure_browser_vault(monkeypatch, tmp_path)
+    monkeypatch.setenv("XBOW_BROWSER_SECRET_TEST_LOGIN", "must-not-fallback")
+
+    with pytest.raises(BrowserPolicyError, match="legacy XBOW_BROWSER_SECRET_TEST_LOGIN fallback is forbidden"):
+        _browser_secret("XBOW_BROWSER_SECRET_TEST_LOGIN")
+
+
+def test_browser_secret_missing_in_vault_fails_closed(monkeypatch, tmp_path):
+    _clear_browser_secret_env(monkeypatch)
+    _configure_browser_vault(monkeypatch, tmp_path)
+
+    with pytest.raises(BrowserPolicyError, match="required browser secret is unavailable"):
+        _browser_secret("XBOW_BROWSER_SECRET_TEST_LOGIN")
+
+
+def test_browser_secret_invalid_vault_configuration_fails_closed(monkeypatch):
+    _clear_browser_secret_env(monkeypatch)
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "sometimes")
+
+    with pytest.raises(BrowserPolicyError, match="browser vault configuration is invalid"):
+        _browser_secret("XBOW_BROWSER_SECRET_TEST_LOGIN")
