@@ -462,3 +462,19 @@ def test_orchestrator_halts_after_repeated_requeues_without_success(tmp_path):
     assert result["job_ids"] == []
     assert result["intelligence"]["worker_outcomes"]["totals"]["requeued"] == 2
     assert result["intelligence"]["cycle"]["retry_suppressed_job_kinds"] == ["recon_task"]
+
+
+def test_orchestrator_exposes_advisory_only_coverage_guidance(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    result = advance_campaign(campaign, queue, store)
+
+    guidance = result["intelligence"]["coverage_guidance"]
+    coverage = result["intelligence"]["coverage"]
+    assert guidance["advisory_only"] is True
+    assert guidance["may_unlock_actions"] is False
+    assert coverage["interpretation"] == "evidence_coverage_not_unknown_surface_completeness"
