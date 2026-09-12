@@ -16,7 +16,7 @@ from .decision_consensus import build_decision_consensus
 from .hypothesis_memory import build_hypotheses
 from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
-from .learning_memory import build_learning_memory
+from .learning_memory import build_learning_memory, summarize_worker_outcomes
 from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .planner_budget import PlannerBudget, apply_budget, budget_usage, validation_batch_limit
@@ -144,7 +144,8 @@ def _intelligence_context(
         consensus=consensus,
     )
     memories = build_learning_memory(graph)
-    cycle = build_adaptive_cycle(gate, planned_actions, memories)
+    worker_outcomes = summarize_worker_outcomes(campaign.events)
+    cycle = build_adaptive_cycle(gate, planned_actions, memories, worker_outcomes)
     recon = build_recon_plan(
         str(campaign.target.primary_url),
         graph,
@@ -157,6 +158,7 @@ def _intelligence_context(
         "risk": risk,
         "gate": gate,
         "memory": memories,
+        "worker_outcomes": worker_outcomes,
         "cycle": cycle,
         "recon": recon,
         "surface_enrichment": _surface_enrichment(campaign, graph),
@@ -368,6 +370,7 @@ def _result(
             "consensus": intelligence["consensus"].to_dict(),
             "decisions": [item.to_dict() for item in intelligence["decisions"]],
             "learning_memory": [item.to_dict() for item in intelligence["memory"]],
+            "worker_outcomes": dict(intelligence["worker_outcomes"]),
             "recon_plan": [item.to_dict() for item in intelligence["recon"]],
             "surface_enrichment": dict(intelligence["surface_enrichment"]),
             "read_only_context": True,
