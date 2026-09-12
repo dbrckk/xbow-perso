@@ -32,19 +32,30 @@ def _artifact_store_ready(root: Path) -> dict[str, Any]:
 def readiness() -> dict[str, Any]:
     """Return dependency readiness without exposing queue payloads or secrets."""
     try:
-        database = JobQueue().health()
+        queue = JobQueue().health()
     except Exception as exc:  # pragma: no cover - defensive boundary for container probes
-        database = {"ok": False, "error": exc.__class__.__name__}
+        queue = {"ok": False, "error": exc.__class__.__name__}
 
     try:
         store = Storage()
-        artifacts = _artifact_store_ready(store.artifact_root)
+        metadata = store.health()
     except Exception as exc:  # pragma: no cover - defensive boundary for container probes
-        artifacts = {"ok": False, "error": exc.__class__.__name__}
+        store = None
+        metadata = {"ok": False, "error": exc.__class__.__name__}
+
+    if store is None:
+        artifacts = {"ok": False, "error": "StorageUnavailable"}
+    else:
+        artifacts = _artifact_store_ready(store.artifact_root)
 
     return {
-        "ok": bool(database.get("ok")) and bool(artifacts.get("ok")),
-        "database": database,
+        "ok": (
+            bool(queue.get("ok"))
+            and bool(metadata.get("ok"))
+            and bool(artifacts.get("ok"))
+        ),
+        "queue": queue,
+        "metadata": metadata,
         "artifacts": artifacts,
     }
 
