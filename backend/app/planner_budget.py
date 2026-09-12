@@ -102,7 +102,7 @@ def budget_usage(
     counts = queue.campaign_job_counts(campaign_id)
     status_counts = queue.campaign_job_status_counts(campaign_id)
     actions = sum(1 for item in history if item.get("action") != "stop")
-    scans = counts["strix_scan"]
+    scans = counts["strix_scan"] + counts["nuclei_scan"]
     validations = counts["independent_validation"]
     reports = counts["report"]
     inflight_jobs = status_counts["queued"] + status_counts["running"]
@@ -176,5 +176,25 @@ def validation_batch_limit(usage: BudgetUsage, budget: PlannerBudget | None = No
             limits.max_validation_batch,
             usage.remaining_validations,
             usage.remaining_inflight_jobs,
+        ),
+    )
+
+
+
+def scan_batch_limit(
+    usage: BudgetUsage,
+    requested_engines: int,
+    budget: PlannerBudget | None = None,
+) -> int:
+    if requested_engines < 0:
+        raise ValueError("requested_engines must be non-negative")
+    limits = budget or PlannerBudget()
+    return max(
+        0,
+        min(
+            requested_engines,
+            usage.remaining_scans,
+            usage.remaining_inflight_jobs,
+            limits.max_scans,
         ),
     )
