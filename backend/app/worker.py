@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import os
 import shlex
 import subprocess
@@ -61,6 +62,101 @@ def _max_autonomous_rps() -> float:
     if not 0.1 <= limit <= 20.0:
         raise WorkerPolicyError("XBOW_MAX_AUTONOMOUS_RPS must be between 0.1 and 20")
     return limit
+
+
+def _safe_nuclei_output_dir(output_dir: str) -> str:
+    root = Path(os.getenv("XBOW_NUCLEI_RUN_ROOT", "/data/nuclei_runs")).resolve()
+    candidate = Path(output_dir)
+    if candidate.is_symlink():
+        raise WorkerPolicyError("Nuclei output directory must not be a symlink")
+    resolved = candidate.resolve(strict=False)
+    try:
+        resolved.relative_to(root)
+    except ValueError as exc:
+        raise WorkerPolicyError("Nuclei output directory escaped configured run root") from exc
+    return str(resolved)
+
+
+def _nuclei_rate_limit(rps: float) -> tuple[int, str]:
+    if rps <= 0:
+        raise WorkerPolicyError("Nuclei rate limit must be positive")
+    if rps < 1:
+        seconds = max(1, int(math.ceil(1 / rps)))
+        return 1, f"{seconds}s"
+    return max(1, int(math.floor(rps))), "1s"
+
+
+def build_nuclei_plan(campaign: Campaign, output_dir: str = "/data/nuclei_runs") -> WorkerPlan:
+    output_dir = _safe_nuclei_output_dir(output_dir)
+    target = str(campaign.target.primary_url)
+    host = (urlparse(target).hostname or "").lower()
+    rules = campaign.target.rules
+    if not is_host_allowed(host, rules.allowed_targets, rules.denied_targets):
+        raise WorkerPolicyError("Target is outside declared scope")
+    if not rules.automated_scanning:
+        raise WorkerPolicyError("Automated scanning is disabled by program rules")
+    if rules.destructive_testing or rules.denial_of_service or rules.social_engineering or rules.credential_attacks:
+        raise WorkerPolicyError("Unsafe campaign flags cannot be delegated to autonomous worker")
+
+    active_enabled = _strict_bool_env("XBOW_ENABLE_ACTIVE_SCANS", False)
+    nuclei_enabled = _strict_bool_env("XBOW_ENABLE_NUCLEI", False)
+    dry_run_requested = _strict_bool_env("DRY_RUN", True)
+    autonomous_cap = None
+    if active_enabled and nuclei_enabled and not dry_run_requested:
+        autonomous_cap = _max_autonomous_rps()
+        if rules.max_requests_per_second > autonomous_cap:
+            raise WorkerPolicyError(
+                "Campaign request-rate limit exceeds autonomous worker admission cap"
+            )
+    dry_run = dry_run_requested or not active_enabled or not nuclei_enabled
+    rate, duration = _nuclei_rate_limit(float(rules.max_requests_per_second))
+    output_file = str(Path(output_dir) / "nuclei.jsonl")
+    cmd = [
+        "nuclei",
+        "-target",
+        target,
+        "-type",
+        "http",
+        "-tags",
+        "tech,misconfig,exposure",
+        "-exclude-tags",
+        "dos,fuzz",
+        "-disable-unsigned-templates",
+        "-no-interactsh",
+        "-restrict-local-network-access",
+        "-disable-redirects",
+        "-no-stdin",
+        "-silent",
+        "-no-color",
+        "-omit-raw",
+        "-omit-template",
+        "-rate-limit",
+        str(rate),
+        "-rate-limit-duration",
+        duration,
+        "-concurrency",
+        "1",
+        "-bulk-size",
+        "1",
+        "-payload-concurrency",
+        "1",
+        "-retries",
+        "0",
+        "-timeout",
+        "10",
+        "-disable-update-check",
+        "-jsonl-export",
+        output_file,
+    ]
+    return WorkerPlan(
+        engine="nuclei",
+        command=cmd,
+        target=target,
+        dry_run=dry_run,
+        output_dir=output_dir,
+        campaign_rps=float(rules.max_requests_per_second),
+        admission_cap_rps=autonomous_cap,
+    )
 
 
 def build_strix_plan(campaign: Campaign, output_dir: str = "/data/strix_runs") -> WorkerPlan:
@@ -130,6 +226,17 @@ def execute(plan: WorkerPlan) -> dict:
     timeout = _bounded_timeout()
     output = Path(plan.output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    environment = _worker_env()
+    if plan.engine == "nuclei":
+        isolated_home = output / ".nuclei-home"
+        isolated_home.mkdir(parents=True, exist_ok=True)
+        environment = {
+            key: value
+            for key, value in environment.items()
+            if key in {"PATH", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}
+        }
+        environment["HOME"] = str(isolated_home)
+
     try:
         result = subprocess.run(
             plan.command,
@@ -138,7 +245,7 @@ def execute(plan: WorkerPlan) -> dict:
             text=True,
             timeout=timeout,
             check=False,
-            env=_worker_env(),
+            env=environment,
         )
     except subprocess.TimeoutExpired as exc:
         return {
