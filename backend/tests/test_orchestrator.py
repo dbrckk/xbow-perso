@@ -538,3 +538,49 @@ def test_orchestrator_scanner_memory_can_only_reduce_configured_engines(tmp_path
     assert adaptation["may_expand_configuration"] is False
     jobs = [queue.get(job_id) for job_id in result["job_ids"]]
     assert [job["kind"] for job in jobs] == ["strix_scan"]
+
+
+def test_orchestrator_caps_multi_engine_scan_fanout_to_remaining_budget(tmp_path, monkeypatch):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    monkeypatch.setenv("XBOW_SCAN_ENGINES", "strix,nuclei")
+
+    store.put_observation(
+        campaign.id,
+        Observation("a1", "asset", "example.test", "recon").to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "e1",
+            "endpoint",
+            "https://example.test/",
+            "recon:crawl",
+            parent_ids=("a1",),
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "t1",
+            "technology",
+            "Server:fixture",
+            "recon:detect_technology",
+            parent_ids=("a1",),
+        ).to_dict(),
+    )
+
+    result = advance_campaign(
+        campaign,
+        queue,
+        store,
+        budget=__import__("app.planner_budget", fromlist=["PlannerBudget"]).PlannerBudget(max_scans=1),
+    )
+
+    assert result["action"]["kind"] == "scan"
+    assert len(result["job_ids"]) == 1
+    assert result["budget"]["usage"]["scans"] == 1
+    assert result["budget"]["usage"]["remaining_scans"] == 0
