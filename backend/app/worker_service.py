@@ -8,6 +8,7 @@ from contextlib import contextmanager
 
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .jobqueue import JobQueue
+from .learning_memory import worker_outcome_event
 from .queue_backend import create_queue
 from .main import Campaign, CampaignState, utcnow
 from .observation_writer import (
@@ -354,6 +355,32 @@ def process_report(job: dict, store: Storage) -> None:
     _save(store, campaign, version)
 
 
+def _record_worker_outcome(store: Storage, job: dict, *, success: bool, status: str) -> bool:
+    """Persist a bounded, idempotent worker outcome without job payloads or errors."""
+    event = worker_outcome_event(job, success=success, status=status)
+    for _ in range(3):
+        record = store.get_campaign_record(job["campaign_id"])
+        if not record:
+            return False
+        raw, version = record
+        campaign = Campaign.model_validate(raw)
+        if any(
+            item.get("type") == "worker_outcome"
+            and item.get("job_id") == event["job_id"]
+            and item.get("status") == event["status"]
+            for item in campaign.events
+        ):
+            return True
+        campaign.events.append({**event, "at": utcnow()})
+        campaign.updated_at = utcnow()
+        try:
+            store.save_campaign(campaign.model_dump(mode="json"), expected_version=version)
+            return True
+        except CampaignConflictError:
+            continue
+    return False
+
+
 def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
     job = queue.claim(worker_id)
     if not job:
@@ -376,15 +403,25 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
             latest_campaign, _ = _campaign(store, job["campaign_id"])
             advance_campaign(latest_campaign, queue, store)
     except CampaignCancelledError as exc:
-        queue.cancel_owned(job["id"], worker_id, str(exc))
+        finished = queue.cancel_owned(job["id"], worker_id, str(exc))
+        if finished is not None:
+            _record_worker_outcome(store, finished, success=False, status="cancelled")
     except CampaignConflictError as exc:
-        queue.finish(job["id"], worker_id, False, f"campaign state changed concurrently: {exc}")
+        finished = queue.finish(job["id"], worker_id, False, f"campaign state changed concurrently: {exc}")
+        if finished is not None:
+            _record_worker_outcome(store, finished, success=False, status=finished["status"])
     except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ReconPolicyError, ValueError, KeyError) as exc:
-        queue.finish(job["id"], worker_id, False, str(exc))
+        finished = queue.finish(job["id"], worker_id, False, str(exc))
+        if finished is not None:
+            _record_worker_outcome(store, finished, success=False, status=finished["status"])
     except Exception as exc:
-        queue.finish(job["id"], worker_id, False, str(exc))
+        finished = queue.finish(job["id"], worker_id, False, str(exc))
+        if finished is not None:
+            _record_worker_outcome(store, finished, success=False, status=finished["status"])
     else:
-        queue.finish(job["id"], worker_id, True)
+        finished = queue.finish(job["id"], worker_id, True)
+        if finished is not None:
+            _record_worker_outcome(store, finished, success=True, status=finished["status"])
     return True
 
 
