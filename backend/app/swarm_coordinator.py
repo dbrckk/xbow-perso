@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, replace
 from typing import Any
 
+from .agent_registry import agent_by_name
 from .recon_swarm import ReconCapability, ReconTask, recon_capabilities
 
 
@@ -69,6 +70,14 @@ def coordinate_recon_swarm(
             raise ValueError(f"no registered capability for recon task: {task.kind}")
         if task.agent != capability.agent:
             raise ValueError(f"recon task agent mismatch for {task.kind}")
+        profile = agent_by_name(task.agent)
+        if profile.role != "recon":
+            raise ValueError("recon task agent must have recon role")
+        if profile.network_access != capability.network_access:
+            raise ValueError("recon agent network capability mismatch")
+        expected_action = f"recon:{task.kind}"
+        if expected_action not in profile.actions:
+            raise ValueError("recon agent action registration mismatch")
         if not task.read_only or not task.same_origin_only:
             raise ValueError("recon swarm only accepts read-only same-origin tasks")
         if not set(task.allowed_methods) <= set(capability.allowed_methods):
