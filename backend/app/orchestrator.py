@@ -236,6 +236,17 @@ def _enqueue_recon_tasks(
     return jobs
 
 
+def _scan_engines() -> tuple[str, ...]:
+    raw = os.getenv("XBOW_SCAN_ENGINES", "strix")
+    values = tuple(dict.fromkeys(part.strip().lower() for part in raw.split(",") if part.strip()))
+    if not values:
+        raise ValueError("XBOW_SCAN_ENGINES must include at least one scanner engine")
+    unsupported = [value for value in values if value not in {"strix", "nuclei"}]
+    if unsupported:
+        raise ValueError(f"unsupported scanner engine: {unsupported[0]}")
+    return values
+
+
 def _enqueue_action(
     action: PlannedAction,
     campaign: Campaign,
@@ -252,15 +263,20 @@ def _enqueue_action(
         if not receipt["allowed"]:
             return []
         stable_receipt = {key: value for key, value in receipt.items() if key != "timestamp"}
-        return [
-            queue.enqueue(
-                campaign.id,
-                "strix_scan",
-                sanitized_scan_payload(campaign, stable_receipt),
-                max_attempts=2,
-                dedupe_key=f"planner:scan:{fingerprint}",
+        payload = sanitized_scan_payload(campaign, stable_receipt)
+        jobs = []
+        for engine in _scan_engines():
+            kind = "strix_scan" if engine == "strix" else "nuclei_scan"
+            jobs.append(
+                queue.enqueue(
+                    campaign.id,
+                    kind,
+                    payload,
+                    max_attempts=2,
+                    dedupe_key=f"planner:scan:{engine}:{fingerprint}",
+                )
             )
-        ]
+        return jobs
 
     if action.kind == "validate":
         jobs = []
