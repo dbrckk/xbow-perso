@@ -6,6 +6,8 @@ from pathlib import Path
 
 from fastapi import Request
 
+from .secret_vault import SecretVaultError, get_secret, vault_enabled
+
 
 class AuthError(RuntimeError):
     def __init__(self, status_code: int, detail: str):
@@ -26,12 +28,22 @@ def _validate_token(token: str) -> str:
 def configured_api_token() -> str:
     """Return the server API token or fail closed when it is unsafe/missing.
 
-    Prefer XBOW_API_TOKEN_FILE for deployments so the token does not need to be
-    present in the process environment. Supplying both sources is rejected to
-    prevent ambiguous secret rotation and accidental fallback.
+    When the encrypted vault is enabled, only the api_token vault entry is
+    accepted. Legacy env/file sources remain available only with the vault disabled.
     """
     inline = os.getenv("XBOW_API_TOKEN", "").strip()
     token_file = os.getenv("XBOW_API_TOKEN_FILE", "").strip()
+    try:
+        use_vault = vault_enabled()
+    except SecretVaultError as exc:
+        raise AuthError(503, "API authentication vault configuration is invalid") from exc
+    if use_vault:
+        if inline or token_file:
+            raise AuthError(503, "API authentication has conflicting legacy secret sources")
+        try:
+            return _validate_token(get_secret("api_token"))
+        except SecretVaultError as exc:
+            raise AuthError(503, "API authentication vault secret is unavailable") from exc
     if inline and token_file:
         raise AuthError(503, "API authentication has conflicting secret sources")
     if token_file:

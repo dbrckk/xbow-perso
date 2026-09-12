@@ -126,11 +126,15 @@ def get_secret(name: str) -> str:
         raise SecretVaultError("secret decryption failed") from exc
 
 
-def resolve_secret(vault_name: str, env_name: str) -> str | None:
-    vault_enabled = os.getenv("XBOW_VAULT_ENABLED", "false").strip().lower()
-    if vault_enabled not in {"true", "false", "1", "0", "yes", "no", "on", "off"}:
+def vault_enabled() -> bool:
+    value = os.getenv("XBOW_VAULT_ENABLED", "false").strip().lower()
+    if value not in {"true", "false", "1", "0", "yes", "no", "on", "off"}:
         raise SecretVaultError("XBOW_VAULT_ENABLED must be a boolean")
-    enabled = vault_enabled in {"true", "1", "yes", "on"}
+    return value in {"true", "1", "yes", "on"}
+
+
+def resolve_secret(vault_name: str, env_name: str) -> str | None:
+    enabled = vault_enabled()
     inline = os.getenv(env_name)
     if not enabled:
         return inline

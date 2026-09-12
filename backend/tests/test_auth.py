@@ -1,10 +1,12 @@
 import asyncio
+import base64
 
 import pytest
 from starlette.requests import Request
 
 from app.auth import AuthError, configured_api_token, require_api_token
 from app.main import authenticate_control_api
+from app.secret_vault import set_secret
 
 
 def request(headers: dict[str, str] | None = None) -> Request:
@@ -15,6 +17,10 @@ def request(headers: dict[str, str] | None = None) -> Request:
 def clear_secret_env(monkeypatch):
     monkeypatch.delenv("XBOW_API_TOKEN", raising=False)
     monkeypatch.delenv("XBOW_API_TOKEN_FILE", raising=False)
+    monkeypatch.delenv("XBOW_VAULT_ENABLED", raising=False)
+    monkeypatch.delenv("XBOW_VAULT_MASTER_KEY", raising=False)
+    monkeypatch.delenv("XBOW_VAULT_MASTER_KEY_FILE", raising=False)
+    monkeypatch.delenv("XBOW_VAULT_PATH", raising=False)
 
 
 def test_missing_server_token_fails_closed(monkeypatch):
@@ -232,3 +238,51 @@ def test_oversized_secret_file_fails_closed(monkeypatch, tmp_path):
         configured_api_token()
 
     assert exc.value.status_code == 503
+
+
+def test_vault_backed_api_token_is_supported(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    token = "vault-token-" + "v" * 32
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "true")
+    monkeypatch.setenv(
+        "XBOW_VAULT_MASTER_KEY",
+        base64.urlsafe_b64encode(b"k" * 32).decode("ascii"),
+    )
+    monkeypatch.setenv("XBOW_VAULT_PATH", str(tmp_path / "vault.json"))
+    set_secret("api_token", token)
+
+    assert configured_api_token() == token
+    require_api_token(request({"Authorization": f"Bearer {token}"}))
+
+
+def test_vault_enabled_refuses_legacy_api_token_fallback(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "true")
+    monkeypatch.setenv(
+        "XBOW_VAULT_MASTER_KEY",
+        base64.urlsafe_b64encode(b"k" * 32).decode("ascii"),
+    )
+    monkeypatch.setenv("XBOW_VAULT_PATH", str(tmp_path / "vault.json"))
+    monkeypatch.setenv("XBOW_API_TOKEN", "a" * 32)
+
+    with pytest.raises(AuthError) as exc:
+        configured_api_token()
+
+    assert exc.value.status_code == 503
+    assert "conflicting legacy secret sources" in exc.value.detail
+
+
+def test_vault_enabled_missing_api_token_fails_closed(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "true")
+    monkeypatch.setenv(
+        "XBOW_VAULT_MASTER_KEY",
+        base64.urlsafe_b64encode(b"k" * 32).decode("ascii"),
+    )
+    monkeypatch.setenv("XBOW_VAULT_PATH", str(tmp_path / "vault.json"))
+
+    with pytest.raises(AuthError) as exc:
+        configured_api_token()
+
+    assert exc.value.status_code == 503
+    assert "vault secret is unavailable" in exc.value.detail
