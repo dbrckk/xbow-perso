@@ -286,12 +286,12 @@ def test_scan_batch_limit_respects_scan_and_inflight_capacity(tmp_path):
     assert scan_batch_limit(usage, 2, limits) == 1
 
 
-def test_scan_batch_limit_rejects_negative_request():
+def test_scan_batch_limit_rejects_negative_request(tmp_path):
     with pytest.raises(ValueError, match="non-negative"):
         scan_batch_limit(
             budget_usage(
                 ObservationGraph(),
-                JobQueue(":memory:"),
+                JobQueue(str(tmp_path / "negative.sqlite3")),
                 "c1",
             ),
             -1,
