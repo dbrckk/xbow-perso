@@ -719,5 +719,7 @@ def download_artifact(campaign_id: str, artifact_id: str):
 
 
 from .browser import router as browser_router  # noqa: E402
+from .coverage import router as coverage_router  # noqa: E402
 
 app.include_router(browser_router)
+app.include_router(coverage_router)
