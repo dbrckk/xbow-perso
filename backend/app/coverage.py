@@ -83,3 +83,32 @@ def campaign_coverage(campaign_id: str):
         ),
     )
     return {"campaign_id": campaign.id, **coverage}
+
+
+def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
+    dimensions = coverage.get("dimensions") or {}
+    discovery = float(dimensions.get("surface_discovery") or 0.0)
+    scanner = float(dimensions.get("scanner_execution") or 0.0)
+    validation = dimensions.get("independent_validation")
+
+    if discovery < 0.40:
+        focus = "surface_discovery"
+        reason = "surface evidence is still sparse"
+    elif scanner < 1.0:
+        focus = "scanner_execution"
+        reason = "surface evidence exists but no completed scanner evidence is recorded"
+    elif validation is not None and float(validation) < 1.0:
+        focus = "independent_validation"
+        reason = "not all observed findings have independent validation evidence"
+    else:
+        focus = "none"
+        reason = "no evidence-coverage gap requires advisory emphasis"
+
+    return {
+        "focus": focus,
+        "reason": reason,
+        "coverage_score": float(coverage.get("score") or 0.0),
+        "advisory_only": True,
+        "may_unlock_actions": False,
+        "interpretation": "evidence_guidance_not_security_assurance",
+    }
