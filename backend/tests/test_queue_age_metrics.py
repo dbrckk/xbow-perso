@@ -56,3 +56,11 @@ def test_queue_age_threshold_fails_closed_on_invalid_config(monkeypatch):
         assert "XBOW_ALERT_QUEUE_AGE_SECONDS" in str(exc)
     else:
         raise AssertionError("invalid alert threshold was accepted")
+
+
+def test_overflowing_queue_timestamp_does_not_break_metrics():
+    metrics = build_operational_metrics(
+        Queue("9999-12-31T23:59:59-01:00"),
+        Storage(),
+    )
+    assert metrics["oldest_queued_age_seconds"] is None
