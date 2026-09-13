@@ -11,7 +11,7 @@ from psycopg.rows import dict_row
 from app.postgres_storage import PostgresStorage, _PostgresCompatConnection
 from app.redis_jobqueue import RedisJobQueue
 from app.planner_lock import campaign_planner_lock
-from app.storage import CampaignConflictError
+from app.storage import CampaignConflictError, Storage
 from app.totp_auth import _totp, configured_totp_secret, consume_totp_code
 
 
@@ -367,3 +367,74 @@ def test_redis_claim_stress_has_no_duplicate_or_lost_jobs(monkeypatch):
         keys = list(queue.redis.scan_iter(f"{prefix}:*"))
         if keys:
             queue.redis.delete(*keys)
+
+
+
+def test_sqlite_cas_stress_has_exactly_one_winner_and_preserves_event(tmp_path):
+    store = Storage(
+        str(tmp_path / "sqlite-cas.sqlite3"),
+        str(tmp_path / "artifacts-sqlite-cas"),
+    )
+    campaign_id = f"sqlite-stress-{uuid4()}"
+    original = {
+        "id": campaign_id,
+        "state": "ready",
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "updated_at": "2026-01-01T00:00:00+00:00",
+        "events": [],
+    }
+    assert store.save_campaign(original, expected_version=0) == 1
+
+    contenders = 16
+    barrier = threading.Barrier(contenders)
+    outcomes = []
+    errors = []
+    lock = threading.Lock()
+
+    def write(index):
+        document = {
+            **original,
+            "state": "running",
+            "updated_at": f"2026-01-01T00:00:{index:02d}+00:00",
+            "events": [{"type": "writer_commit", "writer": index}],
+        }
+        try:
+            barrier.wait(timeout=10)
+            version = store.save_campaign(document, expected_version=1)
+            result = ("ok", version, index)
+        except CampaignConflictError:
+            result = ("conflict", None, index)
+        except Exception as exc:
+            with lock:
+                errors.append(exc)
+            return
+        with lock:
+            outcomes.append(result)
+
+    threads = [
+        threading.Thread(target=write, args=(index,), name=f"sqlite-writer-{index}")
+        for index in range(contenders)
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=20)
+        assert not thread.is_alive()
+
+    assert errors == []
+    assert sum(kind == "ok" for kind, _version, _index in outcomes) == 1
+    assert sum(kind == "conflict" for kind, _version, _index in outcomes) == contenders - 1
+    winners = [
+        (version, index)
+        for kind, version, index in outcomes
+        if kind == "ok"
+    ]
+    assert len(winners) == 1
+    assert winners[0][0] == 2
+
+    saved, version = store.get_campaign_record(campaign_id)
+    assert version == 2
+    assert saved["state"] == "running"
+    assert saved["events"] == [
+        {"type": "writer_commit", "writer": winners[0][1]}
+    ]
