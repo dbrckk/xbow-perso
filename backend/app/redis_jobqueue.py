@@ -47,6 +47,10 @@ class RedisJobQueue:
     def _all(self) -> str:
         return f"{self.prefix}:all"
 
+    def _queued_kind(self, kind: str) -> str:
+        digest = hashlib.sha256(kind.encode("utf-8")).hexdigest()[:24]
+        return f"{self.prefix}:queued-kind:{digest}"
+
     def _job_key(self, job_id: str) -> str:
         return f"{self.prefix}:job:{job_id}"
 
@@ -123,6 +127,7 @@ class RedisJobQueue:
                 pipe.hset(self._job_key(job_id), mapping=row)
                 if kind != "pentagi_flow":
                     pipe.zadd(self._queued, {job_id: score})
+                pipe.zadd(self._queued_kind(kind), {job_id: score})
                 pipe.sadd(self._all, job_id)
                 pipe.sadd(self._campaign_key(campaign_id), job_id)
                 pipe.execute()
@@ -152,6 +157,7 @@ class RedisJobQueue:
                     pipe.hset(self._job_key(job_id), mapping=row)
                     if kind != "pentagi_flow":
                         pipe.zadd(self._queued, {job_id: score})
+                    pipe.zadd(self._queued_kind(kind), {job_id: score})
                     pipe.sadd(self._all, job_id)
                     pipe.sadd(self._campaign_key(campaign_id), job_id)
                     pipe.hset(dedupe_hash, dedupe_key, job_id)
@@ -230,7 +236,9 @@ class RedisJobQueue:
                         pipe.watch(key, self._queued)
                         row = pipe.hgetall(key)
                         if not row or row.get("status") != "queued" or row.get("campaign_id") != campaign_id:
-                            pipe.unwatch()
+                            pipe.multi()
+                            pipe.zrem(queued_kind, job_id)
+                            pipe.execute()
                             break
                         now = utcnow()
                         pipe.multi()
@@ -245,6 +253,7 @@ class RedisJobQueue:
                             },
                         )
                         pipe.zrem(self._queued, job_id)
+                        pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                         pipe.execute()
                         count += 1
                         break
@@ -297,7 +306,7 @@ class RedisJobQueue:
             while True:
                 try:
                     with self.redis.pipeline() as pipe:
-                        pipe.watch(key, self._running, self._queued)
+                        pipe.watch(key, self._running, self._queued, queued_kind)
                         row = pipe.hgetall(key)
                         score = pipe.zscore(self._running, job_id)
                         if not row or row.get("status") != "running" or score is None or score > cutoff:
@@ -318,8 +327,10 @@ class RedisJobQueue:
                             },
                         )
                         pipe.zrem(self._running, job_id)
-                        if status == "queued" and row.get("kind") != "pentagi_flow":
-                            pipe.zadd(self._queued, {job_id: time.time()})
+                        if status == "queued":
+                            if row.get("kind") != "pentagi_flow":
+                                pipe.zadd(self._queued, {job_id: time.time()})
+                            pipe.zadd(self._queued_kind(row.get("kind", "")), {job_id: time.time()})
                         pipe.execute()
                         recovered += 1
                         break
@@ -396,18 +407,8 @@ class RedisJobQueue:
             raise ValueError("unsupported job kind")
         self.recover_expired_leases()
 
-        candidates: list[tuple[str, str]] = []
-        for job_id in self.redis.smembers(self._all):
-            row = self.redis.hgetall(self._job_key(job_id))
-            if (
-                row
-                and row.get("status") == "queued"
-                and row.get("kind") == kind
-                and int(row.get("attempts", "0")) < int(row.get("max_attempts", "0"))
-            ):
-                candidates.append((row.get("created_at", ""), job_id))
-
-        for _, job_id in sorted(candidates):
+        queued_kind = self._queued_kind(kind)
+        for job_id in self.redis.zrange(queued_kind, 0, -1):
             key = self._job_key(job_id)
             while True:
                 try:
@@ -435,6 +436,7 @@ class RedisJobQueue:
                             },
                         )
                         pipe.zrem(self._queued, job_id)
+                        pipe.zrem(queued_kind, job_id)
                         pipe.zadd(self._running, {job_id: time.time()})
                         pipe.execute()
                         return self.get(job_id)
@@ -498,8 +500,10 @@ class RedisJobQueue:
                         },
                     )
                     pipe.zrem(self._running, job_id)
-                    if status == "queued" and row.get("kind") != "pentagi_flow":
-                        pipe.zadd(self._queued, {job_id: time.time()})
+                    if status == "queued":
+                        if row.get("kind") != "pentagi_flow":
+                            pipe.zadd(self._queued, {job_id: time.time()})
+                        pipe.zadd(self._queued_kind(row.get("kind", "")), {job_id: time.time()})
                     pipe.execute()
                     return self.get(job_id)
             except redis.WatchError:
