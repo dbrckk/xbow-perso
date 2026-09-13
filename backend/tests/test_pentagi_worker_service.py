@@ -60,11 +60,22 @@ def _enable_worker(monkeypatch):
 class _Store:
     def __init__(self, campaign):
         self.campaign = campaign
+        self.artifacts = []
 
     def get_campaign_record(self, campaign_id):
         if campaign_id != self.campaign.id:
             return None
         return self.campaign.model_dump(mode="json"), 1
+
+    def put_artifact(self, campaign_id, kind, content, **kwargs):
+        record = {
+            "campaign_id": campaign_id,
+            "kind": kind,
+            "content": content,
+            **kwargs,
+        }
+        self.artifacts.append(record)
+        return record
 
 
 def test_transport_gate_is_explicit(monkeypatch):
@@ -138,8 +149,18 @@ def test_process_one_submits_once_and_completes(tmp_path, monkeypatch):
 
     monkeypatch.setattr("app.pentagi_worker_service.submit_pentagi_flow", submit)
 
-    assert process_one(queue, _Store(campaign), "pentagi-worker") is True
+    store = _Store(campaign)
+    assert process_one(queue, store, "pentagi-worker") is True
     assert len(calls) == 1
+    assert len(store.artifacts) == 1
+    receipt = store.artifacts[0]
+    assert receipt["kind"] == "pentagi_receipt"
+    assert receipt["media_type"] == "application/json"
+    decoded = __import__("json").loads(receipt["content"].decode("utf-8"))
+    assert decoded["flow_id"] == "flow-42"
+    assert decoded["job_id"] == job["id"]
+    assert "token" not in decoded
+    assert "request" not in decoded
     completed = queue.get(job["id"])
     assert completed["status"] == "completed"
     assert completed["attempts"] == 1
