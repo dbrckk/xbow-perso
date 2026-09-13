@@ -22,10 +22,23 @@ def _job_payload(permit: PentagiExecutionPermit, plan: PentagiFlowPlan) -> dict:
     }
 
 
+def prepare_pentagi_execution_permit(
+    campaign: Campaign,
+    plan: PentagiFlowPlan,
+) -> PentagiExecutionPermit:
+    """Create and verify the deterministic permit before any queue mutation."""
+
+    permit = issue_pentagi_execution_permit(campaign, plan)
+    verify_pentagi_execution_permit(permit, campaign, plan)
+    return permit
+
+
 def enqueue_pentagi_flow(
     queue: QueueBackend,
     campaign: Campaign,
     plan: PentagiFlowPlan,
+    *,
+    permit: PentagiExecutionPermit | None = None,
 ) -> dict:
     """Persist one admitted PentAGI flow request with atomic local deduplication.
 
@@ -35,7 +48,7 @@ def enqueue_pentagi_flow(
     failure must be reconciled manually instead of risking a duplicate remote flow.
     """
 
-    permit = issue_pentagi_execution_permit(campaign, plan)
+    permit = permit or prepare_pentagi_execution_permit(campaign, plan)
     verify_pentagi_execution_permit(permit, campaign, plan)
     return queue.enqueue(
         campaign.id,
