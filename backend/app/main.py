@@ -299,6 +299,8 @@ def system_capabilities():
             "strix_scanning": "gated",
             "http_validation": "gated",
             "browser_automation": "gated",
+            "pentagi": "gated",
+            "pentagi_status_tracking": "gated",
             "default_mode": "dry_run",
             "arbitrary_shell_jobs": False,
         },
@@ -386,6 +388,100 @@ def list_campaigns():
 @app.get("/api/campaigns/{campaign_id}", response_model=Campaign)
 def get_campaign(campaign_id: str):
     return assert_campaign_exists(campaign_id)
+
+
+@app.get("/api/campaigns/{campaign_id}/pentagi/preview")
+def preview_pentagi_campaign(campaign_id: str):
+    from .pentagi_adapter import PentagiPolicyError
+    from .pentagi_admission import PentagiAdmissionError
+    from .pentagi_control import PentagiControlError, prepare_pentagi_control_preview
+
+    campaign = assert_campaign_exists(campaign_id)
+    _reject_cancelled_campaign(campaign)
+    try:
+        preview = prepare_pentagi_control_preview(campaign)
+    except (PentagiPolicyError, PentagiAdmissionError, PentagiControlError) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    return {
+        "campaign_id": campaign.id,
+        "ready": preview.ready,
+        "admission": {
+            "allowed": preview.decision.allowed,
+            "reasons": list(preview.decision.reasons),
+            "policy_fingerprint": preview.decision.policy_fingerprint,
+            "max_requests_per_second": preview.decision.max_requests_per_second,
+        },
+        "operational_reasons": list(preview.operational_reasons),
+        "plan": {
+            "target": preview.plan.target,
+            "endpoint": preview.plan.endpoint,
+            "model_provider": preview.plan.model_provider,
+            "execution_supported": preview.plan.execution_supported,
+        },
+        "request_payload_exposed": False,
+    }
+
+
+@app.post("/api/campaigns/{campaign_id}/pentagi/dispatch")
+def dispatch_pentagi_campaign(campaign_id: str):
+    from .pentagi_adapter import PentagiPolicyError
+    from .pentagi_admission import PentagiAdmissionError
+    from .pentagi_control import PentagiControlError, require_pentagi_control_ready
+    from .pentagi_dispatch import enqueue_pentagi_flow
+    from .pentagi_execution_guard import PentagiExecutionGuardError
+
+    campaign, version = assert_campaign_record(campaign_id)
+    _reject_cancelled_campaign(campaign)
+    try:
+        preview = require_pentagi_control_ready(campaign)
+        job = enqueue_pentagi_flow(queue(), campaign, preview.plan)
+    except (
+        PentagiPolicyError,
+        PentagiAdmissionError,
+        PentagiControlError,
+        PentagiExecutionGuardError,
+    ) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "pentagi_flow_queued",
+            "at": utcnow(),
+            "job_id": job["id"],
+            "policy_fingerprint": preview.decision.policy_fingerprint,
+        },
+    )
+    campaign.updated_at = utcnow()
+    save_campaign(campaign, expected_version=version)
+    return {
+        "campaign_id": campaign.id,
+        "job": job,
+        "policy_fingerprint": preview.decision.policy_fingerprint,
+    }
+
+
+@app.get("/api/campaigns/{campaign_id}/pentagi")
+def pentagi_campaign_status(campaign_id: str):
+    campaign = assert_campaign_exists(campaign_id)
+    counts = queue().campaign_job_counts(campaign.id)
+    artifacts = [
+        item
+        for item in storage().list_artifacts(campaign.id)
+        if item.get("kind") in {"pentagi_receipt", "pentagi_status"}
+    ]
+    return {
+        "campaign_id": campaign.id,
+        "jobs": {
+            "pentagi_flow": counts.get("pentagi_flow", 0),
+            "pentagi_status": counts.get("pentagi_status", 0),
+        },
+        "artifacts": artifacts,
+        "read_only": True,
+    }
 
 
 @app.get("/api/campaigns/{campaign_id}/observations")
