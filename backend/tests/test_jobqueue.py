@@ -365,3 +365,71 @@ def test_queue_database_permissions_are_private_on_posix(tmp_path):
     db = tmp_path / "q.sqlite3"
     JobQueue(str(db))
     assert stat.S_IMODE(db.stat().st_mode) == 0o600
+
+
+def test_claim_kind_can_claim_parked_pentagi_job(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    job = q.enqueue(
+        "campaign-pentagi",
+        "pentagi_flow",
+        {"request": {"query": "mutation { noop }"}},
+        dedupe_key="pentagi:test",
+    )
+
+    assert q.claim("generic-worker") is None
+
+    claimed = q.claim_kind("pentagi-worker", "pentagi_flow")
+    assert claimed is not None
+    assert claimed["id"] == job["id"]
+    assert claimed["kind"] == "pentagi_flow"
+    assert claimed["status"] == "running"
+    assert claimed["claimed_by"] == "pentagi-worker"
+    assert claimed["attempts"] == 1
+
+
+def test_claim_kind_does_not_cross_job_kinds(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    report = q.enqueue("campaign-1", "report", {"platform": "generic"})
+    pentagi = q.enqueue(
+        "campaign-1",
+        "pentagi_flow",
+        {"request": {"query": "mutation { noop }"}},
+        dedupe_key="pentagi:test",
+    )
+
+    claimed = q.claim_kind("pentagi-worker", "pentagi_flow")
+    assert claimed is not None
+    assert claimed["id"] == pentagi["id"]
+    assert q.get(report["id"])["status"] == "queued"
+
+
+def test_claim_kind_rejects_unknown_kind(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    try:
+        q.claim_kind("worker-a", "shell")
+    except ValueError as exc:
+        assert "unsupported job kind" in str(exc)
+    else:
+        raise AssertionError("unknown kind must fail closed")
+
+
+def test_failed_pentagi_job_remains_out_of_generic_claim_path(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    job = q.enqueue(
+        "campaign-pentagi",
+        "pentagi_flow",
+        {"request": {"query": "mutation { noop }"}},
+        max_attempts=2,
+        dedupe_key="pentagi:test",
+    )
+    claimed = q.claim_kind("pentagi-worker", "pentagi_flow")
+    assert claimed is not None
+    requeued = q.finish(job["id"], "pentagi-worker", False, "transient")
+    assert requeued is not None
+    assert requeued["status"] == "queued"
+
+    assert q.claim("generic-worker") is None
+    reclaimed = q.claim_kind("pentagi-worker-2", "pentagi_flow")
+    assert reclaimed is not None
+    assert reclaimed["id"] == job["id"]
+    assert reclaimed["attempts"] == 2
