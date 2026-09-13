@@ -35,6 +35,10 @@ class CampaignCancelledError(ValueError):
     pass
 
 
+class StaleValidationJobError(ValidationPolicyError):
+    pass
+
+
 # Backward-compatible re-export for existing imports/tests.
 _state_after_scan = _scanner_state_after_scan
 
@@ -123,9 +127,9 @@ def process_validation(job: dict, store: Storage) -> None:
     if not finding:
         raise KeyError(f"finding {finding_id} not found")
     if campaign.state == CampaignState.completed:
-        raise ValidationPolicyError("completed campaign rejects validation work")
+        raise StaleValidationJobError("completed campaign rejects validation work")
     if finding.status != "validation_required":
-        raise ValidationPolicyError(
+        raise StaleValidationJobError(
             f"stale validation job for finding in {finding.status} state"
         )
     if finding.discovered_by == "independent-http-validator":
@@ -434,6 +438,10 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
         finished = queue.finish(job["id"], worker_id, False, f"campaign state changed concurrently: {exc}")
         if finished is not None:
             _record_worker_outcome(store, finished, success=False, status=finished["status"])
+    except StaleValidationJobError as exc:
+        finished = queue.cancel_owned(job["id"], worker_id, str(exc))
+        if finished is not None:
+            _record_worker_outcome(store, finished, success=False, status="cancelled")
     except (WorkerPolicyError, ValidationPolicyError, BrowserPolicyError, ReconPolicyError, ValueError, KeyError) as exc:
         finished = queue.finish(job["id"], worker_id, False, str(exc))
         if finished is not None:
