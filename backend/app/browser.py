@@ -4,15 +4,20 @@ import hashlib
 import json
 import os
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Literal
+from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
-from .jobqueue import JobQueue
+from .api_outbox import has_event, pending_request_id
+from .campaign_audit import append_campaign_event
+from .queue_backend import QueueBackend, create_queue
 from .secret_vault import SecretVaultError, get_secret, vault_enabled
-from .storage import CampaignConflictError, Storage
+from .storage import CampaignConflictError
+from .storage_backend import StorageBackend, create_storage
 from .submission_api import router as submission_router
 
 router = APIRouter()
@@ -91,20 +96,94 @@ def _browser_secret(secret_env: str) -> str:
     return secret
 
 
-def _campaign(campaign_id: str):
+def _utcnow() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _campaign(campaign_id: str, store: StorageBackend | None = None):
     from .main import Campaign
 
-    record = Storage().get_campaign_record(campaign_id)
+    backend = store or create_storage()
+    record = backend.get_campaign_record(campaign_id)
     if not record:
         raise HTTPException(status_code=404, detail="Campaign not found")
     raw, version = record
     return Campaign.model_validate(raw), version
 
 
+def _flow_fingerprint(flow: BrowserFlowInput) -> str:
+    encoded = json.dumps(
+        flow.model_dump(mode="json"),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
 def _flow_dedupe_key(campaign_id: str, version: int, flow: BrowserFlowInput) -> str:
-    encoded = json.dumps(flow.model_dump(mode="json"), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    digest = hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:24]
+    """Backward-compatible deterministic key helper for historical callers/tests."""
+    digest = _flow_fingerprint(flow)[:24]
     return f"browser:v{version}:{campaign_id}:{digest}"
+
+
+def _save_campaign(store: StorageBackend, campaign, version: int) -> int:
+    try:
+        return store.save_campaign(
+            campaign.model_dump(mode="json"),
+            expected_version=version,
+        )
+    except CampaignConflictError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Campaign changed concurrently; reload and retry",
+        ) from exc
+
+
+def _reconcile_browser_flow_queued(
+    store: StorageBackend,
+    campaign_id: str,
+    job: dict,
+    *,
+    request_id: str,
+    flow_fingerprint: str,
+    attempts: int = 3,
+) -> None:
+    for _ in range(attempts):
+        campaign, version = _campaign(campaign_id, store)
+        if has_event(
+            campaign.events,
+            "browser_flow_queued",
+            identity={
+                "request_id": request_id,
+                "flow_fingerprint": flow_fingerprint,
+                "job_id": job["id"],
+            },
+        ):
+            return
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "browser_flow_queued",
+                "request_id": request_id,
+                "flow_fingerprint": flow_fingerprint,
+                "job_id": job["id"],
+                "at": _utcnow(),
+            },
+        )
+        campaign.updated_at = _utcnow()
+        try:
+            store.save_campaign(
+                campaign.model_dump(mode="json"),
+                expected_version=version,
+            )
+            return
+        except CampaignConflictError:
+            continue
+    raise HTTPException(
+        status_code=409,
+        detail="Browser job queued but campaign audit reconciliation conflicted; retry safely",
+    )
 
 
 def _allowed_url(campaign, candidate: str, base: str | None = None) -> str:
@@ -153,22 +232,69 @@ def validate_flow(campaign, flow: BrowserFlowInput) -> BrowserFlowInput:
 
 @router.post("/api/campaigns/{campaign_id}/browser-flows")
 def queue_browser_flow(campaign_id: str, flow: BrowserFlowInput):
-    campaign, version = _campaign(campaign_id)
+    store = create_storage()
+    jobs: QueueBackend = create_queue()
+    campaign, version = _campaign(campaign_id, store)
     validate_flow(campaign, flow)
     if campaign.state.value in {"cancelled", "completed"}:
-        raise HTTPException(status_code=409, detail=f"Cannot queue browser flow from {campaign.state}")
-    job = JobQueue().enqueue(
-        campaign.id,
+        raise HTTPException(
+            status_code=409,
+            detail=f"Cannot queue browser flow from {campaign.state}",
+        )
+
+    flow_fingerprint = _flow_fingerprint(flow)
+    request_id = pending_request_id(
+        campaign.events,
+        requested_type="browser_flow_requested",
+        completed_type="browser_flow_queued",
+        identity={"flow_fingerprint": flow_fingerprint},
+    ) or str(uuid4())
+
+    if not has_event(
+        campaign.events,
+        "browser_flow_requested",
+        identity={
+            "request_id": request_id,
+            "flow_fingerprint": flow_fingerprint,
+        },
+    ):
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "browser_flow_requested",
+                "request_id": request_id,
+                "flow_fingerprint": flow_fingerprint,
+                "at": _utcnow(),
+            },
+        )
+        campaign.updated_at = _utcnow()
+        _save_campaign(store, campaign, version)
+
+    latest, _latest_version = _campaign(campaign.id, store)
+    validate_flow(latest, flow)
+    if latest.state.value in {"cancelled", "completed"}:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Cannot queue browser flow from {latest.state}",
+        )
+
+    job = jobs.enqueue(
+        latest.id,
         "browser_flow",
-        {"campaign_id": campaign.id, "steps": flow.model_dump(mode="json")["steps"]},
+        {
+            "campaign_id": latest.id,
+            "steps": flow.model_dump(mode="json")["steps"],
+        },
         max_attempts=2,
-        dedupe_key=_flow_dedupe_key(campaign.id, version, flow),
+        dedupe_key=f"browser:{request_id}",
     )
-    campaign.events.append({"type": "browser_flow_queued", "job_id": job["id"], "at": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()})
-    try:
-        Storage().save_campaign(campaign.model_dump(mode="json"), expected_version=version)
-    except CampaignConflictError as exc:
-        raise HTTPException(status_code=409, detail="Campaign changed concurrently; reload and retry") from exc
+    _reconcile_browser_flow_queued(
+        store,
+        latest.id,
+        job,
+        request_id=request_id,
+        flow_fingerprint=flow_fingerprint,
+    )
     return job
 
 
@@ -324,7 +450,7 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
 
 
 def persist_browser_result(
-    store: Storage,
+    store: StorageBackend,
     campaign_id: str,
     result: BrowserExecutionResult,
     *,
