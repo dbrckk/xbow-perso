@@ -3,12 +3,13 @@ from fastapi import HTTPException
 
 from app import main
 from app.jobqueue import JobQueue
-from app.main import Campaign, ProgramRules, TargetInput
+from app.main import Campaign, CampaignState, ProgramRules, TargetInput
 
 
 def _campaign():
     return Campaign(
         id="api-pentagi",
+        state=CampaignState.ready,
         target=TargetInput(
             name="fixture",
             primary_url="https://app.example.test",
