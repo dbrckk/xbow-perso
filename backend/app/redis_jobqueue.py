@@ -11,7 +11,7 @@ import redis
 
 from .jobqueue import _bounded_identifier, _job_lease_seconds, _max_job_payload_bytes, utcnow
 
-_ALLOWED_KINDS = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report"}
+_ALLOWED_KINDS = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow"}
 _STATUSES = ("queued", "running", "completed", "failed", "cancelled")
 
 
@@ -121,7 +121,8 @@ class RedisJobQueue:
         if dedupe_key is None:
             with self.redis.pipeline(transaction=True) as pipe:
                 pipe.hset(self._job_key(job_id), mapping=row)
-                pipe.zadd(self._queued, {job_id: score})
+                if kind != "pentagi_flow":
+                    pipe.zadd(self._queued, {job_id: score})
                 pipe.sadd(self._all, job_id)
                 pipe.sadd(self._campaign_key(campaign_id), job_id)
                 pipe.execute()
@@ -149,7 +150,8 @@ class RedisJobQueue:
                         return existing
                     pipe.multi()
                     pipe.hset(self._job_key(job_id), mapping=row)
-                    pipe.zadd(self._queued, {job_id: score})
+                    if kind != "pentagi_flow":
+                        pipe.zadd(self._queued, {job_id: score})
                     pipe.sadd(self._all, job_id)
                     pipe.sadd(self._campaign_key(campaign_id), job_id)
                     pipe.hset(dedupe_hash, dedupe_key, job_id)
