@@ -447,21 +447,10 @@ def campaign_outbox_recovery(campaign_id: str):
     }
 
 
-@app.post("/api/campaigns/{campaign_id}/outbox/reconcile-local")
-def reconcile_campaign_outbox_local(campaign_id: str):
-    from .outbox_recovery import (
-        diagnose_outbox_recovery,
-        local_completion_event,
-        public_recovery_diagnostics,
-    )
-
-    campaign, version = assert_campaign_record(campaign_id)
-    jobs = queue()
-    diagnostics = diagnose_outbox_recovery(
-        campaign.id,
-        campaign.events,
-        jobs,
-    )
+def _apply_local_outbox_repairs(
+    campaign: Campaign,
+    diagnostics: list[dict[str, Any]],
+) -> tuple[int, int]:
     repaired = 0
     skipped_ambiguous = 0
 
@@ -491,23 +480,66 @@ def reconcile_campaign_outbox_local(campaign_id: str):
         append_campaign_event(campaign.events, event)
         repaired += 1
 
-    if repaired:
-        campaign.updated_at = utcnow()
-        save_campaign(campaign, expected_version=version)
+    return repaired, skipped_ambiguous
 
-    remaining = diagnose_outbox_recovery(
-        campaign.id,
-        campaign.events,
-        jobs,
+
+@app.post("/api/campaigns/{campaign_id}/outbox/reconcile-local")
+def reconcile_campaign_outbox_local(campaign_id: str):
+    from .outbox_recovery import (
+        diagnose_outbox_recovery,
+        local_completion_event,
+        public_recovery_diagnostics,
     )
-    return {
-        "campaign_id": campaign.id,
-        "repaired": repaired,
-        "skipped_ambiguous": skipped_ambiguous,
-        "remaining": public_recovery_diagnostics(remaining),
-        "local_repair_only": True,
-        "automatic_job_creation": False,
-    }
+
+    jobs = queue()
+    last_conflict: HTTPException | None = None
+
+    for _ in range(3):
+        campaign, version = assert_campaign_record(campaign_id)
+        _reject_cancelled_campaign(campaign)
+        diagnostics = diagnose_outbox_recovery(
+            campaign.id,
+            campaign.events,
+            jobs,
+        )
+        repaired, skipped_ambiguous = _apply_local_outbox_repairs(
+            campaign,
+            diagnostics,
+        )
+
+        if repaired:
+            campaign.updated_at = utcnow()
+            try:
+                save_campaign(campaign, expected_version=version)
+            except HTTPException as exc:
+                if exc.status_code != 409:
+                    raise
+                last_conflict = exc
+                continue
+
+        latest = assert_campaign_exists(campaign.id)
+        remaining = diagnose_outbox_recovery(
+            latest.id,
+            latest.events,
+            jobs,
+        )
+        return {
+            "campaign_id": latest.id,
+            "repaired": repaired,
+            "skipped_ambiguous": skipped_ambiguous,
+            "remaining": public_recovery_diagnostics(remaining),
+            "local_repair_only": True,
+            "automatic_job_creation": False,
+        }
+
+    raise HTTPException(
+        status_code=409,
+        detail=(
+            "Outbox reconciliation conflicted repeatedly; reload and retry"
+            if last_conflict is not None
+            else "Outbox reconciliation did not converge"
+        ),
+    )
 
 
 @app.get("/api/campaigns/{campaign_id}/pentagi/preview")
