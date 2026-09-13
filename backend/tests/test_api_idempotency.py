@@ -13,6 +13,7 @@ from app.main import (
     TargetInput,
     add_finding,
     add_text_artifact,
+    queue_report,
     start_campaign,
     validate_finding,
 )
@@ -473,3 +474,138 @@ def test_add_finding_retry_repairs_missing_validation_job_after_intent(
     ]
     assert len(queued) == 1
     assert queued[0]["request_id"] == f"validation:{finding.id}"
+
+
+
+def test_manual_report_conflict_before_intent_commit_never_enqueues(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "queue.sqlite3")
+    campaign = Campaign(
+        id="report-conflict",
+        state=CampaignState.running,
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="test-authorization",
+                allowed_targets=["example.test"],
+            ),
+        ),
+    )
+    jobs = JobQueue(db)
+
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign, 3),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+    monkeypatch.setattr(
+        main,
+        "save_campaign",
+        lambda value, expected_version=None: (_ for _ in ()).throw(
+            HTTPException(
+                status_code=409,
+                detail="Campaign changed concurrently; reload and retry",
+            )
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        queue_report(campaign.id, "generic")
+
+    assert exc.value.status_code == 409
+    assert jobs.stats()["total"] == 0
+    assert any(
+        event.get("type") == "report_requested"
+        and event.get("purpose") == "manual"
+        for event in campaign.events
+    )
+    assert not any(
+        event.get("type") == "report_queued"
+        for event in campaign.events
+    )
+
+
+def test_manual_report_retry_reuses_pending_request_and_job(tmp_path, monkeypatch):
+    db, artifacts = _setup(tmp_path, monkeypatch)
+    store = Storage(db, artifacts)
+    document, version = store.get_campaign_record("c1")
+    campaign = Campaign.model_validate(document)
+    request_id = "manual-report-resume"
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "report_requested",
+            "request_id": request_id,
+            "platform": "generic",
+            "purpose": "manual",
+            "at": main.utcnow(),
+        },
+    )
+    campaign.updated_at = main.utcnow()
+    store.save_campaign(
+        campaign.model_dump(mode="json"),
+        expected_version=version,
+    )
+
+    jobs = JobQueue(db)
+    existing = jobs.enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": "generic"},
+        max_attempts=2,
+        dedupe_key=f"report:generic:{request_id}",
+    )
+
+    result = queue_report(campaign.id, "generic")
+
+    assert result["id"] == existing["id"]
+    assert jobs.campaign_job_counts(campaign.id)["report"] == 1
+    persisted = store.get_campaign(campaign.id)
+    queued = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "report_queued"
+        and event.get("request_id") == request_id
+    ]
+    assert len(queued) == 1
+    assert queued[0]["job_id"] == existing["id"]
+
+
+def test_final_validation_conflict_before_completion_intent_never_enqueues_report(
+    tmp_path,
+    monkeypatch,
+):
+    finding = Finding(
+        id="f1",
+        title="candidate",
+        severity="low",
+        asset="https://example.test",
+        summary="fixture",
+        status="validation_required",
+        discovered_by="scanner",
+    )
+    db, artifacts = _setup(tmp_path, monkeypatch, findings=[finding])
+    _record_observed_validation(db, artifacts)
+    jobs = JobQueue(db)
+    original_save = main.save_campaign
+
+    def fail_save(value, expected_version=None):
+        raise HTTPException(
+            status_code=409,
+            detail="Campaign changed concurrently; reload and retry",
+        )
+
+    monkeypatch.setattr(main, "save_campaign", fail_save)
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+
+    with pytest.raises(HTTPException) as exc:
+        validate_finding("c1", "f1", True, "human-reviewer")
+
+    assert exc.value.status_code == 409
+    assert jobs.campaign_job_counts("c1")["report"] == 0
+
+    monkeypatch.setattr(main, "save_campaign", original_save)
