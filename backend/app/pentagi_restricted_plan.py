@@ -5,7 +5,11 @@ from dataclasses import dataclass
 from urllib.parse import urlparse
 
 from .main import Campaign
-from .pentagi_adapter import PentagiPolicyError, build_pentagi_flow_plan
+from .pentagi_adapter import build_pentagi_flow_plan
+from .pentagi_broker_auth import (
+    PentagiBrokerAuthError,
+    load_pentagi_broker_auth,
+)
 
 
 _NATIVE_FUNCTIONS = (
@@ -102,14 +106,12 @@ def _broker_url() -> str:
 
 
 def _broker_token() -> str:
-    value = (os.getenv("XBOW_PENTAGI_BROKER_TOKEN") or "").strip()
-    if not value:
-        raise PentagiRestrictedPlanError("XBOW_PENTAGI_BROKER_TOKEN is required")
-    if len(value) < 16 or len(value) > 8192:
-        raise PentagiRestrictedPlanError("XBOW_PENTAGI_BROKER_TOKEN is invalid")
-    if any(ord(ch) < 33 or ord(ch) == 127 for ch in value):
-        raise PentagiRestrictedPlanError("XBOW_PENTAGI_BROKER_TOKEN is invalid")
-    return value
+    try:
+        return load_pentagi_broker_auth().token
+    except PentagiBrokerAuthError as exc:
+        raise PentagiRestrictedPlanError(
+            "PentAGI broker token is unavailable"
+        ) from exc
 
 
 def _broker_schema() -> dict[str, object]:
