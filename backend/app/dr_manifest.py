@@ -196,19 +196,25 @@ def write_backup_manifest(manifest: dict[str, Any], destination: str) -> None:
     tmp = path.with_name(path.name + ".tmp")
     sealed = _seal_manifest(manifest)
     encoded = json.dumps(sealed, sort_keys=True, indent=2)
+    owns_tmp = False
     try:
         with tmp.open("x", encoding="utf-8") as handle:
+            owns_tmp = True
             os.chmod(tmp, 0o600)
             handle.write(encoded)
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(tmp, path)
+        owns_tmp = False
         os.chmod(path, 0o600)
     except OSError as exc:
-        try:
-            tmp.unlink(missing_ok=True)
-        except OSError:
-            pass
+        # An exclusive-open collision belongs to another writer. Only clean
+        # up a temporary file successfully created by this invocation.
+        if owns_tmp:
+            try:
+                tmp.unlink(missing_ok=True)
+            except OSError:
+                pass
         raise DisasterRecoveryError("manifest write failed") from exc
 
 
