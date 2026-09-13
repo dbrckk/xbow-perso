@@ -63,7 +63,12 @@ def process_one(queue: QueueBackend, store, worker_id: str) -> bool:
                 "PentAGI status job lease was lost during polling"
             )
 
-        finished = queue.finish(job["id"], worker_id, True)
+        finished = queue.finish(
+            job["id"],
+            worker_id,
+            not result.timed_out,
+            "PentAGI status polling window elapsed" if result.timed_out else None,
+        )
         if finished is None:
             raise PentagiStatusWorkerError(
                 "PentAGI status job ownership was lost before completion"
