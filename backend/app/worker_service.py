@@ -39,6 +39,10 @@ class StaleValidationJobError(ValidationPolicyError):
     pass
 
 
+class StaleBrowserJobError(BrowserPolicyError):
+    pass
+
+
 # Backward-compatible re-export for existing imports/tests.
 _state_after_scan = _scanner_state_after_scan
 
@@ -194,6 +198,8 @@ def process_validation(job: dict, store: Storage) -> None:
 
 def process_browser_flow(job: dict, store: Storage) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
+    if campaign.state == CampaignState.completed:
+        raise StaleBrowserJobError("completed campaign rejects browser work")
     asset_id = record_asset(store, campaign, str(campaign.target.primary_url), "browser")
     result = execute_browser_flow(campaign, job["payload"])
     artifacts = persist_browser_result(store, campaign.id, result, idempotency_prefix=job["id"])
@@ -439,6 +445,10 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
         if finished is not None:
             _record_worker_outcome(store, finished, success=False, status=finished["status"])
     except StaleValidationJobError as exc:
+        finished = queue.cancel_owned(job["id"], worker_id, str(exc))
+        if finished is not None:
+            _record_worker_outcome(store, finished, success=False, status="cancelled")
+    except StaleBrowserJobError as exc:
         finished = queue.cancel_owned(job["id"], worker_id, str(exc))
         if finished is not None:
             _record_worker_outcome(store, finished, success=False, status="cancelled")

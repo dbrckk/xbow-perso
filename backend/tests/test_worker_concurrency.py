@@ -195,3 +195,40 @@ def test_completed_campaign_validation_job_is_cancelled_without_retry(tmp_path):
     assert final["status"] == "cancelled"
     assert final["attempts"] == 1
     assert queue.claim("worker-retry") is None
+
+
+
+def test_completed_campaign_browser_job_is_cancelled_without_retry(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    campaign.state = CampaignState.completed
+    store.save_campaign(campaign.model_dump(mode="json"))
+    job = queue.enqueue(
+        campaign.id,
+        "browser_flow",
+        {
+            "campaign_id": campaign.id,
+            "steps": [
+                {
+                    "operation": "navigate",
+                    "url": "https://example.test",
+                    "selector": None,
+                    "secret_env": None,
+                    "timeout_ms": 1000,
+                }
+            ],
+        },
+        max_attempts=2,
+        dedupe_key="browser:stale-completed",
+    )
+
+    assert process_one(queue, store, "worker-browser-completed") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "cancelled"
+    assert final["attempts"] == 1
+    assert final["claimed_by"] is None
+    assert queue.claim("worker-browser-retry") is None

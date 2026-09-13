@@ -75,6 +75,16 @@ def _request_key(event: Mapping[str, Any]) -> tuple[str, str] | None:
             return "campaign_completion_report", request_id
         if purpose == "manual":
             return "report_manual", request_id
+    if event_type == "browser_flow_requested":
+        request_id = event.get("request_id")
+        flow_fingerprint = event.get("flow_fingerprint")
+        if (
+            isinstance(request_id, str)
+            and request_id
+            and isinstance(flow_fingerprint, str)
+            and flow_fingerprint
+        ):
+            return "browser_flow", request_id
     if event_type == "pentagi_dispatch_requested":
         fingerprint = event.get("dispatch_fingerprint")
         if isinstance(fingerprint, str) and fingerprint:
@@ -100,6 +110,10 @@ def _completion_key(event: Mapping[str, Any]) -> tuple[str, str] | None:
         request_id = event.get("request_id")
         if isinstance(request_id, str) and request_id:
             return "campaign_completion_report", request_id
+    if event_type == "browser_flow_queued":
+        request_id = event.get("request_id")
+        if isinstance(request_id, str) and request_id:
+            return "browser_flow", request_id
     if event_type == "pentagi_flow_queued":
         fingerprint = event.get("dispatch_fingerprint")
         if isinstance(fingerprint, str) and fingerprint:
@@ -214,6 +228,12 @@ def pending_outbox_intents(
                 job_kind="report",
                 dedupe_key=raw_identity,
                 completion_type="campaign_completed",
+            )
+        elif kind == "browser_flow":
+            descriptor.update(
+                job_kind="browser_flow",
+                dedupe_key=f"browser:{raw_identity}",
+                completion_type="browser_flow_queued",
             )
         elif kind == "pentagi_dispatch":
             descriptor.update(

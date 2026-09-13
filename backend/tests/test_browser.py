@@ -1,8 +1,10 @@
 import base64
 
 import pytest
+from fastapi import HTTPException
 from pydantic import ValidationError
 
+from app import browser
 from app.browser import (
     BrowserExecutionResult,
     BrowserFlowInput,
@@ -11,12 +13,17 @@ from app.browser import (
     _assert_read_only_browser_method,
     _browser_secret,
     _flow_dedupe_key,
+    _flow_fingerprint,
     execute_browser_flow,
     persist_browser_result,
+    queue_browser_flow,
     validate_flow,
 )
-from app.main import Campaign, ProgramRules, TargetInput
-from app.storage import Storage
+from app.api_outbox import outbox_snapshot
+from app.campaign_audit import append_campaign_event, verify_campaign_event_chain
+from app.jobqueue import JobQueue
+from app.main import Campaign, CampaignState, ProgramRules, TargetInput
+from app.storage import CampaignConflictError, Storage
 
 
 def _campaign() -> Campaign:
@@ -259,3 +266,168 @@ def test_browser_secret_invalid_vault_configuration_fails_closed(monkeypatch):
 
     with pytest.raises(BrowserPolicyError, match="browser vault configuration is invalid"):
         _browser_secret("XBOW_BROWSER_SECRET_TEST_LOGIN")
+
+
+
+def _browser_flow():
+    return BrowserFlowInput(
+        steps=[
+            BrowserStep(
+                operation="navigate",
+                url="https://app.test.local/login",
+            ),
+            BrowserStep(operation="screenshot"),
+        ]
+    )
+
+
+def _browser_api_backends(tmp_path, monkeypatch):
+    db = str(tmp_path / "browser-api.sqlite3")
+    artifacts = str(tmp_path / "browser-artifacts")
+    store = Storage(db, artifacts)
+    jobs = JobQueue(db)
+    campaign = _campaign()
+    campaign.id = "browser-api-campaign"
+    campaign.state = CampaignState.running
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+    monkeypatch.setattr(browser, "create_storage", lambda: store)
+    monkeypatch.setattr(browser, "create_queue", lambda: jobs)
+    return store, jobs, campaign
+
+
+def test_browser_queue_uses_backend_factories_and_audited_outbox(
+    tmp_path,
+    monkeypatch,
+):
+    store, jobs, campaign = _browser_api_backends(tmp_path, monkeypatch)
+
+    job = queue_browser_flow(campaign.id, _browser_flow())
+
+    assert job["kind"] == "browser_flow"
+    assert jobs.stats()["total"] == 1
+    persisted = store.get_campaign(campaign.id)
+    assert verify_campaign_event_chain(persisted["events"])["valid"] is True
+
+    requested = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "browser_flow_requested"
+    ]
+    queued = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "browser_flow_queued"
+    ]
+    assert len(requested) == 1
+    assert len(queued) == 1
+    assert queued[0]["request_id"] == requested[0]["request_id"]
+    assert queued[0]["flow_fingerprint"] == requested[0]["flow_fingerprint"]
+    assert queued[0]["job_id"] == job["id"]
+    assert outbox_snapshot(persisted["events"])["pending_total"] == 0
+
+
+def test_browser_conflict_before_intent_commit_never_enqueues(
+    tmp_path,
+    monkeypatch,
+):
+    store, jobs, campaign = _browser_api_backends(tmp_path, monkeypatch)
+
+    def conflict(document, expected_version=None):
+        raise CampaignConflictError("fixture conflict")
+
+    monkeypatch.setattr(store, "save_campaign", conflict)
+
+    with pytest.raises(HTTPException) as exc:
+        queue_browser_flow(campaign.id, _browser_flow())
+
+    assert exc.value.status_code == 409
+    assert "concurrently" in str(exc.value.detail)
+    assert jobs.stats()["total"] == 0
+
+
+def test_browser_retry_after_enqueue_reuses_existing_job(
+    tmp_path,
+    monkeypatch,
+):
+    store, jobs, campaign = _browser_api_backends(tmp_path, monkeypatch)
+    flow = _browser_flow()
+    fingerprint = _flow_fingerprint(flow)
+    request_id = "browser-resume-request"
+
+    document, version = store.get_campaign_record(campaign.id)
+    interrupted = Campaign.model_validate(document)
+    append_campaign_event(
+        interrupted.events,
+        {
+            "type": "browser_flow_requested",
+            "request_id": request_id,
+            "flow_fingerprint": fingerprint,
+            "at": browser._utcnow(),
+        },
+    )
+    interrupted.updated_at = browser._utcnow()
+    store.save_campaign(
+        interrupted.model_dump(mode="json"),
+        expected_version=version,
+    )
+
+    existing = jobs.enqueue(
+        campaign.id,
+        "browser_flow",
+        {
+            "campaign_id": campaign.id,
+            "steps": flow.model_dump(mode="json")["steps"],
+        },
+        max_attempts=2,
+        dedupe_key=f"browser:{request_id}",
+    )
+
+    retried = queue_browser_flow(campaign.id, flow)
+
+    assert retried["id"] == existing["id"]
+    assert jobs.stats()["total"] == 1
+    persisted = store.get_campaign(campaign.id)
+    requested = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "browser_flow_requested"
+        and event.get("request_id") == request_id
+    ]
+    queued = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "browser_flow_queued"
+        and event.get("request_id") == request_id
+    ]
+    assert len(requested) == 1
+    assert len(queued) == 1
+    assert queued[0]["job_id"] == existing["id"]
+
+
+def test_browser_pending_intent_is_visible_in_outbox(tmp_path, monkeypatch):
+    store, _jobs, campaign = _browser_api_backends(tmp_path, monkeypatch)
+    flow = _browser_flow()
+    fingerprint = _flow_fingerprint(flow)
+
+    document, version = store.get_campaign_record(campaign.id)
+    pending = Campaign.model_validate(document)
+    append_campaign_event(
+        pending.events,
+        {
+            "type": "browser_flow_requested",
+            "request_id": "browser-pending-request",
+            "flow_fingerprint": fingerprint,
+            "at": browser._utcnow(),
+        },
+    )
+    store.save_campaign(
+        pending.model_dump(mode="json"),
+        expected_version=version,
+    )
+
+    snapshot = outbox_snapshot(store.get_campaign(campaign.id)["events"])
+
+    assert snapshot["pending_total"] == 1
+    assert snapshot["pending_by_kind"] == {"browser_flow": 1}
+    assert "browser-pending-request" not in str(snapshot)
+    assert fingerprint not in str(snapshot)
