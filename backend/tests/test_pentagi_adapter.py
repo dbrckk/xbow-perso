@@ -73,6 +73,10 @@ def test_pentagi_plan_reads_explicit_environment(monkeypatch):
         "https://pentagi.example.test/path",
         "https://pentagi.example.test?x=1",
         "https://pentagi.example.test/#fragment",
+        "https://[",
+        "https://[::1",
+        "https://pentagi.example.test:notaport",
+        "https://pentagi.example.test:70000",
     ],
 )
 def test_pentagi_plan_rejects_unsafe_endpoint_forms(base_url):
