@@ -312,6 +312,39 @@ class JobQueue:
             db.execute("COMMIT")
         return self._decode(claimed)
 
+
+    def claim_kind(self, worker_id: str, kind: str) -> dict[str, Any] | None:
+        """Atomically claim only one explicitly requested job kind."""
+        worker_id = _bounded_identifier(worker_id, "worker_id")
+        kind = _bounded_identifier(kind, "kind")
+        allowed_kinds = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow"}
+        if kind not in allowed_kinds:
+            raise ValueError("unsupported job kind")
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            now_dt = datetime.now(timezone.utc)
+            self._recover_expired_leases(db, now_dt)
+            row = db.execute(
+                "SELECT id FROM jobs WHERE status='queued' AND kind=? AND attempts < max_attempts ORDER BY created_at LIMIT 1",
+                (kind,),
+            ).fetchone()
+            if not row:
+                db.execute("COMMIT")
+                return None
+            now = now_dt.isoformat()
+            cursor = db.execute(
+                """UPDATE jobs
+                   SET status='running', attempts=attempts+1, claimed_by=?, claimed_at=?, updated_at=?
+                   WHERE id=? AND status='queued' AND kind=?""",
+                (worker_id, now, now, row["id"], kind),
+            )
+            if cursor.rowcount != 1:
+                db.execute("ROLLBACK")
+                return None
+            claimed = db.execute("SELECT * FROM jobs WHERE id=?", (row["id"],)).fetchone()
+            db.execute("COMMIT")
+        return self._decode(claimed)
+
     def heartbeat(self, job_id: str, worker_id: str) -> bool:
         """Renew a running job lease only when the caller still owns it."""
         job_id = _bounded_identifier(job_id, "job_id")
