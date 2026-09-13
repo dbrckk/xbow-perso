@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import os
 import socket
+import threading
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass
 
 from .main import Campaign, CampaignState
-from .pentagi_adapter import PentagiFlowPlan
+from .pentagi_adapter import PentagiFlowPlan, PentagiPolicyError
+from .pentagi_admission import PentagiAdmissionError
 from .pentagi_execution_guard import (
     PentagiExecutionGuardError,
     PentagiExecutionPermit,
@@ -49,6 +52,55 @@ def _require_worker_runtime() -> None:
         raise PentagiWorkerPolicyError("PentAGI worker is disabled")
     if not pentagi_worker_available():
         raise PentagiWorkerPolicyError("PentAGI transport is disabled")
+
+
+def _lease_seconds() -> int:
+    raw = os.getenv("XBOW_JOB_LEASE_SECONDS", "21600")
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise PentagiWorkerPolicyError("XBOW_JOB_LEASE_SECONDS must be an integer") from exc
+    if not 60 <= value <= 86400:
+        raise PentagiWorkerPolicyError(
+            "XBOW_JOB_LEASE_SECONDS must be between 60 and 86400"
+        )
+    return value
+
+
+@contextmanager
+def _maintain_lease(queue: QueueBackend, job_id: str, worker_id: str):
+    """Renew ownership while the blocking remote submission is in flight."""
+
+    stop = threading.Event()
+    lost = threading.Event()
+    interval = min(20.0, max(5.0, _lease_seconds() / 4.0))
+
+    if not queue.heartbeat(job_id, worker_id):
+        raise PentagiWorkerPolicyError(
+            "PentAGI job lease was lost before submission"
+        )
+
+    def heartbeat_loop() -> None:
+        while not stop.wait(interval):
+            try:
+                if not queue.heartbeat(job_id, worker_id):
+                    lost.set()
+                    return
+            except Exception:
+                lost.set()
+                return
+
+    thread = threading.Thread(
+        target=heartbeat_loop,
+        name=f"pentagi-heartbeat:{job_id}",
+        daemon=True,
+    )
+    thread.start()
+    try:
+        yield lost
+    finally:
+        stop.set()
+        thread.join(timeout=1.0)
 
 
 def _payload_object(job: dict) -> dict:
@@ -110,7 +162,7 @@ def preflight_pentagi_job(job: dict, campaign: Campaign) -> PentagiWorkerPreflig
 
     try:
         verify_pentagi_execution_permit(permit, campaign, plan)
-    except PentagiExecutionGuardError as exc:
+    except (PentagiExecutionGuardError, PentagiAdmissionError, PentagiPolicyError) as exc:
         raise PentagiWorkerPolicyError("PentAGI execution permit revalidation failed") from exc
 
     return PentagiWorkerPreflight(campaign=campaign, plan=plan, permit=permit)
@@ -134,22 +186,19 @@ def process_one(queue: QueueBackend, store, worker_id: str) -> bool:
 
     try:
         campaign = _load_campaign(store, job["campaign_id"])
-        preflight = preflight_pentagi_job(job, campaign)
+        preflight_pentagi_job(job, campaign)
 
-        if not queue.heartbeat(job["id"], worker_id):
-            raise PentagiWorkerPolicyError("PentAGI job lease was lost before submission")
-
-        # Reload and revalidate immediately before the mutating remote POST. This
-        # catches cancellation or policy drift occurring after the initial claim.
         current_campaign = _load_campaign(store, job["campaign_id"])
         preflight = preflight_pentagi_job(job, current_campaign)
-        verify_pentagi_execution_permit(
-            preflight.permit,
-            current_campaign,
-            preflight.plan,
-        )
 
-        response = submit_pentagi_flow(preflight.plan, preflight.permit)
+        with _maintain_lease(queue, job["id"], worker_id) as lease_lost:
+            response = submit_pentagi_flow(preflight.plan, preflight.permit)
+
+        if lease_lost.is_set():
+            raise PentagiWorkerPolicyError(
+                "PentAGI job lease was lost during submission"
+            )
+
         create_flow = response.body["data"]["createFlow"]
         flow_id = create_flow["id"]
         remote_status = create_flow.get("status") or "unknown"
@@ -160,13 +209,18 @@ def process_one(queue: QueueBackend, store, worker_id: str) -> bool:
                 "PentAGI flow was created but queue ownership was lost before completion"
             )
 
-        # Keep operational output intentionally non-sensitive.
         print(
             f"pentagi_flow_created job_id={job['id']} "
             f"flow_id={flow_id} status={remote_status}"
         )
         return True
-    except (PentagiWorkerPolicyError, PentagiExecutionGuardError, PentagiTransportError) as exc:
+    except (
+        PentagiWorkerPolicyError,
+        PentagiExecutionGuardError,
+        PentagiAdmissionError,
+        PentagiPolicyError,
+        PentagiTransportError,
+    ) as exc:
         queue.finish(job["id"], worker_id, False, str(exc))
         return True
 
