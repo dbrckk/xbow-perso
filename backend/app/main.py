@@ -289,6 +289,9 @@ def health():
 
 @app.get("/api/capabilities")
 def system_capabilities():
+    from .runtime_capabilities import safe_pentagi_runtime_capability
+
+    pentagi = safe_pentagi_runtime_capability()
     return {
         "campaign_control": {
             "scope_enforcement": True,
@@ -302,9 +305,14 @@ def system_capabilities():
             "strix_scanning": "gated",
             "http_validation": "gated",
             "browser_automation": "gated",
-            "pentagi": "preview_only",
-            "pentagi_status_tracking": "gated",
-            "default_mode": "dry_run",
+            "pentagi": pentagi["mode"],
+            "pentagi_detail": pentagi,
+            "pentagi_status_tracking": (
+                "available"
+                if pentagi["status_tracking"]["available"]
+                else "disabled"
+            ),
+            "default_mode": "dry_run" if pentagi["dry_run"] else "active",
             "arbitrary_shell_jobs": False,
         },
         "reasoning": {
@@ -329,6 +337,9 @@ def system_capabilities():
             "credential_attacks": False,
             "exploit_execution": False,
             "out_of_scope_execution": False,
+            "pentagi_remote_execution_enforceable": bool(
+                pentagi["execution_transport_enforceable"]
+            ),
         },
     }
 

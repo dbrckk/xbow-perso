@@ -33,7 +33,7 @@ FastAPI Control Plane
 Isolated Worker Adapter Layer
       |
       +-- Strix (first integration)
-      +-- PentAGI (guarded execution + status tracking)
+      +-- PentAGI (guarded preview + dedicated lifecycle workers)
       +-- additional scanners/tools (planned)
 ```
 
@@ -113,14 +113,16 @@ A campaign must include written authorization metadata, allowed targets and proh
 
 ## PentAGI workers
 
-PentAGI execution is split into two dedicated services so remote flow creation never blocks generic scanning workers:
+PentAGI has two dedicated worker services so its lifecycle never blocks generic scanning workers:
 
-- `pentagi-worker`: creates one admitted remote flow after policy/permit revalidation.
-- `pentagi-status-worker`: tracks only already-created flows through bounded read-only polling.
+- `pentagi-worker`: reserved for a future execution-capable, fully admitted remote-flow path.
+- `pentagi-status-worker`: tracks already-created flows through bounded read-only polling.
 
-All PentAGI switches default to disabled, and the dedicated containers are behind Compose profiles so a normal `docker compose up` does not start them. To enable execution deliberately, configure the PentAGI endpoint/provider and credentials, enable `XBOW_ENABLE_PENTAGI`, `XBOW_ENABLE_PENTAGI_WORKER`, and `XBOW_ENABLE_PENTAGI_TRANSPORT`, then start the `pentagi` profile. Enable `XBOW_ENABLE_PENTAGI_STATUS_WORKER` and the `pentagi-status` profile separately for lifecycle tracking.
+The current release intentionally keeps **new PentAGI flow dispatch in `preview_only` mode**. The HTTPS transport, permit validation, dedicated queue and worker gates exist, but xbow-perso cannot yet prove that downstream PentAGI activity enforces the campaign's exact scope and request-rate ceiling after `createFlow`. For that reason, turning on `XBOW_ENABLE_PENTAGI`, `XBOW_ENABLE_PENTAGI_WORKER`, `XBOW_ENABLE_PENTAGI_TRANSPORT`, active scans, and `DRY_RUN=false` is still **not sufficient** to make dispatch admissible.
 
-Example:
+`GET /api/capabilities` reports the effective PentAGI state and the exact non-secret block reasons. The control plane remains fail-closed until an enforceable downstream execution contract is implemented and reviewed.
+
+The dedicated containers remain behind Compose profiles. The status profile may be enabled separately when tracking previously created/known flows is required:
 
 ```bash
 docker compose --profile pentagi --profile pentagi-status up -d --build
