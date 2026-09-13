@@ -5,6 +5,7 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException
 
+from .campaign_audit import append_campaign_event
 from .campaign_overview import router as overview_router
 from .campaign_review_state import router as review_state_router
 from .report_readiness import build_report_readiness
@@ -114,7 +115,16 @@ def approve_report(campaign_id: str, artifact_id: str, reviewer: str):
             raise ValueError("reviewer is required")
         if current.approved and current.reviewer == reviewer:
             return submission_status(campaign, artifact).to_dict()
-        campaign.events.append(approval_event_from_storage(campaign, store, artifact_id, reviewer, utcnow()))
+        append_campaign_event(
+            campaign.events,
+            approval_event_from_storage(
+                campaign,
+                store,
+                artifact_id,
+                reviewer,
+                utcnow(),
+            ),
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     campaign.updated_at = utcnow()
@@ -139,7 +149,10 @@ def revoke_report_approval(campaign_id: str, artifact_id: str, reviewer: str):
     ]
     if relevant and relevant[-1].get("type") == "report_approval_revoked":
         return submission_status(campaign, artifact).to_dict()
-    campaign.events.append(revocation_event(artifact_id, reviewer, utcnow()))
+    append_campaign_event(
+        campaign.events,
+        revocation_event(artifact_id, reviewer, utcnow()),
+    )
     campaign.updated_at = utcnow()
     _save(campaign, version)
     return submission_status(campaign, artifact).to_dict()
@@ -164,7 +177,10 @@ def mark_report_submitted(
         raise HTTPException(status_code=409, detail="Report is already marked submitted with different metadata")
     try:
         assert_submission_allowed(campaign, artifact)
-        campaign.events.append(submission_event(artifact_id, actor, platform, utcnow()))
+        append_campaign_event(
+            campaign.events,
+            submission_event(artifact_id, actor, platform, utcnow()),
+        )
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     campaign.updated_at = utcnow()
