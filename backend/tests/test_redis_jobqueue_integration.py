@@ -163,3 +163,79 @@ def test_redis_stats_expose_running_lease_without_worker_identity(redis_queue):
 
     assert stats["oldest_running_claimed_at"] == "2026-09-13T10:00:00+00:00"
     assert "redis-worker-secret-name" not in str(stats)
+
+
+
+def test_redis_heartbeat_renews_only_current_owner(redis_queue):
+    job = redis_queue.enqueue(
+        "redis-heartbeat",
+        "report",
+        {"campaign_id": "redis-heartbeat", "platform": "generic"},
+        dedupe_key="report:generic:heartbeat",
+    )
+    claimed = redis_queue.claim("heartbeat-owner")
+    assert claimed is not None and claimed["id"] == job["id"]
+
+    key = redis_queue._job_key(job["id"])
+    redis_queue.redis.hset(
+        key,
+        mapping={"claimed_at": "2000-01-01T00:00:00+00:00"},
+    )
+    redis_queue.redis.zadd(redis_queue._running, {job["id"]: 1})
+
+    assert redis_queue.heartbeat(job["id"], "wrong-worker") is False
+    unchanged = redis_queue.get(job["id"])
+    assert unchanged is not None
+    assert unchanged["claimed_at"] == "2000-01-01T00:00:00+00:00"
+    assert redis_queue.redis.zscore(redis_queue._running, job["id"]) == 1
+
+    assert redis_queue.heartbeat(job["id"], "heartbeat-owner") is True
+    renewed = redis_queue.get(job["id"])
+    assert renewed is not None
+    assert renewed["claimed_at"] != "2000-01-01T00:00:00+00:00"
+    assert redis_queue.redis.zscore(redis_queue._running, job["id"]) > 1
+
+
+def test_redis_stale_worker_cannot_finish_reclaimed_job(redis_queue, monkeypatch):
+    monkeypatch.setenv("XBOW_JOB_LEASE_SECONDS", "60")
+    job = redis_queue.enqueue(
+        "redis-ownership",
+        "report",
+        {"campaign_id": "redis-ownership", "platform": "generic"},
+        max_attempts=2,
+        dedupe_key="report:generic:ownership",
+    )
+    first = redis_queue.claim("worker-before-reclaim")
+    assert first is not None and first["id"] == job["id"]
+
+    redis_queue.redis.zadd(redis_queue._running, {job["id"]: 0})
+    redis_queue.redis.hset(
+        redis_queue._job_key(job["id"]),
+        mapping={"claimed_at": "2000-01-01T00:00:00+00:00"},
+    )
+
+    second = redis_queue.claim("worker-after-reclaim")
+    assert second is not None
+    assert second["id"] == job["id"]
+    assert second["attempts"] == 2
+    assert second["claimed_by"] == "worker-after-reclaim"
+
+    assert redis_queue.finish(
+        job["id"],
+        "worker-before-reclaim",
+        True,
+    ) is None
+
+    current = redis_queue.get(job["id"])
+    assert current is not None
+    assert current["status"] == "running"
+    assert current["claimed_by"] == "worker-after-reclaim"
+
+    completed = redis_queue.finish(
+        job["id"],
+        "worker-after-reclaim",
+        True,
+    )
+    assert completed is not None
+    assert completed["status"] == "completed"
+    assert completed["claimed_by"] is None
