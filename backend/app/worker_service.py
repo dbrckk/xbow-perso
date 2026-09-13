@@ -122,6 +122,12 @@ def process_validation(job: dict, store: Storage) -> None:
     finding = next((f for f in campaign.findings if f.id == finding_id), None)
     if not finding:
         raise KeyError(f"finding {finding_id} not found")
+    if campaign.state == CampaignState.completed:
+        raise ValidationPolicyError("completed campaign rejects validation work")
+    if finding.status != "validation_required":
+        raise ValidationPolicyError(
+            f"stale validation job for finding in {finding.status} state"
+        )
     if finding.discovered_by == "independent-http-validator":
         raise ValidationPolicyError("discovery agent cannot validate its own finding")
 

@@ -12,6 +12,7 @@ from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field, HttpUrl, model_validator
 
+from .api_outbox import has_event, pending_request_id
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
@@ -484,7 +485,6 @@ def _reconcile_pentagi_queued_event(
             },
         )
         if campaign.state in {CampaignState.ready, CampaignState.failed}:
-            if campaign.state in {CampaignState.ready, CampaignState.failed}:
             campaign.state = CampaignState.running
         campaign.updated_at = utcnow()
         try:
@@ -814,21 +814,11 @@ def verify_campaign_policy_receipt(campaign_id: str, receipt: dict[str, Any] = B
 
 
 def _pending_campaign_start_request(campaign: Campaign) -> str | None:
-    completed = {
-        str(event.get("request_id"))
-        for event in campaign.events
-        if event.get("type") == "campaign_started" and event.get("request_id")
-    }
-    for event in reversed(campaign.events):
-        request_id = event.get("request_id")
-        if (
-            event.get("type") == "campaign_start_requested"
-            and isinstance(request_id, str)
-            and request_id
-            and request_id not in completed
-        ):
-            return request_id
-    return None
+    return pending_request_id(
+        campaign.events,
+        requested_type="campaign_start_requested",
+        completed_type="campaign_started",
+    )
 
 
 def _record_campaign_start_intent(
@@ -993,6 +983,58 @@ def get_job(job_id: str):
     return job
 
 
+def _validation_request_id(finding_id: str) -> str:
+    return f"validation:{finding_id}"
+
+
+def _reconcile_validation_queued(
+    campaign_id: str,
+    finding_id: str,
+    job: dict[str, Any],
+    *,
+    request_id: str,
+    attempts: int = 3,
+) -> Finding:
+    for _ in range(attempts):
+        campaign, version = assert_campaign_record(campaign_id)
+        _reject_new_findings_for_closed_campaign(campaign)
+        current = next((item for item in campaign.findings if item.id == finding_id), None)
+        if current is None:
+            raise HTTPException(status_code=409, detail="Finding disappeared during validation queue reconciliation")
+        if current.status != "validation_required":
+            raise HTTPException(
+                status_code=409,
+                detail=f"Cannot queue validation for finding in {current.status} state",
+            )
+        if has_event(
+            campaign.events,
+            "validation_queued",
+            identity={"finding_id": finding_id, "request_id": request_id, "job_id": job["id"]},
+        ):
+            return current
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "validation_queued",
+                "finding_id": finding_id,
+                "request_id": request_id,
+                "job_id": job["id"],
+                "at": utcnow(),
+            },
+        )
+        campaign.updated_at = utcnow()
+        try:
+            save_campaign(campaign, expected_version=version)
+            return current
+        except HTTPException as exc:
+            if exc.status_code != 409:
+                raise
+    raise HTTPException(
+        status_code=409,
+        detail="Validation job queued but campaign audit reconciliation conflicted; retry safely",
+    )
+
+
 @app.post("/api/campaigns/{campaign_id}/findings", response_model=Finding)
 def add_finding(campaign_id: str, finding: Finding):
     campaign, version = assert_campaign_record(campaign_id)
@@ -1001,28 +1043,208 @@ def add_finding(campaign_id: str, finding: Finding):
     if not is_host_allowed(host, campaign.target.rules.allowed_targets, campaign.target.rules.denied_targets):
         raise HTTPException(status_code=403, detail="Finding asset is outside campaign scope")
 
+    request_id = _validation_request_id(finding.id)
     existing = next((item for item in campaign.findings if item.id == finding.id), None)
     if existing:
         candidate = finding.model_copy(update={"status": existing.status, "validated_by": existing.validated_by})
         if candidate.model_dump(mode="json") != existing.model_dump(mode="json"):
             raise HTTPException(status_code=409, detail="Finding id already exists with different content")
-        return existing
+        if has_event(
+            campaign.events,
+            "validation_queued",
+            identity={"finding_id": finding.id, "request_id": request_id},
+        ):
+            return existing
+        if not has_event(
+            campaign.events,
+            "validation_requested",
+            identity={"finding_id": finding.id, "request_id": request_id},
+        ):
+            append_campaign_event(
+                campaign.events,
+                {
+                    "type": "validation_requested",
+                    "finding_id": finding.id,
+                    "request_id": request_id,
+                    "at": utcnow(),
+                },
+            )
+            campaign.updated_at = utcnow()
+            save_campaign(campaign, expected_version=version)
+    else:
+        finding.status = "validation_required"
+        campaign.findings.append(finding)
+        campaign.state = CampaignState.validating
+        campaign.updated_at = utcnow()
+        append_campaign_event(
+            campaign.events,
+            {"type": "finding_received", "finding_id": finding.id, "at": utcnow()},
+        )
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "validation_requested",
+                "finding_id": finding.id,
+                "request_id": request_id,
+                "at": utcnow(),
+            },
+        )
+        save_campaign(campaign, expected_version=version)
 
-    finding.status = "validation_required"
-    campaign.findings.append(finding)
-    campaign.state = CampaignState.validating
-    campaign.updated_at = utcnow()
-    append_campaign_event(campaign.events, {"type": "finding_received", "finding_id": finding.id, "at": utcnow()})
+    latest = assert_campaign_exists(campaign.id)
+    _reject_new_findings_for_closed_campaign(latest)
+    current = next((item for item in latest.findings if item.id == finding.id), None)
+    if current is None or current.status != "validation_required":
+        raise HTTPException(status_code=409, detail="Finding is no longer awaiting validation")
+
     validation_job = queue().enqueue(
         campaign.id,
         "independent_validation",
-        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
+        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": current.asset},
         max_attempts=2,
-        dedupe_key=f"validation:{finding.id}",
+        dedupe_key=request_id,
     )
-    append_campaign_event(campaign.events, {"type": "validation_queued", "finding_id": finding.id, "job_id": validation_job["id"], "at": utcnow()})
-    save_campaign(campaign, expected_version=version)
-    return finding
+    return _reconcile_validation_queued(
+        campaign.id,
+        finding.id,
+        validation_job,
+        request_id=request_id,
+    )
+
+
+def _record_report_request(
+    campaign: Campaign,
+    version: int,
+    *,
+    request_id: str,
+    platform: str,
+    purpose: str,
+) -> int:
+    identity = {
+        "request_id": request_id,
+        "platform": platform,
+        "purpose": purpose,
+    }
+    if has_event(campaign.events, "report_requested", identity=identity):
+        return version
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "report_requested",
+            **identity,
+            "at": utcnow(),
+        },
+    )
+    campaign.updated_at = utcnow()
+    return save_campaign(campaign, expected_version=version)
+
+
+def _reconcile_report_job(
+    campaign_id: str,
+    job: dict[str, Any],
+    *,
+    request_id: str,
+    platform: str,
+    purpose: str,
+    completion_type: str,
+    mark_completed: bool = False,
+    attempts: int = 3,
+) -> Campaign:
+    identity = {
+        "request_id": request_id,
+        "platform": platform,
+        "purpose": purpose,
+        "job_id": job["id"],
+    }
+    for _ in range(attempts):
+        campaign, version = assert_campaign_record(campaign_id)
+        _reject_cancelled_campaign(campaign)
+        if has_event(campaign.events, completion_type, identity=identity):
+            return campaign
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": completion_type,
+                **identity,
+                "report_job_id": job["id"],
+                "at": utcnow(),
+            },
+        )
+        if mark_completed:
+            campaign.state = CampaignState.completed
+        campaign.updated_at = utcnow()
+        try:
+            save_campaign(campaign, expected_version=version)
+            return campaign
+        except HTTPException as exc:
+            if exc.status_code != 409:
+                raise
+    raise HTTPException(
+        status_code=409,
+        detail="Report job queued but campaign audit reconciliation conflicted; retry safely",
+    )
+
+
+def _ensure_completion_report(campaign: Campaign, version: int) -> Campaign:
+    request_id = "report:generic:completed"
+    platform = "generic"
+    purpose = "campaign_completion"
+    if has_event(
+        campaign.events,
+        "campaign_completed",
+        identity={
+            "request_id": request_id,
+            "platform": platform,
+            "purpose": purpose,
+        },
+    ):
+        return campaign
+
+    if not has_event(
+        campaign.events,
+        "report_requested",
+        identity={
+            "request_id": request_id,
+            "platform": platform,
+            "purpose": purpose,
+        },
+    ):
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "report_requested",
+                "request_id": request_id,
+                "platform": platform,
+                "purpose": purpose,
+                "at": utcnow(),
+            },
+        )
+        campaign.state = CampaignState.completed
+        campaign.updated_at = utcnow()
+        save_campaign(campaign, expected_version=version)
+    elif campaign.state != CampaignState.completed:
+        campaign.state = CampaignState.completed
+        campaign.updated_at = utcnow()
+        save_campaign(campaign, expected_version=version)
+
+    latest = assert_campaign_exists(campaign.id)
+    _reject_cancelled_campaign(latest)
+    report_job = queue().enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": platform},
+        max_attempts=2,
+        dedupe_key=request_id,
+    )
+    return _reconcile_report_job(
+        campaign.id,
+        report_job,
+        request_id=request_id,
+        platform=platform,
+        purpose=purpose,
+        completion_type="campaign_completed",
+        mark_completed=True,
+    )
 
 
 @app.post("/api/campaigns/{campaign_id}/findings/{finding_id}/validate")
@@ -1039,6 +1261,9 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
 
     desired_status = "confirmed" if confirmed else "rejected"
     if finding.status == desired_status and finding.validated_by == validator:
+        if campaign.findings and all(item.status in {"confirmed", "rejected"} for item in campaign.findings):
+            completed = _ensure_completion_report(campaign, version)
+            return next(item for item in completed.findings if item.id == finding_id)
         return finding
     if finding.status in {"confirmed", "rejected"} and finding.status != desired_status:
         raise HTTPException(status_code=409, detail="Finding already has a conflicting validation result")
@@ -1046,18 +1271,39 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
     finding.status = desired_status
     finding.validated_by = validator
     campaign.updated_at = utcnow()
-    append_campaign_event(campaign.events, {"type": "finding_validated", "finding_id": finding.id, "confirmed": confirmed, "validator": validator, "at": utcnow()})
-    if campaign.findings and all(item.status in {"confirmed", "rejected"} for item in campaign.findings):
-        campaign.state = CampaignState.completed
-        report_job = queue().enqueue(
-            campaign.id,
-            "report",
-            {"campaign_id": campaign.id, "platform": "generic"},
-            max_attempts=2,
-            dedupe_key="report:generic:completed",
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "finding_validated",
+            "finding_id": finding.id,
+            "confirmed": confirmed,
+            "validator": validator,
+            "at": utcnow(),
+        },
+    )
+    should_complete = bool(
+        campaign.findings
+        and all(item.status in {"confirmed", "rejected"} for item in campaign.findings)
+    )
+    if should_complete:
+        request_id = "report:generic:completed"
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "report_requested",
+                "request_id": request_id,
+                "platform": "generic",
+                "purpose": "campaign_completion",
+                "at": utcnow(),
+            },
         )
-        append_campaign_event(campaign.events, {"type": "campaign_completed", "report_job_id": report_job["id"], "at": utcnow()})
+        campaign.state = CampaignState.completed
     save_campaign(campaign, expected_version=version)
+
+    if should_complete:
+        latest, latest_version = assert_campaign_record(campaign.id)
+        completed = _ensure_completion_report(latest, latest_version)
+        return next(item for item in completed.findings if item.id == finding_id)
     return finding
 
 
@@ -1065,16 +1311,37 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
 def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bugcrowd"] = "generic"):
     campaign, version = assert_campaign_record(campaign_id)
     _reject_cancelled_campaign(campaign)
+    purpose = "manual"
+    request_id = pending_request_id(
+        campaign.events,
+        requested_type="report_requested",
+        completed_type="report_queued",
+        identity={"platform": platform, "purpose": purpose},
+    ) or str(uuid4())
+    _record_report_request(
+        campaign,
+        version,
+        request_id=request_id,
+        platform=platform,
+        purpose=purpose,
+    )
+    latest = assert_campaign_exists(campaign.id)
+    _reject_cancelled_campaign(latest)
     job = queue().enqueue(
         campaign.id,
         "report",
         {"campaign_id": campaign.id, "platform": platform},
         max_attempts=2,
-        dedupe_key=f"report:{platform}:v{version}",
+        dedupe_key=f"report:{platform}:{request_id}",
     )
-    append_campaign_event(campaign.events, {"type": "report_queued", "platform": platform, "job_id": job["id"], "at": utcnow()})
-    campaign.updated_at = utcnow()
-    save_campaign(campaign, expected_version=version)
+    _reconcile_report_job(
+        campaign.id,
+        job,
+        request_id=request_id,
+        platform=platform,
+        purpose=purpose,
+        completion_type="report_queued",
+    )
     return job
 
 
