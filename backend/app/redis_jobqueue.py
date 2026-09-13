@@ -13,6 +13,11 @@ from .jobqueue import _bounded_identifier, _job_lease_seconds, _max_job_payload_
 
 _ALLOWED_KINDS = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status"}
 _STATUSES = ("queued", "running", "completed", "failed", "cancelled")
+_DEDICATED_KINDS = {"pentagi_flow", "pentagi_status"}
+
+
+def _uses_generic_queue(kind: str) -> bool:
+    return kind not in _DEDICATED_KINDS
 
 
 class RedisJobQueue:
@@ -125,7 +130,7 @@ class RedisJobQueue:
         if dedupe_key is None:
             with self.redis.pipeline(transaction=True) as pipe:
                 pipe.hset(self._job_key(job_id), mapping=row)
-                if kind not in {"pentagi_flow", "pentagi_status"}:
+                if _uses_generic_queue(kind):
                     pipe.zadd(self._queued, {job_id: score})
                 pipe.zadd(self._queued_kind(kind), {job_id: score})
                 pipe.sadd(self._all, job_id)
@@ -155,7 +160,7 @@ class RedisJobQueue:
                         return existing
                     pipe.multi()
                     pipe.hset(self._job_key(job_id), mapping=row)
-                    if kind not in {"pentagi_flow", "pentagi_status"}:
+                    if _uses_generic_queue(kind):
                         pipe.zadd(self._queued, {job_id: score})
                     pipe.zadd(self._queued_kind(kind), {job_id: score})
                     pipe.sadd(self._all, job_id)
@@ -326,7 +331,7 @@ class RedisJobQueue:
                         )
                         pipe.zrem(self._running, job_id)
                         if status == "queued":
-                            if row.get("kind") != "pentagi_flow":
+                            if _uses_generic_queue(row.get("kind", "")):
                                 pipe.zadd(self._queued, {job_id: time.time()})
                             pipe.zadd(self._queued_kind(row.get("kind", "")), {job_id: time.time()})
                         pipe.execute()
@@ -504,7 +509,7 @@ class RedisJobQueue:
                     )
                     pipe.zrem(self._running, job_id)
                     if status == "queued":
-                        if row.get("kind") != "pentagi_flow":
+                        if _uses_generic_queue(row.get("kind", "")):
                             pipe.zadd(self._queued, {job_id: time.time()})
                         pipe.zadd(self._queued_kind(row.get("kind", "")), {job_id: time.time()})
                     pipe.execute()
