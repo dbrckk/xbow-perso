@@ -415,7 +415,6 @@ def preview_pentagi_campaign(campaign_id: str):
         "operational_reasons": list(preview.operational_reasons),
         "plan": {
             "target": preview.plan.target,
-            "endpoint": preview.plan.endpoint,
             "model_provider": preview.plan.model_provider,
             "execution_supported": preview.plan.execution_supported,
         },
@@ -489,7 +488,17 @@ def pentagi_campaign_status(campaign_id: str):
     campaign = assert_campaign_exists(campaign_id)
     counts = queue().campaign_job_counts(campaign.id)
     artifacts = [
-        item
+        {
+            key: item.get(key)
+            for key in (
+                "id",
+                "kind",
+                "media_type",
+                "sha256",
+                "size_bytes",
+                "created_at",
+            )
+        }
         for item in storage().list_artifacts(campaign.id)
         if item.get("kind") in {"pentagi_receipt", "pentagi_status"}
     ]
