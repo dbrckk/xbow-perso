@@ -136,3 +136,25 @@ def test_parked_pentagi_job_does_not_block_other_work(tmp_path, monkeypatch):
     assert claimed["id"] == active["id"]
     assert queue.get(parked["id"])["status"] == "queued"
     assert queue.get(parked["id"])["attempts"] == 0
+
+
+def test_pentagi_dispatch_disables_automatic_remote_retry(tmp_path, monkeypatch):
+    _enable_runtime(monkeypatch)
+    queue = JobQueue(str(tmp_path / "queue.sqlite3"))
+    campaign = _campaign()
+    job = enqueue_pentagi_flow(queue, campaign, _future_plan(campaign))
+
+    assert job["max_attempts"] == 1
+
+    claimed = queue.claim_kind("pentagi-worker", "pentagi_flow")
+    assert claimed is not None
+    failed = queue.finish(
+        claimed["id"],
+        "pentagi-worker",
+        False,
+        "ambiguous remote createFlow outcome",
+    )
+
+    assert failed is not None
+    assert failed["status"] == "failed"
+    assert queue.claim_kind("pentagi-worker-2", "pentagi_flow") is None
