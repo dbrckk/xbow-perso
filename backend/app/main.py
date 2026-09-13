@@ -137,6 +137,10 @@ class EvidenceInput(BaseModel):
     finding_id: str | None = None
 
 
+class HackerOneScopePreviewInput(BaseModel):
+    document: dict[str, Any]
+
+
 def normalize_pattern(pattern: str) -> str:
     value = pattern.strip().lower()
     if "://" in value:
@@ -328,6 +332,42 @@ def system_capabilities():
 def list_agents():
     from .agent_registry import public_agent_catalog
     return public_agent_catalog()
+
+
+@app.post("/api/imports/hackerone/scope-preview")
+def preview_hackerone_scope(payload: HackerOneScopePreviewInput):
+    from .hackerone_scope_import import (
+        HackerOneScopeImportError,
+        import_hackerone_structured_scope,
+    )
+
+    try:
+        preview = import_hackerone_structured_scope(payload.document)
+    except HackerOneScopeImportError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return {
+        "provider": "hackerone",
+        "complete": preview.complete,
+        "requires_review": True,
+        "persisted": False,
+        "campaign_created": False,
+        "allowed_targets": list(preview.allowed_targets),
+        "denied_targets": list(preview.denied_targets),
+        "conflicts": list(preview.conflicts),
+        "unsupported": list(preview.unsupported),
+        "assets": [
+            {
+                "identifier": asset.identifier,
+                "asset_type": asset.asset_type,
+                "eligible_for_submission": asset.eligible_for_submission,
+                "host_pattern": asset.host_pattern,
+                "compatible": asset.compatible,
+                "reason": asset.reason,
+            }
+            for asset in preview.assets
+        ],
+    }
 
 
 @app.post("/api/campaigns", response_model=Campaign)
