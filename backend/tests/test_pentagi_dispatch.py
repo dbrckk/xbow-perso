@@ -106,3 +106,18 @@ def test_policy_change_creates_new_identity_not_silent_reuse(tmp_path, monkeypat
     assert first["id"] != second["id"]
     assert first["dedupe_key"] != second["dedupe_key"]
     assert queue.stats()["total"] == 2
+
+
+def test_pentagi_jobs_are_parked_for_generic_workers(tmp_path, monkeypatch):
+    _enable_runtime(monkeypatch)
+    queue = JobQueue(str(tmp_path / "queue.sqlite3"))
+    campaign = _campaign()
+    job = enqueue_pentagi_flow(queue, campaign, _future_plan(campaign))
+
+    assert job["status"] == "queued"
+    assert queue.claim("generic-worker") is None
+
+    parked = queue.get(job["id"])
+    assert parked is not None
+    assert parked["status"] == "queued"
+    assert parked["attempts"] == 0
