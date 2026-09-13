@@ -433,3 +433,24 @@ def test_failed_pentagi_job_remains_out_of_generic_claim_path(tmp_path):
     assert reclaimed is not None
     assert reclaimed["id"] == job["id"]
     assert reclaimed["attempts"] == 2
+
+
+
+def test_get_by_dedupe_returns_exact_job(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    created = q.enqueue(
+        "campaign-lookup",
+        "report",
+        {"campaign_id": "campaign-lookup", "platform": "generic"},
+        dedupe_key="report:generic:request-1",
+    )
+
+    found = q.get_by_dedupe(
+        "campaign-lookup",
+        "report",
+        "report:generic:request-1",
+    )
+
+    assert found is not None
+    assert found["id"] == created["id"]
+    assert q.get_by_dedupe("campaign-lookup", "report", "missing-key") is None
