@@ -27,12 +27,16 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     queued_limit = _threshold("XBOW_ALERT_QUEUED_JOBS", 20, 1, 100000)
     running_limit = _threshold("XBOW_ALERT_RUNNING_JOBS", 20, 1, 100000)
     queue_age_limit = _threshold("XBOW_ALERT_QUEUE_AGE_SECONDS", 300, 30, 86400)
+    outbox_limit = _threshold("XBOW_ALERT_PENDING_OUTBOX", 20, 1, 100000)
+    outbox_age_limit = _threshold("XBOW_ALERT_OUTBOX_AGE_SECONDS", 300, 30, 86400)
 
     statuses = metrics.get("jobs_by_status") or {}
     failed = int(statuses.get("failed") or 0)
     queued = int(statuses.get("queued") or 0)
     running = int(statuses.get("running") or 0)
     queue_age = metrics.get("oldest_queued_age_seconds")
+    pending_outbox = int(metrics.get("pending_outbox_total") or 0)
+    outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
 
     alerts: list[dict[str, Any]] = []
     if failed >= failed_limit:
@@ -69,6 +73,25 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
                 "severity": "warning",
                 "value": running,
                 "threshold": running_limit,
+            }
+        )
+
+    if pending_outbox >= outbox_limit:
+        alerts.append(
+            {
+                "code": "outbox_backlog",
+                "severity": "warning",
+                "value": pending_outbox,
+                "threshold": outbox_limit,
+            }
+        )
+    if outbox_age is not None and int(outbox_age) >= outbox_age_limit:
+        alerts.append(
+            {
+                "code": "outbox_stalled",
+                "severity": "critical",
+                "value": int(outbox_age),
+                "threshold": outbox_age_limit,
             }
         )
 
