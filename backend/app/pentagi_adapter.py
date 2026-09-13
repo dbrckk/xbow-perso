@@ -52,13 +52,23 @@ def _configured_provider() -> str:
 
 
 def _graphql_endpoint(base_url: str) -> str:
-    parsed = urlparse(base_url)
+    try:
+        parsed = urlparse(base_url)
+        hostname = parsed.hostname
+        username = parsed.username
+        password = parsed.password
+        port = parsed.port
+    except ValueError as exc:
+        raise PentagiPolicyError("PentAGI endpoint URL is invalid") from exc
+
     if parsed.scheme.lower() != "https":
         raise PentagiPolicyError("PentAGI endpoint must use HTTPS")
-    if not parsed.hostname:
+    if not hostname:
         raise PentagiPolicyError("PentAGI endpoint has no hostname")
-    if parsed.username or parsed.password:
+    if username or password:
         raise PentagiPolicyError("PentAGI endpoint must not contain credentials")
+    if port is not None and not 1 <= port <= 65535:
+        raise PentagiPolicyError("PentAGI endpoint port is invalid")
     if parsed.query or parsed.fragment:
         raise PentagiPolicyError("PentAGI endpoint must not contain query or fragment")
     if parsed.path not in {"", "/"}:
@@ -68,8 +78,11 @@ def _graphql_endpoint(base_url: str) -> str:
 
 def _safe_campaign_target(campaign: Campaign) -> str:
     target = str(campaign.target.primary_url)
-    parsed = urlparse(target)
-    host = (parsed.hostname or "").lower()
+    try:
+        parsed = urlparse(target)
+        host = (parsed.hostname or "").lower()
+    except ValueError as exc:
+        raise PentagiPolicyError("Campaign target URL is invalid") from exc
     rules = campaign.target.rules
 
     if not host or not is_host_allowed(
