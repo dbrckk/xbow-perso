@@ -185,6 +185,22 @@ class JobQueue:
             row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
         return self._decode(row) if row else None
 
+    def get_by_dedupe(
+        self,
+        campaign_id: str,
+        kind: str,
+        dedupe_key: str,
+    ) -> dict[str, Any] | None:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        kind = _bounded_identifier(kind, "kind")
+        dedupe_key = _bounded_identifier(dedupe_key, "dedupe_key")
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT * FROM jobs WHERE campaign_id=? AND kind=? AND dedupe_key=?",
+                (campaign_id, kind, dedupe_key),
+            ).fetchone()
+        return self._decode(row) if row else None
+
     def stats(self) -> dict[str, Any]:
         """Return bounded operational queue telemetry without exposing payloads."""
         with self.connect() as db:

@@ -153,3 +153,73 @@ def outbox_snapshot(
         "truncated": len(visible) < len(pending),
         "identities_redacted": True,
     }
+
+
+
+def pending_outbox_intents(
+    events: Iterable[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Return internal pending intent descriptors.
+
+    This function intentionally includes raw identities/dedupe keys for local
+    reconciliation code. API responses must use redacted diagnostics instead.
+    """
+
+    materialized = list(events)
+    completed = {
+        key
+        for event in materialized
+        if (key := _completion_key(event)) is not None
+    }
+    intents: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+
+    for event in materialized:
+        identity_key = _request_key(event)
+        if identity_key is None or identity_key in seen or identity_key in completed:
+            continue
+        seen.add(identity_key)
+        kind, raw_identity = identity_key
+        descriptor: dict[str, Any] = {
+            "kind": kind,
+            "raw_identity": raw_identity,
+            "requested_at": event.get("at") if isinstance(event.get("at"), str) else None,
+            "request_event": dict(event),
+            "job_kind": None,
+            "dedupe_key": None,
+            "completion_type": None,
+        }
+        if kind == "campaign_start":
+            descriptor.update(
+                job_kind="strix_scan",
+                dedupe_key=f"api:start:{raw_identity}",
+                completion_type="campaign_started",
+            )
+        elif kind == "finding_validation":
+            descriptor.update(
+                job_kind="independent_validation",
+                dedupe_key=raw_identity,
+                completion_type="validation_queued",
+            )
+        elif kind == "report_manual":
+            platform = event.get("platform")
+            if isinstance(platform, str) and platform:
+                descriptor.update(
+                    job_kind="report",
+                    dedupe_key=f"report:{platform}:{raw_identity}",
+                    completion_type="report_queued",
+                )
+        elif kind == "campaign_completion_report":
+            descriptor.update(
+                job_kind="report",
+                dedupe_key=raw_identity,
+                completion_type="campaign_completed",
+            )
+        elif kind == "pentagi_dispatch":
+            descriptor.update(
+                job_kind="pentagi_flow",
+                completion_type="pentagi_flow_queued",
+            )
+        intents.append(descriptor)
+
+    return intents

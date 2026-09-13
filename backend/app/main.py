@@ -407,6 +407,91 @@ def campaign_outbox_status(campaign_id: str, limit: int = 100):
     }
 
 
+@app.get("/api/campaigns/{campaign_id}/outbox/recovery")
+def campaign_outbox_recovery(campaign_id: str):
+    from .outbox_recovery import (
+        diagnose_outbox_recovery,
+        public_recovery_diagnostics,
+    )
+
+    campaign = assert_campaign_exists(campaign_id)
+    diagnostics = diagnose_outbox_recovery(
+        campaign.id,
+        campaign.events,
+        queue(),
+    )
+    return {
+        "campaign_id": campaign.id,
+        "diagnostics": public_recovery_diagnostics(diagnostics),
+        "read_only": True,
+        "local_repair_only": True,
+        "automatic_job_creation": False,
+    }
+
+
+@app.post("/api/campaigns/{campaign_id}/outbox/reconcile-local")
+def reconcile_campaign_outbox_local(campaign_id: str):
+    from .outbox_recovery import (
+        diagnose_outbox_recovery,
+        local_completion_event,
+        public_recovery_diagnostics,
+    )
+
+    campaign, version = assert_campaign_record(campaign_id)
+    jobs = queue()
+    diagnostics = diagnose_outbox_recovery(
+        campaign.id,
+        campaign.events,
+        jobs,
+    )
+    repaired = 0
+    skipped_ambiguous = 0
+
+    for diagnostic in diagnostics:
+        intent = diagnostic.get("_intent") or {}
+        job = diagnostic.get("_job") or {}
+        if intent.get("kind") == "campaign_start":
+            job_status = str(job.get("status") or "")
+            if campaign.state in {
+                CampaignState.running,
+                CampaignState.validating,
+                CampaignState.completed,
+            }:
+                pass
+            elif (
+                campaign.state in {CampaignState.ready, CampaignState.failed}
+                and job_status in {"queued", "running"}
+            ):
+                campaign.state = CampaignState.running
+            else:
+                skipped_ambiguous += 1
+                continue
+
+        event = local_completion_event(diagnostic, at=utcnow())
+        if event is None:
+            continue
+        append_campaign_event(campaign.events, event)
+        repaired += 1
+
+    if repaired:
+        campaign.updated_at = utcnow()
+        save_campaign(campaign, expected_version=version)
+
+    remaining = diagnose_outbox_recovery(
+        campaign.id,
+        campaign.events,
+        jobs,
+    )
+    return {
+        "campaign_id": campaign.id,
+        "repaired": repaired,
+        "skipped_ambiguous": skipped_ambiguous,
+        "remaining": public_recovery_diagnostics(remaining),
+        "local_repair_only": True,
+        "automatic_job_creation": False,
+    }
+
+
 @app.get("/api/campaigns/{campaign_id}/pentagi/preview")
 def preview_pentagi_campaign(campaign_id: str):
     from .pentagi_adapter import PentagiPolicyError
