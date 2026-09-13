@@ -318,7 +318,7 @@ class RedisJobQueue:
                             },
                         )
                         pipe.zrem(self._running, job_id)
-                        if status == "queued":
+                        if status == "queued" and row.get("kind") != "pentagi_flow":
                             pipe.zadd(self._queued, {job_id: time.time()})
                         pipe.execute()
                         recovered += 1
@@ -387,6 +387,61 @@ class RedisJobQueue:
             except redis.WatchError:
                 continue
 
+
+    def claim_kind(self, worker_id: str, kind: str) -> dict[str, Any] | None:
+        """Atomically claim only one explicitly requested job kind."""
+        worker_id = _bounded_identifier(worker_id, "worker_id")
+        kind = _bounded_identifier(kind, "kind")
+        if kind not in _ALLOWED_KINDS:
+            raise ValueError("unsupported job kind")
+        self.recover_expired_leases()
+
+        candidates: list[tuple[str, str]] = []
+        for job_id in self.redis.smembers(self._all):
+            row = self.redis.hgetall(self._job_key(job_id))
+            if (
+                row
+                and row.get("status") == "queued"
+                and row.get("kind") == kind
+                and int(row.get("attempts", "0")) < int(row.get("max_attempts", "0"))
+            ):
+                candidates.append((row.get("created_at", ""), job_id))
+
+        for _, job_id in sorted(candidates):
+            key = self._job_key(job_id)
+            while True:
+                try:
+                    with self.redis.pipeline() as pipe:
+                        pipe.watch(key, self._running, self._queued)
+                        row = pipe.hgetall(key)
+                        if (
+                            not row
+                            or row.get("status") != "queued"
+                            or row.get("kind") != kind
+                            or int(row["attempts"]) >= int(row["max_attempts"])
+                        ):
+                            pipe.unwatch()
+                            break
+                        now = utcnow()
+                        pipe.multi()
+                        pipe.hset(
+                            key,
+                            mapping={
+                                "status": "running",
+                                "attempts": str(int(row["attempts"]) + 1),
+                                "claimed_by": worker_id,
+                                "claimed_at": now,
+                                "updated_at": now,
+                            },
+                        )
+                        pipe.zrem(self._queued, job_id)
+                        pipe.zadd(self._running, {job_id: time.time()})
+                        pipe.execute()
+                        return self.get(job_id)
+                except redis.WatchError:
+                    continue
+        return None
+
     def heartbeat(self, job_id: str, worker_id: str) -> bool:
         job_id = _bounded_identifier(job_id, "job_id")
         worker_id = _bounded_identifier(worker_id, "worker_id")
@@ -443,7 +498,7 @@ class RedisJobQueue:
                         },
                     )
                     pipe.zrem(self._running, job_id)
-                    if status == "queued":
+                    if status == "queued" and row.get("kind") != "pentagi_flow":
                         pipe.zadd(self._queued, {job_id: time.time()})
                     pipe.execute()
                     return self.get(job_id)
