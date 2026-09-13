@@ -1,4 +1,7 @@
+import hashlib
+import hmac
 import json
+import sys
 
 import pytest
 
@@ -18,6 +21,25 @@ def _files(tmp_path):
     redis.write_bytes(b"redis-backup")
     vault.write_bytes(b"vault-backup")
     return postgres, redis, vault
+
+
+def _canonical_legacy_v1(manifest):
+    payload = {
+        key: value
+        for key, value in manifest.items()
+        if key
+        not in {
+            "manifest_signature",
+            "manifest_signature_alg",
+            "integrity_mode",
+        }
+    }
+    return json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
 
 
 def test_backup_manifest_contains_only_integrity_metadata(tmp_path):
@@ -161,7 +183,9 @@ def test_signed_manifest_detects_manifest_rewrite(tmp_path, monkeypatch):
     write_backup_manifest(manifest, str(manifest_path))
 
     saved = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert saved["version"] == 2
     assert saved["manifest_signature_alg"] == "hmac-sha256"
+    assert saved["integrity_mode"] == "sha256-artifacts+hmac-sha256-manifest"
     assert len(saved["manifest_signature"]) == 64
 
     saved["artifacts"][0]["sha256"] = "0" * 64
@@ -176,6 +200,72 @@ def test_signed_manifest_detects_manifest_rewrite(tmp_path, monkeypatch):
 
     assert result["valid"] is False
     assert result["manifest_signature_valid"] is False
+
+
+def test_signed_manifest_rejects_signature_field_stripping(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "dr-signing-key")
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    write_backup_manifest(
+        build_backup_manifest(
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        ),
+        str(manifest_path),
+    )
+
+    saved = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert saved["version"] == 2
+    for field in (
+        "manifest_signature",
+        "manifest_signature_alg",
+        "integrity_mode",
+    ):
+        saved.pop(field, None)
+    manifest_path.write_text(json.dumps(saved), encoding="utf-8")
+
+    with pytest.raises(
+        DisasterRecoveryError,
+        match="authentication metadata is missing or invalid",
+    ):
+        verify_backup_manifest(
+            str(manifest_path),
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        )
+
+
+def test_signed_manifest_authenticates_integrity_mode(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "dr-signing-key")
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    write_backup_manifest(
+        build_backup_manifest(
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        ),
+        str(manifest_path),
+    )
+
+    saved = json.loads(manifest_path.read_text(encoding="utf-8"))
+    saved["integrity_mode"] = "sha256-artifacts"
+    manifest_path.write_text(json.dumps(saved), encoding="utf-8")
+
+    with pytest.raises(
+        DisasterRecoveryError,
+        match="authentication metadata is missing or invalid",
+    ):
+        verify_backup_manifest(
+            str(manifest_path),
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        )
 
 
 def test_signed_manifest_requires_matching_verification_key(tmp_path, monkeypatch):
@@ -219,6 +309,7 @@ def test_unsigned_manifest_remains_backward_compatible(tmp_path, monkeypatch):
     )
 
     saved = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert saved["version"] == 1
     assert saved["manifest_signature"] is None
 
     result = verify_backup_manifest(
@@ -230,6 +321,63 @@ def test_unsigned_manifest_remains_backward_compatible(tmp_path, monkeypatch):
 
     assert result["valid"] is True
     assert result["manifest_signature_valid"] is None
+
+
+def test_legacy_signed_v1_manifest_remains_backward_compatible(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "legacy-key")
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    manifest = build_backup_manifest(
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+    manifest["manifest_signature_alg"] = "hmac-sha256"
+    manifest["integrity_mode"] = "sha256-artifacts+hmac-sha256-manifest"
+    manifest["manifest_signature"] = hmac.new(
+        b"legacy-key",
+        _canonical_legacy_v1(manifest),
+        hashlib.sha256,
+    ).hexdigest()
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    result = verify_backup_manifest(
+        str(manifest_path),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+
+    assert result["valid"] is True
+    assert result["manifest_signature_valid"] is True
+
+
+def test_legacy_v1_rejects_partial_signature_stripping(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    manifest = build_backup_manifest(
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+    manifest["manifest_signature_alg"] = "hmac-sha256"
+    manifest["integrity_mode"] = "sha256-artifacts+hmac-sha256-manifest"
+    manifest["manifest_signature"] = None
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(
+        DisasterRecoveryError,
+        match="signature metadata is inconsistent",
+    ):
+        verify_backup_manifest(
+            str(manifest_path),
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        )
 
 
 def test_signed_manifest_fails_closed_when_key_becomes_unavailable(tmp_path, monkeypatch):
