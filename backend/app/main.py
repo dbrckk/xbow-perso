@@ -484,6 +484,7 @@ def _reconcile_pentagi_queued_event(
             },
         )
         if campaign.state in {CampaignState.ready, CampaignState.failed}:
+            if campaign.state in {CampaignState.ready, CampaignState.failed}:
             campaign.state = CampaignState.running
         campaign.updated_at = utcnow()
         try:
@@ -874,6 +875,15 @@ def _reconcile_campaign_started(
         ):
             return campaign
         _reject_cancelled_campaign(campaign)
+        if campaign.state not in {
+            CampaignState.ready,
+            CampaignState.failed,
+            CampaignState.running,
+        }:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Cannot reconcile campaign start from {campaign.state.value}",
+            )
         append_campaign_event(
             campaign.events,
             {
