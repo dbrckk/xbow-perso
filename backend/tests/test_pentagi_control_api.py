@@ -134,6 +134,48 @@ def test_pentagi_dispatch_conflict_before_intent_persistence_never_enqueues(
     )
 
 
+def test_pentagi_queue_audit_reconciliation_retries_on_fresh_snapshot(monkeypatch):
+    campaign = _campaign()
+    snapshots = [
+        (campaign.model_copy(deep=True), 8),
+        (campaign.model_copy(deep=True), 9),
+    ]
+    saves = []
+
+    def load(_campaign_id):
+        return snapshots.pop(0)
+
+    def save(value, expected_version=None):
+        saves.append((value.model_copy(deep=True), expected_version))
+        if len(saves) == 1:
+            raise HTTPException(
+                status_code=409,
+                detail="Campaign changed concurrently; reload and retry",
+            )
+        return expected_version + 1
+
+    monkeypatch.setattr(main, "assert_campaign_record", load)
+    monkeypatch.setattr(main, "save_campaign", save)
+
+    result = main._reconcile_pentagi_queued_event(
+        campaign.id,
+        {"id": "pentagi-job-1"},
+        dispatch_fingerprint="d" * 64,
+        policy_fingerprint="p" * 64,
+    )
+
+    assert len(saves) == 2
+    assert [expected for _value, expected in saves] == [8, 9]
+    assert result.state == main.CampaignState.running
+    queued_events = [
+        event
+        for event in result.events
+        if event.get("type") == "pentagi_flow_queued"
+    ]
+    assert len(queued_events) == 1
+    assert queued_events[0]["job_id"] == "pentagi-job-1"
+
+
 def test_future_enforceable_dispatch_response_is_sanitized_and_idempotent(
     tmp_path,
     monkeypatch,
