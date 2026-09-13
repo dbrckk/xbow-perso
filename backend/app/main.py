@@ -451,6 +451,8 @@ def _apply_local_outbox_repairs(
     campaign: Campaign,
     diagnostics: list[dict[str, Any]],
 ) -> tuple[int, int]:
+    from .outbox_recovery import local_completion_event
+
     repaired = 0
     skipped_ambiguous = 0
 
@@ -487,7 +489,6 @@ def _apply_local_outbox_repairs(
 def reconcile_campaign_outbox_local(campaign_id: str):
     from .outbox_recovery import (
         diagnose_outbox_recovery,
-        local_completion_event,
         public_recovery_diagnostics,
     )
 
