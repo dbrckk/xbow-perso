@@ -446,17 +446,22 @@ def dispatch_pentagi_campaign(campaign_id: str):
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    append_campaign_event(
-        campaign.events,
-        {
-            "type": "pentagi_flow_queued",
-            "at": utcnow(),
-            "job_id": job["id"],
-            "policy_fingerprint": preview.decision.policy_fingerprint,
-        },
-    )
-    campaign.updated_at = utcnow()
-    save_campaign(campaign, expected_version=version)
+    if not any(
+        event.get("type") == "pentagi_flow_queued"
+        and event.get("job_id") == job["id"]
+        for event in campaign.events
+    ):
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "pentagi_flow_queued",
+                "at": utcnow(),
+                "job_id": job["id"],
+                "policy_fingerprint": preview.decision.policy_fingerprint,
+            },
+        )
+        campaign.updated_at = utcnow()
+        save_campaign(campaign, expected_version=version)
     return {
         "campaign_id": campaign.id,
         "job": job,
