@@ -7,6 +7,7 @@ import time
 from contextlib import contextmanager
 
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
+from .campaign_audit import append_campaign_event
 from .jobqueue import JobQueue
 from .learning_memory import worker_outcome_event
 from .queue_backend import create_queue
@@ -68,7 +69,7 @@ def _append_event_once(campaign: Campaign, event: dict) -> None:
     job_id = event.get("job_id")
     if job_id and any(e.get("type") == event_type and e.get("job_id") == job_id for e in campaign.events):
         return
-    campaign.events.append(event)
+    append_campaign_event(campaign.events, event)
 
 
 # Backward-compatible aliases for historical imports/tests.
@@ -401,7 +402,7 @@ def _record_worker_outcome(store: Storage, job: dict, *, success: bool, status: 
             {**event, "at": utcnow()},
             campaign.events,
         )
-        campaign.events.append(sealed)
+        append_campaign_event(campaign.events, sealed)
         campaign.updated_at = utcnow()
         try:
             store.save_campaign(campaign.model_dump(mode="json"), expected_version=version)
