@@ -228,7 +228,7 @@ def process_one(queue: QueueBackend, store, worker_id: str) -> bool:
             current_campaign.id,
             "pentagi_status",
             {"receipt_artifact_id": receipt_id},
-            max_attempts=1,
+            max_attempts=3,
             dedupe_key=preflight.permit.idempotency_key + ":status-worker",
         )
 
