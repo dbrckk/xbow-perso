@@ -114,6 +114,24 @@ def test_stats_expose_counts_without_payloads(tmp_path):
     assert "must-not-leak" not in str(stats)
 
 
+def test_stats_expose_oldest_running_lease_without_worker_identity(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    job = q.enqueue("campaign-running", "report", {"platform": "generic"})
+    claimed = q.claim("worker-secret-name")
+    assert claimed is not None and claimed["id"] == job["id"]
+
+    with q.connect() as db:
+        db.execute(
+            "UPDATE jobs SET claimed_at='2026-09-13T10:00:00+00:00' WHERE id=?",
+            (job["id"],),
+        )
+
+    stats = q.stats()
+
+    assert stats["oldest_running_claimed_at"] == "2026-09-13T10:00:00+00:00"
+    assert "worker-secret-name" not in str(stats)
+
+
 def test_heartbeat_renews_only_current_owner(tmp_path):
     q = JobQueue(str(tmp_path / "q.sqlite3"))
     job = q.enqueue("campaign-1", "strix_scan", {"target": "https://example.test"})

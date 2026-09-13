@@ -141,3 +141,25 @@ def test_redis_dedicated_job_stays_isolated_after_lease_recovery(
     assert reclaimed["id"] == job["id"]
     assert reclaimed["kind"] == "pentagi_flow"
     assert reclaimed["attempts"] == 2
+
+
+
+def test_redis_stats_expose_running_lease_without_worker_identity(redis_queue):
+    job = redis_queue.enqueue(
+        "redis-running-metrics",
+        "report",
+        {"campaign_id": "redis-running-metrics", "platform": "generic"},
+        dedupe_key="report:generic:running-metrics",
+    )
+    claimed = redis_queue.claim("redis-worker-secret-name")
+    assert claimed is not None and claimed["id"] == job["id"]
+
+    redis_queue.redis.hset(
+        redis_queue._job_key(job["id"]),
+        mapping={"claimed_at": "2026-09-13T10:00:00+00:00"},
+    )
+
+    stats = redis_queue.stats()
+
+    assert stats["oldest_running_claimed_at"] == "2026-09-13T10:00:00+00:00"
+    assert "redis-worker-secret-name" not in str(stats)
