@@ -287,6 +287,13 @@ def health():
     return payload
 
 
+@app.get("/api/deployment/preflight")
+def deployment_preflight():
+    from .deployment_preflight import build_deployment_preflight
+
+    return build_deployment_preflight(dependency_readiness())
+
+
 @app.get("/api/capabilities")
 def system_capabilities():
     from .runtime_capabilities import safe_pentagi_runtime_capability
