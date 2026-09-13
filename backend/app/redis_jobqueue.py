@@ -121,7 +121,8 @@ class RedisJobQueue:
         if dedupe_key is None:
             with self.redis.pipeline(transaction=True) as pipe:
                 pipe.hset(self._job_key(job_id), mapping=row)
-                pipe.zadd(self._queued, {job_id: score})
+                if kind != "pentagi_flow":
+                    pipe.zadd(self._queued, {job_id: score})
                 pipe.sadd(self._all, job_id)
                 pipe.sadd(self._campaign_key(campaign_id), job_id)
                 pipe.execute()
@@ -149,7 +150,8 @@ class RedisJobQueue:
                         return existing
                     pipe.multi()
                     pipe.hset(self._job_key(job_id), mapping=row)
-                    pipe.zadd(self._queued, {job_id: score})
+                    if kind != "pentagi_flow":
+                        pipe.zadd(self._queued, {job_id: score})
                     pipe.sadd(self._all, job_id)
                     pipe.sadd(self._campaign_key(campaign_id), job_id)
                     pipe.hset(dedupe_hash, dedupe_key, job_id)
