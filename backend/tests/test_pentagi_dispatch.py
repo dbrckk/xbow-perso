@@ -121,3 +121,18 @@ def test_pentagi_jobs_are_parked_for_generic_workers(tmp_path, monkeypatch):
     assert parked is not None
     assert parked["status"] == "queued"
     assert parked["attempts"] == 0
+
+
+def test_parked_pentagi_job_does_not_block_other_work(tmp_path, monkeypatch):
+    _enable_runtime(monkeypatch)
+    queue = JobQueue(str(tmp_path / "queue.sqlite3"))
+    campaign = _campaign()
+    parked = enqueue_pentagi_flow(queue, campaign, _future_plan(campaign))
+    active = queue.enqueue("other-campaign", "report", {"platform": "generic"})
+
+    claimed = queue.claim("generic-worker")
+
+    assert claimed is not None
+    assert claimed["id"] == active["id"]
+    assert queue.get(parked["id"])["status"] == "queued"
+    assert queue.get(parked["id"])["attempts"] == 0
