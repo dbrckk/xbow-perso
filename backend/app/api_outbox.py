@@ -83,8 +83,14 @@ def _request_descriptor(event: Mapping[str, Any]) -> tuple[str, str, str, dict[s
             and isinstance(purpose, str)
             and purpose
         ):
-            completion_type = "campaign_completed" if purpose == "campaign_completion" else "report_queued"
-            kind = "campaign_completion_report" if purpose == "campaign_completion" else "report_manual"
+            if purpose == "campaign_completion":
+                completion_type = "campaign_completed"
+                kind = "campaign_completion_report"
+            elif purpose == "manual":
+                completion_type = "report_queued"
+                kind = "report_manual"
+            else:
+                return None
             return (
                 kind,
                 request_id,
