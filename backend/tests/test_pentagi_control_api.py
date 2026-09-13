@@ -44,8 +44,8 @@ def test_pentagi_preview_exposes_metadata_not_request_payload(monkeypatch):
     assert result["ready"] is True
     assert result["request_payload_exposed"] is False
     assert result["plan"]["target"] == str(campaign.target.primary_url)
-    assert result["plan"]["endpoint"] == "https://pentagi.example.test/api/v1/graphql"
     assert result["plan"]["model_provider"] == "openai"
+    assert "endpoint" not in result["plan"]
     assert "payload" not in result["plan"]
 
 
@@ -119,8 +119,24 @@ def test_pentagi_dispatch_fails_closed_when_transport_disabled(tmp_path, monkeyp
 class _ArtifactStore:
     def list_artifacts(self, campaign_id):
         return [
-            {"id": "a1", "kind": "pentagi_receipt"},
-            {"id": "a2", "kind": "pentagi_status"},
+            {
+                "id": "a1",
+                "kind": "pentagi_receipt",
+                "media_type": "application/json",
+                "sha256": "a" * 64,
+                "size_bytes": 42,
+                "created_at": "2026-01-01T00:00:00+00:00",
+                "idempotency_key": "internal-receipt-key",
+            },
+            {
+                "id": "a2",
+                "kind": "pentagi_status",
+                "media_type": "application/json",
+                "sha256": "b" * 64,
+                "size_bytes": 21,
+                "created_at": "2026-01-01T00:01:00+00:00",
+                "idempotency_key": "internal-status-key",
+            },
             {"id": "a3", "kind": "report"},
         ]
 
@@ -155,6 +171,7 @@ def test_pentagi_status_summary_filters_local_artifacts(tmp_path, monkeypatch):
         "pentagi_status",
     ]
     assert result["read_only"] is True
+    assert all("idempotency_key" not in item for item in result["artifacts"])
 
 
 def test_pentagi_dispatch_rejects_closed_lifecycle(tmp_path, monkeypatch):
