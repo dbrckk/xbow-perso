@@ -12,6 +12,7 @@ from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field, HttpUrl, model_validator
 
+from .api_outbox import has_event, pending_request_id
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
@@ -813,21 +814,11 @@ def verify_campaign_policy_receipt(campaign_id: str, receipt: dict[str, Any] = B
 
 
 def _pending_campaign_start_request(campaign: Campaign) -> str | None:
-    completed = {
-        str(event.get("request_id"))
-        for event in campaign.events
-        if event.get("type") == "campaign_started" and event.get("request_id")
-    }
-    for event in reversed(campaign.events):
-        request_id = event.get("request_id")
-        if (
-            event.get("type") == "campaign_start_requested"
-            and isinstance(request_id, str)
-            and request_id
-            and request_id not in completed
-        ):
-            return request_id
-    return None
+    return pending_request_id(
+        campaign.events,
+        requested_type="campaign_start_requested",
+        completed_type="campaign_started",
+    )
 
 
 def _record_campaign_start_intent(
@@ -992,6 +983,58 @@ def get_job(job_id: str):
     return job
 
 
+def _validation_request_id(finding_id: str) -> str:
+    return f"validation:{finding_id}"
+
+
+def _reconcile_validation_queued(
+    campaign_id: str,
+    finding_id: str,
+    job: dict[str, Any],
+    *,
+    request_id: str,
+    attempts: int = 3,
+) -> Finding:
+    for _ in range(attempts):
+        campaign, version = assert_campaign_record(campaign_id)
+        _reject_new_findings_for_closed_campaign(campaign)
+        current = next((item for item in campaign.findings if item.id == finding_id), None)
+        if current is None:
+            raise HTTPException(status_code=409, detail="Finding disappeared during validation queue reconciliation")
+        if current.status != "validation_required":
+            raise HTTPException(
+                status_code=409,
+                detail=f"Cannot queue validation for finding in {current.status} state",
+            )
+        if has_event(
+            campaign.events,
+            "validation_queued",
+            identity={"finding_id": finding_id, "request_id": request_id, "job_id": job["id"]},
+        ):
+            return current
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "validation_queued",
+                "finding_id": finding_id,
+                "request_id": request_id,
+                "job_id": job["id"],
+                "at": utcnow(),
+            },
+        )
+        campaign.updated_at = utcnow()
+        try:
+            save_campaign(campaign, expected_version=version)
+            return current
+        except HTTPException as exc:
+            if exc.status_code != 409:
+                raise
+    raise HTTPException(
+        status_code=409,
+        detail="Validation job queued but campaign audit reconciliation conflicted; retry safely",
+    )
+
+
 @app.post("/api/campaigns/{campaign_id}/findings", response_model=Finding)
 def add_finding(campaign_id: str, finding: Finding):
     campaign, version = assert_campaign_record(campaign_id)
@@ -1000,28 +1043,73 @@ def add_finding(campaign_id: str, finding: Finding):
     if not is_host_allowed(host, campaign.target.rules.allowed_targets, campaign.target.rules.denied_targets):
         raise HTTPException(status_code=403, detail="Finding asset is outside campaign scope")
 
+    request_id = _validation_request_id(finding.id)
     existing = next((item for item in campaign.findings if item.id == finding.id), None)
     if existing:
         candidate = finding.model_copy(update={"status": existing.status, "validated_by": existing.validated_by})
         if candidate.model_dump(mode="json") != existing.model_dump(mode="json"):
             raise HTTPException(status_code=409, detail="Finding id already exists with different content")
-        return existing
+        if has_event(
+            campaign.events,
+            "validation_queued",
+            identity={"finding_id": finding.id, "request_id": request_id},
+        ):
+            return existing
+        if not has_event(
+            campaign.events,
+            "validation_requested",
+            identity={"finding_id": finding.id, "request_id": request_id},
+        ):
+            append_campaign_event(
+                campaign.events,
+                {
+                    "type": "validation_requested",
+                    "finding_id": finding.id,
+                    "request_id": request_id,
+                    "at": utcnow(),
+                },
+            )
+            campaign.updated_at = utcnow()
+            save_campaign(campaign, expected_version=version)
+    else:
+        finding.status = "validation_required"
+        campaign.findings.append(finding)
+        campaign.state = CampaignState.validating
+        campaign.updated_at = utcnow()
+        append_campaign_event(
+            campaign.events,
+            {"type": "finding_received", "finding_id": finding.id, "at": utcnow()},
+        )
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "validation_requested",
+                "finding_id": finding.id,
+                "request_id": request_id,
+                "at": utcnow(),
+            },
+        )
+        save_campaign(campaign, expected_version=version)
 
-    finding.status = "validation_required"
-    campaign.findings.append(finding)
-    campaign.state = CampaignState.validating
-    campaign.updated_at = utcnow()
-    append_campaign_event(campaign.events, {"type": "finding_received", "finding_id": finding.id, "at": utcnow()})
+    latest = assert_campaign_exists(campaign.id)
+    _reject_new_findings_for_closed_campaign(latest)
+    current = next((item for item in latest.findings if item.id == finding.id), None)
+    if current is None or current.status != "validation_required":
+        raise HTTPException(status_code=409, detail="Finding is no longer awaiting validation")
+
     validation_job = queue().enqueue(
         campaign.id,
         "independent_validation",
-        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
+        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": current.asset},
         max_attempts=2,
-        dedupe_key=f"validation:{finding.id}",
+        dedupe_key=request_id,
     )
-    append_campaign_event(campaign.events, {"type": "validation_queued", "finding_id": finding.id, "job_id": validation_job["id"], "at": utcnow()})
-    save_campaign(campaign, expected_version=version)
-    return finding
+    return _reconcile_validation_queued(
+        campaign.id,
+        finding.id,
+        validation_job,
+        request_id=request_id,
+    )
 
 
 @app.post("/api/campaigns/{campaign_id}/findings/{finding_id}/validate")
