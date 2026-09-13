@@ -1,6 +1,6 @@
 import pytest
 
-from app.redis_jobqueue import RedisJobQueue
+from app.redis_jobqueue import RedisJobQueue, _uses_generic_queue
 
 
 class DummyRedis:
@@ -33,3 +33,9 @@ def test_redis_queue_health_does_not_expose_configuration(monkeypatch):
     queue = RedisJobQueue()
     assert queue.health() == {"ok": True, "storage": "redis"}
     assert "secret.example" not in str(queue.health())
+
+
+def test_pentagi_jobs_never_use_generic_redis_queue():
+    assert _uses_generic_queue("pentagi_flow") is False
+    assert _uses_generic_queue("pentagi_status") is False
+    assert _uses_generic_queue("report") is True
