@@ -118,4 +118,10 @@ PentAGI execution is split into two dedicated services so remote flow creation n
 - `pentagi-worker`: creates one admitted remote flow after policy/permit revalidation.
 - `pentagi-status-worker`: tracks only already-created flows through bounded read-only polling.
 
-All PentAGI switches default to disabled. To enable execution deliberately, configure the PentAGI endpoint/provider and credentials, then enable `XBOW_ENABLE_PENTAGI`, `XBOW_ENABLE_PENTAGI_WORKER`, and `XBOW_ENABLE_PENTAGI_TRANSPORT`. Enable `XBOW_ENABLE_PENTAGI_STATUS_WORKER` separately for lifecycle tracking.
+All PentAGI switches default to disabled, and the dedicated containers are behind Compose profiles so a normal `docker compose up` does not start them. To enable execution deliberately, configure the PentAGI endpoint/provider and credentials, enable `XBOW_ENABLE_PENTAGI`, `XBOW_ENABLE_PENTAGI_WORKER`, and `XBOW_ENABLE_PENTAGI_TRANSPORT`, then start the `pentagi` profile. Enable `XBOW_ENABLE_PENTAGI_STATUS_WORKER` and the `pentagi-status` profile separately for lifecycle tracking.
+
+Example:
+
+```bash
+docker compose --profile pentagi --profile pentagi-status up -d --build
+```
