@@ -37,8 +37,20 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     queue_age = metrics.get("oldest_queued_age_seconds")
     pending_outbox = int(metrics.get("pending_outbox_total") or 0)
     outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
+    invalid_audit_chains = int(
+        metrics.get("invalid_campaign_audit_chains") or 0
+    )
 
     alerts: list[dict[str, Any]] = []
+    if invalid_audit_chains:
+        alerts.append(
+            {
+                "code": "campaign_audit_invalid",
+                "severity": "critical",
+                "value": invalid_audit_chains,
+                "threshold": 1,
+            }
+        )
     if failed >= failed_limit:
         alerts.append(
             {
