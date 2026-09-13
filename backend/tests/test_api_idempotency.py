@@ -1,15 +1,19 @@
 import pytest
 from fastapi import HTTPException
 
+from app import main
+from app.campaign_audit import append_campaign_event
 from app.jobqueue import JobQueue
 from app.main import (
     Campaign,
+    CampaignState,
     EvidenceInput,
     Finding,
     ProgramRules,
     TargetInput,
     add_finding,
     add_text_artifact,
+    start_campaign,
     validate_finding,
 )
 from app.observation_graph import Observation
@@ -190,3 +194,120 @@ def test_completed_campaign_rejects_new_findings(tmp_path, monkeypatch):
     assert "completed" in str(exc.value.detail)
     assert Storage(db).get_campaign("c1")["findings"] == []
     assert JobQueue(db).stats()["total"] == 0
+
+
+def test_campaign_start_conflict_before_intent_commit_never_enqueues(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "queue.sqlite3")
+    campaign = Campaign(
+        id="start-conflict",
+        state=CampaignState.ready,
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="test-authorization",
+                allowed_targets=["example.test"],
+            ),
+        ),
+    )
+    jobs = JobQueue(db)
+
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign, 4),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+    monkeypatch.setattr(
+        main,
+        "save_campaign",
+        lambda value, expected_version=None: (_ for _ in ()).throw(
+            HTTPException(
+                status_code=409,
+                detail="Campaign changed concurrently; reload and retry",
+            )
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        start_campaign(campaign.id)
+
+    assert exc.value.status_code == 409
+    assert jobs.stats()["total"] == 0
+    assert any(
+        event.get("type") == "campaign_start_requested"
+        for event in campaign.events
+    )
+    assert not any(
+        event.get("type") == "campaign_started"
+        for event in campaign.events
+    )
+
+
+def test_campaign_start_retry_after_enqueue_reuses_pending_request(
+    tmp_path,
+    monkeypatch,
+):
+    db, artifacts = _setup(tmp_path, monkeypatch)
+    store = Storage(db, artifacts)
+    document, version = store.get_campaign_record("c1")
+    campaign = Campaign.model_validate(document)
+    campaign.state = CampaignState.ready
+    request_id = "resume-start-request"
+    receipt = main.policy_receipt(
+        campaign,
+        "example.test",
+        "automated_scan",
+    )
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "campaign_start_requested",
+            "request_id": request_id,
+            "at": main.utcnow(),
+            "policy": receipt,
+        },
+    )
+    campaign.updated_at = main.utcnow()
+    store.save_campaign(
+        campaign.model_dump(mode="json"),
+        expected_version=version,
+    )
+
+    jobs = JobQueue(db)
+    payload = main.sanitized_scan_payload(campaign, receipt)
+    existing = jobs.enqueue(
+        campaign.id,
+        "strix_scan",
+        payload,
+        max_attempts=2,
+        dedupe_key=f"api:start:{request_id}",
+    )
+
+    result = start_campaign(campaign.id)
+
+    assert result["request_id"] == request_id
+    assert result["job"]["id"] == existing["id"]
+    assert result["audit_reconciled"] is True
+    assert jobs.stats()["total"] == 1
+
+    persisted = store.get_campaign(campaign.id)
+    assert persisted["state"] == "running"
+    requested = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "campaign_start_requested"
+        and event.get("request_id") == request_id
+    ]
+    started = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "campaign_started"
+        and event.get("request_id") == request_id
+    ]
+    assert len(requested) == 1
+    assert len(started) == 1
+    assert started[0]["job_id"] == existing["id"]
