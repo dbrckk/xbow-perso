@@ -812,6 +812,92 @@ def verify_campaign_policy_receipt(campaign_id: str, receipt: dict[str, Any] = B
     return verify_policy_receipt(receipt)
 
 
+def _pending_campaign_start_request(campaign: Campaign) -> str | None:
+    completed = {
+        str(event.get("request_id"))
+        for event in campaign.events
+        if event.get("type") == "campaign_started" and event.get("request_id")
+    }
+    for event in reversed(campaign.events):
+        request_id = event.get("request_id")
+        if (
+            event.get("type") == "campaign_start_requested"
+            and isinstance(request_id, str)
+            and request_id
+            and request_id not in completed
+        ):
+            return request_id
+    return None
+
+
+def _record_campaign_start_intent(
+    campaign: Campaign,
+    version: int,
+    *,
+    request_id: str,
+    receipt: dict[str, Any],
+) -> int:
+    if any(
+        event.get("type") == "campaign_start_requested"
+        and event.get("request_id") == request_id
+        for event in campaign.events
+    ):
+        return version
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "campaign_start_requested",
+            "request_id": request_id,
+            "at": utcnow(),
+            "policy": receipt,
+        },
+    )
+    campaign.updated_at = utcnow()
+    return save_campaign(campaign, expected_version=version)
+
+
+def _reconcile_campaign_started(
+    campaign_id: str,
+    job: dict[str, Any],
+    *,
+    request_id: str,
+    receipt: dict[str, Any],
+    attempts: int = 3,
+) -> Campaign:
+    for _ in range(attempts):
+        campaign, version = assert_campaign_record(campaign_id)
+        if any(
+            event.get("type") == "campaign_started"
+            and event.get("request_id") == request_id
+            and event.get("job_id") == job["id"]
+            for event in campaign.events
+        ):
+            return campaign
+        _reject_cancelled_campaign(campaign)
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "campaign_started",
+                "request_id": request_id,
+                "at": utcnow(),
+                "policy": receipt,
+                "job_id": job["id"],
+            },
+        )
+        campaign.state = CampaignState.running
+        campaign.updated_at = utcnow()
+        try:
+            save_campaign(campaign, expected_version=version)
+            return campaign
+        except HTTPException as exc:
+            if exc.status_code != 409:
+                raise
+    raise HTTPException(
+        status_code=409,
+        detail="Campaign start job queued but audit reconciliation conflicted; retry safely",
+    )
+
+
 @app.post("/api/campaigns/{campaign_id}/start")
 def start_campaign(campaign_id: str):
     campaign, version = assert_campaign_record(campaign_id)
@@ -826,18 +912,34 @@ def start_campaign(campaign_id: str):
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
 
     payload = sanitized_scan_payload(campaign, receipt)
+    request_id = _pending_campaign_start_request(campaign) or str(uuid4())
+    _record_campaign_start_intent(
+        campaign,
+        version,
+        request_id=request_id,
+        receipt=receipt,
+    )
     job = queue().enqueue(
         campaign.id,
         "strix_scan",
         payload,
         max_attempts=2,
-        dedupe_key=f"api:start:v{version}",
+        dedupe_key=f"api:start:{request_id}",
     )
-    campaign.state = CampaignState.running
-    campaign.updated_at = utcnow()
-    append_campaign_event(campaign.events, {"type": "campaign_started", "at": utcnow(), "policy": receipt, "job_id": job["id"]})
-    save_campaign(campaign, expected_version=version)
-    return {"campaign_id": campaign.id, "state": campaign.state, "policy": receipt, "job": job}
+    campaign = _reconcile_campaign_started(
+        campaign.id,
+        job,
+        request_id=request_id,
+        receipt=receipt,
+    )
+    return {
+        "campaign_id": campaign.id,
+        "state": campaign.state,
+        "policy": receipt,
+        "job": job,
+        "request_id": request_id,
+        "audit_reconciled": True,
+    }
 
 
 @app.post("/api/campaigns/{campaign_id}/cancel")
