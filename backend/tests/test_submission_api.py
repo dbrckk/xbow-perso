@@ -2,6 +2,7 @@ import pytest
 from fastapi import HTTPException
 
 import app.submission_api as submission_api
+from app.campaign_audit import verify_campaign_event_chain
 from app.main import Campaign, Finding, ProgramRules, TargetInput, app
 from app.observation_graph import Observation
 from app.storage import Storage
@@ -195,3 +196,40 @@ def test_report_approval_rejects_confirmed_finding_without_ready_evidence(tmp_pa
 
     assert exc.value.status_code == 400
     assert "report-ready" in str(exc.value.detail)
+
+
+
+def test_submission_mutations_preserve_campaign_audit_chain(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+
+    submission_api.approve_report(campaign.id, artifact["id"], "reviewer")
+    submission_api.mark_report_submitted(
+        campaign.id,
+        artifact["id"],
+        "operator",
+        "generic",
+    )
+    submission_api.revoke_report_approval(
+        campaign.id,
+        artifact["id"],
+        "reviewer",
+    )
+
+    persisted = Storage().get_campaign(campaign.id)
+    verification = verify_campaign_event_chain(persisted["events"])
+
+    assert verification["valid"] is True
+    assert verification["legacy_unsealed"] == 0
+    assert [
+        event["type"]
+        for event in persisted["events"]
+        if event["type"] in {
+            "report_approved",
+            "report_submitted",
+            "report_approval_revoked",
+        }
+    ] == [
+        "report_approved",
+        "report_submitted",
+        "report_approval_revoked",
+    ]
