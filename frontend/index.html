@@ -54,6 +54,7 @@
 <script>
 let campaign=null;
 let pentagiReady=false;
+let pentagiPreviewCampaignId=null;
 const $=id=>document.getElementById(id);
 const lines=id=>$(id).value.split('\n').map(x=>x.trim()).filter(Boolean);
 $('token').value=sessionStorage.getItem('xbowApiToken')||'';
@@ -71,6 +72,7 @@ $('create').onclick=async()=>{try{
  const payload={name:$('name').value,primary_url:$('url').value,rules:{authorization_reference:$('auth').value,allowed_targets:lines('allowed'),denied_targets:lines('denied'),max_requests_per_second:Number($('rps').value),destructive_testing:false,denial_of_service:false,social_engineering:false,credential_attacks:false,automated_scanning:true,notes:$('notes').value}};
  campaign=await api('/campaigns',{method:'POST',body:JSON.stringify(payload)});
  pentagiReady=false;
+ pentagiPreviewCampaignId=null;
  $('start').disabled=false;
  $('pentagi-preview').disabled=false;
  $('pentagi-dispatch').disabled=true;
@@ -81,22 +83,25 @@ $('create').onclick=async()=>{try{
 }catch(e){$('status').className='err';$('status').textContent=e.message}}
 $('start').onclick=async()=>{if(!campaign)return;try{const r=await api('/campaigns/'+campaign.id+'/start',{method:'POST'});$('status').className='ok';$('status').textContent='Campagne démarrée';$('output').textContent=JSON.stringify(r,null,2)}catch(e){$('status').className='err';$('status').textContent=e.message}}
 
-$('pentagi-preview').onclick=async()=>{if(!campaign)return;try{
- const r=await api('/campaigns/'+campaign.id+'/pentagi/preview');
+$('pentagi-preview').onclick=async()=>{if(!campaign)return;const requestedCampaignId=campaign.id;try{
+ const r=await api('/campaigns/'+requestedCampaignId+'/pentagi/preview');
+ if(!campaign||campaign.id!==requestedCampaignId)return;
  pentagiReady=Boolean(r.ready);
+ pentagiPreviewCampaignId=requestedCampaignId;
  $('pentagi-dispatch').disabled=!pentagiReady;
  const reasons=[...(r.admission?.reasons||[]),...(r.operational_reasons||[])];
  $('pentagi-status').className=pentagiReady?'ok':'err';
  $('pentagi-status').textContent=pentagiReady?'PentAGI prêt à être dispatché.':'PentAGI bloqué : '+(reasons.join(', ')||'configuration incomplète');
  $('output').textContent=JSON.stringify(r,null,2);
-}catch(e){pentagiReady=false;$('pentagi-dispatch').disabled=true;$('pentagi-status').className='err';$('pentagi-status').textContent=e.message}}
-$('pentagi-dispatch').onclick=async()=>{if(!campaign||!pentagiReady)return;try{
- const r=await api('/campaigns/'+campaign.id+'/pentagi/dispatch',{method:'POST'});
- $('pentagi-status').className='ok';
- $('pentagi-status').textContent='Job PentAGI en file : '+r.job.id;
+}catch(e){if(!campaign||campaign.id!==requestedCampaignId)return;pentagiReady=false;pentagiPreviewCampaignId=null;$('pentagi-dispatch').disabled=true;$('pentagi-status').className='err';$('pentagi-status').textContent=e.message}}
+$('pentagi-dispatch').onclick=async()=>{if(!campaign||!pentagiReady||pentagiPreviewCampaignId!==campaign.id)return;const requestedCampaignId=campaign.id;try{
+ const r=await api('/campaigns/'+requestedCampaignId+'/pentagi/dispatch',{method:'POST'});
+ if(!campaign||campaign.id!==requestedCampaignId)return;
+ $('pentagi-status').className=r.job.status==='failed'?'err':'ok';
+ $('pentagi-status').textContent='Job PentAGI '+r.job.status+' : '+r.job.id;
  $('pentagi-refresh').disabled=false;
  $('output').textContent=JSON.stringify(r,null,2);
-}catch(e){$('pentagi-status').className='err';$('pentagi-status').textContent=e.message}}
+}catch(e){if(!campaign||campaign.id!==requestedCampaignId)return;$('pentagi-status').className='err';$('pentagi-status').textContent=e.message}}
 $('pentagi-refresh').onclick=async()=>{if(!campaign)return;try{
  const r=await api('/campaigns/'+campaign.id+'/pentagi');
  $('pentagi-status').className='ok';
