@@ -39,25 +39,25 @@ def test_control_preview_reports_operational_gates(monkeypatch):
 
     preview = prepare_pentagi_control_preview(_campaign())
 
-    assert preview.decision.allowed is True
+    assert preview.decision.allowed is False
+    assert "plan_is_dry_run" in preview.decision.reasons
+    assert "execution_transport_not_enforceable" in preview.decision.reasons
     assert preview.ready is False
     assert preview.operational_reasons == (
         "pentagi_worker_disabled",
         "pentagi_transport_disabled",
     )
-    assert preview.plan.dry_run is False
-    assert preview.plan.execution_supported is True
+    assert preview.plan.dry_run is True
+    assert preview.plan.execution_supported is False
 
 
-def test_control_ready_requires_worker_and_transport(monkeypatch):
+def test_control_ready_remains_blocked_without_enforcing_transport(monkeypatch):
     _configure(monkeypatch)
     monkeypatch.setenv("XBOW_ENABLE_PENTAGI_WORKER", "true")
     monkeypatch.setenv("XBOW_ENABLE_PENTAGI_TRANSPORT", "true")
 
-    preview = require_pentagi_control_ready(_campaign())
-
-    assert preview.ready is True
-    assert preview.decision.reasons == ()
+    with pytest.raises(PentagiControlError, match="execution_transport_not_enforceable"):
+        require_pentagi_control_ready(_campaign())
 
 
 def test_control_ready_keeps_global_dry_run_fail_closed(monkeypatch):
