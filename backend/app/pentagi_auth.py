@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .secret_vault import SecretVaultError, resolve_secret
 
@@ -11,7 +11,7 @@ class PentagiAuthError(RuntimeError):
 
 @dataclass(frozen=True)
 class PentagiAuth:
-    token: str
+    token: str = field(repr=False)
 
     def headers(self) -> dict[str, str]:
         return {
