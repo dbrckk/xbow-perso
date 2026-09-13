@@ -69,6 +69,35 @@ services:
       XBOW_QUEUE_BACKEND: redis
       XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
 
+
+  pentagi-worker:
+    depends_on:
+      backend:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      XBOW_STORAGE_BACKEND: postgresql
+      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
+      XBOW_QUEUE_BACKEND: redis
+      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
+
+  pentagi-status-worker:
+    depends_on:
+      backend:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      XBOW_STORAGE_BACKEND: postgresql
+      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
+      XBOW_QUEUE_BACKEND: redis
+      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
+
 volumes:
   xbow-postgres:
   xbow-redis:
