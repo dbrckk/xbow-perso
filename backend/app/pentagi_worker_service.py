@@ -212,12 +212,24 @@ def process_one(queue: QueueBackend, store, worker_id: str) -> bool:
             "endpoint": preflight.permit.endpoint,
             "model_provider": preflight.permit.model_provider,
         }
-        store.put_artifact(
+        receipt_artifact = store.put_artifact(
             current_campaign.id,
             "pentagi_receipt",
             json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8"),
             media_type="application/json",
             idempotency_key=preflight.permit.idempotency_key + ":receipt",
+        )
+
+        receipt_id = receipt_artifact.get("id")
+        if not isinstance(receipt_id, str) or not receipt_id:
+            raise PentagiWorkerPolicyError("PentAGI receipt artifact id is invalid")
+
+        queue.enqueue(
+            current_campaign.id,
+            "pentagi_status",
+            {"receipt_artifact_id": receipt_id},
+            max_attempts=1,
+            dedupe_key=preflight.permit.idempotency_key + ":status-worker",
         )
 
         finished = queue.finish(job["id"], worker_id, True)
