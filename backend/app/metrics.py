@@ -34,6 +34,9 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
 
     by_status = dict(queue_stats.get("by_status") or {})
     oldest_queued_age_seconds = _age_seconds(queue_stats.get("oldest_queued_at"))
+    oldest_running_lease_age_seconds = _age_seconds(
+        queue_stats.get("oldest_running_claimed_at")
+    )
 
     pending_outbox_total = 0
     pending_outbox_by_kind: Counter[str] = Counter()
@@ -63,6 +66,7 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         },
         "queue_storage": str(queue_stats.get("storage") or "unknown"),
         "oldest_queued_age_seconds": oldest_queued_age_seconds,
+        "oldest_running_lease_age_seconds": oldest_running_lease_age_seconds,
         "pending_outbox_total": pending_outbox_total,
         "pending_outbox_by_kind": dict(sorted(pending_outbox_by_kind.items())),
         "oldest_outbox_pending_age_seconds": oldest_outbox_age_seconds,
