@@ -484,7 +484,6 @@ def _reconcile_pentagi_queued_event(
             },
         )
         if campaign.state in {CampaignState.ready, CampaignState.failed}:
-            if campaign.state in {CampaignState.ready, CampaignState.failed}:
             campaign.state = CampaignState.running
         campaign.updated_at = utcnow()
         try:
