@@ -20,23 +20,6 @@ def has_event(
     )
 
 
-def append_event_once(
-    events: list[dict[str, Any]],
-    event: dict[str, Any],
-    *,
-    identity: Mapping[str, Any],
-) -> bool:
-    event_type = str(event.get("type") or "")
-    if not event_type:
-        raise ValueError("outbox event type is required")
-    if not identity:
-        raise ValueError("outbox event identity is required")
-    if has_event(events, event_type, identity=identity):
-        return False
-    events.append(event)
-    return True
-
-
 def pending_request_id(
     events: Iterable[Mapping[str, Any]],
     *,
