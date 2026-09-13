@@ -368,6 +368,11 @@ class RedisJobQueue:
                         pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                         pipe.execute()
                         continue
+                    if not _uses_generic_queue(row.get("kind", "")):
+                        pipe.multi()
+                        pipe.zrem(self._queued, job_id)
+                        pipe.execute()
+                        continue
                     if int(row["attempts"]) >= int(row["max_attempts"]):
                         pipe.multi()
                         pipe.hset(
