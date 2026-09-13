@@ -27,3 +27,19 @@ def test_mobile_ui_does_not_accept_pentagi_runtime_configuration():
     assert "XBOW_PENTAGI_API_TOKEN" not in html
     assert 'id="pentagi-endpoint"' not in html
     assert 'id="pentagi-provider"' not in html
+
+
+def test_mobile_ui_binds_preview_and_dispatch_to_same_campaign():
+    html = _frontend()
+
+    assert "let pentagiPreviewCampaignId=null" in html
+    assert "const requestedCampaignId=campaign.id" in html
+    assert "campaign.id!==requestedCampaignId" in html
+    assert "pentagiPreviewCampaignId!==campaign.id" in html
+
+
+def test_mobile_ui_reports_server_job_status():
+    html = _frontend()
+
+    assert "r.job.status" in html
+    assert "Job PentAGI en file" not in html
