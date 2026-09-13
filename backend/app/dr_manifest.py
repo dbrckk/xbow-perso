@@ -10,19 +10,30 @@ from typing import Any
 from .secret_vault import SecretVaultError, resolve_secret
 
 
-_SIGNATURE_FIELDS = {"manifest_signature", "manifest_signature_alg", "integrity_mode"}
+_LEGACY_SIGNATURE_FIELDS = {
+    "manifest_signature",
+    "manifest_signature_alg",
+    "integrity_mode",
+}
+_V2_SIGNATURE_FIELDS = {"manifest_signature", "manifest_signature_alg"}
+_V2_INTEGRITY_MODE = "sha256-artifacts+hmac-sha256-manifest"
 
 
 class DisasterRecoveryError(RuntimeError):
     pass
 
 
-
 def _canonical_manifest(manifest: dict[str, Any]) -> bytes:
+    version = manifest.get("version")
+    excluded = (
+        _LEGACY_SIGNATURE_FIELDS
+        if version == 1
+        else _V2_SIGNATURE_FIELDS
+    )
     payload = {
         key: value
         for key, value in manifest.items()
-        if key not in _SIGNATURE_FIELDS
+        if key not in excluded
     }
     return json.dumps(
         payload,
@@ -38,42 +49,87 @@ def _seal_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
         secret = resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
     except SecretVaultError as exc:
         raise DisasterRecoveryError("DR manifest signing key is unavailable") from exc
+
     if not secret:
         sealed["manifest_signature_alg"] = None
         sealed["manifest_signature"] = None
         sealed["integrity_mode"] = "sha256-artifacts"
         return sealed
 
-    canonical = _canonical_manifest(sealed)
+    # Version 2 makes authenticated manifests unambiguously authenticated.
+    # A v2 manifest cannot be downgraded to an unsigned legacy manifest merely
+    # by deleting signature metadata.
+    sealed["version"] = 2
     sealed["manifest_signature_alg"] = "hmac-sha256"
+    sealed["integrity_mode"] = _V2_INTEGRITY_MODE
+    canonical = _canonical_manifest(sealed)
     sealed["manifest_signature"] = hmac.new(
         secret.encode("utf-8"),
         canonical,
         hashlib.sha256,
     ).hexdigest()
-    sealed["integrity_mode"] = "sha256-artifacts+hmac-sha256-manifest"
     return sealed
 
 
-def _verify_manifest_signature(manifest: dict[str, Any]) -> bool | None:
-    signature = manifest.get("manifest_signature")
-    algorithm = manifest.get("manifest_signature_alg")
-    if signature is None:
-        return None
-    if algorithm != "hmac-sha256":
-        raise DisasterRecoveryError("unsupported DR manifest signature algorithm")
+def _verification_secret() -> str:
     try:
         secret = resolve_secret("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY")
     except SecretVaultError as exc:
         raise DisasterRecoveryError("DR manifest verification key is unavailable") from exc
     if not secret:
         raise DisasterRecoveryError("DR manifest verification key is unavailable")
+    return secret
+
+
+def _verify_manifest_signature(manifest: dict[str, Any]) -> bool | None:
+    version = manifest.get("version")
+    signature = manifest.get("manifest_signature")
+    algorithm = manifest.get("manifest_signature_alg")
+    integrity_mode = manifest.get("integrity_mode")
+
+    if version == 2:
+        if (
+            algorithm != "hmac-sha256"
+            or integrity_mode != _V2_INTEGRITY_MODE
+            or not isinstance(signature, str)
+            or len(signature) != 64
+        ):
+            raise DisasterRecoveryError(
+                "signed DR manifest authentication metadata is missing or invalid"
+            )
+        try:
+            int(signature, 16)
+        except ValueError as exc:
+            raise DisasterRecoveryError(
+                "signed DR manifest authentication metadata is missing or invalid"
+            ) from exc
+    elif version == 1:
+        # Legacy unsigned v1 manifests remain readable. Legacy signed v1
+        # manifests also remain verifiable using their original canonical form.
+        if signature is None:
+            if algorithm not in (None, ""):
+                raise DisasterRecoveryError(
+                    "legacy DR manifest signature metadata is inconsistent"
+                )
+            if integrity_mode not in (None, "", "sha256-artifacts"):
+                raise DisasterRecoveryError(
+                    "legacy DR manifest signature metadata is inconsistent"
+                )
+            return None
+        if algorithm != "hmac-sha256":
+            raise DisasterRecoveryError("unsupported DR manifest signature algorithm")
+        if not isinstance(signature, str):
+            raise DisasterRecoveryError("legacy DR manifest signature is invalid")
+    else:
+        raise DisasterRecoveryError("unsupported manifest format")
+
+    secret = _verification_secret()
     expected = hmac.new(
         secret.encode("utf-8"),
         _canonical_manifest(manifest),
         hashlib.sha256,
     ).hexdigest()
-    return hmac.compare_digest(str(signature), expected)
+    return hmac.compare_digest(signature, expected)
 
 
 def _safe_backup_file(path_value: str, label: str) -> Path:
@@ -171,7 +227,10 @@ def verify_backup_manifest(
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise DisasterRecoveryError("manifest is invalid") from exc
 
-    if manifest.get("version") != 1 or not isinstance(manifest.get("artifacts"), list):
+    if (
+        manifest.get("version") not in (1, 2)
+        or not isinstance(manifest.get("artifacts"), list)
+    ):
         raise DisasterRecoveryError("unsupported manifest format")
 
     signature_valid = _verify_manifest_signature(manifest)
