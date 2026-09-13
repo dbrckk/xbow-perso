@@ -361,3 +361,64 @@ def test_local_reconcile_skips_ambiguous_completed_start_job(tmp_path, monkeypat
     assert result["skipped_ambiguous"] == 1
     assert saved == []
     assert result["remaining"][0]["diagnosis"] == "audit_missing"
+
+
+
+def test_local_reconcile_repairs_existing_browser_audit_without_enqueue(
+    tmp_path,
+    monkeypatch,
+):
+    campaign = _campaign(
+        [
+            {
+                "type": "browser_flow_requested",
+                "request_id": "browser-repair-request",
+                "flow_fingerprint": "f" * 64,
+                "at": "2026-09-13T10:00:00+00:00",
+            }
+        ]
+    )
+    campaign.state = CampaignState.running
+    jobs = JobQueue(str(tmp_path / "queue.sqlite3"))
+    job = jobs.enqueue(
+        campaign.id,
+        "browser_flow",
+        {
+            "campaign_id": campaign.id,
+            "steps": [],
+        },
+        dedupe_key="browser:browser-repair-request",
+    )
+    saved = []
+
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign, 9),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+    monkeypatch.setattr(
+        main,
+        "save_campaign",
+        lambda value, expected_version=None: saved.append(
+            (value.model_copy(deep=True), expected_version)
+        )
+        or expected_version + 1,
+    )
+
+    result = main.reconcile_campaign_outbox_local(campaign.id)
+
+    assert result["repaired"] == 1
+    assert result["remaining"] == []
+    assert jobs.stats()["total"] == 1
+    repaired = [
+        event
+        for event in campaign.events
+        if event.get("type") == "browser_flow_queued"
+        and event.get("request_id") == "browser-repair-request"
+    ]
+    assert len(repaired) == 1
+    assert repaired[0]["job_id"] == job["id"]
+    assert repaired[0]["flow_fingerprint"] == "f" * 64
+    assert repaired[0]["reconciled_locally"] is True
+    assert saved and saved[0][1] == 9
