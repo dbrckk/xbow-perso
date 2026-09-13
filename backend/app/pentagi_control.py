@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 from .main import Campaign
 from .pentagi_adapter import PentagiFlowPlan, build_pentagi_flow_plan
@@ -39,12 +39,7 @@ def prepare_pentagi_control_preview(campaign: Campaign) -> PentagiControlPreview
     """Build the server-configured execution candidate and evaluate all API gates."""
 
     preview = build_pentagi_flow_plan(campaign)
-    executable = replace(
-        preview,
-        dry_run=False,
-        execution_supported=True,
-    )
-    decision = evaluate_pentagi_admission(campaign, executable)
+    decision = evaluate_pentagi_admission(campaign, preview)
 
     operational_reasons: list[str] = []
     if not _strict_bool_env("XBOW_ENABLE_PENTAGI_WORKER", False):
@@ -53,7 +48,7 @@ def prepare_pentagi_control_preview(campaign: Campaign) -> PentagiControlPreview
         operational_reasons.append("pentagi_transport_disabled")
 
     return PentagiControlPreview(
-        plan=executable,
+        plan=preview,
         decision=decision,
         operational_reasons=tuple(operational_reasons),
     )
