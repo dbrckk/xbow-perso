@@ -5,8 +5,9 @@ from app.operational_alerts import build_operational_alerts
 
 
 class Queue:
-    def __init__(self, oldest):
+    def __init__(self, oldest, running=None):
         self.oldest = oldest
+        self.running = running
 
     def stats(self):
         return {
@@ -14,6 +15,7 @@ class Queue:
             "by_status": {"queued": 2, "running": 1},
             "storage": "redis",
             "oldest_queued_at": self.oldest,
+            "oldest_running_claimed_at": self.running,
         }
 
 
@@ -167,3 +169,52 @@ def test_outbox_alert_thresholds_fail_closed(monkeypatch):
         assert "XBOW_ALERT_OUTBOX_AGE_SECONDS" in str(exc)
     else:
         raise AssertionError("invalid outbox alert threshold was accepted")
+
+
+
+def test_metrics_expose_running_lease_age():
+    running = (datetime.now(timezone.utc) - timedelta(seconds=120)).isoformat()
+    metrics = build_operational_metrics(Queue(None, running), Storage())
+
+    assert 115 <= metrics["oldest_running_lease_age_seconds"] <= 125
+
+
+def test_invalid_running_lease_timestamp_does_not_break_metrics():
+    metrics = build_operational_metrics(Queue(None, "not-a-date"), Storage())
+
+    assert metrics["oldest_running_lease_age_seconds"] is None
+
+
+def test_alerts_detect_stale_running_lease(monkeypatch):
+    monkeypatch.setenv("XBOW_ALERT_RUNNING_LEASE_AGE_SECONDS", "60")
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {"failed": 0, "queued": 0, "running": 1},
+            "oldest_running_lease_age_seconds": 61,
+        }
+    )
+
+    stale = [
+        item
+        for item in result["alerts"]
+        if item["code"] == "running_lease_stale"
+    ]
+    assert stale == [
+        {
+            "code": "running_lease_stale",
+            "severity": "critical",
+            "value": 61,
+            "threshold": 60,
+        }
+    ]
+
+
+def test_running_lease_alert_threshold_fails_closed(monkeypatch):
+    monkeypatch.setenv("XBOW_ALERT_RUNNING_LEASE_AGE_SECONDS", "10")
+
+    try:
+        build_operational_alerts({"jobs_by_status": {}})
+    except ValueError as exc:
+        assert "XBOW_ALERT_RUNNING_LEASE_AGE_SECONDS" in str(exc)
+    else:
+        raise AssertionError("invalid running lease alert threshold was accepted")
