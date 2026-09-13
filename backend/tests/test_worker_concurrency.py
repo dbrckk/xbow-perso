@@ -1,9 +1,16 @@
 import pytest
 
+from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput
 from app.storage import CampaignConflictError, Storage
 from app.validator import ValidationPolicyError
-from app.worker_service import _campaign, _save, _worker_poll_seconds, process_validation
+from app.worker_service import (
+    _campaign,
+    _save,
+    _worker_poll_seconds,
+    process_one,
+    process_validation,
+)
 
 
 def make_campaign() -> Campaign:
@@ -108,3 +115,83 @@ def test_validation_worker_rejects_completed_campaign_before_probe(tmp_path):
 
     with pytest.raises(ValidationPolicyError, match="completed campaign"):
         process_validation(job, store)
+
+
+
+def test_stale_validation_job_is_cancelled_without_retry(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    campaign.state = CampaignState.validating
+    campaign.findings = [
+        Finding(
+            id="f1",
+            title="fixture",
+            severity="low",
+            asset="https://example.test",
+            summary="fixture",
+            status="confirmed",
+            discovered_by="scanner",
+        )
+    ]
+    store.save_campaign(campaign.model_dump(mode="json"))
+    job = queue.enqueue(
+        campaign.id,
+        "independent_validation",
+        {
+            "campaign_id": campaign.id,
+            "finding_id": "f1",
+            "asset": "https://example.test",
+        },
+        max_attempts=2,
+        dedupe_key="validation:f1",
+    )
+
+    assert process_one(queue, store, "worker-stale") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "cancelled"
+    assert final["attempts"] == 1
+    assert final["claimed_by"] is None
+    assert queue.claim("worker-retry") is None
+
+
+def test_completed_campaign_validation_job_is_cancelled_without_retry(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    campaign.state = CampaignState.completed
+    campaign.findings = [
+        Finding(
+            id="f1",
+            title="fixture",
+            severity="low",
+            asset="https://example.test",
+            summary="fixture",
+            status="validation_required",
+            discovered_by="scanner",
+        )
+    ]
+    store.save_campaign(campaign.model_dump(mode="json"))
+    job = queue.enqueue(
+        campaign.id,
+        "independent_validation",
+        {
+            "campaign_id": campaign.id,
+            "finding_id": "f1",
+            "asset": "https://example.test",
+        },
+        max_attempts=2,
+        dedupe_key="validation:f1",
+    )
+
+    assert process_one(queue, store, "worker-completed") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "cancelled"
+    assert final["attempts"] == 1
+    assert queue.claim("worker-retry") is None
