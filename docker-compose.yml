@@ -16,6 +16,10 @@ services:
       XBOW_ALERT_WEBHOOK_URL: ${XBOW_ALERT_WEBHOOK_URL:-}
       XBOW_ALERT_WEBHOOK_TIMEOUT_SECONDS: ${XBOW_ALERT_WEBHOOK_TIMEOUT_SECONDS:-5}
       XBOW_ALERT_WEBHOOK_HMAC_KEY: ${XBOW_ALERT_WEBHOOK_HMAC_KEY:-}
+      XBOW_ENABLE_PENTAGI: ${XBOW_ENABLE_PENTAGI:-false}
+      XBOW_PENTAGI_BASE_URL: ${XBOW_PENTAGI_BASE_URL:-}
+      XBOW_PENTAGI_MODEL_PROVIDER: ${XBOW_PENTAGI_MODEL_PROVIDER:-}
+      XBOW_PENTAGI_MAX_ADMISSION_RPS: ${XBOW_PENTAGI_MAX_ADMISSION_RPS:-2.0}
     volumes:
       - xbow-data:/data
     read_only: true
@@ -85,6 +89,88 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    networks: [control]
+
+
+  pentagi-worker:
+    profiles: ["pentagi"]
+    build: ./backend
+    command: ["python", "-m", "app.pentagi_worker_service"]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      DRY_RUN: ${DRY_RUN:-true}
+      XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
+      XBOW_ENABLE_PENTAGI: ${XBOW_ENABLE_PENTAGI:-false}
+      XBOW_ENABLE_PENTAGI_WORKER: ${XBOW_ENABLE_PENTAGI_WORKER:-false}
+      XBOW_ENABLE_PENTAGI_TRANSPORT: ${XBOW_ENABLE_PENTAGI_TRANSPORT:-false}
+      XBOW_PENTAGI_API_TOKEN: ${XBOW_PENTAGI_API_TOKEN:-}
+      XBOW_PENTAGI_TIMEOUT_SECONDS: ${XBOW_PENTAGI_TIMEOUT_SECONDS:-10}
+      XBOW_PENTAGI_MAX_RESPONSE_BYTES: ${XBOW_PENTAGI_MAX_RESPONSE_BYTES:-1048576}
+      XBOW_PENTAGI_MAX_ADMISSION_RPS: ${XBOW_PENTAGI_MAX_ADMISSION_RPS:-2.0}
+      XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
+      XBOW_DB_PATH: /data/xbow.sqlite3
+      XBOW_ARTIFACT_ROOT: /data/artifacts
+      XBOW_VAULT_ENABLED: ${XBOW_VAULT_ENABLED:-false}
+      XBOW_VAULT_PATH: /data/secrets.vault.json
+      XBOW_VAULT_MASTER_KEY: ${XBOW_VAULT_MASTER_KEY:-}
+      XBOW_VAULT_MASTER_KEY_FILE: ${XBOW_VAULT_MASTER_KEY_FILE:-}
+    volumes:
+      - xbow-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 0.5
+    networks: [control]
+
+  pentagi-status-worker:
+    profiles: ["pentagi-status"]
+    build: ./backend
+    command: ["python", "-m", "app.pentagi_status_worker_service"]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      XBOW_ENABLE_PENTAGI: ${XBOW_ENABLE_PENTAGI:-false}
+      XBOW_ENABLE_PENTAGI_STATUS_WORKER: ${XBOW_ENABLE_PENTAGI_STATUS_WORKER:-false}
+      XBOW_PENTAGI_API_TOKEN: ${XBOW_PENTAGI_API_TOKEN:-}
+      XBOW_PENTAGI_TIMEOUT_SECONDS: ${XBOW_PENTAGI_TIMEOUT_SECONDS:-10}
+      XBOW_PENTAGI_MAX_RESPONSE_BYTES: ${XBOW_PENTAGI_MAX_RESPONSE_BYTES:-1048576}
+      XBOW_PENTAGI_STATUS_POLL_SECONDS: ${XBOW_PENTAGI_STATUS_POLL_SECONDS:-10}
+      XBOW_PENTAGI_STATUS_MAX_SECONDS: ${XBOW_PENTAGI_STATUS_MAX_SECONDS:-3600}
+      XBOW_PENTAGI_STATUS_WORKER_IDLE_SECONDS: ${XBOW_PENTAGI_STATUS_WORKER_IDLE_SECONDS:-1}
+      XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
+      XBOW_DB_PATH: /data/xbow.sqlite3
+      XBOW_ARTIFACT_ROOT: /data/artifacts
+      XBOW_VAULT_ENABLED: ${XBOW_VAULT_ENABLED:-false}
+      XBOW_VAULT_PATH: /data/secrets.vault.json
+      XBOW_VAULT_MASTER_KEY: ${XBOW_VAULT_MASTER_KEY:-}
+      XBOW_VAULT_MASTER_KEY_FILE: ${XBOW_VAULT_MASTER_KEY_FILE:-}
+    volumes:
+      - xbow-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 128
+    mem_limit: 384m
+    cpus: 0.5
     networks: [control]
 
   frontend:

@@ -33,7 +33,7 @@ FastAPI Control Plane
 Isolated Worker Adapter Layer
       |
       +-- Strix (first integration)
-      +-- PentAGI (planned adapter)
+      +-- PentAGI (guarded execution + status tracking)
       +-- additional scanners/tools (planned)
 ```
 
@@ -98,7 +98,7 @@ A campaign must include written authorization metadata, allowed targets and proh
 - persistent PostgreSQL storage
 - queued workers (Redis/Celery or equivalent)
 - real Strix job lifecycle + result parser
-- PentAGI adapter
+- PentAGI remote lifecycle/status UX
 - Playwright browser worker
 - recon graph / target memory
 - program importers
@@ -109,3 +109,19 @@ A campaign must include written authorization metadata, allowed targets and proh
 - encrypted secrets vault
 - audit logs and per-action policy receipts
 - deployment hardening and reverse proxy/TLS
+
+
+## PentAGI workers
+
+PentAGI execution is split into two dedicated services so remote flow creation never blocks generic scanning workers:
+
+- `pentagi-worker`: creates one admitted remote flow after policy/permit revalidation.
+- `pentagi-status-worker`: tracks only already-created flows through bounded read-only polling.
+
+All PentAGI switches default to disabled, and the dedicated containers are behind Compose profiles so a normal `docker compose up` does not start them. To enable execution deliberately, configure the PentAGI endpoint/provider and credentials, enable `XBOW_ENABLE_PENTAGI`, `XBOW_ENABLE_PENTAGI_WORKER`, and `XBOW_ENABLE_PENTAGI_TRANSPORT`, then start the `pentagi` profile. Enable `XBOW_ENABLE_PENTAGI_STATUS_WORKER` and the `pentagi-status` profile separately for lifecycle tracking.
+
+Example:
+
+```bash
+docker compose --profile pentagi --profile pentagi-status up -d --build
+```
