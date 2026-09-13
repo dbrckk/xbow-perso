@@ -69,6 +69,7 @@ class _Store:
 
     def put_artifact(self, campaign_id, kind, content, **kwargs):
         record = {
+            "id": f"artifact-{len(self.artifacts) + 1}",
             "campaign_id": campaign_id,
             "kind": kind,
             "content": content,
