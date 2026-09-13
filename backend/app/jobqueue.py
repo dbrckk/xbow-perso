@@ -209,12 +209,18 @@ class JobQueue:
             oldest = db.execute(
                 "SELECT created_at FROM jobs WHERE status='queued' ORDER BY created_at LIMIT 1"
             ).fetchone()
+            oldest_running = db.execute(
+                "SELECT claimed_at FROM jobs WHERE status='running' AND claimed_at IS NOT NULL ORDER BY claimed_at LIMIT 1"
+            ).fetchone()
         counts = {status: 0 for status in ("queued", "running", "completed", "failed", "cancelled")}
         counts.update({row["status"]: row["count"] for row in rows})
         return {
             "total": total,
             "by_status": counts,
             "oldest_queued_at": oldest["created_at"] if oldest else None,
+            "oldest_running_claimed_at": (
+                oldest_running["claimed_at"] if oldest_running else None
+            ),
         }
 
     def campaign_job_counts(self, campaign_id: str) -> dict[str, int]:
