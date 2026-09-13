@@ -107,6 +107,9 @@ def local_completion_event(
         event["platform"] = request["platform"]
         event["purpose"] = request["purpose"]
         event["report_job_id"] = job["id"]
+    elif kind == "browser_flow":
+        event["request_id"] = request["request_id"]
+        event["flow_fingerprint"] = request["flow_fingerprint"]
     else:
         return None
     return event
