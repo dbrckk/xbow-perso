@@ -71,3 +71,29 @@ def pentagi_runtime_capability() -> dict[str, Any]:
         },
         "contains_secrets": False,
     }
+
+
+
+def safe_pentagi_runtime_capability() -> dict[str, Any]:
+    """Return a fail-closed public capability document on configuration errors."""
+
+    try:
+        return pentagi_runtime_capability()
+    except CapabilityConfigError:
+        return {
+            "mode": "configuration_error",
+            "integration_enabled": False,
+            "active_scans_enabled": False,
+            "dry_run": True,
+            "worker_enabled": False,
+            "transport_enabled": False,
+            "execution_transport_enforceable": False,
+            "dispatch_ready": False,
+            "dispatch_block_reasons": ["invalid_boolean_configuration"],
+            "status_tracking": {
+                "worker_enabled": False,
+                "available": False,
+            },
+            "contains_secrets": False,
+            "configuration_error": True,
+        }
