@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import socket
 import threading
@@ -202,6 +203,22 @@ def process_one(queue: QueueBackend, store, worker_id: str) -> bool:
         create_flow = response.body["data"]["createFlow"]
         flow_id = create_flow["id"]
         remote_status = create_flow.get("status") or "unknown"
+
+        receipt = {
+            "job_id": job["id"],
+            "flow_id": flow_id,
+            "remote_status": remote_status,
+            "idempotency_key": preflight.permit.idempotency_key,
+            "endpoint": preflight.permit.endpoint,
+            "model_provider": preflight.permit.model_provider,
+        }
+        store.put_artifact(
+            current_campaign.id,
+            "pentagi_receipt",
+            json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+            media_type="application/json",
+            idempotency_key=preflight.permit.idempotency_key + ":receipt",
+        )
 
         finished = queue.finish(job["id"], worker_id, True)
         if finished is None:
