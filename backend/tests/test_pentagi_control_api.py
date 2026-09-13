@@ -75,6 +75,7 @@ def test_pentagi_dispatch_enqueues_single_attempt_job_and_audits(tmp_path, monke
     assert persisted["max_attempts"] == 1
     assert persisted["attempts"] == 0
     assert persisted["status"] == "queued"
+    assert campaign.state == main.CampaignState.running
     assert saved and saved[0][1] == 7
     assert any(
         event.get("type") == "pentagi_flow_queued"
@@ -153,3 +154,23 @@ def test_pentagi_status_summary_filters_local_artifacts(tmp_path, monkeypatch):
         "pentagi_status",
     ]
     assert result["read_only"] is True
+
+
+def test_pentagi_dispatch_rejects_closed_lifecycle(tmp_path, monkeypatch):
+    _configure(monkeypatch)
+    campaign = _campaign()
+    campaign.state = main.CampaignState.completed
+    jobs = JobQueue(str(tmp_path / "queue.sqlite3"))
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign, 3),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+
+    with pytest.raises(HTTPException) as exc:
+        main.dispatch_pentagi_campaign(campaign.id)
+
+    assert exc.value.status_code == 409
+    assert "Cannot dispatch PentAGI from completed" in str(exc.value.detail)
+    assert jobs.stats()["total"] == 0
