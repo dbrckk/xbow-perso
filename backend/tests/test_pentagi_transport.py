@@ -5,22 +5,46 @@ import pytest
 
 from app.main import Campaign, ProgramRules, TargetInput
 from app.pentagi_adapter import build_pentagi_flow_plan
+from app.pentagi_auth import PentagiAuth
 from app.pentagi_execution_guard import issue_pentagi_execution_permit
 from app.pentagi_transport import PentagiTransportError, submit_pentagi_flow
+
+
+class _Socket:
+    def __init__(self):
+        self.timeouts = []
+
+    def settimeout(self, value):
+        self.timeouts.append(value)
+
+
+class _Raw:
+    def __init__(self, sock):
+        self._sock = sock
+
+
+class _FP:
+    def __init__(self, sock):
+        self.raw = _Raw(sock)
 
 
 class _Response:
     def __init__(self, payload: bytes, *, status: int = 200, content_type: str = "application/json"):
         self._payload = payload
+        self._offset = 0
         self.status = status
         self.headers = Message()
         self.headers["Content-Type"] = content_type
+        self.socket = _Socket()
+        self.fp = _FP(self.socket)
 
     def getcode(self):
         return self.status
 
     def read(self, amount: int):
-        return self._payload[:amount]
+        chunk = self._payload[self._offset:self._offset + amount]
+        self._offset += len(chunk)
+        return chunk
 
 
 class _Opener:
@@ -73,10 +97,18 @@ def _plan_and_permit(monkeypatch):
     return plan, issue_pentagi_execution_permit(campaign, plan)
 
 
+def _auth(monkeypatch):
+    monkeypatch.setattr(
+        "app.pentagi_transport.load_pentagi_auth",
+        lambda: PentagiAuth(token="secret-token-secret"),
+    )
+
+
 def test_transport_posts_json_without_redirects(monkeypatch):
     plan, permit = _plan_and_permit(monkeypatch)
-    monkeypatch.setenv("XBOW_PENTAGI_TOKEN", "secret-token")
-    opener = _Opener(_Response(b'{"data":{"createFlow":{"id":"42"}}}'))
+    _auth(monkeypatch)
+    response = _Response(b'{"data":{"createFlow":{"id":"42","status":"created"}}}')
+    opener = _Opener(response)
     monkeypatch.setattr("app.pentagi_transport.urllib.request.build_opener", lambda *args: opener)
 
     result = submit_pentagi_flow(plan, permit)
@@ -84,10 +116,11 @@ def test_transport_posts_json_without_redirects(monkeypatch):
     assert result.status == 200
     assert result.body["data"]["createFlow"]["id"] == "42"
     assert opener.timeout == 10.0
+    assert response.socket.timeouts
     assert opener.request.full_url == "https://pentagi.example.test/api/v1/graphql"
     assert opener.request.get_method() == "POST"
-    assert opener.request.get_header("Authorization") == "Bearer secret-token"
-    assert opener.request.get_header("X-xbow-idempotency-key") == permit.idempotency_key
+    assert opener.request.get_header("Authorization") == "Bearer secret-token-secret"
+    assert opener.request.get_header("X-xbow-request-key") == permit.idempotency_key
 
 
 @pytest.mark.parametrize(
@@ -101,7 +134,7 @@ def test_transport_posts_json_without_redirects(monkeypatch):
 )
 def test_transport_rejects_unsafe_endpoints(monkeypatch, endpoint):
     plan, permit = _plan_and_permit(monkeypatch)
-    monkeypatch.setenv("XBOW_PENTAGI_TOKEN", "secret-token")
+    _auth(monkeypatch)
     plan = replace(plan, endpoint=endpoint)
     permit = replace(permit, endpoint=endpoint)
 
@@ -109,19 +142,24 @@ def test_transport_rejects_unsafe_endpoints(monkeypatch, endpoint):
         submit_pentagi_flow(plan, permit)
 
 
-def test_transport_requires_token_without_leaking_value(monkeypatch):
+def test_transport_wraps_auth_failure_without_secret(monkeypatch):
     plan, permit = _plan_and_permit(monkeypatch)
-    monkeypatch.delenv("XBOW_PENTAGI_TOKEN", raising=False)
 
-    with pytest.raises(PentagiTransportError, match="XBOW_PENTAGI_TOKEN is required") as exc:
+    def fail():
+        from app.pentagi_auth import PentagiAuthError
+        raise PentagiAuthError("vault detail")
+
+    monkeypatch.setattr("app.pentagi_transport.load_pentagi_auth", fail)
+
+    with pytest.raises(PentagiTransportError, match="API token is unavailable") as exc:
         submit_pentagi_flow(plan, permit)
 
-    assert "Bearer" not in str(exc.value)
+    assert "vault detail" not in str(exc.value)
 
 
 def test_transport_rejects_oversized_response(monkeypatch):
     plan, permit = _plan_and_permit(monkeypatch)
-    monkeypatch.setenv("XBOW_PENTAGI_TOKEN", "secret-token")
+    _auth(monkeypatch)
     monkeypatch.setenv("XBOW_PENTAGI_MAX_RESPONSE_BYTES", "1024")
     opener = _Opener(_Response(b"{" + b"x" * 2048 + b"}"))
     monkeypatch.setattr("app.pentagi_transport.urllib.request.build_opener", lambda *args: opener)
@@ -132,7 +170,7 @@ def test_transport_rejects_oversized_response(monkeypatch):
 
 def test_transport_rejects_graphql_errors(monkeypatch):
     plan, permit = _plan_and_permit(monkeypatch)
-    monkeypatch.setenv("XBOW_PENTAGI_TOKEN", "secret-token")
+    _auth(monkeypatch)
     opener = _Opener(_Response(b'{"errors":[{"message":"no"}],"data":null}'))
     monkeypatch.setattr("app.pentagi_transport.urllib.request.build_opener", lambda *args: opener)
 
@@ -142,9 +180,28 @@ def test_transport_rejects_graphql_errors(monkeypatch):
 
 def test_transport_rejects_non_json_content_type(monkeypatch):
     plan, permit = _plan_and_permit(monkeypatch)
-    monkeypatch.setenv("XBOW_PENTAGI_TOKEN", "secret-token")
+    _auth(monkeypatch)
     opener = _Opener(_Response(b"ok", content_type="text/plain"))
     monkeypatch.setattr("app.pentagi_transport.urllib.request.build_opener", lambda *args: opener)
 
     with pytest.raises(PentagiTransportError, match="not JSON"):
+        submit_pentagi_flow(plan, permit)
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        b'{"data":{}}',
+        b'{"data":{"createFlow":null}}',
+        b'{"data":{"createFlow":{"id":""}}}',
+        b'{"data":{"createFlow":{"id":"42","status":123}}}',
+    ],
+)
+def test_transport_validates_create_flow_shape(monkeypatch, payload):
+    plan, permit = _plan_and_permit(monkeypatch)
+    _auth(monkeypatch)
+    opener = _Opener(_Response(payload))
+    monkeypatch.setattr("app.pentagi_transport.urllib.request.build_opener", lambda *args: opener)
+
+    with pytest.raises(PentagiTransportError):
         submit_pentagi_flow(plan, permit)
