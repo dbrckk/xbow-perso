@@ -193,6 +193,26 @@ def test_invalid_identifiers_never_become_allowed_targets(identifier, asset_type
     assert preview.assets[0].compatible is False
 
 
+@pytest.mark.parametrize(
+    "identifier",
+    [
+        "http://[",
+        "https://[::1",
+        "https://user:pass@[",
+    ],
+)
+def test_malformed_urls_never_escape_parser_errors(identifier):
+    preview = import_hackerone_structured_scope(
+        {"data": [_resource(identifier, "Url", True)]}
+    )
+
+    assert preview.complete is False
+    assert preview.allowed_targets == ()
+    assert preview.assets[0].compatible is False
+    assert preview.assets[0].reason == "invalid_url"
+    assert preview.unsupported == (f"Url:{identifier}",)
+
+
 def test_scope_asset_limit_fails_closed():
     document = {
         "data": [

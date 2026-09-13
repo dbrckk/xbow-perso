@@ -157,10 +157,20 @@ def _compatible_host_pattern(asset_type: str, identifier: str) -> tuple[str | No
             return None, "invalid_ip_address"
 
     if asset_type == "Url":
-        parsed = urlparse(identifier)
-        if parsed.scheme.lower() not in {"http", "https"} or not parsed.hostname:
+        try:
+            parsed = urlparse(identifier)
+            hostname = parsed.hostname
+            username = parsed.username
+            password = parsed.password
+        except ValueError:
+            # urllib.parse raises for malformed IPv6 brackets, invalid ports,
+            # and a few other malformed netloc shapes. Treat all parser
+            # failures as incompatible input rather than allowing a 500 at the
+            # authenticated preview API boundary.
             return None, "invalid_url"
-        if parsed.username or parsed.password:
+        if parsed.scheme.lower() not in {"http", "https"} or not hostname:
+            return None, "invalid_url"
+        if username or password:
             return None, "url_contains_userinfo"
         # XBOW's current scope engine is host-only. Converting a URL scope to a
         # hostname would lose scheme/path/port constraints and could broaden scope.
