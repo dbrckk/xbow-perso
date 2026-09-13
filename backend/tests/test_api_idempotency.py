@@ -344,3 +344,132 @@ def test_campaign_start_reconciliation_never_reopens_completed_campaign(monkeypa
     assert exc.value.status_code == 409
     assert "completed" in str(exc.value.detail)
     assert campaign.state == CampaignState.completed
+
+
+
+def test_add_finding_conflict_before_validation_intent_commit_never_enqueues(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "queue.sqlite3")
+    campaign = Campaign(
+        id="finding-conflict",
+        state=CampaignState.running,
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="test-authorization",
+                allowed_targets=["example.test"],
+            ),
+        ),
+    )
+    jobs = JobQueue(db)
+    finding = Finding(
+        id="f-conflict",
+        title="candidate",
+        severity="medium",
+        asset="https://example.test/path",
+        summary="fixture",
+        discovered_by="fixture",
+    )
+
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign, 5),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+    monkeypatch.setattr(
+        main,
+        "save_campaign",
+        lambda value, expected_version=None: (_ for _ in ()).throw(
+            HTTPException(
+                status_code=409,
+                detail="Campaign changed concurrently; reload and retry",
+            )
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        add_finding(campaign.id, finding)
+
+    assert exc.value.status_code == 409
+    assert jobs.stats()["total"] == 0
+    assert any(
+        event.get("type") == "validation_requested"
+        and event.get("finding_id") == finding.id
+        for event in campaign.events
+    )
+    assert not any(
+        event.get("type") == "validation_queued"
+        for event in campaign.events
+    )
+
+
+def test_add_finding_retry_repairs_missing_validation_job_after_intent(
+    tmp_path,
+    monkeypatch,
+):
+    db, artifacts = _setup(tmp_path, monkeypatch)
+    store = Storage(db, artifacts)
+    document, version = store.get_campaign_record("c1")
+    campaign = Campaign.model_validate(document)
+    finding = Finding(
+        id="f-resume",
+        title="candidate",
+        severity="medium",
+        asset="https://example.test/resume",
+        summary="fixture",
+        discovered_by="fixture",
+        status="validation_required",
+    )
+    campaign.findings.append(finding)
+    campaign.state = CampaignState.validating
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "finding_received",
+            "finding_id": finding.id,
+            "at": main.utcnow(),
+        },
+    )
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "validation_requested",
+            "finding_id": finding.id,
+            "request_id": f"validation:{finding.id}",
+            "at": main.utcnow(),
+        },
+    )
+    campaign.updated_at = main.utcnow()
+    store.save_campaign(
+        campaign.model_dump(mode="json"),
+        expected_version=version,
+    )
+
+    result = add_finding(
+        campaign.id,
+        Finding(
+            id=finding.id,
+            title=finding.title,
+            severity=finding.severity,
+            asset=finding.asset,
+            summary=finding.summary,
+            discovered_by=finding.discovered_by,
+        ),
+    )
+
+    assert result.id == finding.id
+    jobs = JobQueue(db)
+    assert jobs.campaign_job_counts(campaign.id)["independent_validation"] == 1
+    persisted = store.get_campaign(campaign.id)
+    queued = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "validation_queued"
+        and event.get("finding_id") == finding.id
+    ]
+    assert len(queued) == 1
+    assert queued[0]["request_id"] == f"validation:{finding.id}"
