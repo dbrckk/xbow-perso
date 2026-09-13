@@ -99,6 +99,7 @@ class Storage:
         "screenshot",
         "validation",
         "report",
+        "pentagi_receipt",
     }
     ALLOWED_OBSERVATION_KINDS = {
         "asset",
