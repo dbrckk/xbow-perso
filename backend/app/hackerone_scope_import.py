@@ -189,6 +189,15 @@ def import_hackerone_structured_scope(document: dict[str, Any]) -> HackerOneScop
     if not isinstance(document, dict):
         raise HackerOneScopeImportError("HackerOne scope document must be an object")
 
+    links = document.get("links")
+    if links is not None:
+        if not isinstance(links, dict):
+            raise HackerOneScopeImportError("HackerOne scope document links are invalid")
+        if links.get("next"):
+            raise HackerOneScopeImportError(
+                "HackerOne scope document is paginated; collect all pages before import"
+            )
+
     data = document.get("data")
     if isinstance(data, dict):
         resources = [data]
