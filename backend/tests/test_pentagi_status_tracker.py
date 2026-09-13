@@ -41,7 +41,7 @@ def test_refresh_persists_idempotent_status_snapshot(monkeypatch):
     store = _Store()
     monkeypatch.setattr(
         "app.pentagi_status_tracker.fetch_pentagi_flow_status",
-        lambda endpoint, flow_id: PentagiFlowStatus(
+        lambda endpoint, flow_id, **kwargs: PentagiFlowStatus(
             flow_id="flow-42",
             status="running",
             title="scan",

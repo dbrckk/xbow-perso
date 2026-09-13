@@ -66,6 +66,8 @@ def _flow_status_url(graphql_endpoint: str, flow_id: str) -> str:
 def fetch_pentagi_flow_status(
     graphql_endpoint: str,
     flow_id: str,
+    *,
+    timeout_seconds: float | None = None,
 ) -> PentagiFlowStatus:
     """Fetch one existing PentAGI flow without mutating remote state."""
 
@@ -89,7 +91,17 @@ def fetch_pentagi_flow_status(
         urllib.request.HTTPSHandler(context=context),
     )
 
-    timeout = _timeout_seconds()
+    configured_timeout = _timeout_seconds()
+    if timeout_seconds is None:
+        timeout = configured_timeout
+    else:
+        try:
+            requested_timeout = float(timeout_seconds)
+        except (TypeError, ValueError) as exc:
+            raise PentagiTransportError("PentAGI flow status timeout is invalid") from exc
+        if requested_timeout <= 0:
+            raise PentagiTransportError("PentAGI flow status timeout must be positive")
+        timeout = min(configured_timeout, requested_timeout)
     deadline = time.monotonic() + timeout
     try:
         response = opener.open(request, timeout=timeout)
