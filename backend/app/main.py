@@ -422,12 +422,91 @@ def preview_pentagi_campaign(campaign_id: str):
     }
 
 
+def _pentagi_dispatch_fingerprint(idempotency_key: str) -> str:
+    return hashlib.sha256(idempotency_key.encode("utf-8")).hexdigest()
+
+
+def _record_pentagi_dispatch_intent(
+    campaign: Campaign,
+    version: int,
+    *,
+    dispatch_fingerprint: str,
+    policy_fingerprint: str,
+) -> int:
+    if any(
+        event.get("type") == "pentagi_dispatch_requested"
+        and event.get("dispatch_fingerprint") == dispatch_fingerprint
+        for event in campaign.events
+    ):
+        return version
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "pentagi_dispatch_requested",
+            "at": utcnow(),
+            "dispatch_fingerprint": dispatch_fingerprint,
+            "policy_fingerprint": policy_fingerprint,
+        },
+    )
+    campaign.updated_at = utcnow()
+    return save_campaign(campaign, expected_version=version)
+
+
+def _reconcile_pentagi_queued_event(
+    campaign_id: str,
+    job: dict[str, Any],
+    *,
+    dispatch_fingerprint: str,
+    policy_fingerprint: str,
+    attempts: int = 3,
+) -> Campaign:
+    for _ in range(attempts):
+        campaign, version = assert_campaign_record(campaign_id)
+        if any(
+            event.get("type") == "pentagi_flow_queued"
+            and event.get("job_id") == job["id"]
+            for event in campaign.events
+        ):
+            return campaign
+        if campaign.state == CampaignState.cancelled:
+            raise HTTPException(
+                status_code=409,
+                detail="Campaign was cancelled while PentAGI dispatch was being reconciled",
+            )
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "pentagi_flow_queued",
+                "at": utcnow(),
+                "job_id": job["id"],
+                "dispatch_fingerprint": dispatch_fingerprint,
+                "policy_fingerprint": policy_fingerprint,
+            },
+        )
+        if campaign.state in {CampaignState.ready, CampaignState.failed}:
+            campaign.state = CampaignState.running
+        campaign.updated_at = utcnow()
+        try:
+            save_campaign(campaign, expected_version=version)
+            return campaign
+        except HTTPException as exc:
+            if exc.status_code != 409:
+                raise
+    raise HTTPException(
+        status_code=409,
+        detail="PentAGI job queued but campaign audit reconciliation conflicted; retry safely",
+    )
+
+
 @app.post("/api/campaigns/{campaign_id}/pentagi/dispatch")
 def dispatch_pentagi_campaign(campaign_id: str):
     from .pentagi_adapter import PentagiPolicyError
     from .pentagi_admission import PentagiAdmissionError
     from .pentagi_control import PentagiControlError, require_pentagi_control_ready
-    from .pentagi_dispatch import enqueue_pentagi_flow
+    from .pentagi_dispatch import (
+        enqueue_pentagi_flow,
+        prepare_pentagi_execution_permit,
+    )
     from .pentagi_execution_guard import PentagiExecutionGuardError
 
     campaign, version = assert_campaign_record(campaign_id)
@@ -443,7 +522,20 @@ def dispatch_pentagi_campaign(campaign_id: str):
         )
     try:
         preview = require_pentagi_control_ready(campaign)
-        job = enqueue_pentagi_flow(queue(), campaign, preview.plan)
+        permit = prepare_pentagi_execution_permit(campaign, preview.plan)
+        dispatch_fingerprint = _pentagi_dispatch_fingerprint(permit.idempotency_key)
+        _record_pentagi_dispatch_intent(
+            campaign,
+            version,
+            dispatch_fingerprint=dispatch_fingerprint,
+            policy_fingerprint=preview.decision.policy_fingerprint,
+        )
+        job = enqueue_pentagi_flow(
+            queue(),
+            campaign,
+            preview.plan,
+            permit=permit,
+        )
     except (
         PentagiPolicyError,
         PentagiAdmissionError,
@@ -454,28 +546,12 @@ def dispatch_pentagi_campaign(campaign_id: str):
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    changed = False
-    if not any(
-        event.get("type") == "pentagi_flow_queued"
-        and event.get("job_id") == job["id"]
-        for event in campaign.events
-    ):
-        append_campaign_event(
-            campaign.events,
-            {
-                "type": "pentagi_flow_queued",
-                "at": utcnow(),
-                "job_id": job["id"],
-                "policy_fingerprint": preview.decision.policy_fingerprint,
-            },
-        )
-        changed = True
-    if campaign.state in {CampaignState.ready, CampaignState.failed}:
-        campaign.state = CampaignState.running
-        changed = True
-    if changed:
-        campaign.updated_at = utcnow()
-        save_campaign(campaign, expected_version=version)
+    campaign = _reconcile_pentagi_queued_event(
+        campaign.id,
+        job,
+        dispatch_fingerprint=dispatch_fingerprint,
+        policy_fingerprint=preview.decision.policy_fingerprint,
+    )
     safe_job = {
         key: job.get(key)
         for key in (
@@ -492,6 +568,7 @@ def dispatch_pentagi_campaign(campaign_id: str):
         "campaign_id": campaign.id,
         "job": safe_job,
         "policy_fingerprint": preview.decision.policy_fingerprint,
+        "audit_reconciled": True,
     }
 
 
