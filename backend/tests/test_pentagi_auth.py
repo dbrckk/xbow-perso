@@ -24,6 +24,7 @@ def test_pentagi_auth_reads_legacy_env_when_vault_disabled(monkeypatch):
         "Content-Type": "application/json",
         "User-Agent": "xbow-perso-pentagi/1.0",
     }
+    assert "legacy-token-1234567890" not in repr(auth)
 
 
 def test_pentagi_auth_reads_vault_and_refuses_legacy_fallback(monkeypatch, tmp_path):
