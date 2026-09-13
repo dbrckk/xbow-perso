@@ -28,14 +28,14 @@ def pending_request_id(
     identity: Mapping[str, Any] | None = None,
 ) -> str | None:
     identity = identity or {}
+    materialized = list(events)
     completed = {
         str(event.get("request_id"))
-        for event in events
+        for event in materialized
         if event.get("type") == completed_type
         and event.get("request_id")
         and _matches_identity(event, identity)
     }
-    materialized = list(events)
     for event in reversed(materialized):
         request_id = event.get("request_id")
         if (
