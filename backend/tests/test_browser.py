@@ -1,6 +1,7 @@
 import base64
 
 import pytest
+from fastapi import HTTPException
 from pydantic import ValidationError
 
 from app import browser
@@ -305,7 +306,7 @@ def test_browser_queue_uses_backend_factories_and_audited_outbox(
     assert job["kind"] == "browser_flow"
     assert jobs.stats()["total"] == 1
     persisted = store.get_campaign(campaign.id)
-    assert verify_campaign_event_chain(persisted["events"])["ok"] is True
+    assert verify_campaign_event_chain(persisted["events"])["valid"] is True
 
     requested = [
         event
@@ -336,10 +337,11 @@ def test_browser_conflict_before_intent_commit_never_enqueues(
 
     monkeypatch.setattr(store, "save_campaign", conflict)
 
-    with pytest.raises(Exception) as exc:
+    with pytest.raises(HTTPException) as exc:
         queue_browser_flow(campaign.id, _browser_flow())
 
-    assert "concurrently" in str(exc.value)
+    assert exc.value.status_code == 409
+    assert "concurrently" in str(exc.value.detail)
     assert jobs.stats()["total"] == 0
 
 
