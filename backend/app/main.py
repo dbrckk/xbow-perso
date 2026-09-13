@@ -299,7 +299,7 @@ def system_capabilities():
             "strix_scanning": "gated",
             "http_validation": "gated",
             "browser_automation": "gated",
-            "pentagi": "gated",
+            "pentagi": "preview_only",
             "pentagi_status_tracking": "gated",
             "default_mode": "dry_run",
             "arbitrary_shell_jobs": False,
