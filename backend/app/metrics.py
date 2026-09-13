@@ -6,7 +6,25 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .api_outbox import outbox_snapshot
+
 router = APIRouter()
+
+
+def _age_seconds(value: Any, *, now: datetime | None = None) -> int | None:
+    if not value:
+        return None
+    try:
+        created = datetime.fromisoformat(str(value))
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        current = now or datetime.now(timezone.utc)
+        return max(
+            0,
+            int((current - created.astimezone(timezone.utc)).total_seconds()),
+        )
+    except (TypeError, ValueError, OverflowError):
+        return None
 
 
 def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
@@ -15,19 +33,26 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
     states = Counter(str(item.get("state") or "unknown") for item in campaigns)
 
     by_status = dict(queue_stats.get("by_status") or {})
-    oldest_queued_at = queue_stats.get("oldest_queued_at")
-    oldest_queued_age_seconds = None
-    if oldest_queued_at:
-        try:
-            created = datetime.fromisoformat(str(oldest_queued_at))
-            if created.tzinfo is None:
-                created = created.replace(tzinfo=timezone.utc)
-            oldest_queued_age_seconds = max(
-                0,
-                int((datetime.now(timezone.utc) - created.astimezone(timezone.utc)).total_seconds()),
+    oldest_queued_age_seconds = _age_seconds(queue_stats.get("oldest_queued_at"))
+
+    pending_outbox_total = 0
+    pending_outbox_by_kind: Counter[str] = Counter()
+    oldest_outbox_age_seconds = None
+    for campaign in campaigns:
+        events = campaign.get("events") or []
+        if not isinstance(events, list):
+            continue
+        snapshot = outbox_snapshot(events, max_items=1)
+        pending_outbox_total += int(snapshot["pending_total"])
+        pending_outbox_by_kind.update(snapshot["pending_by_kind"])
+        age = _age_seconds(snapshot.get("oldest_pending_at"))
+        if age is not None:
+            oldest_outbox_age_seconds = (
+                age
+                if oldest_outbox_age_seconds is None
+                else max(oldest_outbox_age_seconds, age)
             )
-        except (TypeError, ValueError, OverflowError):
-            oldest_queued_age_seconds = None
+
     metrics = {
         "campaigns_total": len(campaigns),
         "campaigns_by_state": dict(sorted(states.items())),
@@ -38,10 +63,14 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         },
         "queue_storage": str(queue_stats.get("storage") or "unknown"),
         "oldest_queued_age_seconds": oldest_queued_age_seconds,
+        "pending_outbox_total": pending_outbox_total,
+        "pending_outbox_by_kind": dict(sorted(pending_outbox_by_kind.items())),
+        "oldest_outbox_pending_age_seconds": oldest_outbox_age_seconds,
         "read_only": True,
         "contains_targets": False,
         "contains_payloads": False,
         "contains_secrets": False,
+        "contains_outbox_identities": False,
     }
     return metrics
 
