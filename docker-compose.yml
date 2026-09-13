@@ -93,6 +93,7 @@ services:
 
 
   pentagi-worker:
+    profiles: ["pentagi"]
     build: ./backend
     command: ["python", "-m", "app.pentagi_worker_service"]
     restart: unless-stopped
@@ -133,6 +134,7 @@ services:
     networks: [control]
 
   pentagi-status-worker:
+    profiles: ["pentagi-status"]
     build: ./backend
     command: ["python", "-m", "app.pentagi_status_worker_service"]
     restart: unless-stopped
