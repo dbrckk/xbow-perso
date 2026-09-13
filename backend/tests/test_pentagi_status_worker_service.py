@@ -65,14 +65,14 @@ def test_status_worker_completes_terminal_tracking_job(tmp_path, monkeypatch):
     assert queue.get(job["id"])["status"] == "completed"
 
 
-def test_status_worker_completes_bounded_timeout_job(tmp_path, monkeypatch):
+def test_status_worker_requeues_bounded_timeout_job(tmp_path, monkeypatch):
     _enable(monkeypatch)
     queue = JobQueue(str(tmp_path / "q.sqlite3"))
     job = queue.enqueue(
         "campaign-1",
         "pentagi_status",
         {"receipt_artifact_id": "receipt-1"},
-        max_attempts=1,
+        max_attempts=3,
         dedupe_key="pentagi:status:1",
     )
 
@@ -88,4 +88,6 @@ def test_status_worker_completes_bounded_timeout_job(tmp_path, monkeypatch):
     )
 
     assert process_one(queue, object(), "status-worker") is True
-    assert queue.get(job["id"])["status"] == "completed"
+    requeued = queue.get(job["id"])
+    assert requeued["status"] == "queued"
+    assert requeued["attempts"] == 1
