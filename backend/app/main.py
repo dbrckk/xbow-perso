@@ -12,7 +12,7 @@ from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field, HttpUrl, model_validator
 
-from .api_outbox import has_event, pending_request_id
+from .api_outbox import has_event, outbox_snapshot, pending_request_id
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
@@ -295,6 +295,8 @@ def system_capabilities():
             "durable_queue": True,
             "artifact_integrity": "sha256",
             "optimistic_campaign_versioning": True,
+            "crash_safe_outbox": True,
+            "outbox_observability": True,
         },
         "execution": {
             "strix_scanning": "gated",
@@ -389,6 +391,20 @@ def list_campaigns():
 @app.get("/api/campaigns/{campaign_id}", response_model=Campaign)
 def get_campaign(campaign_id: str):
     return assert_campaign_exists(campaign_id)
+
+
+@app.get("/api/campaigns/{campaign_id}/outbox")
+def campaign_outbox_status(campaign_id: str, limit: int = 100):
+    campaign = assert_campaign_exists(campaign_id)
+    try:
+        snapshot = outbox_snapshot(campaign.events, max_items=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {
+        "campaign_id": campaign.id,
+        **snapshot,
+        "read_only": True,
+    }
 
 
 @app.get("/api/campaigns/{campaign_id}/pentagi/preview")
