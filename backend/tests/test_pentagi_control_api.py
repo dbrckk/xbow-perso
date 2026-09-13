@@ -85,6 +85,12 @@ def test_pentagi_dispatch_enqueues_single_attempt_job_and_audits(tmp_path, monke
     repeated = main.dispatch_pentagi_campaign(campaign.id)
     assert repeated["job"]["id"] == job["id"]
     assert jobs.campaign_job_counts(campaign.id)["pentagi_flow"] == 1
+    assert sum(
+        1
+        for event in campaign.events
+        if event.get("type") == "pentagi_flow_queued"
+        and event.get("job_id") == job["id"]
+    ) == 1
 
 
 def test_pentagi_dispatch_fails_closed_when_transport_disabled(tmp_path, monkeypatch):
