@@ -1,8 +1,9 @@
 import pytest
 
-from app.main import Campaign, CampaignState, ProgramRules, TargetInput
+from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput
 from app.storage import CampaignConflictError, Storage
-from app.worker_service import _campaign, _save, _worker_poll_seconds
+from app.validator import ValidationPolicyError
+from app.worker_service import _campaign, _save, _worker_poll_seconds, process_validation
 
 
 def make_campaign() -> Campaign:
@@ -52,3 +53,58 @@ def test_worker_poll_interval_is_bounded(monkeypatch):
 
     monkeypatch.setenv("XBOW_WORKER_POLL_SECONDS", "60")
     assert _worker_poll_seconds() == 60.0
+
+
+
+def test_validation_worker_rejects_resolved_finding_before_probe(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    campaign = make_campaign()
+    campaign.state = CampaignState.validating
+    campaign.findings = [
+        Finding(
+            id="f1",
+            title="fixture",
+            severity="low",
+            asset="https://example.test",
+            summary="fixture",
+            status="confirmed",
+            discovered_by="scanner",
+        )
+    ]
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    job = {
+        "id": "job-validation-stale",
+        "campaign_id": campaign.id,
+        "payload": {"finding_id": "f1"},
+    }
+
+    with pytest.raises(ValidationPolicyError, match="stale validation job"):
+        process_validation(job, store)
+
+
+def test_validation_worker_rejects_completed_campaign_before_probe(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    campaign = make_campaign()
+    campaign.state = CampaignState.completed
+    campaign.findings = [
+        Finding(
+            id="f1",
+            title="fixture",
+            severity="low",
+            asset="https://example.test",
+            summary="fixture",
+            status="validation_required",
+            discovered_by="scanner",
+        )
+    ]
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    job = {
+        "id": "job-validation-completed",
+        "campaign_id": campaign.id,
+        "payload": {"finding_id": "f1"},
+    }
+
+    with pytest.raises(ValidationPolicyError, match="completed campaign"):
+        process_validation(job, store)
