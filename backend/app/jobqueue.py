@@ -129,7 +129,7 @@ class JobQueue:
         dedupe_key: str | None = None,
     ) -> dict[str, Any]:
         campaign_id = _bounded_identifier(campaign_id, "campaign_id")
-        if kind not in {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow"}:
+        if kind not in {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status"}:
             raise ValueError("unsupported job kind")
         if not 1 <= max_attempts <= 5:
             raise ValueError("max_attempts must be 1..5")
@@ -209,7 +209,7 @@ class JobQueue:
                 "SELECT kind, COUNT(*) AS count FROM jobs WHERE campaign_id=? GROUP BY kind",
                 (campaign_id,),
             ).fetchall()
-        counts = {kind: 0 for kind in ("strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow")}
+        counts = {kind: 0 for kind in ("strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status")}
         counts.update({row["kind"]: int(row["count"]) for row in rows})
         return counts
 
@@ -296,7 +296,7 @@ class JobQueue:
             now_dt = datetime.now(timezone.utc)
             self._recover_expired_leases(db, now_dt)
             row = db.execute(
-                "SELECT id FROM jobs WHERE status='queued' AND kind != 'pentagi_flow' AND attempts < max_attempts ORDER BY created_at LIMIT 1"
+                "SELECT id FROM jobs WHERE status='queued' AND kind NOT IN ('pentagi_flow','pentagi_status') AND attempts < max_attempts ORDER BY created_at LIMIT 1"
             ).fetchone()
             if not row:
                 db.execute("COMMIT")
@@ -317,7 +317,7 @@ class JobQueue:
         """Atomically claim only one explicitly requested job kind."""
         worker_id = _bounded_identifier(worker_id, "worker_id")
         kind = _bounded_identifier(kind, "kind")
-        allowed_kinds = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow"}
+        allowed_kinds = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status"}
         if kind not in allowed_kinds:
             raise ValueError("unsupported job kind")
         with self.connect() as db:
