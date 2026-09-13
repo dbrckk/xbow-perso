@@ -433,6 +433,15 @@ def dispatch_pentagi_campaign(campaign_id: str):
 
     campaign, version = assert_campaign_record(campaign_id)
     _reject_cancelled_campaign(campaign)
+    if campaign.state not in {
+        CampaignState.ready,
+        CampaignState.running,
+        CampaignState.failed,
+    }:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Cannot dispatch PentAGI from {campaign.state.value}",
+        )
     try:
         preview = require_pentagi_control_ready(campaign)
         job = enqueue_pentagi_flow(queue(), campaign, preview.plan)
@@ -446,6 +455,7 @@ def dispatch_pentagi_campaign(campaign_id: str):
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    changed = False
     if not any(
         event.get("type") == "pentagi_flow_queued"
         and event.get("job_id") == job["id"]
@@ -460,6 +470,11 @@ def dispatch_pentagi_campaign(campaign_id: str):
                 "policy_fingerprint": preview.decision.policy_fingerprint,
             },
         )
+        changed = True
+    if campaign.state in {CampaignState.ready, CampaignState.failed}:
+        campaign.state = CampaignState.running
+        changed = True
+    if changed:
         campaign.updated_at = utcnow()
         save_campaign(campaign, expected_version=version)
     return {
