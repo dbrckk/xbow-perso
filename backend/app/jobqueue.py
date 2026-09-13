@@ -296,7 +296,7 @@ class JobQueue:
             now_dt = datetime.now(timezone.utc)
             self._recover_expired_leases(db, now_dt)
             row = db.execute(
-                "SELECT id FROM jobs WHERE status='queued' AND attempts < max_attempts ORDER BY created_at LIMIT 1"
+                "SELECT id FROM jobs WHERE status='queued' AND kind != 'pentagi_flow' AND attempts < max_attempts ORDER BY created_at LIMIT 1"
             ).fetchone()
             if not row:
                 db.execute("COMMIT")
