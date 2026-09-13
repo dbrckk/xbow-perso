@@ -73,6 +73,109 @@ def test_pentagi_dispatch_is_fail_closed_without_enforcing_transport(tmp_path, m
     assert jobs.stats()["total"] == 0
 
 
+def test_pentagi_dispatch_conflict_before_intent_persistence_never_enqueues(
+    tmp_path,
+    monkeypatch,
+):
+    _configure(monkeypatch)
+    campaign = _campaign()
+    jobs = JobQueue(str(tmp_path / "queue.sqlite3"))
+
+    preview = pentagi_control.prepare_pentagi_control_preview(campaign)
+    executable_plan = replace(
+        preview.plan,
+        dry_run=False,
+        execution_supported=True,
+    )
+    executable_decision = pentagi_control.evaluate_pentagi_admission(
+        campaign,
+        executable_plan,
+    )
+    future_preview = pentagi_control.PentagiControlPreview(
+        plan=executable_plan,
+        decision=executable_decision,
+        operational_reasons=(),
+    )
+
+    monkeypatch.setattr(
+        pentagi_control,
+        "require_pentagi_control_ready",
+        lambda value: future_preview,
+    )
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign, 7),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+    monkeypatch.setattr(
+        main,
+        "save_campaign",
+        lambda value, expected_version=None: (_ for _ in ()).throw(
+            HTTPException(
+                status_code=409,
+                detail="Campaign changed concurrently; reload and retry",
+            )
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        main.dispatch_pentagi_campaign(campaign.id)
+
+    assert exc.value.status_code == 409
+    assert jobs.stats()["total"] == 0
+    assert any(
+        event.get("type") == "pentagi_dispatch_requested"
+        for event in campaign.events
+    )
+    assert not any(
+        event.get("type") == "pentagi_flow_queued"
+        for event in campaign.events
+    )
+
+
+def test_pentagi_queue_audit_reconciliation_retries_on_fresh_snapshot(monkeypatch):
+    campaign = _campaign()
+    snapshots = [
+        (campaign.model_copy(deep=True), 8),
+        (campaign.model_copy(deep=True), 9),
+    ]
+    saves = []
+
+    def load(_campaign_id):
+        return snapshots.pop(0)
+
+    def save(value, expected_version=None):
+        saves.append((value.model_copy(deep=True), expected_version))
+        if len(saves) == 1:
+            raise HTTPException(
+                status_code=409,
+                detail="Campaign changed concurrently; reload and retry",
+            )
+        return expected_version + 1
+
+    monkeypatch.setattr(main, "assert_campaign_record", load)
+    monkeypatch.setattr(main, "save_campaign", save)
+
+    result = main._reconcile_pentagi_queued_event(
+        campaign.id,
+        {"id": "pentagi-job-1"},
+        dispatch_fingerprint="d" * 64,
+        policy_fingerprint="p" * 64,
+    )
+
+    assert len(saves) == 2
+    assert [expected for _value, expected in saves] == [8, 9]
+    assert result.state == main.CampaignState.running
+    queued_events = [
+        event
+        for event in result.events
+        if event.get("type") == "pentagi_flow_queued"
+    ]
+    assert len(queued_events) == 1
+    assert queued_events[0]["job_id"] == "pentagi-job-1"
+
+
 def test_future_enforceable_dispatch_response_is_sanitized_and_idempotent(
     tmp_path,
     monkeypatch,
@@ -137,7 +240,17 @@ def test_future_enforceable_dispatch_response_is_sanitized_and_idempotent(
     assert persisted is not None
     assert persisted["payload"]["request"]
     assert campaign.state == main.CampaignState.running
+    assert result["audit_reconciled"] is True
     assert saved and saved[0][1] == 7
+    pentagi_events = [
+        event["type"]
+        for event in campaign.events
+        if event["type"].startswith("pentagi_")
+    ]
+    assert pentagi_events == [
+        "pentagi_dispatch_requested",
+        "pentagi_flow_queued",
+    ]
 
     repeated = main.dispatch_pentagi_campaign(campaign.id)
     assert repeated["job"]["id"] == safe_job["id"]
