@@ -83,10 +83,25 @@ def poll_pentagi_flow_until_terminal(
                 timed_out=True,
             )
 
+        remaining_before_refresh = deadline - monotonic_fn()
+        if remaining_before_refresh <= 0:
+            if last is None:
+                raise PentagiStatusPollError(
+                    "PentAGI status polling deadline elapsed before first refresh"
+                )
+            return PentagiPollResult(
+                flow_id=last.flow_id,
+                status=last.status,
+                polls=polls,
+                terminal=False,
+                timed_out=True,
+            )
+
         last = refresh_pentagi_flow_status(
             store,
             campaign_id,
             receipt_artifact_id,
+            timeout_seconds=remaining_before_refresh,
         )
         polls += 1
 
