@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import APIRouter
 
 from .api_outbox import outbox_snapshot
+from .campaign_audit import verify_campaign_event_chain
 
 router = APIRouter()
 
@@ -38,10 +39,21 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
     pending_outbox_total = 0
     pending_outbox_by_kind: Counter[str] = Counter()
     oldest_outbox_age_seconds = None
+    invalid_campaign_audit_chains = 0
+    campaigns_with_legacy_audit_events = 0
+    legacy_audit_events_total = 0
     for campaign in campaigns:
         events = campaign.get("events") or []
         if not isinstance(events, list):
             continue
+        audit = verify_campaign_event_chain(events)
+        if not bool(audit.get("valid")):
+            invalid_campaign_audit_chains += 1
+        legacy_count = int(audit.get("legacy_unsealed") or 0)
+        if legacy_count:
+            campaigns_with_legacy_audit_events += 1
+            legacy_audit_events_total += legacy_count
+
         snapshot = outbox_snapshot(events, max_items=1)
         pending_outbox_total += int(snapshot["pending_total"])
         pending_outbox_by_kind.update(snapshot["pending_by_kind"])
@@ -66,6 +78,9 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "pending_outbox_total": pending_outbox_total,
         "pending_outbox_by_kind": dict(sorted(pending_outbox_by_kind.items())),
         "oldest_outbox_pending_age_seconds": oldest_outbox_age_seconds,
+        "invalid_campaign_audit_chains": invalid_campaign_audit_chains,
+        "campaigns_with_legacy_audit_events": campaigns_with_legacy_audit_events,
+        "legacy_audit_events_total": legacy_audit_events_total,
         "read_only": True,
         "contains_targets": False,
         "contains_payloads": False,
