@@ -55,57 +55,55 @@ def _identity_digest(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
 
 
-def _request_descriptor(event: Mapping[str, Any]) -> tuple[str, str, str, dict[str, Any]] | None:
+def _request_key(event: Mapping[str, Any]) -> tuple[str, str] | None:
     event_type = event.get("type")
     if event_type == "campaign_start_requested":
         request_id = event.get("request_id")
         if isinstance(request_id, str) and request_id:
-            return "campaign_start", request_id, "campaign_started", {"request_id": request_id}
+            return "campaign_start", request_id
     if event_type == "validation_requested":
         request_id = event.get("request_id")
         finding_id = event.get("finding_id")
         if isinstance(request_id, str) and request_id and isinstance(finding_id, str) and finding_id:
-            return (
-                "finding_validation",
-                request_id,
-                "validation_queued",
-                {"request_id": request_id, "finding_id": finding_id},
-            )
+            return "finding_validation", request_id
     if event_type == "report_requested":
         request_id = event.get("request_id")
-        platform = event.get("platform")
         purpose = event.get("purpose")
-        if (
-            isinstance(request_id, str)
-            and request_id
-            and isinstance(platform, str)
-            and platform
-            and isinstance(purpose, str)
-            and purpose
-        ):
-            if purpose == "campaign_completion":
-                completion_type = "campaign_completed"
-                kind = "campaign_completion_report"
-            elif purpose == "manual":
-                completion_type = "report_queued"
-                kind = "report_manual"
-            else:
-                return None
-            return (
-                kind,
-                request_id,
-                completion_type,
-                {"request_id": request_id, "platform": platform, "purpose": purpose},
-            )
+        if not isinstance(request_id, str) or not request_id:
+            return None
+        if purpose == "campaign_completion":
+            return "campaign_completion_report", request_id
+        if purpose == "manual":
+            return "report_manual", request_id
     if event_type == "pentagi_dispatch_requested":
         fingerprint = event.get("dispatch_fingerprint")
         if isinstance(fingerprint, str) and fingerprint:
-            return (
-                "pentagi_dispatch",
-                fingerprint,
-                "pentagi_flow_queued",
-                {"dispatch_fingerprint": fingerprint},
-            )
+            return "pentagi_dispatch", fingerprint
+    return None
+
+
+def _completion_key(event: Mapping[str, Any]) -> tuple[str, str] | None:
+    event_type = event.get("type")
+    if event_type == "campaign_started":
+        request_id = event.get("request_id")
+        if isinstance(request_id, str) and request_id:
+            return "campaign_start", request_id
+    if event_type == "validation_queued":
+        request_id = event.get("request_id")
+        if isinstance(request_id, str) and request_id:
+            return "finding_validation", request_id
+    if event_type == "report_queued" and event.get("purpose") == "manual":
+        request_id = event.get("request_id")
+        if isinstance(request_id, str) and request_id:
+            return "report_manual", request_id
+    if event_type == "campaign_completed" and event.get("purpose") == "campaign_completion":
+        request_id = event.get("request_id")
+        if isinstance(request_id, str) and request_id:
+            return "campaign_completion_report", request_id
+    if event_type == "pentagi_flow_queued":
+        fingerprint = event.get("dispatch_fingerprint")
+        if isinstance(fingerprint, str) and fingerprint:
+            return "pentagi_dispatch", fingerprint
     return None
 
 
@@ -118,20 +116,22 @@ def outbox_snapshot(
         raise ValueError("max_items must be between 1 and 500")
 
     materialized = list(events)
+    completed = {
+        key
+        for event in materialized
+        if (key := _completion_key(event)) is not None
+    }
     pending: list[dict[str, Any]] = []
     seen: set[tuple[str, str]] = set()
 
     for event in materialized:
-        descriptor = _request_descriptor(event)
-        if descriptor is None:
-            continue
-        kind, raw_identity, completion_type, completion_identity = descriptor
-        identity_key = (kind, raw_identity)
-        if identity_key in seen:
+        identity_key = _request_key(event)
+        if identity_key is None or identity_key in seen:
             continue
         seen.add(identity_key)
-        if has_event(materialized, completion_type, identity=completion_identity):
+        if identity_key in completed:
             continue
+        kind, raw_identity = identity_key
         requested_at = event.get("at")
         pending.append(
             {

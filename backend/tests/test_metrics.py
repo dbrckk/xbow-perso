@@ -36,6 +36,10 @@ def test_operational_metrics_are_aggregate_only():
     assert result["contains_targets"] is False
     assert result["contains_payloads"] is False
     assert result["contains_secrets"] is False
+    assert result["pending_outbox_total"] == 0
+    assert result["pending_outbox_by_kind"] == {}
+    assert result["oldest_outbox_pending_age_seconds"] is None
+    assert result["contains_outbox_identities"] is False
     rendered = str(result)
     assert "secret.example" not in rendered
     assert "other.example" not in rendered
