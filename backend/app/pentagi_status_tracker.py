@@ -22,6 +22,8 @@ def refresh_pentagi_flow_status(
     store,
     campaign_id: str,
     receipt_artifact_id: str,
+    *,
+    timeout_seconds: float | None = None,
 ) -> PentagiStatusSnapshot:
     """Refresh one known PentAGI flow from its durable creation receipt."""
 
@@ -41,7 +43,11 @@ def refresh_pentagi_flow_status(
     if not all(isinstance(value, str) and value for value in (flow_id, endpoint, idempotency_key)):
         raise PentagiStatusTrackingError("PentAGI receipt metadata is incomplete")
 
-    remote: PentagiFlowStatus = fetch_pentagi_flow_status(endpoint, flow_id)
+    remote: PentagiFlowStatus = fetch_pentagi_flow_status(
+        endpoint,
+        flow_id,
+        timeout_seconds=timeout_seconds,
+    )
     snapshot = {
         "flow_id": remote.flow_id,
         "status": remote.status,
