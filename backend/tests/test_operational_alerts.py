@@ -56,3 +56,36 @@ def test_operational_alert_thresholds_fail_closed(monkeypatch):
 
 def test_alerts_route_is_exposed_under_authenticated_api():
     assert "/api/alerts" in app.openapi()["paths"]
+
+
+
+def test_operational_alerts_flag_invalid_campaign_audit_chain(monkeypatch):
+    monkeypatch.setenv("XBOW_ALERT_FAILED_JOBS", "2")
+    monkeypatch.setenv("XBOW_ALERT_QUEUED_JOBS", "20")
+    monkeypatch.setenv("XBOW_ALERT_RUNNING_JOBS", "20")
+
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {
+                "failed": 0,
+                "queued": 0,
+                "running": 0,
+            },
+            "invalid_campaign_audit_chains": 1,
+        }
+    )
+
+    audit_alerts = [
+        item
+        for item in result["alerts"]
+        if item["code"] == "campaign_audit_invalid"
+    ]
+    assert audit_alerts == [
+        {
+            "code": "campaign_audit_invalid",
+            "severity": "critical",
+            "value": 1,
+            "threshold": 1,
+        }
+    ]
+    assert result["status"] == "alert"
