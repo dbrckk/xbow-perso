@@ -180,6 +180,23 @@ class RedisJobQueue:
         job_id = _bounded_identifier(job_id, "job_id")
         return self._decode(self.redis.hgetall(self._job_key(job_id)))
 
+    def get_by_dedupe(
+        self,
+        campaign_id: str,
+        kind: str,
+        dedupe_key: str,
+    ) -> dict[str, Any] | None:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        kind = _bounded_identifier(kind, "kind")
+        dedupe_key = _bounded_identifier(dedupe_key, "dedupe_key")
+        job_id = self.redis.hget(self._dedupe_key(campaign_id, kind), dedupe_key)
+        if not job_id:
+            return None
+        job = self.get(job_id)
+        if job is None:
+            raise RuntimeError("Redis queue dedupe index is inconsistent")
+        return job
+
     def stats(self) -> dict[str, Any]:
         ids = list(self.redis.smembers(self._all))
         counts = {status: 0 for status in _STATUSES}
