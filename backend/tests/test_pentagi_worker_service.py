@@ -141,7 +141,7 @@ def test_process_one_submits_once_and_completes(tmp_path, monkeypatch):
     assert process_one(queue, _Store(campaign), "pentagi-worker") is True
     assert len(calls) == 1
     completed = queue.get(job["id"])
-    assert completed["status"] == "succeeded"
+    assert completed["status"] == "completed"
     assert completed["attempts"] == 1
 
 
@@ -193,5 +193,55 @@ def test_process_one_revalidates_after_claim_before_transport(tmp_path, monkeypa
     monkeypatch.setattr("app.pentagi_worker_service.submit_pentagi_flow", submit)
 
     assert process_one(queue, _DriftingStore(campaign), "pentagi-worker") is True
+    assert called is False
+    assert queue.get(job["id"])["status"] == "failed"
+
+
+def test_process_one_maintains_lease_during_transport(tmp_path, monkeypatch):
+    _enable_worker(monkeypatch)
+    monkeypatch.setenv("XBOW_JOB_LEASE_SECONDS", "60")
+    queue = JobQueue(str(tmp_path / "queue.sqlite3"))
+    campaign = _campaign()
+    enqueue_pentagi_flow(queue, campaign, _future_plan(campaign))
+    heartbeats = []
+    original_heartbeat = queue.heartbeat
+
+    def heartbeat(job_id, worker_id):
+        heartbeats.append((job_id, worker_id))
+        return original_heartbeat(job_id, worker_id)
+
+    monkeypatch.setattr(queue, "heartbeat", heartbeat)
+    monkeypatch.setattr(
+        "app.pentagi_worker_service.submit_pentagi_flow",
+        lambda plan, permit: PentagiTransportResponse(
+            status=200,
+            body={"data": {"createFlow": {"id": "flow-heartbeat", "status": "created"}}},
+        ),
+    )
+
+    assert process_one(queue, _Store(campaign), "pentagi-worker") is True
+    assert len(heartbeats) >= 1
+
+
+def test_process_one_contains_admission_policy_error(tmp_path, monkeypatch):
+    _enable_worker(monkeypatch)
+    queue = JobQueue(str(tmp_path / "queue.sqlite3"))
+    campaign = _campaign()
+    job = enqueue_pentagi_flow(queue, campaign, _future_plan(campaign))
+    monkeypatch.setenv("XBOW_PENTAGI_MAX_ADMISSION_RPS", "not-a-number")
+
+    called = False
+
+    def submit(plan, permit):
+        nonlocal called
+        called = True
+        return PentagiTransportResponse(
+            status=200,
+            body={"data": {"createFlow": {"id": "should-not-run"}}},
+        )
+
+    monkeypatch.setattr("app.pentagi_worker_service.submit_pentagi_flow", submit)
+
+    assert process_one(queue, _Store(campaign), "pentagi-worker") is True
     assert called is False
     assert queue.get(job["id"])["status"] == "failed"
