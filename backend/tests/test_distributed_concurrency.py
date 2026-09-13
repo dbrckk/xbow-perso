@@ -250,6 +250,7 @@ def test_postgres_cas_stress_has_exactly_one_winner(tmp_path):
         "state": "ready",
         "created_at": "2026-01-01T00:00:00+00:00",
         "updated_at": "2026-01-01T00:00:00+00:00",
+        "events": [],
     }
     assert store.save_campaign(original, expected_version=0) == 1
 
@@ -279,12 +280,13 @@ def test_postgres_cas_stress_has_exactly_one_winner(tmp_path):
             **original,
             "state": "running",
             "updated_at": f"2026-01-01T00:00:{index:02d}+00:00",
+            "events": [{"type": "writer_commit", "writer": index}],
         }
         try:
             version = store.save_campaign(document, expected_version=1)
-            result = ("ok", version)
+            result = ("ok", version, index)
         except CampaignConflictError:
-            result = ("conflict", None)
+            result = ("conflict", None, index)
         except Exception as exc:
             with lock:
                 errors.append(exc)
@@ -303,12 +305,25 @@ def test_postgres_cas_stress_has_exactly_one_winner(tmp_path):
         assert not thread.is_alive()
 
     assert errors == []
-    assert sum(kind == "ok" for kind, _version in outcomes) == 1
-    assert sum(kind == "conflict" for kind, _version in outcomes) == contenders - 1
-    assert [version for kind, version in outcomes if kind == "ok"] == [2]
+    assert sum(kind == "ok" for kind, _version, _index in outcomes) == 1
+    assert (
+        sum(kind == "conflict" for kind, _version, _index in outcomes)
+        == contenders - 1
+    )
+    winners = [
+        (version, index)
+        for kind, version, index in outcomes
+        if kind == "ok"
+    ]
+    assert len(winners) == 1
+    assert winners[0][0] == 2
+
     saved, version = store.get_campaign_record(campaign_id)
     assert version == 2
     assert saved["state"] == "running"
+    assert saved["events"] == [
+        {"type": "writer_commit", "writer": winners[0][1]}
+    ]
 
 
 @pytest.mark.skipif(not _redis_url(), reason="Redis integration URL unavailable")
