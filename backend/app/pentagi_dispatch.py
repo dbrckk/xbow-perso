@@ -27,11 +27,12 @@ def enqueue_pentagi_flow(
     campaign: Campaign,
     plan: PentagiFlowPlan,
 ) -> dict:
-    """Persist one admitted PentAGI flow request with atomic deduplication.
+    """Persist one admitted PentAGI flow request with atomic local deduplication.
 
-    The queue is the source of truth for duplicate prevention. SQLite enforces
-    uniqueness with an index and Redis uses WATCH/MULTI around its dedupe index.
-    This function still performs no external network request.
+    PentAGI createFlow is a mutating remote operation and the upstream API has no
+    documented server-side idempotency contract in this integration yet.
+    Therefore the queue intentionally uses max_attempts=1: an ambiguous transport
+    failure must be reconciled manually instead of risking a duplicate remote flow.
     """
 
     permit = issue_pentagi_execution_permit(campaign, plan)
@@ -40,6 +41,6 @@ def enqueue_pentagi_flow(
         campaign.id,
         "pentagi_flow",
         _job_payload(permit, plan),
-        max_attempts=2,
+        max_attempts=1,
         dedupe_key=permit.idempotency_key,
     )
