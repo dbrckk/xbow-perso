@@ -476,9 +476,21 @@ def dispatch_pentagi_campaign(campaign_id: str):
     if changed:
         campaign.updated_at = utcnow()
         save_campaign(campaign, expected_version=version)
+    safe_job = {
+        key: job.get(key)
+        for key in (
+            "id",
+            "kind",
+            "status",
+            "attempts",
+            "max_attempts",
+            "created_at",
+            "updated_at",
+        )
+    }
     return {
         "campaign_id": campaign.id,
-        "job": job,
+        "job": safe_job,
         "policy_fingerprint": preview.decision.policy_fingerprint,
     }
 
