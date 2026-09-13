@@ -38,12 +38,23 @@
   </section>
 
   <section class="card">
+    <h2>PentAGI</h2>
+    <p class="muted">Contrôle serveur uniquement : le navigateur ne choisit ni endpoint, ni provider, ni payload d'exécution.</p>
+    <button id="pentagi-preview" disabled>Prévisualiser l'admission PentAGI</button>
+    <button id="pentagi-dispatch" disabled>Lancer PentAGI</button>
+    <button id="pentagi-refresh" disabled>Actualiser le suivi PentAGI</button>
+    <p id="pentagi-status" class="muted">Créez d'abord une campagne.</p>
+  </section>
+
+  <section class="card">
     <h2>État</h2>
     <pre id="output">Prêt.</pre>
   </section>
 </main>
 <script>
 let campaign=null;
+let pentagiReady=false;
+let pentagiPreviewCampaignId=null;
 const $=id=>document.getElementById(id);
 const lines=id=>$(id).value.split('\n').map(x=>x.trim()).filter(Boolean);
 $('token').value=sessionStorage.getItem('xbowApiToken')||'';
@@ -59,9 +70,45 @@ async function api(path, opts={}){
 }
 $('create').onclick=async()=>{try{
  const payload={name:$('name').value,primary_url:$('url').value,rules:{authorization_reference:$('auth').value,allowed_targets:lines('allowed'),denied_targets:lines('denied'),max_requests_per_second:Number($('rps').value),destructive_testing:false,denial_of_service:false,social_engineering:false,credential_attacks:false,automated_scanning:true,notes:$('notes').value}};
- campaign=await api('/campaigns',{method:'POST',body:JSON.stringify(payload)}); $('start').disabled=false; $('status').className='ok'; $('status').textContent='Campagne prête : '+campaign.id; $('output').textContent=JSON.stringify(campaign,null,2);
+ campaign=await api('/campaigns',{method:'POST',body:JSON.stringify(payload)});
+ pentagiReady=false;
+ pentagiPreviewCampaignId=null;
+ $('start').disabled=false;
+ $('pentagi-preview').disabled=false;
+ $('pentagi-dispatch').disabled=true;
+ $('pentagi-refresh').disabled=false;
+ $('pentagi-status').className='muted';
+ $('pentagi-status').textContent='Admission PentAGI non vérifiée.';
+ $('status').className='ok'; $('status').textContent='Campagne prête : '+campaign.id; $('output').textContent=JSON.stringify(campaign,null,2);
 }catch(e){$('status').className='err';$('status').textContent=e.message}}
 $('start').onclick=async()=>{if(!campaign)return;try{const r=await api('/campaigns/'+campaign.id+'/start',{method:'POST'});$('status').className='ok';$('status').textContent='Campagne démarrée';$('output').textContent=JSON.stringify(r,null,2)}catch(e){$('status').className='err';$('status').textContent=e.message}}
+
+$('pentagi-preview').onclick=async()=>{if(!campaign)return;const requestedCampaignId=campaign.id;try{
+ const r=await api('/campaigns/'+requestedCampaignId+'/pentagi/preview');
+ if(!campaign||campaign.id!==requestedCampaignId)return;
+ pentagiReady=Boolean(r.ready);
+ pentagiPreviewCampaignId=requestedCampaignId;
+ $('pentagi-dispatch').disabled=!pentagiReady;
+ const reasons=[...(r.admission?.reasons||[]),...(r.operational_reasons||[])];
+ $('pentagi-status').className=pentagiReady?'ok':'err';
+ $('pentagi-status').textContent=pentagiReady?'PentAGI prêt à être dispatché.':'PentAGI bloqué : '+(reasons.join(', ')||'configuration incomplète');
+ $('output').textContent=JSON.stringify(r,null,2);
+}catch(e){if(!campaign||campaign.id!==requestedCampaignId)return;pentagiReady=false;pentagiPreviewCampaignId=null;$('pentagi-dispatch').disabled=true;$('pentagi-status').className='err';$('pentagi-status').textContent=e.message}}
+$('pentagi-dispatch').onclick=async()=>{if(!campaign||!pentagiReady||pentagiPreviewCampaignId!==campaign.id)return;const requestedCampaignId=campaign.id;try{
+ const r=await api('/campaigns/'+requestedCampaignId+'/pentagi/dispatch',{method:'POST'});
+ if(!campaign||campaign.id!==requestedCampaignId)return;
+ $('pentagi-status').className=r.job.status==='failed'?'err':'ok';
+ $('pentagi-status').textContent='Job PentAGI '+r.job.status+' : '+r.job.id;
+ $('pentagi-refresh').disabled=false;
+ $('output').textContent=JSON.stringify(r,null,2);
+}catch(e){if(!campaign||campaign.id!==requestedCampaignId)return;$('pentagi-status').className='err';$('pentagi-status').textContent=e.message}}
+$('pentagi-refresh').onclick=async()=>{if(!campaign)return;try{
+ const r=await api('/campaigns/'+campaign.id+'/pentagi');
+ $('pentagi-status').className='ok';
+ $('pentagi-status').textContent='Suivi local actualisé — flows: '+r.jobs.pentagi_flow+', status: '+r.jobs.pentagi_status;
+ $('output').textContent=JSON.stringify(r,null,2);
+}catch(e){$('pentagi-status').className='err';$('pentagi-status').textContent=e.message}}
+
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
 </body>
