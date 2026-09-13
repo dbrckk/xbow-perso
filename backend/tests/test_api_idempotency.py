@@ -311,3 +311,36 @@ def test_campaign_start_retry_after_enqueue_reuses_pending_request(
     assert len(requested) == 1
     assert len(started) == 1
     assert started[0]["job_id"] == existing["id"]
+
+
+
+def test_campaign_start_reconciliation_never_reopens_completed_campaign(monkeypatch):
+    campaign = Campaign(
+        id="completed-start",
+        state=CampaignState.completed,
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="test-authorization",
+                allowed_targets=["example.test"],
+            ),
+        ),
+    )
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign.model_copy(deep=True), 7),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        main._reconcile_campaign_started(
+            campaign.id,
+            {"id": "job-1"},
+            request_id="request-1",
+            receipt={"allowed": True},
+        )
+
+    assert exc.value.status_code == 409
+    assert "completed" in str(exc.value.detail)
+    assert campaign.state == CampaignState.completed
