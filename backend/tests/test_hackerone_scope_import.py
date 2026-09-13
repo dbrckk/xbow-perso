@@ -203,3 +203,38 @@ def test_scope_asset_limit_fails_closed():
 
     with pytest.raises(HackerOneScopeImportError, match="5000 asset safety limit"):
         import_hackerone_structured_scope(document)
+
+
+def test_paginated_scope_page_fails_closed():
+    document = {
+        "data": [_resource("example.com", "Domain", True)],
+        "links": {
+            "next": "https://api.hackerone.com/v1/programs/1/structured_scopes?page[number]=2"
+        },
+    }
+
+    with pytest.raises(HackerOneScopeImportError, match="collect all pages before import"):
+        import_hackerone_structured_scope(document)
+
+
+@pytest.mark.parametrize("links", [{}, {"next": None}, {"next": ""}])
+def test_terminal_scope_page_is_accepted(links):
+    preview = import_hackerone_structured_scope(
+        {
+            "data": [_resource("example.com", "Domain", True)],
+            "links": links,
+        }
+    )
+
+    assert preview.complete is True
+    assert preview.allowed_targets == ("example.com",)
+
+
+def test_malformed_scope_links_fail_closed():
+    with pytest.raises(HackerOneScopeImportError, match="links are invalid"):
+        import_hackerone_structured_scope(
+            {
+                "data": [_resource("example.com", "Domain", True)],
+                "links": ["not", "a", "mapping"],
+            }
+        )
