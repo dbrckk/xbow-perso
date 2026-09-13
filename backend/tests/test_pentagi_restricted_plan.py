@@ -94,8 +94,8 @@ def test_restricted_plan_keeps_broker_secret_internal(monkeypatch):
     [
         ("XBOW_PENTAGI_BROKER_URL", "", "BROKER_URL is required"),
         ("XBOW_PENTAGI_BROKER_URL", "http://xbow.example.test/broker", "must use HTTPS"),
-        ("XBOW_PENTAGI_BROKER_TOKEN", "", "BROKER_TOKEN is required"),
-        ("XBOW_PENTAGI_BROKER_TOKEN", "short", "BROKER_TOKEN is invalid"),
+        ("XBOW_PENTAGI_BROKER_TOKEN", "", "broker token is unavailable"),
+        ("XBOW_PENTAGI_BROKER_TOKEN", "short", "broker token is unavailable"),
     ],
 )
 def test_restricted_plan_requires_safe_broker_configuration(
