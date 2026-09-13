@@ -27,6 +27,12 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     queued_limit = _threshold("XBOW_ALERT_QUEUED_JOBS", 20, 1, 100000)
     running_limit = _threshold("XBOW_ALERT_RUNNING_JOBS", 20, 1, 100000)
     queue_age_limit = _threshold("XBOW_ALERT_QUEUE_AGE_SECONDS", 300, 30, 86400)
+    running_lease_age_limit = _threshold(
+        "XBOW_ALERT_RUNNING_LEASE_AGE_SECONDS",
+        900,
+        30,
+        86400,
+    )
     outbox_limit = _threshold("XBOW_ALERT_PENDING_OUTBOX", 20, 1, 100000)
     outbox_age_limit = _threshold("XBOW_ALERT_OUTBOX_AGE_SECONDS", 300, 30, 86400)
 
@@ -35,6 +41,7 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     queued = int(statuses.get("queued") or 0)
     running = int(statuses.get("running") or 0)
     queue_age = metrics.get("oldest_queued_age_seconds")
+    running_lease_age = metrics.get("oldest_running_lease_age_seconds")
     pending_outbox = int(metrics.get("pending_outbox_total") or 0)
     outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
 
@@ -73,6 +80,19 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
                 "severity": "warning",
                 "value": running,
                 "threshold": running_limit,
+            }
+        )
+
+    if (
+        running_lease_age is not None
+        and int(running_lease_age) >= running_lease_age_limit
+    ):
+        alerts.append(
+            {
+                "code": "running_lease_stale",
+                "severity": "critical",
+                "value": int(running_lease_age),
+                "threshold": running_lease_age_limit,
             }
         )
 
