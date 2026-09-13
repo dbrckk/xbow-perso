@@ -200,7 +200,12 @@ def test_future_enforceable_dispatch_response_is_sanitized_and_idempotent(
     assert campaign.state == main.CampaignState.running
     assert result["audit_reconciled"] is True
     assert saved and saved[0][1] == 7
-    assert [event["type"] for event in campaign.events if event["type"].startswith("pentagi_")] == [
+    pentagi_events = [
+        event["type"]
+        for event in campaign.events
+        if event["type"].startswith("pentagi_")
+    ]
+    assert pentagi_events == [
         "pentagi_dispatch_requested",
         "pentagi_flow_queued",
     ]
