@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import socket
 import ssl
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -10,6 +12,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from .pentagi_adapter import PentagiFlowPlan
+from .pentagi_auth import PentagiAuthError, load_pentagi_auth
 from .pentagi_execution_guard import PentagiExecutionPermit
 
 
@@ -50,15 +53,6 @@ def _max_response_bytes() -> int:
     return value
 
 
-def _token() -> str:
-    value = (os.getenv("XBOW_PENTAGI_TOKEN") or "").strip()
-    if not value:
-        raise PentagiTransportError("XBOW_PENTAGI_TOKEN is required")
-    if len(value) > 8192 or any(ord(ch) < 33 or ord(ch) == 127 for ch in value):
-        raise PentagiTransportError("XBOW_PENTAGI_TOKEN is invalid")
-    return value
-
-
 def _validate_endpoint(endpoint: str) -> None:
     try:
         parsed = urlparse(endpoint)
@@ -83,14 +77,45 @@ def _validate_endpoint(endpoint: str) -> None:
         raise PentagiTransportError("PentAGI endpoint path is not the expected GraphQL endpoint")
 
 
+def _set_response_timeout(response, timeout: float) -> None:
+    candidates = (
+        getattr(response, "fp", None),
+        getattr(getattr(response, "fp", None), "raw", None),
+        getattr(getattr(getattr(response, "fp", None), "raw", None), "_sock", None),
+    )
+    for candidate in reversed(candidates):
+        if candidate is not None and hasattr(candidate, "settimeout"):
+            candidate.settimeout(timeout)
+            return
+    raise PentagiTransportError("PentAGI response socket deadline cannot be enforced")
+
+
+def _read_bounded_with_deadline(response, *, limit: int, deadline: float) -> bytes:
+    chunks: list[bytes] = []
+    total = 0
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise PentagiTransportError("PentAGI transport total deadline exceeded")
+        _set_response_timeout(response, remaining)
+        chunk = response.read(min(65536, limit + 1 - total))
+        if not chunk:
+            break
+        chunks.append(chunk)
+        total += len(chunk)
+        if total > limit:
+            raise PentagiTransportError("PentAGI response exceeds configured size limit")
+    return b"".join(chunks)
+
+
 def submit_pentagi_flow(
     plan: PentagiFlowPlan,
     permit: PentagiExecutionPermit,
 ) -> PentagiTransportResponse:
     """Submit one already-admitted PentAGI GraphQL request.
 
-    This transport deliberately has no retry loop. Retries are owned by the queue
-    layer so duplicate execution remains governed by the durable idempotency key.
+    The queue must not automatically retry this mutating create operation until
+    the remote API exposes a documented idempotency/reconciliation mechanism.
     """
 
     if plan.dry_run or not plan.execution_supported:
@@ -115,18 +140,24 @@ def submit_pentagi_flow(
     if len(body) > 128 * 1024:
         raise PentagiTransportError("PentAGI request exceeds 128 KiB")
 
-    token = _token()
+    try:
+        auth = load_pentagi_auth()
+    except PentagiAuthError as exc:
+        raise PentagiTransportError("PentAGI API token is unavailable") from exc
+
+    headers = auth.headers()
+    headers.update(
+        {
+            "Accept": "application/json",
+            "User-Agent": "xbow-perso/pentagi-transport",
+            "X-XBOW-Request-Key": permit.idempotency_key,
+        }
+    )
     request = urllib.request.Request(
         plan.endpoint,
         data=body,
         method="POST",
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "User-Agent": "xbow-perso/pentagi-transport",
-            "X-XBOW-Idempotency-Key": permit.idempotency_key,
-        },
+        headers=headers,
     )
 
     context = ssl.create_default_context()
@@ -135,26 +166,27 @@ def submit_pentagi_flow(
         urllib.request.HTTPSHandler(context=context),
     )
 
+    timeout = _timeout_seconds()
+    deadline = time.monotonic() + timeout
+
     try:
-        response = opener.open(request, timeout=_timeout_seconds())
+        response = opener.open(request, timeout=timeout)
         status = int(getattr(response, "status", response.getcode()))
         content_type = (response.headers.get("Content-Type") or "").lower()
         if "application/json" not in content_type:
             raise PentagiTransportError("PentAGI response is not JSON")
-
-        limit = _max_response_bytes()
-        raw = response.read(limit + 1)
-        if len(raw) > limit:
-            raise PentagiTransportError("PentAGI response exceeds configured size limit")
+        raw = _read_bounded_with_deadline(
+            response,
+            limit=_max_response_bytes(),
+            deadline=deadline,
+        )
     except PentagiTransportError:
         raise
     except urllib.error.HTTPError as exc:
-        # Do not surface remote bodies or request headers; they may contain
-        # sensitive service diagnostics or reflect credentials.
         raise PentagiTransportError(f"PentAGI returned HTTP {exc.code}") from exc
     except urllib.error.URLError as exc:
         raise PentagiTransportError("PentAGI transport connection failed") from exc
-    except TimeoutError as exc:
+    except (TimeoutError, socket.timeout) as exc:
         raise PentagiTransportError("PentAGI transport timed out") from exc
     except OSError as exc:
         raise PentagiTransportError("PentAGI transport I/O failed") from exc
@@ -170,7 +202,17 @@ def submit_pentagi_flow(
         raise PentagiTransportError("PentAGI response must be a JSON object")
     if document.get("errors"):
         raise PentagiTransportError("PentAGI GraphQL response contains errors")
-    if not isinstance(document.get("data"), dict):
+    data = document.get("data")
+    if not isinstance(data, dict):
         raise PentagiTransportError("PentAGI GraphQL response has no data object")
+    create_flow = data.get("createFlow")
+    if not isinstance(create_flow, dict):
+        raise PentagiTransportError("PentAGI GraphQL response has no createFlow object")
+    flow_id = create_flow.get("id")
+    status_value = create_flow.get("status")
+    if not isinstance(flow_id, str) or not flow_id.strip():
+        raise PentagiTransportError("PentAGI createFlow id is invalid")
+    if status_value is not None and not isinstance(status_value, str):
+        raise PentagiTransportError("PentAGI createFlow status is invalid")
 
     return PentagiTransportResponse(status=status, body=document)
