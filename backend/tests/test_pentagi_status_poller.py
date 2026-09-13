@@ -136,3 +136,30 @@ def test_poller_continues_through_waiting(monkeypatch):
     assert result.status == "finished"
     assert result.polls == 2
     assert clock.sleeps == [1.0]
+
+
+def test_poller_caps_refresh_by_remaining_budget(monkeypatch):
+    observed = []
+
+    def refresh(*args, **kwargs):
+        observed.append(kwargs["timeout_seconds"])
+        return _snapshot("running")
+
+    monkeypatch.setattr(
+        "app.pentagi_status_poller.refresh_pentagi_flow_status",
+        refresh,
+    )
+    clock = _Clock()
+    monkeypatch.setenv("XBOW_PENTAGI_STATUS_POLL_SECONDS", "2")
+    monkeypatch.setenv("XBOW_PENTAGI_STATUS_MAX_SECONDS", "5")
+
+    result = poll_pentagi_flow_until_terminal(
+        object(),
+        "campaign-1",
+        "receipt-1",
+        sleep_fn=clock.sleep,
+        monotonic_fn=clock.monotonic,
+    )
+
+    assert result.timed_out is True
+    assert observed == [5.0, 3.0, 1.0]
