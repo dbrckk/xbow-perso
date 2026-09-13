@@ -113,3 +113,26 @@ def test_poller_rejects_invalid_interval(monkeypatch):
         assert "interval" in str(exc)
     else:
         raise AssertionError("invalid interval must fail closed")
+
+
+def test_poller_continues_through_waiting(monkeypatch):
+    statuses = iter(["waiting", "finished"])
+    monkeypatch.setattr(
+        "app.pentagi_status_poller.refresh_pentagi_flow_status",
+        lambda *args, **kwargs: _snapshot(next(statuses)),
+    )
+    clock = _Clock()
+    monkeypatch.setenv("XBOW_PENTAGI_STATUS_POLL_SECONDS", "1")
+    monkeypatch.setenv("XBOW_PENTAGI_STATUS_MAX_SECONDS", "10")
+
+    result = poll_pentagi_flow_until_terminal(
+        object(),
+        "campaign-1",
+        "receipt-1",
+        sleep_fn=clock.sleep,
+        monotonic_fn=clock.monotonic,
+    )
+
+    assert result.status == "finished"
+    assert result.polls == 2
+    assert clock.sleeps == [1.0]
