@@ -213,7 +213,21 @@ class RedisJobQueue:
         oldest_ids = self.redis.zrange(self._queued, 0, 0)
         if oldest_ids:
             oldest_at = self.redis.hget(self._job_key(oldest_ids[0]), "created_at")
-        return {"total": len(ids), "by_status": counts, "oldest_queued_at": oldest_at}
+
+        oldest_running_at = None
+        oldest_running_ids = self.redis.zrange(self._running, 0, 0)
+        if oldest_running_ids:
+            oldest_running_at = self.redis.hget(
+                self._job_key(oldest_running_ids[0]),
+                "claimed_at",
+            )
+
+        return {
+            "total": len(ids),
+            "by_status": counts,
+            "oldest_queued_at": oldest_at,
+            "oldest_running_claimed_at": oldest_running_at,
+        }
 
     def _campaign_members(self, campaign_id: str) -> list[str]:
         campaign_id = _bounded_identifier(campaign_id, "campaign_id")
