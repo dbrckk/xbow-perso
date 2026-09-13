@@ -1,7 +1,9 @@
+from dataclasses import replace
+
 import pytest
 from fastapi import HTTPException
 
-from app import main
+from app import main, pentagi_control
 from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, ProgramRules, TargetInput
 
@@ -41,20 +43,67 @@ def test_pentagi_preview_exposes_metadata_not_request_payload(monkeypatch):
 
     result = main.preview_pentagi_campaign(campaign.id)
 
-    assert result["ready"] is True
+    assert result["ready"] is False
     assert result["request_payload_exposed"] is False
     assert result["plan"]["target"] == str(campaign.target.primary_url)
     assert result["plan"]["model_provider"] == "openai"
+    assert result["plan"]["execution_supported"] is False
+    assert "execution_transport_not_enforceable" in result["admission"]["reasons"]
     assert "endpoint" not in result["plan"]
     assert "payload" not in result["plan"]
 
 
-def test_pentagi_dispatch_enqueues_single_attempt_job_and_audits(tmp_path, monkeypatch):
+def test_pentagi_dispatch_is_fail_closed_without_enforcing_transport(tmp_path, monkeypatch):
+    _configure(monkeypatch)
+    campaign = _campaign()
+    jobs = JobQueue(str(tmp_path / "queue.sqlite3"))
+
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign, 7),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+
+    with pytest.raises(HTTPException) as exc:
+        main.dispatch_pentagi_campaign(campaign.id)
+
+    assert exc.value.status_code == 409
+    assert "execution_transport_not_enforceable" in str(exc.value.detail)
+    assert jobs.stats()["total"] == 0
+
+
+def test_future_enforceable_dispatch_response_is_sanitized_and_idempotent(
+    tmp_path,
+    monkeypatch,
+):
     _configure(monkeypatch)
     campaign = _campaign()
     jobs = JobQueue(str(tmp_path / "queue.sqlite3"))
     saved = []
 
+    preview = pentagi_control.prepare_pentagi_control_preview(campaign)
+    executable_plan = replace(
+        preview.plan,
+        dry_run=False,
+        execution_supported=True,
+    )
+    executable_decision = pentagi_control.evaluate_pentagi_admission(
+        campaign,
+        executable_plan,
+    )
+    future_preview = pentagi_control.PentagiControlPreview(
+        plan=executable_plan,
+        decision=executable_decision,
+        operational_reasons=(),
+    )
+    assert future_preview.decision.allowed is True
+
+    monkeypatch.setattr(
+        pentagi_control,
+        "require_pentagi_control_ready",
+        lambda value: future_preview,
+    )
     monkeypatch.setattr(
         main,
         "assert_campaign_record",
@@ -69,31 +118,36 @@ def test_pentagi_dispatch_enqueues_single_attempt_job_and_audits(tmp_path, monke
 
     result = main.dispatch_pentagi_campaign(campaign.id)
 
-    job = result["job"]
-    persisted = jobs.get(job["id"])
+    safe_job = result["job"]
+    assert set(safe_job) == {
+        "id",
+        "kind",
+        "status",
+        "attempts",
+        "max_attempts",
+        "created_at",
+        "updated_at",
+    }
+    assert safe_job["kind"] == "pentagi_flow"
+    assert safe_job["max_attempts"] == 1
+    assert "payload" not in safe_job
+    assert "dedupe_key" not in safe_job
+
+    persisted = jobs.get(safe_job["id"])
     assert persisted is not None
-    assert persisted["kind"] == "pentagi_flow"
-    assert persisted["max_attempts"] == 1
-    assert persisted["attempts"] == 0
-    assert persisted["status"] == "queued"
+    assert persisted["payload"]["request"]
     assert campaign.state == main.CampaignState.running
     assert saved and saved[0][1] == 7
-    assert any(
-        event.get("type") == "pentagi_flow_queued"
-        and event.get("job_id") == job["id"]
-        for event in campaign.events
-    )
 
     repeated = main.dispatch_pentagi_campaign(campaign.id)
-    assert repeated["job"]["id"] == job["id"]
+    assert repeated["job"]["id"] == safe_job["id"]
     assert jobs.campaign_job_counts(campaign.id)["pentagi_flow"] == 1
     assert sum(
         1
         for event in campaign.events
         if event.get("type") == "pentagi_flow_queued"
-        and event.get("job_id") == job["id"]
+        and event.get("job_id") == safe_job["id"]
     ) == 1
-
 
 def test_pentagi_dispatch_fails_closed_when_transport_disabled(tmp_path, monkeypatch):
     _configure(monkeypatch)
