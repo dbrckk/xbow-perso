@@ -422,3 +422,117 @@ def test_local_reconcile_repairs_existing_browser_audit_without_enqueue(
     assert repaired[0]["flow_fingerprint"] == "f" * 64
     assert repaired[0]["reconciled_locally"] is True
     assert saved and saved[0][1] == 9
+
+
+
+def test_local_reconcile_retries_optimistic_conflict_with_fresh_snapshot(
+    tmp_path,
+    monkeypatch,
+):
+    base = _campaign(
+        [
+            {
+                "type": "report_requested",
+                "request_id": "retry-report-request",
+                "platform": "generic",
+                "purpose": "manual",
+                "at": "2026-09-13T10:00:00+00:00",
+            }
+        ]
+    )
+    base.state = CampaignState.running
+    jobs = JobQueue(str(tmp_path / "queue.sqlite3"))
+    job = jobs.enqueue(
+        base.id,
+        "report",
+        {"campaign_id": base.id, "platform": "generic"},
+        dedupe_key="report:generic:retry-report-request",
+    )
+
+    snapshots = [
+        (base.model_copy(deep=True), 10),
+        (base.model_copy(deep=True), 11),
+    ]
+    saved = []
+    latest = {"campaign": base.model_copy(deep=True)}
+
+    def load(_campaign_id):
+        return snapshots.pop(0)
+
+    def save(value, expected_version=None):
+        saved.append((value.model_copy(deep=True), expected_version))
+        if len(saved) == 1:
+            raise main.HTTPException(
+                status_code=409,
+                detail="Campaign changed concurrently; reload and retry",
+            )
+        latest["campaign"] = value.model_copy(deep=True)
+        return expected_version + 1
+
+    monkeypatch.setattr(main, "assert_campaign_record", load)
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_exists",
+        lambda campaign_id: latest["campaign"].model_copy(deep=True),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+    monkeypatch.setattr(main, "save_campaign", save)
+
+    result = main.reconcile_campaign_outbox_local(base.id)
+
+    assert result["repaired"] == 1
+    assert result["remaining"] == []
+    assert [version for _campaign_value, version in saved] == [10, 11]
+    repaired = [
+        event
+        for event in latest["campaign"].events
+        if event.get("type") == "report_queued"
+        and event.get("request_id") == "retry-report-request"
+    ]
+    assert len(repaired) == 1
+    assert repaired[0]["job_id"] == job["id"]
+
+
+def test_local_reconcile_rejects_cancelled_campaign_without_mutation(
+    tmp_path,
+    monkeypatch,
+):
+    campaign = _campaign(
+        [
+            {
+                "type": "report_requested",
+                "request_id": "cancelled-report-request",
+                "platform": "generic",
+                "purpose": "manual",
+                "at": "2026-09-13T10:00:00+00:00",
+            }
+        ]
+    )
+    campaign.state = CampaignState.cancelled
+    jobs = JobQueue(str(tmp_path / "queue.sqlite3"))
+    jobs.enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": "generic"},
+        dedupe_key="report:generic:cancelled-report-request",
+    )
+    saved = []
+
+    monkeypatch.setattr(
+        main,
+        "assert_campaign_record",
+        lambda campaign_id: (campaign.model_copy(deep=True), 3),
+    )
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+    monkeypatch.setattr(
+        main,
+        "save_campaign",
+        lambda value, expected_version=None: saved.append(value) or 4,
+    )
+
+    with pytest.raises(main.HTTPException) as exc:
+        main.reconcile_campaign_outbox_local(campaign.id)
+
+    assert exc.value.status_code == 409
+    assert "cancelled" in str(exc.value.detail).lower()
+    assert saved == []
