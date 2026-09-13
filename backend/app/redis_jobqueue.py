@@ -236,9 +236,7 @@ class RedisJobQueue:
                         pipe.watch(key, self._queued)
                         row = pipe.hgetall(key)
                         if not row or row.get("status") != "queued" or row.get("campaign_id") != campaign_id:
-                            pipe.multi()
-                            pipe.zrem(queued_kind, job_id)
-                            pipe.execute()
+                            pipe.unwatch()
                             break
                         now = utcnow()
                         pipe.multi()
@@ -306,7 +304,7 @@ class RedisJobQueue:
             while True:
                 try:
                     with self.redis.pipeline() as pipe:
-                        pipe.watch(key, self._running, self._queued, queued_kind)
+                        pipe.watch(key, self._running, self._queued)
                         row = pipe.hgetall(key)
                         score = pipe.zscore(self._running, job_id)
                         if not row or row.get("status") != "running" or score is None or score > cutoff:
@@ -362,6 +360,7 @@ class RedisJobQueue:
                     if row.get("status") != "queued":
                         pipe.multi()
                         pipe.zrem(self._queued, job_id)
+                        pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                         pipe.execute()
                         continue
                     if int(row["attempts"]) >= int(row["max_attempts"]):
@@ -375,6 +374,7 @@ class RedisJobQueue:
                             },
                         )
                         pipe.zrem(self._queued, job_id)
+                        pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                         pipe.execute()
                         continue
 
@@ -392,6 +392,7 @@ class RedisJobQueue:
                         },
                     )
                     pipe.zrem(self._queued, job_id)
+                    pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                     pipe.zadd(self._running, {job_id: score})
                     pipe.execute()
                     return self.get(job_id)
@@ -413,7 +414,7 @@ class RedisJobQueue:
             while True:
                 try:
                     with self.redis.pipeline() as pipe:
-                        pipe.watch(key, self._running, self._queued)
+                        pipe.watch(key, self._running, self._queued, queued_kind)
                         row = pipe.hgetall(key)
                         if (
                             not row
@@ -421,7 +422,9 @@ class RedisJobQueue:
                             or row.get("kind") != kind
                             or int(row["attempts"]) >= int(row["max_attempts"])
                         ):
-                            pipe.unwatch()
+                            pipe.multi()
+                            pipe.zrem(queued_kind, job_id)
+                            pipe.execute()
                             break
                         now = utcnow()
                         pipe.multi()
