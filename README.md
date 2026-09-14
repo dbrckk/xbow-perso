@@ -319,3 +319,10 @@ This preserves the distinction between a reporting governance incident and a pla
 Per-report submission audits use the canonical `submission-audit-v1` schema and include a deterministic SHA-256 fingerprint. The API also returns an independent verification result with expected/computed fingerprints and schema validity.
 
 This allows operators to detect post-generation modification of audit results without changing campaign state or automatically repairing events.
+
+
+### Aggregate submission audit fingerprints
+
+Campaign-level and storage-wide submission-integrity summaries are now canonicalized and SHA-256 fingerprinted. Their fingerprints include the fingerprints of child report audits, allowing aggregate summaries to be independently verified and making post-generation modification detectable.
+
+The operations dashboard exposes verification status for the storage-wide aggregate. Unsupported backends remain explicitly marked unsupported rather than being treated as integrity failures.
