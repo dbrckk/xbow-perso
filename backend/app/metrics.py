@@ -72,6 +72,32 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
                 else max(oldest_outbox_age_seconds, age)
             )
 
+    readiness_history_fn = getattr(
+        storage_backend,
+        "list_recovery_readiness_snapshots",
+        None,
+    )
+    readiness_snapshots = (
+        readiness_history_fn(limit=100)
+        if callable(readiness_history_fn)
+        else []
+    )
+    readiness_counts: Counter[str] = Counter(
+        str(item.get("decision") or "unknown")
+        for item in readiness_snapshots
+    )
+    readiness_transitions = 0
+    ready_to_block_regressions = 0
+    chronological = list(reversed(readiness_snapshots))
+    previous_decision = None
+    for item in chronological:
+        decision = str(item.get("decision") or "unknown")
+        if previous_decision is not None and decision != previous_decision:
+            readiness_transitions += 1
+            if previous_decision == "READY" and decision == "BLOCK":
+                ready_to_block_regressions += 1
+        previous_decision = decision
+
     metrics = {
         "campaigns_total": len(campaigns),
         "campaigns_by_state": dict(sorted(states.items())),
@@ -86,6 +112,18 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "pending_outbox_total": pending_outbox_total,
         "pending_outbox_by_kind": dict(sorted(pending_outbox_by_kind.items())),
         "oldest_outbox_pending_age_seconds": oldest_outbox_age_seconds,
+        "recovery_readiness": {
+            "supported": callable(readiness_history_fn),
+            "latest_decision": (
+                str(readiness_snapshots[0].get("decision"))
+                if readiness_snapshots
+                else None
+            ),
+            "snapshots": len(readiness_snapshots),
+            "by_decision": dict(sorted(readiness_counts.items())),
+            "transitions": readiness_transitions,
+            "ready_to_block_regressions": ready_to_block_regressions,
+        },
         "queue_transition_audit": {
             "supported": queue_audit_supported,
             "campaigns_checked": queue_audit_campaigns,
