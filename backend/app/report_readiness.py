@@ -11,6 +11,7 @@ from .evidence_quality import build_evidence_quality
 from .finding_consensus import build_finding_consensus
 from .finding_correlation import correlate_findings
 from .observation_graph import ObservationGraph, load_observation_graph
+from .report_provenance import build_report_provenance
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
@@ -155,9 +156,24 @@ def campaign_report_readiness(campaign_id: str):
     from .report_quality import build_report_quality_gates, summarize_report_quality
 
     quality_gates = build_report_quality_gates(readiness)
+    provenance = build_report_provenance(
+        [str(item.id) for item in campaign.findings],
+        graph,
+    )
     return {
         "campaign_id": campaign.id,
         "findings": [item.to_dict() for item in readiness],
+        "provenance": {
+            "schema": "report-provenance-v1",
+            "findings": [item.to_dict() for item in provenance],
+            "summary": {
+                "total": len(provenance),
+                "complete": sum(item.complete for item in provenance),
+                "blocked": sum(not item.complete for item in provenance),
+            },
+            "read_only": True,
+            "advisory_only": True,
+        },
         "quality": {
             "findings": [item.to_dict() for item in quality_gates],
             "summary": summarize_report_quality(quality_gates),
