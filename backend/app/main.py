@@ -1053,6 +1053,64 @@ def _reconcile_campaign_started(
     )
 
 
+def _reconcile_orchestrated_campaign_started(
+    campaign_id: str,
+    jobs: list[dict[str, Any]],
+    planner: dict[str, Any],
+    *,
+    request_id: str,
+    receipt: dict[str, Any],
+    attempts: int = 3,
+) -> Campaign:
+    for _ in range(attempts):
+        campaign, version = assert_campaign_record(campaign_id)
+        _reject_cancelled_campaign(campaign)
+        if any(
+            event.get("type") == "campaign_started"
+            and event.get("request_id") == request_id
+            for event in campaign.events
+        ):
+            return campaign
+        if campaign.state not in {
+            CampaignState.ready,
+            CampaignState.failed,
+            CampaignState.running,
+        }:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Cannot reconcile campaign start from {campaign.state.value}",
+            )
+
+        action = dict(planner.get("action") or {})
+        job_ids = [str(job["id"]) for job in jobs if job.get("id")]
+        append_campaign_event(
+            campaign.events,
+            {
+                "type": "campaign_started",
+                "request_id": request_id,
+                "at": utcnow(),
+                "policy": receipt,
+                "job_id": job_ids[0] if job_ids else None,
+                "job_ids": job_ids,
+                "planner_action": action.get("kind"),
+                "planner_reason": action.get("reason"),
+            },
+        )
+        if job_ids:
+            campaign.state = CampaignState.running
+        campaign.updated_at = utcnow()
+        try:
+            save_campaign(campaign, expected_version=version)
+            return campaign
+        except HTTPException as exc:
+            if exc.status_code != 409:
+                raise
+    raise HTTPException(
+        status_code=409,
+        detail="Campaign start planner reconciliation conflicted; retry safely",
+    )
+
+
 @app.post("/api/campaigns/{campaign_id}/start")
 def start_campaign(campaign_id: str):
     campaign, version = assert_campaign_record(campaign_id)
@@ -1066,7 +1124,6 @@ def start_campaign(campaign_id: str):
         save_campaign(campaign, expected_version=version)
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
 
-    payload = sanitized_scan_payload(campaign, receipt)
     request_id = _pending_campaign_start_request(campaign) or str(uuid4())
     _record_campaign_start_intent(
         campaign,
@@ -1074,16 +1131,17 @@ def start_campaign(campaign_id: str):
         request_id=request_id,
         receipt=receipt,
     )
-    job = queue().enqueue(
+
+    from .campaign_start import start_via_orchestrator
+
+    latest = assert_campaign_exists(campaign.id)
+    started = start_via_orchestrator(latest, queue(), storage())
+    planner = dict(started["planner"])
+    jobs = list(started["jobs"])
+    campaign = _reconcile_orchestrated_campaign_started(
         campaign.id,
-        "strix_scan",
-        payload,
-        max_attempts=2,
-        dedupe_key=f"api:start:{request_id}",
-    )
-    campaign = _reconcile_campaign_started(
-        campaign.id,
-        job,
+        jobs,
+        planner,
         request_id=request_id,
         receipt=receipt,
     )
@@ -1091,9 +1149,12 @@ def start_campaign(campaign_id: str):
         "campaign_id": campaign.id,
         "state": campaign.state,
         "policy": receipt,
-        "job": job,
+        "job": started["primary_job"],
+        "jobs": jobs,
+        "planner": planner,
         "request_id": request_id,
         "audit_reconciled": True,
+        "orchestrated_start": True,
     }
 
 
