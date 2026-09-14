@@ -24,7 +24,10 @@ from .red_team_coverage import build_red_team_coverage, router as red_team_cover
 from .red_team_decision import build_red_team_decisions, router as red_team_decision_router
 from .report_quality import summarize_report_quality
 from .report_readiness import router as report_readiness_router
-from .reporting_governance import build_reporting_governance_snapshot
+from .reporting_governance import (
+    build_reporting_governance_snapshot,
+    verify_reporting_governance_snapshot,
+)
 from .review_queue import build_review_queue, router as review_queue_router
 from .storage import ArtifactIntegrityError
 from .submission_audit import audit_campaign_submissions
@@ -244,6 +247,10 @@ def campaign_overview(campaign_id: str):
         },
         "report_readiness": {
             "total": len(report_readiness),
+            "governance_fingerprint": reporting.governance_fingerprint,
+            "governance_verification": verify_reporting_governance_snapshot(
+                reporting
+            ),
             "quality": summarize_report_quality(report_quality),
             "ready_for_human_review": sum(item.ready_for_human_review for item in report_readiness),
             "blocked": sum(not item.ready_for_human_review for item in report_readiness),
