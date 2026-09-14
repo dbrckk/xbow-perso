@@ -281,6 +281,8 @@ def test_provenance_change_after_approval_makes_approval_stale(tmp_path, monkeyp
     assert status["state"] == "review_required"
     assert status["approved"] is False
     assert status["stale"] is True
+    assert "report_provenance_changed" in status["stale_reasons"]
+    assert "reporting_governance_changed" in status["stale_reasons"]
 
     audit = submission_api.get_submission_audit(
         campaign.id,
