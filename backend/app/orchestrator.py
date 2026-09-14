@@ -114,6 +114,7 @@ def _intelligence_context(
     campaign: Campaign,
     graph: ObservationGraph,
     queue: JobQueue,
+    store: Storage,
     budget: PlannerBudget,
     runtime: object,
     planned_actions: list[PlannedAction],
@@ -127,6 +128,7 @@ def _intelligence_context(
         campaign.findings,
         graph,
         scope_checker=scope_checker,
+        hypothesis_snapshots=store.list_hypothesis_snapshots(campaign.id, limit=50),
         limit=10,
     )
     consensus = build_decision_consensus(decisions)
@@ -486,6 +488,7 @@ def advance_campaign(
             campaign,
             graph,
             queue,
+            store,
             limits,
             runtime,
             [action],
@@ -615,7 +618,7 @@ def advance_campaign(
     graph = _load_graph(store, campaign.id)
     action = planner.plan(campaign, graph)[0]
     action, _ = apply_budget(action, graph, queue, campaign.id, limits)
-    runtime = runtime_status(campaign.created_at, runtime_limit)
+    runtime = runtime_status(campaign.created_at, effective_runtime_limit)
     intelligence = _intelligence_context(
         campaign,
         graph,
