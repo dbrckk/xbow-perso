@@ -135,3 +135,66 @@ def test_recovery_readiness_blocks_invalid_provenance_configuration():
 
 def test_recovery_readiness_route_is_exposed():
     assert "/api/recovery/readiness" in app.openapi()["paths"]
+
+
+
+def test_recovery_readiness_history_detects_ready_to_block_regression(tmp_path):
+    from app.recovery_readiness import (
+        record_recovery_readiness,
+        recovery_readiness_history,
+    )
+    from app.storage import Storage
+
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+
+    ready = {
+        "decision": "READY",
+        "blockers": [],
+        "review_reasons": [],
+        "checks": {"queue_safe_to_resume": True},
+        "workers_may_resume": True,
+    }
+    block = {
+        "decision": "BLOCK",
+        "blockers": ["queue_recovery_not_safe"],
+        "review_reasons": [],
+        "checks": {"queue_safe_to_resume": False},
+        "workers_may_resume": False,
+    }
+
+    record_recovery_readiness(store, ready)
+    record_recovery_readiness(store, block)
+
+    history = recovery_readiness_history(store)
+
+    assert history["latest_decision"] == "BLOCK"
+    assert history["ready_to_block_regressions"] == 1
+    assert history["transitions"][0]["from"] == "READY"
+    assert history["transitions"][0]["to"] == "BLOCK"
+    assert history["transitions"][0]["ready_to_block"] is True
+
+
+def test_record_recovery_readiness_is_idempotent_for_same_state(tmp_path):
+    from app.recovery_readiness import record_recovery_readiness
+    from app.storage import Storage
+
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    result = {
+        "decision": "REVIEW",
+        "blockers": [],
+        "review_reasons": ["signed_recovery_attestation_missing"],
+        "checks": {"attestation_present": False},
+        "workers_may_resume": False,
+    }
+
+    first = record_recovery_readiness(store, result)
+    second = record_recovery_readiness(store, result)
+
+    snapshots = store.list_recovery_readiness_snapshots()
+
+    assert first["snapshot_fingerprint"] == second["snapshot_fingerprint"]
+    assert len(snapshots) == 1
+
+
+def test_recovery_readiness_history_route_is_exposed():
+    assert "/api/recovery/readiness/history" in app.openapi()["paths"]
