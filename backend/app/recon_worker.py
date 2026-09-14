@@ -211,16 +211,26 @@ def _safe_url(campaign, candidate: str) -> str:
     return urlunparse((parsed.scheme.lower(), parsed.netloc, parsed.path or "/", "", "", ""))
 
 
+def _effective_port(parsed) -> int | None:
+    if parsed.port is not None:
+        return parsed.port
+    if parsed.scheme.lower() == "https":
+        return 443
+    if parsed.scheme.lower() == "http":
+        return 80
+    return None
+
+
 def _same_origin(base: str, candidate: str) -> bool:
     left, right = urlparse(base), urlparse(candidate)
     return (
         left.scheme.lower(),
         (left.hostname or "").lower(),
-        left.port,
+        _effective_port(left),
     ) == (
         right.scheme.lower(),
         (right.hostname or "").lower(),
-        right.port,
+        _effective_port(right),
     )
 
 
