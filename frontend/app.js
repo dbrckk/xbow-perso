@@ -70,7 +70,10 @@ function renderControl(data){
   pill.textContent=data.autonomy_blocked?'autonomie bloquée':'autonomie disponible';
   pill.className='pill '+(data.autonomy_blocked?'err':'ok');
 
-  $('breakerReason').textContent=breaker.open&&breaker.reason?('Raison : '+breaker.reason):'';
+  const blockReasons=Array.isArray(data.autonomy_block_reasons)?data.autonomy_block_reasons:[];
+  const reasonParts=blockReasons.map(autonomyReasonLabel);
+  if(breaker.open&&breaker.reason)reasonParts.push('détail : '+breaker.reason);
+  $('breakerReason').textContent=reasonParts.length?('Blocage : '+reasonParts.join(' · ')):'';
   $('resetBreaker').classList.toggle('hidden',!breaker.open);
 
   const limits=data.budget?.limits||{};
@@ -91,6 +94,14 @@ function gradeClass(grade){
   if(grade==='high')return 'ok';
   if(grade==='medium')return 'warn';
   return 'err';
+}
+
+function autonomyReasonLabel(reason){
+  return {
+    circuit_breaker_open:'circuit breaker ouvert',
+    runtime_exhausted:'durée maximale atteinte',
+    budget_blocked:'budget de sécurité atteint'
+  }[reason]||reason;
 }
 
 function renderEvidence(data){
