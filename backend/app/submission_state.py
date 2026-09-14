@@ -54,12 +54,21 @@ def _approval_events(campaign: Any, artifact_id: str) -> list[tuple[int, dict[st
     ]
 
 
-def submission_status(campaign: Any, artifact: dict[str, Any]) -> SubmissionStatus:
+def submission_status(
+    campaign: Any,
+    artifact: dict[str, Any],
+    *,
+    provenance_fingerprint: str | None = None,
+) -> SubmissionStatus:
     if artifact.get("kind") != "report":
         raise ValueError("only report artifacts have submission state")
 
     artifact_id = artifact["id"]
-    approval = approval_status(campaign, artifact)
+    approval = approval_status(
+        campaign,
+        artifact,
+        provenance_fingerprint=provenance_fingerprint,
+    )
     approval_events = _approval_events(campaign, artifact_id)
     revoked = bool(approval_events) and approval_events[-1][1].get("type") == "report_approval_revoked"
 
@@ -121,12 +130,18 @@ def assert_submission_allowed(
     campaign: Any,
     artifact: dict[str, Any],
     quality_gates: list[Any],
+    *,
+    provenance_fingerprint: str | None = None,
 ) -> SubmissionStatus:
     """Require current human approval plus verified report quality for submission.
 
     This function is a local governance gate only. It does not submit externally.
     """
-    status = submission_status(campaign, artifact)
+    status = submission_status(
+        campaign,
+        artifact,
+        provenance_fingerprint=provenance_fingerprint,
+    )
     if status.state != "approved":
         raise ValueError("report submission requires current human approval")
 
