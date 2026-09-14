@@ -142,6 +142,10 @@ def get_submission_audit(campaign_id: str, artifact_id: str):
             campaign,
             store,
         ),
+        current_governance_fingerprint=_current_governance_fingerprint(
+            campaign,
+            store,
+        ),
     )
     return {
         **audit,
