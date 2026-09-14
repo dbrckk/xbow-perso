@@ -74,6 +74,9 @@ def test_campaign_change_invalidates_existing_approval():
 
     assert status.approved is False
     assert status.stale is True
+    assert "artifact_sha256_changed" in status.stale_reasons
+    assert "approval_basis_changed" in status.stale_reasons
+    assert "approval_basis_changed" in status.stale_reasons
 
 
 def test_report_hash_change_invalidates_existing_approval():
@@ -206,3 +209,5 @@ def test_reporting_governance_change_invalidates_existing_approval():
     assert status.current_provenance_fingerprint == "a" * 64
     assert status.approved_governance_fingerprint == "b" * 64
     assert status.current_governance_fingerprint == "c" * 64
+    assert "reporting_governance_changed" in status.stale_reasons
+    assert "approval_basis_changed" in status.stale_reasons
