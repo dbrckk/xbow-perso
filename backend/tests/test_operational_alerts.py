@@ -116,3 +116,84 @@ def test_operational_alerts_flag_exhausted_slo_budget():
     codes = {item["code"] for item in result["alerts"]}
     assert "slo_error_budget_exhausted" in codes
     assert result["status"] == "alert"
+
+
+
+def test_operational_alerts_flag_fast_multiwindow_slo_burn():
+    result = build_operational_alerts(
+        {
+            "jobs_total": 10,
+            "jobs_by_status": {"failed": 0, "queued": 0, "running": 0},
+            "queue_transition_audit": {"valid": True},
+            "recovery_readiness": {"latest_decision": "READY"},
+            "control_plane_health": {"latest_score": 100},
+            "pending_outbox_total": 0,
+            "slo": {
+                "state": "HEALTHY",
+                "summary": {
+                    "exhausted_slos": [],
+                    "at_risk_slos": [],
+                },
+                "historical": {
+                    "windows": {
+                        "1h": {
+                            "available": True,
+                            "burn_rate": 2.5,
+                        },
+                        "24h": {
+                            "available": True,
+                            "burn_rate": 1.2,
+                        },
+                        "7d": {
+                            "available": True,
+                            "burn_rate": 0.8,
+                        },
+                    }
+                },
+            },
+        }
+    )
+
+    codes = {item["code"] for item in result["alerts"]}
+    assert "slo_fast_burn_multiwindow" in codes
+    assert result["status"] == "alert"
+
+
+def test_operational_alerts_flag_slow_multiwindow_slo_burn():
+    result = build_operational_alerts(
+        {
+            "jobs_total": 10,
+            "jobs_by_status": {"failed": 0, "queued": 0, "running": 0},
+            "queue_transition_audit": {"valid": True},
+            "recovery_readiness": {"latest_decision": "READY"},
+            "control_plane_health": {"latest_score": 100},
+            "pending_outbox_total": 0,
+            "slo": {
+                "state": "HEALTHY",
+                "summary": {
+                    "exhausted_slos": [],
+                    "at_risk_slos": [],
+                },
+                "historical": {
+                    "windows": {
+                        "1h": {
+                            "available": True,
+                            "burn_rate": 0.5,
+                        },
+                        "24h": {
+                            "available": True,
+                            "burn_rate": 1.1,
+                        },
+                        "7d": {
+                            "available": True,
+                            "burn_rate": 1.0,
+                        },
+                    }
+                },
+            },
+        }
+    )
+
+    codes = {item["code"] for item in result["alerts"]}
+    assert "slo_slow_burn_multiwindow" in codes
+    assert result["status"] == "alert"
