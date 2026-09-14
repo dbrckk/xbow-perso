@@ -184,3 +184,21 @@ def test_control_plane_health_record_is_idempotent(tmp_path):
 
     assert first["snapshot_fingerprint"] == second["snapshot_fingerprint"]
     assert len(snapshots) == 1
+
+
+
+def test_control_plane_health_penalizes_reporting_submission_integrity():
+    dashboard = _dashboard()
+    dashboard["submission_integrity"] = {
+        "supported": True,
+        "valid": False,
+        "invalid_reports": 2,
+    }
+
+    result = build_control_plane_health(dashboard)
+
+    reporting = result["components"]["reporting"]
+    assert reporting["score"] == 80
+    assert reporting["state"] == "DEGRADED"
+    assert "submission_event_audit_invalid" in reporting["reasons"]
+    assert "submission_event_audit_invalid" not in result["hard_blockers"]
