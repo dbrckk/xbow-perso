@@ -71,3 +71,28 @@ def test_operational_metrics_include_recovery_readiness_history():
     }
     assert result["recovery_readiness"]["transitions"] == 2
     assert result["recovery_readiness"]["ready_to_block_regressions"] == 1
+
+
+
+def test_operational_metrics_include_control_plane_health_trend():
+    class HealthStorage(Storage):
+        def list_control_plane_health_snapshots(self, limit=100):
+            return [
+                {"score": 68, "state": "BLOCKED"},
+                {"score": 82, "state": "DEGRADED"},
+                {"score": 95, "state": "HEALTHY"},
+            ]
+
+    result = build_operational_metrics(Queue(), HealthStorage())
+
+    health = result["control_plane_health"]
+    assert health["supported"] is True
+    assert health["latest_score"] == 68
+    assert health["previous_score"] == 82
+    assert health["delta"] == -14
+    assert health["trend"] == "degrading"
+    assert health["latest_state"] == "BLOCKED"
+    assert health["transitions"] == 2
+    assert health["healthy_to_degraded_transitions"] == 1
+    assert health["to_blocked_transitions"] == 1
+    assert health["persistent_degradation"] is True
