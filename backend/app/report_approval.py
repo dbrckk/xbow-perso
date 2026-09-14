@@ -19,6 +19,7 @@ class ReportApprovalStatus:
     current_provenance_fingerprint: str | None
     approved_governance_fingerprint: str | None
     current_governance_fingerprint: str | None
+    stale_reasons: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -165,6 +166,7 @@ def approval_status(
             current_provenance_fingerprint=provenance_fingerprint,
             approved_governance_fingerprint=None,
             current_governance_fingerprint=governance_fingerprint,
+            stale_reasons=(),
         )
 
     latest = relevant[-1]
@@ -181,22 +183,27 @@ def approval_status(
             current_provenance_fingerprint=provenance_fingerprint,
             approved_governance_fingerprint=None,
             current_governance_fingerprint=governance_fingerprint,
+            stale_reasons=(),
         )
 
-    stale = (
-        latest.get("artifact_sha256") != artifact["sha256"]
-        or latest.get("basis_digest") != current_digest
-        or (
-            latest.get("report_provenance_fingerprint") is not None
-            and latest.get("report_provenance_fingerprint")
-            != provenance_fingerprint
-        )
-        or (
-            latest.get("reporting_governance_fingerprint") is not None
-            and latest.get("reporting_governance_fingerprint")
-            != governance_fingerprint
-        )
-    )
+    stale_reasons: list[str] = []
+    if latest.get("artifact_sha256") != artifact["sha256"]:
+        stale_reasons.append("artifact_sha256_changed")
+    if latest.get("basis_digest") != current_digest:
+        stale_reasons.append("approval_basis_changed")
+    if (
+        latest.get("report_provenance_fingerprint") is not None
+        and latest.get("report_provenance_fingerprint")
+        != provenance_fingerprint
+    ):
+        stale_reasons.append("report_provenance_changed")
+    if (
+        latest.get("reporting_governance_fingerprint") is not None
+        and latest.get("reporting_governance_fingerprint")
+        != governance_fingerprint
+    ):
+        stale_reasons.append("reporting_governance_changed")
+    stale = bool(stale_reasons)
     return ReportApprovalStatus(
         artifact_id=artifact["id"],
         artifact_sha256=artifact["sha256"],
@@ -213,6 +220,7 @@ def approval_status(
             "reporting_governance_fingerprint"
         ),
         current_governance_fingerprint=governance_fingerprint,
+        stale_reasons=tuple(stale_reasons),
     )
 
 
