@@ -139,14 +139,17 @@ def test_operational_alerts_flag_fast_multiwindow_slo_burn():
                         "1h": {
                             "available": True,
                             "burn_rate": 2.5,
+                            "data_quality": "complete",
                         },
                         "24h": {
                             "available": True,
                             "burn_rate": 1.2,
+                            "data_quality": "complete",
                         },
                         "7d": {
                             "available": True,
                             "burn_rate": 0.8,
+                            "data_quality": "complete",
                         },
                     }
                 },
@@ -179,14 +182,17 @@ def test_operational_alerts_flag_slow_multiwindow_slo_burn():
                         "1h": {
                             "available": True,
                             "burn_rate": 0.5,
+                            "data_quality": "complete",
                         },
                         "24h": {
                             "available": True,
                             "burn_rate": 1.1,
+                            "data_quality": "complete",
                         },
                         "7d": {
                             "available": True,
                             "burn_rate": 1.0,
+                            "data_quality": "complete",
                         },
                     }
                 },
@@ -197,3 +203,39 @@ def test_operational_alerts_flag_slow_multiwindow_slo_burn():
     codes = {item["code"] for item in result["alerts"]}
     assert "slo_slow_burn_multiwindow" in codes
     assert result["status"] == "alert"
+
+
+
+def test_operational_alerts_do_not_page_on_partial_multiwindow_data():
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {"failed": 0, "queued": 0, "running": 0},
+            "slo": {
+                "state": "HEALTHY",
+                "summary": {"exhausted_slos": [], "at_risk_slos": []},
+                "historical": {
+                    "windows": {
+                        "1h": {
+                            "available": True,
+                            "burn_rate": 3.0,
+                            "data_quality": "partial",
+                        },
+                        "24h": {
+                            "available": True,
+                            "burn_rate": 2.0,
+                            "data_quality": "complete",
+                        },
+                        "7d": {
+                            "available": True,
+                            "burn_rate": 1.5,
+                            "data_quality": "partial",
+                        },
+                    }
+                },
+            },
+        }
+    )
+
+    codes = {item["code"] for item in result["alerts"]}
+    assert "slo_fast_burn_multiwindow" not in codes
+    assert "slo_slow_burn_multiwindow" not in codes
