@@ -623,6 +623,7 @@ def advance_campaign(
         campaign,
         graph,
         queue,
+        store,
         limits,
         runtime,
         [action],
