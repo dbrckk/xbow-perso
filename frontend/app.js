@@ -87,16 +87,20 @@ function renderControl(data){
   budgets.replaceChildren(...rows.map(row=>budgetRow(...row)));
 }
 
-function gradeClass(grade){
-  if(grade==='high')return 'ok';
-  if(grade==='medium')return 'warn';
+function readinessClass(value){
+  if(value==='report_review_ready')return 'ok';
+  if(value==='needs_review')return 'warn';
   return 'err';
 }
 
-function renderEvidence(data){
+function renderFindingIntelligence(data){
   $('evidenceCard').classList.remove('hidden');
   const summary=data.summary||{};
-  $('evidenceSummary').textContent=(summary.total||0)+' finding(s) · '+(summary.high||0)+' haute qualité';
+  $('evidenceSummary').textContent=
+    (summary.findings||0)+' finding(s) · '+
+    (summary.saturated_clusters||0)+' cluster(s) saturé(s) · '+
+    (summary.validations_saved||0)+' validation(s) évitée(s)';
+
   const list=$('evidenceList');
   list.replaceChildren();
   const findings=Array.isArray(data.findings)?data.findings:[];
@@ -104,35 +108,53 @@ function renderEvidence(data){
     list.textContent='Aucun finding enregistré.';
     return;
   }
+
   for(const item of findings){
     const row=document.createElement('div');
     row.className='finding';
+
     const head=document.createElement('div');
     head.className='finding-head';
+
     const id=document.createElement('strong');
     id.textContent=item.finding_id;
-    const grade=document.createElement('span');
-    grade.className='pill '+gradeClass(item.grade);
-    grade.textContent=item.grade+' · '+Math.round((Number(item.score)||0)*100)+'%';
-    head.append(id,grade);
-    const issues=document.createElement('div');
-    issues.className='muted';
-    const values=Array.isArray(item.issues)?item.issues:[];
-    issues.textContent=values.length?values.join(' · '):'Chaîne de preuve complète et corroborée';
-    row.append(head,issues);
+
+    const readiness=item.readiness?.readiness||'unknown';
+    const pill=document.createElement('span');
+    pill.className='pill '+readinessClass(readiness);
+    pill.textContent=readiness.replaceAll('_',' ');
+
+    head.append(id,pill);
+
+    const meta=document.createElement('div');
+    meta.className='muted';
+    const parts=[
+      item.severity?('sévérité '+item.severity):null,
+      item.cluster_status?('cluster '+item.cluster_status):null,
+      item.cluster_saturated?'cluster saturé':null,
+      item.readiness?('score '+Math.round((Number(item.readiness.readiness_score)||0)*100)+'%'):null
+    ].filter(Boolean);
+    meta.textContent=parts.join(' · ');
+
+    const blockers=document.createElement('div');
+    blockers.className='muted';
+    const values=Array.isArray(item.readiness?.blockers)?item.readiness.blockers:[];
+    blockers.textContent=values.length?('Blocages : '+values.join(' · ')):'Aucun blocage de readiness';
+
+    row.append(head,meta,blockers);
     list.appendChild(row);
   }
 }
 
 async function refreshDashboard(){
   if(!campaign)return;
-  const [control,evidence]=await Promise.all([
+  const [control,intelligence]=await Promise.all([
     api('/campaigns/'+campaign.id+'/control-status'),
-    api('/campaigns/'+campaign.id+'/evidence-quality')
+    api('/campaigns/'+campaign.id+'/finding-intelligence')
   ]);
   renderControl(control);
-  renderEvidence(evidence);
-  $('output').textContent=JSON.stringify({control,evidence_quality:evidence},null,2);
+  renderFindingIntelligence(intelligence);
+  $('output').textContent=JSON.stringify({control,finding_intelligence:intelligence},null,2);
 }
 
 async function activateCampaign(value){
