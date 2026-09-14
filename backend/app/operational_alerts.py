@@ -193,6 +193,49 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
             }
         )
 
+    historical = slo.get("historical") or {}
+    windows = historical.get("windows") or {}
+    one_hour = windows.get("1h") or {}
+    day = windows.get("24h") or {}
+    week = windows.get("7d") or {}
+
+    fast_burn = (
+        bool(one_hour.get("available"))
+        and bool(day.get("available"))
+        and float(one_hour.get("burn_rate") or 0.0) >= 2.0
+        and float(day.get("burn_rate") or 0.0) >= 1.0
+    )
+    slow_burn = (
+        bool(day.get("available"))
+        and bool(week.get("available"))
+        and float(day.get("burn_rate") or 0.0) >= 1.0
+        and float(week.get("burn_rate") or 0.0) >= 1.0
+    )
+    if fast_burn:
+        alerts.append(
+            {
+                "code": "slo_fast_burn_multiwindow",
+                "severity": "critical",
+                "value": {
+                    "1h": one_hour.get("burn_rate"),
+                    "24h": day.get("burn_rate"),
+                },
+                "threshold": {"1h": 2.0, "24h": 1.0},
+            }
+        )
+    elif slow_burn:
+        alerts.append(
+            {
+                "code": "slo_slow_burn_multiwindow",
+                "severity": "warning",
+                "value": {
+                    "24h": day.get("burn_rate"),
+                    "7d": week.get("burn_rate"),
+                },
+                "threshold": {"24h": 1.0, "7d": 1.0},
+            }
+        )
+
     return {
         "status": "alert" if alerts else "ok",
         "alerts": alerts,
