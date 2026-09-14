@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .queue_backend import create_queue
 from .dr_manifest import (
     DisasterRecoveryError,
     build_backup_manifest,
@@ -30,6 +31,11 @@ def _parser() -> argparse.ArgumentParser:
     verify.add_argument("--postgres-dump", required=True)
     verify.add_argument("--redis-snapshot", required=True)
     verify.add_argument("--vault-copy", required=True)
+
+    sub.add_parser(
+        "queue-check",
+        help="Read-only post-restore queue consistency and lease assessment.",
+    )
 
     return parser
 
@@ -59,7 +65,7 @@ def main() -> int:
                 "manifest": args.output,
                 "artifacts": len(manifest["artifacts"]),
             }
-        else:
+        elif args.command == "verify":
             verification = verify_backup_manifest(
                 args.manifest,
                 postgres_dump=args.postgres_dump,
@@ -68,6 +74,12 @@ def main() -> int:
             )
             result = {"ok": verification["valid"], **verification}
             if not verification["valid"]:
+                print(json.dumps(result, sort_keys=True))
+                return 1
+        else:
+            assessment = create_queue().recovery_assessment()
+            result = {"ok": bool(assessment["safe_to_resume"]), **assessment}
+            if not result["ok"]:
                 print(json.dumps(result, sort_keys=True))
                 return 1
     except DisasterRecoveryError as exc:
