@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+from app.campaign_control import campaign_control_status
 from app.campaign_runtime import CampaignRuntimeLimit
 from app.circuit_breaker import circuit_breaker_state, record_circuit_open, record_circuit_reset
 from app.jobqueue import JobQueue
@@ -90,3 +91,35 @@ def test_control_routes_are_exposed():
 
     assert "/api/campaigns/{campaign_id}/control-status" in paths
     assert "/api/campaigns/{campaign_id}/circuit-breaker/reset" in paths
+
+
+
+def test_control_status_reports_budget_blocker_consistently(tmp_path, monkeypatch):
+    db = str(tmp_path / "db.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_PLANNER_MAX_FAILED_JOBS", "1")
+
+    store = Storage(db, artifacts)
+    queue = JobQueue(db)
+    campaign = _campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": "generic"},
+        max_attempts=1,
+        dedupe_key="fixture:failed-control-status",
+    )
+    claimed = queue.claim("fixture-worker")
+    assert claimed is not None and claimed["id"] == job["id"]
+    queue.finish(claimed["id"], "fixture-worker", False, "fixture failure")
+
+    result = campaign_control_status(campaign.id)
+
+    assert result["autonomy_blocked"] is True
+    assert result["autonomy_block_reasons"] == ["budget_blocked"]
+    assert result["budget"]["usage"]["failed_jobs"] == 1
+    assert result["budget"]["usage"]["blocked_actions"]["scan"] == "failed job budget exhausted"
