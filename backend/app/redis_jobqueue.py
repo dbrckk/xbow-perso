@@ -212,6 +212,14 @@ class RedisJobQueue:
                 pipe.sadd(self._all, job_id)
                 pipe.sadd(self._campaign_key(campaign_id), job_id)
                 pipe.execute()
+            self._append_transition(
+                row,
+                from_status=None,
+                to_status="queued",
+                actor="queue",
+                reason="job enqueued",
+                at=now,
+            )
             created = self.get(job_id)
             if created is None:
                 raise RuntimeError("queued job disappeared")
@@ -247,6 +255,14 @@ class RedisJobQueue:
             except redis.WatchError:
                 continue
 
+        self._append_transition(
+            row,
+            from_status=None,
+            to_status="queued",
+            actor="queue",
+            reason="job enqueued",
+            at=now,
+        )
         created = self.get(job_id)
         if created is None:
             raise RuntimeError("queued job disappeared")
@@ -365,6 +381,14 @@ class RedisJobQueue:
                         pipe.zrem(self._queued, job_id)
                         pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                         pipe.execute()
+                        self._append_transition(
+                            row,
+                            from_status="queued",
+                            to_status="cancelled",
+                            actor="campaign-control",
+                            reason="campaign cancelled before execution",
+                            at=now,
+                        )
                         count += 1
                         break
                 except redis.WatchError:
@@ -402,6 +426,14 @@ class RedisJobQueue:
                     )
                     pipe.zrem(self._running, job_id)
                     pipe.execute()
+                    self._append_transition(
+                        row,
+                        from_status="running",
+                        to_status="cancelled",
+                        actor=worker_id,
+                        reason=reason or "campaign cancelled",
+                        at=utcnow(),
+                    )
                     return self.get(job_id)
             except redis.WatchError:
                 continue
@@ -442,6 +474,14 @@ class RedisJobQueue:
                                 pipe.zadd(self._queued, {job_id: time.time()})
                             pipe.zadd(self._queued_kind(row.get("kind", "")), {job_id: time.time()})
                         pipe.execute()
+                        self._append_transition(
+                            row,
+                            from_status="running",
+                            to_status=status,
+                            actor="lease-recovery",
+                            reason="worker lease expired before completion",
+                            at=now,
+                        )
                         recovered += 1
                         break
                 except redis.WatchError:
@@ -493,6 +533,14 @@ class RedisJobQueue:
                         pipe.zrem(self._queued, job_id)
                         pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                         pipe.execute()
+                        self._append_transition(
+                            row,
+                            from_status="queued",
+                            to_status="failed",
+                            actor="queue",
+                            reason=row.get("last_error") or "retry budget exhausted",
+                            at=utcnow(),
+                        )
                         continue
 
                     now = utcnow()
@@ -512,6 +560,14 @@ class RedisJobQueue:
                     pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                     pipe.zadd(self._running, {job_id: score})
                     pipe.execute()
+                    self._append_transition(
+                        row,
+                        from_status="queued",
+                        to_status="running",
+                        actor=worker_id,
+                        reason="job claimed",
+                        at=now,
+                    )
                     return self.get(job_id)
             except redis.WatchError:
                 continue
@@ -591,6 +647,14 @@ class RedisJobQueue:
                         pipe.zrem(queued_kind, job_id)
                         pipe.zadd(self._running, {job_id: time.time()})
                         pipe.execute()
+                        self._append_transition(
+                            row,
+                            from_status="queued",
+                            to_status="running",
+                            actor=worker_id,
+                            reason="job claimed",
+                            at=now,
+                        )
                         return self.get(job_id)
                 except redis.WatchError:
                     continue
@@ -657,6 +721,14 @@ class RedisJobQueue:
                             pipe.zadd(self._queued, {job_id: time.time()})
                         pipe.zadd(self._queued_kind(row.get("kind", "")), {job_id: time.time()})
                     pipe.execute()
+                    self._append_transition(
+                        row,
+                        from_status="running",
+                        to_status=status,
+                        actor=worker_id,
+                        reason=("job completed" if success else ((error or "job failed")[-4000:])),
+                        at=now,
+                    )
                     return self.get(job_id)
             except redis.WatchError:
                 continue
