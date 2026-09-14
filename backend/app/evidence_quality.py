@@ -64,7 +64,7 @@ def build_evidence_quality(graph: ObservationGraph) -> list[EvidenceQuality]:
             for item in evidence_items
         )
         independent = bool(chain and chain.independent_validation_observed)
-        source_count = int(chain.source_count if chain else 0)
+        source_count = int(finding_consensus.source_count if finding_consensus else 0)
         chain_integrity = bool(
             chain
             and chain.ancestor_ids
