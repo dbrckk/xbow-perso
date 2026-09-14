@@ -423,8 +423,27 @@ def _record_worker_outcome(store: Storage, job: dict, *, success: bool, status: 
     return False
 
 
+def _claim_for_role(queue: JobQueue, worker_id: str):
+    role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
+    if not role:
+        return queue.claim(worker_id)
+    if role == "general":
+        for kind in ("independent_validation", "browser_flow", "recon_task", "report"):
+            job = queue.claim_kind(worker_id, kind)
+            if job:
+                return job
+        return None
+    if role == "scanner":
+        for kind in ("nuclei_scan", "strix_scan"):
+            job = queue.claim_kind(worker_id, kind)
+            if job:
+                return job
+        return None
+    raise ValueError("XBOW_WORKER_ROLE must be general or scanner")
+
+
 def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
-    job = queue.claim(worker_id)
+    job = _claim_for_role(queue, worker_id)
     if not job:
         return False
     try:
