@@ -94,3 +94,30 @@ def test_storage_submission_audit_aggregates_campaigns():
     assert result["campaigns_checked"] == 2
     assert result["reports_checked"] == 2
     assert result["invalid_reports"] == 1
+
+
+
+def test_submission_audit_detects_stale_approval_provenance():
+    campaign = {
+        "events": [
+            {
+                "type": "report_approved",
+                "artifact_id": "r1",
+                "artifact_sha256": "a" * 64,
+                "basis_digest": "b" * 64,
+                "report_provenance_fingerprint": "c" * 64,
+                "reviewer": "reviewer",
+                "at": "2026-09-14T18:00:00Z",
+            }
+        ]
+    }
+
+    result = audit_campaign_submissions(
+        campaign,
+        ["r1"],
+        current_provenance_fingerprint="d" * 64,
+    )
+
+    assert result["valid"] is False
+    assert result["invalid_reports"] == 1
+    assert result["issue_counts"]["approval_provenance_stale"] == 1
