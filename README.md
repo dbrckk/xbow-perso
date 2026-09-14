@@ -240,3 +240,22 @@ Control-plane health is an advisory, aggregate signal only. `HEALTHY`, `DEGRADED
 The control plane exposes read-only SLO/error-budget status through `GET /api/slo` and the operations dashboard. Current SLOs cover platform availability, queue integrity, terminal job reliability, recovery readiness, and reporting/outbox health.
 
 Each SLO reports its target, observed ratio, error budget, budget consumed, remaining budget, burn rate, and state (`HEALTHY`, `AT_RISK`, or `EXHAUSTED`). The platform also computes historical 1h/24h/7d burn-rate windows from retained control-plane health snapshots. Multi-window alerting raises a critical fast-burn alert when both 1h and 24h consumption are elevated, and a warning for sustained 24h/7d slow burn. SLO state never changes scope, authorization, worker permissions, or execution behavior.
+
+
+### Historical SLO burn-rate windows
+
+The SLO layer computes read-only historical availability windows for `1h`, `24h`, and `7d` from retained control-plane health snapshots. Because health snapshots are deduplicated on state change, window observations are time-weighted rather than averaged by snapshot count.
+
+Each historical window reports:
+
+- `observed`
+- `burn_rate`
+- `budget_remaining`
+- `samples`
+- `covered_seconds`
+- `window_seconds`
+- `coverage_ratio`
+- `boundary_state_known`
+- `data_quality` (`complete`, `partial`, or `insufficient`)
+
+A partial window is never presented as complete evidence. Historical windows remain advisory and do not alter worker execution, scope, authorization, or queue state.
