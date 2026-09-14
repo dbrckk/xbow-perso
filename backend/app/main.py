@@ -1557,11 +1557,13 @@ def download_artifact(campaign_id: str, artifact_id: str):
 from .browser import router as browser_router  # noqa: E402
 from .campaign_control import router as campaign_control_router  # noqa: E402
 from .coverage import router as coverage_router  # noqa: E402
+from .evidence_quality import router as evidence_quality_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
 
 app.include_router(browser_router)
 app.include_router(campaign_control_router)
 app.include_router(coverage_router)
+app.include_router(evidence_quality_router)
 app.include_router(metrics_router)
 app.include_router(alerts_router)
