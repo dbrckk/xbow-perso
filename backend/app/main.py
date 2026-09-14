@@ -328,6 +328,7 @@ def system_capabilities():
             "knowledge_memory": True,
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
+            "evidence_quality_scoring": "read_only",
             "review_queue": "read_only",
             "decision_consensus": "read_only",
         },
