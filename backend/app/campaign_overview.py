@@ -27,6 +27,7 @@ from .report_readiness import router as report_readiness_router
 from .reporting_governance import build_reporting_governance_snapshot
 from .review_queue import build_review_queue, router as review_queue_router
 from .storage import ArtifactIntegrityError
+from .submission_audit import audit_campaign_submissions
 from .submission_state import submission_status
 from .validation_state import analyze_validation_state
 
@@ -105,9 +106,11 @@ def campaign_overview(campaign_id: str):
     report_states = Counter()
     report_integrity_errors = 0
     reports = []
+    report_artifact_ids: list[str] = []
     for artifact in store.list_artifacts(campaign.id):
         if artifact.get("kind") != "report":
             continue
+        report_artifact_ids.append(str(artifact["id"]))
         try:
             verified, _content = store.read_artifact(campaign.id, artifact["id"])
         except ArtifactIntegrityError:
@@ -117,6 +120,11 @@ def campaign_overview(campaign_id: str):
         reports.append(status)
         report_states[status["state"]] += 1
 
+    submission_audit = audit_campaign_submissions(
+        campaign,
+        report_artifact_ids,
+    )
+
     job_kinds = jobs.campaign_job_counts(campaign.id)
     job_statuses = jobs.campaign_job_status_counts(campaign.id)
     queue_transition_audit = jobs.campaign_transition_audit(campaign.id)
@@ -125,6 +133,8 @@ def campaign_overview(campaign_id: str):
     attention_reasons = []
     if report_integrity_errors:
         attention_reasons.append("report_integrity_error")
+    if not submission_audit["valid"]:
+        attention_reasons.append("submission_event_audit_invalid")
     if blocked:
         attention_reasons.append("budget_blocked")
     if runtime.exhausted and not terminal_campaign:
@@ -325,6 +335,7 @@ def campaign_overview(campaign_id: str):
         },
         "reports": {
             "total": len(reports) + report_integrity_errors,
+            "submission_audit": submission_audit,
             "verified": len(reports),
             "integrity_errors": report_integrity_errors,
             "submission_ready": report_states.get("approved", 0),
