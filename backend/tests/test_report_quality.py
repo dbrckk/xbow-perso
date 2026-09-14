@@ -109,3 +109,37 @@ def test_report_quality_gate_blocks_high_grade_when_provenance_is_incomplete():
     assert gate.grade in {"C", "D"}
     assert gate.checks["provenance_complete"] is False
     assert "provenance_complete" in gate.blockers
+
+
+
+def test_report_quality_gate_rejects_tampered_provenance():
+    graph = _validated_graph()
+    readiness = build_report_readiness([_finding()], graph)
+    provenance = build_report_provenance(["f1"], graph)
+    tampered = provenance[0].to_dict()
+    tampered["evidence_artifact_ids"] = ["artifact-tampered"]
+
+    from app.report_provenance import ReportProvenance
+
+    tampered_manifest = ReportProvenance(
+        finding_id=tampered["finding_id"],
+        schema=tampered["schema"],
+        fingerprint=tampered["fingerprint"],
+        finding_observation_id=tampered["finding_observation_id"],
+        validation_observation_ids=tuple(tampered["validation_observation_ids"]),
+        evidence_observation_ids=tuple(tampered["evidence_observation_ids"]),
+        evidence_artifact_ids=tuple(tampered["evidence_artifact_ids"]),
+        source_classes=tuple(tampered["source_classes"]),
+        complete=tampered["complete"],
+        blockers=tuple(tampered["blockers"]),
+    )
+
+    gate = build_report_quality_gates(
+        readiness,
+        [tampered_manifest],
+    )[0]
+
+    assert gate.checks["provenance_complete"] is True
+    assert gate.checks["provenance_verified"] is False
+    assert gate.grade in {"C", "D"}
+    assert "provenance_verified" in gate.blockers
