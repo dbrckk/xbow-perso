@@ -59,11 +59,21 @@ def _submission_governance(campaign, store):
     return (
         list(snapshot.quality_gates),
         snapshot.provenance_fingerprint,
+        snapshot.governance_fingerprint,
     )
 
 
 def _current_provenance_fingerprint(campaign, store) -> str:
-    _quality_gates, fingerprint = _submission_governance(campaign, store)
+    _quality_gates, fingerprint, _governance_fingerprint = (
+        _submission_governance(campaign, store)
+    )
+    return fingerprint
+
+
+def _current_governance_fingerprint(campaign, store) -> str:
+    _quality_gates, _provenance_fingerprint, fingerprint = (
+        _submission_governance(campaign, store)
+    )
     return fingerprint
 
 
@@ -97,12 +107,15 @@ def list_submission_states(campaign_id: str):
         for artifact in store.list_artifacts(campaign.id)
         if artifact.get("kind") == "report"
     ]
-    provenance_fingerprint = _current_provenance_fingerprint(campaign, store)
+    quality_gates, provenance_fingerprint, governance_fingerprint = (
+        _submission_governance(campaign, store)
+    )
     states = [
         submission_status(
             campaign,
             _verified_report(campaign, store, artifact_id),
             provenance_fingerprint=provenance_fingerprint,
+            governance_fingerprint=governance_fingerprint,
         ).to_dict()
         for artifact_id in report_ids
     ]
@@ -140,11 +153,14 @@ def get_submission_audit(campaign_id: str, artifact_id: str):
 def get_submission_state(campaign_id: str, artifact_id: str):
     campaign, _version, store = _context(campaign_id)
     artifact = _verified_report(campaign, store, artifact_id)
-    provenance_fingerprint = _current_provenance_fingerprint(campaign, store)
+    _quality_gates, provenance_fingerprint, governance_fingerprint = (
+        _submission_governance(campaign, store)
+    )
     return submission_status(
         campaign,
         artifact,
         provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
     ).to_dict()
 
 
@@ -156,15 +172,18 @@ def approve_report(campaign_id: str, artifact_id: str, reviewer: str):
     artifact = _verified_report(campaign, store, artifact_id)
     try:
         _assert_report_review_ready(campaign, store)
-        _quality_gates, provenance_fingerprint = _submission_governance(
-            campaign,
-            store,
+        _quality_gates, provenance_fingerprint, governance_fingerprint = (
+            _submission_governance(
+                campaign,
+                store,
+            )
         )
         current = approval_status_from_storage(
             campaign,
             store,
             artifact_id,
             provenance_fingerprint=provenance_fingerprint,
+            governance_fingerprint=governance_fingerprint,
         )
         reviewer = reviewer.strip()
         if not reviewer:
@@ -174,6 +193,7 @@ def approve_report(campaign_id: str, artifact_id: str, reviewer: str):
                 campaign,
                 artifact,
                 provenance_fingerprint=provenance_fingerprint,
+                governance_fingerprint=governance_fingerprint,
             ).to_dict()
         append_campaign_event(
             campaign.events,
@@ -184,6 +204,7 @@ def approve_report(campaign_id: str, artifact_id: str, reviewer: str):
                 reviewer,
                 utcnow(),
                 provenance_fingerprint=provenance_fingerprint,
+                governance_fingerprint=governance_fingerprint,
             ),
         )
     except ValueError as exc:
@@ -194,6 +215,10 @@ def approve_report(campaign_id: str, artifact_id: str, reviewer: str):
         campaign,
         artifact,
         provenance_fingerprint=_current_provenance_fingerprint(
+            campaign,
+            store,
+        ),
+        governance_fingerprint=_current_governance_fingerprint(
             campaign,
             store,
         ),
@@ -223,6 +248,10 @@ def revoke_report_approval(campaign_id: str, artifact_id: str, reviewer: str):
                 campaign,
                 store,
             ),
+            governance_fingerprint=_current_governance_fingerprint(
+                campaign,
+                store,
+            ),
         ).to_dict()
     append_campaign_event(
         campaign.events,
@@ -234,6 +263,10 @@ def revoke_report_approval(campaign_id: str, artifact_id: str, reviewer: str):
         campaign,
         artifact,
         provenance_fingerprint=_current_provenance_fingerprint(
+            campaign,
+            store,
+        ),
+        governance_fingerprint=_current_governance_fingerprint(
             campaign,
             store,
         ),
@@ -251,14 +284,17 @@ def mark_report_submitted(
 
     campaign, version, store = _context(campaign_id)
     artifact = _verified_report(campaign, store, artifact_id)
-    quality_gates, provenance_fingerprint = _submission_governance(
-        campaign,
-        store,
+    quality_gates, provenance_fingerprint, governance_fingerprint = (
+        _submission_governance(
+            campaign,
+            store,
+        )
     )
     current = submission_status(
         campaign,
         artifact,
         provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
     )
     actor = actor.strip()
     if current.state == "submitted":
@@ -271,6 +307,7 @@ def mark_report_submitted(
             artifact,
             quality_gates,
             provenance_fingerprint=provenance_fingerprint,
+            governance_fingerprint=governance_fingerprint,
         )
         append_campaign_event(
             campaign.events,
@@ -284,4 +321,5 @@ def mark_report_submitted(
         campaign,
         artifact,
         provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
     ).to_dict()
