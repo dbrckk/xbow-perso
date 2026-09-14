@@ -726,7 +726,11 @@ class RedisJobQueue:
                         from_status="running",
                         to_status=status,
                         actor=worker_id,
-                        reason=("job completed" if success else ((error or "job failed")[-4000:])),
+                        reason=(
+                            "job completed"
+                            if success
+                            else ("job requeued after failure" if status == "queued" else "job failed")
+                        ),
                         at=now,
                     )
                     return self.get(job_id)
