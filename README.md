@@ -127,3 +127,26 @@ The dedicated containers remain behind Compose profiles. The status profile may 
 ```bash
 docker compose --profile pentagi --profile pentagi-status up -d --build
 ```
+
+
+## Dedicated scanner sandbox
+
+Active external scanner execution is isolated from the general worker. The general worker handles recon, browser, validation and report jobs; Strix/Nuclei jobs require the dedicated scanner worker profile.
+
+Start it explicitly:
+
+```bash
+docker compose --profile scanner up -d --build
+```
+
+Active execution remains fail-closed unless all scanner admission gates are satisfied, including:
+
+- `DRY_RUN=false`;
+- `XBOW_ENABLE_ACTIVE_SCANS=true`;
+- `XBOW_ENABLE_SCANNER_WORKER=true`;
+- `XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1`;
+- engine present in `XBOW_SCANNER_ALLOWED_ENGINES`;
+- worker runtime attests read-only root filesystem, no-new-privileges and all Linux capabilities dropped;
+- engine-specific runtime checks such as the pinned Nuclei version.
+
+The default allowlist contains only Nuclei. Strix must be explicitly added after its runtime contract has been reviewed. `GET /api/capabilities` reports the non-secret scanner admission state.
