@@ -6,10 +6,10 @@ from typing import Any
 from fastapi import APIRouter
 
 from .campaign_risk import CampaignRisk, build_campaign_risk
-from .campaign_runtime import CampaignRuntimeLimit, runtime_status
+from .campaign_runtime import campaign_runtime_limit_from_env, runtime_status
 from .decision_consensus import DecisionConsensus, build_decision_consensus
 from .observation_graph import load_observation_graph
-from .planner_budget import PlannerBudget, budget_usage
+from .planner_budget import budget_usage, planner_budget_from_env
 from .red_team_decision import build_red_team_decisions
 
 router = APIRouter()
@@ -119,9 +119,9 @@ def campaign_autonomy_gate(campaign_id: str):
         graph,
         scope_checker=scope_checker,
     )
-    limits = PlannerBudget()
+    limits = planner_budget_from_env()
     budget = budget_usage(graph, queue(), campaign.id, limits)
-    runtime = runtime_status(campaign.created_at, CampaignRuntimeLimit())
+    runtime = runtime_status(campaign.created_at, campaign_runtime_limit_from_env())
     job_statuses = queue().campaign_job_status_counts(campaign.id)
 
     gate = build_autonomy_gate(
