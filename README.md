@@ -280,3 +280,10 @@ The quality gate combines evidence-backed validation, evidence quality, consensu
 The local submission governance gate now requires both current human approval and verified report quality coverage for every confirmed finding. Each covered finding must have grade `A` or `B`, be marked submission-ready, have complete report provenance, and pass independent provenance fingerprint verification.
 
 A present-but-tampered provenance manifest is treated as invalid and blocks submission exactly like incomplete provenance. Missing quality coverage for any confirmed finding also blocks submission. This gate remains local and advisory to the submission workflow; external platform submission remains disabled by default.
+
+
+### Approval provenance binding
+
+Human report approval is bound to the aggregate fingerprint of the current report provenance set. The approval basis digest therefore covers the report artifact, submission-relevant campaign state, and the exact provenance fingerprints for confirmed findings.
+
+If report provenance changes after approval, the approval becomes stale and submission state returns to `review_required` until a reviewer explicitly approves the new provenance-bound state. This behavior remains local to governance; it does not submit externally or mutate worker execution.
