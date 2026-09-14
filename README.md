@@ -294,3 +294,14 @@ If report provenance changes after approval, the approval becomes stale and subm
 Report readiness, provenance manifests, report quality gates, and the aggregate provenance fingerprint are now built through one shared read-only governance snapshot. The report-readiness API, campaign overview, approval flow, and submission flow consume this same canonical computation, reducing the risk of policy drift between reporting surfaces.
 
 The snapshot remains advisory and deterministic. It does not approve reports, submit externally, mutate campaign state, or change worker execution.
+
+
+### Submission event audit
+
+The reporting workflow exposes a read-only submission-event audit for each report artifact:
+
+```text
+GET /api/campaigns/{campaign_id}/reports/{artifact_id}/submission-audit
+```
+
+The audit checks approval, revocation, and submission ordering and reports invalid sequences such as submission without an active approval or revocation without an active approval. It also exposes the latest approval provenance fingerprint for incident review. The audit never repairs, reorders, or mutates campaign events automatically.
