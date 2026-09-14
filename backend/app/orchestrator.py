@@ -20,7 +20,7 @@ from .hypothesis_memory import build_hypotheses
 from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
 from .learning_memory import build_learning_memory, summarize_worker_outcomes
-from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload
+from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload, utcnow
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .planner_budget import PlannerBudget, apply_budget, budget_usage, planner_budget_from_env
 from .pipeline_swarm import coordinate_pipeline_action
@@ -462,7 +462,7 @@ def advance_campaign(
     runtime = runtime_status(campaign.created_at, effective_runtime_limit)
     if runtime.exhausted:
         graph = _load_graph(store, campaign.id)
-        record_circuit_open(store, campaign.id, runtime.reason or "campaign runtime budget exhausted", at=campaign.updated_at)
+        record_circuit_open(store, campaign.id, runtime.reason or "campaign runtime budget exhausted", at=utcnow())
         return _result(
             PlannedAction("stop", str(campaign.target.primary_url), runtime.reason or "campaign runtime budget exhausted", 100),
             [],
@@ -480,7 +480,7 @@ def advance_campaign(
         action = planned_actions[0]
         action, usage = apply_budget(action, graph, queue, campaign.id, limits)
         if usage.exhausted and action.kind == "stop":
-            record_circuit_open(store, campaign.id, action.reason, at=campaign.updated_at)
+            record_circuit_open(store, campaign.id, action.reason, at=utcnow())
         runtime = runtime_status(campaign.created_at, effective_runtime_limit)
         intelligence = _intelligence_context(
             campaign,
@@ -495,7 +495,7 @@ def advance_campaign(
         if cycle.next_action == "stop" or not cycle.safe_to_progress:
             breaker_blockers = {"failed_jobs", "runtime_exhausted", "budget_blocked", "campaign_risk_blocked"}
             if breaker_blockers.intersection(set(intelligence["gate"].blockers)):
-                record_circuit_open(store, campaign.id, cycle.reason, at=campaign.updated_at)
+                record_circuit_open(store, campaign.id, cycle.reason, at=utcnow())
             stop_reason = cycle.reason
             if cycle.requires_human:
                 stop_reason = f"human review required: {cycle.reason}"
