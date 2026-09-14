@@ -76,3 +76,37 @@ def test_operations_dashboard_route_is_exposed():
 
 def test_operations_health_history_route_is_exposed():
     assert "/api/dashboard/operations/health-history" in app.openapi()["paths"]
+
+
+
+def test_operations_dashboard_degrades_on_invalid_submission_audit():
+    class SubmissionAuditStorage(Storage):
+        def list_campaigns(self):
+            return [
+                {
+                    "id": "c1",
+                    "state": "running",
+                    "events": [
+                        {
+                            "type": "report_submitted",
+                            "artifact_id": "r1",
+                            "actor": "operator",
+                            "platform": "generic",
+                            "at": "2026-09-14T18:00:00Z",
+                        }
+                    ],
+                }
+            ]
+
+        def list_artifacts(self, campaign_id):
+            return [{"id": "r1", "kind": "report"}]
+
+    result = build_operations_dashboard(
+        Queue(),
+        SubmissionAuditStorage(["READY"]),
+    )
+
+    assert result["submission_integrity"]["supported"] is True
+    assert result["submission_integrity"]["valid"] is False
+    assert result["submission_integrity"]["invalid_reports"] == 1
+    assert "submission_event_audit_invalid" in result["degraded_reasons"]
