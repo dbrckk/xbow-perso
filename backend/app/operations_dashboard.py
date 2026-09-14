@@ -44,7 +44,17 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
         blocked_reasons.append("recovery_readiness_block")
     if not bool(queue_audit.get("valid", True)):
         blocked_reasons.append("queue_transition_audit_invalid")
-    if critical_alerts:
+    blocking_alert_codes = {
+        "queue_stalled",
+        "running_lease_stale",
+        "recovery_readiness_block",
+        "recovery_ready_to_block_regression",
+        "control_plane_persistent_degradation",
+    }
+    if any(
+        str(item.get("code") or "") in blocking_alert_codes
+        for item in alerts.get("alerts") or []
+    ):
         blocked_reasons.append("critical_operational_alert")
 
     if recovery.get("latest_decision") == "REVIEW":
