@@ -44,6 +44,29 @@ def _fingerprint(payload: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def aggregate_report_provenance_fingerprint(
+    manifests: list[ReportProvenance],
+) -> str:
+    payload = [
+        {
+            "finding_id": item.finding_id,
+            "fingerprint": item.fingerprint,
+            "complete": item.complete,
+        }
+        for item in sorted(manifests, key=lambda item: item.finding_id)
+    ]
+    encoded = json.dumps(
+        {
+            "schema": "report-provenance-set-v1",
+            "manifests": payload,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def verify_report_provenance(
     manifest: ReportProvenance | dict[str, Any],
 ) -> dict[str, Any]:
