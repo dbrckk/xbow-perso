@@ -8,12 +8,8 @@ from fastapi import APIRouter, HTTPException
 from .campaign_audit import append_campaign_event
 from .campaign_overview import router as overview_router
 from .campaign_review_state import router as review_state_router
-from .report_provenance import (
-    aggregate_report_provenance_fingerprint,
-    build_report_provenance,
-)
-from .report_quality import build_report_quality_gates
 from .report_readiness import build_report_readiness
+from .reporting_governance import build_reporting_governance_snapshot
 from .observation_graph import load_observation_graph
 from .report_approval import (
     approval_event_from_storage,
@@ -55,14 +51,13 @@ def _save(campaign, version: int) -> None:
 
 def _submission_governance(campaign, store):
     graph = load_observation_graph(store, campaign.id)
-    readiness = build_report_readiness(campaign.findings, graph)
-    provenance = build_report_provenance(
-        [str(item.id) for item in campaign.findings],
+    snapshot = build_reporting_governance_snapshot(
+        campaign.findings,
         graph,
     )
     return (
-        build_report_quality_gates(readiness, provenance),
-        aggregate_report_provenance_fingerprint(provenance),
+        list(snapshot.quality_gates),
+        snapshot.provenance_fingerprint,
     )
 
 
