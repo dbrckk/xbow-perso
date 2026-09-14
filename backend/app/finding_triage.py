@@ -37,6 +37,8 @@ class FindingTriage:
     evidence_quality_grade: str
     duplicate_candidate: bool
     duplicate_group_size: int
+    correlated_discovery_source_count: int
+    multi_scanner_corroborated: bool
     recommended_state: str
 
     def to_dict(self) -> dict[str, Any]:
@@ -61,10 +63,14 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
     quality_by_id = {item.finding_id: item for item in build_evidence_quality(graph)}
     observed_finding_ids = {item.id for item in graph.by_kind("finding")}
     duplicate_size: dict[str, int] = {}
+    correlated_source_count: dict[str, int] = {}
+    multi_scanner: dict[str, bool] = {}
     for group in correlate_findings(findings):
         size = len(group.finding_ids)
         for finding_id in group.finding_ids:
             duplicate_size[finding_id] = size
+            correlated_source_count[finding_id] = group.discovery_source_count
+            multi_scanner[finding_id] = group.multi_scanner_corroborated
 
     ranked: list[FindingTriage] = []
     for finding in findings:
@@ -127,6 +133,8 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
                 evidence_quality_grade=evidence_quality_grade,
                 duplicate_candidate=duplicate,
                 duplicate_group_size=group_size,
+                correlated_discovery_source_count=correlated_source_count.get(finding_id, 1),
+                multi_scanner_corroborated=multi_scanner.get(finding_id, False),
                 recommended_state=recommended,
             )
         )
@@ -151,6 +159,7 @@ def campaign_finding_triage(campaign_id: str):
             "report_review": sum(item.recommended_state == "review_for_report" for item in triage),
             "corroborated": sum(item.corroborated for item in triage),
             "high_quality_evidence": sum(item.evidence_quality_grade == "high" for item in triage),
+            "multi_scanner_corroborated": sum(item.multi_scanner_corroborated for item in triage),
         },
         "read_only": True,
         "advisory_only": True,
