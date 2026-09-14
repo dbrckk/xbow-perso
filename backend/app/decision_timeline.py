@@ -32,6 +32,7 @@ def build_decision_timeline(
                 "decision_hash": item.metadata.get("decision_hash"),
                 "previous_decision_hash": item.metadata.get("previous_decision_hash"),
                 "signed": bool(item.metadata.get("decision_signature")),
+                "why": item.metadata.get("explanation"),
             }
         )
     planner_entries.sort(
