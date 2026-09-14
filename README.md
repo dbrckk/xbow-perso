@@ -326,3 +326,10 @@ This allows operators to detect post-generation modification of audit results wi
 Campaign-level and storage-wide submission-integrity summaries are now canonicalized and SHA-256 fingerprinted. Their fingerprints include the fingerprints of child report audits, allowing aggregate summaries to be independently verified and making post-generation modification detectable.
 
 The operations dashboard exposes verification status for the storage-wide aggregate. Unsupported backends remain explicitly marked unsupported rather than being treated as integrity failures.
+
+
+### Reporting governance fingerprint
+
+The reporting governance snapshot now has a deterministic `reporting-governance-v1` fingerprint covering report readiness, provenance manifests, provenance-set fingerprint, and report quality gates. The campaign overview exposes both the fingerprint and an independent verification result.
+
+This makes post-generation modification of the reporting-governance state detectable while keeping the entire layer read-only and advisory.
