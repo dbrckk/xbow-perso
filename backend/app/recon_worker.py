@@ -144,7 +144,7 @@ def _recon_rps(campaign) -> float:
 
 
 def _discovery_documents_enabled() -> bool:
-    raw = os.getenv("XBOW_RECON_DISCOVERY_DOCUMENTS", "true").strip().lower()
+    raw = os.getenv("XBOW_RECON_DISCOVERY_DOCUMENTS", "false").strip().lower()
     if raw in {"1", "true", "yes", "on"}:
         return True
     if raw in {"0", "false", "no", "off"}:
@@ -168,6 +168,9 @@ def _robots_sitemaps(body: bytes, base_url: str) -> list[str]:
 
 
 def _sitemap_locations(body: bytes) -> list[str]:
+    upper = body[:1_048_576].upper()
+    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
+        return []
     try:
         root = ET.fromstring(body)
     except ET.ParseError:
