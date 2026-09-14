@@ -160,3 +160,15 @@ class PostgresStorage(Storage):
                 """CREATE INDEX IF NOT EXISTS advisory_focus_snapshots_campaign_created
                    ON advisory_focus_snapshots(campaign_id, created_at DESC)"""
             )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS recovery_readiness_snapshots (
+                    fingerprint TEXT PRIMARY KEY,
+                    decision TEXT NOT NULL,
+                    document TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )"""
+            )
+            db.execute(
+                """CREATE INDEX IF NOT EXISTS recovery_readiness_snapshots_created
+                   ON recovery_readiness_snapshots(created_at DESC)"""
+            )
