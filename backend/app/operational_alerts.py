@@ -48,9 +48,19 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     health = metrics.get("control_plane_health") or {}
     slo = metrics.get("slo")
     if slo is None:
-        from .slo import build_platform_slos
+        required_slo_inputs = {
+            "jobs_total",
+            "queue_transition_audit",
+            "recovery_readiness",
+            "control_plane_health",
+            "pending_outbox_total",
+        }
+        if required_slo_inputs.issubset(metrics):
+            from .slo import build_platform_slos
 
-        slo = build_platform_slos(metrics)
+            slo = build_platform_slos(metrics)
+        else:
+            slo = {}
     latest_recovery_decision = recovery.get("latest_decision")
     ready_to_block_regressions = int(
         recovery.get("ready_to_block_regressions") or 0
