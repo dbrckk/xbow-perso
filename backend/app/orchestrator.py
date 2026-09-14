@@ -425,6 +425,7 @@ def _record_decision(
             "reason": action.reason,
             "priority": action.priority,
             "graph_fingerprint": fingerprint,
+            "at": utcnow(),
             "audit_seq": audit_seq,
             "previous_decision_hash": previous_hash,
         },
