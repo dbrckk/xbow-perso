@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -19,6 +21,7 @@ class ReportingGovernanceSnapshot:
     provenance: tuple[ReportProvenance, ...]
     quality_gates: tuple[ReportQualityGate, ...]
     provenance_fingerprint: str
+    governance_fingerprint: str
 
     def summary(self) -> dict[str, Any]:
         return {
@@ -33,9 +36,69 @@ class ReportingGovernanceSnapshot:
                 item.grade in {"A", "B"} for item in self.quality_gates
             ),
             "provenance_fingerprint": self.provenance_fingerprint,
+            "governance_fingerprint": self.governance_fingerprint,
             "read_only": True,
             "advisory_only": True,
         }
+
+
+REPORTING_GOVERNANCE_SCHEMA = "reporting-governance-v1"
+
+
+def reporting_governance_document(
+    readiness: tuple[ReportReadiness, ...],
+    provenance: tuple[ReportProvenance, ...],
+    quality_gates: tuple[ReportQualityGate, ...],
+    provenance_fingerprint: str,
+) -> dict[str, Any]:
+    return {
+        "schema": REPORTING_GOVERNANCE_SCHEMA,
+        "provenance_fingerprint": provenance_fingerprint,
+        "readiness": [
+            item.to_dict()
+            for item in sorted(readiness, key=lambda item: item.finding_id)
+        ],
+        "provenance": [
+            item.to_dict()
+            for item in sorted(provenance, key=lambda item: item.finding_id)
+        ],
+        "quality_gates": [
+            item.to_dict()
+            for item in sorted(quality_gates, key=lambda item: item.finding_id)
+        ],
+    }
+
+
+def reporting_governance_fingerprint(
+    document: dict[str, Any],
+) -> str:
+    encoded = json.dumps(
+        document,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def verify_reporting_governance_snapshot(
+    snapshot: ReportingGovernanceSnapshot,
+) -> dict[str, Any]:
+    document = reporting_governance_document(
+        snapshot.readiness,
+        snapshot.provenance,
+        snapshot.quality_gates,
+        snapshot.provenance_fingerprint,
+    )
+    computed = reporting_governance_fingerprint(document)
+    return {
+        "valid": computed == snapshot.governance_fingerprint,
+        "schema": REPORTING_GOVERNANCE_SCHEMA,
+        "expected_fingerprint": snapshot.governance_fingerprint,
+        "computed_fingerprint": computed,
+        "read_only": True,
+        "automatic_mutation": False,
+    }
 
 
 def build_reporting_governance_snapshot(
@@ -55,11 +118,19 @@ def build_reporting_governance_snapshot(
             list(provenance),
         )
     )
+    provenance_fingerprint = aggregate_report_provenance_fingerprint(
+        list(provenance)
+    )
+    document = reporting_governance_document(
+        readiness,
+        provenance,
+        quality_gates,
+        provenance_fingerprint,
+    )
     return ReportingGovernanceSnapshot(
         readiness=readiness,
         provenance=provenance,
         quality_gates=quality_gates,
-        provenance_fingerprint=aggregate_report_provenance_fingerprint(
-            list(provenance)
-        ),
+        provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=reporting_governance_fingerprint(document),
     )
