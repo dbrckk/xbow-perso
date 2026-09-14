@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 from typing import Any
 
@@ -119,3 +121,83 @@ def current_recovery_readiness(
         campaign_audits=campaign_audits,
         attestation_verification=attestation_verification,
     )
+
+
+
+def readiness_snapshot_document(result: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "decision": str(result.get("decision") or "BLOCK"),
+        "blockers": sorted(str(item) for item in result.get("blockers") or []),
+        "review_reasons": sorted(
+            str(item) for item in result.get("review_reasons") or []
+        ),
+        "checks": dict(result.get("checks") or {}),
+        "workers_may_resume": bool(result.get("workers_may_resume")),
+        "automatic_worker_start": False,
+        "automatic_mutation": False,
+    }
+
+
+def readiness_snapshot_fingerprint(result: dict[str, Any]) -> str:
+    document = readiness_snapshot_document(result)
+    encoded = json.dumps(
+        document,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def record_recovery_readiness(storage_backend, result: dict[str, Any]) -> dict[str, Any]:
+    document = readiness_snapshot_document(result)
+    fingerprint = readiness_snapshot_fingerprint(result)
+    snapshot = storage_backend.put_recovery_readiness_snapshot(
+        fingerprint,
+        document["decision"],
+        document,
+    )
+    return {
+        **result,
+        "snapshot_fingerprint": fingerprint,
+        "snapshot_created_at": snapshot.get("created_at"),
+    }
+
+
+def recovery_readiness_history(storage_backend, *, limit: int = 100) -> dict[str, Any]:
+    snapshots = storage_backend.list_recovery_readiness_snapshots(limit=limit)
+    transitions: list[dict[str, Any]] = []
+    chronological = list(reversed(snapshots))
+    previous = None
+    for item in chronological:
+        decision = str(item.get("decision") or "")
+        if previous is not None and decision != previous["decision"]:
+            transitions.append(
+                {
+                    "from": previous["decision"],
+                    "to": decision,
+                    "at": item.get("created_at"),
+                    "fingerprint": item.get("fingerprint"),
+                    "ready_to_block": (
+                        previous["decision"] == "READY"
+                        and decision == "BLOCK"
+                    ),
+                }
+            )
+        previous = {
+            "decision": decision,
+            "created_at": item.get("created_at"),
+        }
+
+    return {
+        "snapshots": snapshots,
+        "transitions": list(reversed(transitions)),
+        "latest_decision": (
+            str(snapshots[0].get("decision")) if snapshots else None
+        ),
+        "ready_to_block_regressions": sum(
+            bool(item["ready_to_block"]) for item in transitions
+        ),
+        "read_only": True,
+        "aggregate_only": True,
+    }
