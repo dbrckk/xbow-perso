@@ -496,3 +496,22 @@ def test_sitemap_parser_rejects_dtd_entity_documents(monkeypatch):
     )
 
     assert "https://example.test/evil" not in result.endpoints
+
+
+
+def test_recon_same_origin_normalizes_default_https_port(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    html = b'<a href="https://example.test:443/explicit">explicit</a>'
+    response = _Response(html, {"Content-Type": "text/html"})
+    monkeypatch.setattr(
+        "app.recon_worker.build_opener",
+        lambda *_args, **_kwargs: _Opener(response),
+    )
+
+    result = execute_recon_task(
+        _campaign(),
+        {"kind": "map_endpoints", "target": "https://example.test"},
+    )
+
+    assert result.endpoints == ("https://example.test:443/explicit",)
+    assert result.skipped_cross_origin == 0
