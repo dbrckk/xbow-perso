@@ -1,5 +1,6 @@
 import pytest
 
+from app.job_provenance import attach_job_provenance
 from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput
 from app.storage import CampaignConflictError, Storage
@@ -232,3 +233,38 @@ def test_completed_campaign_browser_job_is_cancelled_without_retry(tmp_path):
     assert final["attempts"] == 1
     assert final["claimed_by"] is None
     assert queue.claim("worker-browser-retry") is None
+
+
+
+def test_worker_rejects_policy_bound_job_after_scope_policy_changes(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    payload = attach_job_provenance(
+        {"campaign_id": campaign.id, "platform": "generic"},
+        campaign,
+        job_kind="report",
+        action="report",
+    )
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        payload,
+        max_attempts=1,
+        dedupe_key="report:stale-policy",
+    )
+
+    document, version = store.get_campaign_record(campaign.id)
+    document["target"]["rules"]["max_requests_per_second"] = 1.0
+    store.save_campaign(document, expected_version=version)
+
+    assert process_one(queue, store, "worker-policy-check") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "failed"
+    assert final["attempts"] == 1
+    assert "policy_fingerprint_mismatch" in str(final["last_error"])
