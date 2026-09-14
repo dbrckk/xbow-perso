@@ -574,7 +574,7 @@ class RedisJobQueue:
                             from_status="queued",
                             to_status="failed",
                             actor="queue",
-                            reason=row.get("last_error") or "retry budget exhausted",
+                            reason="retry budget exhausted",
                             at=utcnow(),
                         )
                         continue
