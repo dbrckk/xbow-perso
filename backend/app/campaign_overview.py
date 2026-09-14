@@ -131,6 +131,7 @@ def campaign_overview(campaign_id: str):
         campaign,
         report_artifact_ids,
         current_provenance_fingerprint=reporting.provenance_fingerprint,
+        current_governance_fingerprint=reporting.governance_fingerprint,
     )
 
     job_kinds = jobs.campaign_job_counts(campaign.id)
