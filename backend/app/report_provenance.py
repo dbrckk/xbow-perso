@@ -44,6 +44,42 @@ def _fingerprint(payload: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def verify_report_provenance(
+    manifest: ReportProvenance | dict[str, Any],
+) -> dict[str, Any]:
+    payload = manifest.to_dict() if isinstance(manifest, ReportProvenance) else dict(manifest)
+    expected = str(payload.get("fingerprint") or "")
+    canonical = {
+        "schema": payload.get("schema"),
+        "finding_id": payload.get("finding_id"),
+        "finding_observation_id": payload.get("finding_observation_id"),
+        "validation_observation_ids": sorted(
+            str(item) for item in (payload.get("validation_observation_ids") or [])
+        ),
+        "evidence_observation_ids": sorted(
+            str(item) for item in (payload.get("evidence_observation_ids") or [])
+        ),
+        "evidence_artifact_ids": sorted(
+            str(item) for item in (payload.get("evidence_artifact_ids") or [])
+        ),
+        "source_classes": sorted(
+            str(item) for item in (payload.get("source_classes") or [])
+        ),
+    }
+    computed = _fingerprint(canonical)
+    schema_valid = canonical["schema"] == "report-provenance-v1"
+    fingerprint_valid = bool(expected) and expected == computed
+    return {
+        "valid": schema_valid and fingerprint_valid,
+        "schema_valid": schema_valid,
+        "fingerprint_valid": fingerprint_valid,
+        "expected_fingerprint": expected,
+        "computed_fingerprint": computed,
+        "read_only": True,
+        "automatic_mutation": False,
+    }
+
+
 def build_report_provenance(
     finding_ids: list[str],
     graph: ObservationGraph,
