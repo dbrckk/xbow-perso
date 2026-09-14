@@ -69,3 +69,8 @@ def test_operations_dashboard_tracks_ready_to_block():
 
 def test_operations_dashboard_route_is_exposed():
     assert "/api/dashboard/operations" in app.openapi()["paths"]
+
+
+
+def test_operations_health_history_route_is_exposed():
+    assert "/api/dashboard/operations/health-history" in app.openapi()["paths"]
