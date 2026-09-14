@@ -39,6 +39,7 @@ class ReconResult:
     request_budget: int = 0
     frontier_remaining: int = 0
     stopped_by_request_budget: bool = False
+    deferred_by_request_budget: int = 0
     coverage_complete: bool = False
 
 
@@ -274,6 +275,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     skipped_out_of_scope = 0
     skipped_cross_origin = 0
     stopped_by_time_budget = False
+    deferred_by_request_budget = 0
 
     while pending and len(visited) < request_budget:
         if time.monotonic() >= deadline:
@@ -341,9 +343,11 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                     and depth < max_depth
                     and safe not in visited
                     and all(item[0] != safe for item in pending)
-                    and len(pending) + len(visited) < request_budget
                 ):
-                    pending.append((safe, depth + 1))
+                    if len(pending) + len(visited) < request_budget:
+                        pending.append((safe, depth + 1))
+                    else:
+                        deferred_by_request_budget += 1
 
         if kind in {"crawl", "map_forms"}:
             for form in parser.forms:
@@ -380,12 +384,12 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     wall_time_seconds = max(0.0, time.monotonic() - started_at)
     frontier_remaining = len(pending)
     stopped_by_request_budget = bool(
-        pending and len(visited) >= request_budget and not stopped_by_time_budget
+        deferred_by_request_budget > 0 and not stopped_by_time_budget
     )
     coverage_complete = bool(
         not pending
         and not stopped_by_time_budget
-        and not stopped_by_request_budget
+        and deferred_by_request_budget == 0
     )
 
     if not visited:
@@ -403,6 +407,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
             request_budget=request_budget,
             frontier_remaining=frontier_remaining,
             stopped_by_request_budget=stopped_by_request_budget,
+            deferred_by_request_budget=deferred_by_request_budget,
             coverage_complete=coverage_complete,
         )
 
@@ -425,5 +430,6 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         request_budget=request_budget,
         frontier_remaining=frontier_remaining,
         stopped_by_request_budget=stopped_by_request_budget,
+        deferred_by_request_budget=deferred_by_request_budget,
         coverage_complete=coverage_complete,
     )
