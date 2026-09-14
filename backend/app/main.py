@@ -296,9 +296,13 @@ def deployment_preflight():
 
 @app.get("/api/capabilities")
 def system_capabilities():
-    from .runtime_capabilities import safe_pentagi_runtime_capability
+    from .runtime_capabilities import (
+        safe_pentagi_runtime_capability,
+        safe_scanner_runtime_capability,
+    )
 
     pentagi = safe_pentagi_runtime_capability()
+    scanners = safe_scanner_runtime_capability()
     return {
         "campaign_control": {
             "scope_enforcement": True,
@@ -310,6 +314,8 @@ def system_capabilities():
         },
         "execution": {
             "strix_scanning": "gated",
+            "scanner_worker": scanners["mode"],
+            "scanner_worker_detail": scanners,
             "http_validation": "gated",
             "browser_automation": "gated",
             "pentagi": pentagi["mode"],
@@ -347,6 +353,9 @@ def system_capabilities():
             "out_of_scope_execution": False,
             "pentagi_remote_execution_enforceable": bool(
                 pentagi["execution_transport_enforceable"]
+            ),
+            "scanner_sandbox_admission_enforced": bool(
+                scanners["worker_admission_enforced"]
             ),
         },
     }
