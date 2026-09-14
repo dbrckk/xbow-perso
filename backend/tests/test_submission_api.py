@@ -282,6 +282,13 @@ def test_provenance_change_after_approval_makes_approval_stale(tmp_path, monkeyp
     assert status["approved"] is False
     assert status["stale"] is True
 
+    audit = submission_api.get_submission_audit(
+        campaign.id,
+        artifact["id"],
+    )
+    assert audit["valid"] is False
+    assert "approval_provenance_stale" in audit["issues"]
+
 
 
 def test_submission_audit_accepts_valid_approval_and_submission(tmp_path, monkeypatch):
