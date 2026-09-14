@@ -3,6 +3,23 @@ from __future__ import annotations
 from typing import Any
 
 
+ISSUE_CLASS = {
+    "submission_without_active_approval": "structural",
+    "revocation_without_active_approval": "structural",
+    "approval_missing_basis_digest": "metadata",
+    "approval_missing_artifact_sha256": "metadata",
+    "approval_provenance_stale": "stale",
+}
+
+
+def _issue_classes(issues: list[str]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for issue in issues:
+        category = ISSUE_CLASS.get(issue, "other")
+        counts[category] = counts.get(category, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def _campaign_events(campaign: Any) -> list[dict[str, Any]]:
     if isinstance(campaign, dict):
         return list(campaign.get("events") or [])
@@ -69,6 +86,7 @@ def audit_submission_events(
         "latest_approval_provenance_fingerprint": last_approval_provenance,
         "current_provenance_fingerprint": current_provenance_fingerprint,
         "issues": sorted(set(issues)),
+        "issue_classes": _issue_classes(sorted(set(issues))),
         "read_only": True,
         "automatic_mutation": False,
     }
@@ -90,9 +108,14 @@ def audit_campaign_submissions(
         for artifact_id in sorted(set(report_artifact_ids))
     ]
     issue_counts: dict[str, int] = {}
+    issue_class_counts: dict[str, int] = {}
     for audit in audits:
         for issue in audit["issues"]:
             issue_counts[issue] = issue_counts.get(issue, 0) + 1
+        for category, count in audit["issue_classes"].items():
+            issue_class_counts[category] = (
+                issue_class_counts.get(category, 0) + int(count)
+            )
 
     invalid = [audit for audit in audits if not audit["valid"]]
     return {
@@ -104,6 +127,7 @@ def audit_campaign_submissions(
             bool(audit["approval_active"]) for audit in audits
         ),
         "issue_counts": dict(sorted(issue_counts.items())),
+        "issue_class_counts": dict(sorted(issue_class_counts.items())),
         "invalid_artifact_ids": sorted(
             str(audit["artifact_id"]) for audit in invalid
         ),
@@ -123,6 +147,7 @@ def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
             "reports_checked": 0,
             "invalid_reports": 0,
             "issue_counts": {},
+            "issue_class_counts": {},
             "read_only": True,
             "automatic_mutation": False,
         }
@@ -130,6 +155,7 @@ def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
     campaigns = list(storage_backend.list_campaigns())
     campaign_audits: list[dict[str, Any]] = []
     issue_counts: dict[str, int] = {}
+    issue_class_counts: dict[str, int] = {}
     for campaign in campaigns:
         campaign_id = (
             str(campaign.get("id"))
@@ -146,6 +172,10 @@ def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
         campaign_audits.append(audit)
         for issue, count in audit["issue_counts"].items():
             issue_counts[issue] = issue_counts.get(issue, 0) + int(count)
+        for category, count in audit["issue_class_counts"].items():
+            issue_class_counts[category] = (
+                issue_class_counts.get(category, 0) + int(count)
+            )
 
     return {
         "supported": True,
@@ -158,6 +188,7 @@ def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
             int(item["invalid_reports"]) for item in campaign_audits
         ),
         "issue_counts": dict(sorted(issue_counts.items())),
+        "issue_class_counts": dict(sorted(issue_class_counts.items())),
         "read_only": True,
         "automatic_mutation": False,
     }
