@@ -681,6 +681,7 @@ class JobQueue:
             return None
         return self.get(job_id)
 
+    @staticmethod
     def _decode(row: sqlite3.Row) -> dict[str, Any]:
         result = dict(row)
         result["payload"] = json.loads(result["payload"])
