@@ -335,6 +335,52 @@ class JobQueue:
         return self._decode(claimed)
 
 
+    def claim_allowed(self, worker_id: str, kinds: tuple[str, ...] | list[str]) -> dict[str, Any] | None:
+        """Atomically claim the oldest queued job among an explicit set of kinds."""
+        worker_id = _bounded_identifier(worker_id, "worker_id")
+        allowed_kinds = {
+            "strix_scan",
+            "nuclei_scan",
+            "independent_validation",
+            "browser_flow",
+            "recon_task",
+            "report",
+            "pentagi_flow",
+            "pentagi_status",
+        }
+        normalized = tuple(dict.fromkeys(_bounded_identifier(kind, "kind") for kind in kinds))
+        if not normalized:
+            raise ValueError("at least one allowed job kind is required")
+        if any(kind not in allowed_kinds for kind in normalized):
+            raise ValueError("unsupported job kind")
+        placeholders = ",".join("?" for _ in normalized)
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            now_dt = datetime.now(timezone.utc)
+            self._recover_expired_leases(db, now_dt)
+            row = db.execute(
+                f"SELECT id FROM jobs WHERE status='queued' AND kind IN ({placeholders}) "
+                "AND attempts < max_attempts ORDER BY created_at,id LIMIT 1",
+                normalized,
+            ).fetchone()
+            if not row:
+                db.execute("COMMIT")
+                return None
+            now = now_dt.isoformat()
+            cursor = db.execute(
+                """UPDATE jobs
+                   SET status='running', attempts=attempts+1, claimed_by=?, claimed_at=?, updated_at=?
+                   WHERE id=? AND status='queued'""",
+                (worker_id, now, now, row["id"]),
+            )
+            if cursor.rowcount != 1:
+                db.execute("ROLLBACK")
+                return None
+            claimed = db.execute("SELECT * FROM jobs WHERE id=?", (row["id"],)).fetchone()
+            db.execute("COMMIT")
+        return self._decode(claimed)
+
+
     def claim_kind(self, worker_id: str, kind: str) -> dict[str, Any] | None:
         """Atomically claim only one explicitly requested job kind."""
         worker_id = _bounded_identifier(worker_id, "worker_id")
