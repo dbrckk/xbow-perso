@@ -338,6 +338,7 @@ def system_capabilities():
             "report_provenance_manifest": True,
             "report_provenance_verification": True,
             "verified_submission_gate": True,
+            "approval_provenance_binding": True,
             "multiwindow_slo_burn_rates": True,
         },
         "execution": {
