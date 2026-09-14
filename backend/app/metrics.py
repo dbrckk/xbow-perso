@@ -45,10 +45,12 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
     queue_audit_events = 0
     queue_audit_invalid_campaigns = 0
     queue_audit_invalid_jobs = 0
+    queue_audit_fn = getattr(queue_backend, "campaign_transition_audit", None)
+    queue_audit_supported = callable(queue_audit_fn)
     for campaign in campaigns:
         campaign_id = str(campaign.get("id") or "")
-        if campaign_id:
-            audit = queue_backend.campaign_transition_audit(campaign_id)
+        if campaign_id and queue_audit_supported:
+            audit = queue_audit_fn(campaign_id)
             queue_audit_campaigns += 1
             queue_audit_events += int(audit.get("events") or 0)
             invalid_jobs = list(audit.get("invalid_jobs") or [])
@@ -85,11 +87,16 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "pending_outbox_by_kind": dict(sorted(pending_outbox_by_kind.items())),
         "oldest_outbox_pending_age_seconds": oldest_outbox_age_seconds,
         "queue_transition_audit": {
+            "supported": queue_audit_supported,
             "campaigns_checked": queue_audit_campaigns,
             "events_checked": queue_audit_events,
             "invalid_campaigns": queue_audit_invalid_campaigns,
             "invalid_jobs": queue_audit_invalid_jobs,
-            "valid": queue_audit_invalid_campaigns == 0,
+            "valid": (
+                queue_audit_invalid_campaigns == 0
+                if queue_audit_supported
+                else None
+            ),
         },
         "read_only": True,
         "contains_targets": False,
