@@ -10,6 +10,7 @@ from app.scanner_sandbox import (
 
 _NAMES = (
     "XBOW_WORKER_ROLE",
+    "XBOW_ENABLE_SCANNER_WORKER",
     "XBOW_SCANNER_SANDBOX_PROFILE",
     "XBOW_SANDBOX_READ_ONLY_ROOTFS",
     "XBOW_SANDBOX_NO_NEW_PRIVILEGES",
@@ -36,6 +37,7 @@ def test_scanner_sandbox_defaults_fail_closed(monkeypatch):
 
 def test_restricted_scanner_worker_can_admit_allowlisted_engine(monkeypatch):
     monkeypatch.setenv("XBOW_WORKER_ROLE", "scanner")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
     monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
     monkeypatch.setenv("XBOW_SANDBOX_READ_ONLY_ROOTFS", "true")
     monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
@@ -51,6 +53,7 @@ def test_restricted_scanner_worker_can_admit_allowlisted_engine(monkeypatch):
 
 def test_engine_must_be_explicitly_allowlisted(monkeypatch):
     monkeypatch.setenv("XBOW_WORKER_ROLE", "scanner")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
     monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
     monkeypatch.setenv("XBOW_SANDBOX_READ_ONLY_ROOTFS", "true")
     monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
@@ -70,3 +73,17 @@ def test_invalid_sandbox_boolean_fails_closed(monkeypatch):
     assert safe["ready"] is False
     assert safe["configuration_error"] is True
     assert safe["block_reasons"] == ["invalid_sandbox_configuration"]
+
+
+
+def test_scanner_worker_kill_switch_blocks_execution_admission(monkeypatch):
+    monkeypatch.setenv("XBOW_WORKER_ROLE", "scanner")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "false")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SANDBOX_READ_ONLY_ROOTFS", "true")
+    monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
+    monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "true")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+
+    with pytest.raises(ScannerSandboxConfigError, match="scanner_worker_disabled"):
+        require_scanner_sandbox("nuclei")
