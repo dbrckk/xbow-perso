@@ -3,13 +3,19 @@ from __future__ import annotations
 from typing import Any
 
 
+def _campaign_events(campaign: Any) -> list[dict[str, Any]]:
+    if isinstance(campaign, dict):
+        return list(campaign.get("events") or [])
+    return list(getattr(campaign, "events", []) or [])
+
+
 def audit_submission_events(
     campaign: Any,
     artifact_id: str,
 ) -> dict[str, Any]:
     relevant = [
         event
-        for event in campaign.events
+        for event in _campaign_events(campaign)
         if event.get("artifact_id") == artifact_id
         and event.get("type")
         in {
@@ -52,6 +58,38 @@ def audit_submission_events(
         "approval_active": approval_active,
         "latest_approval_provenance_fingerprint": last_approval_provenance,
         "issues": sorted(set(issues)),
+        "read_only": True,
+        "automatic_mutation": False,
+    }
+
+
+
+def audit_campaign_submissions(
+    campaign: Any,
+    report_artifact_ids: list[str],
+) -> dict[str, Any]:
+    audits = [
+        audit_submission_events(campaign, artifact_id)
+        for artifact_id in sorted(set(report_artifact_ids))
+    ]
+    issue_counts: dict[str, int] = {}
+    for audit in audits:
+        for issue in audit["issues"]:
+            issue_counts[issue] = issue_counts.get(issue, 0) + 1
+
+    invalid = [audit for audit in audits if not audit["valid"]]
+    return {
+        "valid": not invalid,
+        "reports_checked": len(audits),
+        "invalid_reports": len(invalid),
+        "submissions": sum(int(audit["submissions"]) for audit in audits),
+        "active_approvals": sum(
+            bool(audit["approval_active"]) for audit in audits
+        ),
+        "issue_counts": dict(sorted(issue_counts.items())),
+        "invalid_artifact_ids": sorted(
+            str(audit["artifact_id"]) for audit in invalid
+        ),
         "read_only": True,
         "automatic_mutation": False,
     }
