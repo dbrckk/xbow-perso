@@ -35,6 +35,7 @@ def build_control_plane_health(dashboard: dict[str, Any]) -> dict[str, Any]:
     summary = dashboard.get("summary") or {}
     recovery = dashboard.get("recovery") or {}
     queue = dashboard.get("queue_integrity") or {}
+    submission_integrity = dashboard.get("submission_integrity") or {}
 
     critical_alerts = int(summary.get("critical_alerts") or 0)
     warning_alerts = int(summary.get("warning_alerts") or 0)
@@ -125,6 +126,15 @@ def build_control_plane_health(dashboard: dict[str, Any]) -> dict[str, Any]:
     if critical_alerts:
         reporting_score -= min(20, critical_alerts * 5)
         reporting_reasons.append("critical_alerts_present")
+    if (
+        submission_integrity.get("supported")
+        and submission_integrity.get("valid") is False
+    ):
+        invalid_reports = int(
+            submission_integrity.get("invalid_reports") or 0
+        )
+        reporting_score -= min(40, max(10, invalid_reports * 10))
+        reporting_reasons.append("submission_event_audit_invalid")
 
     components = {
         "governance": HealthComponent(
