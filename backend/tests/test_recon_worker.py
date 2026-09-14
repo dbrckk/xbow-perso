@@ -476,8 +476,9 @@ def test_recon_worker_marks_request_budget_saturation_as_incomplete(monkeypatch)
     assert result.requests_made == 1
     assert result.request_budget == 1
     assert result.frontier_remaining == 0
-    assert result.stopped_by_request_budget is False
-    assert result.coverage_complete is True
+    assert result.stopped_by_request_budget is True
+    assert result.deferred_by_request_budget == 1
+    assert result.coverage_complete is False
 
 
 def test_recon_worker_reports_incomplete_frontier_when_budget_prevents_followup(monkeypatch):
@@ -516,5 +517,6 @@ def test_recon_worker_reports_incomplete_frontier_when_budget_prevents_followup(
     assert result.requests_made == 2
     assert result.request_budget == 2
     assert result.frontier_remaining == 0
-    assert result.stopped_by_request_budget is False
-    assert result.coverage_complete is True
+    assert result.stopped_by_request_budget is True
+    assert result.deferred_by_request_budget >= 1
+    assert result.coverage_complete is False
