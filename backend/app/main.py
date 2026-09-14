@@ -1563,6 +1563,7 @@ from .coverage import router as coverage_router  # noqa: E402
 from .evidence_quality import router as evidence_quality_router  # noqa: E402
 from .finding_cluster_consensus import router as finding_cluster_consensus_router  # noqa: E402
 from .finding_cluster_saturation import router as finding_cluster_saturation_router  # noqa: E402
+from .finding_intelligence import router as finding_intelligence_router  # noqa: E402
 from .finding_correlation import router as finding_correlation_router  # noqa: E402
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
@@ -1575,6 +1576,7 @@ app.include_router(evidence_quality_router)
 app.include_router(finding_correlation_router)
 app.include_router(finding_cluster_consensus_router)
 app.include_router(finding_cluster_saturation_router)
+app.include_router(finding_intelligence_router)
 app.include_router(finding_readiness_router)
 app.include_router(metrics_router)
 app.include_router(alerts_router)
