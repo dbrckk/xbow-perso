@@ -18,6 +18,7 @@ class SubmissionStatus:
     submitted_at: str | None
     submitted_by: str | None
     platform: str | None
+    stale_reasons: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -91,6 +92,7 @@ def submission_status(
             submitted_at=None,
             submitted_by=None,
             platform=None,
+            stale_reasons=approval.stale_reasons,
         )
 
     latest_approval_index = approval_events[-1][0] if approval_events else -1
@@ -108,6 +110,7 @@ def submission_status(
             submitted_at=latest.get("at"),
             submitted_by=latest.get("actor"),
             platform=latest.get("platform"),
+            stale_reasons=(),
         )
 
     return SubmissionStatus(
@@ -119,6 +122,7 @@ def submission_status(
         submitted_at=None,
         submitted_by=None,
         platform=None,
+        stale_reasons=(),
     )
 
 
