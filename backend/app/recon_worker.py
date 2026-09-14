@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 import os
 import time
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from urllib.error import HTTPError, URLError
@@ -34,6 +35,7 @@ class ReconResult:
     max_depth_reached: int = 0
     skipped_out_of_scope: int = 0
     skipped_cross_origin: int = 0
+    endpoint_provenance: tuple[dict, ...] = ()
 
 
 _MAX_DISCOVERED_LINKS = 500
@@ -141,6 +143,50 @@ def _recon_rps(campaign) -> float:
     return min(campaign_rps, local_cap)
 
 
+def _discovery_documents_enabled() -> bool:
+    raw = os.getenv("XBOW_RECON_DISCOVERY_DOCUMENTS", "false").strip().lower()
+    if raw in {"1", "true", "yes", "on"}:
+        return True
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    raise ReconPolicyError("XBOW_RECON_DISCOVERY_DOCUMENTS must be a boolean")
+
+
+def _robots_sitemaps(body: bytes, base_url: str) -> list[str]:
+    values: list[str] = []
+    text = body.decode("utf-8", errors="replace")
+    for line in text.splitlines():
+        key, sep, value = line.partition(":")
+        if not sep or key.strip().lower() != "sitemap":
+            continue
+        candidate = urljoin(base_url, value.strip())
+        if candidate not in values:
+            values.append(candidate)
+        if len(values) >= 20:
+            break
+    return values
+
+
+def _sitemap_locations(body: bytes) -> list[str]:
+    upper = body[:1_048_576].upper()
+    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
+        return []
+    try:
+        root = ET.fromstring(body)
+    except ET.ParseError:
+        return []
+    values: list[str] = []
+    for element in root.iter():
+        if element.tag.rsplit("}", 1)[-1].lower() != "loc":
+            continue
+        value = (element.text or "").strip()
+        if value and value not in values:
+            values.append(value)
+        if len(values) >= _MAX_DISCOVERED_LINKS:
+            break
+    return values
+
+
 def _enabled() -> bool:
     raw = os.getenv("XBOW_ENABLE_RECON", "0").strip().lower()
     if raw in {"1", "true", "yes", "on"}:
@@ -165,16 +211,26 @@ def _safe_url(campaign, candidate: str) -> str:
     return urlunparse((parsed.scheme.lower(), parsed.netloc, parsed.path or "/", "", "", ""))
 
 
+def _effective_port(parsed) -> int | None:
+    if parsed.port is not None:
+        return parsed.port
+    if parsed.scheme.lower() == "https":
+        return 443
+    if parsed.scheme.lower() == "http":
+        return 80
+    return None
+
+
 def _same_origin(base: str, candidate: str) -> bool:
     left, right = urlparse(base), urlparse(candidate)
     return (
         left.scheme.lower(),
         (left.hostname or "").lower(),
-        left.port,
+        _effective_port(left),
     ) == (
         right.scheme.lower(),
         (right.hostname or "").lower(),
-        right.port,
+        _effective_port(right),
     )
 
 
@@ -240,9 +296,10 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     max_bytes = _max_bytes()
     opener = build_opener(_NoRedirect())
 
-    pending: list[tuple[str, int]] = [(target, 0)]
+    pending: list[tuple[str, int, str]] = [(target, 0, "seed")]
     visited: set[str] = set()
     endpoints: set[str] = set()
+    endpoint_sources: dict[str, set[str]] = {}
     forms: list[dict] = []
     technologies: set[str] = set()
     waf: set[str] = set()
@@ -253,9 +310,10 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     max_depth_reached = 0
     skipped_out_of_scope = 0
     skipped_cross_origin = 0
+    discovery_docs_seeded = False
 
     while pending and len(visited) < request_budget:
-        current, depth = pending.pop(0)
+        current, depth, discovery_source = pending.pop(0)
         if current in visited:
             continue
         if not _same_origin(target, current):
@@ -289,6 +347,70 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         if text:
             parser.feed(text)
 
+        if (
+            kind == "crawl"
+            and not discovery_docs_seeded
+            and current == target
+            and _discovery_documents_enabled()
+            and request_budget >= 3
+        ):
+            discovery_docs_seeded = True
+            parsed_target = urlparse(target)
+            origin = urlunparse(
+                (
+                    parsed_target.scheme,
+                    parsed_target.netloc,
+                    "/",
+                    "",
+                    "",
+                    "",
+                )
+            ).rstrip("/")
+            for document, source_name in (
+                (origin + "/robots.txt", "robots"),
+                (origin + "/sitemap.xml", "sitemap"),
+            ):
+                if document not in visited and all(item[0] != document for item in pending):
+                    pending.append((document, 0, source_name))
+
+        path = urlparse(current).path.lower()
+        if kind == "crawl" and discovery_source == "robots" and body:
+            for candidate in _robots_sitemaps(body, current):
+                try:
+                    safe = _safe_url(campaign, candidate)
+                except ReconPolicyError:
+                    skipped_out_of_scope += 1
+                    continue
+                if not _same_origin(target, safe):
+                    skipped_cross_origin += 1
+                    continue
+                if (
+                    safe not in visited
+                    and all(item[0] != safe for item in pending)
+                    and len(pending) + len(visited) < request_budget
+                ):
+                    pending.append((safe, 0, "sitemap"))
+
+        if kind == "crawl" and (discovery_source == "sitemap" or path.endswith(".xml")) and body:
+            for candidate in _sitemap_locations(body):
+                try:
+                    safe = _safe_url(campaign, candidate)
+                except ReconPolicyError:
+                    skipped_out_of_scope += 1
+                    continue
+                if not _same_origin(target, safe):
+                    skipped_cross_origin += 1
+                    continue
+                endpoints.add(safe)
+                endpoint_sources.setdefault(safe, set()).add("sitemap")
+                if (
+                    depth < max_depth
+                    and safe not in visited
+                    and all(item[0] != safe for item in pending)
+                    and len(pending) + len(visited) < request_budget
+                ):
+                    pending.append((safe, depth + 1, "sitemap"))
+
         if kind in {"crawl", "map_endpoints"}:
             for candidate in sorted(parser.links):
                 try:
@@ -300,6 +422,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                     skipped_cross_origin += 1
                     continue
                 endpoints.add(safe)
+                endpoint_sources.setdefault(safe, set()).add("html")
                 if (
                     kind == "crawl"
                     and depth < max_depth
@@ -307,7 +430,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                     and all(item[0] != safe for item in pending)
                     and len(pending) + len(visited) < request_budget
                 ):
-                    pending.append((safe, depth + 1))
+                    pending.append((safe, depth + 1, "html"))
 
         if kind in {"crawl", "map_forms"}:
             for form in parser.forms:
@@ -367,4 +490,11 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         max_depth_reached=max_depth_reached,
         skipped_out_of_scope=skipped_out_of_scope,
         skipped_cross_origin=skipped_cross_origin,
+        endpoint_provenance=tuple(
+            {
+                "endpoint": endpoint,
+                "sources": sorted(endpoint_sources.get(endpoint, set())),
+            }
+            for endpoint in sorted(endpoints)[:100]
+        ),
     )
