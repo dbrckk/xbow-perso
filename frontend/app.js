@@ -192,10 +192,27 @@ function renderDecisionTimeline(data){
   $('timelineCard').classList.remove('hidden');
   const timeline=Array.isArray(data.timeline)?data.timeline:[];
   const audit=data.audit||{};
+  const stability=data.planner_stability||{};
   $('timelineSummary').textContent=timeline.length+' événement(s)';
+  const state=stability.state||'unknown';
+  const score=Math.round((Number(stability.score)||0)*100);
   $('timelineAudit').textContent=
     'Chaîne audit : '+(audit.valid?'valide':'invalide')+
-    ' · '+(audit.checked||0)+' décision(s) vérifiée(s)';
+    ' · '+(audit.checked||0)+' décision(s) vérifiée(s)'+
+    ' · stabilité '+state+' '+score+'%';
+  $('timelineAudit').className=(stability.alert?'err':'muted');
+
+  const oldAlert=$('plannerStabilityAlert');
+  if(oldAlert)oldAlert.remove();
+  if(stability.alert){
+    const alert=document.createElement('div');
+    alert.id='plannerStabilityAlert';
+    alert.className='stability-alert';
+    const anomalies=Array.isArray(stability.anomalies)?stability.anomalies:[];
+    const labels=anomalies.map(item=>item.kind).filter(Boolean);
+    alert.textContent='Alerte stabilité planner : '+(labels.length?labels.join(' · '):'comportement instable détecté');
+    $('timelineAudit').insertAdjacentElement('afterend',alert);
+  }
 
   const list=$('timelineList');
   list.replaceChildren();
