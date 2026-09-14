@@ -30,6 +30,11 @@ def _setup(tmp_path, monkeypatch, *, report_ready=True):
                 severity="medium",
                 asset="https://example.test",
                 summary="bounded fixture",
+                impact="bounded impact",
+                remediation="apply bounded remediation",
+                reproduction_steps=["observe bounded fixture"],
+                cwe="CWE-200",
+                cvss=5.3,
                 status="confirmed",
                 discovered_by="scanner",
                 validated_by="independent-validator",
@@ -71,6 +76,10 @@ def _setup(tmp_path, monkeypatch, *, report_ready=True):
                 "artifact-reference",
                 "independent-validator",
                 parent_ids=("validation:v1",),
+                metadata={
+                    "artifact_id": "validation-artifact-f1",
+                    "artifact_sha256": "b" * 64,
+                },
             ).to_dict(),
         )
     artifact = store.put_artifact(campaign.id, "report", b"report", media_type="text/markdown")
