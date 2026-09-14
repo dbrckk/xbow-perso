@@ -152,14 +152,16 @@ def campaign_report_readiness(campaign_id: str):
 
     campaign = assert_campaign_exists(campaign_id)
     graph = load_observation_graph(storage(), campaign.id)
-    readiness = build_report_readiness(campaign.findings, graph)
-    from .report_quality import build_report_quality_gates, summarize_report_quality
+    from .report_quality import summarize_report_quality
+    from .reporting_governance import build_reporting_governance_snapshot
 
-    provenance = build_report_provenance(
-        [str(item.id) for item in campaign.findings],
+    reporting = build_reporting_governance_snapshot(
+        campaign.findings,
         graph,
     )
-    quality_gates = build_report_quality_gates(readiness, provenance)
+    readiness = list(reporting.readiness)
+    provenance = list(reporting.provenance)
+    quality_gates = list(reporting.quality_gates)
     return {
         "campaign_id": campaign.id,
         "findings": [item.to_dict() for item in readiness],
@@ -176,6 +178,7 @@ def campaign_report_readiness(campaign_id: str):
                 "total": len(provenance),
                 "complete": sum(item.complete for item in provenance),
                 "blocked": sum(not item.complete for item in provenance),
+                "aggregate_fingerprint": reporting.provenance_fingerprint,
             },
             "read_only": True,
             "advisory_only": True,
