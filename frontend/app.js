@@ -232,6 +232,36 @@ function renderDecisionTimeline(data){
     detail.className='muted';
     if(item.type==='planner_decision'){
       detail.textContent=item.reason||'Aucune raison enregistrée';
+      const why=item.why||null;
+      if(why){
+        const whyDetails=document.createElement('details');
+        const whySummary=document.createElement('summary');
+        whySummary.textContent='Why?';
+        const signals=document.createElement('div');
+        signals.className='why-grid';
+        const entries=[
+          ['Gate',why.gate?.allowed===false?'bloqué':'autorisé',why.gate?.blockers],
+          ['Risque',why.risk?.level||'inconnu',why.risk?.reasons],
+          ['Consensus',why.consensus?.next_focus||'aucun',why.consensus?.reasons],
+          ['Cycle',why.cycle?.state||'inconnu',[why.cycle?.reason]],
+          ['Surface',Math.round((Number(why.surface_enrichment?.score)||0)*100)+'%',[why.surface_enrichment?.ready?'prête':'insuffisante']],
+          ['Couverture',Math.round((Number(why.coverage?.coverage_score)||0)*100)+'%',[]]
+        ];
+        for(const [label,value,reasons] of entries){
+          const block=document.createElement('div');
+          block.className='why-block';
+          const strong=document.createElement('strong');
+          strong.textContent=label+' : '+value;
+          const text=document.createElement('div');
+          text.className='muted';
+          const list=(Array.isArray(reasons)?reasons:[]).filter(Boolean);
+          text.textContent=list.join(' · ');
+          block.append(strong,text);
+          signals.appendChild(block);
+        }
+        whyDetails.append(whySummary,signals);
+        body.appendChild(whyDetails);
+      }
     }else{
       const parts=[
         item.finding_id?('finding '+item.finding_id):null,
