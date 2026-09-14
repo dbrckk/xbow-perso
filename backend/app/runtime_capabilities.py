@@ -97,3 +97,63 @@ def safe_pentagi_runtime_capability() -> dict[str, Any]:
             "contains_secrets": False,
             "configuration_error": True,
         }
+
+
+
+def scanner_runtime_capability() -> dict[str, Any]:
+    active_scans_enabled = _strict_bool("XBOW_ENABLE_ACTIVE_SCANS", False)
+    scanner_worker_enabled = _strict_bool("XBOW_ENABLE_SCANNER_WORKER", False)
+    dry_run = _strict_bool("DRY_RUN", True)
+    profile = (os.getenv("XBOW_SCANNER_SANDBOX_PROFILE") or "").strip().lower()
+    engines = tuple(
+        sorted(
+            {
+                item.strip().lower()
+                for item in os.getenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei").split(",")
+                if item.strip()
+            }
+        )
+    )
+    reasons: list[str] = []
+    if not active_scans_enabled:
+        reasons.append("active_scans_disabled")
+    if dry_run:
+        reasons.append("global_dry_run")
+    if not scanner_worker_enabled:
+        reasons.append("scanner_worker_disabled")
+    if profile != "restricted-v1":
+        reasons.append("restricted_sandbox_profile_required")
+    if not engines:
+        reasons.append("no_scanner_engine_allowlisted")
+
+    return {
+        "mode": "active_gated" if active_scans_enabled else "disabled",
+        "active_scans_enabled": active_scans_enabled,
+        "scanner_worker_enabled": scanner_worker_enabled,
+        "dry_run": dry_run,
+        "sandbox_profile": profile or "unconfigured",
+        "allowed_engines": list(engines),
+        "dispatch_ready": not reasons,
+        "dispatch_block_reasons": reasons,
+        "worker_admission_enforced": True,
+        "contains_secrets": False,
+    }
+
+
+def safe_scanner_runtime_capability() -> dict[str, Any]:
+    try:
+        return scanner_runtime_capability()
+    except CapabilityConfigError:
+        return {
+            "mode": "configuration_error",
+            "active_scans_enabled": False,
+            "scanner_worker_enabled": False,
+            "dry_run": True,
+            "sandbox_profile": "configuration_error",
+            "allowed_engines": [],
+            "dispatch_ready": False,
+            "dispatch_block_reasons": ["invalid_boolean_configuration"],
+            "worker_admission_enforced": True,
+            "contains_secrets": False,
+            "configuration_error": True,
+        }
