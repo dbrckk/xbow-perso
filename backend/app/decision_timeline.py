@@ -112,6 +112,81 @@ def _causal_summary(
     return transition_text + " principalement parce que " + "; ".join(clauses[:4]) + "."
 
 
+def _planner_stability(planner_entries: list[dict[str, Any]]) -> dict[str, Any]:
+    actions = [str(item.get("action") or "") for item in planner_entries if item.get("action")]
+    transitions = list(zip(actions, actions[1:]))
+    anomalies: list[dict[str, Any]] = []
+
+    reversals = 0
+    for index in range(2, len(actions)):
+        if actions[index] == actions[index - 2] and actions[index] != actions[index - 1]:
+            reversals += 1
+            anomalies.append(
+                {
+                    "kind": "oscillation",
+                    "index": index,
+                    "sequence": planner_entries[index].get("sequence"),
+                    "pattern": actions[index - 2:index + 1],
+                    "severity": "warning",
+                }
+            )
+
+    stop_reopens = 0
+    for index, (before, after) in enumerate(transitions, start=1):
+        if before == "stop" and after != "stop":
+            stop_reopens += 1
+            anomalies.append(
+                {
+                    "kind": "stop_reopened",
+                    "index": index,
+                    "sequence": planner_entries[index].get("sequence"),
+                    "pattern": [before, after],
+                    "severity": "critical",
+                }
+            )
+
+    repeated_switches = 0
+    if len(transitions) >= 4:
+        recent = transitions[-4:]
+        repeated_switches = sum(1 for before, after in recent if before != after)
+        if repeated_switches >= 4:
+            anomalies.append(
+                {
+                    "kind": "high_churn",
+                    "index": len(actions) - 1,
+                    "sequence": planner_entries[-1].get("sequence"),
+                    "pattern": actions[-5:],
+                    "severity": "warning",
+                }
+            )
+
+    score = 1.0
+    score -= min(0.45, reversals * 0.15)
+    score -= min(0.40, stop_reopens * 0.40)
+    if repeated_switches >= 4:
+        score -= 0.20
+    score = round(max(0.0, score), 2)
+
+    if score >= 0.85:
+        state = "stable"
+    elif score >= 0.60:
+        state = "watch"
+    else:
+        state = "unstable"
+
+    return {
+        "score": score,
+        "state": state,
+        "decisions": len(actions),
+        "transitions": len(transitions),
+        "oscillations": reversals,
+        "stop_reopens": stop_reopens,
+        "anomalies": anomalies,
+        "alert": state == "unstable" or stop_reopens > 0,
+        "read_only": True,
+    }
+
+
 def build_decision_timeline(
     campaign: Any,
     graph: Any,
@@ -191,12 +266,15 @@ def build_decision_timeline(
         )
     )
 
+    stability = _planner_stability(planner_entries)
+
     return {
         "timeline": timestamped,
         "planner_decisions": planner_entries,
         "campaign_events": campaign_entries,
         "audit": verify_decision_audit_chain(graph),
         "legacy_decision_history": decision_history(graph),
+        "planner_stability": stability,
         "summary": {
             "timeline_entries": len(timestamped),
             "planner_decisions": len(planner_entries),

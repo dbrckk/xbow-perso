@@ -276,3 +276,87 @@ def test_decision_timeline_builds_deterministic_causal_summary(monkeypatch):
     assert "2 nouveau(x) blocker(s)" in summary
     assert "risque est passé de low à high" in summary
     assert "consensus a changé" in summary
+
+
+
+def _add_decision(graph, seq, action, at):
+    graph.add(
+        Observation(
+            f"decision:{seq}",
+            "evidence",
+            action,
+            "orchestrator",
+            metadata={
+                "memory_type": "planner_decision",
+                "action": action,
+                "agent": "analysis-agent",
+                "reason": f"fixture {action}",
+                "priority": 80,
+                "graph_fingerprint": f"g{seq}",
+                "at": at,
+                "audit_seq": seq,
+                "previous_decision_hash": None,
+                "decision_hash": f"h{seq}",
+            },
+        )
+    )
+
+
+def test_planner_stability_is_high_for_monotonic_progress(monkeypatch):
+    graph = ObservationGraph()
+    _add_decision(graph, 1, "inventory", "2026-09-14T07:00:00+00:00")
+    _add_decision(graph, 2, "scan", "2026-09-14T07:00:01+00:00")
+    _add_decision(graph, 3, "validate", "2026-09-14T07:00:02+00:00")
+    _add_decision(graph, 4, "report", "2026-09-14T07:00:03+00:00")
+    monkeypatch.setattr(
+        "app.decision_timeline.verify_decision_audit_chain",
+        lambda _graph: {"valid": True, "checked": 4, "sealed_decisions": 4, "legacy_unsealed": [], "reason": None},
+    )
+
+    result = build_decision_timeline(_campaign(), graph)
+    stability = result["planner_stability"]
+
+    assert stability["state"] == "stable"
+    assert stability["score"] >= 0.85
+    assert stability["oscillations"] == 0
+    assert stability["stop_reopens"] == 0
+    assert stability["alert"] is False
+
+
+def test_planner_stability_detects_oscillation(monkeypatch):
+    graph = ObservationGraph()
+    _add_decision(graph, 1, "scan", "2026-09-14T07:00:00+00:00")
+    _add_decision(graph, 2, "validate", "2026-09-14T07:00:01+00:00")
+    _add_decision(graph, 3, "scan", "2026-09-14T07:00:02+00:00")
+    _add_decision(graph, 4, "validate", "2026-09-14T07:00:03+00:00")
+    _add_decision(graph, 5, "scan", "2026-09-14T07:00:04+00:00")
+    monkeypatch.setattr(
+        "app.decision_timeline.verify_decision_audit_chain",
+        lambda _graph: {"valid": True, "checked": 5, "sealed_decisions": 5, "legacy_unsealed": [], "reason": None},
+    )
+
+    result = build_decision_timeline(_campaign(), graph)
+    stability = result["planner_stability"]
+
+    assert stability["oscillations"] >= 2
+    assert any(item["kind"] == "oscillation" for item in stability["anomalies"])
+    assert any(item["kind"] == "high_churn" for item in stability["anomalies"])
+    assert stability["score"] < 0.85
+
+
+def test_planner_stability_flags_action_after_stop(monkeypatch):
+    graph = ObservationGraph()
+    _add_decision(graph, 1, "scan", "2026-09-14T07:00:00+00:00")
+    _add_decision(graph, 2, "stop", "2026-09-14T07:00:01+00:00")
+    _add_decision(graph, 3, "validate", "2026-09-14T07:00:02+00:00")
+    monkeypatch.setattr(
+        "app.decision_timeline.verify_decision_audit_chain",
+        lambda _graph: {"valid": True, "checked": 3, "sealed_decisions": 3, "legacy_unsealed": [], "reason": None},
+    )
+
+    result = build_decision_timeline(_campaign(), graph)
+    stability = result["planner_stability"]
+
+    assert stability["stop_reopens"] == 1
+    assert stability["alert"] is True
+    assert any(item["kind"] == "stop_reopened" for item in stability["anomalies"])
