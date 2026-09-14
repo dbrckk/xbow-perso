@@ -56,3 +56,25 @@ def test_operational_alert_thresholds_fail_closed(monkeypatch):
 
 def test_alerts_route_is_exposed_under_authenticated_api():
     assert "/api/alerts" in app.openapi()["paths"]
+
+
+
+def test_operational_alerts_flag_recovery_block_and_regression(monkeypatch):
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {
+                "failed": 0,
+                "queued": 0,
+                "running": 0,
+            },
+            "recovery_readiness": {
+                "latest_decision": "BLOCK",
+                "ready_to_block_regressions": 1,
+            },
+        }
+    )
+
+    codes = {item["code"] for item in result["alerts"]}
+    assert "recovery_readiness_block" in codes
+    assert "recovery_ready_to_block_regression" in codes
+    assert result["status"] == "alert"
