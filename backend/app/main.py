@@ -334,6 +334,7 @@ def system_capabilities():
             "slo_error_budgets": True,
             "historical_slo_windows": True,
             "multiwindow_slo_policy": True,
+            "report_quality_gate": True,
             "multiwindow_slo_burn_rates": True,
         },
         "execution": {
