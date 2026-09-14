@@ -116,13 +116,18 @@ def campaign_overview(campaign_id: str):
         except ArtifactIntegrityError:
             report_integrity_errors += 1
             continue
-        status = submission_status(campaign, verified).to_dict()
+        status = submission_status(
+            campaign,
+            verified,
+            provenance_fingerprint=reporting.provenance_fingerprint,
+        ).to_dict()
         reports.append(status)
         report_states[status["state"]] += 1
 
     submission_audit = audit_campaign_submissions(
         campaign,
         report_artifact_ids,
+        current_provenance_fingerprint=reporting.provenance_fingerprint,
     )
 
     job_kinds = jobs.campaign_job_counts(campaign.id)
