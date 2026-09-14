@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 from app.observation_graph import Observation, ObservationGraph
+from app.report_provenance import build_report_provenance
 from app.report_quality import build_report_quality_gates, summarize_report_quality
 from app.report_readiness import build_report_readiness
 
@@ -62,8 +63,10 @@ def _validated_graph() -> ObservationGraph:
 
 
 def test_report_quality_gate_is_advisory_and_submission_safe():
-    readiness = build_report_readiness([_finding()], _validated_graph())
-    gates = build_report_quality_gates(readiness)
+    graph = _validated_graph()
+    readiness = build_report_readiness([_finding()], graph)
+    provenance = build_report_provenance(["f1"], graph)
+    gates = build_report_quality_gates(readiness, provenance)
     summary = summarize_report_quality(gates)
 
     assert len(gates) == 1
@@ -83,11 +86,26 @@ def test_report_quality_gate_downgrades_incomplete_metadata():
     finding.cvss = None
     finding.remediation = ""
 
-    readiness = build_report_readiness([finding], _validated_graph())
-    gate = build_report_quality_gates(readiness)[0]
+    graph = _validated_graph()
+    readiness = build_report_readiness([finding], graph)
+    provenance = build_report_provenance(["f1"], graph)
+    gate = build_report_quality_gates(readiness, provenance)[0]
 
     assert gate.submission_ready is False
     assert gate.grade in {"C", "D"}
     assert "metadata_complete" in gate.blockers
     assert "cvss_present" in gate.blockers
     assert "remediation_present" in gate.blockers
+
+
+
+def test_report_quality_gate_blocks_high_grade_when_provenance_is_incomplete():
+    graph = _validated_graph()
+    readiness = build_report_readiness([_finding()], graph)
+    provenance = build_report_provenance(["missing"], graph)
+
+    gate = build_report_quality_gates(readiness, provenance)[0]
+
+    assert gate.grade in {"C", "D"}
+    assert gate.checks["provenance_complete"] is False
+    assert "provenance_complete" in gate.blockers
