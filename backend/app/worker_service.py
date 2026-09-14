@@ -32,6 +32,10 @@ from .planner_lock import campaign_planner_lock
 from .recon_worker import ReconPolicyError, execute_recon_task
 from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_nuclei_job, run_strix_job
 from .report import render_markdown
+from .reporting_governance import (
+    build_reporting_governance_snapshot,
+    verify_reporting_governance_snapshot,
+)
 from .storage import CampaignConflictError, Storage
 from .storage_backend import create_storage
 from .validator import ValidationPolicyError, safe_http_probe
@@ -191,6 +195,12 @@ def process_validation(job: dict, store: Storage) -> None:
             "probe_status": result.status,
             "http_status": result.http_status,
             "artifact_id": artifact["id"],
+            "reporting_governance_fingerprint": (
+                reporting.governance_fingerprint
+            ),
+            "report_provenance_fingerprint": (
+                reporting.provenance_fingerprint
+            ),
             "at": utcnow(),
         },
     )
@@ -384,10 +394,26 @@ def process_report(job: dict, store: Storage) -> None:
         item.finding_id: item.to_dict()
         for item in build_evidence_quality(graph)
     }
+    reporting = build_reporting_governance_snapshot(
+        campaign.findings,
+        graph,
+    )
+    reporting_verification = verify_reporting_governance_snapshot(reporting)
+    governance_manifest = {
+        "schema": "reporting-governance-v1",
+        "governance_fingerprint": reporting.governance_fingerprint,
+        "provenance_fingerprint": reporting.provenance_fingerprint,
+        "verification_valid": bool(reporting_verification["valid"]),
+        "findings": len(reporting.readiness),
+        "submission_ready": sum(
+            item.submission_ready for item in reporting.quality_gates
+        ),
+    }
     report = render_markdown(
         campaign,
         platform=platform,
         evidence_quality=quality,
+        governance_manifest=governance_manifest,
     ).encode("utf-8")
     artifact = store.put_artifact(
         campaign.id,
@@ -401,7 +427,19 @@ def process_report(job: dict, store: Storage) -> None:
         campaign,
         artifact,
         source="report-engine",
-        metadata={"platform": platform, "artifact_kind": "report"},
+        metadata={
+            "platform": platform,
+            "artifact_kind": "report",
+            "reporting_governance_fingerprint": (
+                reporting.governance_fingerprint
+            ),
+            "report_provenance_fingerprint": (
+                reporting.provenance_fingerprint
+            ),
+            "reporting_governance_verified": bool(
+                reporting_verification["valid"]
+            ),
+        },
     )
     _append_event_once(
         campaign,
