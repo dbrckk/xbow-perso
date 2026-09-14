@@ -22,9 +22,9 @@ from .planner_budget import PlannerBudget, budget_usage
 from .recon_swarm import build_recon_plan, router as recon_swarm_router
 from .red_team_coverage import build_red_team_coverage, router as red_team_coverage_router
 from .red_team_decision import build_red_team_decisions, router as red_team_decision_router
-from .report_provenance import build_report_provenance
-from .report_quality import build_report_quality_gates, summarize_report_quality
-from .report_readiness import build_report_readiness, router as report_readiness_router
+from .report_quality import summarize_report_quality
+from .report_readiness import router as report_readiness_router
+from .reporting_governance import build_reporting_governance_snapshot
 from .review_queue import build_review_queue, router as review_queue_router
 from .storage import ArtifactIntegrityError
 from .submission_state import submission_status
@@ -66,15 +66,12 @@ def campaign_overview(campaign_id: str):
     correlations = correlate_findings(campaign.findings)
     triage = build_finding_triage(campaign.findings, graph)
     lifecycle = build_finding_lifecycle(campaign.findings, graph)
-    report_readiness = build_report_readiness(campaign.findings, graph)
-    report_provenance = build_report_provenance(
-        [str(item.id) for item in campaign.findings],
+    reporting = build_reporting_governance_snapshot(
+        campaign.findings,
         graph,
     )
-    report_quality = build_report_quality_gates(
-        report_readiness,
-        report_provenance,
-    )
+    report_readiness = list(reporting.readiness)
+    report_quality = list(reporting.quality_gates)
     review_state = build_campaign_review_state(campaign.findings, graph)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
     review_tasks = build_review_queue(graph, scope_checker=scope_checker)
