@@ -109,4 +109,5 @@ def test_operations_dashboard_degrades_on_invalid_submission_audit():
     assert result["submission_integrity"]["supported"] is True
     assert result["submission_integrity"]["valid"] is False
     assert result["submission_integrity"]["invalid_reports"] == 1
+    assert result["submission_integrity"]["verification"]["valid"] is True
     assert "submission_event_audit_invalid" in result["degraded_reasons"]
