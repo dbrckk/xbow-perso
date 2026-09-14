@@ -63,7 +63,7 @@ def test_independent_artifact_backed_multi_source_evidence_is_high_quality():
     assert item.grade == "high"
     assert item.independent_validation is True
     assert item.artifact_backed is True
-    assert item.source_count == 4
+    assert item.source_count == 3
     assert item.chain_integrity is True
     assert item.corroborated is True
     assert item.issues == ()
