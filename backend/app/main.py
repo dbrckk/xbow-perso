@@ -344,6 +344,7 @@ def system_capabilities():
             "submission_event_audit": True,
             "submission_integrity_metrics": True,
             "submission_audit_fingerprint": True,
+            "submission_audit_governance_staleness": True,
             "submission_audit_aggregate_fingerprints": True,
             "reporting_governance_snapshot": True,
             "multiwindow_slo_burn_rates": True,
