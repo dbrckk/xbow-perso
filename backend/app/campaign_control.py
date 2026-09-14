@@ -4,11 +4,32 @@ from fastapi import APIRouter, HTTPException
 
 from .campaign_runtime import campaign_runtime_limit_from_env, runtime_status
 from .circuit_breaker import circuit_breaker_state, record_circuit_reset
+from .decision_timeline import planner_stability_from_graph
 from .observation_graph import load_observation_graph
 from .planner_budget import budget_usage, planner_budget_from_env
 from .planner_limits import planner_limits
+from .runtime_capabilities import safe_scanner_runtime_capability
 
 router = APIRouter()
+
+
+def _recon_telemetry(events: list[dict]) -> dict:
+    completed = [event for event in events if event.get("type") == "recon_completed"]
+    return {
+        "completed_tasks": len(completed),
+        "requests_made": sum(int(event.get("requests_made") or 0) for event in completed),
+        "bytes_read": sum(int(event.get("bytes_read") or 0) for event in completed),
+        "max_depth_reached": max(
+            (int(event.get("max_depth_reached") or 0) for event in completed),
+            default=0,
+        ),
+        "skipped_out_of_scope": sum(
+            int(event.get("skipped_out_of_scope") or 0) for event in completed
+        ),
+        "skipped_cross_origin": sum(
+            int(event.get("skipped_cross_origin") or 0) for event in completed
+        ),
+    }
 
 
 def _autonomy_block_reasons(breaker: dict, runtime: object, usage: object) -> list[str]:
@@ -36,6 +57,9 @@ def campaign_control_status(campaign_id: str):
     runtime = runtime_status(campaign.created_at, runtime_limit)
     statuses = jobs.campaign_job_status_counts(campaign.id)
     breaker = circuit_breaker_state(graph)
+    stability = planner_stability_from_graph(graph)
+    scanner = safe_scanner_runtime_capability()
+    recon = _recon_telemetry(campaign.events)
     block_reasons = _autonomy_block_reasons(breaker, runtime, usage)
 
     return {
@@ -52,6 +76,9 @@ def campaign_control_status(campaign_id: str):
         },
         "graph_limits": planner_limits().__dict__,
         "jobs": statuses,
+        "planner_stability": stability,
+        "scanner_execution": scanner,
+        "recon_telemetry": recon,
         "autonomy_blocked": bool(block_reasons),
         "autonomy_block_reasons": block_reasons,
         "read_only": True,
