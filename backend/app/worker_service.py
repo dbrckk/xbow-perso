@@ -461,6 +461,17 @@ def _active_scanner_execution_requested() -> bool:
     )
 
 
+def _verify_policy_bound_job(job: dict, store: Storage) -> None:
+    payload = job.get("payload") if isinstance(job.get("payload"), dict) else {}
+    if "_provenance" not in payload:
+        return
+    campaign, _version = _campaign(store, job["campaign_id"])
+    try:
+        require_job_provenance(job, campaign)
+    except JobProvenanceError as exc:
+        raise WorkerPolicyError(str(exc)) from exc
+
+
 def _claim_for_role(queue: JobQueue, worker_id: str):
     role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
     if not role:
@@ -480,6 +491,7 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
     if not job:
         return False
     try:
+        _verify_policy_bound_job(job, store)
         with _lease_heartbeat(queue, job["id"], worker_id):
             if job["kind"] == "strix_scan":
                 process_strix_scan(job, queue, store)
