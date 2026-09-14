@@ -5,6 +5,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .control_plane_health import build_control_plane_health
 from .metrics import build_operational_metrics
 from .operational_alerts import build_operational_alerts
 from .recovery_readiness import recovery_readiness_history
@@ -58,7 +59,7 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
     else:
         health = "HEALTHY"
 
-    return {
+    dashboard = {
         "health": health,
         "blocked_reasons": sorted(set(blocked_reasons)),
         "degraded_reasons": sorted(set(degraded_reasons)),
@@ -105,6 +106,8 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
         "contains_payloads": False,
         "contains_secrets": False,
     }
+    dashboard["control_plane_health"] = build_control_plane_health(dashboard)
+    return dashboard
 
 
 @router.get("/api/dashboard/operations")
