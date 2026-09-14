@@ -3,6 +3,43 @@ from __future__ import annotations
 from typing import Any
 
 
+ISSUE_SEVERITY = {
+    "structural": "high",
+    "metadata": "medium",
+    "stale": "low",
+    "other": "medium",
+}
+
+
+def _severity_summary(issue_class_counts: dict[str, int]) -> dict[str, Any]:
+    weighted = {
+        "high": 3,
+        "medium": 2,
+        "low": 1,
+    }
+    severity_counts = {
+        severity: 0
+        for severity in ("high", "medium", "low")
+    }
+    for category, count in issue_class_counts.items():
+        severity = ISSUE_SEVERITY.get(category, "medium")
+        severity_counts[severity] += int(count)
+    highest = "none"
+    for severity in ("high", "medium", "low"):
+        if severity_counts[severity]:
+            highest = severity
+            break
+    score = sum(
+        weighted[severity] * count
+        for severity, count in severity_counts.items()
+    )
+    return {
+        "highest": highest,
+        "counts": severity_counts,
+        "weighted_score": score,
+    }
+
+
 ISSUE_CLASS = {
     "submission_without_active_approval": "structural",
     "revocation_without_active_approval": "structural",
@@ -87,6 +124,9 @@ def audit_submission_events(
         "current_provenance_fingerprint": current_provenance_fingerprint,
         "issues": sorted(set(issues)),
         "issue_classes": _issue_classes(sorted(set(issues))),
+        "severity": _severity_summary(
+            _issue_classes(sorted(set(issues)))
+        ),
         "read_only": True,
         "automatic_mutation": False,
     }
@@ -128,6 +168,7 @@ def audit_campaign_submissions(
         ),
         "issue_counts": dict(sorted(issue_counts.items())),
         "issue_class_counts": dict(sorted(issue_class_counts.items())),
+        "severity": _severity_summary(issue_class_counts),
         "invalid_artifact_ids": sorted(
             str(audit["artifact_id"]) for audit in invalid
         ),
@@ -148,6 +189,7 @@ def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
             "invalid_reports": 0,
             "issue_counts": {},
             "issue_class_counts": {},
+            "severity": _severity_summary({}),
             "read_only": True,
             "automatic_mutation": False,
         }
@@ -189,6 +231,7 @@ def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
         ),
         "issue_counts": dict(sorted(issue_counts.items())),
         "issue_class_counts": dict(sorted(issue_class_counts.items())),
+        "severity": _severity_summary(issue_class_counts),
         "read_only": True,
         "automatic_mutation": False,
     }
