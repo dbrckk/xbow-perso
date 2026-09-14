@@ -13,6 +13,7 @@ from .control_plane_health import (
 from .metrics import build_operational_metrics
 from .operational_alerts import build_operational_alerts
 from .recovery_readiness import recovery_readiness_history
+from .slo import build_platform_slos
 
 router = APIRouter()
 
@@ -121,6 +122,7 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
         "contains_secrets": False,
     }
     dashboard["control_plane_health"] = build_control_plane_health(dashboard)
+    dashboard["slo"] = build_platform_slos(metrics)
     return dashboard
 
 
