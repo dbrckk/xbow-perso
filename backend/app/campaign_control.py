@@ -45,6 +45,9 @@ def _recon_telemetry(events: list[dict]) -> dict:
         "frontier_remaining": sum(
             int(event.get("frontier_remaining") or 0) for event in completed
         ),
+        "deferred_by_request_budget": sum(
+            int(event.get("deferred_by_request_budget") or 0) for event in completed
+        ),
     }
 
 
