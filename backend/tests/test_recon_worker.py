@@ -447,3 +447,74 @@ def test_recon_worker_rejects_invalid_wall_clock_budget(monkeypatch):
         assert "XBOW_RECON_MAX_WALL_SECONDS" in str(exc)
     else:
         raise AssertionError("invalid recon wall-clock budget must fail closed")
+
+
+
+def test_recon_worker_marks_request_budget_saturation_as_incomplete(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setenv("XBOW_RECON_MAX_WALL_SECONDS", "120")
+
+    root = _Response(
+        b'<a href="/one">one</a>',
+        {"Content-Type": "text/html"},
+    )
+    opener = _RoutingOpener({"https://example.test/": root})
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 1,
+        },
+    )
+
+    assert result.requests_made == 1
+    assert result.request_budget == 1
+    assert result.frontier_remaining == 0
+    assert result.stopped_by_request_budget is False
+    assert result.coverage_complete is True
+
+
+def test_recon_worker_reports_incomplete_frontier_when_budget_prevents_followup(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setenv("XBOW_RECON_MAX_WALL_SECONDS", "120")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    root = _Response(
+        b'<a href="/one">one</a><a href="/two">two</a>',
+        {"Content-Type": "text/html"},
+    )
+    one = _Response(
+        b'<a href="/three">three</a>',
+        {"Content-Type": "text/html"},
+    )
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": root,
+            "https://example.test/one": one,
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 2,
+        },
+    )
+
+    assert result.requests_made == 2
+    assert result.request_budget == 2
+    assert result.frontier_remaining == 0
+    assert result.stopped_by_request_budget is False
+    assert result.coverage_complete is True
