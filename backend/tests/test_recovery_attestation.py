@@ -147,3 +147,49 @@ def test_recovery_attestation_requires_signing_key(monkeypatch):
             queue_assessment=_queue(),
             campaign_audits=_audits(),
         )
+
+
+
+def test_recovery_attestation_file_roundtrip(monkeypatch, tmp_path):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "attestation-key")
+    from app.recovery_attestation import (
+        load_and_verify_recovery_attestation,
+        write_recovery_attestation,
+    )
+
+    attestation = build_recovery_attestation(
+        backup_verification=_backup(),
+        queue_assessment=_queue(),
+        campaign_audits=_audits(),
+        issued_at="2026-09-14T13:00:00+00:00",
+    )
+    destination = tmp_path / "recovery-attestation.json"
+
+    write_recovery_attestation(attestation, str(destination))
+    result = load_and_verify_recovery_attestation(str(destination))
+
+    assert result["valid"] is True
+    assert oct(destination.stat().st_mode & 0o777) == "0o600"
+
+
+def test_recovery_attestation_writer_rejects_symlink(monkeypatch, tmp_path):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "attestation-key")
+    from app.recovery_attestation import write_recovery_attestation
+
+    attestation = build_recovery_attestation(
+        backup_verification=_backup(),
+        queue_assessment=_queue(),
+        campaign_audits=_audits(),
+    )
+    real = tmp_path / "real.json"
+    real.write_text("{}", encoding="utf-8")
+    link = tmp_path / "attestation.json"
+    link.symlink_to(real)
+
+    with pytest.raises(
+        RecoveryAttestationError,
+        match="must not be a symlink",
+    ):
+        write_recovery_attestation(attestation, str(link))
