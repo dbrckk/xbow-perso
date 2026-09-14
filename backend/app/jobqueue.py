@@ -655,7 +655,11 @@ class JobQueue:
                 return None
             status = "completed" if success else ("queued" if row["attempts"] < row["max_attempts"] else "failed")
             now = utcnow()
-            reason = "job completed" if success else ((error or "job failed")[-4000:])
+            reason = (
+                "job completed"
+                if success
+                else ("job requeued after failure" if status == "queued" else "job failed")
+            )
             cursor = db.execute(
                 """UPDATE jobs
                    SET status=?, updated_at=?, last_error=?, claimed_by=NULL, claimed_at=NULL
