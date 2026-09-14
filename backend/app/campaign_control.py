@@ -36,6 +36,15 @@ def _recon_telemetry(events: list[dict]) -> dict:
         "time_budget_stops": sum(
             1 for event in completed if bool(event.get("stopped_by_time_budget"))
         ),
+        "request_budget_stops": sum(
+            1 for event in completed if bool(event.get("stopped_by_request_budget"))
+        ),
+        "incomplete_tasks": sum(
+            1 for event in completed if not bool(event.get("coverage_complete"))
+        ),
+        "frontier_remaining": sum(
+            int(event.get("frontier_remaining") or 0) for event in completed
+        ),
     }
 
 
