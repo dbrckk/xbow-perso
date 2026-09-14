@@ -140,11 +140,16 @@ def test_stale_validation_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "independent_validation",
-        {
-            "campaign_id": campaign.id,
-            "finding_id": "f1",
-            "asset": "https://example.test",
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "finding_id": "f1",
+                "asset": "https://example.test",
+            },
+            campaign,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key="validation:f1",
     )
@@ -209,18 +214,23 @@ def test_completed_campaign_browser_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "browser_flow",
-        {
-            "campaign_id": campaign.id,
-            "steps": [
-                {
-                    "operation": "navigate",
-                    "url": "https://example.test",
-                    "selector": None,
-                    "secret_env": None,
-                    "timeout_ms": 1000,
-                }
-            ],
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "steps": [
+                    {
+                        "operation": "navigate",
+                        "url": "https://example.test",
+                        "selector": None,
+                        "secret_env": None,
+                        "timeout_ms": 1000,
+                    }
+                ],
+            },
+            campaign,
+            job_kind="browser_flow",
+            action="crawl",
+        ),
         max_attempts=2,
         dedupe_key="browser:stale-completed",
     )
