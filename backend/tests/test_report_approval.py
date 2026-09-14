@@ -176,3 +176,33 @@ def test_tampered_report_bytes_cannot_be_approved_or_reported_as_approved(tmp_pa
             pass
         else:
             raise AssertionError("tampered report bytes must fail integrity verification")
+
+
+
+def test_reporting_governance_change_invalidates_existing_approval():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(
+        approval_event(
+            campaign,
+            artifact,
+            "human-reviewer",
+            "2026-09-09T21:00:00Z",
+            provenance_fingerprint="a" * 64,
+            governance_fingerprint="b" * 64,
+        )
+    )
+
+    status = approval_status(
+        campaign,
+        artifact,
+        provenance_fingerprint="a" * 64,
+        governance_fingerprint="c" * 64,
+    )
+
+    assert status.approved is False
+    assert status.stale is True
+    assert status.approved_provenance_fingerprint == "a" * 64
+    assert status.current_provenance_fingerprint == "a" * 64
+    assert status.approved_governance_fingerprint == "b" * 64
+    assert status.current_governance_fingerprint == "c" * 64
