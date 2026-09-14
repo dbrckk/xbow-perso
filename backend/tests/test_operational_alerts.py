@@ -136,22 +136,17 @@ def test_operational_alerts_flag_fast_multiwindow_slo_burn():
                 },
                 "historical": {
                     "windows": {
-                        "1h": {
-                            "available": True,
-                            "burn_rate": 2.5,
-                            "data_quality": "complete",
-                        },
-                        "24h": {
-                            "available": True,
-                            "burn_rate": 1.2,
-                            "data_quality": "complete",
-                        },
-                        "7d": {
-                            "available": True,
-                            "burn_rate": 0.8,
-                            "data_quality": "complete",
-                        },
+                        "1h": {"burn_rate": 2.5},
+                        "24h": {"burn_rate": 1.2},
+                        "7d": {"burn_rate": 0.8},
                     }
+                },
+                "multiwindow_policy": {
+                    "fast_burn": {
+                        "triggered": True,
+                        "thresholds": {"1h": 2.0, "24h": 1.0},
+                    },
+                    "slow_burn": {"triggered": False},
                 },
             },
         }
@@ -179,22 +174,17 @@ def test_operational_alerts_flag_slow_multiwindow_slo_burn():
                 },
                 "historical": {
                     "windows": {
-                        "1h": {
-                            "available": True,
-                            "burn_rate": 0.5,
-                            "data_quality": "complete",
-                        },
-                        "24h": {
-                            "available": True,
-                            "burn_rate": 1.1,
-                            "data_quality": "complete",
-                        },
-                        "7d": {
-                            "available": True,
-                            "burn_rate": 1.0,
-                            "data_quality": "complete",
-                        },
+                        "1h": {"burn_rate": 0.5},
+                        "24h": {"burn_rate": 1.1},
+                        "7d": {"burn_rate": 1.0},
                     }
+                },
+                "multiwindow_policy": {
+                    "fast_burn": {"triggered": False},
+                    "slow_burn": {
+                        "triggered": True,
+                        "thresholds": {"24h": 1.0, "7d": 1.0},
+                    },
                 },
             },
         }
@@ -215,22 +205,14 @@ def test_operational_alerts_do_not_page_on_partial_multiwindow_data():
                 "summary": {"exhausted_slos": [], "at_risk_slos": []},
                 "historical": {
                     "windows": {
-                        "1h": {
-                            "available": True,
-                            "burn_rate": 3.0,
-                            "data_quality": "partial",
-                        },
-                        "24h": {
-                            "available": True,
-                            "burn_rate": 2.0,
-                            "data_quality": "complete",
-                        },
-                        "7d": {
-                            "available": True,
-                            "burn_rate": 1.5,
-                            "data_quality": "partial",
-                        },
+                        "1h": {"burn_rate": 3.0},
+                        "24h": {"burn_rate": 2.0},
+                        "7d": {"burn_rate": 1.5},
                     }
+                },
+                "multiwindow_policy": {
+                    "fast_burn": {"triggered": False},
+                    "slow_burn": {"triggered": False},
                 },
             },
         }
