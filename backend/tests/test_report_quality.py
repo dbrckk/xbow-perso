@@ -73,6 +73,9 @@ def test_report_quality_gate_is_advisory_and_submission_safe():
     assert summary["human_approval_required"] is True
     assert summary["automatic_submission"] is False
     assert summary["read_only"] is True
+    assert summary["submission_gate"]["minimum_grade"] == "B"
+    assert summary["submission_gate"]["requires_human_approval"] is True
+    assert summary["grade_semantics"]["A"] == "submission_complete_with_consensus_quorum"
 
 
 def test_report_quality_gate_downgrades_incomplete_metadata():
