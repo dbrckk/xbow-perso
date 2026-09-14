@@ -4,6 +4,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 from urllib.parse import urlparse
 
+from .planner_limits import PlannerLimitConfigError, planner_limit_violation
 from .validation_state import analyze_validation_state
 
 ObservationKind = Literal[
@@ -118,6 +119,13 @@ class AdaptivePlanner:
         rules = campaign.target.rules
         if not rules.automated_scanning:
             return [PlannedAction("stop", host, "automated scanning disabled by program rules", 100)]
+
+        try:
+            limit_violation = planner_limit_violation(graph)
+        except PlannerLimitConfigError:
+            return [PlannedAction("stop", host, "invalid planner safety limit configuration", 100)]
+        if limit_violation:
+            return [PlannedAction("stop", host, limit_violation, 100)]
 
         observations = graph.values()
         assets = graph.by_kind("asset")
