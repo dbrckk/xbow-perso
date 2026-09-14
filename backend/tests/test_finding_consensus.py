@@ -17,8 +17,10 @@ def test_single_source_finding_is_not_corroborated():
     assert result[0].finding_id == "f1"
     assert result[0].source_count == 1
     assert result[0].independent_validator_count == 0
+    assert result[0].evidence_backed_validator_count == 0
     assert result[0].evidence_source_count == 0
     assert result[0].corroborated is False
+    assert result[0].consensus_level == "none"
     assert result[0].score == 0.30
 
 
@@ -48,9 +50,62 @@ def test_independent_validation_and_evidence_raise_consensus():
     assert result.corroborated is True
     assert result.source_count == 3
     assert result.independent_validator_count == 1
+    assert result.evidence_backed_validator_count == 1
     assert result.evidence_source_count == 1
+    assert result.consensus_level == "single_evidence_backed_validator"
     assert result.score == 0.85
     assert result.sources == ("scanner-a", "validator-b", "validator-c")
+
+
+def test_independent_observation_without_evidence_is_not_corroborated():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "validation:v1",
+            "validation",
+            "observed",
+            "validator-b",
+            parent_ids=("finding:f1",),
+        )
+    )
+
+    result = build_finding_consensus(graph)[0]
+
+    assert result.independent_validator_count == 1
+    assert result.evidence_backed_validator_count == 0
+    assert result.corroborated is False
+    assert result.consensus_level == "none"
+    assert result.score == 0.55
+
+
+def test_two_evidence_backed_validators_reach_quorum():
+    graph = _graph()
+    for suffix, validator in (("1", "validator-b"), ("2", "validator-c")):
+        graph.add(
+            Observation(
+                f"validation:v{suffix}",
+                "validation",
+                "observed",
+                validator,
+                parent_ids=("finding:f1",),
+            )
+        )
+        graph.add(
+            Observation(
+                f"evidence:e{suffix}",
+                "evidence",
+                "artifact-reference",
+                validator,
+                parent_ids=(f"validation:v{suffix}",),
+            )
+        )
+
+    result = build_finding_consensus(graph)[0]
+
+    assert result.evidence_backed_validator_count == 2
+    assert result.consensus_level == "quorum"
+    assert result.corroborated is True
+    assert result.score == 1.0
 
 
 def test_self_validation_does_not_count_as_independent_consensus():
@@ -69,6 +124,8 @@ def test_self_validation_does_not_count_as_independent_consensus():
 
     assert result.corroborated is False
     assert result.independent_validator_count == 0
+    assert result.evidence_backed_validator_count == 0
+    assert result.consensus_level == "none"
     assert result.score == 0.30
 
 
