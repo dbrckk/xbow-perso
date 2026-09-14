@@ -191,7 +191,11 @@ def test_triage_allows_report_review_with_high_quality_artifact_backed_evidence(
             "artifact-reference",
             "validator-b",
             parent_ids=("validation:h",),
-            metadata={"artifact_id": "artifact-h", "artifact_kind": "validation"},
+            metadata={
+                "artifact_id": "artifact-h",
+                "artifact_kind": "validation",
+                "artifact_sha256": "b" * 64,
+            },
         )
     )
 
