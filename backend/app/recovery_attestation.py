@@ -3,8 +3,13 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
+
+from .campaign_audit import verify_campaign_event_chain
+from .worker_audit import verify_worker_audit_chain
 
 from .secret_vault import SecretVaultError, resolve_secret
 
@@ -200,3 +205,70 @@ def verify_recovery_attestation(attestation: dict[str, Any]) -> dict[str, Any]:
         "attestation_digest": expected_digest,
         "schema": ATTESTATION_SCHEMA,
     }
+
+
+
+def collect_recovery_campaign_audits(storage_backend, queue_backend) -> list[dict[str, Any]]:
+    audits: list[dict[str, Any]] = []
+    for campaign in storage_backend.list_campaigns():
+        campaign_id = str(campaign.get("id") or "")
+        if not campaign_id:
+            raise RecoveryAttestationError("campaign without identifier cannot be attested")
+        events = campaign.get("events") or []
+        if not isinstance(events, list):
+            raise RecoveryAttestationError("campaign audit events are invalid")
+        audits.append(
+            {
+                "campaign": verify_campaign_event_chain(events),
+                "worker": verify_worker_audit_chain(events),
+                "queue": queue_backend.campaign_transition_audit(campaign_id),
+            }
+        )
+    return audits
+
+
+def write_recovery_attestation(
+    attestation: dict[str, Any],
+    destination: str,
+) -> None:
+    path = Path(destination)
+    if path.is_symlink():
+        raise RecoveryAttestationError(
+            "recovery attestation path must not be a symlink"
+        )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    encoded = json.dumps(attestation, sort_keys=True, indent=2)
+    try:
+        with tmp.open("x", encoding="utf-8") as handle:
+            os.chmod(tmp, 0o600)
+            handle.write(encoded)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, path)
+        os.chmod(path, 0o600)
+    except OSError as exc:
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise RecoveryAttestationError(
+            "recovery attestation write failed"
+        ) from exc
+
+
+def load_and_verify_recovery_attestation(path_value: str) -> dict[str, Any]:
+    path = Path(path_value)
+    try:
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > 1024 * 1024:
+            raise OSError("unsafe attestation")
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise RecoveryAttestationError(
+            "recovery attestation file is invalid"
+        ) from exc
+    if not isinstance(document, dict):
+        raise RecoveryAttestationError(
+            "recovery attestation file is invalid"
+        )
+    return verify_recovery_attestation(document)
