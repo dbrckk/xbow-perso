@@ -77,6 +77,8 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
     assert result["reports"]["total"] == 0
     assert result["reports"]["submission_ready"] == 0
     assert result["reports"]["submitted"] == 0
+    assert len(result["report_readiness"]["governance_fingerprint"]) == 64
+    assert result["report_readiness"]["governance_verification"]["valid"] is True
     assert result["activity"]["event_count"] == 0
     assert result["activity"]["latest_event_type"] is None
     assert result["attention_required"] is True
