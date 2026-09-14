@@ -347,3 +347,10 @@ This preserves explicit human review over the exact governance state that was ap
 Submission audits now distinguish stale report provenance from stale reporting governance. The audit records both approved/current provenance fingerprints and approved/current `reporting-governance-v1` fingerprints.
 
 A governance-only change therefore produces `approval_governance_stale`, while a provenance-set change produces `approval_provenance_stale`. Both remain read-only audit findings and are classified as low-severity stale conditions rather than structural workflow corruption.
+
+
+### Approval staleness reasons
+
+Approval and submission-state responses now expose explicit stale reasons instead of only a boolean. Current reasons include `artifact_sha256_changed`, `approval_basis_changed`, `report_provenance_changed`, and `reporting_governance_changed`.
+
+These reasons are observational only: they explain why a report returned to review-required state but never reapprove, repair, submit, or mutate worker state automatically.
