@@ -216,8 +216,8 @@ def audit_campaign_submissions(
             )
 
     invalid = [audit for audit in audits if not audit["valid"]]
-    return {
-        "valid": not invalid,
+    canonical = {
+        "schema": "submission-audit-campaign-v1",
         "reports_checked": len(audits),
         "invalid_reports": len(invalid),
         "submissions": sum(int(audit["submissions"]) for audit in audits),
@@ -230,10 +230,88 @@ def audit_campaign_submissions(
         "invalid_artifact_ids": sorted(
             str(audit["artifact_id"]) for audit in invalid
         ),
+        "report_audit_fingerprints": sorted(
+            str(audit["fingerprint"]) for audit in audits
+        ),
+    }
+    return {
+        **canonical,
+        "valid": not invalid,
+        "fingerprint": _audit_fingerprint(canonical),
         "read_only": True,
         "automatic_mutation": False,
     }
 
+
+
+def verify_campaign_submission_audit(
+    audit: dict[str, Any],
+) -> dict[str, Any]:
+    canonical = {
+        "schema": audit.get("schema"),
+        "reports_checked": int(audit.get("reports_checked") or 0),
+        "invalid_reports": int(audit.get("invalid_reports") or 0),
+        "submissions": int(audit.get("submissions") or 0),
+        "active_approvals": int(audit.get("active_approvals") or 0),
+        "issue_counts": dict(sorted((audit.get("issue_counts") or {}).items())),
+        "issue_class_counts": dict(
+            sorted((audit.get("issue_class_counts") or {}).items())
+        ),
+        "severity": audit.get("severity") or {},
+        "invalid_artifact_ids": sorted(
+            str(item) for item in (audit.get("invalid_artifact_ids") or [])
+        ),
+        "report_audit_fingerprints": sorted(
+            str(item)
+            for item in (audit.get("report_audit_fingerprints") or [])
+        ),
+    }
+    computed = _audit_fingerprint(canonical)
+    expected = str(audit.get("fingerprint") or "")
+    schema_valid = canonical["schema"] == "submission-audit-campaign-v1"
+    fingerprint_valid = bool(expected) and expected == computed
+    return {
+        "valid": schema_valid and fingerprint_valid,
+        "schema_valid": schema_valid,
+        "fingerprint_valid": fingerprint_valid,
+        "expected_fingerprint": expected,
+        "computed_fingerprint": computed,
+        "read_only": True,
+        "automatic_mutation": False,
+    }
+
+
+def verify_storage_submission_audit(
+    audit: dict[str, Any],
+) -> dict[str, Any]:
+    canonical = {
+        "schema": audit.get("schema"),
+        "campaigns_checked": int(audit.get("campaigns_checked") or 0),
+        "reports_checked": int(audit.get("reports_checked") or 0),
+        "invalid_reports": int(audit.get("invalid_reports") or 0),
+        "issue_counts": dict(sorted((audit.get("issue_counts") or {}).items())),
+        "issue_class_counts": dict(
+            sorted((audit.get("issue_class_counts") or {}).items())
+        ),
+        "severity": audit.get("severity") or {},
+        "campaign_audit_fingerprints": sorted(
+            str(item)
+            for item in (audit.get("campaign_audit_fingerprints") or [])
+        ),
+    }
+    computed = _audit_fingerprint(canonical)
+    expected = str(audit.get("fingerprint") or "")
+    schema_valid = canonical["schema"] == "submission-audit-storage-v1"
+    fingerprint_valid = bool(expected) and expected == computed
+    return {
+        "valid": schema_valid and fingerprint_valid,
+        "schema_valid": schema_valid,
+        "fingerprint_valid": fingerprint_valid,
+        "expected_fingerprint": expected,
+        "computed_fingerprint": computed,
+        "read_only": True,
+        "automatic_mutation": False,
+    }
 
 
 def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
@@ -277,9 +355,8 @@ def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
                 issue_class_counts.get(category, 0) + int(count)
             )
 
-    return {
-        "supported": True,
-        "valid": all(item["valid"] for item in campaign_audits),
+    canonical = {
+        "schema": "submission-audit-storage-v1",
         "campaigns_checked": len(campaign_audits),
         "reports_checked": sum(
             int(item["reports_checked"]) for item in campaign_audits
@@ -290,6 +367,15 @@ def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
         "issue_counts": dict(sorted(issue_counts.items())),
         "issue_class_counts": dict(sorted(issue_class_counts.items())),
         "severity": _severity_summary(issue_class_counts),
+        "campaign_audit_fingerprints": sorted(
+            str(item["fingerprint"]) for item in campaign_audits
+        ),
+    }
+    return {
+        **canonical,
+        "supported": True,
+        "valid": all(item["valid"] for item in campaign_audits),
+        "fingerprint": _audit_fingerprint(canonical),
         "read_only": True,
         "automatic_mutation": False,
     }
