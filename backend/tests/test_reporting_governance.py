@@ -1,7 +1,10 @@
 from types import SimpleNamespace
 
 from app.observation_graph import Observation, ObservationGraph
-from app.reporting_governance import build_reporting_governance_snapshot
+from app.reporting_governance import (
+    build_reporting_governance_snapshot,
+    verify_reporting_governance_snapshot,
+)
 
 
 def _finding():
@@ -71,11 +74,14 @@ def test_reporting_governance_snapshot_is_consistent_and_read_only():
     assert snapshot.quality_gates[0].checks["provenance_complete"] is True
     assert snapshot.quality_gates[0].checks["provenance_verified"] is True
     assert len(snapshot.provenance_fingerprint) == 64
+    assert len(snapshot.governance_fingerprint) == 64
+    assert verify_reporting_governance_snapshot(snapshot)["valid"] is True
 
     summary = snapshot.summary()
     assert summary["findings"] == 1
     assert summary["provenance_complete"] == 1
     assert summary["provenance_fingerprint"] == snapshot.provenance_fingerprint
+    assert summary["governance_fingerprint"] == snapshot.governance_fingerprint
     assert summary["read_only"] is True
     assert summary["advisory_only"] is True
 
@@ -85,4 +91,24 @@ def test_reporting_governance_snapshot_is_deterministic():
     second = build_reporting_governance_snapshot([_finding()], _graph())
 
     assert first.provenance_fingerprint == second.provenance_fingerprint
+    assert first.governance_fingerprint == second.governance_fingerprint
     assert first.provenance[0].fingerprint == second.provenance[0].fingerprint
+
+
+def test_reporting_governance_snapshot_verifier_detects_tampering():
+    snapshot = build_reporting_governance_snapshot([_finding()], _graph())
+    tampered = snapshot.__class__(
+        readiness=snapshot.readiness,
+        provenance=snapshot.provenance,
+        quality_gates=snapshot.quality_gates,
+        provenance_fingerprint="0" * 64,
+        governance_fingerprint=snapshot.governance_fingerprint,
+    )
+
+    verification = verify_reporting_governance_snapshot(tampered)
+
+    assert verification["valid"] is False
+    assert (
+        verification["expected_fingerprint"]
+        != verification["computed_fingerprint"]
+    )
