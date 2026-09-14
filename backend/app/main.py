@@ -341,6 +341,7 @@ def system_capabilities():
             "verified_submission_gate": True,
             "approval_provenance_binding": True,
             "approval_governance_binding": True,
+            "approval_staleness_reasons": True,
             "submission_event_audit": True,
             "submission_integrity_metrics": True,
             "submission_audit_fingerprint": True,
