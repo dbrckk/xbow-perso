@@ -112,6 +112,7 @@ def campaign_overview(campaign_id: str):
 
     job_kinds = jobs.campaign_job_counts(campaign.id)
     job_statuses = jobs.campaign_job_status_counts(campaign.id)
+    queue_transition_audit = jobs.campaign_transition_audit(campaign.id)
     blocked = dict(budget.blocked_actions)
     terminal_campaign = campaign.state.value in {"completed", "failed", "cancelled"}
     attention_reasons = []
@@ -141,6 +142,8 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("campaign_risk_elevated")
     if job_statuses["failed"]:
         attention_reasons.append("failed_jobs")
+    if not queue_transition_audit["valid"]:
+        attention_reasons.append("queue_transition_audit_invalid")
 
     latest_event = campaign.events[-1] if campaign.events else None
     total_findings = len(campaign.findings)
@@ -298,6 +301,13 @@ def campaign_overview(campaign_id: str):
             "by_status": job_statuses,
             "inflight": job_statuses["queued"] + job_statuses["running"],
             "terminal": job_statuses["completed"] + job_statuses["failed"] + job_statuses["cancelled"],
+            "transition_audit": {
+                "jobs": queue_transition_audit["jobs"],
+                "events": queue_transition_audit["events"],
+                "valid": queue_transition_audit["valid"],
+                "invalid_job_count": len(queue_transition_audit["invalid_jobs"]),
+                "read_only": True,
+            },
         },
         "budget": {
             "limits": limits.to_dict(),
