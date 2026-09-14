@@ -305,3 +305,10 @@ GET /api/campaigns/{campaign_id}/reports/{artifact_id}/submission-audit
 ```
 
 The audit checks approval, revocation, and submission ordering and reports invalid sequences such as submission without an active approval or revocation without an active approval. It also exposes the latest approval provenance fingerprint for incident review. The audit never repairs, reorders, or mutates campaign events automatically.
+
+
+### Submission integrity observability
+
+Submission-event integrity is aggregated into `/api/metrics`, operational alerts, campaign overview, and the operations dashboard. Invalid report workflow sequences produce a warning and reduce only the reporting health component; they do not automatically hard-block the entire control plane.
+
+This preserves the distinction between a reporting governance incident and a platform-wide recovery or queue-integrity failure.
