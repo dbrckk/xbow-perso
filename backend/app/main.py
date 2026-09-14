@@ -341,6 +341,7 @@ def system_capabilities():
             "approval_provenance_binding": True,
             "submission_event_audit": True,
             "submission_integrity_metrics": True,
+            "submission_audit_fingerprint": True,
             "reporting_governance_snapshot": True,
             "multiwindow_slo_burn_rates": True,
         },
