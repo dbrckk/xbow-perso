@@ -1,6 +1,21 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Any
+
+
+SUBMISSION_AUDIT_SCHEMA = "submission-audit-v1"
+
+
+def _audit_fingerprint(payload: dict[str, Any]) -> str:
+    encoded = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 ISSUE_SEVERITY = {
@@ -114,23 +129,66 @@ def audit_submission_events(
     ):
         issues.append("approval_provenance_stale")
 
-    return {
-        "valid": not issues,
+    issue_list = sorted(set(issues))
+    issue_classes = _issue_classes(issue_list)
+    severity = _severity_summary(issue_classes)
+    canonical = {
+        "schema": SUBMISSION_AUDIT_SCHEMA,
         "artifact_id": artifact_id,
         "events_checked": len(relevant),
         "submissions": submissions,
         "approval_active": approval_active,
         "latest_approval_provenance_fingerprint": last_approval_provenance,
         "current_provenance_fingerprint": current_provenance_fingerprint,
-        "issues": sorted(set(issues)),
-        "issue_classes": _issue_classes(sorted(set(issues))),
-        "severity": _severity_summary(
-            _issue_classes(sorted(set(issues)))
-        ),
+        "issues": issue_list,
+        "issue_classes": issue_classes,
+        "severity": severity,
+    }
+
+    return {
+        **canonical,
+        "valid": not issue_list,
+        "fingerprint": _audit_fingerprint(canonical),
         "read_only": True,
         "automatic_mutation": False,
     }
 
+
+
+def verify_submission_audit(
+    audit: dict[str, Any],
+) -> dict[str, Any]:
+    canonical = {
+        "schema": audit.get("schema"),
+        "artifact_id": audit.get("artifact_id"),
+        "events_checked": int(audit.get("events_checked") or 0),
+        "submissions": int(audit.get("submissions") or 0),
+        "approval_active": bool(audit.get("approval_active")),
+        "latest_approval_provenance_fingerprint": audit.get(
+            "latest_approval_provenance_fingerprint"
+        ),
+        "current_provenance_fingerprint": audit.get(
+            "current_provenance_fingerprint"
+        ),
+        "issues": sorted(str(item) for item in (audit.get("issues") or [])),
+        "issue_classes": dict(
+            sorted((audit.get("issue_classes") or {}).items())
+        ),
+        "severity": audit.get("severity") or {},
+    }
+    computed = _audit_fingerprint(canonical)
+    expected = str(audit.get("fingerprint") or "")
+    schema_valid = canonical["schema"] == SUBMISSION_AUDIT_SCHEMA
+    fingerprint_valid = bool(expected) and expected == computed
+    return {
+        "valid": schema_valid and fingerprint_valid,
+        "schema_valid": schema_valid,
+        "fingerprint_valid": fingerprint_valid,
+        "expected_fingerprint": expected,
+        "computed_fingerprint": computed,
+        "read_only": True,
+        "automatic_mutation": False,
+    }
 
 
 def audit_campaign_submissions(
