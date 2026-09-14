@@ -41,7 +41,21 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
     pending_outbox_total = 0
     pending_outbox_by_kind: Counter[str] = Counter()
     oldest_outbox_age_seconds = None
+    queue_audit_campaigns = 0
+    queue_audit_events = 0
+    queue_audit_invalid_campaigns = 0
+    queue_audit_invalid_jobs = 0
     for campaign in campaigns:
+        campaign_id = str(campaign.get("id") or "")
+        if campaign_id:
+            audit = queue_backend.campaign_transition_audit(campaign_id)
+            queue_audit_campaigns += 1
+            queue_audit_events += int(audit.get("events") or 0)
+            invalid_jobs = list(audit.get("invalid_jobs") or [])
+            queue_audit_invalid_jobs += len(invalid_jobs)
+            if not bool(audit.get("valid")):
+                queue_audit_invalid_campaigns += 1
+
         events = campaign.get("events") or []
         if not isinstance(events, list):
             continue
@@ -70,6 +84,13 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "pending_outbox_total": pending_outbox_total,
         "pending_outbox_by_kind": dict(sorted(pending_outbox_by_kind.items())),
         "oldest_outbox_pending_age_seconds": oldest_outbox_age_seconds,
+        "queue_transition_audit": {
+            "campaigns_checked": queue_audit_campaigns,
+            "events_checked": queue_audit_events,
+            "invalid_campaigns": queue_audit_invalid_campaigns,
+            "invalid_jobs": queue_audit_invalid_jobs,
+            "valid": queue_audit_invalid_campaigns == 0,
+        },
         "read_only": True,
         "contains_targets": False,
         "contains_payloads": False,
