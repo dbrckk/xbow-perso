@@ -137,7 +137,7 @@ def test_control_status_exposes_scanner_stability_and_recon_telemetry(tmp_path, 
     campaign.events.extend(
         [
             {
-                "type": "recon_completed",
+                "type": "recon_task_completed",
                 "requests_made": 3,
                 "bytes_read": 1200,
                 "max_depth_reached": 2,
@@ -145,7 +145,7 @@ def test_control_status_exposes_scanner_stability_and_recon_telemetry(tmp_path, 
                 "skipped_cross_origin": 2,
             },
             {
-                "type": "recon_completed",
+                "type": "recon_task_completed",
                 "requests_made": 2,
                 "bytes_read": 800,
                 "max_depth_reached": 1,
