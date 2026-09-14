@@ -16,13 +16,14 @@ from .api_outbox import has_event, outbox_snapshot, pending_request_id
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
+from .job_provenance import attach_job_provenance
 from .policy_integrity import seal_policy_receipt, verify_policy_receipt
 from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
 from .storage import ArtifactIntegrityError, CampaignConflictError
 from .storage_backend import StorageBackend, create_storage
 from .totp_auth import require_totp_for_mutation
-from .validation_state import has_observed_independent_validation
+from .validation_state import has_evidence_backed_independent_validation
 
 app = FastAPI(title="xbow-perso", version="0.4.0")
 
@@ -197,9 +198,9 @@ def _campaign_graph(campaign_id: str):
     return ObservationGraph.from_records(storage().list_observations(campaign_id))
 
 
-def _has_observed_independent_validation(campaign_id: str, finding: Finding) -> bool:
+def _has_evidence_backed_independent_validation(campaign_id: str, finding: Finding) -> bool:
     graph = _campaign_graph(campaign_id)
-    return has_observed_independent_validation(graph, f"finding:{finding.id}")
+    return has_evidence_backed_independent_validation(graph, f"finding:{finding.id}")
 
 
 def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]:
@@ -236,7 +237,7 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
     """
     transient = {"timestamp", "receipt_hash", "signature", "signature_alg", "integrity_mode"}
     stable_receipt = {key: value for key, value in receipt.items() if key not in transient}
-    return {
+    payload = {
         "campaign_id": campaign.id,
         "target": str(campaign.target.primary_url),
         "policy": stable_receipt,
@@ -251,6 +252,12 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
             "automated_scanning": campaign.target.rules.automated_scanning,
         },
     }
+    return attach_job_provenance(
+        payload,
+        campaign,
+        job_kind="strix_scan",
+        action="automated_scan",
+    )
 
 
 @app.get("/live")
@@ -1420,8 +1427,11 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
         raise HTTPException(status_code=404, detail="Finding not found")
     if validator == finding.discovered_by:
         raise HTTPException(status_code=409, detail="Discovery agent cannot validate its own finding")
-    if not _has_observed_independent_validation(campaign_id, finding):
-        raise HTTPException(status_code=409, detail="Finding requires observed independent validation evidence before resolution")
+    if not _has_evidence_backed_independent_validation(campaign_id, finding):
+        raise HTTPException(
+            status_code=409,
+            detail="Finding requires evidence-backed independent validation before resolution",
+        )
 
     desired_status = "confirmed" if confirmed else "rejected"
     if finding.status == desired_status and finding.validated_by == validator:
