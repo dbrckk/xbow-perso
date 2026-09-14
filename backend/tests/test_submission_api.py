@@ -242,3 +242,41 @@ def test_submission_mutations_preserve_campaign_audit_chain(tmp_path, monkeypatc
         "report_submitted",
         "report_approval_revoked",
     ]
+
+
+
+def test_provenance_change_after_approval_makes_approval_stale(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+
+    approved = submission_api.approve_report(
+        campaign.id,
+        artifact["id"],
+        "reviewer",
+    )
+    assert approved["state"] == "approved"
+    assert approved["stale"] is False
+
+    store = Storage()
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "evidence:e2",
+            "evidence",
+            "artifact-reference",
+            "independent-validator",
+            parent_ids=("validation:v1",),
+            metadata={
+                "artifact_id": "validation-artifact-f1-secondary",
+                "artifact_sha256": "c" * 64,
+            },
+        ).to_dict(),
+    )
+
+    status = submission_api.get_submission_state(
+        campaign.id,
+        artifact["id"],
+    )
+
+    assert status["state"] == "review_required"
+    assert status["approved"] is False
+    assert status["stale"] is True
