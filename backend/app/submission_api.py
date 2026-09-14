@@ -107,7 +107,7 @@ def list_submission_states(campaign_id: str):
         for artifact in store.list_artifacts(campaign.id)
         if artifact.get("kind") == "report"
     ]
-    quality_gates, provenance_fingerprint, governance_fingerprint = (
+    _quality_gates, provenance_fingerprint, governance_fingerprint = (
         _submission_governance(campaign, store)
     )
     states = [
