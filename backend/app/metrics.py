@@ -119,7 +119,9 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
     recent_health = chronological_health[-3:]
     persistent_health_degradation = (
         len(recent_health) == 3
-        and all(str(item.get("state")) != "HEALTHY" for item in recent_health)
+        and str(recent_health[-1].get("state")) != "HEALTHY"
+        and int(recent_health[-1].get("score") or 0)
+        < int(recent_health[0].get("score") or 0)
         and all(
             int(recent_health[index].get("score") or 0)
             <= int(recent_health[index - 1].get("score") or 0)
