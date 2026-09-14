@@ -386,3 +386,64 @@ def test_recon_worker_reports_consumed_budget_and_skip_telemetry(monkeypatch):
     assert result.max_depth_reached == 2
     assert result.skipped_out_of_scope >= 1
     assert result.skipped_cross_origin == 0
+
+
+
+def test_recon_worker_stops_cleanly_when_wall_clock_budget_expires(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "3")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setenv("XBOW_RECON_MAX_WALL_SECONDS", "5")
+
+    root = _Response(
+        b'<a href="/one">one</a>',
+        {"Content-Type": "text/html"},
+    )
+    one = _Response(
+        b'<a href="/two">two</a>',
+        {"Content-Type": "text/html"},
+    )
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": root,
+            "https://example.test/one": one,
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    ticks = iter((0.0, 0.1, 0.2, 0.3, 6.0, 6.0))
+    monkeypatch.setattr("app.recon_worker.time.monotonic", lambda: next(ticks))
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 3,
+        },
+    )
+
+    assert opener.calls == ["https://example.test/"]
+    assert result.requests_made == 1
+    assert result.stopped_by_time_budget is True
+    assert result.wall_time_seconds == 6.0
+
+
+def test_recon_worker_rejects_invalid_wall_clock_budget(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_WALL_SECONDS", "0")
+
+    try:
+        execute_recon_task(
+            _campaign(),
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "max_requests": 1,
+            },
+        )
+    except Exception as exc:
+        assert "XBOW_RECON_MAX_WALL_SECONDS" in str(exc)
+    else:
+        raise AssertionError("invalid recon wall-clock budget must fail closed")
