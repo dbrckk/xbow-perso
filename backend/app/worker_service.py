@@ -423,15 +423,34 @@ def _record_worker_outcome(store: Storage, job: dict, *, success: bool, status: 
     return False
 
 
+def _worker_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True
+    if value in {"0", "false", "no", "off"}:
+        return False
+    raise ValueError(f"{name} must be a boolean")
+
+
+def _active_scanner_execution_requested() -> bool:
+    return (
+        _worker_bool("XBOW_ENABLE_ACTIVE_SCANS", False)
+        and not _worker_bool("DRY_RUN", True)
+    )
+
+
 def _claim_for_role(queue: JobQueue, worker_id: str):
     role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
     if not role:
         return queue.claim(worker_id)
     if role == "general":
-        return queue.claim_allowed(
-            worker_id,
-            ("independent_validation", "browser_flow", "recon_task", "report"),
-        )
+        kinds = ["independent_validation", "browser_flow", "recon_task", "report"]
+        if not _active_scanner_execution_requested():
+            kinds.extend(("nuclei_scan", "strix_scan"))
+        return queue.claim_allowed(worker_id, kinds)
     if role == "scanner":
         return queue.claim_allowed(worker_id, ("nuclei_scan", "strix_scan"))
     raise ValueError("XBOW_WORKER_ROLE must be general or scanner")
