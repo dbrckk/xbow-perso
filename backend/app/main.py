@@ -331,6 +331,7 @@ def system_capabilities():
             "operations_dashboard": True,
             "control_plane_health_model": True,
             "control_plane_health_history": True,
+            "slo_error_budgets": True,
         },
         "execution": {
             "strix_scanning": "gated",
@@ -1724,6 +1725,7 @@ from .operational_alerts import router as alerts_router  # noqa: E402
 from .operations_dashboard import router as operations_dashboard_router  # noqa: E402
 from .report_readiness import router as report_readiness_router  # noqa: E402
 from .review_queue import router as review_queue_router  # noqa: E402
+from .slo import router as slo_router  # noqa: E402
 
 app.include_router(browser_router)
 app.include_router(campaign_control_router)
@@ -1740,3 +1742,4 @@ app.include_router(alerts_router)
 app.include_router(operations_dashboard_router)
 app.include_router(report_readiness_router)
 app.include_router(review_queue_router)
+app.include_router(slo_router)
