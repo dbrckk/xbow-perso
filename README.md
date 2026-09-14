@@ -228,3 +228,8 @@ GET /api/dashboard/operations/health-history
 ```
 
 The history includes the current and previous score, score delta, trend (`improving`, `stable`, `degrading`), state transitions, and persistent-degradation detection. Operational alerts include a warning when health is actively degrading and a critical alert when degradation persists across the latest retained snapshots. History is aggregate-only and contains no target, payload, or secret data.
+
+
+### Operational health response
+
+Control-plane health is an advisory, aggregate signal only. `HEALTHY`, `DEGRADED`, and `BLOCKED` never expand authorization, target scope, execution permissions, or worker capabilities. Operators should inspect the operations dashboard, health history, recovery readiness, queue-transition integrity, and aggregate alerts before declaring recovery. Ordinary failed jobs degrade service health; fail-closed blocking remains reserved for integrity/recovery conditions and persistent control-plane degradation.
