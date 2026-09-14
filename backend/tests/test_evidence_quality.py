@@ -53,6 +53,9 @@ def test_independent_artifact_backed_multi_source_evidence_is_high_quality():
             metadata={
                 "artifact_id": "artifact-1",
                 "artifact_kind": "validation",
+                "artifact_sha256": "a" * 64,
+                "artifact_size_bytes": 128,
+                "artifact_media_type": "application/json",
             },
         )
     )
@@ -63,6 +66,7 @@ def test_independent_artifact_backed_multi_source_evidence_is_high_quality():
     assert item.grade == "high"
     assert item.independent_validation is True
     assert item.artifact_backed is True
+    assert item.integrity_attested is True
     assert item.source_count == 3
     assert item.chain_integrity is True
     assert item.corroborated is True
@@ -94,7 +98,7 @@ def test_plain_linked_evidence_does_not_receive_artifact_credit():
 
     assert item.grade == "medium"
     assert item.artifact_backed is False
-    assert item.components["artifact_backing"] == 0.10
+    assert item.components["artifact_backing"] == 0.05
     assert "evidence_not_artifact_backed" in item.issues
 
 
@@ -155,3 +159,35 @@ def test_evidence_quality_route_is_exposed(tmp_path, monkeypatch):
     assert result["read_only"] is True
     assert result["advisory_only"] is True
     assert result["summary"]["low"] == 1
+
+
+
+def test_artifact_reference_without_sha256_is_not_high_grade():
+    graph = _base_graph()
+    graph.add(
+        Observation(
+            "validation:v2",
+            "validation",
+            "observed",
+            "validator-b",
+            parent_ids=("finding:f1",),
+        )
+    )
+    graph.add(
+        Observation(
+            "evidence:e2",
+            "evidence",
+            "artifact-reference",
+            "validator-c",
+            parent_ids=("validation:v2",),
+            metadata={"artifact_id": "artifact-without-hash"},
+        )
+    )
+
+    item = build_evidence_quality(graph)[0]
+
+    assert item.artifact_backed is True
+    assert item.integrity_attested is False
+    assert item.grade == "medium"
+    assert item.components["artifact_integrity"] == 0.0
+    assert "artifact_integrity_not_attested" in item.issues

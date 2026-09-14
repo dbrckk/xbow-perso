@@ -19,6 +19,7 @@ class EvidenceQuality:
     grade: str
     independent_validation: bool
     artifact_backed: bool
+    integrity_attested: bool
     source_count: int
     chain_integrity: bool
     corroborated: bool
@@ -31,8 +32,8 @@ class EvidenceQuality:
         return payload
 
 
-def _grade(score: float) -> str:
-    if score >= 0.80:
+def _grade(score: float, *, integrity_attested: bool) -> str:
+    if score >= 0.80 and integrity_attested:
         return "high"
     if score >= 0.55:
         return "medium"
@@ -58,10 +59,13 @@ def build_evidence_quality(graph: ObservationGraph) -> list[EvidenceQuality]:
             for item_id in (chain.evidence_ids if chain else ())
             if item_id in by_id
         ]
-        artifact_backed = any(
-            item.metadata.get("artifact_id")
-            or item.metadata.get("artifact_kind") == "validation"
+        artifact_backed = any(item.metadata.get("artifact_id") for item in evidence_items)
+        integrity_attested = any(
+            isinstance(item.metadata.get("artifact_sha256"), str)
+            and len(item.metadata["artifact_sha256"]) == 64
+            and all(ch in "0123456789abcdefABCDEF" for ch in item.metadata["artifact_sha256"])
             for item in evidence_items
+            if item.metadata.get("artifact_id")
         )
         independent = bool(chain and chain.independent_validation_observed)
         source_count = int(finding_consensus.source_count if finding_consensus else 0)
@@ -76,10 +80,11 @@ def build_evidence_quality(graph: ObservationGraph) -> list[EvidenceQuality]:
         components = {
             "independent_validation": 0.35 if independent else 0.0,
             "artifact_backing": (
-                0.25
+                0.10
                 if artifact_backed
-                else (0.10 if evidence_items else 0.0)
+                else (0.05 if evidence_items else 0.0)
             ),
+            "artifact_integrity": 0.15 if integrity_attested else 0.0,
             "source_diversity": (
                 0.20 if source_count >= 3 else (0.10 if source_count >= 2 else 0.0)
             ),
@@ -95,6 +100,8 @@ def build_evidence_quality(graph: ObservationGraph) -> list[EvidenceQuality]:
             issues.append("missing_linked_evidence")
         elif not artifact_backed:
             issues.append("evidence_not_artifact_backed")
+        elif not integrity_attested:
+            issues.append("artifact_integrity_not_attested")
         if source_count < 2:
             issues.append("low_source_diversity")
         if not chain_integrity:
@@ -106,9 +113,10 @@ def build_evidence_quality(graph: ObservationGraph) -> list[EvidenceQuality]:
             EvidenceQuality(
                 finding_id=finding.id.removeprefix("finding:"),
                 score=score,
-                grade=_grade(score),
+                grade=_grade(score, integrity_attested=integrity_attested),
                 independent_validation=independent,
                 artifact_backed=artifact_backed,
+                integrity_attested=integrity_attested,
                 source_count=source_count,
                 chain_integrity=chain_integrity,
                 corroborated=corroborated,
@@ -136,6 +144,7 @@ def campaign_evidence_quality(campaign_id: str):
             "medium": sum(item.grade == "medium" for item in quality),
             "low": sum(item.grade == "low" for item in quality),
             "artifact_backed": sum(item.artifact_backed for item in quality),
+            "integrity_attested": sum(item.integrity_attested for item in quality),
             "corroborated": sum(item.corroborated for item in quality),
         },
         "read_only": True,

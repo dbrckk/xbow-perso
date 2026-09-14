@@ -115,13 +115,23 @@ def record_artifact(
     value: str | None = None,
     metadata: dict | None = None,
 ) -> str:
+    artifact_metadata = {
+        "artifact_id": artifact["id"],
+        "artifact_sha256": artifact.get("sha256"),
+        "artifact_kind": artifact.get("kind"),
+        "artifact_size_bytes": artifact.get("size_bytes"),
+        "artifact_media_type": artifact.get("media_type"),
+    }
+    artifact_metadata = {
+        key: value for key, value in artifact_metadata.items() if value is not None
+    }
     observation = Observation(
         id=f"{kind}:{artifact['id']}",
         kind=kind,
         value=value or artifact["id"],
         source=source,
         parent_ids=parent_ids,
-        metadata={"artifact_id": artifact["id"], **(metadata or {})},
+        metadata={**(metadata or {}), **artifact_metadata},
     )
     store.put_observation(campaign.id, observation.to_dict())
     return observation.id
