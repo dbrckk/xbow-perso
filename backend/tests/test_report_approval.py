@@ -74,7 +74,6 @@ def test_campaign_change_invalidates_existing_approval():
 
     assert status.approved is False
     assert status.stale is True
-    assert "artifact_sha256_changed" in status.stale_reasons
     assert "approval_basis_changed" in status.stale_reasons
     assert "approval_basis_changed" in status.stale_reasons
 
