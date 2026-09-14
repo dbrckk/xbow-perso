@@ -200,6 +200,66 @@ function renderClusters(data){
   }
 }
 
+function renderReviewAndSubmission(reviewQueue, reportReadiness){
+  $('reviewCard').classList.remove('hidden');
+  const tasks=Array.isArray(reviewQueue.tasks)?reviewQueue.tasks:[];
+  const readiness=Array.isArray(reportReadiness.findings)?reportReadiness.findings:[];
+  const ready=Number(reportReadiness.summary?.submission_ready)||0;
+  const blocked=Number(reportReadiness.summary?.submission_blocked)||0;
+  $('reviewSummary').textContent=tasks.length+' tâche(s)';
+  $('submissionSummary').textContent=
+    ready+' prêt(s) à soumettre · '+blocked+' bloqué(s) · approbation humaine requise';
+
+  const list=$('reviewList');
+  list.replaceChildren();
+
+  for(const item of readiness){
+    const row=document.createElement('div');
+    row.className='review-item';
+    const head=document.createElement('div');
+    head.className='finding-head';
+    const title=document.createElement('strong');
+    title.textContent='Finding '+item.finding_id;
+    const pill=document.createElement('span');
+    pill.className='pill '+(item.submission_ready?'ok':'warn');
+    pill.textContent=item.submission_ready?'submission ready':'incomplet';
+    head.append(title,pill);
+    const meta=document.createElement('div');
+    meta.className='muted';
+    meta.textContent=
+      Math.round((Number(item.submission_completeness_score)||0)*100)+'% complétude · preuves '+
+      (item.evidence_quality_grade||'unknown');
+    const blockers=document.createElement('div');
+    blockers.className='muted detail-block';
+    const values=Array.isArray(item.metadata_blockers)?item.metadata_blockers:[];
+    blockers.textContent=values.length?('Manques : '+values.join(' · ')):'Métadonnées complètes';
+    row.append(head,meta,blockers);
+    list.appendChild(row);
+  }
+
+  for(const task of tasks.slice(0,10)){
+    const row=document.createElement('div');
+    row.className='review-item';
+    const head=document.createElement('div');
+    head.className='finding-head';
+    const title=document.createElement('strong');
+    title.textContent=task.kind||'review';
+    const pill=document.createElement('span');
+    pill.className='pill';
+    pill.textContent=Math.round((Number(task.priority)||0)*100)+'%';
+    head.append(title,pill);
+    const reason=document.createElement('div');
+    reason.className='muted';
+    reason.textContent=task.reason||'';
+    row.append(head,reason);
+    list.appendChild(row);
+  }
+
+  if(!readiness.length&&!tasks.length){
+    list.textContent='Aucune tâche de revue.';
+  }
+}
+
 function renderDecisionTimeline(data){
   $('timelineCard').classList.remove('hidden');
   const timeline=Array.isArray(data.timeline)?data.timeline:[];
@@ -414,16 +474,19 @@ function renderFindingIntelligence(data){
 
 async function refreshDashboard(){
   if(!campaign)return;
-  const [control,intelligence,timeline]=await Promise.all([
+  const [control,intelligence,timeline,reviewQueue,reportReadiness]=await Promise.all([
     api('/campaigns/'+campaign.id+'/control-status'),
     api('/campaigns/'+campaign.id+'/finding-intelligence'),
-    api('/campaigns/'+campaign.id+'/decision-timeline')
+    api('/campaigns/'+campaign.id+'/decision-timeline'),
+    api('/campaigns/'+campaign.id+'/review-queue'),
+    api('/campaigns/'+campaign.id+'/report-readiness')
   ]);
   renderControl(control);
   renderFindingIntelligence(intelligence);
   renderClusters(intelligence);
   renderDecisionTimeline(timeline);
-  $('output').textContent=JSON.stringify({control,finding_intelligence:intelligence,decision_timeline:timeline},null,2);
+  renderReviewAndSubmission(reviewQueue,reportReadiness);
+  $('output').textContent=JSON.stringify({control,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
 }
 
 async function activateCampaign(value){
