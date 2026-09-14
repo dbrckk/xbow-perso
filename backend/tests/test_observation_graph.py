@@ -61,6 +61,19 @@ def test_planner_progresses_through_bounded_phases():
     assert AdaptivePlanner().plan(active_campaign, graph)[0].kind == "validate"
 
     graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+    unevidenced = AdaptivePlanner().plan(active_campaign, graph)[0]
+    assert unevidenced.kind == "stop"
+    assert "lacks attached evidence" in unevidenced.reason
+
+    graph.add(
+        Observation(
+            "ve1",
+            "evidence",
+            "validation-artifact",
+            "validator",
+            parent_ids=("v1",),
+        )
+    )
     assert AdaptivePlanner().plan(active_campaign, graph)[0].kind == "stop"
 
     active_campaign.findings[0].status = "confirmed"
@@ -84,6 +97,15 @@ def test_planner_waits_for_explicit_resolution_after_observed_validation():
     graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
     graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
     graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+    graph.add(
+        Observation(
+            "ve1",
+            "evidence",
+            "validation-artifact",
+            "validator",
+            parent_ids=("v1",),
+        )
+    )
 
     action = AdaptivePlanner().plan(campaign(findings=(finding(),)), graph)[0]
 
@@ -97,6 +119,15 @@ def test_planner_does_not_generate_report_when_all_findings_are_rejected():
     graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
     graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
     graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+    graph.add(
+        Observation(
+            "ve1",
+            "evidence",
+            "validation-artifact",
+            "validator",
+            parent_ids=("v1",),
+        )
+    )
 
     action = AdaptivePlanner().plan(campaign(findings=(finding(status="rejected"),)), graph)[0]
 
@@ -218,3 +249,16 @@ def test_planner_stops_when_automation_is_disabled():
     action = AdaptivePlanner().plan(campaign(automated_scanning=False), graph)[0]
     assert action.kind == "stop"
     assert "disabled" in action.reason
+
+
+def test_planner_fails_closed_when_observed_validation_has_no_attached_evidence():
+    graph = ObservationGraph()
+    graph.add(Observation("a1", "asset", "example.com", "recon"))
+    graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
+    graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
+    graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+
+    action = AdaptivePlanner().plan(campaign(findings=(finding(),)), graph)[0]
+
+    assert action.kind == "stop"
+    assert "lacks attached evidence" in action.reason
