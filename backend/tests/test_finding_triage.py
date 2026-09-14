@@ -120,7 +120,6 @@ def test_finding_triage_route_is_exposed(tmp_path, monkeypatch):
     assert result["advisory_only"] is True
 
 
-
 def test_triage_requires_high_quality_evidence_before_report_review():
     finding = _finding("quality", "high")
     graph = ObservationGraph()
