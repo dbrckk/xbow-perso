@@ -1,6 +1,8 @@
 from app.submission_audit import (
     audit_campaign_submissions,
     audit_storage_submissions,
+    audit_submission_events,
+    verify_submission_audit,
 )
 
 
@@ -150,3 +152,58 @@ def test_submission_audit_classifies_missing_approval_metadata():
     assert result["severity"]["counts"]["medium"] == 2
     assert result["issue_counts"]["approval_missing_basis_digest"] == 1
     assert result["issue_counts"]["approval_missing_artifact_sha256"] == 1
+
+
+
+def test_submission_audit_fingerprint_is_deterministic_and_verifiable():
+    campaign = {
+        "events": [
+            {
+                "type": "report_approved",
+                "artifact_id": "r1",
+                "artifact_sha256": "a" * 64,
+                "basis_digest": "b" * 64,
+                "report_provenance_fingerprint": "c" * 64,
+                "reviewer": "reviewer",
+                "at": "2026-09-14T18:00:00Z",
+            }
+        ]
+    }
+
+    first = audit_submission_events(
+        campaign,
+        "r1",
+        current_provenance_fingerprint="c" * 64,
+    )
+    second = audit_submission_events(
+        campaign,
+        "r1",
+        current_provenance_fingerprint="c" * 64,
+    )
+
+    assert first["schema"] == "submission-audit-v1"
+    assert first["fingerprint"] == second["fingerprint"]
+    assert len(first["fingerprint"]) == 64
+    assert verify_submission_audit(first)["valid"] is True
+
+
+def test_submission_audit_verifier_detects_tampering():
+    campaign = {
+        "events": [
+            {
+                "type": "report_submitted",
+                "artifact_id": "r1",
+                "actor": "operator",
+                "platform": "generic",
+                "at": "2026-09-14T18:00:00Z",
+            }
+        ]
+    }
+
+    audit = audit_submission_events(campaign, "r1")
+    audit["issues"] = []
+
+    verification = verify_submission_audit(audit)
+
+    assert verification["valid"] is False
+    assert verification["fingerprint_valid"] is False
