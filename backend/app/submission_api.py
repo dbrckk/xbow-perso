@@ -122,7 +122,14 @@ def list_submission_states(campaign_id: str):
 def get_submission_audit(campaign_id: str, artifact_id: str):
     campaign, _version, store = _context(campaign_id)
     _verified_report(campaign, store, artifact_id)
-    return audit_submission_events(campaign, artifact_id)
+    return audit_submission_events(
+        campaign,
+        artifact_id,
+        current_provenance_fingerprint=_current_provenance_fingerprint(
+            campaign,
+            store,
+        ),
+    )
 
 
 @router.get("/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state")
