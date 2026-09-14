@@ -180,8 +180,12 @@ def build_platform_slos(metrics: dict[str, Any]) -> dict[str, Any]:
 def platform_slos():
     from .main import queue, storage
 
-    metrics = build_operational_metrics(queue(), storage())
-    return build_platform_slos(metrics)
+    store = storage()
+    metrics = build_operational_metrics(queue(), store)
+    return attach_historical_slo_windows(
+        build_platform_slos(metrics),
+        store,
+    )
 
 
 
