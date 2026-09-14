@@ -276,3 +276,36 @@ def test_storage_submission_audit_fingerprint_verifies_and_detects_tampering():
     tampered["reports_checked"] = 99
 
     assert verify_storage_submission_audit(tampered)["valid"] is False
+
+
+
+def test_submission_audit_detects_stale_reporting_governance():
+    campaign = {
+        "events": [
+            {
+                "type": "report_approved",
+                "artifact_id": "r1",
+                "artifact_sha256": "a" * 64,
+                "basis_digest": "b" * 64,
+                "report_provenance_fingerprint": "c" * 64,
+                "reporting_governance_fingerprint": "d" * 64,
+                "reviewer": "reviewer",
+                "at": "2026-09-14T18:00:00Z",
+            }
+        ]
+    }
+
+    result = audit_submission_events(
+        campaign,
+        "r1",
+        current_provenance_fingerprint="c" * 64,
+        current_governance_fingerprint="e" * 64,
+    )
+
+    assert result["valid"] is False
+    assert "approval_governance_stale" in result["issues"]
+    assert result["issue_classes"]["stale"] == 1
+    assert result["latest_approval_governance_fingerprint"] == "d" * 64
+    assert result["current_governance_fingerprint"] == "e" * 64
+    assert result["severity"]["highest"] == "low"
+    assert verify_submission_audit(result)["valid"] is True
