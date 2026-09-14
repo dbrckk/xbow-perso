@@ -59,6 +59,7 @@ def submission_status(
     artifact: dict[str, Any],
     *,
     provenance_fingerprint: str | None = None,
+    governance_fingerprint: str | None = None,
 ) -> SubmissionStatus:
     if artifact.get("kind") != "report":
         raise ValueError("only report artifacts have submission state")
@@ -68,6 +69,7 @@ def submission_status(
         campaign,
         artifact,
         provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
     )
     approval_events = _approval_events(campaign, artifact_id)
     revoked = bool(approval_events) and approval_events[-1][1].get("type") == "report_approval_revoked"
@@ -132,6 +134,7 @@ def assert_submission_allowed(
     quality_gates: list[Any],
     *,
     provenance_fingerprint: str | None = None,
+    governance_fingerprint: str | None = None,
 ) -> SubmissionStatus:
     """Require current human approval plus verified report quality for submission.
 
@@ -141,6 +144,7 @@ def assert_submission_allowed(
         campaign,
         artifact,
         provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
     )
     if status.state != "approved":
         raise ValueError("report submission requires current human approval")
