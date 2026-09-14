@@ -6,6 +6,7 @@ from typing import Any
 from fastapi import APIRouter
 
 from .evidence_chain import build_evidence_chains
+from .evidence_quality import build_evidence_quality
 from .finding_consensus import build_finding_consensus, router as finding_consensus_router
 from .finding_correlation import correlate_findings
 from .knowledge_memory import build_knowledge_snapshot
@@ -32,6 +33,8 @@ class FindingTriage:
     evidence_chain_complete: bool
     source_consensus_score: float
     corroborated: bool
+    evidence_quality_score: float
+    evidence_quality_grade: str
     duplicate_candidate: bool
     duplicate_group_size: int
     recommended_state: str
@@ -55,6 +58,7 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
         for item in build_finding_consensus(graph)
     }
     chains = {item.finding_id: item for item in build_evidence_chains(graph)}
+    quality_by_id = {item.finding_id: item for item in build_evidence_quality(graph)}
     observed_finding_ids = {item.id for item in graph.by_kind("finding")}
     duplicate_size: dict[str, int] = {}
     for group in correlate_findings(findings):
@@ -72,6 +76,9 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
         consensus = consensus_by_id.get(finding_id)
         consensus_score = consensus.score if consensus else 0.0
         corroborated = bool(consensus and consensus.corroborated)
+        quality = quality_by_id.get(finding_id)
+        evidence_quality_score = quality.score if quality else 0.0
+        evidence_quality_grade = quality.grade if quality else "low"
         chain = chains.get(graph_id)
         chain_complete = bool(chain and chain.complete)
         group_size = duplicate_size.get(finding_id, 1)
@@ -86,9 +93,10 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
                 0.0,
                 min(
                     1.0,
-                    (severity_weight * 0.55)
-                    + (evidence_gap * 0.30)
+                    (severity_weight * 0.50)
+                    + (evidence_gap * 0.20)
                     + (chain_gap * 0.15)
+                    + ((1.0 - evidence_quality_score) * 0.15)
                     - duplicate_discount,
                 ),
             ),
@@ -99,7 +107,7 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
             recommended = "resolved"
         elif duplicate and not observed:
             recommended = "review_duplicate"
-        elif not chain_complete or confidence < 0.75 or not corroborated:
+        elif not chain_complete or confidence < 0.75 or not corroborated or evidence_quality_score < 0.80:
             recommended = "validate"
         elif duplicate:
             recommended = "review_duplicate"
@@ -115,6 +123,8 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
                 evidence_chain_complete=chain_complete,
                 source_consensus_score=consensus_score,
                 corroborated=corroborated,
+                evidence_quality_score=evidence_quality_score,
+                evidence_quality_grade=evidence_quality_grade,
                 duplicate_candidate=duplicate,
                 duplicate_group_size=group_size,
                 recommended_state=recommended,
@@ -140,6 +150,7 @@ def campaign_finding_triage(campaign_id: str):
             "duplicate_review": sum(item.recommended_state == "review_duplicate" for item in triage),
             "report_review": sum(item.recommended_state == "review_for_report" for item in triage),
             "corroborated": sum(item.corroborated for item in triage),
+            "high_quality_evidence": sum(item.evidence_quality_grade == "high" for item in triage),
         },
         "read_only": True,
         "advisory_only": True,

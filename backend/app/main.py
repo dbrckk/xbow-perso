@@ -328,6 +328,7 @@ def system_capabilities():
             "knowledge_memory": True,
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
+            "evidence_quality_scoring": "read_only",
             "review_queue": "read_only",
             "decision_consensus": "read_only",
         },
@@ -904,14 +905,15 @@ def campaign_hypothesis_stability(campaign_id: str, limit: int = 50):
 @app.get("/api/campaigns/{campaign_id}/plan")
 def campaign_plan(campaign_id: str):
     from .agent_registry import agent_for_action
+    from .evidence_quality import build_evidence_quality
     from .knowledge_memory import build_knowledge_snapshot, rank_findings
     from .observation_graph import AdaptivePlanner
-    from .planner_budget import PlannerBudget, apply_budget, budget_usage
+    from .planner_budget import apply_budget, budget_usage, planner_budget_from_env
 
     campaign = assert_campaign_exists(campaign_id)
     graph = _campaign_graph(campaign_id)
     jobs = queue()
-    limits = PlannerBudget()
+    limits = planner_budget_from_env()
     planner_actions = AdaptivePlanner().plan(campaign, graph)
     actions = [apply_budget(item, graph, jobs, campaign.id, limits)[0] for item in planner_actions]
     usage = budget_usage(graph, jobs, campaign.id, limits)
@@ -944,6 +946,7 @@ def campaign_plan(campaign_id: str):
         "advisory": advisory,
         "advisory_fingerprint": advisory_fingerprint,
         "memory": build_knowledge_snapshot(graph).to_dict(),
+        "evidence_quality": [item.to_dict() for item in build_evidence_quality(graph)],
         "budget": {"limits": limits.to_dict(), "usage": usage.to_dict()},
         "read_only": True,
     }
@@ -1557,11 +1560,13 @@ def download_artifact(campaign_id: str, artifact_id: str):
 from .browser import router as browser_router  # noqa: E402
 from .campaign_control import router as campaign_control_router  # noqa: E402
 from .coverage import router as coverage_router  # noqa: E402
+from .evidence_quality import router as evidence_quality_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
 
 app.include_router(browser_router)
 app.include_router(campaign_control_router)
 app.include_router(coverage_router)
+app.include_router(evidence_quality_router)
 app.include_router(metrics_router)
 app.include_router(alerts_router)

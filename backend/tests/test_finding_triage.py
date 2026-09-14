@@ -118,3 +118,85 @@ def test_finding_triage_route_is_exposed(tmp_path, monkeypatch):
     assert result["campaign_id"] == campaign.id
     assert result["read_only"] is True
     assert result["advisory_only"] is True
+
+
+def test_triage_requires_high_quality_evidence_before_report_review():
+    finding = _finding("quality", "high")
+    graph = ObservationGraph()
+    graph.add(Observation("asset:q", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:quality",
+            "finding",
+            "quality",
+            "scanner",
+            parent_ids=("asset:q",),
+        )
+    )
+    graph.add(
+        Observation(
+            "validation:q",
+            "validation",
+            "observed",
+            "validator",
+            parent_ids=("finding:quality",),
+        )
+    )
+    graph.add(
+        Observation(
+            "evidence:q",
+            "evidence",
+            "plain-reference",
+            "validator",
+            parent_ids=("validation:q",),
+        )
+    )
+
+    triage = build_finding_triage([finding], graph)[0]
+
+    assert triage.evidence_chain_complete is True
+    assert triage.confidence >= 0.75
+    assert triage.corroborated is True
+    assert triage.evidence_quality_grade == "medium"
+    assert triage.evidence_quality_score < 0.80
+    assert triage.recommended_state == "validate"
+
+
+def test_triage_allows_report_review_with_high_quality_artifact_backed_evidence():
+    finding = _finding("quality-high", "high")
+    graph = ObservationGraph()
+    graph.add(Observation("asset:h", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:quality-high",
+            "finding",
+            "quality-high",
+            "scanner",
+            parent_ids=("asset:h",),
+        )
+    )
+    graph.add(
+        Observation(
+            "validation:h",
+            "validation",
+            "observed",
+            "validator-a",
+            parent_ids=("finding:quality-high",),
+        )
+    )
+    graph.add(
+        Observation(
+            "evidence:h",
+            "evidence",
+            "artifact-reference",
+            "validator-b",
+            parent_ids=("validation:h",),
+            metadata={"artifact_id": "artifact-h", "artifact_kind": "validation"},
+        )
+    )
+
+    triage = build_finding_triage([finding], graph)[0]
+
+    assert triage.evidence_quality_grade == "high"
+    assert triage.evidence_quality_score == 1.0
+    assert triage.recommended_state == "review_for_report"
