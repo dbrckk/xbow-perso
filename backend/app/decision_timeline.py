@@ -44,6 +44,74 @@ def _signal_diff(previous: dict[str, Any] | None, current: dict[str, Any] | None
     return changes
 
 
+def _causal_summary(
+    transition: dict[str, Any] | None,
+    changes: list[dict[str, Any]],
+) -> str | None:
+    if not transition or not changes:
+        return None
+
+    by_signal = {item["signal"]: item for item in changes}
+    clauses: list[str] = []
+
+    gate_allowed = by_signal.get("gate.allowed")
+    gate_blockers = by_signal.get("gate.blockers")
+    if gate_allowed and gate_allowed.get("before") is True and gate_allowed.get("after") is False:
+        added = list((gate_blockers or {}).get("added") or [])
+        suffix = f" après {len(added)} nouveau(x) blocker(s)" if added else ""
+        clauses.append(f"le gate est passé d'autorisé à bloqué{suffix}")
+    elif gate_blockers and gate_blockers.get("added"):
+        clauses.append(
+            "de nouveaux blockers sont apparus: "
+            + ", ".join(gate_blockers["added"][:3])
+        )
+
+    risk_level = by_signal.get("risk.level")
+    if risk_level:
+        clauses.append(
+            f"le risque est passé de {risk_level.get('before')} à {risk_level.get('after')}"
+        )
+
+    consensus_focus = by_signal.get("consensus.next_focus")
+    if consensus_focus:
+        clauses.append(
+            "le consensus a changé de "
+            f"{consensus_focus.get('before')} vers {consensus_focus.get('after')}"
+        )
+
+    contradictory = by_signal.get("consensus.contradictory")
+    if contradictory and contradictory.get("after") is True:
+        clauses.append("une contradiction a été détectée")
+
+    cycle_state = by_signal.get("cycle.state")
+    if cycle_state:
+        clauses.append(
+            f"le cycle est passé de {cycle_state.get('before')} à {cycle_state.get('after')}"
+        )
+
+    surface_ready = by_signal.get("surface_enrichment.ready")
+    if surface_ready:
+        clauses.append(
+            "la surface est devenue "
+            + ("suffisamment enrichie" if surface_ready.get("after") else "insuffisamment enrichie")
+        )
+
+    coverage = by_signal.get("coverage.coverage_score")
+    if coverage and isinstance(coverage.get("before"), (int, float)) and isinstance(coverage.get("after"), (int, float)):
+        before = round(float(coverage["before"]) * 100)
+        after = round(float(coverage["after"]) * 100)
+        clauses.append(f"la couverture est passée de {before}% à {after}%")
+
+    if not clauses:
+        clauses.append(f"{len(changes)} signal(aux) décisionnel(s) ont changé")
+
+    transition_text = (
+        f"{transition.get('from_action') or '—'} → "
+        f"{transition.get('to_action') or '—'}"
+    )
+    return transition_text + " principalement parce que " + "; ".join(clauses[:4]) + "."
+
+
 def build_decision_timeline(
     campaign: Any,
     graph: Any,
@@ -81,6 +149,7 @@ def build_decision_timeline(
         if previous is None:
             entry["transition"] = None
             entry["signal_diff"] = []
+            entry["causal_summary"] = None
         else:
             entry["transition"] = {
                 "from_action": previous.get("action"),
@@ -89,6 +158,7 @@ def build_decision_timeline(
                 "to_sequence": entry.get("sequence"),
             }
             entry["signal_diff"] = _signal_diff(previous.get("why"), entry.get("why"))
+            entry["causal_summary"] = _causal_summary(entry["transition"], entry["signal_diff"])
         previous = entry
 
     campaign_entries = []
