@@ -20,7 +20,12 @@ router = APIRouter()
 
 def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]:
     metrics = build_operational_metrics(queue_backend, storage_backend)
-    alerts = build_operational_alerts(metrics)
+    slo = attach_historical_slo_windows(
+        build_platform_slos(metrics),
+        storage_backend,
+    )
+    alert_metrics = {**metrics, "slo": slo}
+    alerts = build_operational_alerts(alert_metrics)
     history = recovery_readiness_history(storage_backend, limit=25)
 
     campaigns = storage_backend.list_campaigns()
@@ -122,10 +127,7 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
         "contains_secrets": False,
     }
     dashboard["control_plane_health"] = build_control_plane_health(dashboard)
-    dashboard["slo"] = attach_historical_slo_windows(
-        build_platform_slos(metrics),
-        storage_backend,
-    )
+    dashboard["slo"] = slo
     return dashboard
 
 
