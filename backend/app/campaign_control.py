@@ -29,6 +29,13 @@ def _recon_telemetry(events: list[dict]) -> dict:
         "skipped_cross_origin": sum(
             int(event.get("skipped_cross_origin") or 0) for event in completed
         ),
+        "wall_time_seconds": round(
+            sum(float(event.get("wall_time_seconds") or 0.0) for event in completed),
+            3,
+        ),
+        "time_budget_stops": sum(
+            1 for event in completed if bool(event.get("stopped_by_time_budget"))
+        ),
     }
 
 
