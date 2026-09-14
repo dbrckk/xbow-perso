@@ -340,3 +340,10 @@ This makes post-generation modification of the reporting-governance state detect
 Human report approval is now bound to both the report-provenance fingerprint and the full `reporting-governance-v1` fingerprint. A change to report readiness, provenance, or quality-gate state therefore makes the approval stale even when the report bytes and provenance-set identifier alone have not changed.
 
 This preserves explicit human review over the exact governance state that was approved and does not trigger any external submission or worker action.
+
+
+### Governance-aware submission audit
+
+Submission audits now distinguish stale report provenance from stale reporting governance. The audit records both approved/current provenance fingerprints and approved/current `reporting-governance-v1` fingerprints.
+
+A governance-only change therefore produces `approval_governance_stale`, while a provenance-set change produces `approval_provenance_stale`. Both remain read-only audit findings and are classified as low-severity stale conditions rather than structural workflow corruption.
