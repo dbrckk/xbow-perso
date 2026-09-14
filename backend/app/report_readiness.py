@@ -152,9 +152,16 @@ def campaign_report_readiness(campaign_id: str):
     campaign = assert_campaign_exists(campaign_id)
     graph = load_observation_graph(storage(), campaign.id)
     readiness = build_report_readiness(campaign.findings, graph)
+    from .report_quality import build_report_quality_gates, summarize_report_quality
+
+    quality_gates = build_report_quality_gates(readiness)
     return {
         "campaign_id": campaign.id,
         "findings": [item.to_dict() for item in readiness],
+        "quality": {
+            "findings": [item.to_dict() for item in quality_gates],
+            "summary": summarize_report_quality(quality_gates),
+        },
         "summary": {
             "total": len(readiness),
             "ready_for_human_review": sum(item.ready_for_human_review for item in readiness),
