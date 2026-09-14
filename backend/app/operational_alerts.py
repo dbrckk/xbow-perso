@@ -46,6 +46,7 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
     recovery = metrics.get("recovery_readiness") or {}
     health = metrics.get("control_plane_health") or {}
+    submission_integrity = metrics.get("submission_integrity") or {}
     slo = metrics.get("slo")
     if slo is None:
         required_slo_inputs = {
@@ -152,6 +153,21 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
                 "severity": "critical",
                 "value": ready_to_block_regressions,
                 "threshold": 1,
+            }
+        )
+
+    if (
+        submission_integrity.get("supported")
+        and submission_integrity.get("valid") is False
+    ):
+        alerts.append(
+            {
+                "code": "submission_event_audit_invalid",
+                "severity": "warning",
+                "value": int(
+                    submission_integrity.get("invalid_reports") or 0
+                ),
+                "threshold": 0,
             }
         )
 
