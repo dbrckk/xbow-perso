@@ -32,6 +32,7 @@ def test_campaign_submission_audit_aggregates_invalid_reports():
     assert result["reports_checked"] == 2
     assert result["invalid_reports"] == 1
     assert result["issue_counts"]["submission_without_active_approval"] == 1
+    assert result["issue_class_counts"]["structural"] == 1
     assert result["invalid_artifact_ids"] == ["r1"]
 
 
@@ -121,3 +122,25 @@ def test_submission_audit_detects_stale_approval_provenance():
     assert result["valid"] is False
     assert result["invalid_reports"] == 1
     assert result["issue_counts"]["approval_provenance_stale"] == 1
+    assert result["issue_class_counts"]["stale"] == 1
+
+
+
+def test_submission_audit_classifies_missing_approval_metadata():
+    campaign = {
+        "events": [
+            {
+                "type": "report_approved",
+                "artifact_id": "r1",
+                "reviewer": "reviewer",
+                "at": "2026-09-14T18:00:00Z",
+            }
+        ]
+    }
+
+    result = audit_campaign_submissions(campaign, ["r1"])
+
+    assert result["valid"] is False
+    assert result["issue_class_counts"]["metadata"] == 2
+    assert result["issue_counts"]["approval_missing_basis_digest"] == 1
+    assert result["issue_counts"]["approval_missing_artifact_sha256"] == 1
