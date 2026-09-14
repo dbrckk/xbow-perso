@@ -229,7 +229,12 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
     )
 
 
-def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[str, Any]:
+def sanitized_scan_payload(
+    campaign: Campaign,
+    receipt: dict[str, Any],
+    *,
+    job_kind: str = "strix_scan",
+) -> dict[str, Any]:
     """Return deterministic worker input suitable for queue idempotency.
 
     The audit receipt keeps its timestamp in campaign events/API responses, but
@@ -255,7 +260,7 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
     return attach_job_provenance(
         payload,
         campaign,
-        job_kind="strix_scan",
+        job_kind=job_kind,
         action="automated_scan",
     )
 
@@ -1083,7 +1088,7 @@ def start_campaign(campaign_id: str):
         save_campaign(campaign, expected_version=version)
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
 
-    payload = sanitized_scan_payload(campaign, receipt)
+    payload = sanitized_scan_payload(campaign, receipt, job_kind="strix_scan")
     request_id = _pending_campaign_start_request(campaign) or str(uuid4())
     _record_campaign_start_intent(
         campaign,
@@ -1290,7 +1295,12 @@ def add_finding(campaign_id: str, finding: Finding):
     validation_job = queue().enqueue(
         campaign.id,
         "independent_validation",
-        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": current.asset},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "finding_id": finding.id, "asset": current.asset},
+            latest,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key=request_id,
     )
@@ -1422,7 +1432,12 @@ def _ensure_completion_report(campaign: Campaign, version: int) -> Campaign:
     report_job = queue().enqueue(
         campaign.id,
         "report",
-        {"campaign_id": campaign.id, "platform": platform},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": platform},
+            latest,
+            job_kind="report",
+            action="report",
+        ),
         max_attempts=2,
         dedupe_key=request_id,
     )
@@ -1523,7 +1538,12 @@ def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bu
     job = queue().enqueue(
         campaign.id,
         "report",
-        {"campaign_id": campaign.id, "platform": platform},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": platform},
+            latest,
+            job_kind="report",
+            action="report",
+        ),
         max_attempts=2,
         dedupe_key=f"report:{platform}:{request_id}",
     )
