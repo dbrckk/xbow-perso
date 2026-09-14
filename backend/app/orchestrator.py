@@ -16,6 +16,7 @@ from .circuit_breaker import circuit_breaker_state, record_circuit_open
 from .coverage import build_coverage_guidance, build_evidence_coverage
 from .decision_audit import next_audit_link, seal_decision_metadata
 from .decision_consensus import build_decision_consensus
+from .finding_correlation import cluster_findings
 from .hypothesis_memory import build_hypotheses
 from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
@@ -194,7 +195,7 @@ def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
     ]
     priorities = {item.finding_id: item for item in rank_findings(pending, graph)}
     hypotheses = {item.finding_id: item for item in build_hypotheses(graph)}
-    return sorted(
+    ordered = sorted(
         pending,
         key=lambda finding: (
             -priorities[str(finding.id)].score,
@@ -204,6 +205,28 @@ def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
             str(finding.id),
         ),
     )
+
+    # Validate only one representative from each high-confidence duplicate cluster
+    # per planner cycle. After that representative is independently observed, the
+    # next campaign advance re-evaluates the graph and may select another member.
+    clusters, _similarities = cluster_findings(campaign.findings, threshold=0.75)
+    cluster_by_member = {
+        finding_id: cluster.cluster_id
+        for cluster in clusters
+        for finding_id in cluster.finding_ids
+    }
+    selected_clusters: set[str] = set()
+    selected: list = []
+    for finding in ordered:
+        cluster_id = cluster_by_member.get(str(finding.id))
+        if cluster_id is None:
+            selected.append(finding)
+            continue
+        if cluster_id in selected_clusters:
+            continue
+        selected_clusters.add(cluster_id)
+        selected.append(finding)
+    return selected
 
 
 def _enqueue_recon_tasks(
