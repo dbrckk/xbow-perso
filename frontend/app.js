@@ -1,4 +1,5 @@
 let campaign=null;
+let findingIntelligence=null;
 const $=id=>document.getElementById(id);
 const lines=id=>$(id).value.split('\n').map(x=>x.trim()).filter(Boolean);
 const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
@@ -93,6 +94,41 @@ function readinessClass(value){
   return 'err';
 }
 
+const severityRank={critical:4,high:3,medium:2,low:1,info:0};
+
+function visibleFindings(data){
+  const filter=$('findingFilter')?.value||'all';
+  const sort=$('findingSort')?.value||'priority';
+  const findings=[...(Array.isArray(data.findings)?data.findings:[])];
+
+  const filtered=findings.filter(item=>{
+    const readiness=item.readiness?.readiness||'unknown';
+    if(filter==='all')return true;
+    if(filter==='saturated')return Boolean(item.cluster_saturated);
+    return readiness===filter;
+  });
+
+  filtered.sort((a,b)=>{
+    const ar=Number(a.readiness?.readiness_score)||0;
+    const br=Number(b.readiness?.readiness_score)||0;
+    if(sort==='readiness_desc')return br-ar||String(a.finding_id).localeCompare(String(b.finding_id));
+    if(sort==='readiness_asc')return ar-br||String(a.finding_id).localeCompare(String(b.finding_id));
+    if(sort==='severity')return (severityRank[b.severity]||0)-(severityRank[a.severity]||0)||br-ar;
+    if(sort==='cluster')return String(a.cluster_id||'~').localeCompare(String(b.cluster_id||'~'))||br-ar;
+    const priority={
+      blocked:5,
+      needs_validation:4,
+      needs_review:3,
+      report_review_ready:2,
+      unknown:1
+    };
+    const ap=priority[a.readiness?.readiness||'unknown']||0;
+    const bp=priority[b.readiness?.readiness||'unknown']||0;
+    return bp-ap||br-ar||String(a.finding_id).localeCompare(String(b.finding_id));
+  });
+  return filtered;
+}
+
 function renderFindingIntelligence(data){
   $('evidenceCard').classList.remove('hidden');
   const summary=data.summary||{};
@@ -103,9 +139,10 @@ function renderFindingIntelligence(data){
 
   const list=$('evidenceList');
   list.replaceChildren();
-  const findings=Array.isArray(data.findings)?data.findings:[];
+  findingIntelligence=data;
+  const findings=visibleFindings(data);
   if(!findings.length){
-    list.textContent='Aucun finding enregistré.';
+    list.textContent='Aucun finding pour ce filtre.';
     return;
   }
 
@@ -136,12 +173,19 @@ function renderFindingIntelligence(data){
     ].filter(Boolean);
     meta.textContent=parts.join(' · ');
 
+    const details=document.createElement('details');
+    const summaryEl=document.createElement('summary');
+    summaryEl.textContent='Détails';
     const blockers=document.createElement('div');
-    blockers.className='muted';
+    blockers.className='muted detail-block';
     const values=Array.isArray(item.readiness?.blockers)?item.readiness.blockers:[];
     blockers.textContent=values.length?('Blocages : '+values.join(' · ')):'Aucun blocage de readiness';
+    const cluster=document.createElement('div');
+    cluster.className='muted detail-block';
+    cluster.textContent=item.cluster_id?('Cluster : '+item.cluster_id):'Hors cluster';
+    details.append(summaryEl,blockers,cluster);
 
-    row.append(head,meta,blockers);
+    row.append(head,meta,details);
     list.appendChild(row);
   }
 }
@@ -165,6 +209,9 @@ async function activateCampaign(value){
   setStatus('Campagne chargée : '+campaign.id,'ok');
   await refreshDashboard();
 }
+
+$('findingFilter').addEventListener('change',()=>{if(findingIntelligence)renderFindingIntelligence(findingIntelligence)});
+$('findingSort').addEventListener('change',()=>{if(findingIntelligence)renderFindingIntelligence(findingIntelligence)});
 
 $('load').onclick=async()=>{try{
   const id=$('campaignId').value.trim();
