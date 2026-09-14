@@ -329,6 +329,7 @@ def system_capabilities():
             "signed_recovery_attestation": True,
             "recovery_readiness_gate": True,
             "operations_dashboard": True,
+            "control_plane_health_model": True,
         },
         "execution": {
             "strix_scanning": "gated",
