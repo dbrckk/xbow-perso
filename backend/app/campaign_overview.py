@@ -14,6 +14,7 @@ from .finding_correlation import correlate_findings
 from .finding_lifecycle import build_finding_lifecycle, router as finding_lifecycle_router
 from .finding_triage import build_finding_triage, router as finding_triage_router
 from .hypothesis_engine import build_hypotheses
+from .job_provenance import policy_snapshot_fingerprint
 from .knowledge_memory import build_knowledge_snapshot
 from .learning_memory import build_learning_memory, router as learning_memory_router
 from .observation_graph import load_observation_graph
@@ -126,6 +127,8 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("out_of_scope_observations")
     if validation.unresolved_finding_ids:
         attention_reasons.append("unresolved_validation")
+    if validation.unevidenced_finding_ids:
+        attention_reasons.append("validation_missing_evidence")
     if any(not item.graph_observed for item in lifecycle):
         attention_reasons.append("finding_graph_mismatch")
     if any(not item.evidence_chain_integrity_ok and item.graph_observed for item in lifecycle):
@@ -153,6 +156,8 @@ def campaign_overview(campaign_id: str):
         },
         "policy": {
             "authorization_reference": rules.authorization_reference,
+            "fingerprint": policy_snapshot_fingerprint(campaign),
+            "provenance_schema": "job-provenance-v1",
             "automated_scanning": rules.automated_scanning,
             "max_requests_per_second": rules.max_requests_per_second,
             "allowed_target_count": len(rules.allowed_targets),
@@ -225,9 +230,16 @@ def campaign_overview(campaign_id: str):
             "graph_findings": len(validation.finding_ids),
             "attempted": len(validation.attempted_finding_ids),
             "observed_independent": len(validation.observed_independent_finding_ids),
+            "evidence_backed_independent": len(
+                validation.evidence_backed_independent_finding_ids
+            ),
+            "unevidenced": len(validation.unevidenced_finding_ids),
             "unresolved": len(validation.unresolved_finding_ids),
             "unattempted": len(validation.unattempted_finding_ids),
             "all_observed_independently": validation.all_observed_independently,
+            "all_evidence_backed_independently": (
+                validation.all_evidence_backed_independently
+            ),
         },
         "hypotheses": {
             "total": len(hypotheses),
