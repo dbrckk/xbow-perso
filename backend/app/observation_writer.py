@@ -118,6 +118,7 @@ def record_artifact(
     artifact_metadata = {
         "artifact_id": artifact["id"],
         "artifact_sha256": artifact.get("sha256"),
+        "artifact_kind": artifact.get("kind"),
         "artifact_size_bytes": artifact.get("size_bytes"),
         "artifact_media_type": artifact.get("media_type"),
     }
