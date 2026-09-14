@@ -29,6 +29,11 @@ class ReconResult:
     waf: tuple[str, ...] = ()
     http_status: int | None = None
     error: str | None = None
+    requests_made: int = 0
+    bytes_read: int = 0
+    max_depth_reached: int = 0
+    skipped_out_of_scope: int = 0
+    skipped_cross_origin: int = 0
 
 
 _MAX_DISCOVERED_LINKS = 500
@@ -244,16 +249,22 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     first_status: int | None = None
     first_error: str | None = None
     last_request_at: float | None = None
+    bytes_read = 0
+    max_depth_reached = 0
+    skipped_out_of_scope = 0
+    skipped_cross_origin = 0
 
     while pending and len(visited) < request_budget:
         current, depth = pending.pop(0)
         if current in visited:
             continue
         if not _same_origin(target, current):
+            skipped_cross_origin += 1
             continue
         try:
             current = _safe_url(campaign, current)
         except ReconPolicyError:
+            skipped_out_of_scope += 1
             continue
 
         if last_request_at is not None:
@@ -264,6 +275,8 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         body, status, headers, error = _fetch_page(opener, current, max_bytes)
         last_request_at = time.monotonic()
         visited.add(current)
+        bytes_read += len(body)
+        max_depth_reached = max(max_depth_reached, depth)
         if first_status is None and status is not None:
             first_status = status
         if error:
@@ -281,8 +294,10 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                 try:
                     safe = _safe_url(campaign, candidate)
                 except ReconPolicyError:
+                    skipped_out_of_scope += 1
                     continue
                 if not _same_origin(target, safe):
+                    skipped_cross_origin += 1
                     continue
                 endpoints.add(safe)
                 if (
@@ -301,8 +316,10 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                 try:
                     action = _safe_url(campaign, form["action"])
                 except ReconPolicyError:
+                    skipped_out_of_scope += 1
                     continue
                 if not _same_origin(target, action):
+                    skipped_cross_origin += 1
                     continue
                 normalized = {
                     "action": action,
@@ -325,7 +342,16 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
             break
 
     if not visited:
-        return ReconResult(status="error", target=target, error=first_error or "recon request failed")
+        return ReconResult(
+            status="error",
+            target=target,
+            error=first_error or "recon request failed",
+            requests_made=len(visited),
+            bytes_read=bytes_read,
+            max_depth_reached=max_depth_reached,
+            skipped_out_of_scope=skipped_out_of_scope,
+            skipped_cross_origin=skipped_cross_origin,
+        )
 
     return ReconResult(
         status="observed",
@@ -336,4 +362,9 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         waf=tuple(sorted(waf)[:20]),
         http_status=first_status,
         error=first_error if first_status is None else None,
+        requests_made=len(visited),
+        bytes_read=bytes_read,
+        max_depth_reached=max_depth_reached,
+        skipped_out_of_scope=skipped_out_of_scope,
+        skipped_cross_origin=skipped_cross_origin,
     )
