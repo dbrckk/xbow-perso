@@ -14,7 +14,10 @@ from .metrics import build_operational_metrics
 from .operational_alerts import build_operational_alerts
 from .recovery_readiness import recovery_readiness_history
 from .slo import attach_historical_slo_windows, build_platform_slos
-from .submission_audit import audit_storage_submissions
+from .submission_audit import (
+    audit_storage_submissions,
+    verify_storage_submission_audit,
+)
 
 router = APIRouter()
 
@@ -106,7 +109,20 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
             ),
             "recent_transitions": history.get("transitions") or [],
         },
-        "submission_integrity": submission_audit,
+        "submission_integrity": {
+            **submission_audit,
+            "verification": (
+                verify_storage_submission_audit(submission_audit)
+                if submission_audit.get("supported")
+                else {
+                    "valid": True,
+                    "schema_valid": None,
+                    "fingerprint_valid": None,
+                    "read_only": True,
+                    "automatic_mutation": False,
+                }
+            ),
+        },
         "queue_integrity": {
             "storage": metrics.get("queue_storage"),
             "audit_valid": queue_audit.get("valid"),
