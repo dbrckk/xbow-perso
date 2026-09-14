@@ -10,7 +10,7 @@ from .red_team_decision import RedTeamDecision, build_red_team_decisions
 
 router = APIRouter()
 
-_BLOCKING_KINDS = {"scope_integrity"}
+_BLOCKING_KINDS = {"scope_integrity", "review_contradiction"}
 _ACTIONABLE_KINDS = {
     "validate_findings",
     "strengthen_evidence",
@@ -45,12 +45,18 @@ def build_decision_consensus(decisions: list[RedTeamDecision]) -> DecisionConsen
     actionable = [item for item in decisions if item.kind in _ACTIONABLE_KINDS]
 
     if blocking:
+        top_blocker = sorted(blocking, key=lambda item: (-item.priority, item.kind))[0]
+        reason = (
+            "scope integrity signal blocks downstream review"
+            if top_blocker.kind == "scope_integrity"
+            else "contradictory finding history requires explicit human review"
+        )
         return DecisionConsensus(
-            next_focus="scope_integrity",
+            next_focus=top_blocker.kind,
             confidence=1.0,
             blocked=True,
-            contradictory=bool(actionable),
-            reasons=("scope integrity signal blocks downstream review",),
+            contradictory=bool(actionable) or top_blocker.kind == "review_contradiction",
+            reasons=(reason,),
             supporting_kinds=kinds,
         )
 

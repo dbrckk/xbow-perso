@@ -7,6 +7,7 @@ from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface
 from .evidence_chain import build_evidence_chains
+from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .hypothesis_engine import build_hypotheses
 from .observation_graph import ObservationGraph, load_observation_graph
@@ -14,6 +15,7 @@ from .red_team_coverage import build_red_team_coverage
 
 DecisionKind = Literal[
     "scope_integrity",
+    "review_contradiction",
     "validate_findings",
     "strengthen_evidence",
     "review_surface",
@@ -45,6 +47,7 @@ def build_red_team_decisions(
     graph: ObservationGraph,
     *,
     scope_checker: Callable[[str], bool] | None = None,
+    hypothesis_snapshots: list[dict[str, Any]] | None = None,
     limit: int = 10,
 ) -> list[RedTeamDecision]:
     """Rank safe red-team work from existing state without executing target actions."""
@@ -54,6 +57,12 @@ def build_red_team_decisions(
     surface = build_attack_surface(graph, scope_checker=scope_checker)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
     triage = build_finding_triage(findings, graph)
+    readiness = build_finding_readiness(
+        findings,
+        graph,
+        hypothesis_snapshots=hypothesis_snapshots,
+    )
+    readiness_by_id = {item.finding_id: item for item in readiness}
     chains = build_evidence_chains(graph)
     hypotheses = build_hypotheses(graph, limit=100, scope_checker=scope_checker)
     decisions: list[RedTeamDecision] = []
@@ -72,8 +81,28 @@ def build_red_team_decisions(
             )
         )
 
+    contradiction_ids = tuple(
+        item.finding_id for item in readiness if item.contradictory
+    )
+    if contradiction_ids:
+        decisions.append(
+            RedTeamDecision(
+                kind="review_contradiction",
+                priority=0.98,
+                reason="contradictory finding history requires explicit human review",
+                finding_ids=contradiction_ids[:10],
+            )
+        )
+
     validation_ids = tuple(
-        item.finding_id for item in triage if item.recommended_state == "validate"
+        item.finding_id
+        for item in triage
+        if item.recommended_state == "validate"
+        and readiness_by_id.get(item.finding_id) is not None
+        and readiness_by_id[item.finding_id].readiness not in {
+            "report_review_ready",
+            "blocked",
+        }
     )
     if validation_ids:
         decisions.append(
@@ -120,7 +149,9 @@ def build_red_team_decisions(
         )
 
     report_ids = tuple(
-        item.finding_id for item in triage if item.recommended_state == "review_for_report"
+        item.finding_id
+        for item in readiness
+        if item.readiness == "report_review_ready"
     )
     if report_ids:
         decisions.append(
@@ -158,7 +189,9 @@ def campaign_red_team_decisions(campaign_id: str, limit: int = 10):
     from .main import assert_campaign_exists, is_host_allowed, storage
 
     campaign = assert_campaign_exists(campaign_id)
-    graph = load_observation_graph(storage(), campaign.id)
+    store = storage()
+    graph = load_observation_graph(store, campaign.id)
+    snapshots = store.list_hypothesis_snapshots(campaign.id, limit=50)
     rules = campaign.target.rules
 
     def scope_checker(host: str) -> bool:
@@ -168,6 +201,7 @@ def campaign_red_team_decisions(campaign_id: str, limit: int = 10):
         campaign.findings,
         graph,
         scope_checker=scope_checker,
+        hypothesis_snapshots=snapshots,
         limit=limit,
     )
     return {
