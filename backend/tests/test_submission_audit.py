@@ -2,6 +2,8 @@ from app.submission_audit import (
     audit_campaign_submissions,
     audit_storage_submissions,
     audit_submission_events,
+    verify_campaign_submission_audit,
+    verify_storage_submission_audit,
     verify_submission_audit,
 )
 
@@ -207,3 +209,70 @@ def test_submission_audit_verifier_detects_tampering():
 
     assert verification["valid"] is False
     assert verification["fingerprint_valid"] is False
+
+
+
+def test_campaign_submission_audit_fingerprint_verifies_and_detects_tampering():
+    campaign = {
+        "events": [
+            {
+                "type": "report_approved",
+                "artifact_id": "r1",
+                "artifact_sha256": "a" * 64,
+                "basis_digest": "b" * 64,
+                "report_provenance_fingerprint": "c" * 64,
+                "reviewer": "reviewer",
+                "at": "2026-09-14T18:00:00Z",
+            }
+        ]
+    }
+
+    audit = audit_campaign_submissions(campaign, ["r1"])
+    verification = verify_campaign_submission_audit(audit)
+
+    assert audit["schema"] == "submission-audit-campaign-v1"
+    assert len(audit["fingerprint"]) == 64
+    assert len(audit["report_audit_fingerprints"]) == 1
+    assert verification["valid"] is True
+
+    tampered = dict(audit)
+    tampered["invalid_reports"] = 1
+
+    assert verify_campaign_submission_audit(tampered)["valid"] is False
+
+
+def test_storage_submission_audit_fingerprint_verifies_and_detects_tampering():
+    class Storage:
+        def list_campaigns(self):
+            return [
+                {
+                    "id": "c1",
+                    "events": [
+                        {
+                            "type": "report_approved",
+                            "artifact_id": "r1",
+                            "artifact_sha256": "a" * 64,
+                            "basis_digest": "b" * 64,
+                            "report_provenance_fingerprint": "c" * 64,
+                            "reviewer": "reviewer",
+                            "at": "2026-09-14T18:00:00Z",
+                        }
+                    ],
+                }
+            ]
+
+        def list_artifacts(self, campaign_id):
+            return [{"id": "r1", "kind": "report"}]
+
+    audit = audit_storage_submissions(Storage())
+    verification = verify_storage_submission_audit(audit)
+
+    assert audit["schema"] == "submission-audit-storage-v1"
+    assert len(audit["fingerprint"]) == 64
+    assert len(audit["campaign_audit_fingerprints"]) == 1
+    assert verification["valid"] is True
+
+    tampered = dict(audit)
+    tampered["reports_checked"] = 99
+
+    assert verify_storage_submission_audit(tampered)["valid"] is False
