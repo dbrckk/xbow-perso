@@ -21,6 +21,7 @@ from app.browser import (
 )
 from app.api_outbox import outbox_snapshot
 from app.campaign_audit import append_campaign_event, verify_campaign_event_chain
+from app.job_provenance import attach_job_provenance
 from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, ProgramRules, TargetInput
 from app.storage import CampaignConflictError, Storage
@@ -374,10 +375,15 @@ def test_browser_retry_after_enqueue_reuses_existing_job(
     existing = jobs.enqueue(
         campaign.id,
         "browser_flow",
-        {
-            "campaign_id": campaign.id,
-            "steps": flow.model_dump(mode="json")["steps"],
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "steps": flow.model_dump(mode="json")["steps"],
+            },
+            interrupted,
+            job_kind="browser_flow",
+            action="crawl",
+        ),
         max_attempts=2,
         dedupe_key=f"browser:{request_id}",
     )
