@@ -35,6 +35,14 @@ def _admit_scanner_sandbox(monkeypatch):
     monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
     monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "true")
     monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+    monkeypatch.setattr(
+        "app.scanner_sandbox._runtime_hardening_attestation",
+        lambda: {
+            "read_only_rootfs": True,
+            "no_new_privileges": True,
+            "cap_drop_all": True,
+        },
+    )
 
 
 def test_nuclei_plan_is_dry_run_by_default(monkeypatch, tmp_path):
