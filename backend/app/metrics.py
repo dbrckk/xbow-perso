@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import APIRouter
 
 from .api_outbox import outbox_snapshot
+from .submission_audit import audit_storage_submissions
 
 router = APIRouter()
 
@@ -155,6 +156,8 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
                 ready_to_block_regressions += 1
         previous_decision = decision
 
+    submission_integrity = audit_storage_submissions(storage_backend)
+
     metrics = {
         "campaigns_total": len(campaigns),
         "campaigns_by_state": dict(sorted(states.items())),
@@ -198,6 +201,7 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
             "transitions": readiness_transitions,
             "ready_to_block_regressions": ready_to_block_regressions,
         },
+        "submission_integrity": submission_integrity,
         "queue_transition_audit": {
             "supported": queue_audit_supported,
             "campaigns_checked": queue_audit_campaigns,
