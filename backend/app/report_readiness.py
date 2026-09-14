@@ -155,11 +155,11 @@ def campaign_report_readiness(campaign_id: str):
     readiness = build_report_readiness(campaign.findings, graph)
     from .report_quality import build_report_quality_gates, summarize_report_quality
 
-    quality_gates = build_report_quality_gates(readiness)
     provenance = build_report_provenance(
         [str(item.id) for item in campaign.findings],
         graph,
     )
+    quality_gates = build_report_quality_gates(readiness, provenance)
     return {
         "campaign_id": campaign.id,
         "findings": [item.to_dict() for item in readiness],
