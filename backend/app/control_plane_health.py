@@ -324,14 +324,16 @@ def control_plane_health_history(
     else:
         trend = "stable"
 
-    recent = chronological[-5:]
+    recent = chronological[-3:]
     persistent_degradation = (
-        len(recent) >= 3
-        and all(str(item.get("state")) != "HEALTHY" for item in recent[-3:])
+        len(recent) == 3
+        and str(recent[-1].get("state")) != "HEALTHY"
+        and int(recent[-1].get("score") or 0)
+        < int(recent[0].get("score") or 0)
         and all(
             int(recent[index].get("score") or 0)
             <= int(recent[index - 1].get("score") or 0)
-            for index in range(max(1, len(recent) - 2), len(recent))
+            for index in range(1, len(recent))
         )
     )
 
