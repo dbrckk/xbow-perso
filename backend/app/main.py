@@ -335,6 +335,7 @@ def system_capabilities():
             "historical_slo_windows": True,
             "multiwindow_slo_policy": True,
             "report_quality_gate": True,
+            "report_provenance_manifest": True,
             "multiwindow_slo_burn_rates": True,
         },
         "execution": {
