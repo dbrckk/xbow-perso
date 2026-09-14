@@ -345,6 +345,11 @@ def process_recon_task(job: dict, store: Storage) -> None:
             "forms": len(result.forms),
             "technologies": len(result.technologies),
             "waf": len(result.waf),
+            "requests_made": result.requests_made,
+            "bytes_read": result.bytes_read,
+            "max_depth_reached": result.max_depth_reached,
+            "skipped_out_of_scope": result.skipped_out_of_scope,
+            "skipped_cross_origin": result.skipped_cross_origin,
             "at": utcnow(),
         },
     )
