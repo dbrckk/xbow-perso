@@ -89,6 +89,14 @@ PYTHONPATH=backend python -m app.dr_cli verify \
   --vault-copy /backups/secrets.vault.json
 ```
 
+After restoring storage, validate the logical queue state before resuming workers:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli queue-check
+```
+
+`queue-check` is read-only. It does not requeue jobs, recreate work, clear leases, or mutate queue state. It reports expired or inconsistent leases, invalid retry counters, and queue-transition audit failures, then returns a non-zero exit code when operator reconciliation is required. The same assessment is available through `GET /api/recovery/queue`.
+
 The manifest stores only filenames, sizes, and SHA-256 hashes; it never embeds backup contents or decrypted secrets. When `XBOW_AUDIT_HMAC_KEY` (or the `audit_hmac_key` vault entry) is available, the manifest is also authenticated with HMAC-SHA256 so manifest rewriting is detectable.
 
 ## Safety model
