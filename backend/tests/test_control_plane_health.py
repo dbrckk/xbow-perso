@@ -120,3 +120,67 @@ def test_operations_dashboard_exposes_control_plane_health():
 
     assert "control_plane_health" in result
     assert result["control_plane_health"]["score"] == 100
+
+
+
+def test_control_plane_health_history_tracks_delta_and_degradation(tmp_path):
+    from app.control_plane_health import (
+        control_plane_health_history,
+        record_control_plane_health,
+    )
+    from app.storage import Storage
+
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    snapshots = [
+        {
+            "score": 95,
+            "state": "HEALTHY",
+            "components": {},
+            "hard_blockers": [],
+        },
+        {
+            "score": 82,
+            "state": "DEGRADED",
+            "components": {},
+            "hard_blockers": [],
+        },
+        {
+            "score": 68,
+            "state": "BLOCKED",
+            "components": {},
+            "hard_blockers": ["critical_operational_alerts"],
+        },
+    ]
+    for item in snapshots:
+        record_control_plane_health(store, item)
+
+    history = control_plane_health_history(store)
+
+    assert history["latest_score"] == 68
+    assert history["previous_score"] == 82
+    assert history["delta"] == -14
+    assert history["trend"] == "degrading"
+    assert history["latest_state"] == "BLOCKED"
+    assert history["transition_counts"]["healthy_to_degraded"] == 1
+    assert history["transition_counts"]["to_blocked"] == 1
+    assert history["persistent_degradation"] is True
+
+
+def test_control_plane_health_record_is_idempotent(tmp_path):
+    from app.control_plane_health import record_control_plane_health
+    from app.storage import Storage
+
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    result = {
+        "score": 100,
+        "state": "HEALTHY",
+        "components": {},
+        "hard_blockers": [],
+    }
+
+    first = record_control_plane_health(store, result)
+    second = record_control_plane_health(store, result)
+    snapshots = store.list_control_plane_health_snapshots()
+
+    assert first["snapshot_fingerprint"] == second["snapshot_fingerprint"]
+    assert len(snapshots) == 1
