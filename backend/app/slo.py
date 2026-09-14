@@ -31,7 +31,7 @@ def _bounded_ratio(value: float) -> float:
 
 
 def _state(burn_rate: float, budget_remaining: float) -> str:
-    if budget_remaining <= 0 or burn_rate >= 2.0:
+    if burn_rate > 1.0:
         return "EXHAUSTED"
     if burn_rate >= 1.0 or budget_remaining <= 0.25:
         return "AT_RISK"
