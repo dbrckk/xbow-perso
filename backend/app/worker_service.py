@@ -352,6 +352,10 @@ def process_recon_task(job: dict, store: Storage) -> None:
             "skipped_cross_origin": result.skipped_cross_origin,
             "wall_time_seconds": result.wall_time_seconds,
             "stopped_by_time_budget": result.stopped_by_time_budget,
+            "request_budget": result.request_budget,
+            "frontier_remaining": result.frontier_remaining,
+            "stopped_by_request_budget": result.stopped_by_request_budget,
+            "coverage_complete": result.coverage_complete,
             "at": utcnow(),
         },
     )
