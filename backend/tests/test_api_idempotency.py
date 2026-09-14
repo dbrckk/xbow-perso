@@ -3,6 +3,7 @@ from fastapi import HTTPException
 
 from app import main
 from app.campaign_audit import append_campaign_event
+from app.job_provenance import attach_job_provenance
 from app.jobqueue import JobQueue
 from app.main import (
     Campaign,
@@ -565,7 +566,12 @@ def test_manual_report_retry_reuses_pending_request_and_job(tmp_path, monkeypatc
     existing = jobs.enqueue(
         campaign.id,
         "report",
-        {"campaign_id": campaign.id, "platform": "generic"},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": "generic"},
+            campaign,
+            job_kind="report",
+            action="report",
+        ),
         max_attempts=2,
         dedupe_key=f"report:generic:{request_id}",
     )
