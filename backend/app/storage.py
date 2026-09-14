@@ -204,6 +204,16 @@ class Storage:
                 "CREATE INDEX IF NOT EXISTS advisory_focus_snapshots_campaign_created "
                 "ON advisory_focus_snapshots(campaign_id, created_at DESC)"
             )
+            db.execute("""CREATE TABLE IF NOT EXISTS recovery_readiness_snapshots (
+                fingerprint TEXT PRIMARY KEY,
+                decision TEXT NOT NULL,
+                document TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS recovery_readiness_snapshots_created "
+                "ON recovery_readiness_snapshots(created_at DESC)"
+            )
 
     def health(self) -> dict[str, Any]:
         try:
@@ -457,6 +467,65 @@ class Storage:
             {
                 "fingerprint": row["fingerprint"],
                 "advisory": json.loads(row["document"]),
+                "created_at": row["created_at"],
+            }
+            for row in rows
+        ]
+
+
+    def put_recovery_readiness_snapshot(
+        self,
+        fingerprint: str,
+        decision: str,
+        document: dict[str, Any],
+    ) -> dict[str, Any]:
+        fingerprint = _bounded_identifier(fingerprint, "fingerprint", max_length=64)
+        if decision not in {"BLOCK", "REVIEW", "READY"}:
+            raise ValueError("invalid recovery readiness decision")
+        encoded = json.dumps(document, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        if len(encoded.encode("utf-8")) > 65536:
+            raise ValueError("recovery readiness snapshot exceeds size limit")
+        now = utcnow()
+        with self.connect() as db:
+            existing = db.execute(
+                "SELECT document,created_at FROM recovery_readiness_snapshots WHERE fingerprint=?",
+                (fingerprint,),
+            ).fetchone()
+            if existing:
+                return {
+                    "fingerprint": fingerprint,
+                    "decision": decision,
+                    "document": json.loads(existing["document"]),
+                    "created_at": existing["created_at"],
+                }
+            db.execute(
+                """INSERT INTO recovery_readiness_snapshots(
+                       fingerprint,decision,document,created_at
+                   ) VALUES(?,?,?,?)""",
+                (fingerprint, decision, encoded, now),
+            )
+        return {
+            "fingerprint": fingerprint,
+            "decision": decision,
+            "document": document,
+            "created_at": now,
+        }
+
+    def list_recovery_readiness_snapshots(self, *, limit: int = 100) -> list[dict[str, Any]]:
+        if not 1 <= limit <= 500:
+            raise ValueError("recovery readiness snapshot limit must be between 1 and 500")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT fingerprint,decision,document,created_at
+                   FROM recovery_readiness_snapshots
+                   ORDER BY created_at DESC LIMIT ?""",
+                (limit,),
+            ).fetchall()
+        return [
+            {
+                "fingerprint": row["fingerprint"],
+                "decision": row["decision"],
+                "document": json.loads(row["document"]),
                 "created_at": row["created_at"],
             }
             for row in rows
