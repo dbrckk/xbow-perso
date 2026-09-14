@@ -180,3 +180,20 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 - engine-specific runtime checks such as the pinned Nuclei version.
 
 The default allowlist contains only Nuclei. Strix must be explicitly added after its runtime contract has been reviewed. `GET /api/capabilities` reports the non-secret scanner admission state.
+
+
+### Recovery readiness gate
+
+After restore verification, configure the signed attestation path:
+
+```bash
+XBOW_RECOVERY_ATTESTATION_PATH=/backups/recovery-attestation.json
+```
+
+The read-only endpoint `GET /api/recovery/readiness` returns one of:
+
+- `BLOCK`: a hard integrity or configuration problem exists; workers must not resume.
+- `REVIEW`: no blocker exists, but operator review is still required (for example legacy provenance mode or no signed attestation configured).
+- `READY`: preflight, queue recovery, campaign/worker/queue audits, and the signed recovery attestation are all valid.
+
+The gate never starts workers or mutates queue state. `workers_may_resume=true` is only an advisory authorization signal for an operator-controlled restart.
