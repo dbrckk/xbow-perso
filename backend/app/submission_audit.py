@@ -93,3 +93,54 @@ def audit_campaign_submissions(
         "read_only": True,
         "automatic_mutation": False,
     }
+
+
+
+def audit_storage_submissions(storage_backend: Any) -> dict[str, Any]:
+    list_artifacts = getattr(storage_backend, "list_artifacts", None)
+    if not callable(list_artifacts):
+        return {
+            "supported": False,
+            "valid": True,
+            "campaigns_checked": 0,
+            "reports_checked": 0,
+            "invalid_reports": 0,
+            "issue_counts": {},
+            "read_only": True,
+            "automatic_mutation": False,
+        }
+
+    campaigns = list(storage_backend.list_campaigns())
+    campaign_audits: list[dict[str, Any]] = []
+    issue_counts: dict[str, int] = {}
+    for campaign in campaigns:
+        campaign_id = (
+            str(campaign.get("id"))
+            if isinstance(campaign, dict)
+            else str(getattr(campaign, "id"))
+        )
+        artifacts = list_artifacts(campaign_id)
+        report_ids = [
+            str(item["id"])
+            for item in artifacts
+            if item.get("kind") == "report"
+        ]
+        audit = audit_campaign_submissions(campaign, report_ids)
+        campaign_audits.append(audit)
+        for issue, count in audit["issue_counts"].items():
+            issue_counts[issue] = issue_counts.get(issue, 0) + int(count)
+
+    return {
+        "supported": True,
+        "valid": all(item["valid"] for item in campaign_audits),
+        "campaigns_checked": len(campaign_audits),
+        "reports_checked": sum(
+            int(item["reports_checked"]) for item in campaign_audits
+        ),
+        "invalid_reports": sum(
+            int(item["invalid_reports"]) for item in campaign_audits
+        ),
+        "issue_counts": dict(sorted(issue_counts.items())),
+        "read_only": True,
+        "automatic_mutation": False,
+    }
