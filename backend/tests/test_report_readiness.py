@@ -23,7 +23,7 @@ def _finding(finding_id: str, status: str = "validation_required"):
     )
 
 
-def test_report_readiness_blocks_unvalidated_finding():
+def _base_graph() -> ObservationGraph:
     graph = ObservationGraph()
     graph.add(Observation("asset:a", "asset", "example.test", "recon"))
     graph.add(
@@ -35,8 +35,11 @@ def test_report_readiness_blocks_unvalidated_finding():
             parent_ids=("asset:a",),
         )
     )
+    return graph
 
-    item = build_report_readiness([_finding("f1")], graph)[0]
+
+def test_report_readiness_blocks_unvalidated_finding():
+    item = build_report_readiness([_finding("f1")], _base_graph())[0]
 
     assert item.ready_for_human_review is False
     assert "finding_not_confirmed" in item.blockers
@@ -44,18 +47,31 @@ def test_report_readiness_blocks_unvalidated_finding():
     assert "incomplete_evidence_chain" in item.blockers
 
 
-def test_report_readiness_requires_complete_independent_evidence():
-    graph = ObservationGraph()
-    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+def test_report_readiness_observed_validation_without_evidence_stays_blocked():
+    graph = _base_graph()
     graph.add(
         Observation(
-            "finding:f1",
-            "finding",
-            "f1",
-            "scanner",
-            parent_ids=("asset:a",),
+            "validation:v1",
+            "validation",
+            "observed",
+            "independent-validator",
+            parent_ids=("finding:f1",),
         )
     )
+
+    item = build_report_readiness([_finding("f1", "confirmed")], graph)[0]
+
+    assert item.independent_validation_observed is True
+    assert item.evidence_backed_independent_validation is False
+    assert item.consensus_level == "none"
+    assert item.ready_for_human_review is False
+    assert "missing_evidence_backed_independent_validation" in item.blockers
+    assert "incomplete_evidence_chain" in item.blockers
+    assert item.score == 0.40
+
+
+def test_report_readiness_requires_complete_independent_evidence():
+    graph = _base_graph()
     graph.add(
         Observation(
             "validation:v1",
@@ -78,6 +94,9 @@ def test_report_readiness_requires_complete_independent_evidence():
     item = build_report_readiness([_finding("f1", "confirmed")], graph)[0]
 
     assert item.score == 1.0
+    assert item.independent_validation_observed is True
+    assert item.evidence_backed_independent_validation is True
+    assert item.consensus_level == "single_evidence_backed_validator"
     assert item.ready_for_human_review is True
     assert item.blockers == ()
 
@@ -98,23 +117,12 @@ def test_report_readiness_route_is_exposed():
     assert "/api/campaigns/{campaign_id}/report-readiness" in app.openapi()["paths"]
 
 
-
 def test_report_readiness_distinguishes_human_review_from_submission_completeness():
     finding = _finding("f1", "confirmed")
     finding.cvss = None
     finding.impact = ""
     finding.remediation = ""
-    graph = ObservationGraph()
-    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
-    graph.add(
-        Observation(
-            "finding:f1",
-            "finding",
-            "f1",
-            "scanner",
-            parent_ids=("asset:a",),
-        )
-    )
+    graph = _base_graph()
     graph.add(
         Observation(
             "validation:v1",
