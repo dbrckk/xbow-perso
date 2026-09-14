@@ -1,7 +1,13 @@
+from datetime import datetime, timedelta, timezone
+
 import pytest
 
 from app.campaign_runtime import campaign_runtime_limit_from_env
+from app.jobqueue import JobQueue
+from app.main import Campaign, ProgramRules, TargetInput
+from app.orchestrator import advance_campaign
 from app.planner_budget import planner_budget_from_env
+from app.storage import Storage
 
 
 PLANNER_ENV_NAMES = (
@@ -104,3 +110,32 @@ def test_campaign_runtime_limit_from_env_rejects_invalid_values(monkeypatch, val
 
     with pytest.raises(ValueError, match="XBOW_CAMPAIGN_MAX_RUNTIME_SECONDS"):
         campaign_runtime_limit_from_env()
+
+
+
+def test_orchestrator_uses_runtime_limit_from_environment(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_CAMPAIGN_MAX_RUNTIME_SECONDS", "60")
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = Campaign(
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="authorized-test",
+                allowed_targets=["example.test"],
+            ),
+        )
+    )
+    campaign.created_at = (
+        datetime.now(timezone.utc) - timedelta(seconds=120)
+    ).isoformat()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    result = advance_campaign(campaign, queue, store)
+
+    assert result["action"]["kind"] == "stop"
+    assert result["action"]["reason"] == "campaign runtime budget exhausted"
+    assert result["job_ids"] == []
+    assert queue.stats()["total"] == 0
