@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass, asdict
 from typing import Any
 
@@ -214,4 +216,154 @@ def build_control_plane_health(dashboard: dict[str, Any]) -> dict[str, Any]:
         "contains_targets": False,
         "contains_payloads": False,
         "contains_secrets": False,
+    }
+
+
+
+def health_snapshot_document(result: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "score": int(result.get("score") or 0),
+        "state": str(result.get("state") or "BLOCKED"),
+        "components": {
+            str(name): {
+                "score": int((component or {}).get("score") or 0),
+                "state": str((component or {}).get("state") or "BLOCKED"),
+                "reasons": sorted(
+                    str(item)
+                    for item in (component or {}).get("reasons") or []
+                ),
+            }
+            for name, component in sorted(
+                (result.get("components") or {}).items()
+            )
+        },
+        "hard_blockers": sorted(
+            str(item) for item in result.get("hard_blockers") or []
+        ),
+    }
+
+
+def health_snapshot_fingerprint(result: dict[str, Any]) -> str:
+    encoded = json.dumps(
+        health_snapshot_document(result),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def record_control_plane_health(
+    storage_backend,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    document = health_snapshot_document(result)
+    fingerprint = health_snapshot_fingerprint(result)
+    snapshot = storage_backend.put_control_plane_health_snapshot(
+        fingerprint,
+        document["score"],
+        document["state"],
+        document,
+    )
+    return {
+        **result,
+        "snapshot_fingerprint": fingerprint,
+        "snapshot_created_at": snapshot.get("created_at"),
+    }
+
+
+def control_plane_health_history(
+    storage_backend,
+    *,
+    limit: int = 100,
+) -> dict[str, Any]:
+    snapshots = storage_backend.list_control_plane_health_snapshots(limit=limit)
+    chronological = list(reversed(snapshots))
+    transitions: list[dict[str, Any]] = []
+    deltas: list[int] = []
+
+    previous = None
+    for item in chronological:
+        score = int(item.get("score") or 0)
+        state = str(item.get("state") or "BLOCKED")
+        if previous is not None:
+            delta = score - previous["score"]
+            deltas.append(delta)
+            if state != previous["state"]:
+                transitions.append(
+                    {
+                        "from": previous["state"],
+                        "to": state,
+                        "score_from": previous["score"],
+                        "score_to": score,
+                        "delta": delta,
+                        "at": item.get("created_at"),
+                        "fingerprint": item.get("fingerprint"),
+                    }
+                )
+        previous = {"score": score, "state": state}
+
+    latest_score = int(snapshots[0].get("score") or 0) if snapshots else None
+    previous_score = (
+        int(snapshots[1].get("score") or 0)
+        if len(snapshots) > 1
+        else None
+    )
+    delta = (
+        latest_score - previous_score
+        if latest_score is not None and previous_score is not None
+        else None
+    )
+
+    if delta is None:
+        trend = "unknown"
+    elif delta > 0:
+        trend = "improving"
+    elif delta < 0:
+        trend = "degrading"
+    else:
+        trend = "stable"
+
+    recent = chronological[-5:]
+    persistent_degradation = (
+        len(recent) >= 3
+        and all(str(item.get("state")) != "HEALTHY" for item in recent[-3:])
+        and all(
+            int(recent[index].get("score") or 0)
+            <= int(recent[index - 1].get("score") or 0)
+            for index in range(max(1, len(recent) - 2), len(recent))
+        )
+    )
+
+    severe_transitions = sum(
+        item["from"] == "HEALTHY" and item["to"] == "BLOCKED"
+        for item in transitions
+    )
+    degraded_transitions = sum(
+        item["from"] == "HEALTHY" and item["to"] == "DEGRADED"
+        for item in transitions
+    )
+    blocked_transitions = sum(
+        item["to"] == "BLOCKED"
+        for item in transitions
+    )
+
+    return {
+        "latest_score": latest_score,
+        "previous_score": previous_score,
+        "delta": delta,
+        "trend": trend,
+        "latest_state": (
+            str(snapshots[0].get("state")) if snapshots else None
+        ),
+        "snapshots": snapshots,
+        "transitions": list(reversed(transitions)),
+        "transition_counts": {
+            "healthy_to_degraded": degraded_transitions,
+            "to_blocked": blocked_transitions,
+            "healthy_to_blocked": severe_transitions,
+        },
+        "persistent_degradation": persistent_degradation,
+        "read_only": True,
+        "aggregate_only": True,
     }
