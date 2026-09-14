@@ -1,5 +1,7 @@
 from app.main import app
-from app.slo import build_platform_slos
+from datetime import datetime, timezone
+
+from app.slo import build_historical_slo_windows, build_platform_slos
 
 
 def _metrics():
@@ -72,3 +74,72 @@ def test_platform_slos_block_recovery_budget_when_gate_blocks():
 
 def test_platform_slos_route_is_exposed():
     assert "/api/slo" in app.openapi()["paths"]
+
+
+
+def test_historical_slo_windows_use_retained_health_snapshots():
+    class Storage:
+        def list_control_plane_health_snapshots(self, limit=500):
+            return [
+                {
+                    "score": 80,
+                    "state": "DEGRADED",
+                    "created_at": "2026-09-14T15:30:00+00:00",
+                },
+                {
+                    "score": 90,
+                    "state": "HEALTHY",
+                    "created_at": "2026-09-14T14:30:00+00:00",
+                },
+                {
+                    "score": 100,
+                    "state": "HEALTHY",
+                    "created_at": "2026-09-13T12:00:00+00:00",
+                },
+            ][:limit]
+
+    result = build_historical_slo_windows(
+        Storage(),
+        now=datetime(2026, 9, 14, 16, 0, tzinfo=timezone.utc),
+    )
+
+    one_hour = result["windows"]["1h"]
+    day = result["windows"]["24h"]
+    week = result["windows"]["7d"]
+
+    assert result["supported"] is True
+    assert one_hour["samples"] == 1
+    assert one_hour["observed"] == 0.8
+    assert one_hour["state"] == "EXHAUSTED"
+    assert day["samples"] == 2
+    assert day["observed"] == 0.85
+    assert week["samples"] == 3
+    assert week["observed"] == 0.9
+
+
+def test_historical_slo_windows_report_unknown_when_no_samples():
+    class Storage:
+        def list_control_plane_health_snapshots(self, limit=500):
+            return []
+
+    result = build_historical_slo_windows(
+        Storage(),
+        now=datetime(2026, 9, 14, 16, 0, tzinfo=timezone.utc),
+    )
+
+    assert result["supported"] is True
+    assert result["windows"]["1h"]["available"] is False
+    assert result["windows"]["1h"]["state"] == "UNKNOWN"
+    assert result["windows"]["24h"]["samples"] == 0
+    assert result["windows"]["7d"]["burn_rate"] is None
+
+
+def test_historical_slo_windows_degrade_gracefully_without_history_backend():
+    result = build_historical_slo_windows(
+        object(),
+        now=datetime(2026, 9, 14, 16, 0, tzinfo=timezone.utc),
+    )
+
+    assert result["supported"] is False
+    assert result["windows"] == {}
+    assert result["reason"] == "control_plane_health_history_unavailable"
