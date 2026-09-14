@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from .queue_audit import build_transition_event, verify_transition_events
+
 TERMINAL = {"completed", "failed", "cancelled"}
 
 
@@ -103,6 +105,125 @@ class JobQueue:
             db.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS jobs_dedupe ON jobs(campaign_id,kind,dedupe_key) WHERE dedupe_key IS NOT NULL"
             )
+            db.execute("""CREATE TABLE IF NOT EXISTS job_transitions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                job_id TEXT NOT NULL,
+                campaign_id TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                seq INTEGER NOT NULL,
+                from_status TEXT,
+                to_status TEXT NOT NULL,
+                actor TEXT NOT NULL,
+                reason TEXT NOT NULL,
+                at TEXT NOT NULL,
+                previous_hash TEXT,
+                event_hash TEXT NOT NULL,
+                UNIQUE(job_id, seq)
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS job_transitions_campaign ON job_transitions(campaign_id, id)"
+            )
+
+    def _append_transition(
+        self,
+        db: sqlite3.Connection,
+        row: sqlite3.Row | dict[str, Any],
+        *,
+        from_status: str | None,
+        to_status: str,
+        actor: str,
+        reason: str,
+        at: str,
+    ) -> dict[str, Any]:
+        job_id = str(row["id"])
+        latest = db.execute(
+            "SELECT seq,event_hash,to_status FROM job_transitions WHERE job_id=? ORDER BY seq DESC LIMIT 1",
+            (job_id,),
+        ).fetchone()
+        seq = int(latest["seq"]) + 1 if latest else 1
+        previous_hash = str(latest["event_hash"]) if latest else None
+        if latest and latest["to_status"] != from_status:
+            raise RuntimeError("queue transition audit status discontinuity")
+        event = build_transition_event(
+            job_id=job_id,
+            campaign_id=str(row["campaign_id"]),
+            kind=str(row["kind"]),
+            seq=seq,
+            from_status=from_status,
+            to_status=to_status,
+            actor=actor,
+            reason=reason,
+            at=at,
+            previous_hash=previous_hash,
+        )
+        db.execute(
+            """INSERT INTO job_transitions(
+                   job_id,campaign_id,kind,seq,from_status,to_status,actor,reason,at,previous_hash,event_hash
+               ) VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
+            (
+                event["job_id"],
+                event["campaign_id"],
+                event["kind"],
+                event["seq"],
+                event["from_status"],
+                event["to_status"],
+                event["actor"],
+                event["reason"],
+                event["at"],
+                event["previous_hash"],
+                event["event_hash"],
+            ),
+        )
+        return event
+
+    def job_transitions(self, job_id: str) -> list[dict[str, Any]]:
+        job_id = _bounded_identifier(job_id, "job_id")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT job_id,campaign_id,kind,seq,from_status,to_status,actor,reason,at,previous_hash,event_hash
+                   FROM job_transitions WHERE job_id=? ORDER BY seq""",
+                (job_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def verify_job_transitions(self, job_id: str) -> dict[str, Any]:
+        events = self.job_transitions(job_id)
+        verification = verify_transition_events(events)
+        current = self.get(job_id)
+        if current is None:
+            return {**verification, "valid": False, "reason": "job missing"}
+        if verification["valid"] and verification.get("final_status") != current["status"]:
+            return {
+                **verification,
+                "valid": False,
+                "reason": "audit final status does not match job status",
+            }
+        return verification
+
+    def campaign_transition_audit(self, campaign_id: str) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        with self.connect() as db:
+            job_ids = [
+                row["id"]
+                for row in db.execute(
+                    "SELECT id FROM jobs WHERE campaign_id=? ORDER BY created_at,id",
+                    (campaign_id,),
+                ).fetchall()
+            ]
+        invalid: list[dict[str, Any]] = []
+        checked_events = 0
+        for job_id in job_ids:
+            result = self.verify_job_transitions(job_id)
+            checked_events += int(result.get("checked", 0))
+            if not result.get("valid"):
+                invalid.append({"job_id": job_id, "reason": result.get("reason")})
+        return {
+            "campaign_id": campaign_id,
+            "jobs": len(job_ids),
+            "events": checked_events,
+            "valid": not invalid,
+            "invalid_jobs": invalid,
+        }
 
     def health(self) -> dict[str, Any]:
         """Return minimal storage health without exposing job payloads."""
