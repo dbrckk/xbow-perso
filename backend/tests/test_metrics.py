@@ -47,3 +47,27 @@ def test_operational_metrics_are_aggregate_only():
 
 def test_metrics_route_is_exposed_under_authenticated_api():
     assert "/api/metrics" in app.openapi()["paths"]
+
+
+
+def test_operational_metrics_include_recovery_readiness_history():
+    class ReadinessStorage(Storage):
+        def list_recovery_readiness_snapshots(self, limit=100):
+            return [
+                {"decision": "BLOCK"},
+                {"decision": "READY"},
+                {"decision": "REVIEW"},
+            ]
+
+    result = build_operational_metrics(Queue(), ReadinessStorage())
+
+    assert result["recovery_readiness"]["supported"] is True
+    assert result["recovery_readiness"]["latest_decision"] == "BLOCK"
+    assert result["recovery_readiness"]["snapshots"] == 3
+    assert result["recovery_readiness"]["by_decision"] == {
+        "BLOCK": 1,
+        "READY": 1,
+        "REVIEW": 1,
+    }
+    assert result["recovery_readiness"]["transitions"] == 2
+    assert result["recovery_readiness"]["ready_to_block_regressions"] == 1
