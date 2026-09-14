@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .campaign_audit import append_campaign_event
 from .evidence_quality import build_evidence_quality
+from .job_provenance import JobProvenanceError, require_job_provenance
 from .jobqueue import JobQueue
 from .learning_memory import worker_outcome_event
 from .queue_backend import create_queue
@@ -113,6 +114,12 @@ def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
 
 def _process_scanner_job(job: dict, queue: JobQueue, store: Storage, runner) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
+    payload = job.get("payload") if isinstance(job.get("payload"), dict) else {}
+    if "policy" in payload:
+        try:
+            require_job_provenance(job, campaign)
+        except JobProvenanceError as exc:
+            raise WorkerPolicyError(str(exc)) from exc
     result = runner(job, campaign, queue, store)
     _append_event_once(campaign, result.event)
     _save(store, campaign, version)
