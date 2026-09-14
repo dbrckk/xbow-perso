@@ -287,3 +287,10 @@ A present-but-tampered provenance manifest is treated as invalid and blocks subm
 Human report approval is bound to the aggregate fingerprint of the current report provenance set. The approval basis digest therefore covers the report artifact, submission-relevant campaign state, and the exact provenance fingerprints for confirmed findings.
 
 If report provenance changes after approval, the approval becomes stale and submission state returns to `review_required` until a reviewer explicitly approves the new provenance-bound state. This behavior remains local to governance; it does not submit externally or mutate worker execution.
+
+
+### Centralized reporting governance snapshot
+
+Report readiness, provenance manifests, report quality gates, and the aggregate provenance fingerprint are now built through one shared read-only governance snapshot. The report-readiness API, campaign overview, approval flow, and submission flow consume this same canonical computation, reducing the risk of policy drift between reporting surfaces.
+
+The snapshot remains advisory and deterministic. It does not approve reports, submit externally, mutate campaign state, or change worker execution.
