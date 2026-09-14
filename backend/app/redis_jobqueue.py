@@ -11,6 +11,7 @@ import redis
 
 from .jobqueue import _bounded_identifier, _job_lease_seconds, _max_job_payload_bytes, utcnow
 from .queue_audit import build_transition_event, verify_transition_events
+from .queue_recovery import analyze_queue_recovery
 
 _ALLOWED_KINDS = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status"}
 _STATUSES = ("queued", "running", "completed", "failed", "cancelled")
@@ -155,6 +156,41 @@ class RedisJobQueue:
             if result.get(key, "") == "":
                 result[key] = None
         return result
+
+    def recovery_assessment(self) -> dict[str, Any]:
+        job_ids = sorted(self.redis.smembers(self._all))
+        jobs: list[dict[str, Any]] = []
+        audits: dict[str, dict[str, Any]] = {}
+        for job_id in job_ids:
+            job = self.get(str(job_id))
+            if job is None:
+                continue
+            jobs.append(
+                {
+                    key: job.get(key)
+                    for key in (
+                        "id",
+                        "campaign_id",
+                        "kind",
+                        "status",
+                        "attempts",
+                        "max_attempts",
+                        "claimed_by",
+                        "claimed_at",
+                        "created_at",
+                        "updated_at",
+                    )
+                }
+            )
+            audits[str(job_id)] = self.verify_job_transitions(str(job_id))
+        return {
+            **analyze_queue_recovery(
+                jobs,
+                lease_seconds=_job_lease_seconds(),
+                audit_results=audits,
+            ),
+            "storage": "redis",
+        }
 
     def health(self) -> dict[str, Any]:
         try:
