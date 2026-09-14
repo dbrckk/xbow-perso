@@ -325,6 +325,7 @@ def system_capabilities():
             "outbox_observability": True,
             "policy_bound_job_provenance": True,
             "queue_transition_audit": True,
+            "queue_recovery_assessment": True,
         },
         "execution": {
             "strix_scanning": "gated",
@@ -1171,6 +1172,20 @@ def get_job(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+
+@app.get("/api/recovery/queue")
+def queue_recovery_assessment():
+    assessment = queue().recovery_assessment()
+    return {
+        **assessment,
+        "read_only": True,
+        "automatic_requeue": False,
+        "automatic_job_creation": False,
+        "automatic_mutation": False,
+        "payloads_exposed": False,
+        "raw_errors_exposed": False,
+    }
 
 
 @app.get("/api/jobs/{job_id}/transitions")
