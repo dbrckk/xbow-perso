@@ -221,3 +221,28 @@ def test_operational_alerts_do_not_page_on_partial_multiwindow_data():
     codes = {item["code"] for item in result["alerts"]}
     assert "slo_fast_burn_multiwindow" not in codes
     assert "slo_slow_burn_multiwindow" not in codes
+
+
+
+def test_operational_alerts_flag_invalid_submission_audit():
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {
+                "failed": 0,
+                "queued": 0,
+                "running": 0,
+            },
+            "submission_integrity": {
+                "supported": True,
+                "valid": False,
+                "invalid_reports": 2,
+            },
+        }
+    )
+
+    alerts = {
+        item["code"]: item
+        for item in result["alerts"]
+    }
+    assert alerts["submission_event_audit_invalid"]["severity"] == "warning"
+    assert alerts["submission_event_audit_invalid"]["value"] == 2
