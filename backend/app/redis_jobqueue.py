@@ -441,6 +441,38 @@ class RedisJobQueue:
                 continue
 
 
+    def claim_allowed(self, worker_id: str, kinds: tuple[str, ...] | list[str]) -> dict[str, Any] | None:
+        """Claim the oldest queued job across an explicit set of kinds."""
+        worker_id = _bounded_identifier(worker_id, "worker_id")
+        normalized = tuple(dict.fromkeys(_bounded_identifier(kind, "kind") for kind in kinds))
+        if not normalized:
+            raise ValueError("at least one allowed job kind is required")
+        if any(kind not in _ALLOWED_KINDS for kind in normalized):
+            raise ValueError("unsupported job kind")
+        self.recover_expired_leases()
+
+        for _ in range(32):
+            candidates: list[tuple[float, str, str]] = []
+            for kind in normalized:
+                rows = self.redis.zrange(
+                    self._queued_kind(kind),
+                    0,
+                    0,
+                    withscores=True,
+                )
+                if rows:
+                    job_id, score = rows[0]
+                    candidates.append((float(score), str(job_id), kind))
+            if not candidates:
+                return None
+
+            _score, _job_id, chosen_kind = min(candidates)
+            claimed = self.claim_kind(worker_id, chosen_kind)
+            if claimed is not None:
+                return claimed
+        return None
+
+
     def claim_kind(self, worker_id: str, kind: str) -> dict[str, Any] | None:
         """Atomically claim only one explicitly requested job kind."""
         worker_id = _bounded_identifier(worker_id, "worker_id")
