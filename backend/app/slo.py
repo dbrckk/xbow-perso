@@ -205,20 +205,90 @@ def _window_health_observed(
     snapshots: list[dict[str, Any]],
     *,
     since: datetime,
-) -> tuple[float | None, int]:
-    selected: list[int] = []
+    until: datetime,
+) -> dict[str, Any]:
+    points: list[tuple[datetime, int]] = []
     for item in snapshots:
         created_at = _parse_time(item.get("created_at"))
-        if created_at is None or created_at < since:
+        if created_at is None or created_at > until:
             continue
         try:
             score = int(item.get("score"))
         except (TypeError, ValueError):
             continue
-        selected.append(max(0, min(100, score)))
-    if not selected:
-        return None, 0
-    return sum(selected) / (100.0 * len(selected)), len(selected)
+        points.append((created_at, max(0, min(100, score))))
+
+    points.sort(key=lambda item: item[0])
+    if not points:
+        return {
+            "observed": None,
+            "samples": 0,
+            "covered_seconds": 0,
+            "window_seconds": max(0, int((until - since).total_seconds())),
+            "coverage_ratio": 0.0,
+            "boundary_state_known": False,
+        }
+
+    boundary_point = None
+    in_window: list[tuple[datetime, int]] = []
+    for point in points:
+        if point[0] <= since:
+            boundary_point = point
+        elif point[0] <= until:
+            in_window.append(point)
+
+    segments: list[tuple[datetime, int]] = []
+    boundary_state_known = boundary_point is not None
+    if boundary_point is not None:
+        segments.append((since, boundary_point[1]))
+    elif in_window:
+        segments.append(in_window[0])
+
+    for point in in_window:
+        if not segments or point[0] > segments[-1][0]:
+            segments.append(point)
+
+    if not segments:
+        return {
+            "observed": None,
+            "samples": 0,
+            "covered_seconds": 0,
+            "window_seconds": max(0, int((until - since).total_seconds())),
+            "coverage_ratio": 0.0,
+            "boundary_state_known": boundary_state_known,
+        }
+
+    weighted_score_seconds = 0.0
+    covered_seconds = 0.0
+    for index, (start, score) in enumerate(segments):
+        end = (
+            segments[index + 1][0]
+            if index + 1 < len(segments)
+            else until
+        )
+        duration = max(0.0, (end - start).total_seconds())
+        weighted_score_seconds += float(score) * duration
+        covered_seconds += duration
+
+    window_seconds = max(0.0, (until - since).total_seconds())
+    observed = (
+        weighted_score_seconds / (100.0 * covered_seconds)
+        if covered_seconds > 0
+        else None
+    )
+    return {
+        "observed": observed,
+        "samples": len(in_window) + (1 if boundary_point is not None else 0),
+        "covered_seconds": int(covered_seconds),
+        "window_seconds": int(window_seconds),
+        "coverage_ratio": round(
+            covered_seconds / window_seconds,
+            6,
+        )
+        if window_seconds > 0
+        else 0.0,
+        "boundary_state_known": boundary_state_known,
+    }
 
 
 def build_historical_slo_windows(
@@ -243,10 +313,12 @@ def build_historical_slo_windows(
     }
     windows: dict[str, Any] = {}
     for name, duration in specs.items():
-        observed, sample_count = _window_health_observed(
+        window = _window_health_observed(
             snapshots,
             since=current - duration,
+            until=current,
         )
+        observed = window["observed"]
         if observed is None:
             windows[name] = {
                 "available": False,
@@ -256,22 +328,38 @@ def build_historical_slo_windows(
                 "burn_rate": None,
                 "budget_remaining": None,
                 "state": "UNKNOWN",
+                "covered_seconds": window["covered_seconds"],
+                "window_seconds": window["window_seconds"],
+                "coverage_ratio": window["coverage_ratio"],
+                "boundary_state_known": window["boundary_state_known"],
+                "data_quality": "insufficient",
             }
             continue
         slo = _evaluate_slo(
             f"availability_{name}",
             target=0.99,
             observed=observed,
-            reason="derived_from_control_plane_health_history",
+            reason="time_weighted_control_plane_health_history",
+        )
+        coverage_ratio = float(window["coverage_ratio"])
+        data_quality = (
+            "complete"
+            if coverage_ratio >= 0.999 and window["boundary_state_known"]
+            else "partial"
         )
         windows[name] = {
             "available": True,
-            "samples": sample_count,
+            "samples": window["samples"],
             "target": slo.target,
             "observed": slo.observed,
             "burn_rate": slo.burn_rate,
             "budget_remaining": slo.budget_remaining,
             "state": slo.state,
+            "covered_seconds": window["covered_seconds"],
+            "window_seconds": window["window_seconds"],
+            "coverage_ratio": coverage_ratio,
+            "boundary_state_known": window["boundary_state_known"],
+            "data_quality": data_quality,
         }
 
     return {
