@@ -78,3 +78,23 @@ def test_operational_alerts_flag_recovery_block_and_regression(monkeypatch):
     assert "recovery_readiness_block" in codes
     assert "recovery_ready_to_block_regression" in codes
     assert result["status"] == "alert"
+
+
+
+def test_operational_alerts_flag_persistent_control_plane_degradation():
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {"failed": 0, "queued": 0, "running": 0},
+            "control_plane_health": {
+                "latest_state": "BLOCKED",
+                "delta": -12,
+                "trend": "degrading",
+                "persistent_degradation": True,
+            },
+        }
+    )
+
+    codes = {item["code"] for item in result["alerts"]}
+    assert "control_plane_persistent_degradation" in codes
+    assert "control_plane_health_degrading" in codes
+    assert result["status"] == "alert"
