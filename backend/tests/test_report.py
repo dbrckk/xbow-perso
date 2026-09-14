@@ -89,3 +89,26 @@ def test_report_holds_confirmed_finding_when_evidence_quality_is_not_high():
     assert "0 of 1 confirmed finding(s) currently meet the high-quality evidence threshold." in report
     assert "**Evidence quality:** MEDIUM (70%)" in report
     assert "**Submission readiness:** HOLD — strengthen evidence before submission" in report
+
+
+
+def test_report_embeds_governance_audit_manifest():
+    report = render_markdown(
+        _campaign(),
+        governance_manifest={
+            "schema": "reporting-governance-v1",
+            "governance_fingerprint": "a" * 64,
+            "provenance_fingerprint": "b" * 64,
+            "verification_valid": True,
+            "findings": 1,
+            "submission_ready": 1,
+        },
+    )
+
+    assert "## Governance & audit manifest" in report
+    assert "**Schema:** reporting-governance-v1" in report
+    assert f"**Reporting governance fingerprint:** `{'a' * 64}`" in report
+    assert f"**Provenance fingerprint:** `{'b' * 64}`" in report
+    assert "**Governance verification:** VALID" in report
+    assert "**Findings represented:** 1" in report
+    assert "**Submission-ready findings:** 1" in report
