@@ -96,3 +96,38 @@ def test_operational_metrics_include_control_plane_health_trend():
     assert health["healthy_to_degraded_transitions"] == 1
     assert health["to_blocked_transitions"] == 1
     assert health["persistent_degradation"] is True
+
+
+
+def test_operational_metrics_include_submission_integrity():
+    class SubmissionStorage(Storage):
+        def list_artifacts(self, campaign_id):
+            return [{"id": f"report-{campaign_id}", "kind": "report"}]
+
+        def list_campaigns(self):
+            return [
+                {
+                    "id": "c1",
+                    "state": "running",
+                    "events": [
+                        {
+                            "type": "report_submitted",
+                            "artifact_id": "report-c1",
+                            "actor": "operator",
+                            "platform": "generic",
+                            "at": "2026-09-14T18:00:00Z",
+                        }
+                    ],
+                }
+            ]
+
+    result = build_operational_metrics(Queue(), SubmissionStorage())
+
+    integrity = result["submission_integrity"]
+    assert integrity["supported"] is True
+    assert integrity["valid"] is False
+    assert integrity["reports_checked"] == 1
+    assert integrity["invalid_reports"] == 1
+    assert (
+        integrity["issue_counts"]["submission_without_active_approval"] == 1
+    )
