@@ -104,4 +104,15 @@ def summarize_report_quality(
         "advisory_only": True,
         "human_approval_required": True,
         "automatic_submission": False,
+        "grade_semantics": {
+            "A": "submission_complete_with_consensus_quorum",
+            "B": "submission_complete_with_evidence_backed_consensus",
+            "C": "human_review_ready_but_submission_incomplete",
+            "D": "human_review_blocked",
+        },
+        "submission_gate": {
+            "minimum_grade": "B",
+            "requires_human_approval": True,
+            "automatic_submission": False,
+        },
     }
