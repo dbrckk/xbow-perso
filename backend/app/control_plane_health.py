@@ -33,7 +33,6 @@ def build_control_plane_health(dashboard: dict[str, Any]) -> dict[str, Any]:
     summary = dashboard.get("summary") or {}
     recovery = dashboard.get("recovery") or {}
     queue = dashboard.get("queue_integrity") or {}
-    alerts = dashboard.get("alerts") or []
 
     critical_alerts = int(summary.get("critical_alerts") or 0)
     warning_alerts = int(summary.get("warning_alerts") or 0)
