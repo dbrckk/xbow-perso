@@ -109,3 +109,134 @@ def test_decision_limit_fails_closed():
             assert "between 1 and 25" in str(exc)
         else:
             raise AssertionError("invalid decision limit should fail")
+
+
+
+def _strong_finding_graph():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:strong", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:strong",
+            "finding",
+            "strong",
+            "scanner-a",
+            parent_ids=("asset:strong",),
+        )
+    )
+    graph.add(
+        Observation(
+            "validation:strong",
+            "validation",
+            "observed",
+            "validator-b",
+            parent_ids=("finding:strong",),
+        )
+    )
+    graph.add(
+        Observation(
+            "evidence:strong",
+            "evidence",
+            "artifact-reference",
+            "validator-c",
+            parent_ids=("validation:strong",),
+            metadata={
+                "artifact_id": "artifact-strong",
+                "artifact_kind": "validation",
+                "artifact_sha256": "c" * 64,
+            },
+        )
+    )
+    return graph
+
+
+def test_readiness_suppresses_redundant_validation_when_report_ready():
+    finding = Finding(
+        id="strong",
+        title="fixture",
+        severity="high",
+        asset="https://example.test",
+        summary="bounded fixture",
+        status="validation_required",
+        discovered_by="scanner-a",
+    )
+    snapshots = [
+        {
+            "graph_fingerprint": "stable-1",
+            "created_at": "2026-09-14T07:00:00+00:00",
+            "hypotheses": [
+                {
+                    "finding_id": "strong",
+                    "confidence": 0.95,
+                    "status": "supported",
+                }
+            ],
+        }
+    ]
+
+    decisions = build_red_team_decisions(
+        [finding],
+        _strong_finding_graph(),
+        hypothesis_snapshots=snapshots,
+    )
+    kinds = [item.kind for item in decisions]
+
+    assert "validate_findings" not in kinds
+    assert "review_for_report" in kinds
+
+
+def test_contradictory_readiness_requires_human_review():
+    finding = Finding(
+        id="strong",
+        title="fixture",
+        severity="high",
+        asset="https://example.test",
+        summary="bounded fixture",
+        status="validation_required",
+        discovered_by="scanner-a",
+    )
+    snapshots = [
+        {
+            "graph_fingerprint": "c",
+            "created_at": "2026-09-14T09:00:00+00:00",
+            "hypotheses": [
+                {
+                    "finding_id": "strong",
+                    "confidence": 0.75,
+                    "status": "partially_supported",
+                }
+            ],
+        },
+        {
+            "graph_fingerprint": "b",
+            "created_at": "2026-09-14T08:00:00+00:00",
+            "hypotheses": [
+                {
+                    "finding_id": "strong",
+                    "confidence": 0.95,
+                    "status": "supported",
+                }
+            ],
+        },
+        {
+            "graph_fingerprint": "a",
+            "created_at": "2026-09-14T07:00:00+00:00",
+            "hypotheses": [
+                {
+                    "finding_id": "strong",
+                    "confidence": 0.35,
+                    "status": "unvalidated",
+                }
+            ],
+        },
+    ]
+
+    decisions = build_red_team_decisions(
+        [finding],
+        _strong_finding_graph(),
+        hypothesis_snapshots=snapshots,
+    )
+
+    assert decisions[0].kind == "review_contradiction"
+    assert decisions[0].priority == 0.98
+    assert decisions[0].finding_ids == ("strong",)
