@@ -207,3 +207,72 @@ def test_decision_timeline_diffs_successive_why_snapshots(monkeypatch):
     assert by_signal["gate.blockers"]["added"] == ["budget_blocked", "failed_jobs"]
     assert by_signal["risk.level"]["before"] == "low"
     assert by_signal["risk.level"]["after"] == "high"
+
+
+
+def test_decision_timeline_builds_deterministic_causal_summary(monkeypatch):
+    graph = _graph()
+    first = graph._items["decision:1"]
+    first.metadata["explanation"] = {
+        "gate": {"allowed": True, "blockers": [], "reason": None},
+        "risk": {"score": 0.2, "level": "low", "blocked": False, "reasons": []},
+        "consensus": {"next_focus": "validate_findings", "contradictory": False},
+        "cycle": {"state": "progress"},
+    }
+    graph.add(
+        Observation(
+            "decision:2",
+            "evidence",
+            "stop",
+            "orchestrator",
+            metadata={
+                "memory_type": "planner_decision",
+                "action": "stop",
+                "agent": "analysis-agent",
+                "reason": "fixture stop",
+                "priority": 100,
+                "graph_fingerprint": "g2",
+                "at": "2026-09-14T07:00:02+00:00",
+                "audit_seq": 2,
+                "previous_decision_hash": "legacy-fixture",
+                "decision_hash": "legacy-fixture-2",
+                "explanation": {
+                    "gate": {
+                        "allowed": False,
+                        "blockers": ["budget_blocked", "failed_jobs"],
+                        "reason": "blocked",
+                    },
+                    "risk": {
+                        "score": 0.8,
+                        "level": "high",
+                        "blocked": True,
+                        "reasons": ["risk threshold exceeded"],
+                    },
+                    "consensus": {
+                        "next_focus": "review_contradiction",
+                        "contradictory": True,
+                    },
+                    "cycle": {"state": "halt"},
+                },
+            },
+        )
+    )
+    monkeypatch.setattr(
+        "app.decision_timeline.verify_decision_audit_chain",
+        lambda _graph: {
+            "valid": True,
+            "checked": 2,
+            "sealed_decisions": 2,
+            "legacy_unsealed": [],
+            "reason": None,
+        },
+    )
+
+    result = build_decision_timeline(_campaign(), graph)
+    summary = result["planner_decisions"][1]["causal_summary"]
+
+    assert summary.startswith("scan → stop principalement parce que")
+    assert "gate est passé d'autorisé à bloqué" in summary
+    assert "2 nouveau(x) blocker(s)" in summary
+    assert "risque est passé de low à high" in summary
+    assert "consensus a changé" in summary

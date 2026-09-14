@@ -263,6 +263,13 @@ function renderDecisionTimeline(data){
         body.appendChild(whyDetails);
       }
 
+      if(item.causal_summary){
+        const causal=document.createElement('div');
+        causal.className='causal-summary';
+        causal.textContent=item.causal_summary;
+        body.appendChild(causal);
+      }
+
       const changes=Array.isArray(item.signal_diff)?item.signal_diff:[];
       if(item.transition&&changes.length){
         const diffDetails=document.createElement('details');
