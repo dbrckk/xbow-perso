@@ -312,3 +312,10 @@ The audit checks approval, revocation, and submission ordering and reports inval
 Submission-event integrity is aggregated into `/api/metrics`, operational alerts, campaign overview, and the operations dashboard. Invalid report workflow sequences produce a warning and reduce only the reporting health component; they do not automatically hard-block the entire control plane.
 
 This preserves the distinction between a reporting governance incident and a platform-wide recovery or queue-integrity failure.
+
+
+### Submission audit fingerprints
+
+Per-report submission audits use the canonical `submission-audit-v1` schema and include a deterministic SHA-256 fingerprint. The API also returns an independent verification result with expected/computed fingerprints and schema validity.
+
+This allows operators to detect post-generation modification of audit results without changing campaign state or automatically repairing events.
