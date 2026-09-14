@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -35,6 +36,38 @@ class PlannerBudget:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+def _env_int(name: str, default: int, *, minimum: int, maximum: int) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be an integer") from exc
+    if not minimum <= value <= maximum:
+        raise ValueError(f"{name} must be between {minimum} and {maximum}")
+    return value
+
+
+def planner_budget_from_env() -> PlannerBudget:
+    budget = PlannerBudget(
+        max_actions=_env_int("XBOW_PLANNER_MAX_ACTIONS", 50, minimum=1, maximum=1000),
+        max_scans=_env_int("XBOW_PLANNER_MAX_SCANS", 3, minimum=1, maximum=100),
+        max_validations=_env_int("XBOW_PLANNER_MAX_VALIDATIONS", 25, minimum=1, maximum=1000),
+        max_validation_batch=_env_int(
+            "XBOW_PLANNER_MAX_VALIDATION_BATCH", 10, minimum=1, maximum=100
+        ),
+        max_reports=_env_int("XBOW_PLANNER_MAX_REPORTS", 5, minimum=1, maximum=100),
+        max_inflight_jobs=_env_int(
+            "XBOW_PLANNER_MAX_INFLIGHT_JOBS", 12, minimum=1, maximum=500
+        ),
+        max_failed_jobs=_env_int(
+            "XBOW_PLANNER_MAX_FAILED_JOBS", 5, minimum=1, maximum=100
+        ),
+    )
+    return budget
 
 
 @dataclass(frozen=True)
