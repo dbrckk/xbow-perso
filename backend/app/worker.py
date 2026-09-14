@@ -250,11 +250,6 @@ def execute(plan: WorkerPlan) -> dict:
             "admission_cap_rps": plan.admission_cap_rps,
         }
 
-    try:
-        sandbox = require_scanner_sandbox(plan.engine)
-    except ScannerSandboxConfigError as exc:
-        raise WorkerPolicyError(str(exc)) from exc
-
     timeout = _bounded_timeout()
     output = Path(plan.output_dir)
     output.mkdir(parents=True, exist_ok=True)
@@ -269,6 +264,11 @@ def execute(plan: WorkerPlan) -> dict:
         }
         environment["HOME"] = str(isolated_home)
         _verify_nuclei_runtime(environment)
+
+    try:
+        sandbox = require_scanner_sandbox(plan.engine)
+    except ScannerSandboxConfigError as exc:
+        raise WorkerPolicyError(str(exc)) from exc
 
     try:
         result = subprocess.run(
