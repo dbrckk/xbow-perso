@@ -45,6 +45,7 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     pending_outbox = int(metrics.get("pending_outbox_total") or 0)
     outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
     recovery = metrics.get("recovery_readiness") or {}
+    health = metrics.get("control_plane_health") or {}
     latest_recovery_decision = recovery.get("latest_decision")
     ready_to_block_regressions = int(
         recovery.get("ready_to_block_regressions") or 0
@@ -136,6 +137,25 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
                 "severity": "critical",
                 "value": ready_to_block_regressions,
                 "threshold": 1,
+            }
+        )
+
+    if bool(health.get("persistent_degradation")):
+        alerts.append(
+            {
+                "code": "control_plane_persistent_degradation",
+                "severity": "critical",
+                "value": str(health.get("latest_state") or "unknown"),
+                "threshold": 3,
+            }
+        )
+    if str(health.get("trend") or "") == "degrading":
+        alerts.append(
+            {
+                "code": "control_plane_health_degrading",
+                "severity": "warning",
+                "value": int(health.get("delta") or 0),
+                "threshold": 0,
             }
         )
 
