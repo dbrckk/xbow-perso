@@ -63,6 +63,8 @@ Open `http://SERVER_IP:8080` from your phone.
 
 The default configuration uses `DRY_RUN=true`; external testing engines are not launched until you explicitly configure them.
 
+Governed queue jobs also require deterministic policy provenance by default. A worker rejects a governed job when provenance is missing or when the campaign scope/rules no longer match the queued policy fingerprint. During migration only, legacy jobs created before provenance enforcement may be drained by explicitly setting `XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS=true`; deployment preflight reports this as a warning and the default remains `false`.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
