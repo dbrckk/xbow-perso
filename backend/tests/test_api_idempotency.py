@@ -65,6 +65,16 @@ def _record_observed_validation(db, artifacts, finding_id="f1"):
             parent_ids=(f"finding:{finding_id}",),
         ).to_dict(),
     )
+    store.put_observation(
+        "c1",
+        Observation(
+            "ev1",
+            "evidence",
+            "validation-artifact",
+            "independent-http-validator",
+            parent_ids=("v1",),
+        ).to_dict(),
+    )
 
 
 def test_duplicate_finding_retry_returns_existing_and_keeps_one_job(tmp_path, monkeypatch):
@@ -87,7 +97,7 @@ def test_duplicate_finding_retry_returns_existing_and_keeps_one_job(tmp_path, mo
     assert JobQueue(db).stats()["total"] == 1
 
 
-def test_resolution_requires_observed_independent_validation(tmp_path, monkeypatch):
+def test_resolution_requires_evidence_backed_independent_validation(tmp_path, monkeypatch):
     finding = Finding(
         id="f1",
         title="candidate",
