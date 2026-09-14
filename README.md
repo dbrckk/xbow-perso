@@ -259,3 +259,10 @@ Each historical window reports:
 - `data_quality` (`complete`, `partial`, or `insufficient`)
 
 A partial window is never presented as complete evidence. Historical windows remain advisory and do not alter worker execution, scope, authorization, or queue state.
+
+
+### Multi-window SLO policy
+
+Historical SLO windows feed one centralized, read-only multi-window policy. Fast burn requires complete `1h` and `24h` windows and burn rates of at least `2.0` and `1.0` respectively. Slow burn requires complete `24h` and `7d` windows with burn rates of at least `1.0` in both. Partial or insufficient windows are not evaluable and cannot trigger multi-window alerts.
+
+The policy exposes `FAST_BURN`, `SLOW_BURN`, `HEALTHY`, or `UNKNOWN`, together with the evaluated windows and thresholds. Alerting consumes this centralized policy rather than duplicating threshold logic. It remains advisory-only and cannot mutate scope, authorization, queue state, or worker behavior.
