@@ -16,6 +16,7 @@ from .circuit_breaker import circuit_breaker_state, record_circuit_open
 from .coverage import build_coverage_guidance, build_evidence_coverage
 from .decision_audit import next_audit_link, seal_decision_metadata
 from .decision_consensus import build_decision_consensus
+from .evidence_quality import build_evidence_quality
 from .finding_correlation import cluster_findings
 from .hypothesis_memory import build_hypotheses
 from .jobqueue import JobQueue
@@ -186,6 +187,46 @@ def _intelligence_context(
     }
 
 
+def _validation_saturated_cluster_ids(
+    campaign: Campaign,
+    graph: ObservationGraph,
+) -> set[str]:
+    """Return clusters whose validated representative has strong independent evidence.
+
+    This only suppresses additional automatic validation fan-out. It never marks
+    sibling findings as validated, confirmed, or report-ready.
+    """
+    clusters, _similarities = cluster_findings(campaign.findings, threshold=0.75)
+    if not clusters:
+        return set()
+
+    quality_by_id = {
+        item.finding_id: item
+        for item in build_evidence_quality(graph)
+    }
+    observed_validated = {
+        item.removeprefix("finding:")
+        for item in observed_independent_finding_ids(graph)
+    }
+
+    saturated: set[str] = set()
+    for cluster in clusters:
+        if cluster.confidence < 0.90:
+            continue
+        for finding_id in cluster.finding_ids:
+            quality = quality_by_id.get(finding_id)
+            if (
+                finding_id in observed_validated
+                and quality is not None
+                and quality.grade == "high"
+                and quality.integrity_attested
+                and quality.corroborated
+            ):
+                saturated.add(cluster.cluster_id)
+                break
+    return saturated
+
+
 def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
     observed_validated = observed_independent_finding_ids(graph)
     pending = [
@@ -216,11 +257,14 @@ def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:
         for finding_id in cluster.finding_ids
     }
     selected_clusters: set[str] = set()
+    saturated_clusters = _validation_saturated_cluster_ids(campaign, graph)
     selected: list = []
     for finding in ordered:
         cluster_id = cluster_by_member.get(str(finding.id))
         if cluster_id is None:
             selected.append(finding)
+            continue
+        if cluster_id in saturated_clusters:
             continue
         if cluster_id in selected_clusters:
             continue
