@@ -327,6 +327,7 @@ def system_capabilities():
             "queue_transition_audit": True,
             "queue_recovery_assessment": True,
             "signed_recovery_attestation": True,
+            "recovery_readiness_gate": True,
         },
         "execution": {
             "strix_scanning": "gated",
@@ -1173,6 +1174,18 @@ def get_job(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+
+@app.get("/api/recovery/readiness")
+def recovery_readiness_gate():
+    from .recovery_readiness import current_recovery_readiness
+
+    dependencies = dependency_readiness()
+    return current_recovery_readiness(
+        storage(),
+        queue(),
+        dependencies=dependencies,
+    )
 
 
 @app.get("/api/recovery/queue")
