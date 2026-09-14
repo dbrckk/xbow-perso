@@ -172,3 +172,16 @@ class PostgresStorage(Storage):
                 """CREATE INDEX IF NOT EXISTS recovery_readiness_snapshots_created
                    ON recovery_readiness_snapshots(created_at DESC)"""
             )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS control_plane_health_snapshots (
+                    fingerprint TEXT PRIMARY KEY,
+                    score INTEGER NOT NULL,
+                    state TEXT NOT NULL,
+                    document TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )"""
+            )
+            db.execute(
+                """CREATE INDEX IF NOT EXISTS control_plane_health_snapshots_created
+                   ON control_plane_health_snapshots(created_at DESC)"""
+            )
