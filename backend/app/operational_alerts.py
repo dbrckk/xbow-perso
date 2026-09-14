@@ -44,6 +44,11 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     running_lease_age = metrics.get("oldest_running_lease_age_seconds")
     pending_outbox = int(metrics.get("pending_outbox_total") or 0)
     outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
+    recovery = metrics.get("recovery_readiness") or {}
+    latest_recovery_decision = recovery.get("latest_decision")
+    ready_to_block_regressions = int(
+        recovery.get("ready_to_block_regressions") or 0
+    )
 
     alerts: list[dict[str, Any]] = []
     if failed >= failed_limit:
@@ -112,6 +117,25 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
                 "severity": "critical",
                 "value": int(outbox_age),
                 "threshold": outbox_age_limit,
+            }
+        )
+
+    if latest_recovery_decision == "BLOCK":
+        alerts.append(
+            {
+                "code": "recovery_readiness_block",
+                "severity": "critical",
+                "value": "BLOCK",
+                "threshold": None,
+            }
+        )
+    if ready_to_block_regressions > 0:
+        alerts.append(
+            {
+                "code": "recovery_ready_to_block_regression",
+                "severity": "critical",
+                "value": ready_to_block_regressions,
+                "threshold": 1,
             }
         )
 
