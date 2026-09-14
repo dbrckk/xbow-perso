@@ -341,3 +341,48 @@ def test_recon_worker_rejects_invalid_local_depth(monkeypatch):
         assert "XBOW_RECON_MAX_DEPTH" in str(exc)
     else:
         raise AssertionError("invalid crawl depth must fail closed")
+
+
+
+def test_recon_worker_reports_consumed_budget_and_skip_telemetry(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "3")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    root = _Response(
+        b'<a href="/one">one</a><a href="https://outside.test/nope">outside</a>',
+        {"Content-Type": "text/html"},
+    )
+    one = _Response(
+        b'<a href="/two">two</a>',
+        {"Content-Type": "text/html"},
+    )
+    two = _Response(
+        b"<html>done</html>",
+        {"Content-Type": "text/html"},
+    )
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": root,
+            "https://example.test/one": one,
+            "https://example.test/two": two,
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 3,
+        },
+    )
+
+    assert result.requests_made == 3
+    assert result.bytes_read == len(root._body) + len(one._body) + len(two._body)
+    assert result.max_depth_reached == 2
+    assert result.skipped_out_of_scope >= 1
+    assert result.skipped_cross_origin == 0
