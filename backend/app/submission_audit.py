@@ -61,6 +61,7 @@ ISSUE_CLASS = {
     "approval_missing_basis_digest": "metadata",
     "approval_missing_artifact_sha256": "metadata",
     "approval_provenance_stale": "stale",
+    "approval_governance_stale": "stale",
 }
 
 
@@ -83,6 +84,7 @@ def audit_submission_events(
     artifact_id: str,
     *,
     current_provenance_fingerprint: str | None = None,
+    current_governance_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     relevant = [
         event
@@ -99,6 +101,7 @@ def audit_submission_events(
     issues: list[str] = []
     approval_active = False
     last_approval_provenance: str | None = None
+    last_approval_governance: str | None = None
     submissions = 0
 
     for event in relevant:
@@ -107,6 +110,9 @@ def audit_submission_events(
             approval_active = True
             last_approval_provenance = event.get(
                 "report_provenance_fingerprint"
+            )
+            last_approval_governance = event.get(
+                "reporting_governance_fingerprint"
             )
             if not event.get("basis_digest"):
                 issues.append("approval_missing_basis_digest")
@@ -129,6 +135,14 @@ def audit_submission_events(
     ):
         issues.append("approval_provenance_stale")
 
+    if (
+        approval_active
+        and last_approval_governance is not None
+        and current_governance_fingerprint is not None
+        and last_approval_governance != current_governance_fingerprint
+    ):
+        issues.append("approval_governance_stale")
+
     issue_list = sorted(set(issues))
     issue_classes = _issue_classes(issue_list)
     severity = _severity_summary(issue_classes)
@@ -140,6 +154,8 @@ def audit_submission_events(
         "approval_active": approval_active,
         "latest_approval_provenance_fingerprint": last_approval_provenance,
         "current_provenance_fingerprint": current_provenance_fingerprint,
+        "latest_approval_governance_fingerprint": last_approval_governance,
+        "current_governance_fingerprint": current_governance_fingerprint,
         "issues": issue_list,
         "issue_classes": issue_classes,
         "severity": severity,
@@ -170,6 +186,12 @@ def verify_submission_audit(
         "current_provenance_fingerprint": audit.get(
             "current_provenance_fingerprint"
         ),
+        "latest_approval_governance_fingerprint": audit.get(
+            "latest_approval_governance_fingerprint"
+        ),
+        "current_governance_fingerprint": audit.get(
+            "current_governance_fingerprint"
+        ),
         "issues": sorted(str(item) for item in (audit.get("issues") or [])),
         "issue_classes": dict(
             sorted((audit.get("issue_classes") or {}).items())
@@ -196,12 +218,14 @@ def audit_campaign_submissions(
     report_artifact_ids: list[str],
     *,
     current_provenance_fingerprint: str | None = None,
+    current_governance_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     audits = [
         audit_submission_events(
             campaign,
             artifact_id,
             current_provenance_fingerprint=current_provenance_fingerprint,
+            current_governance_fingerprint=current_governance_fingerprint,
         )
         for artifact_id in sorted(set(report_artifact_ids))
     ]
