@@ -428,17 +428,12 @@ def _claim_for_role(queue: JobQueue, worker_id: str):
     if not role:
         return queue.claim(worker_id)
     if role == "general":
-        for kind in ("independent_validation", "browser_flow", "recon_task", "report"):
-            job = queue.claim_kind(worker_id, kind)
-            if job:
-                return job
-        return None
+        return queue.claim_allowed(
+            worker_id,
+            ("independent_validation", "browser_flow", "recon_task", "report"),
+        )
     if role == "scanner":
-        for kind in ("nuclei_scan", "strix_scan"):
-            job = queue.claim_kind(worker_id, kind)
-            if job:
-                return job
-        return None
+        return queue.claim_allowed(worker_id, ("nuclei_scan", "strix_scan"))
     raise ValueError("XBOW_WORKER_ROLE must be general or scanner")
 
 
