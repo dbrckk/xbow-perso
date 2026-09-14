@@ -462,7 +462,7 @@ def test_recon_discovers_same_origin_sitemaps_with_shared_budget_and_provenance(
     assert provenance["https://example.test/from-default"] == {"sitemap"}
     assert provenance["https://example.test/from-custom"] == {"sitemap"}
     assert provenance["https://example.test/html-page"] == {"html"}
-    assert result.skipped_cross_origin >= 1
+    assert result.skipped_out_of_scope >= 1
 
 
 def test_sitemap_parser_rejects_dtd_entity_documents(monkeypatch):
