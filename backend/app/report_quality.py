@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from .report_provenance import ReportProvenance
+from .report_provenance import ReportProvenance, verify_report_provenance
 from .report_readiness import ReportReadiness
 
 
@@ -35,6 +35,11 @@ def build_report_quality_gates(
     gates: list[ReportQualityGate] = []
     for item in readiness:
         provenance_item = provenance_by_id.get(item.finding_id)
+        provenance_verification = (
+            verify_report_provenance(provenance_item)
+            if provenance_item is not None
+            else None
+        )
         checks = {
             "human_review_ready": bool(item.ready_for_human_review),
             "submission_ready": bool(item.submission_ready),
@@ -48,6 +53,12 @@ def build_report_quality_gates(
             "not_duplicate_candidate": not item.duplicate_candidate,
             "provenance_complete": bool(
                 provenance_item and provenance_item.complete
+            )
+            if provenance is not None
+            else True,
+            "provenance_verified": bool(
+                provenance_verification
+                and provenance_verification.get("valid")
             )
             if provenance is not None
             else True,
