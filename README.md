@@ -233,3 +233,10 @@ The history includes the current and previous score, score delta, trend (`improv
 ### Operational health response
 
 Control-plane health is an advisory, aggregate signal only. `HEALTHY`, `DEGRADED`, and `BLOCKED` never expand authorization, target scope, execution permissions, or worker capabilities. Operators should inspect the operations dashboard, health history, recovery readiness, queue-transition integrity, and aggregate alerts before declaring recovery. Ordinary failed jobs degrade service health; fail-closed blocking remains reserved for integrity/recovery conditions and persistent control-plane degradation.
+
+
+### Platform SLO and error budgets
+
+The control plane exposes read-only SLO/error-budget status through `GET /api/slo` and the operations dashboard. Current SLOs cover platform availability, queue integrity, terminal job reliability, recovery readiness, and reporting/outbox health.
+
+Each SLO reports its target, observed ratio, error budget, budget consumed, remaining budget, burn rate, and state (`HEALTHY`, `AT_RISK`, or `EXHAUSTED`). Current burn rate is based on the latest aggregate snapshot; historical 1h/24h/7d burn-rate windows are declared but not yet computed. SLO state never changes scope, authorization, worker permissions, or execution behavior.
