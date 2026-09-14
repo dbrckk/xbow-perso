@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 from .main import Campaign, Finding, is_host_allowed
 from .scanner_registry import latest_scanner_artifact
+from .scanner_sandbox import ScannerSandboxConfigError, require_scanner_sandbox
 from .secret_vault import SecretVaultError, get_secret, vault_enabled
 from .strix_parser import StrixParserError, max_strix_json_bytes, parse_strix_json
 from .storage import Storage
@@ -249,6 +250,11 @@ def execute(plan: WorkerPlan) -> dict:
             "admission_cap_rps": plan.admission_cap_rps,
         }
 
+    try:
+        sandbox = require_scanner_sandbox(plan.engine)
+    except ScannerSandboxConfigError as exc:
+        raise WorkerPolicyError(str(exc)) from exc
+
     timeout = _bounded_timeout()
     output = Path(plan.output_dir)
     output.mkdir(parents=True, exist_ok=True)
@@ -295,6 +301,7 @@ def execute(plan: WorkerPlan) -> dict:
         "output_dir": str(output),
         "campaign_rps": plan.campaign_rps,
         "admission_cap_rps": plan.admission_cap_rps,
+        "sandbox_profile": sandbox.profile,
     }
 
 
