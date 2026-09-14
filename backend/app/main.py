@@ -16,7 +16,7 @@ from .api_outbox import has_event, outbox_snapshot, pending_request_id
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
-from .job_provenance import attach_job_provenance
+from .job_provenance import attach_job_provenance, verify_job_provenance
 from .policy_integrity import seal_policy_receipt, verify_policy_receipt
 from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
@@ -318,6 +318,7 @@ def system_capabilities():
             "optimistic_campaign_versioning": True,
             "crash_safe_outbox": True,
             "outbox_observability": True,
+            "policy_bound_job_provenance": True,
         },
         "execution": {
             "strix_scanning": "gated",
@@ -1152,6 +1153,24 @@ def get_job(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+
+@app.get("/api/jobs/{job_id}/provenance")
+def get_job_provenance_status(job_id: str):
+    job = queue().get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    campaign = assert_campaign_exists(str(job["campaign_id"]))
+    verification = verify_job_provenance(job, campaign)
+    return {
+        "job_id": job["id"],
+        "campaign_id": campaign.id,
+        "job_kind": job["kind"],
+        "provenance": verification,
+        "read_only": True,
+        "payload_exposed": False,
+        "fail_closed_capable": True,
+    }
 
 
 def _validation_request_id(finding_id: str) -> str:
