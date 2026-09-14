@@ -112,7 +112,7 @@ def _causal_summary(
     return transition_text + " principalement parce que " + "; ".join(clauses[:4]) + "."
 
 
-def _planner_stability(planner_entries: list[dict[str, Any]]) -> dict[str, Any]:
+def planner_stability(planner_entries: list[dict[str, Any]]) -> dict[str, Any]:
     actions = [str(item.get("action") or "") for item in planner_entries if item.get("action")]
     transitions = list(zip(actions, actions[1:]))
     anomalies: list[dict[str, Any]] = []
@@ -185,6 +185,37 @@ def _planner_stability(planner_entries: list[dict[str, Any]]) -> dict[str, Any]:
         "alert": state == "unstable" or stop_reopens > 0,
         "read_only": True,
     }
+
+
+def planner_stability_from_graph(graph: Any) -> dict[str, Any]:
+    entries = []
+    for item in graph.by_kind("evidence"):
+        if item.metadata.get("memory_type") != "planner_decision":
+            continue
+        entries.append(
+            {
+                "sequence": item.metadata.get("audit_seq"),
+                "action": item.metadata.get("action"),
+            }
+        )
+    entries.sort(
+        key=lambda item: (
+            item["sequence"] is None,
+            int(item["sequence"] or 0),
+        )
+    )
+    return planner_stability(entries)
+
+
+def planner_stability_breaker_reason(stability: dict[str, Any]) -> str | None:
+    if int(stability.get("stop_reopens") or 0) > 0:
+        return "planner stability violation: action recorded after stop"
+    if (
+        stability.get("state") == "unstable"
+        and int(stability.get("oscillations") or 0) >= 3
+    ):
+        return "planner stability violation: repeated decision oscillation"
+    return None
 
 
 def build_decision_timeline(
@@ -266,7 +297,7 @@ def build_decision_timeline(
         )
     )
 
-    stability = _planner_stability(planner_entries)
+    stability = planner_stability(planner_entries)
 
     return {
         "timeline": timestamped,

@@ -16,6 +16,7 @@ from .circuit_breaker import circuit_breaker_state, record_circuit_open
 from .coverage import build_coverage_guidance, build_evidence_coverage
 from .decision_audit import next_audit_link, seal_decision_metadata
 from .decision_consensus import build_decision_consensus
+from .decision_timeline import planner_stability_breaker_reason, planner_stability_from_graph
 from .evidence_quality import build_evidence_quality
 from .finding_correlation import cluster_findings
 from .hypothesis_memory import build_hypotheses
@@ -575,6 +576,27 @@ def advance_campaign(
             [], campaign=campaign, graph=initial_graph, store=store, queue=queue,
             budget=(budget if budget is not None else planner_budget_from_env()), intelligence=None,
         )
+
+    stability = planner_stability_from_graph(initial_graph)
+    stability_reason = planner_stability_breaker_reason(stability)
+    if stability_reason:
+        record_circuit_open(store, campaign.id, stability_reason, at=utcnow())
+        return _result(
+            PlannedAction(
+                "stop",
+                str(campaign.target.primary_url),
+                stability_reason,
+                100,
+            ),
+            [],
+            campaign=campaign,
+            graph=initial_graph,
+            store=store,
+            queue=queue,
+            budget=(budget if budget is not None else planner_budget_from_env()),
+            intelligence=None,
+        )
+
     limits = budget if budget is not None else planner_budget_from_env()
     effective_runtime_limit = (
         runtime_limit if runtime_limit is not None else campaign_runtime_limit_from_env()

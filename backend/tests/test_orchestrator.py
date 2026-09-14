@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta, timezone
 
 from app.campaign_runtime import CampaignRuntimeLimit
+from app.circuit_breaker import circuit_breaker_state
 from app.jobqueue import JobQueue
 from app.main import Campaign, Finding, ProgramRules, TargetInput
-from app.observation_graph import Observation
+from app.observation_graph import Observation, ObservationGraph
 from app.planner_budget import PlannerBudget
 from app.orchestrator import advance_campaign
 from app.storage import Storage
@@ -858,3 +859,99 @@ def test_validation_scheduler_does_not_early_stop_on_observed_validation_without
     queued = [queue.get(job_id) for job_id in result["job_ids"]]
 
     assert [job["payload"]["finding_id"] for job in queued] == ["cluster-low"]
+
+
+
+def _seed_planner_decisions(store, campaign_id, actions):
+    previous_hash = None
+    for index, action in enumerate(actions, start=1):
+        decision_hash = f"fixture-hash-{index}"
+        store.put_observation(
+            campaign_id,
+            Observation(
+                f"fixture-decision:{index}",
+                "evidence",
+                action,
+                "orchestrator",
+                metadata={
+                    "memory_type": "planner_decision",
+                    "action": action,
+                    "agent": "analysis-agent",
+                    "reason": f"fixture {action}",
+                    "priority": 80,
+                    "audit_seq": index,
+                    "decision_hash": decision_hash,
+                    "previous_decision_hash": previous_hash,
+                },
+            ).to_dict(),
+        )
+        previous_hash = decision_hash
+
+
+def test_critical_planner_oscillation_opens_circuit_breaker_before_new_work(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    _seed_planner_decisions(
+        store,
+        campaign.id,
+        ["scan", "validate", "scan", "validate", "scan"],
+    )
+
+    result = advance_campaign(campaign, queue, store)
+
+    assert result["action"]["kind"] == "stop"
+    assert result["action"]["reason"] == (
+        "planner stability violation: repeated decision oscillation"
+    )
+    assert result["job_ids"] == []
+    assert queue.stats()["total"] == 0
+    graph = ObservationGraph.from_records(store.list_observations(campaign.id))
+    breaker = circuit_breaker_state(graph)
+    assert breaker["open"] is True
+    assert breaker["reason"] == result["action"]["reason"]
+
+
+def test_action_after_stop_opens_circuit_breaker_before_new_work(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    _seed_planner_decisions(
+        store,
+        campaign.id,
+        ["scan", "stop", "validate"],
+    )
+
+    result = advance_campaign(campaign, queue, store)
+
+    assert result["action"]["kind"] == "stop"
+    assert result["action"]["reason"] == (
+        "planner stability violation: action recorded after stop"
+    )
+    assert result["job_ids"] == []
+    assert queue.stats()["total"] == 0
+
+
+def test_single_planner_reversal_does_not_trip_breaker(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    _seed_planner_decisions(
+        store,
+        campaign.id,
+        ["scan", "validate", "scan"],
+    )
+
+    result = advance_campaign(campaign, queue, store)
+
+    assert result["action"]["reason"] != (
+        "planner stability violation: repeated decision oscillation"
+    )
+    graph = ObservationGraph.from_records(store.list_observations(campaign.id))
+    assert circuit_breaker_state(graph)["open"] is False
