@@ -116,13 +116,14 @@ def test_historical_slo_windows_use_retained_health_snapshots():
     assert one_hour["data_quality"] == "complete"
 
     assert day["samples"] == 3
-    assert round(day["observed"], 6) == 0.977083
+    assert round(day["observed"], 6) == 0.991667
     assert day["coverage_ratio"] == 1.0
     assert day["data_quality"] == "complete"
 
     assert week["samples"] == 3
-    assert round(week["observed"], 6) == 0.996726
-    assert week["coverage_ratio"] == 1.0
+    assert round(week["observed"], 6) == 0.992857
+    assert round(week["coverage_ratio"], 6) == 0.166667
+    assert week["data_quality"] == "partial"
 
 
 def test_historical_slo_windows_report_unknown_when_no_samples():
