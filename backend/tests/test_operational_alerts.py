@@ -236,6 +236,10 @@ def test_operational_alerts_flag_invalid_submission_audit():
                 "supported": True,
                 "valid": False,
                 "invalid_reports": 2,
+                "issue_class_counts": {
+                    "structural": 1,
+                    "stale": 1,
+                },
             },
         }
     )
@@ -245,4 +249,10 @@ def test_operational_alerts_flag_invalid_submission_audit():
         for item in result["alerts"]
     }
     assert alerts["submission_event_audit_invalid"]["severity"] == "warning"
-    assert alerts["submission_event_audit_invalid"]["value"] == 2
+    assert alerts["submission_event_audit_invalid"]["value"] == {
+        "invalid_reports": 2,
+        "issue_class_counts": {
+            "structural": 1,
+            "stale": 1,
+        },
+    }
