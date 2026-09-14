@@ -66,6 +66,18 @@ function renderControl(data){
   $('jobsQueued').textContent=String(data.jobs?.queued||0);
   $('jobsRunning').textContent=String(data.jobs?.running||0);
   $('jobsFailed').textContent=String(data.jobs?.failed||0);
+  const scanner=data.scanner_execution||{};
+  const stability=data.planner_stability||{};
+  const recon=data.recon_telemetry||{};
+  $('scannerState').textContent=scanner.dispatch_ready?'READY':'bloqué';
+  $('plannerStability').textContent=
+    (stability.state||'unknown')+' '+Math.round((Number(stability.score)||0)*100)+'%';
+  $('reconRequests').textContent=String(recon.requests_made||0);
+  const scannerReasons=Array.isArray(scanner.dispatch_block_reasons)?scanner.dispatch_block_reasons:[];
+  $('controlDetails').textContent=
+    'Scanner: '+(scannerReasons.length?scannerReasons.join(' · '):'admis')+
+    ' · Recon hors scope ignorés: '+String(recon.skipped_out_of_scope||0)+
+    ' · cross-origin ignorés: '+String(recon.skipped_cross_origin||0);
 
   const pill=$('autonomyPill');
   pill.textContent=data.autonomy_blocked?'autonomie bloquée':'autonomie disponible';

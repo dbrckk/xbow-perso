@@ -123,3 +123,51 @@ def test_control_status_reports_budget_blocker_consistently(tmp_path, monkeypatc
     assert result["autonomy_block_reasons"] == ["budget_blocked"]
     assert result["budget"]["usage"]["failed_jobs"] == 1
     assert result["budget"]["usage"]["blocked_actions"]["scan"] == "failed job budget exhausted"
+
+
+
+def test_control_status_exposes_scanner_stability_and_recon_telemetry(tmp_path, monkeypatch):
+    db = str(tmp_path / "db.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "false")
+    monkeypatch.setenv("DRY_RUN", "true")
+    campaign = _campaign()
+    campaign.events.extend(
+        [
+            {
+                "type": "recon_task_completed",
+                "requests_made": 3,
+                "bytes_read": 1200,
+                "max_depth_reached": 2,
+                "skipped_out_of_scope": 1,
+                "skipped_cross_origin": 2,
+            },
+            {
+                "type": "recon_task_completed",
+                "requests_made": 2,
+                "bytes_read": 800,
+                "max_depth_reached": 1,
+                "skipped_out_of_scope": 0,
+                "skipped_cross_origin": 1,
+            },
+        ]
+    )
+    store = Storage(db, artifacts)
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    from app.campaign_control import campaign_control_status
+
+    result = campaign_control_status(campaign.id)
+
+    assert result["scanner_execution"]["dispatch_ready"] is False
+    assert result["planner_stability"]["state"] == "stable"
+    assert result["recon_telemetry"] == {
+        "completed_tasks": 2,
+        "requests_made": 5,
+        "bytes_read": 2000,
+        "max_depth_reached": 2,
+        "skipped_out_of_scope": 1,
+        "skipped_cross_origin": 3,
+    }
