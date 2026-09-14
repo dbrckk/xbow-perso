@@ -12,6 +12,8 @@ def _campaign_events(campaign: Any) -> list[dict[str, Any]]:
 def audit_submission_events(
     campaign: Any,
     artifact_id: str,
+    *,
+    current_provenance_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     relevant = [
         event
@@ -50,6 +52,14 @@ def audit_submission_events(
             if not approval_active:
                 issues.append("submission_without_active_approval")
 
+    if (
+        approval_active
+        and last_approval_provenance is not None
+        and current_provenance_fingerprint is not None
+        and last_approval_provenance != current_provenance_fingerprint
+    ):
+        issues.append("approval_provenance_stale")
+
     return {
         "valid": not issues,
         "artifact_id": artifact_id,
@@ -57,6 +67,7 @@ def audit_submission_events(
         "submissions": submissions,
         "approval_active": approval_active,
         "latest_approval_provenance_fingerprint": last_approval_provenance,
+        "current_provenance_fingerprint": current_provenance_fingerprint,
         "issues": sorted(set(issues)),
         "read_only": True,
         "automatic_mutation": False,
@@ -67,9 +78,15 @@ def audit_submission_events(
 def audit_campaign_submissions(
     campaign: Any,
     report_artifact_ids: list[str],
+    *,
+    current_provenance_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     audits = [
-        audit_submission_events(campaign, artifact_id)
+        audit_submission_events(
+            campaign,
+            artifact_id,
+            current_provenance_fingerprint=current_provenance_fingerprint,
+        )
         for artifact_id in sorted(set(report_artifact_ids))
     ]
     issue_counts: dict[str, int] = {}
