@@ -246,3 +246,26 @@ def test_submission_rejects_missing_confirmed_finding_quality_gate():
         assert "missing quality gate coverage" in str(exc)
     else:
         raise AssertionError("all confirmed findings require quality coverage")
+
+
+
+def test_approval_status_exposes_provenance_binding():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(
+        approval_event(
+            campaign,
+            artifact,
+            "reviewer",
+            "2026-09-10T08:00:00Z",
+            provenance_fingerprint="a" * 64,
+        )
+    )
+
+    status = submission_status(
+        campaign,
+        artifact,
+        provenance_fingerprint="a" * 64,
+    )
+
+    assert status.state == "approved"
