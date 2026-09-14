@@ -164,9 +164,14 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
             {
                 "code": "submission_event_audit_invalid",
                 "severity": "warning",
-                "value": int(
-                    submission_integrity.get("invalid_reports") or 0
-                ),
+                "value": {
+                    "invalid_reports": int(
+                        submission_integrity.get("invalid_reports") or 0
+                    ),
+                    "issue_class_counts": dict(
+                        submission_integrity.get("issue_class_counts") or {}
+                    ),
+                },
                 "threshold": 0,
             }
         )
