@@ -240,6 +240,15 @@ def test_operational_alerts_flag_invalid_submission_audit():
                     "structural": 1,
                     "stale": 1,
                 },
+                "severity": {
+                    "highest": "high",
+                    "counts": {
+                        "high": 1,
+                        "medium": 0,
+                        "low": 1,
+                    },
+                    "weighted_score": 4,
+                },
             },
         }
     )
@@ -254,5 +263,14 @@ def test_operational_alerts_flag_invalid_submission_audit():
         "issue_class_counts": {
             "structural": 1,
             "stale": 1,
+        },
+        "severity": {
+            "highest": "high",
+            "counts": {
+                "high": 1,
+                "medium": 0,
+                "low": 1,
+            },
+            "weighted_score": 4,
         },
     }
