@@ -107,7 +107,7 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
             recommended = "resolved"
         elif duplicate and not observed:
             recommended = "review_duplicate"
-        elif not chain_complete or confidence < 0.75 or not corroborated or evidence_quality_score < 0.80:
+        elif not chain_complete or confidence < 0.75 or not corroborated or evidence_quality_grade != "high":
             recommended = "validate"
         elif duplicate:
             recommended = "review_duplicate"
