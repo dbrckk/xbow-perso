@@ -36,6 +36,10 @@ class ReconResult:
     skipped_cross_origin: int = 0
     wall_time_seconds: float = 0.0
     stopped_by_time_budget: bool = False
+    request_budget: int = 0
+    frontier_remaining: int = 0
+    stopped_by_request_budget: bool = False
+    coverage_complete: bool = False
 
 
 _MAX_DISCOVERED_LINKS = 500
@@ -374,6 +378,15 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
             break
 
     wall_time_seconds = max(0.0, time.monotonic() - started_at)
+    frontier_remaining = len(pending)
+    stopped_by_request_budget = bool(
+        pending and len(visited) >= request_budget and not stopped_by_time_budget
+    )
+    coverage_complete = bool(
+        not pending
+        and not stopped_by_time_budget
+        and not stopped_by_request_budget
+    )
 
     if not visited:
         return ReconResult(
@@ -387,6 +400,10 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
             skipped_cross_origin=skipped_cross_origin,
             wall_time_seconds=wall_time_seconds,
             stopped_by_time_budget=stopped_by_time_budget,
+            request_budget=request_budget,
+            frontier_remaining=frontier_remaining,
+            stopped_by_request_budget=stopped_by_request_budget,
+            coverage_complete=coverage_complete,
         )
 
     return ReconResult(
@@ -405,4 +422,8 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         skipped_cross_origin=skipped_cross_origin,
         wall_time_seconds=wall_time_seconds,
         stopped_by_time_budget=stopped_by_time_budget,
+        request_budget=request_budget,
+        frontier_remaining=frontier_remaining,
+        stopped_by_request_budget=stopped_by_request_budget,
+        coverage_complete=coverage_complete,
     )
