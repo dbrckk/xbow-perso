@@ -204,3 +204,18 @@ def test_triage_allows_report_review_with_high_quality_artifact_backed_evidence(
     assert triage.evidence_quality_grade == "high"
     assert triage.evidence_quality_score == 1.0
     assert triage.recommended_state == "review_for_report"
+
+
+
+def test_triage_surfaces_multi_scanner_corroboration_without_auto_resolution():
+    first = _finding("multi-1", "high", endpoint="https://example.test/api?id=one", cwe="CWE-200")
+    second = _finding("multi-2", "high", endpoint="https://example.test/api?id=two", cwe="CWE-200")
+    first.discovered_by = "strix"
+    second.discovered_by = "nuclei"
+
+    triage = build_finding_triage([first, second], ObservationGraph())
+
+    assert all(item.duplicate_candidate for item in triage)
+    assert all(item.correlated_discovery_source_count == 2 for item in triage)
+    assert all(item.multi_scanner_corroborated for item in triage)
+    assert all(item.recommended_state == "review_duplicate" for item in triage)

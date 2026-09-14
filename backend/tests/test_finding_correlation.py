@@ -30,6 +30,9 @@ def test_correlates_canonical_duplicate_findings_without_query_values():
     assert group.endpoint == "https://example.test/account"
     assert group.highest_severity == "high"
     assert group.duplicate_candidate is True
+    assert group.discovery_sources == ("scanner",)
+    assert group.discovery_source_count == 1
+    assert group.multi_scanner_corroborated is False
     assert "secret" not in str(group.to_dict())
 
 
@@ -76,6 +79,22 @@ def test_correlation_route_is_exposed_and_does_not_auto_merge(tmp_path, monkeypa
         "groups": 1,
         "duplicate_groups": 1,
         "findings_in_duplicate_groups": 2,
+        "multi_scanner_groups": 0,
     }
     assert "one" not in str(result)
     assert "two" not in str(result)
+
+
+
+def test_correlated_duplicate_group_tracks_multiple_discovery_engines():
+    first = _finding("f1", "https://example.test/account?id=one")
+    second = _finding("f2", "https://example.test/account?id=two")
+    first.discovered_by = "strix"
+    second.discovered_by = "nuclei"
+
+    group = correlate_findings([first, second])[0]
+
+    assert group.duplicate_candidate is True
+    assert group.discovery_sources == ("nuclei", "strix")
+    assert group.discovery_source_count == 2
+    assert group.multi_scanner_corroborated is True

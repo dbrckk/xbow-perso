@@ -47,6 +47,9 @@ class FindingCorrelation:
     cwe: str | None
     highest_severity: str
     duplicate_candidate: bool
+    discovery_sources: tuple[str, ...]
+    discovery_source_count: int
+    multi_scanner_corroborated: bool
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -74,6 +77,18 @@ def correlate_findings(findings: list[Any]) -> list[FindingCorrelation]:
         )
         key = "|".join((asset, endpoint or "-", cwe or "-", strong_identity or "-"))
         duplicate_candidate = len(ordered) > 1 and bool(endpoint or cwe)
+        discovery_sources = tuple(
+            sorted(
+                {
+                    str(item.discovered_by).strip()
+                    for item in ordered
+                    if str(item.discovered_by).strip()
+                }
+            )
+        )
+        multi_scanner_corroborated = (
+            duplicate_candidate and len(discovery_sources) >= 2
+        )
         correlations.append(
             FindingCorrelation(
                 key=key,
@@ -83,6 +98,9 @@ def correlate_findings(findings: list[Any]) -> list[FindingCorrelation]:
                 cwe=cwe,
                 highest_severity=highest,
                 duplicate_candidate=duplicate_candidate,
+                discovery_sources=discovery_sources,
+                discovery_source_count=len(discovery_sources),
+                multi_scanner_corroborated=multi_scanner_corroborated,
             )
         )
 
@@ -111,6 +129,9 @@ def campaign_finding_correlations(campaign_id: str):
             "groups": len(correlations),
             "duplicate_groups": len(duplicate_groups),
             "findings_in_duplicate_groups": duplicate_findings,
+            "multi_scanner_groups": sum(
+                item.multi_scanner_corroborated for item in correlations
+            ),
         },
         "read_only": True,
         "auto_merge": False,
