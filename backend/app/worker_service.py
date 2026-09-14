@@ -350,6 +350,7 @@ def process_recon_task(job: dict, store: Storage) -> None:
             "max_depth_reached": result.max_depth_reached,
             "skipped_out_of_scope": result.skipped_out_of_scope,
             "skipped_cross_origin": result.skipped_cross_origin,
+            "execution_contract": result.execution_contract,
             "at": utcnow(),
         },
     )

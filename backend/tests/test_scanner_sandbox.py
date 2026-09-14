@@ -24,13 +24,14 @@ def _clear(monkeypatch):
         monkeypatch.delenv(name, raising=False)
 
 
-def _attest_runtime(monkeypatch, *, rootfs=True, nnp=True, caps=True):
+def _attest_runtime(monkeypatch, *, rootfs=True, nnp=True, caps=True, seccomp=True):
     monkeypatch.setattr(
         "app.scanner_sandbox._runtime_hardening_attestation",
         lambda: {
             "read_only_rootfs": rootfs,
             "no_new_privileges": nnp,
             "cap_drop_all": caps,
+            "seccomp_filter": seccomp,
         },
     )
 
@@ -104,15 +105,16 @@ def test_scanner_worker_kill_switch_blocks_execution_admission(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    ("rootfs", "nnp", "caps", "reason"),
+    ("rootfs", "nnp", "caps", "seccomp", "reason"),
     [
-        (False, True, True, "runtime_rootfs_not_read_only"),
-        (True, False, True, "runtime_no_new_privileges_missing"),
-        (True, True, False, "runtime_capabilities_present"),
+        (False, True, True, True, "runtime_rootfs_not_read_only"),
+        (True, False, True, True, "runtime_no_new_privileges_missing"),
+        (True, True, False, True, "runtime_capabilities_present"),
+        (True, True, True, False, "runtime_seccomp_filter_missing"),
     ],
 )
 def test_runtime_hardening_is_verified_not_just_declared(
-    monkeypatch, rootfs, nnp, caps, reason
+    monkeypatch, rootfs, nnp, caps, seccomp, reason
 ):
     monkeypatch.setenv("XBOW_WORKER_ROLE", "scanner")
     monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
@@ -121,7 +123,7 @@ def test_runtime_hardening_is_verified_not_just_declared(
     monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
     monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "true")
     monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
-    _attest_runtime(monkeypatch, rootfs=rootfs, nnp=nnp, caps=caps)
+    _attest_runtime(monkeypatch, rootfs=rootfs, nnp=nnp, caps=caps, seccomp=seccomp)
 
     with pytest.raises(ScannerSandboxConfigError, match=reason):
         require_scanner_sandbox("nuclei")

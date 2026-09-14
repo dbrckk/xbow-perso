@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import os
 import time
@@ -34,6 +36,7 @@ class ReconResult:
     max_depth_reached: int = 0
     skipped_out_of_scope: int = 0
     skipped_cross_origin: int = 0
+    execution_contract: str = ""
 
 
 _MAX_DISCOVERED_LINKS = 500
@@ -207,11 +210,56 @@ def _fetch_page(opener, target: str, max_bytes: int):
         return b"", None, None, str(exc)
 
 
+
+def _execution_contract(payload: dict, target: str) -> str:
+    """Validate the immutable read-only recon contract and return its digest."""
+    raw_methods = payload.get("allowed_methods", ["GET", "HEAD"])
+    if not isinstance(raw_methods, (list, tuple)) or not raw_methods:
+        raise ReconPolicyError("allowed_methods must be a non-empty list")
+    methods = tuple(sorted({str(item).upper() for item in raw_methods}))
+    if any(method not in {"GET", "HEAD"} for method in methods):
+        raise ReconPolicyError("recon execution contract permits only GET and HEAD")
+    if "GET" not in methods:
+        raise ReconPolicyError("recon execution contract must permit GET")
+
+    same_origin_only = payload.get("same_origin_only", True)
+    read_only = payload.get("read_only", True)
+    if same_origin_only is not True:
+        raise ReconPolicyError("recon execution contract requires same_origin_only=true")
+    if read_only is not True:
+        raise ReconPolicyError("recon execution contract requires read_only=true")
+
+    requested = payload.get("max_requests", 1)
+    try:
+        requested_int = int(requested)
+    except (TypeError, ValueError) as exc:
+        raise ReconPolicyError("max_requests must be an integer") from exc
+    if not 1 <= requested_int <= 100:
+        raise ReconPolicyError("max_requests must be between 1 and 100")
+
+    material = {
+        "kind": str(payload.get("kind") or ""),
+        "target": target,
+        "max_requests": requested_int,
+        "allowed_methods": list(methods),
+        "same_origin_only": True,
+        "read_only": True,
+    }
+    encoded = json.dumps(
+        material,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return "recon:" + hashlib.sha256(encoded).hexdigest()
+
+
 def execute_recon_task(campaign, payload: dict) -> ReconResult:
     kind = str(payload.get("kind") or "")
     if kind not in {"crawl", "map_endpoints", "detect_technology", "map_forms"}:
         raise ReconPolicyError("unsupported recon task kind")
     target = _safe_url(campaign, str(payload.get("target") or ""))
+    execution_contract = _execution_contract(payload, target)
     if not campaign.target.rules.automated_scanning:
         raise ReconPolicyError("automated scanning is disabled")
     if any(
@@ -224,7 +272,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     ):
         raise ReconPolicyError("unsafe campaign flags block recon execution")
     if not _enabled():
-        return ReconResult(status="dry_run", target=target)
+        return ReconResult(status="dry_run", target=target, execution_contract=execution_contract)
 
     requested = payload.get("max_requests", 1)
     try:
@@ -351,6 +399,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
             max_depth_reached=max_depth_reached,
             skipped_out_of_scope=skipped_out_of_scope,
             skipped_cross_origin=skipped_cross_origin,
+            execution_contract=execution_contract,
         )
 
     return ReconResult(
@@ -367,4 +416,5 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         max_depth_reached=max_depth_reached,
         skipped_out_of_scope=skipped_out_of_scope,
         skipped_cross_origin=skipped_cross_origin,
+        execution_contract=execution_contract,
     )

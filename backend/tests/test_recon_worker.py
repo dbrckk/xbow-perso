@@ -386,3 +386,72 @@ def test_recon_worker_reports_consumed_budget_and_skip_telemetry(monkeypatch):
     assert result.max_depth_reached == 2
     assert result.skipped_out_of_scope >= 1
     assert result.skipped_cross_origin == 0
+
+
+def test_recon_worker_rejects_mutating_execution_contract(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+
+    for payload, expected in (
+        (
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "allowed_methods": ["GET", "POST"],
+            },
+            "permits only GET and HEAD",
+        ),
+        (
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "same_origin_only": False,
+            },
+            "requires same_origin_only=true",
+        ),
+        (
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "read_only": False,
+            },
+            "requires read_only=true",
+        ),
+    ):
+        try:
+            execute_recon_task(_campaign(), payload)
+        except Exception as exc:
+            assert expected in str(exc)
+        else:
+            raise AssertionError("unsafe recon execution contract must fail closed")
+
+
+def test_recon_execution_contract_is_stable_and_binds_budget(monkeypatch):
+    monkeypatch.delenv("XBOW_ENABLE_RECON", raising=False)
+
+    base = {
+        "kind": "crawl",
+        "target": "https://example.test",
+        "max_requests": 4,
+        "allowed_methods": ["HEAD", "GET", "GET"],
+        "same_origin_only": True,
+        "read_only": True,
+    }
+    first = execute_recon_task(_campaign(), base)
+    second = execute_recon_task(
+        _campaign(),
+        {
+            **base,
+            "allowed_methods": ["GET", "HEAD"],
+        },
+    )
+    changed_budget = execute_recon_task(
+        _campaign(),
+        {
+            **base,
+            "max_requests": 5,
+        },
+    )
+
+    assert first.execution_contract.startswith("recon:")
+    assert first.execution_contract == second.execution_contract
+    assert first.execution_contract != changed_budget.execution_contract

@@ -318,6 +318,7 @@ def _enqueue_recon_tasks(
                     "max_requests": task.max_requests,
                     "allowed_methods": list(task.allowed_methods),
                     "same_origin_only": task.same_origin_only,
+                    "read_only": task.read_only,
                 },
                 max_attempts=2,
                 dedupe_key=f"recon:{task.kind}:{fingerprint}:{task.target}",
