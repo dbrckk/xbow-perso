@@ -10,6 +10,7 @@ from uuid import uuid4
 import redis
 
 from .jobqueue import _bounded_identifier, _job_lease_seconds, _max_job_payload_bytes, utcnow
+from .queue_audit import build_transition_event, verify_transition_events
 
 _ALLOWED_KINDS = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status"}
 _STATUSES = ("queued", "running", "completed", "failed", "cancelled")
@@ -58,6 +59,81 @@ class RedisJobQueue:
 
     def _job_key(self, job_id: str) -> str:
         return f"{self.prefix}:job:{job_id}"
+
+    def _audit_key(self, job_id: str) -> str:
+        return f"{self.prefix}:audit:{job_id}"
+
+    def _append_transition(
+        self,
+        row: dict[str, Any],
+        *,
+        from_status: str | None,
+        to_status: str,
+        actor: str,
+        reason: str,
+        at: str,
+    ) -> dict[str, Any]:
+        job_id = str(row["id"])
+        raw = self.redis.lindex(self._audit_key(job_id), -1)
+        previous = json.loads(raw) if raw else None
+        seq = int(previous["seq"]) + 1 if previous else 1
+        previous_hash = str(previous["event_hash"]) if previous else None
+        if previous and previous.get("to_status") != from_status:
+            raise RuntimeError("queue transition audit status discontinuity")
+        event = build_transition_event(
+            job_id=job_id,
+            campaign_id=str(row["campaign_id"]),
+            kind=str(row["kind"]),
+            seq=seq,
+            from_status=from_status,
+            to_status=to_status,
+            actor=actor,
+            reason=reason,
+            at=at,
+            previous_hash=previous_hash,
+        )
+        self.redis.rpush(
+            self._audit_key(job_id),
+            json.dumps(event, sort_keys=True, separators=(",", ":"), ensure_ascii=False),
+        )
+        return event
+
+    def job_transitions(self, job_id: str) -> list[dict[str, Any]]:
+        job_id = _bounded_identifier(job_id, "job_id")
+        rows = self.redis.lrange(self._audit_key(job_id), 0, -1)
+        return [json.loads(row) for row in rows]
+
+    def verify_job_transitions(self, job_id: str) -> dict[str, Any]:
+        events = self.job_transitions(job_id)
+        verification = verify_transition_events(events)
+        current = self.get(job_id)
+        if current is None:
+            return {**verification, "valid": False, "reason": "job missing"}
+        if verification["valid"] and verification.get("final_status") != current["status"]:
+            return {
+                **verification,
+                "valid": False,
+                "reason": "audit final status does not match job status",
+            }
+        return verification
+
+    def campaign_transition_audit(self, campaign_id: str) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        job_ids = sorted(self._campaign_members(campaign_id))
+        invalid: list[dict[str, Any]] = []
+        checked_events = 0
+        for job_id in job_ids:
+            result = self.verify_job_transitions(job_id)
+            checked_events += int(result.get("checked", 0))
+            if not result.get("valid"):
+                invalid.append({"job_id": job_id, "reason": result.get("reason")})
+        return {
+            "campaign_id": campaign_id,
+            "jobs": len(job_ids),
+            "events": checked_events,
+            "valid": not invalid,
+            "invalid_jobs": invalid,
+        }
 
     def _campaign_key(self, campaign_id: str) -> str:
         digest = hashlib.sha256(campaign_id.encode("utf-8")).hexdigest()
