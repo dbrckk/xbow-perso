@@ -719,3 +719,142 @@ def test_validation_scheduler_re_evaluates_cluster_after_representative_validati
     second = advance_campaign(campaign, queue, store)
     second_jobs = [queue.get(job_id) for job_id in second["job_ids"]]
     assert [job["payload"]["finding_id"] for job in second_jobs] == ["cluster-low"]
+
+
+
+def test_validation_scheduler_stops_cluster_fanout_after_strong_representative_evidence(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    findings = [
+        Finding(
+            id="cluster-high",
+            title="Reflected script injection",
+            severity="high",
+            asset="https://example.test",
+            endpoint="https://example.test/account?id=one",
+            summary="high",
+            cwe="CWE-79",
+            discovered_by="scanner-a",
+        ),
+        Finding(
+            id="cluster-low",
+            title="Reflected script injection",
+            severity="low",
+            asset="https://example.test",
+            endpoint="https://example.test/account?id=two",
+            summary="low",
+            cwe="CWE-79",
+            discovered_by="scanner-a",
+        ),
+    ]
+    campaign = make_campaign(findings=findings)
+    store.save_campaign(campaign.model_dump(mode="json"))
+    store.put_observation(
+        campaign.id,
+        Observation("asset:cluster", "asset", "example.test", "recon").to_dict(),
+    )
+    for finding in findings:
+        store.put_observation(
+            campaign.id,
+            Observation(
+                f"finding:{finding.id}",
+                "finding",
+                finding.id,
+                "scanner-a",
+                parent_ids=("asset:cluster",),
+            ).to_dict(),
+        )
+
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "validation:cluster-high",
+            "validation",
+            "observed",
+            "validator-b",
+            parent_ids=("finding:cluster-high",),
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "evidence:cluster-high",
+            "evidence",
+            "artifact-reference",
+            "validator-c",
+            parent_ids=("validation:cluster-high",),
+            metadata={
+                "artifact_id": "artifact-cluster-high",
+                "artifact_kind": "validation",
+                "artifact_sha256": "e" * 64,
+            },
+        ).to_dict(),
+    )
+
+    result = advance_campaign(campaign, queue, store)
+
+    queued = [queue.get(job_id) for job_id in result["job_ids"]]
+    assert all(job["payload"]["finding_id"] != "cluster-low" for job in queued)
+    assert queue.stats()["total"] == 0
+    assert result["action"]["kind"] == "stop"
+
+
+def test_validation_scheduler_does_not_early_stop_on_observed_validation_without_quality_evidence(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    findings = [
+        Finding(
+            id="cluster-high",
+            title="Reflected script injection",
+            severity="high",
+            asset="https://example.test",
+            endpoint="https://example.test/account?id=one",
+            summary="high",
+            cwe="CWE-79",
+            discovered_by="scanner-a",
+        ),
+        Finding(
+            id="cluster-low",
+            title="Reflected script injection",
+            severity="low",
+            asset="https://example.test",
+            endpoint="https://example.test/account?id=two",
+            summary="low",
+            cwe="CWE-79",
+            discovered_by="scanner-a",
+        ),
+    ]
+    campaign = make_campaign(findings=findings)
+    store.save_campaign(campaign.model_dump(mode="json"))
+    store.put_observation(
+        campaign.id,
+        Observation("asset:cluster", "asset", "example.test", "recon").to_dict(),
+    )
+    for finding in findings:
+        store.put_observation(
+            campaign.id,
+            Observation(
+                f"finding:{finding.id}",
+                "finding",
+                finding.id,
+                "scanner-a",
+                parent_ids=("asset:cluster",),
+            ).to_dict(),
+        )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "validation:cluster-high",
+            "validation",
+            "observed",
+            "validator-b",
+            parent_ids=("finding:cluster-high",),
+        ).to_dict(),
+    )
+
+    result = advance_campaign(campaign, queue, store)
+    queued = [queue.get(job_id) for job_id in result["job_ids"]]
+
+    assert [job["payload"]["finding_id"] for job in queued] == ["cluster-low"]
