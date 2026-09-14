@@ -97,6 +97,26 @@ PYTHONPATH=backend python -m app.dr_cli queue-check
 
 `queue-check` is read-only. It does not requeue jobs, recreate work, clear leases, or mutate queue state. It reports expired or inconsistent leases, invalid retry counters, and queue-transition audit failures, then returns a non-zero exit code when operator reconciliation is required. The same assessment is available through `GET /api/recovery/queue`.
 
+When backup verification, queue recovery, campaign audit, worker audit, and queue-transition audit are all valid, create a signed recovery attestation:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli attest \
+  --manifest /backups/xbow-manifest.json \
+  --postgres-dump /backups/postgres.dump \
+  --redis-snapshot /backups/dump.rdb \
+  --vault-copy /backups/secrets.vault.json \
+  --output /backups/recovery-attestation.json
+```
+
+Verify the artifact independently with:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli verify-attestation \
+  --attestation /backups/recovery-attestation.json
+```
+
+Recovery attestations require the configured audit HMAC key and contain only integrity/check results and aggregate counts; they do not include backup contents, target data, payloads, or secrets.
+
 The manifest stores only filenames, sizes, and SHA-256 hashes; it never embeds backup contents or decrypted secrets. When `XBOW_AUDIT_HMAC_KEY` (or the `audit_hmac_key` vault entry) is available, the manifest is also authenticated with HMAC-SHA256 so manifest rewriting is detectable.
 
 ## Safety model
