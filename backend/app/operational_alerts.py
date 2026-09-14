@@ -46,7 +46,11 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
     recovery = metrics.get("recovery_readiness") or {}
     health = metrics.get("control_plane_health") or {}
-    slo = metrics.get("slo") or {}
+    slo = metrics.get("slo")
+    if slo is None:
+        from .slo import build_platform_slos
+
+        slo = build_platform_slos(metrics)
     latest_recovery_decision = recovery.get("latest_decision")
     ready_to_block_regressions = int(
         recovery.get("ready_to_block_regressions") or 0
