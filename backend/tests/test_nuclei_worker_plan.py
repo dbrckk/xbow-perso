@@ -29,6 +29,7 @@ def _configure_run_root(monkeypatch, tmp_path):
 
 def _admit_scanner_sandbox(monkeypatch):
     monkeypatch.setenv("XBOW_WORKER_ROLE", "scanner")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
     monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
     monkeypatch.setenv("XBOW_SANDBOX_READ_ONLY_ROOTFS", "true")
     monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
