@@ -328,6 +328,7 @@ def system_capabilities():
             "queue_recovery_assessment": True,
             "signed_recovery_attestation": True,
             "recovery_readiness_gate": True,
+            "operations_dashboard": True,
         },
         "execution": {
             "strix_scanning": "gated",
