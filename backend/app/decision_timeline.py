@@ -11,6 +11,39 @@ from .observation_graph import load_observation_graph
 router = APIRouter()
 
 
+def _flatten_explanation(value: Any, prefix: str = "") -> dict[str, Any]:
+    if value is None:
+        return {}
+    if isinstance(value, dict):
+        flattened: dict[str, Any] = {}
+        for key in sorted(value):
+            child = f"{prefix}.{key}" if prefix else str(key)
+            flattened.update(_flatten_explanation(value[key], child))
+        return flattened
+    if isinstance(value, (list, tuple)):
+        return {prefix: list(value)}
+    return {prefix: value}
+
+
+def _signal_diff(previous: dict[str, Any] | None, current: dict[str, Any] | None) -> list[dict[str, Any]]:
+    before = _flatten_explanation(previous)
+    after = _flatten_explanation(current)
+    changes: list[dict[str, Any]] = []
+    for key in sorted(set(before) | set(after)):
+        old = before.get(key)
+        new = after.get(key)
+        if old == new:
+            continue
+        change: dict[str, Any] = {"signal": key, "before": old, "after": new}
+        if isinstance(old, list) and isinstance(new, list):
+            old_set = set(str(item) for item in old)
+            new_set = set(str(item) for item in new)
+            change["added"] = sorted(new_set - old_set)
+            change["removed"] = sorted(old_set - new_set)
+        changes.append(change)
+    return changes
+
+
 def build_decision_timeline(
     campaign: Any,
     graph: Any,
@@ -42,6 +75,21 @@ def build_decision_timeline(
             str(item["id"]),
         )
     )
+
+    previous: dict[str, Any] | None = None
+    for entry in planner_entries:
+        if previous is None:
+            entry["transition"] = None
+            entry["signal_diff"] = []
+        else:
+            entry["transition"] = {
+                "from_action": previous.get("action"),
+                "to_action": entry.get("action"),
+                "from_sequence": previous.get("sequence"),
+                "to_sequence": entry.get("sequence"),
+            }
+            entry["signal_diff"] = _signal_diff(previous.get("why"), entry.get("why"))
+        previous = entry
 
     campaign_entries = []
     for index, event in enumerate(campaign.events):

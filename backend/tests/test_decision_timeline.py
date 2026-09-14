@@ -142,3 +142,68 @@ def test_decision_timeline_exposes_historical_why_snapshot(monkeypatch):
     assert why["gate"]["blockers"] == ["failed_jobs"]
     assert why["consensus"]["contradictory"] is True
     assert why["cycle"]["state"] == "halt"
+
+
+
+def test_decision_timeline_diffs_successive_why_snapshots(monkeypatch):
+    graph = _graph()
+    first = graph._items["decision:1"]
+    first.metadata["explanation"] = {
+        "gate": {"allowed": True, "blockers": [], "reason": None},
+        "risk": {"score": 0.2, "level": "low", "blocked": False, "reasons": []},
+    }
+    graph.add(
+        Observation(
+            "decision:2",
+            "evidence",
+            "stop",
+            "orchestrator",
+            metadata={
+                "memory_type": "planner_decision",
+                "action": "stop",
+                "agent": "analysis-agent",
+                "reason": "fixture stop",
+                "priority": 100,
+                "graph_fingerprint": "g2",
+                "at": "2026-09-14T07:00:02+00:00",
+                "audit_seq": 2,
+                "previous_decision_hash": "legacy-fixture",
+                "decision_hash": "legacy-fixture-2",
+                "explanation": {
+                    "gate": {
+                        "allowed": False,
+                        "blockers": ["failed_jobs", "budget_blocked"],
+                        "reason": "blocked",
+                    },
+                    "risk": {
+                        "score": 0.8,
+                        "level": "high",
+                        "blocked": True,
+                        "reasons": ["risk threshold exceeded"],
+                    },
+                },
+            },
+        )
+    )
+    monkeypatch.setattr(
+        "app.decision_timeline.verify_decision_audit_chain",
+        lambda _graph: {
+            "valid": True,
+            "checked": 2,
+            "sealed_decisions": 2,
+            "legacy_unsealed": [],
+            "reason": None,
+        },
+    )
+
+    result = build_decision_timeline(_campaign(), graph)
+    second = result["planner_decisions"][1]
+
+    assert second["transition"]["from_action"] == "scan"
+    assert second["transition"]["to_action"] == "stop"
+    by_signal = {item["signal"]: item for item in second["signal_diff"]}
+    assert by_signal["gate.allowed"]["before"] is True
+    assert by_signal["gate.allowed"]["after"] is False
+    assert by_signal["gate.blockers"]["added"] == ["budget_blocked", "failed_jobs"]
+    assert by_signal["risk.level"]["before"] == "low"
+    assert by_signal["risk.level"]["after"] == "high"

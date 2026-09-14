@@ -262,6 +262,44 @@ function renderDecisionTimeline(data){
         whyDetails.append(whySummary,signals);
         body.appendChild(whyDetails);
       }
+
+      const changes=Array.isArray(item.signal_diff)?item.signal_diff:[];
+      if(item.transition&&changes.length){
+        const diffDetails=document.createElement('details');
+        const diffSummary=document.createElement('summary');
+        diffSummary.textContent='Changements depuis la décision précédente';
+        const transition=document.createElement('div');
+        transition.className='muted detail-block';
+        transition.textContent=
+          (item.transition.from_action||'—')+' → '+(item.transition.to_action||'—');
+        const diffList=document.createElement('div');
+        diffList.className='signal-diff-list';
+        for(const change of changes){
+          const line=document.createElement('div');
+          line.className='signal-diff';
+          const name=document.createElement('strong');
+          name.textContent=change.signal;
+          const values=document.createElement('div');
+          values.className='muted';
+          values.textContent=String(change.before??'—')+' → '+String(change.after??'—');
+          line.append(name,values);
+          if(Array.isArray(change.added)&&change.added.length){
+            const added=document.createElement('div');
+            added.className='ok';
+            added.textContent='+ '+change.added.join(', ');
+            line.appendChild(added);
+          }
+          if(Array.isArray(change.removed)&&change.removed.length){
+            const removed=document.createElement('div');
+            removed.className='err';
+            removed.textContent='− '+change.removed.join(', ');
+            line.appendChild(removed);
+          }
+          diffList.appendChild(line);
+        }
+        diffDetails.append(diffSummary,transition,diffList);
+        body.appendChild(diffDetails);
+      }
     }else{
       const parts=[
         item.finding_id?('finding '+item.finding_id):null,
