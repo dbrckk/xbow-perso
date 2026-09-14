@@ -197,3 +197,23 @@ The read-only endpoint `GET /api/recovery/readiness` returns one of:
 - `READY`: preflight, queue recovery, campaign/worker/queue audits, and the signed recovery attestation are all valid.
 
 The gate never starts workers or mutates queue state. `workers_may_resume=true` is only an advisory authorization signal for an operator-controlled restart.
+
+
+### Control plane health model
+
+The operations dashboard exposes a read-only 0-100 control-plane health score composed from six domains:
+
+- governance: 20%
+- queue integrity: 20%
+- validation pipeline: 15%
+- recovery readiness: 20%
+- storage/durability: 15%
+- reporting pipeline: 10%
+
+Score states are:
+
+- `HEALTHY`: 90-100
+- `DEGRADED`: 70-89
+- `BLOCKED`: 0-69
+
+Hard fail-closed caps override the weighted average when queue transition audit is invalid, recovery readiness is `BLOCK`, or critical operational alerts exist. The score is advisory and never starts workers or mutates platform state.
