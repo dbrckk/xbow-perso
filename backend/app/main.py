@@ -338,6 +338,7 @@ def system_capabilities():
             "report_provenance_manifest": True,
             "report_provenance_verification": True,
             "reporting_governance_fingerprint": True,
+            "report_governance_manifest": True,
             "verified_submission_gate": True,
             "approval_provenance_binding": True,
             "approval_governance_binding": True,
