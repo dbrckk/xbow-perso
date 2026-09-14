@@ -17,7 +17,7 @@ from .report_approval import (
     revocation_event,
 )
 from .storage import ArtifactIntegrityError
-from .submission_audit import audit_submission_events
+from .submission_audit import audit_submission_events, verify_submission_audit
 from .submission_state import assert_submission_allowed, submission_event, submission_status
 
 router = APIRouter()
@@ -122,7 +122,7 @@ def list_submission_states(campaign_id: str):
 def get_submission_audit(campaign_id: str, artifact_id: str):
     campaign, _version, store = _context(campaign_id)
     _verified_report(campaign, store, artifact_id)
-    return audit_submission_events(
+    audit = audit_submission_events(
         campaign,
         artifact_id,
         current_provenance_fingerprint=_current_provenance_fingerprint(
@@ -130,6 +130,10 @@ def get_submission_audit(campaign_id: str, artifact_id: str):
             store,
         ),
     )
+    return {
+        **audit,
+        "verification": verify_submission_audit(audit),
+    }
 
 
 @router.get("/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state")
