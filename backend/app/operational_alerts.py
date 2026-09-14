@@ -202,12 +202,16 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     fast_burn = (
         bool(one_hour.get("available"))
         and bool(day.get("available"))
+        and str(one_hour.get("data_quality") or "") == "complete"
+        and str(day.get("data_quality") or "") == "complete"
         and float(one_hour.get("burn_rate") or 0.0) >= 2.0
         and float(day.get("burn_rate") or 0.0) >= 1.0
     )
     slow_burn = (
         bool(day.get("available"))
         and bool(week.get("available"))
+        and str(day.get("data_quality") or "") == "complete"
+        and str(week.get("data_quality") or "") == "complete"
         and float(day.get("burn_rate") or 0.0) >= 1.0
         and float(week.get("burn_rate") or 0.0) >= 1.0
     )
