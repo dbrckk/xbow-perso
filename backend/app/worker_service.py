@@ -355,6 +355,7 @@ def process_recon_task(job: dict, store: Storage) -> None:
             "request_budget": result.request_budget,
             "frontier_remaining": result.frontier_remaining,
             "stopped_by_request_budget": result.stopped_by_request_budget,
+            "deferred_by_request_budget": result.deferred_by_request_budget,
             "coverage_complete": result.coverage_complete,
             "at": utcnow(),
         },
