@@ -370,6 +370,62 @@ def build_historical_slo_windows(
     }
 
 
+def build_multiwindow_slo_policy(
+    historical: dict[str, Any],
+) -> dict[str, Any]:
+    windows = historical.get("windows") or {}
+    one_hour = windows.get("1h") or {}
+    day = windows.get("24h") or {}
+    week = windows.get("7d") or {}
+
+    def complete(window: dict[str, Any]) -> bool:
+        return (
+            bool(window.get("available"))
+            and str(window.get("data_quality") or "") == "complete"
+        )
+
+    fast_evaluable = complete(one_hour) and complete(day)
+    slow_evaluable = complete(day) and complete(week)
+    fast_burn = (
+        fast_evaluable
+        and float(one_hour.get("burn_rate") or 0.0) >= 2.0
+        and float(day.get("burn_rate") or 0.0) >= 1.0
+    )
+    slow_burn = (
+        slow_evaluable
+        and float(day.get("burn_rate") or 0.0) >= 1.0
+        and float(week.get("burn_rate") or 0.0) >= 1.0
+    )
+
+    if fast_burn:
+        state = "FAST_BURN"
+    elif slow_burn:
+        state = "SLOW_BURN"
+    elif fast_evaluable or slow_evaluable:
+        state = "HEALTHY"
+    else:
+        state = "UNKNOWN"
+
+    return {
+        "state": state,
+        "fast_burn": {
+            "evaluable": fast_evaluable,
+            "triggered": fast_burn,
+            "windows": ["1h", "24h"],
+            "thresholds": {"1h": 2.0, "24h": 1.0},
+        },
+        "slow_burn": {
+            "evaluable": slow_evaluable,
+            "triggered": slow_burn,
+            "windows": ["24h", "7d"],
+            "thresholds": {"24h": 1.0, "7d": 1.0},
+        },
+        "read_only": True,
+        "automatic_mutation": False,
+        "automatic_worker_control": False,
+    }
+
+
 def attach_historical_slo_windows(
     result: dict[str, Any],
     storage_backend,
@@ -380,6 +436,7 @@ def attach_historical_slo_windows(
     return {
         **result,
         "historical": historical,
+        "multiwindow_policy": build_multiwindow_slo_policy(historical),
         "windows": {
             "current": "latest aggregate snapshot",
             "historical_windows": ["1h", "24h", "7d"],
