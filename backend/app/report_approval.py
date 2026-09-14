@@ -15,6 +15,8 @@ class ReportApprovalStatus:
     reviewer: str | None
     approved_at: str | None
     basis_digest: str
+    approved_provenance_fingerprint: str | None
+    current_provenance_fingerprint: str | None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -148,6 +150,8 @@ def approval_status(
             reviewer=None,
             approved_at=None,
             basis_digest=current_digest,
+            approved_provenance_fingerprint=None,
+            current_provenance_fingerprint=provenance_fingerprint,
         )
 
     latest = relevant[-1]
@@ -160,6 +164,8 @@ def approval_status(
             reviewer=latest.get("reviewer"),
             approved_at=None,
             basis_digest=current_digest,
+            approved_provenance_fingerprint=None,
+            current_provenance_fingerprint=provenance_fingerprint,
         )
 
     stale = (
@@ -179,6 +185,10 @@ def approval_status(
         reviewer=latest.get("reviewer"),
         approved_at=latest.get("at"),
         basis_digest=current_digest,
+        approved_provenance_fingerprint=latest.get(
+            "report_provenance_fingerprint"
+        ),
+        current_provenance_fingerprint=provenance_fingerprint,
     )
 
 
