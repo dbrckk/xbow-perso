@@ -326,6 +326,7 @@ def system_capabilities():
             "policy_bound_job_provenance": True,
             "queue_transition_audit": True,
             "queue_recovery_assessment": True,
+            "signed_recovery_attestation": True,
         },
         "execution": {
             "strix_scanning": "gated",
