@@ -127,3 +127,19 @@ def require_job_provenance(job: dict[str, Any], campaign: Any) -> dict[str, Any]
             "job provenance rejected: " + ",".join(verification["reasons"])
         )
     return verification
+
+
+GOVERNED_JOB_KINDS = frozenset(
+    {
+        "strix_scan",
+        "nuclei_scan",
+        "recon_task",
+        "browser_flow",
+        "independent_validation",
+        "report",
+    }
+)
+
+
+def provenance_required_for_job_kind(job_kind: str) -> bool:
+    return str(job_kind) in GOVERNED_JOB_KINDS
