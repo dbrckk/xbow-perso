@@ -112,6 +112,15 @@ def analyze_queue_recovery(
                     "recommended_action": "manual_reconciliation",
                 }
             )
+        elif status == "queued" and attempts >= max_attempts:
+            issues.append(
+                {
+                    "job_id": job_id,
+                    "code": "queued_retry_budget_exhausted",
+                    "severity": "critical",
+                    "recommended_action": "manual_reconciliation",
+                }
+            )
 
         audit = audit_results.get(job_id)
         if audit is not None and not bool(audit.get("valid")):
