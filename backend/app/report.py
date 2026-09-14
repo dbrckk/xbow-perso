@@ -12,6 +12,7 @@ def render_markdown(
     platform: ReportPlatform = "generic",
     *,
     evidence_quality: dict[str, Any] | None = None,
+    governance_manifest: dict[str, Any] | None = None,
 ) -> str:
     """Render a human-review draft from independently confirmed findings only."""
     confirmed = [f for f in campaign.findings if f.status == "confirmed"]
@@ -34,6 +35,23 @@ def render_markdown(
         f"**Target:** {campaign.target.primary_url}  ",
         f"**Authorization reference:** {campaign.target.rules.authorization_reference}  ",
         "",
+        *(
+            [
+                "## Governance & audit manifest",
+                "",
+                f"- **Schema:** {governance_manifest.get('schema', 'N/A')}",
+                f"- **Reporting governance fingerprint:** `{governance_manifest.get('governance_fingerprint', 'N/A')}`",
+                f"- **Provenance fingerprint:** `{governance_manifest.get('provenance_fingerprint', 'N/A')}`",
+                f"- **Governance verification:** {'VALID' if governance_manifest.get('verification_valid') else 'INVALID'}",
+                f"- **Findings represented:** {governance_manifest.get('findings', 0)}",
+                f"- **Submission-ready findings:** {governance_manifest.get('submission_ready', 0)}",
+                "",
+                "> This manifest is read-only. Any governance-state change after generation requires renewed human review before submission.",
+                "",
+            ]
+            if governance_manifest is not None
+            else []
+        ),
         "## Executive summary",
         "",
         f"{len(confirmed)} independently validated finding(s) are eligible for human review.",
