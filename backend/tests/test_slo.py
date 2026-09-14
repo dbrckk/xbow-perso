@@ -1,7 +1,11 @@
 from app.main import app
 from datetime import datetime, timezone
 
-from app.slo import build_historical_slo_windows, build_platform_slos
+from app.slo import (
+    build_historical_slo_windows,
+    build_multiwindow_slo_policy,
+    build_platform_slos,
+)
 
 
 def _metrics():
@@ -181,3 +185,64 @@ def test_historical_slo_windows_mark_partial_coverage():
     assert one_hour["coverage_ratio"] == 0.5
     assert one_hour["boundary_state_known"] is False
     assert one_hour["data_quality"] == "partial"
+
+
+
+def test_multiwindow_slo_policy_requires_complete_windows():
+    policy = build_multiwindow_slo_policy(
+        {
+            "windows": {
+                "1h": {
+                    "available": True,
+                    "burn_rate": 3.0,
+                    "data_quality": "partial",
+                },
+                "24h": {
+                    "available": True,
+                    "burn_rate": 1.5,
+                    "data_quality": "complete",
+                },
+                "7d": {
+                    "available": True,
+                    "burn_rate": 1.2,
+                    "data_quality": "partial",
+                },
+            }
+        }
+    )
+
+    assert policy["state"] == "UNKNOWN"
+    assert policy["fast_burn"]["evaluable"] is False
+    assert policy["fast_burn"]["triggered"] is False
+    assert policy["slow_burn"]["evaluable"] is False
+    assert policy["slow_burn"]["triggered"] is False
+
+
+def test_multiwindow_slo_policy_detects_fast_burn():
+    policy = build_multiwindow_slo_policy(
+        {
+            "windows": {
+                "1h": {
+                    "available": True,
+                    "burn_rate": 2.5,
+                    "data_quality": "complete",
+                },
+                "24h": {
+                    "available": True,
+                    "burn_rate": 1.2,
+                    "data_quality": "complete",
+                },
+                "7d": {
+                    "available": True,
+                    "burn_rate": 0.5,
+                    "data_quality": "complete",
+                },
+            }
+        }
+    )
+
+    assert policy["state"] == "FAST_BURN"
+    assert policy["fast_burn"]["evaluable"] is True
+    assert policy["fast_burn"]["triggered"] is True
+    assert policy["slow_burn"]["triggered"] is False
+    assert policy["automatic_worker_control"] is False
