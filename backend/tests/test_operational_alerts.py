@@ -98,3 +98,21 @@ def test_operational_alerts_flag_persistent_control_plane_degradation():
     assert "control_plane_persistent_degradation" in codes
     assert "control_plane_health_degrading" in codes
     assert result["status"] == "alert"
+
+
+
+def test_operational_alerts_flag_exhausted_slo_budget():
+    result = build_operational_alerts(
+        {
+            "jobs_total": 1,
+            "jobs_by_status": {"failed": 1, "queued": 0, "running": 0},
+            "queue_transition_audit": {"valid": False},
+            "recovery_readiness": {"latest_decision": "READY"},
+            "control_plane_health": {"latest_score": 100},
+            "pending_outbox_total": 0,
+        }
+    )
+
+    codes = {item["code"] for item in result["alerts"]}
+    assert "slo_error_budget_exhausted" in codes
+    assert result["status"] == "alert"
