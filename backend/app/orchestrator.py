@@ -11,7 +11,7 @@ from .attack_surface import build_attack_surface
 from .agent_registry import agent_for_action
 from .autonomy_gate import build_autonomy_gate
 from .campaign_risk import build_campaign_risk
-from .campaign_runtime import CampaignRuntimeLimit, runtime_status
+from .campaign_runtime import CampaignRuntimeLimit, campaign_runtime_limit_from_env, runtime_status
 from .coverage import build_coverage_guidance, build_evidence_coverage
 from .decision_audit import next_audit_link, seal_decision_metadata
 from .decision_consensus import build_decision_consensus
@@ -21,7 +21,7 @@ from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_f
 from .learning_memory import build_learning_memory, summarize_worker_outcomes
 from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
-from .planner_budget import PlannerBudget, apply_budget, budget_usage
+from .planner_budget import PlannerBudget, apply_budget, budget_usage, planner_budget_from_env
 from .pipeline_swarm import coordinate_pipeline_action
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
@@ -446,8 +446,11 @@ def advance_campaign(
     closed when any configured budget is exhausted.
     """
     planner = AdaptivePlanner()
-    limits = budget or PlannerBudget()
-    runtime = runtime_status(campaign.created_at, runtime_limit)
+    limits = budget if budget is not None else planner_budget_from_env()
+    effective_runtime_limit = (
+        runtime_limit if runtime_limit is not None else campaign_runtime_limit_from_env()
+    )
+    runtime = runtime_status(campaign.created_at, effective_runtime_limit)
     if runtime.exhausted:
         graph = _load_graph(store, campaign.id)
         return _result(
@@ -466,7 +469,7 @@ def advance_campaign(
         planned_actions = planner.plan(campaign, graph)
         action = planned_actions[0]
         action, usage = apply_budget(action, graph, queue, campaign.id, limits)
-        runtime = runtime_status(campaign.created_at, runtime_limit)
+        runtime = runtime_status(campaign.created_at, effective_runtime_limit)
         intelligence = _intelligence_context(
             campaign,
             graph,
