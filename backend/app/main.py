@@ -1178,14 +1178,29 @@ def get_job(job_id: str):
 
 @app.get("/api/recovery/readiness")
 def recovery_readiness_gate():
-    from .recovery_readiness import current_recovery_readiness
+    from .recovery_readiness import (
+        current_recovery_readiness,
+        record_recovery_readiness,
+    )
 
     dependencies = dependency_readiness()
-    return current_recovery_readiness(
-        storage(),
+    store = storage()
+    result = current_recovery_readiness(
+        store,
         queue(),
         dependencies=dependencies,
     )
+    return record_recovery_readiness(store, result)
+
+
+@app.get("/api/recovery/readiness/history")
+def recovery_readiness_history(limit: int = 100):
+    from .recovery_readiness import recovery_readiness_history as build_history
+
+    try:
+        return build_history(storage(), limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.get("/api/recovery/queue")
