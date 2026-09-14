@@ -354,3 +354,10 @@ A governance-only change therefore produces `approval_governance_stale`, while a
 Approval and submission-state responses now expose explicit stale reasons instead of only a boolean. Current reasons include `artifact_sha256_changed`, `approval_basis_changed`, `report_provenance_changed`, and `reporting_governance_changed`.
 
 These reasons are observational only: they explain why a report returned to review-required state but never reapprove, repair, submit, or mutate worker state automatically.
+
+
+### Report governance manifest
+
+Generated Markdown report drafts now embed a read-only Governance & Audit Manifest containing the `reporting-governance-v1` fingerprint, provenance fingerprint, verification status, represented finding count, and submission-ready count.
+
+The same fingerprints and verification flag are persisted in report artifact metadata and the `report_generated` campaign event. This binds the draft to the exact governance state used at generation time and makes later review/reapproval decisions auditable without authorizing external submission.
