@@ -53,7 +53,6 @@ def build_evidence_quality(graph: ObservationGraph) -> list[EvidenceQuality]:
         chain = chains.get(finding.id)
         finding_consensus = consensus.get(finding.id)
 
-        validation_ids = set(chain.validation_ids if chain else ())
         evidence_items = [
             by_id[item_id]
             for item_id in (chain.evidence_ids if chain else ())
