@@ -5,7 +5,11 @@ from typing import Any
 
 from fastapi import APIRouter
 
-from .control_plane_health import build_control_plane_health
+from .control_plane_health import (
+    build_control_plane_health,
+    control_plane_health_history,
+    record_control_plane_health,
+)
 from .metrics import build_operational_metrics
 from .operational_alerts import build_operational_alerts
 from .recovery_readiness import recovery_readiness_history
@@ -114,4 +118,26 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
 def operations_dashboard():
     from .main import queue, storage
 
-    return build_operations_dashboard(queue(), storage())
+    store = storage()
+    dashboard = build_operations_dashboard(queue(), store)
+    dashboard["control_plane_health"] = record_control_plane_health(
+        store,
+        dashboard["control_plane_health"],
+    )
+    dashboard["control_plane_health_trend"] = control_plane_health_history(
+        store,
+        limit=25,
+    )
+    return dashboard
+
+
+@router.get("/api/dashboard/operations/health-history")
+def operations_health_history(limit: int = 100):
+    from .main import storage
+
+    try:
+        return control_plane_health_history(storage(), limit=limit)
+    except ValueError as exc:
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
