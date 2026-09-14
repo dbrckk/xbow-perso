@@ -333,3 +333,10 @@ The operations dashboard exposes verification status for the storage-wide aggreg
 The reporting governance snapshot now has a deterministic `reporting-governance-v1` fingerprint covering report readiness, provenance manifests, provenance-set fingerprint, and report quality gates. The campaign overview exposes both the fingerprint and an independent verification result.
 
 This makes post-generation modification of the reporting-governance state detectable while keeping the entire layer read-only and advisory.
+
+
+### Approval governance binding
+
+Human report approval is now bound to both the report-provenance fingerprint and the full `reporting-governance-v1` fingerprint. A change to report readiness, provenance, or quality-gate state therefore makes the approval stale even when the report bytes and provenance-set identifier alone have not changed.
+
+This preserves explicit human review over the exact governance state that was approved and does not trigger any external submission or worker action.
