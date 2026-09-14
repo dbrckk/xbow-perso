@@ -155,3 +155,27 @@ def test_sqlite_recovery_assessment_detects_audit_deletion(tmp_path):
 
 def test_queue_recovery_route_is_exposed():
     assert "/api/recovery/queue" in app.openapi()["paths"]
+
+
+
+def test_recovery_assessment_detects_queued_job_with_exhausted_retry_budget():
+    result = analyze_queue_recovery(
+        [
+            {
+                "id": "job-1",
+                "status": "queued",
+                "attempts": 2,
+                "max_attempts": 2,
+                "claimed_by": None,
+                "claimed_at": None,
+            }
+        ],
+        lease_seconds=60,
+        audit_results={"job-1": {"valid": True}},
+    )
+
+    assert result["safe_to_resume"] is False
+    assert any(
+        item["code"] == "queued_retry_budget_exhausted"
+        for item in result["issues"]
+    )
