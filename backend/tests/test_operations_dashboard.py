@@ -49,6 +49,8 @@ def test_operations_dashboard_is_aggregate_and_read_only():
     assert result["contains_targets"] is False
     assert result["contains_payloads"] is False
     assert result["contains_secrets"] is False
+    assert "slo" in result
+    assert result["slo"]["read_only"] is True
 
 
 def test_operations_dashboard_blocks_on_recovery_block():
