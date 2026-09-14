@@ -185,11 +185,16 @@ def test_completed_campaign_validation_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "independent_validation",
-        {
-            "campaign_id": campaign.id,
-            "finding_id": "f1",
-            "asset": "https://example.test",
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "finding_id": "f1",
+                "asset": "https://example.test",
+            },
+            campaign,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key="validation:f1",
     )
