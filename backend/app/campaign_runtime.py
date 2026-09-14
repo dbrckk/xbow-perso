@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -15,6 +16,21 @@ class CampaignRuntimeLimit:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+def campaign_runtime_limit_from_env() -> CampaignRuntimeLimit:
+    raw = os.getenv("XBOW_CAMPAIGN_MAX_RUNTIME_SECONDS")
+    if raw is None:
+        return CampaignRuntimeLimit()
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValueError("XBOW_CAMPAIGN_MAX_RUNTIME_SECONDS must be an integer") from exc
+    if not 60 <= value <= 7 * 24 * 60 * 60:
+        raise ValueError(
+            "XBOW_CAMPAIGN_MAX_RUNTIME_SECONDS must be between 60 and 604800"
+        )
+    return CampaignRuntimeLimit(max_runtime_seconds=value)
 
 
 @dataclass(frozen=True)
