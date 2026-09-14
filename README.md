@@ -217,3 +217,14 @@ Score states are:
 - `BLOCKED`: 0-69
 
 Hard fail-closed caps override the weighted average when queue transition audit is invalid, recovery readiness is `BLOCK`, or critical operational alerts exist. The score is advisory and never starts workers or mutates platform state.
+
+
+### Control plane health history
+
+Health snapshots are persisted only when the canonical health state changes. The operations dashboard records the current score and exposes trend data through:
+
+```text
+GET /api/dashboard/operations/health-history
+```
+
+The history includes the current and previous score, score delta, trend (`improving`, `stable`, `degrading`), state transitions, and persistent-degradation detection. Operational alerts include a warning when health is actively degrading and a critical alert when degradation persists across the latest retained snapshots. History is aggregate-only and contains no target, payload, or secret data.
