@@ -116,18 +116,21 @@ def test_running_job_becomes_cancelled_when_worker_observes_cancelled_campaign(t
     document["state"] = "cancelled"
     store.save_campaign(document, expected_version=version)
 
-    # Put the claimed job back into the worker path without allowing a retry loop.
-    with jobs.connect() as conn:
-        conn.execute(
-            "UPDATE jobs SET status='queued', claimed_by=NULL, claimed_at=NULL, attempts=0 WHERE id=?",
-            (job["id"],),
-        )
+    # Requeue through the public queue lifecycle so the transition audit remains valid.
+    requeued = jobs.finish(
+        job["id"],
+        "worker-a",
+        False,
+        "fixture requeue before cancelled-campaign observation",
+    )
+    assert requeued is not None
+    assert requeued["status"] == "queued"
 
     assert process_one(jobs, store, "worker-a") is True
     final = jobs.get(job["id"])
     assert final is not None
     assert final["status"] == "cancelled"
-    assert final["attempts"] == 1
+    assert final["attempts"] == 2
     assert final["claimed_by"] is None
 
 
