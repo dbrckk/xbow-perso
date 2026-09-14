@@ -114,6 +114,9 @@ def scanner_runtime_capability() -> dict[str, Any]:
             }
         )
     )
+    supported_engines = {"nuclei", "strix"}
+    unsupported_engines = [item for item in engines if item not in supported_engines]
+
     reasons: list[str] = []
     if not active_scans_enabled:
         reasons.append("active_scans_disabled")
@@ -125,6 +128,8 @@ def scanner_runtime_capability() -> dict[str, Any]:
         reasons.append("restricted_sandbox_profile_required")
     if not engines:
         reasons.append("no_scanner_engine_allowlisted")
+    if unsupported_engines:
+        reasons.append("unsupported_scanner_engine")
 
     return {
         "mode": "active_gated" if active_scans_enabled else "disabled",
