@@ -330,3 +330,53 @@ def test_legacy_unprovenanced_job_requires_explicit_compatibility_flag(tmp_path,
     final = queue.get(job["id"])
     assert final is not None
     assert final["status"] == "completed"
+
+
+
+def test_report_worker_persists_governance_fingerprints(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "platform": "generic",
+            },
+            campaign,
+            job_kind="report",
+            action="report",
+        ),
+        max_attempts=1,
+        dedupe_key="report:governance-manifest",
+    )
+
+    assert process_one(queue, store, "worker-report-governance") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "completed"
+
+    reports = [
+        item
+        for item in store.list_artifacts(campaign.id)
+        if item.get("kind") == "report"
+    ]
+    assert len(reports) == 1
+    metadata = reports[0].get("metadata") or {}
+    assert len(metadata["reporting_governance_fingerprint"]) == 64
+    assert len(metadata["report_provenance_fingerprint"]) == 64
+    assert metadata["reporting_governance_verified"] is True
+
+    _artifact, content = store.read_artifact(
+        campaign.id,
+        reports[0]["id"],
+    )
+    rendered = content.decode("utf-8")
+    assert "## Governance & audit manifest" in rendered
+    assert metadata["reporting_governance_fingerprint"] in rendered
