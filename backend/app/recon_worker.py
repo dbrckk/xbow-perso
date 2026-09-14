@@ -34,6 +34,8 @@ class ReconResult:
     max_depth_reached: int = 0
     skipped_out_of_scope: int = 0
     skipped_cross_origin: int = 0
+    wall_time_seconds: float = 0.0
+    stopped_by_time_budget: bool = False
 
 
 _MAX_DISCOVERED_LINKS = 500
@@ -124,6 +126,17 @@ def _max_crawl_depth() -> int:
     return value
 
 
+def _max_wall_seconds() -> float:
+    raw = os.getenv("XBOW_RECON_MAX_WALL_SECONDS", "120")
+    try:
+        value = float(raw)
+    except ValueError as exc:
+        raise ReconPolicyError("XBOW_RECON_MAX_WALL_SECONDS must be a number") from exc
+    if not math.isfinite(value) or not 5.0 <= value <= 600.0:
+        raise ReconPolicyError("XBOW_RECON_MAX_WALL_SECONDS must be between 5 and 600")
+    return value
+
+
 def _recon_rps(campaign) -> float:
     try:
         campaign_rps = float(campaign.target.rules.max_requests_per_second)
@@ -178,7 +191,7 @@ def _same_origin(base: str, candidate: str) -> bool:
     )
 
 
-def _fetch_page(opener, target: str, max_bytes: int):
+def _fetch_page(opener, target: str, max_bytes: int, timeout_seconds: float):
     request = Request(
         target,
         method="GET",
@@ -189,7 +202,7 @@ def _fetch_page(opener, target: str, max_bytes: int):
         },
     )
     try:
-        with opener.open(request, timeout=_timeout_seconds()) as response:
+        with opener.open(request, timeout=timeout_seconds) as response:
             return (
                 response.read(max_bytes + 1)[:max_bytes],
                 int(response.status),
@@ -238,6 +251,9 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     max_depth = _max_crawl_depth()
     min_interval = 1.0 / _recon_rps(campaign)
     max_bytes = _max_bytes()
+    request_timeout = _timeout_seconds()
+    started_at = time.monotonic()
+    deadline = started_at + _max_wall_seconds()
     opener = build_opener(_NoRedirect())
 
     pending: list[tuple[str, int]] = [(target, 0)]
@@ -253,8 +269,12 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     max_depth_reached = 0
     skipped_out_of_scope = 0
     skipped_cross_origin = 0
+    stopped_by_time_budget = False
 
     while pending and len(visited) < request_budget:
+        if time.monotonic() >= deadline:
+            stopped_by_time_budget = True
+            break
         current, depth = pending.pop(0)
         if current in visited:
             continue
@@ -270,9 +290,21 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         if last_request_at is not None:
             delay = min_interval - (time.monotonic() - last_request_at)
             if delay > 0:
+                if time.monotonic() + delay >= deadline:
+                    stopped_by_time_budget = True
+                    break
                 time.sleep(delay)
 
-        body, status, headers, error = _fetch_page(opener, current, max_bytes)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            stopped_by_time_budget = True
+            break
+        body, status, headers, error = _fetch_page(
+            opener,
+            current,
+            max_bytes,
+            min(request_timeout, remaining),
+        )
         last_request_at = time.monotonic()
         visited.add(current)
         bytes_read += len(body)
@@ -341,6 +373,8 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         if kind != "crawl":
             break
 
+    wall_time_seconds = max(0.0, time.monotonic() - started_at)
+
     if not visited:
         return ReconResult(
             status="error",
@@ -351,6 +385,8 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
             max_depth_reached=max_depth_reached,
             skipped_out_of_scope=skipped_out_of_scope,
             skipped_cross_origin=skipped_cross_origin,
+            wall_time_seconds=wall_time_seconds,
+            stopped_by_time_budget=stopped_by_time_budget,
         )
 
     return ReconResult(
@@ -367,4 +403,6 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         max_depth_reached=max_depth_reached,
         skipped_out_of_scope=skipped_out_of_scope,
         skipped_cross_origin=skipped_cross_origin,
+        wall_time_seconds=wall_time_seconds,
+        stopped_by_time_budget=stopped_by_time_budget,
     )
