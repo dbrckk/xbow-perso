@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import APIRouter
@@ -181,3 +182,115 @@ def platform_slos():
 
     metrics = build_operational_metrics(queue(), storage())
     return build_platform_slos(metrics)
+
+
+
+def _parse_time(value: Any) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _window_health_observed(
+    snapshots: list[dict[str, Any]],
+    *,
+    since: datetime,
+) -> tuple[float | None, int]:
+    selected: list[int] = []
+    for item in snapshots:
+        created_at = _parse_time(item.get("created_at"))
+        if created_at is None or created_at < since:
+            continue
+        try:
+            score = int(item.get("score"))
+        except (TypeError, ValueError):
+            continue
+        selected.append(max(0, min(100, score)))
+    if not selected:
+        return None, 0
+    return sum(selected) / (100.0 * len(selected)), len(selected)
+
+
+def build_historical_slo_windows(
+    storage_backend,
+    *,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    history_fn = getattr(storage_backend, "list_control_plane_health_snapshots", None)
+    if not callable(history_fn):
+        return {
+            "supported": False,
+            "windows": {},
+            "reason": "control_plane_health_history_unavailable",
+        }
+
+    snapshots = history_fn(limit=500)
+    current = now or datetime.now(timezone.utc)
+    specs = {
+        "1h": timedelta(hours=1),
+        "24h": timedelta(hours=24),
+        "7d": timedelta(days=7),
+    }
+    windows: dict[str, Any] = {}
+    for name, duration in specs.items():
+        observed, sample_count = _window_health_observed(
+            snapshots,
+            since=current - duration,
+        )
+        if observed is None:
+            windows[name] = {
+                "available": False,
+                "samples": 0,
+                "target": 0.99,
+                "observed": None,
+                "burn_rate": None,
+                "budget_remaining": None,
+                "state": "UNKNOWN",
+            }
+            continue
+        slo = _evaluate_slo(
+            f"availability_{name}",
+            target=0.99,
+            observed=observed,
+            reason="derived_from_control_plane_health_history",
+        )
+        windows[name] = {
+            "available": True,
+            "samples": sample_count,
+            "target": slo.target,
+            "observed": slo.observed,
+            "burn_rate": slo.burn_rate,
+            "budget_remaining": slo.budget_remaining,
+            "state": slo.state,
+        }
+
+    return {
+        "supported": True,
+        "windows": windows,
+        "read_only": True,
+        "aggregate_only": True,
+    }
+
+
+def attach_historical_slo_windows(
+    result: dict[str, Any],
+    storage_backend,
+    *,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    historical = build_historical_slo_windows(storage_backend, now=now)
+    return {
+        **result,
+        "historical": historical,
+        "windows": {
+            "current": "latest aggregate snapshot",
+            "historical_windows": ["1h", "24h", "7d"],
+            "historical_burn_rate_supported": bool(historical["supported"]),
+        },
+    }
