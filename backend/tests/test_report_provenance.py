@@ -1,5 +1,5 @@
 from app.observation_graph import Observation, ObservationGraph
-from app.report_provenance import build_report_provenance
+from app.report_provenance import build_report_provenance, verify_report_provenance
 
 
 def _graph() -> ObservationGraph:
@@ -84,3 +84,37 @@ def test_report_provenance_fails_closed_when_finding_is_missing():
     assert result.complete is False
     assert result.finding_observation_id is None
     assert "finding_observation_missing" in result.blockers
+
+
+
+def test_report_provenance_verifier_accepts_untampered_manifest():
+    manifest = build_report_provenance(["f1"], _graph())[0]
+
+    verification = verify_report_provenance(manifest)
+
+    assert verification["valid"] is True
+    assert verification["schema_valid"] is True
+    assert verification["fingerprint_valid"] is True
+    assert verification["automatic_mutation"] is False
+
+
+def test_report_provenance_verifier_detects_tampering():
+    manifest = build_report_provenance(["f1"], _graph())[0].to_dict()
+    manifest["evidence_artifact_ids"] = ["artifact-tampered"]
+
+    verification = verify_report_provenance(manifest)
+
+    assert verification["valid"] is False
+    assert verification["schema_valid"] is True
+    assert verification["fingerprint_valid"] is False
+    assert verification["expected_fingerprint"] != verification["computed_fingerprint"]
+
+
+def test_report_provenance_verifier_rejects_unknown_schema():
+    manifest = build_report_provenance(["f1"], _graph())[0].to_dict()
+    manifest["schema"] = "report-provenance-v999"
+
+    verification = verify_report_provenance(manifest)
+
+    assert verification["valid"] is False
+    assert verification["schema_valid"] is False
