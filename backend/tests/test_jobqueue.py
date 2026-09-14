@@ -1,6 +1,8 @@
 import os
 import stat
 
+import pytest
+
 from app.jobqueue import JobQueue
 
 
@@ -472,3 +474,37 @@ def test_get_by_dedupe_returns_exact_job(tmp_path):
     assert found is not None
     assert found["id"] == created["id"]
     assert q.get_by_dedupe("campaign-lookup", "report", "missing-key") is None
+
+
+
+def test_claim_allowed_preserves_fifo_across_job_kinds(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+    older = q.enqueue("campaign-1", "report", {"platform": "generic"})
+    newer = q.enqueue("campaign-1", "independent_validation", {"finding_id": "f1"})
+    with q.connect() as db:
+        db.execute(
+            "UPDATE jobs SET created_at='2026-09-14T07:00:00+00:00' WHERE id=?",
+            (older["id"],),
+        )
+        db.execute(
+            "UPDATE jobs SET created_at='2026-09-14T07:00:01+00:00' WHERE id=?",
+            (newer["id"],),
+        )
+
+    claimed = q.claim_allowed(
+        "worker-a",
+        ("independent_validation", "report"),
+    )
+
+    assert claimed is not None
+    assert claimed["id"] == older["id"]
+    assert claimed["kind"] == "report"
+
+
+def test_claim_allowed_rejects_empty_and_unknown_kind_sets(tmp_path):
+    q = JobQueue(str(tmp_path / "q.sqlite3"))
+
+    with pytest.raises(ValueError, match="at least one allowed job kind"):
+        q.claim_allowed("worker-a", ())
+    with pytest.raises(ValueError, match="unsupported job kind"):
+        q.claim_allowed("worker-a", ("shell",))
