@@ -99,3 +99,44 @@ def test_redis_get_by_dedupe_uses_index_without_scanning(monkeypatch):
     assert found is not None
     assert found["id"] == "job-1"
     assert found["status"] == "queued"
+
+
+
+class AllowedKindRedis(DummyRedis):
+    def __init__(self):
+        self.scores = {}
+
+    def zrange(self, key, start, end, withscores=False):
+        item = self.scores.get(key)
+        if item is None:
+            return []
+        job_id, score = item
+        return [(job_id, score)] if withscores else [job_id]
+
+
+def test_redis_claim_allowed_selects_oldest_kind(monkeypatch):
+    monkeypatch.setenv("XBOW_REDIS_URL", "redis://localhost:6379/0")
+    fake = AllowedKindRedis()
+    monkeypatch.setattr(
+        "app.redis_jobqueue.redis.Redis.from_url",
+        lambda *args, **kwargs: fake,
+    )
+    queue = RedisJobQueue()
+    fake.scores[queue._queued_kind("report")] = ("report-job", 1.0)
+    fake.scores[queue._queued_kind("independent_validation")] = ("validation-job", 2.0)
+    monkeypatch.setattr(queue, "recover_expired_leases", lambda: 0)
+    claimed_kinds = []
+
+    def fake_claim_kind(worker_id, kind):
+        claimed_kinds.append((worker_id, kind))
+        return {"id": "report-job", "kind": kind}
+
+    monkeypatch.setattr(queue, "claim_kind", fake_claim_kind)
+
+    claimed = queue.claim_allowed(
+        "worker-a",
+        ("independent_validation", "report"),
+    )
+
+    assert claimed["kind"] == "report"
+    assert claimed_kinds == [("worker-a", "report")]

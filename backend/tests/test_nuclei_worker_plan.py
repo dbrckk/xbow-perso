@@ -27,6 +27,16 @@ def _configure_run_root(monkeypatch, tmp_path):
     return root
 
 
+def _admit_scanner_sandbox(monkeypatch):
+    monkeypatch.setenv("XBOW_WORKER_ROLE", "scanner")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SANDBOX_READ_ONLY_ROOTFS", "true")
+    monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
+    monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "true")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+
+
 def test_nuclei_plan_is_dry_run_by_default(monkeypatch, tmp_path):
     root = _configure_run_root(monkeypatch, tmp_path)
     monkeypatch.delenv("XBOW_ENABLE_ACTIVE_SCANS", raising=False)
@@ -109,6 +119,7 @@ def test_nuclei_execution_uses_isolated_home(monkeypatch, tmp_path):
     monkeypatch.setenv("LLM_API_KEY", "must-not-leak")
     monkeypatch.setenv("HOME", "/tmp/untrusted-home")
     monkeypatch.setenv("XBOW_NUCLEI_ALLOWED_VERSION", "3.99.0")
+    _admit_scanner_sandbox(monkeypatch)
 
     captured = {"calls": []}
 
