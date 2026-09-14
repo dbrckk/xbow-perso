@@ -129,6 +129,65 @@ function visibleFindings(data){
   return filtered;
 }
 
+function renderClusters(data){
+  $('clusterCard').classList.remove('hidden');
+  const clusters=Array.isArray(data.clusters)?data.clusters:[];
+  const list=$('clusterList');
+  list.replaceChildren();
+  const saved=clusters.reduce((total,item)=>total+(Number(item.saturation?.validations_saved)||0),0);
+  $('clusterSummary').textContent=clusters.length+' cluster(s) · '+saved+' validation(s) évitée(s)';
+
+  if(!clusters.length){
+    list.textContent='Aucun cluster détecté.';
+    return;
+  }
+
+  for(const item of clusters){
+    const cluster=item.cluster||{};
+    const consensus=item.consensus||{};
+    const saturation=item.saturation||{};
+    const row=document.createElement('div');
+    row.className='cluster';
+
+    const head=document.createElement('div');
+    head.className='finding-head';
+    const title=document.createElement('strong');
+    title.textContent=cluster.cluster_id||'cluster';
+    const status=document.createElement('span');
+    status.className='pill '+readinessClass(consensus.status||'unknown');
+    status.textContent=(consensus.status||'unknown').replaceAll('_',' ');
+    head.append(title,status);
+
+    const meta=document.createElement('div');
+    meta.className='cluster-meta';
+    const confidence=Math.round((Number(cluster.confidence)||0)*100);
+    const members=Array.isArray(cluster.finding_ids)?cluster.finding_ids:[];
+    meta.textContent=
+      confidence+'% confiance · '+
+      members.length+' membre(s) · '+
+      (saturation.saturated?'saturé':'non saturé')+' · '+
+      (Number(saturation.validations_saved)||0)+' validation(s) évitée(s)';
+
+    const details=document.createElement('details');
+    const summary=document.createElement('summary');
+    summary.textContent='Voir les détails';
+    const memberBlock=document.createElement('div');
+    memberBlock.className='muted detail-block';
+    memberBlock.textContent='Membres : '+(members.length?members.join(', '):'aucun');
+    const representative=document.createElement('div');
+    representative.className='muted detail-block';
+    representative.textContent='Représentant : '+(saturation.representative_finding_id||'aucun');
+    const blockers=document.createElement('div');
+    blockers.className='muted detail-block';
+    const blockerValues=Array.isArray(consensus.blockers)?consensus.blockers:[];
+    blockers.textContent=blockerValues.length?('Blocages : '+blockerValues.join(' · ')):'Aucun blocage cluster';
+    details.append(summary,memberBlock,representative,blockers);
+
+    row.append(head,meta,details);
+    list.appendChild(row);
+  }
+}
+
 function renderFindingIntelligence(data){
   $('evidenceCard').classList.remove('hidden');
   const summary=data.summary||{};
@@ -198,6 +257,7 @@ async function refreshDashboard(){
   ]);
   renderControl(control);
   renderFindingIntelligence(intelligence);
+  renderClusters(intelligence);
   $('output').textContent=JSON.stringify({control,finding_intelligence:intelligence},null,2);
 }
 
