@@ -8,6 +8,8 @@ from fastapi import APIRouter, HTTPException
 from .campaign_audit import append_campaign_event
 from .campaign_overview import router as overview_router
 from .campaign_review_state import router as review_state_router
+from .report_provenance import build_report_provenance
+from .report_quality import build_report_quality_gates
 from .report_readiness import build_report_readiness
 from .observation_graph import load_observation_graph
 from .report_approval import (
@@ -46,6 +48,16 @@ def _save(campaign, version: int) -> None:
     from .main import save_campaign
 
     save_campaign(campaign, expected_version=version)
+
+
+def _submission_quality_gates(campaign, store):
+    graph = load_observation_graph(store, campaign.id)
+    readiness = build_report_readiness(campaign.findings, graph)
+    provenance = build_report_provenance(
+        [str(item.id) for item in campaign.findings],
+        graph,
+    )
+    return build_report_quality_gates(readiness, provenance)
 
 
 def _assert_report_review_ready(campaign, store) -> None:
@@ -176,7 +188,11 @@ def mark_report_submitted(
             return current.to_dict()
         raise HTTPException(status_code=409, detail="Report is already marked submitted with different metadata")
     try:
-        assert_submission_allowed(campaign, artifact)
+        assert_submission_allowed(
+            campaign,
+            artifact,
+            _submission_quality_gates(campaign, store),
+        )
         append_campaign_event(
             campaign.events,
             submission_event(artifact_id, actor, platform, utcnow()),
