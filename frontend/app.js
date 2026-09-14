@@ -188,6 +188,65 @@ function renderClusters(data){
   }
 }
 
+function renderDecisionTimeline(data){
+  $('timelineCard').classList.remove('hidden');
+  const timeline=Array.isArray(data.timeline)?data.timeline:[];
+  const audit=data.audit||{};
+  $('timelineSummary').textContent=timeline.length+' événement(s)';
+  $('timelineAudit').textContent=
+    'Chaîne audit : '+(audit.valid?'valide':'invalide')+
+    ' · '+(audit.checked||0)+' décision(s) vérifiée(s)';
+
+  const list=$('timelineList');
+  list.replaceChildren();
+  if(!timeline.length){
+    list.textContent='Aucun événement horodaté.';
+    return;
+  }
+
+  for(const item of timeline){
+    const row=document.createElement('div');
+    row.className='timeline-item';
+
+    const dot=document.createElement('span');
+    dot.className='timeline-dot '+(item.type==='planner_decision'?'decision':'event');
+
+    const body=document.createElement('div');
+    const head=document.createElement('div');
+    head.className='timeline-head';
+
+    const title=document.createElement('strong');
+    if(item.type==='planner_decision'){
+      title.textContent=(item.action||'decision')+' · '+(item.agent||'agent');
+    }else{
+      title.textContent=item.event_type||'campaign event';
+    }
+
+    const time=document.createElement('span');
+    time.className='muted';
+    time.textContent=item.at?new Date(item.at).toLocaleString('fr-FR'):'';
+
+    head.append(title,time);
+
+    const detail=document.createElement('div');
+    detail.className='muted';
+    if(item.type==='planner_decision'){
+      detail.textContent=item.reason||'Aucune raison enregistrée';
+    }else{
+      const parts=[
+        item.finding_id?('finding '+item.finding_id):null,
+        item.job_id?('job '+item.job_id):null,
+        item.validator?('validator '+item.validator):null
+      ].filter(Boolean);
+      detail.textContent=parts.join(' · ');
+    }
+
+    body.append(head,detail);
+    row.append(dot,body);
+    list.appendChild(row);
+  }
+}
+
 function renderFindingIntelligence(data){
   $('evidenceCard').classList.remove('hidden');
   const summary=data.summary||{};
@@ -251,14 +310,16 @@ function renderFindingIntelligence(data){
 
 async function refreshDashboard(){
   if(!campaign)return;
-  const [control,intelligence]=await Promise.all([
+  const [control,intelligence,timeline]=await Promise.all([
     api('/campaigns/'+campaign.id+'/control-status'),
-    api('/campaigns/'+campaign.id+'/finding-intelligence')
+    api('/campaigns/'+campaign.id+'/finding-intelligence'),
+    api('/campaigns/'+campaign.id+'/decision-timeline')
   ]);
   renderControl(control);
   renderFindingIntelligence(intelligence);
   renderClusters(intelligence);
-  $('output').textContent=JSON.stringify({control,finding_intelligence:intelligence},null,2);
+  renderDecisionTimeline(timeline);
+  $('output').textContent=JSON.stringify({control,finding_intelligence:intelligence,decision_timeline:timeline},null,2);
 }
 
 async function activateCampaign(value){
