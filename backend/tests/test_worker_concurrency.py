@@ -268,3 +268,50 @@ def test_worker_rejects_policy_bound_job_after_scope_policy_changes(tmp_path):
     assert final["status"] == "failed"
     assert final["attempts"] == 1
     assert "policy_fingerprint_mismatch" in str(final["last_error"])
+
+
+
+def test_worker_rejects_unprovenanced_governed_job_by_default(tmp_path, monkeypatch):
+    monkeypatch.delenv("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", raising=False)
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": "generic"},
+        max_attempts=1,
+        dedupe_key="report:unprovenanced",
+    )
+
+    assert process_one(queue, store, "worker-strict-provenance") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "failed"
+    assert final["attempts"] == 1
+    assert "provenance_missing" in str(final["last_error"])
+
+
+def test_legacy_unprovenanced_job_requires_explicit_compatibility_flag(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", "true")
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": "generic"},
+        max_attempts=1,
+        dedupe_key="report:legacy-compatible",
+    )
+
+    assert process_one(queue, store, "worker-legacy-provenance") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "completed"
