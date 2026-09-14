@@ -169,3 +169,17 @@ def test_capabilities_api_exposes_scanner_worker_admission(monkeypatch):
     assert scanner["dispatch_ready"] is True
     assert scanner["allowed_engines"] == ["nuclei"]
     assert result["safety"]["scanner_sandbox_admission_enforced"] is True
+
+
+
+def test_scanner_runtime_capability_rejects_unsupported_engine(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "unknown")
+
+    result = scanner_runtime_capability()
+
+    assert result["dispatch_ready"] is False
+    assert "unsupported_scanner_engine" in result["dispatch_block_reasons"]
