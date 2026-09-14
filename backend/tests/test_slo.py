@@ -108,13 +108,21 @@ def test_historical_slo_windows_use_retained_health_snapshots():
     week = result["windows"]["7d"]
 
     assert result["supported"] is True
-    assert one_hour["samples"] == 1
-    assert one_hour["observed"] == 0.8
+    assert one_hour["samples"] == 2
+    assert one_hour["observed"] == 0.85
     assert one_hour["state"] == "EXHAUSTED"
-    assert day["samples"] == 2
-    assert day["observed"] == 0.85
+    assert one_hour["coverage_ratio"] == 1.0
+    assert one_hour["boundary_state_known"] is True
+    assert one_hour["data_quality"] == "complete"
+
+    assert day["samples"] == 3
+    assert round(day["observed"], 6) == 0.977083
+    assert day["coverage_ratio"] == 1.0
+    assert day["data_quality"] == "complete"
+
     assert week["samples"] == 3
-    assert week["observed"] == 0.9
+    assert round(week["observed"], 6) == 0.996726
+    assert week["coverage_ratio"] == 1.0
 
 
 def test_historical_slo_windows_report_unknown_when_no_samples():
@@ -143,3 +151,32 @@ def test_historical_slo_windows_degrade_gracefully_without_history_backend():
     assert result["supported"] is False
     assert result["windows"] == {}
     assert result["reason"] == "control_plane_health_history_unavailable"
+
+
+
+def test_historical_slo_windows_mark_partial_coverage():
+    class Storage:
+        def list_control_plane_health_snapshots(self, limit=500):
+            return [
+                {
+                    "score": 80,
+                    "state": "DEGRADED",
+                    "created_at": "2026-09-14T15:30:00+00:00",
+                }
+            ]
+
+    result = build_historical_slo_windows(
+        Storage(),
+        now=datetime(2026, 9, 14, 16, 0, tzinfo=timezone.utc),
+    )
+
+    one_hour = result["windows"]["1h"]
+
+    assert one_hour["available"] is True
+    assert one_hour["samples"] == 1
+    assert one_hour["observed"] == 0.8
+    assert one_hour["covered_seconds"] == 1800
+    assert one_hour["window_seconds"] == 3600
+    assert one_hour["coverage_ratio"] == 0.5
+    assert one_hour["boundary_state_known"] is False
+    assert one_hour["data_quality"] == "partial"
