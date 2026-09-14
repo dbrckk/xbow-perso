@@ -91,6 +91,7 @@ def test_submission_routes_are_mounted():
     expected = {
         "/api/campaigns/{campaign_id}/reports/submission-states",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state",
+        "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-audit",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/approve",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/revoke-approval",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/mark-submitted",
@@ -280,3 +281,50 @@ def test_provenance_change_after_approval_makes_approval_stale(tmp_path, monkeyp
     assert status["state"] == "review_required"
     assert status["approved"] is False
     assert status["stale"] is True
+
+
+
+def test_submission_audit_accepts_valid_approval_and_submission(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+    submission_api.approve_report(campaign.id, artifact["id"], "reviewer")
+    submission_api.mark_report_submitted(
+        campaign.id,
+        artifact["id"],
+        "operator",
+        "generic",
+    )
+
+    audit = submission_api.get_submission_audit(
+        campaign.id,
+        artifact["id"],
+    )
+
+    assert audit["valid"] is True
+    assert audit["submissions"] == 1
+    assert audit["approval_active"] is True
+    assert audit["issues"] == []
+    assert audit["latest_approval_provenance_fingerprint"]
+
+
+def test_submission_audit_detects_submission_without_approval(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+    store = Storage()
+    persisted = store.get_campaign(campaign.id)
+    persisted["events"].append(
+        {
+            "type": "report_submitted",
+            "artifact_id": artifact["id"],
+            "actor": "operator",
+            "platform": "generic",
+            "at": "2026-09-14T18:30:00Z",
+        }
+    )
+    store.save_campaign(persisted, expected_version=1)
+
+    audit = submission_api.get_submission_audit(
+        campaign.id,
+        artifact["id"],
+    )
+
+    assert audit["valid"] is False
+    assert "submission_without_active_approval" in audit["issues"]
