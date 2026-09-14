@@ -24,6 +24,17 @@ def _clear(monkeypatch):
         monkeypatch.delenv(name, raising=False)
 
 
+def _attest_runtime(monkeypatch, *, rootfs=True, nnp=True, caps=True):
+    monkeypatch.setattr(
+        "app.scanner_sandbox._runtime_hardening_attestation",
+        lambda: {
+            "read_only_rootfs": rootfs,
+            "no_new_privileges": nnp,
+            "cap_drop_all": caps,
+        },
+    )
+
+
 def test_scanner_sandbox_defaults_fail_closed(monkeypatch):
     _clear(monkeypatch)
 
@@ -43,6 +54,7 @@ def test_restricted_scanner_worker_can_admit_allowlisted_engine(monkeypatch):
     monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
     monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "true")
     monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+    _attest_runtime(monkeypatch)
 
     result = require_scanner_sandbox("nuclei")
 
@@ -59,6 +71,7 @@ def test_engine_must_be_explicitly_allowlisted(monkeypatch):
     monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
     monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "true")
     monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+    _attest_runtime(monkeypatch)
 
     with pytest.raises(ScannerSandboxConfigError, match="engine_not_allowlisted"):
         require_scanner_sandbox("strix")
@@ -86,4 +99,29 @@ def test_scanner_worker_kill_switch_blocks_execution_admission(monkeypatch):
     monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
 
     with pytest.raises(ScannerSandboxConfigError, match="scanner_worker_disabled"):
+        require_scanner_sandbox("nuclei")
+
+
+
+@pytest.mark.parametrize(
+    ("rootfs", "nnp", "caps", "reason"),
+    [
+        (False, True, True, "runtime_rootfs_not_read_only"),
+        (True, False, True, "runtime_no_new_privileges_missing"),
+        (True, True, False, "runtime_capabilities_present"),
+    ],
+)
+def test_runtime_hardening_is_verified_not_just_declared(
+    monkeypatch, rootfs, nnp, caps, reason
+):
+    monkeypatch.setenv("XBOW_WORKER_ROLE", "scanner")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SANDBOX_READ_ONLY_ROOTFS", "true")
+    monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
+    monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "true")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+    _attest_runtime(monkeypatch, rootfs=rootfs, nnp=nnp, caps=caps)
+
+    with pytest.raises(ScannerSandboxConfigError, match=reason):
         require_scanner_sandbox("nuclei")
