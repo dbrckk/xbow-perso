@@ -400,12 +400,60 @@ def _enqueue_action(
     return []
 
 
+def _decision_explanation(intelligence: dict | None) -> dict | None:
+    if intelligence is None:
+        return None
+    gate = intelligence["gate"].to_dict()
+    risk = intelligence["risk"].to_dict()
+    consensus = intelligence["consensus"].to_dict()
+    cycle = intelligence["cycle"].to_dict()
+    surface = dict(intelligence["surface_enrichment"])
+    coverage = dict(intelligence["coverage"])
+    return {
+        "gate": {
+            "allowed": gate.get("allowed"),
+            "blockers": list(gate.get("blockers") or []),
+            "reason": gate.get("reason"),
+        },
+        "risk": {
+            "score": risk.get("score"),
+            "level": risk.get("level"),
+            "blocked": risk.get("blocked"),
+            "reasons": list(risk.get("reasons") or []),
+        },
+        "consensus": {
+            "next_focus": consensus.get("next_focus"),
+            "confidence": consensus.get("confidence"),
+            "blocked": consensus.get("blocked"),
+            "contradictory": consensus.get("contradictory"),
+            "reasons": list(consensus.get("reasons") or []),
+            "supporting_kinds": list(consensus.get("supporting_kinds") or []),
+        },
+        "cycle": {
+            "state": cycle.get("state"),
+            "next_action": cycle.get("next_action"),
+            "reason": cycle.get("reason"),
+            "safe_to_progress": cycle.get("safe_to_progress"),
+        },
+        "surface_enrichment": {
+            "score": surface.get("score"),
+            "threshold": surface.get("threshold"),
+            "ready": surface.get("ready"),
+        },
+        "coverage": {
+            "coverage_score": coverage.get("coverage_score"),
+            "interpretation": coverage.get("interpretation"),
+        },
+    }
+
+
 def _record_decision(
     store: Storage,
     campaign: Campaign,
     graph: ObservationGraph,
     action: PlannedAction,
     agent_name: str,
+    intelligence: dict | None = None,
 ) -> None:
     fingerprint = _graph_fingerprint(graph)
     observation_id = _stable_id("decision", action.kind, action.reason, fingerprint)
@@ -416,6 +464,7 @@ def _record_decision(
     ):
         return
     audit_seq, previous_hash = next_audit_link(graph)
+    explanation = _decision_explanation(intelligence)
     metadata = seal_decision_metadata(
         observation_id,
         {
@@ -428,6 +477,7 @@ def _record_decision(
             "at": utcnow(),
             "audit_seq": audit_seq,
             "previous_decision_hash": previous_hash,
+            "explanation": explanation,
         },
     )
     observation = Observation(
@@ -452,7 +502,7 @@ def _result(
     intelligence: dict | None = None,
 ) -> dict:
     agent = agent_for_action(action.kind)
-    _record_decision(store, campaign, graph, action, agent.name)
+    _record_decision(store, campaign, graph, action, agent.name, intelligence)
     refreshed_graph = _load_graph(store, campaign.id)
     hypotheses = build_hypotheses(refreshed_graph)
     if hypotheses:
