@@ -324,6 +324,7 @@ def system_capabilities():
             "crash_safe_outbox": True,
             "outbox_observability": True,
             "policy_bound_job_provenance": True,
+            "queue_transition_audit": True,
         },
         "execution": {
             "strix_scanning": "gated",
@@ -806,6 +807,18 @@ def campaign_event_audit(campaign_id: str):
     }
 
 
+@app.get("/api/campaigns/{campaign_id}/audit/queue-transitions")
+def campaign_queue_transition_audit(campaign_id: str):
+    campaign = assert_campaign_exists(campaign_id)
+    return {
+        **queue().campaign_transition_audit(campaign.id),
+        "read_only": True,
+        "payload_exposed": False,
+        "errors_exposed": False,
+        "worker_identity_exposed": False,
+    }
+
+
 @app.get("/api/campaigns/{campaign_id}/audit/workers")
 def campaign_worker_audit(campaign_id: str):
     from .worker_audit import verify_worker_audit_chain
@@ -1158,6 +1171,40 @@ def get_job(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+
+@app.get("/api/jobs/{job_id}/transitions")
+def get_job_transition_audit(job_id: str):
+    jobs = queue()
+    job = jobs.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    verification = jobs.verify_job_transitions(job_id)
+    events = jobs.job_transitions(job_id)
+    return {
+        "job_id": job_id,
+        "campaign_id": job["campaign_id"],
+        "job_kind": job["kind"],
+        "verification": verification,
+        "transitions": [
+            {
+                key: event.get(key)
+                for key in (
+                    "seq",
+                    "from_status",
+                    "to_status",
+                    "at",
+                    "previous_hash",
+                    "event_hash",
+                )
+            }
+            for event in events
+        ],
+        "read_only": True,
+        "payload_exposed": False,
+        "errors_exposed": False,
+        "worker_identity_exposed": False,
+    }
 
 
 @app.get("/api/jobs/{job_id}/provenance")
