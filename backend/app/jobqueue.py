@@ -10,6 +10,7 @@ from typing import Any
 from uuid import uuid4
 
 from .queue_audit import build_transition_event, verify_transition_events
+from .queue_recovery import analyze_queue_recovery
 
 TERMINAL = {"completed", "failed", "cancelled"}
 
@@ -223,6 +224,27 @@ class JobQueue:
             "events": checked_events,
             "valid": not invalid,
             "invalid_jobs": invalid,
+        }
+
+    def recovery_assessment(self) -> dict[str, Any]:
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT id,campaign_id,kind,status,attempts,max_attempts,
+                          claimed_by,claimed_at,created_at,updated_at
+                   FROM jobs ORDER BY created_at,id"""
+            ).fetchall()
+        jobs = [dict(row) for row in rows]
+        audits = {
+            str(job["id"]): self.verify_job_transitions(str(job["id"]))
+            for job in jobs
+        }
+        return {
+            **analyze_queue_recovery(
+                jobs,
+                lease_seconds=_job_lease_seconds(),
+                audit_results=audits,
+            ),
+            "storage": "sqlite",
         }
 
     def health(self) -> dict[str, Any]:
