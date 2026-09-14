@@ -1,16 +1,20 @@
 from __future__ import annotations
 
+import re
 from dataclasses import asdict, dataclass
 from typing import Any
 
 from fastapi import APIRouter
 
 from .evidence_chain import build_evidence_chains
+from .evidence_quality import build_evidence_quality
 from .finding_correlation import correlate_findings
 from .observation_graph import ObservationGraph, load_observation_graph
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
+
+_CWE_RE = re.compile(r"^CWE-[1-9][0-9]{0,5}$")
 
 
 @dataclass(frozen=True)
@@ -23,10 +27,16 @@ class ReportReadiness:
     evidence_chain_complete: bool
     duplicate_candidate: bool
     blockers: tuple[str, ...]
+    submission_ready: bool
+    submission_completeness_score: float
+    evidence_quality_grade: str
+    metadata_blockers: tuple[str, ...]
+    metadata_checks: dict[str, bool]
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["blockers"] = list(self.blockers)
+        payload["metadata_blockers"] = list(self.metadata_blockers)
         return payload
 
 
@@ -39,6 +49,10 @@ def build_report_readiness(
     """
     validation = analyze_validation_state(graph)
     chains = {item.finding_id: item for item in build_evidence_chains(graph)}
+    quality_by_id = {
+        item.finding_id: item
+        for item in build_evidence_quality(graph)
+    }
     duplicate_ids = {
         finding_id
         for group in correlate_findings(findings)
@@ -66,6 +80,29 @@ def build_report_readiness(
         if duplicate:
             blockers.append("duplicate_review_required")
 
+        quality = quality_by_id.get(finding_id)
+        evidence_grade = str(quality.grade if quality else "low")
+        cwe = str(getattr(finding, "cwe", "") or "").strip().upper()
+        cvss = getattr(finding, "cvss", None)
+        metadata_checks = {
+            "summary_present": bool(str(getattr(finding, "summary", "") or "").strip()),
+            "impact_present": bool(str(getattr(finding, "impact", "") or "").strip()),
+            "reproduction_steps_present": bool(getattr(finding, "reproduction_steps", None)),
+            "remediation_present": bool(str(getattr(finding, "remediation", "") or "").strip()),
+            "cwe_valid": bool(_CWE_RE.fullmatch(cwe)),
+            "cvss_present": isinstance(cvss, (int, float)) and 0.0 <= float(cvss) <= 10.0,
+            "evidence_high_quality": bool(
+                quality and quality.grade == "high" and float(quality.score) >= 0.80
+            ),
+        }
+        metadata_blockers = tuple(
+            name for name, passed in metadata_checks.items() if not passed
+        )
+        completeness = round(
+            sum(metadata_checks.values()) / len(metadata_checks),
+            4,
+        )
+
         score = round(
             (0.25 if confirmed else 0.0)
             + (0.30 if independent else 0.0)
@@ -83,6 +120,11 @@ def build_report_readiness(
                 evidence_chain_complete=chain_complete,
                 duplicate_candidate=duplicate,
                 blockers=tuple(blockers),
+                submission_ready=not blockers and not metadata_blockers,
+                submission_completeness_score=completeness,
+                evidence_quality_grade=evidence_grade,
+                metadata_blockers=metadata_blockers,
+                metadata_checks=metadata_checks,
             )
         )
 
@@ -104,6 +146,14 @@ def campaign_report_readiness(campaign_id: str):
             "ready_for_human_review": sum(item.ready_for_human_review for item in readiness),
             "blocked": sum(not item.ready_for_human_review for item in readiness),
             "highest_score": max((item.score for item in readiness), default=0.0),
+            "submission_ready": sum(item.submission_ready for item in readiness),
+            "submission_blocked": sum(not item.submission_ready for item in readiness),
+            "average_submission_completeness": round(
+                sum(item.submission_completeness_score for item in readiness) / len(readiness),
+                4,
+            )
+            if readiness
+            else 0.0,
         },
         "read_only": True,
         "advisory_only": True,
