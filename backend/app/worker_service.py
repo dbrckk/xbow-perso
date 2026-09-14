@@ -8,10 +8,12 @@ from contextlib import contextmanager
 
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .campaign_audit import append_campaign_event
+from .evidence_quality import build_evidence_quality
 from .jobqueue import JobQueue
 from .learning_memory import worker_outcome_event
 from .queue_backend import create_queue
 from .main import Campaign, CampaignState, utcnow
+from .observation_graph import ObservationGraph
 from .observation_writer import (
     observation_id,
     record_artifact,
@@ -354,7 +356,16 @@ def process_report(job: dict, store: Storage) -> None:
     platform = str(job.get("payload", {}).get("platform") or "generic")
     if platform not in {"generic", "hackerone", "bugcrowd"}:
         raise ValueError("unsupported report platform")
-    report = render_markdown(campaign, platform=platform).encode("utf-8")
+    graph = ObservationGraph.from_records(store.list_observations(campaign.id))
+    quality = {
+        item.finding_id: item.to_dict()
+        for item in build_evidence_quality(graph)
+    }
+    report = render_markdown(
+        campaign,
+        platform=platform,
+        evidence_quality=quality,
+    ).encode("utf-8")
     artifact = store.put_artifact(
         campaign.id,
         "report",
