@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 def _recon_telemetry(events: list[dict]) -> dict:
-    completed = [event for event in events if event.get("type") == "recon_completed"]
+    completed = [event for event in events if event.get("type") == "recon_task_completed"]
     return {
         "completed_tasks": len(completed),
         "requests_made": sum(int(event.get("requests_made") or 0) for event in completed),
