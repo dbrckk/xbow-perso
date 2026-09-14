@@ -5,6 +5,7 @@ from app.runtime_capabilities import (
     CapabilityConfigError,
     pentagi_runtime_capability,
     safe_pentagi_runtime_capability,
+    scanner_runtime_capability,
 )
 
 
@@ -119,3 +120,52 @@ def test_capabilities_api_reports_configuration_error_without_raising(monkeypatc
     detail = result["execution"]["pentagi_detail"]
     assert detail["dispatch_ready"] is False
     assert detail["configuration_error"] is True
+
+
+
+def test_scanner_runtime_capability_defaults_fail_closed(monkeypatch):
+    for name in (
+        "XBOW_ENABLE_ACTIVE_SCANS",
+        "XBOW_ENABLE_SCANNER_WORKER",
+        "DRY_RUN",
+        "XBOW_SCANNER_SANDBOX_PROFILE",
+        "XBOW_SCANNER_ALLOWED_ENGINES",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+    result = scanner_runtime_capability()
+
+    assert result["dispatch_ready"] is False
+    assert "active_scans_disabled" in result["dispatch_block_reasons"]
+    assert "global_dry_run" in result["dispatch_block_reasons"]
+    assert "scanner_worker_disabled" in result["dispatch_block_reasons"]
+    assert result["worker_admission_enforced"] is True
+
+
+def test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+
+    result = scanner_runtime_capability()
+
+    assert result["dispatch_ready"] is True
+    assert result["sandbox_profile"] == "restricted-v1"
+    assert result["allowed_engines"] == ["nuclei"]
+
+
+def test_capabilities_api_exposes_scanner_worker_admission(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+
+    result = main.system_capabilities()
+
+    scanner = result["execution"]["scanner_worker_detail"]
+    assert scanner["dispatch_ready"] is True
+    assert scanner["allowed_engines"] == ["nuclei"]
+    assert result["safety"]["scanner_sandbox_admission_enforced"] is True
