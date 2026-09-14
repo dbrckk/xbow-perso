@@ -273,3 +273,10 @@ The policy exposes `FAST_BURN`, `SLOW_BURN`, `HEALTHY`, or `UNKNOWN`, together w
 Report readiness now feeds a separate advisory quality gate. Grades have stable semantics: `A` means submission-complete with consensus quorum, `B` means submission-complete with evidence-backed consensus, `C` means ready for human review but submission metadata remains incomplete, and `D` means human review is still blocked.
 
 The quality gate combines evidence-backed validation, evidence quality, consensus, metadata completeness, duplicate review, and existing report-readiness state. Grade `B` is the minimum quality level for submission completeness, but no grade authorizes submission: explicit human approval remains mandatory and automatic submission remains disabled.
+
+
+### Verified submission gate
+
+The local submission governance gate now requires both current human approval and verified report quality coverage for every confirmed finding. Each covered finding must have grade `A` or `B`, be marked submission-ready, have complete report provenance, and pass independent provenance fingerprint verification.
+
+A present-but-tampered provenance manifest is treated as invalid and blocks submission exactly like incomplete provenance. Missing quality coverage for any confirmed finding also blocks submission. This gate remains local and advisory to the submission workflow; external platform submission remains disabled by default.
