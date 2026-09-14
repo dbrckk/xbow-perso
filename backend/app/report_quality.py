@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
+from .report_provenance import ReportProvenance
 from .report_readiness import ReportReadiness
 
 
@@ -26,9 +27,14 @@ class ReportQualityGate:
 
 def build_report_quality_gates(
     readiness: list[ReportReadiness],
+    provenance: list[ReportProvenance] | None = None,
 ) -> list[ReportQualityGate]:
+    provenance_by_id = {
+        item.finding_id: item for item in (provenance or [])
+    }
     gates: list[ReportQualityGate] = []
     for item in readiness:
+        provenance_item = provenance_by_id.get(item.finding_id)
         checks = {
             "human_review_ready": bool(item.ready_for_human_review),
             "submission_ready": bool(item.submission_ready),
@@ -40,11 +46,17 @@ def build_report_quality_gates(
             in {"single_evidence_backed_validator", "quorum"},
             "metadata_complete": not item.metadata_blockers,
             "not_duplicate_candidate": not item.duplicate_candidate,
+            "provenance_complete": bool(
+                provenance_item and provenance_item.complete
+            )
+            if provenance is not None
+            else True,
         }
         blockers = tuple(
             sorted(
                 set(item.blockers)
                 | set(item.metadata_blockers)
+                | set(provenance_item.blockers if provenance_item else ())
                 | {name for name, passed in checks.items() if not passed}
             )
         )
