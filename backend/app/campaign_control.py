@@ -11,6 +11,17 @@ from .planner_limits import planner_limits
 router = APIRouter()
 
 
+def _autonomy_block_reasons(breaker: dict, runtime: object, usage: object) -> list[str]:
+    reasons: list[str] = []
+    if breaker.get("open"):
+        reasons.append("circuit_breaker_open")
+    if bool(getattr(runtime, "exhausted", False)):
+        reasons.append("runtime_exhausted")
+    if bool(getattr(usage, "blocked_actions", {})):
+        reasons.append("budget_blocked")
+    return reasons
+
+
 @router.get("/api/campaigns/{campaign_id}/control-status")
 def campaign_control_status(campaign_id: str):
     from .main import assert_campaign_exists, queue, storage
@@ -25,6 +36,7 @@ def campaign_control_status(campaign_id: str):
     runtime = runtime_status(campaign.created_at, runtime_limit)
     statuses = jobs.campaign_job_status_counts(campaign.id)
     breaker = circuit_breaker_state(graph)
+    block_reasons = _autonomy_block_reasons(breaker, runtime, usage)
 
     return {
         "campaign_id": campaign.id,
@@ -40,9 +52,8 @@ def campaign_control_status(campaign_id: str):
         },
         "graph_limits": planner_limits().__dict__,
         "jobs": statuses,
-        "autonomy_blocked": bool(
-            breaker["open"] or runtime.exhausted or usage.exhausted
-        ),
+        "autonomy_blocked": bool(block_reasons),
+        "autonomy_block_reasons": block_reasons,
         "read_only": True,
         "fail_closed": True,
     }
