@@ -8,7 +8,7 @@ from fastapi import APIRouter
 from .evidence_chain import build_evidence_chains
 from .evidence_quality import build_evidence_quality
 from .finding_consensus import build_finding_consensus, router as finding_consensus_router
-from .finding_correlation import correlate_findings
+from .finding_correlation import cluster_findings, correlate_findings
 from .knowledge_memory import build_knowledge_snapshot
 from .observation_graph import ObservationGraph, load_observation_graph
 
@@ -64,7 +64,12 @@ def build_finding_triage(findings: list[Any], graph: ObservationGraph) -> list[F
     for group in correlate_findings(findings):
         size = len(group.finding_ids)
         for finding_id in group.finding_ids:
-            duplicate_size[finding_id] = size
+            duplicate_size[finding_id] = max(duplicate_size.get(finding_id, 1), size)
+    clusters, _similarities = cluster_findings(findings, threshold=0.75)
+    for cluster in clusters:
+        size = len(cluster.finding_ids)
+        for finding_id in cluster.finding_ids:
+            duplicate_size[finding_id] = max(duplicate_size.get(finding_id, 1), size)
 
     ranked: list[FindingTriage] = []
     for finding in findings:

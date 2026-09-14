@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import asdict, dataclass
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
@@ -114,4 +115,198 @@ def campaign_finding_correlations(campaign_id: str):
         },
         "read_only": True,
         "auto_merge": False,
+    }
+
+
+
+def _title_tokens(value: str | None) -> set[str]:
+    if not value:
+        return set()
+    return {
+        token
+        for token in re.findall(r"[a-z0-9]+", value.lower())
+        if len(token) >= 3
+        and token not in {"the", "and", "for", "with", "from", "this", "that"}
+    }
+
+
+def _jaccard(left: set[str], right: set[str]) -> float:
+    if not left or not right:
+        return 0.0
+    return len(left & right) / len(left | right)
+
+
+@dataclass(frozen=True)
+class FindingSimilarity:
+    left_id: str
+    right_id: str
+    score: float
+    same_asset: bool
+    same_endpoint: bool
+    same_cwe: bool
+    title_similarity: float
+    reasons: tuple[str, ...]
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = asdict(self)
+        payload["reasons"] = list(self.reasons)
+        return payload
+
+
+@dataclass(frozen=True)
+class FindingCluster:
+    cluster_id: str
+    finding_ids: tuple[str, ...]
+    confidence: float
+    pair_scores: tuple[float, ...]
+    auto_merge: bool = False
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = asdict(self)
+        payload["finding_ids"] = list(self.finding_ids)
+        payload["pair_scores"] = list(self.pair_scores)
+        return payload
+
+
+def score_finding_similarity(left: Any, right: Any) -> FindingSimilarity:
+    """Return a conservative duplicate-likelihood score without merging findings."""
+    left_asset = _canonical_url(str(left.asset)) or str(left.asset).strip().lower()
+    right_asset = _canonical_url(str(right.asset)) or str(right.asset).strip().lower()
+    left_endpoint = _canonical_url(getattr(left, "endpoint", None))
+    right_endpoint = _canonical_url(getattr(right, "endpoint", None))
+    left_cwe = str(left.cwe).strip().upper() if getattr(left, "cwe", None) else None
+    right_cwe = str(right.cwe).strip().upper() if getattr(right, "cwe", None) else None
+
+    same_asset = left_asset == right_asset
+    same_endpoint = bool(left_endpoint and right_endpoint and left_endpoint == right_endpoint)
+    same_cwe = bool(left_cwe and right_cwe and left_cwe == right_cwe)
+    title_similarity = _jaccard(
+        _title_tokens(getattr(left, "title", None)),
+        _title_tokens(getattr(right, "title", None)),
+    )
+
+    components = {
+        "asset": 0.25 if same_asset else 0.0,
+        "endpoint": 0.35 if same_endpoint else 0.0,
+        "cwe": 0.25 if same_cwe else 0.0,
+        "title": round(title_similarity * 0.15, 4),
+    }
+    score = round(sum(components.values()), 4)
+
+    # Fail closed: cross-asset records never become duplicate candidates solely
+    # because they share a generic title/CWE.
+    if not same_asset:
+        score = min(score, 0.40)
+
+    reasons = tuple(
+        key for key, value in components.items() if value > 0.0
+    )
+    return FindingSimilarity(
+        left_id=str(left.id),
+        right_id=str(right.id),
+        score=score,
+        same_asset=same_asset,
+        same_endpoint=same_endpoint,
+        same_cwe=same_cwe,
+        title_similarity=round(title_similarity, 4),
+        reasons=reasons,
+    )
+
+
+def cluster_findings(
+    findings: list[Any],
+    *,
+    threshold: float = 0.75,
+) -> tuple[list[FindingCluster], list[FindingSimilarity]]:
+    """Cluster likely duplicates non-destructively using high-confidence links."""
+    if not 0.50 <= threshold <= 1.0:
+        raise ValueError("cluster threshold must be between 0.50 and 1.0")
+
+    ordered = sorted(findings, key=lambda item: str(item.id))
+    similarities: list[FindingSimilarity] = []
+    adjacency: dict[str, set[str]] = {str(item.id): set() for item in ordered}
+
+    for index, left in enumerate(ordered):
+        for right in ordered[index + 1:]:
+            similarity = score_finding_similarity(left, right)
+            similarities.append(similarity)
+            if similarity.score >= threshold:
+                adjacency[similarity.left_id].add(similarity.right_id)
+                adjacency[similarity.right_id].add(similarity.left_id)
+
+    clusters: list[FindingCluster] = []
+    visited: set[str] = set()
+    for finding in ordered:
+        root = str(finding.id)
+        if root in visited:
+            continue
+        stack = [root]
+        component: set[str] = set()
+        while stack:
+            current = stack.pop()
+            if current in visited:
+                continue
+            visited.add(current)
+            component.add(current)
+            stack.extend(sorted(adjacency[current] - visited, reverse=True))
+
+        if len(component) < 2:
+            continue
+
+        ids = tuple(sorted(component))
+        pair_scores = tuple(
+            item.score
+            for item in similarities
+            if item.left_id in component
+            and item.right_id in component
+            and item.score >= threshold
+        )
+        confidence = round(
+            sum(pair_scores) / len(pair_scores) if pair_scores else 0.0,
+            4,
+        )
+        clusters.append(
+            FindingCluster(
+                cluster_id="cluster:" + "|".join(ids),
+                finding_ids=ids,
+                confidence=confidence,
+                pair_scores=pair_scores,
+                auto_merge=False,
+            )
+        )
+
+    return (
+        sorted(clusters, key=lambda item: (-item.confidence, item.cluster_id)),
+        sorted(similarities, key=lambda item: (-item.score, item.left_id, item.right_id)),
+    )
+
+
+@router.get("/api/campaigns/{campaign_id}/finding-clusters")
+def campaign_finding_clusters(campaign_id: str, threshold: float = 0.75):
+    from .main import assert_campaign_exists
+
+    campaign = assert_campaign_exists(campaign_id)
+    clusters, similarities = cluster_findings(
+        campaign.findings,
+        threshold=threshold,
+    )
+    return {
+        "campaign_id": campaign.id,
+        "threshold": threshold,
+        "clusters": [item.to_dict() for item in clusters],
+        "similarities": [
+            item.to_dict()
+            for item in similarities
+            if item.score >= threshold
+        ],
+        "summary": {
+            "clusters": len(clusters),
+            "clustered_findings": len(
+                {finding_id for item in clusters for finding_id in item.finding_ids}
+            ),
+            "high_confidence_pairs": sum(item.score >= threshold for item in similarities),
+        },
+        "read_only": True,
+        "auto_merge": False,
+        "explainable": True,
     }
