@@ -99,3 +99,46 @@ def test_decision_timeline_keeps_un_timestamped_legacy_decisions_out_of_merged_t
 
 def test_decision_timeline_route_is_exposed():
     assert "/api/campaigns/{campaign_id}/decision-timeline" in app.openapi()["paths"]
+
+
+
+def test_decision_timeline_exposes_historical_why_snapshot(monkeypatch):
+    graph = _graph()
+    graph._items["decision:1"].metadata["explanation"] = {
+        "gate": {"allowed": False, "blockers": ["failed_jobs"], "reason": "blocked"},
+        "risk": {"score": 0.8, "level": "high", "blocked": True, "reasons": ["risk"]},
+        "consensus": {
+            "next_focus": "review_contradiction",
+            "confidence": 1.0,
+            "blocked": True,
+            "contradictory": True,
+            "reasons": ["human review"],
+            "supporting_kinds": ["review_contradiction"],
+        },
+        "cycle": {
+            "state": "halt",
+            "next_action": "stop",
+            "reason": "human review",
+            "safe_to_progress": False,
+        },
+        "surface_enrichment": {"score": 0.5, "threshold": 0.4, "ready": True},
+        "coverage": {"coverage_score": 0.6, "interpretation": "evidence"},
+    }
+    monkeypatch.setattr(
+        "app.decision_timeline.verify_decision_audit_chain",
+        lambda _graph: {
+            "valid": True,
+            "checked": 1,
+            "sealed_decisions": 1,
+            "legacy_unsealed": [],
+            "reason": None,
+        },
+    )
+
+    result = build_decision_timeline(_campaign(), graph)
+
+    why = result["planner_decisions"][0]["why"]
+    assert why["gate"]["allowed"] is False
+    assert why["gate"]["blockers"] == ["failed_jobs"]
+    assert why["consensus"]["contradictory"] is True
+    assert why["cycle"]["state"] == "halt"
