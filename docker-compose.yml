@@ -70,6 +70,7 @@ services:
       XBOW_ARTIFACT_ROOT: /data/artifacts
       XBOW_STRIX_RUN_ROOT: /data/strix_runs
       XBOW_WORKER_POLL_SECONDS: ${XBOW_WORKER_POLL_SECONDS:-1}
+      XBOW_WORKER_ROLE: general
       XBOW_PLANNER_MAX_OBSERVATIONS: ${XBOW_PLANNER_MAX_OBSERVATIONS:-5000}
       XBOW_PLANNER_MAX_ENDPOINTS: ${XBOW_PLANNER_MAX_ENDPOINTS:-1500}
       XBOW_PLANNER_MAX_FINDINGS: ${XBOW_PLANNER_MAX_FINDINGS:-250}
@@ -107,6 +108,57 @@ services:
       retries: 3
       start_period: 10s
     networks: [control]
+
+
+  scanner-worker:
+    profiles: ["scanner"]
+    build: ./backend
+    command: ["python", "-m", "app.worker_service"]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      XBOW_WORKER_ROLE: scanner
+      DRY_RUN: ${DRY_RUN:-true}
+      XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
+      XBOW_ENABLE_NUCLEI: ${XBOW_ENABLE_NUCLEI:-false}
+      XBOW_SCANNER_SANDBOX_PROFILE: restricted-v1
+      XBOW_SANDBOX_READ_ONLY_ROOTFS: "true"
+      XBOW_SANDBOX_NO_NEW_PRIVILEGES: "true"
+      XBOW_SANDBOX_CAP_DROP_ALL: "true"
+      XBOW_SCANNER_ALLOWED_ENGINES: ${XBOW_SCANNER_ALLOWED_ENGINES:-nuclei}
+      XBOW_NUCLEI_ALLOWED_VERSION: ${XBOW_NUCLEI_ALLOWED_VERSION:-}
+      XBOW_MAX_AUTONOMOUS_RPS: ${XBOW_MAX_AUTONOMOUS_RPS:-2.0}
+      WORKER_TIMEOUT_SECONDS: ${WORKER_TIMEOUT_SECONDS:-7200}
+      XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
+      XBOW_DB_PATH: /data/xbow.sqlite3
+      XBOW_ARTIFACT_ROOT: /data/artifacts
+      XBOW_STRIX_RUN_ROOT: /data/strix_runs
+      XBOW_NUCLEI_RUN_ROOT: /data/nuclei_runs
+      STRIX_LLM: ${STRIX_LLM:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_API_BASE: ${LLM_API_BASE:-}
+    volumes:
+      - xbow-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 128
+    mem_limit: 2g
+    cpus: 2.0
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 2048
+    networks: [control]
+
 
 
   pentagi-worker:
