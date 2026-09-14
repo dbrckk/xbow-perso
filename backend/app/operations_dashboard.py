@@ -14,6 +14,7 @@ from .metrics import build_operational_metrics
 from .operational_alerts import build_operational_alerts
 from .recovery_readiness import recovery_readiness_history
 from .slo import attach_historical_slo_windows, build_platform_slos
+from .submission_audit import audit_storage_submissions
 
 router = APIRouter()
 
@@ -29,6 +30,7 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
     history = recovery_readiness_history(storage_backend, limit=25)
 
     campaigns = storage_backend.list_campaigns()
+    submission_audit = audit_storage_submissions(storage_backend)
     campaign_states = Counter(str(item.get("state") or "unknown") for item in campaigns)
     failed_jobs = int((metrics.get("jobs_by_status") or {}).get("failed") or 0)
     queue_audit = metrics.get("queue_transition_audit") or {}
@@ -71,6 +73,8 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
         degraded_reasons.append("operational_warning")
     if int(metrics.get("pending_outbox_total") or 0):
         degraded_reasons.append("pending_outbox")
+    if submission_audit.get("supported") and not submission_audit.get("valid"):
+        degraded_reasons.append("submission_event_audit_invalid")
 
     if blocked_reasons:
         health = "BLOCKED"
@@ -102,6 +106,7 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
             ),
             "recent_transitions": history.get("transitions") or [],
         },
+        "submission_integrity": submission_audit,
         "queue_integrity": {
             "storage": metrics.get("queue_storage"),
             "audit_valid": queue_audit.get("valid"),
@@ -117,6 +122,7 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
             "recovery_history": "/api/recovery/readiness/history",
             "metrics": "/api/metrics",
             "alerts": "/api/alerts",
+            "submission_audit": "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-audit",
         },
         "read_only": True,
         "aggregate_only": True,
