@@ -11,7 +11,7 @@ from .evidence_quality import build_evidence_quality
 from .finding_consensus import build_finding_consensus
 from .finding_correlation import correlate_findings
 from .observation_graph import ObservationGraph, load_observation_graph
-from .report_provenance import build_report_provenance, verify_report_provenance
+from .report_provenance import verify_report_provenance
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
