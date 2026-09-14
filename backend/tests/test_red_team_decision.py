@@ -240,3 +240,172 @@ def test_contradictory_readiness_requires_human_review():
     assert decisions[0].kind == "review_contradiction"
     assert decisions[0].priority == 0.98
     assert decisions[0].finding_ids == ("strong",)
+
+
+
+def _cluster_findings():
+    first = Finding(
+        id="cluster-ready",
+        title="Reflected script injection",
+        severity="high",
+        asset="https://example.test",
+        endpoint="https://example.test/account?id=one",
+        summary="bounded fixture",
+        cwe="CWE-79",
+        status="validation_required",
+        discovered_by="scanner-a",
+    )
+    second = Finding(
+        id="cluster-weak",
+        title="Reflected script injection",
+        severity="high",
+        asset="https://example.test",
+        endpoint="https://example.test/account?id=two",
+        summary="bounded fixture",
+        cwe="CWE-79",
+        status="validation_required",
+        discovered_by="scanner-a",
+    )
+    return first, second
+
+
+def _mixed_cluster_graph():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:cluster", "asset", "example.test", "recon"))
+    for fid in ("cluster-ready", "cluster-weak"):
+        graph.add(
+            Observation(
+                f"finding:{fid}",
+                "finding",
+                fid,
+                "scanner-a",
+                parent_ids=("asset:cluster",),
+            )
+        )
+    graph.add(
+        Observation(
+            "validation:cluster-ready",
+            "validation",
+            "observed",
+            "validator-b",
+            parent_ids=("finding:cluster-ready",),
+        )
+    )
+    graph.add(
+        Observation(
+            "evidence:cluster-ready",
+            "evidence",
+            "artifact-reference",
+            "validator-c",
+            parent_ids=("validation:cluster-ready",),
+            metadata={
+                "artifact_id": "artifact-cluster-ready",
+                "artifact_kind": "validation",
+                "artifact_sha256": "d" * 64,
+            },
+        )
+    )
+    return graph
+
+
+def test_mixed_cluster_holds_ready_member_back_from_report_review():
+    ready, weak = _cluster_findings()
+    snapshots = [
+        {
+            "graph_fingerprint": "cluster-a",
+            "created_at": "2026-09-14T07:00:00+00:00",
+            "hypotheses": [
+                {
+                    "finding_id": "cluster-ready",
+                    "confidence": 0.95,
+                    "status": "supported",
+                },
+                {
+                    "finding_id": "cluster-weak",
+                    "confidence": 0.35,
+                    "status": "unvalidated",
+                },
+            ],
+        }
+    ]
+
+    decisions = build_red_team_decisions(
+        [ready, weak],
+        _mixed_cluster_graph(),
+        hypothesis_snapshots=snapshots,
+    )
+
+    report = next(
+        (item for item in decisions if item.kind == "review_for_report"),
+        None,
+    )
+    validate = next(item for item in decisions if item.kind == "validate_findings")
+
+    assert report is None or "cluster-ready" not in report.finding_ids
+    assert "cluster-weak" in validate.finding_ids
+    assert "cluster-ready" not in validate.finding_ids
+
+
+def test_blocked_cluster_escalates_all_cluster_members_for_human_review():
+    ready, weak = _cluster_findings()
+    graph = _mixed_cluster_graph()
+    snapshots = [
+        {
+            "graph_fingerprint": "c",
+            "created_at": "2026-09-14T09:00:00+00:00",
+            "hypotheses": [
+                {
+                    "finding_id": "cluster-ready",
+                    "confidence": 0.75,
+                    "status": "partially_supported",
+                },
+                {
+                    "finding_id": "cluster-weak",
+                    "confidence": 0.35,
+                    "status": "unvalidated",
+                },
+            ],
+        },
+        {
+            "graph_fingerprint": "b",
+            "created_at": "2026-09-14T08:00:00+00:00",
+            "hypotheses": [
+                {
+                    "finding_id": "cluster-ready",
+                    "confidence": 0.95,
+                    "status": "supported",
+                },
+                {
+                    "finding_id": "cluster-weak",
+                    "confidence": 0.35,
+                    "status": "unvalidated",
+                },
+            ],
+        },
+        {
+            "graph_fingerprint": "a",
+            "created_at": "2026-09-14T07:00:00+00:00",
+            "hypotheses": [
+                {
+                    "finding_id": "cluster-ready",
+                    "confidence": 0.35,
+                    "status": "unvalidated",
+                },
+                {
+                    "finding_id": "cluster-weak",
+                    "confidence": 0.35,
+                    "status": "unvalidated",
+                },
+            ],
+        },
+    ]
+
+    decisions = build_red_team_decisions(
+        [ready, weak],
+        graph,
+        hypothesis_snapshots=snapshots,
+    )
+
+    review = decisions[0]
+    assert review.kind == "review_contradiction"
+    assert set(review.finding_ids) == {"cluster-ready", "cluster-weak"}

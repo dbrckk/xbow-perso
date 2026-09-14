@@ -7,6 +7,7 @@ from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface
 from .evidence_chain import build_evidence_chains
+from .finding_cluster_consensus import build_cluster_consensus
 from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .hypothesis_engine import build_hypotheses
@@ -63,6 +64,18 @@ def build_red_team_decisions(
         hypothesis_snapshots=hypothesis_snapshots,
     )
     readiness_by_id = {item.finding_id: item for item in readiness}
+    cluster_consensus = build_cluster_consensus(
+        findings,
+        graph,
+        hypothesis_snapshots=hypothesis_snapshots,
+    )
+    cluster_status_by_member: dict[str, str] = {}
+    blocked_cluster_members: set[str] = set()
+    for cluster in cluster_consensus:
+        for finding_id in cluster.finding_ids:
+            cluster_status_by_member[finding_id] = cluster.status
+        if cluster.status == "blocked":
+            blocked_cluster_members.update(cluster.finding_ids)
     chains = build_evidence_chains(graph)
     hypotheses = build_hypotheses(graph, limit=100, scope_checker=scope_checker)
     decisions: list[RedTeamDecision] = []
@@ -82,7 +95,14 @@ def build_red_team_decisions(
         )
 
     contradiction_ids = tuple(
-        item.finding_id for item in readiness if item.contradictory
+        sorted(
+            {
+                item.finding_id
+                for item in readiness
+                if item.contradictory
+            }
+            | blocked_cluster_members
+        )
     )
     if contradiction_ids:
         decisions.append(
@@ -103,6 +123,7 @@ def build_red_team_decisions(
             "report_review_ready",
             "blocked",
         }
+        and cluster_status_by_member.get(item.finding_id) != "blocked"
     )
     if validation_ids:
         decisions.append(
@@ -152,6 +173,10 @@ def build_red_team_decisions(
         item.finding_id
         for item in readiness
         if item.readiness == "report_review_ready"
+        and cluster_status_by_member.get(
+            item.finding_id,
+            "report_review_ready",
+        ) == "report_review_ready"
     )
     if report_ids:
         decisions.append(
