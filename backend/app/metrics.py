@@ -72,6 +72,61 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
                 else max(oldest_outbox_age_seconds, age)
             )
 
+    health_history_fn = getattr(
+        storage_backend,
+        "list_control_plane_health_snapshots",
+        None,
+    )
+    health_snapshots = (
+        health_history_fn(limit=100)
+        if callable(health_history_fn)
+        else []
+    )
+    health_latest_score = (
+        int(health_snapshots[0].get("score") or 0)
+        if health_snapshots
+        else None
+    )
+    health_previous_score = (
+        int(health_snapshots[1].get("score") or 0)
+        if len(health_snapshots) > 1
+        else None
+    )
+    health_delta = (
+        health_latest_score - health_previous_score
+        if health_latest_score is not None and health_previous_score is not None
+        else None
+    )
+    health_trend = (
+        "unknown"
+        if health_delta is None
+        else ("improving" if health_delta > 0 else "degrading" if health_delta < 0 else "stable")
+    )
+    health_transitions = 0
+    health_to_blocked = 0
+    health_healthy_to_degraded = 0
+    chronological_health = list(reversed(health_snapshots))
+    previous_health_state = None
+    for item in chronological_health:
+        state = str(item.get("state") or "unknown")
+        if previous_health_state is not None and state != previous_health_state:
+            health_transitions += 1
+            if state == "BLOCKED":
+                health_to_blocked += 1
+            if previous_health_state == "HEALTHY" and state == "DEGRADED":
+                health_healthy_to_degraded += 1
+        previous_health_state = state
+    recent_health = chronological_health[-3:]
+    persistent_health_degradation = (
+        len(recent_health) == 3
+        and all(str(item.get("state")) != "HEALTHY" for item in recent_health)
+        and all(
+            int(recent_health[index].get("score") or 0)
+            <= int(recent_health[index - 1].get("score") or 0)
+            for index in range(1, len(recent_health))
+        )
+    )
+
     readiness_history_fn = getattr(
         storage_backend,
         "list_recovery_readiness_snapshots",
@@ -112,6 +167,23 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "pending_outbox_total": pending_outbox_total,
         "pending_outbox_by_kind": dict(sorted(pending_outbox_by_kind.items())),
         "oldest_outbox_pending_age_seconds": oldest_outbox_age_seconds,
+        "control_plane_health": {
+            "supported": callable(health_history_fn),
+            "latest_score": health_latest_score,
+            "previous_score": health_previous_score,
+            "delta": health_delta,
+            "trend": health_trend,
+            "latest_state": (
+                str(health_snapshots[0].get("state"))
+                if health_snapshots
+                else None
+            ),
+            "snapshots": len(health_snapshots),
+            "transitions": health_transitions,
+            "to_blocked_transitions": health_to_blocked,
+            "healthy_to_degraded_transitions": health_healthy_to_degraded,
+            "persistent_degradation": persistent_health_degradation,
+        },
         "recovery_readiness": {
             "supported": callable(readiness_history_fn),
             "latest_decision": (
