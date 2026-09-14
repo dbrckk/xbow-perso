@@ -50,3 +50,42 @@ def test_report_excludes_unconfirmed_findings():
     assert "Submission format:** Bugcrowd" in report
     assert "No independently validated vulnerabilities" in report
     assert "Example issue" not in report
+
+
+
+def test_report_marks_high_quality_confirmed_finding_ready_for_review():
+    campaign = _campaign()
+    finding_id = str(campaign.findings[0].id)
+
+    report = render_markdown(
+        campaign,
+        evidence_quality={
+            finding_id: {
+                "grade": "high",
+                "score": 1.0,
+            }
+        },
+    )
+
+    assert "1 of 1 confirmed finding(s) currently meet the high-quality evidence threshold." in report
+    assert "**Evidence quality:** HIGH (100%)" in report
+    assert "**Submission readiness:** READY FOR HUMAN SUBMISSION REVIEW" in report
+
+
+def test_report_holds_confirmed_finding_when_evidence_quality_is_not_high():
+    campaign = _campaign()
+    finding_id = str(campaign.findings[0].id)
+
+    report = render_markdown(
+        campaign,
+        evidence_quality={
+            finding_id: {
+                "grade": "medium",
+                "score": 0.7,
+            }
+        },
+    )
+
+    assert "0 of 1 confirmed finding(s) currently meet the high-quality evidence threshold." in report
+    assert "**Evidence quality:** MEDIUM (70%)" in report
+    assert "**Submission readiness:** HOLD — strengthen evidence before submission" in report
