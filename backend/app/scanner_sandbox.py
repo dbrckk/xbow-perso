@@ -60,8 +60,11 @@ def scanner_sandbox_admission(engine: str | None = None) -> ScannerSandboxAdmiss
     no_new_privileges = _strict_bool("XBOW_SANDBOX_NO_NEW_PRIVILEGES", False)
     cap_drop_all = _strict_bool("XBOW_SANDBOX_CAP_DROP_ALL", False)
     allowed_engines = _allowed_engines()
+    scanner_worker_enabled = _strict_bool("XBOW_ENABLE_SCANNER_WORKER", False)
 
     reasons: list[str] = []
+    if not scanner_worker_enabled:
+        reasons.append("scanner_worker_disabled")
     if worker_role != "scanner":
         reasons.append("dedicated_scanner_worker_required")
     if profile != "restricted-v1":
