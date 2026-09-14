@@ -332,6 +332,7 @@ def system_capabilities():
             "control_plane_health_model": True,
             "control_plane_health_history": True,
             "slo_error_budgets": True,
+            "historical_slo_windows": True,
             "multiwindow_slo_burn_rates": True,
         },
         "execution": {
