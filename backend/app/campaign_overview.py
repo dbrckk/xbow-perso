@@ -22,6 +22,7 @@ from .planner_budget import PlannerBudget, budget_usage
 from .recon_swarm import build_recon_plan, router as recon_swarm_router
 from .red_team_coverage import build_red_team_coverage, router as red_team_coverage_router
 from .red_team_decision import build_red_team_decisions, router as red_team_decision_router
+from .report_provenance import build_report_provenance
 from .report_quality import build_report_quality_gates, summarize_report_quality
 from .report_readiness import build_report_readiness, router as report_readiness_router
 from .review_queue import build_review_queue, router as review_queue_router
@@ -66,7 +67,14 @@ def campaign_overview(campaign_id: str):
     triage = build_finding_triage(campaign.findings, graph)
     lifecycle = build_finding_lifecycle(campaign.findings, graph)
     report_readiness = build_report_readiness(campaign.findings, graph)
-    report_quality = build_report_quality_gates(report_readiness)
+    report_provenance = build_report_provenance(
+        [str(item.id) for item in campaign.findings],
+        graph,
+    )
+    report_quality = build_report_quality_gates(
+        report_readiness,
+        report_provenance,
+    )
     review_state = build_campaign_review_state(campaign.findings, graph)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
     review_tasks = build_review_queue(graph, scope_checker=scope_checker)
