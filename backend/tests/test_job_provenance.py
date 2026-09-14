@@ -8,7 +8,7 @@ from app.job_provenance import (
     require_job_provenance,
     verify_job_provenance,
 )
-from app.main import Campaign, ProgramRules, TargetInput
+from app.main import Campaign, ProgramRules, TargetInput, app, policy_receipt, sanitized_scan_payload
 
 
 def _campaign(*, allowed_targets=None, rps=2.0):
@@ -130,3 +130,21 @@ def test_duplicate_provenance_injection_is_rejected():
             job_kind="strix_scan",
             action="automated_scan",
         )
+
+
+def test_sanitized_scan_payload_keeps_deterministic_provenance_without_receipt_secrets():
+    campaign = _campaign()
+    receipt = policy_receipt(campaign, "example.test", "automated_scan")
+
+    payload = sanitized_scan_payload(campaign, receipt)
+
+    assert payload["_provenance"]["policy_fingerprint"] == policy_snapshot_fingerprint(campaign)
+    assert payload["_provenance"]["job_kind"] == "strix_scan"
+    assert payload["_provenance"]["action"] == "automated_scan"
+    assert "timestamp" not in payload["policy"]
+    assert "receipt_hash" not in payload["policy"]
+    assert "signature" not in payload["policy"]
+
+
+def test_job_provenance_status_route_is_exposed():
+    assert "/api/jobs/{job_id}/provenance" in app.openapi()["paths"]
