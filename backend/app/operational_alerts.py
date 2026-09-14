@@ -171,6 +171,9 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
                     "issue_class_counts": dict(
                         submission_integrity.get("issue_class_counts") or {}
                     ),
+                    "severity": dict(
+                        submission_integrity.get("severity") or {}
+                    ),
                 },
                 "threshold": 0,
             }
