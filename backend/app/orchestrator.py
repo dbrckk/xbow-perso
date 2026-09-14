@@ -671,6 +671,13 @@ def advance_campaign(
             validation_limit=validation_limit,
             scan_engines=scan_engines,
         )
+        if action.kind == "validate" and not jobs:
+            action = PlannedAction(
+                "stop",
+                str(campaign.target.primary_url),
+                "cluster validation saturated by strong representative evidence",
+                100,
+            )
         return _result(
             action,
             jobs,
