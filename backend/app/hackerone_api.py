@@ -87,6 +87,20 @@ def _json_sha256(value: Any) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _conservative_admission_reason(policy: Any) -> str | None:
+    if not policy.safe_harbor_confirmed:
+        return "safe_harbor_required"
+    if not policy.automated_scanning:
+        return "automated_scanning_not_authorized"
+    if policy.test_account_required:
+        return "test_account_workflow_not_supported"
+    if policy.test_account_constraints:
+        return "test_account_constraints_not_supported"
+    if policy.additional_restrictions:
+        return "additional_restrictions_require_manual_enforcement"
+    return None
+
+
 @router.post("/api/imports/hackerone/rules-preview")
 def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
     """Preview exact executable rules without persisting or starting a campaign."""
@@ -121,12 +135,23 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
     try:
         preview = import_hackerone_structured_scope(payload.document)
         policy = _policy_from_input(payload.policy)
+        reason = _conservative_admission_reason(policy)
+        if reason:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne conservative admission blocked",
+                    "reason": reason,
+                },
+            )
         rules = preview.to_program_rules(policy=policy)
         target = TargetInput(
             name=payload.target.name,
             primary_url=payload.target.primary_url,
             rules=rules,
         )
+    except HTTPException:
+        raise
     except (HackerOneScopeImportError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
