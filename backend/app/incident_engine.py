@@ -26,12 +26,14 @@ def build_incident_snapshot(
     watchdog: dict[str, Any],
     slo: dict[str, Any],
     error_budget: dict[str, Any],
+    observer: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Fuse redacted operational signals into one deterministic incident snapshot."""
     sources = {
         "watchdog": _state(watchdog.get("status")),
         "slo": _state(slo.get("state")),
         "error_budget": _state(error_budget.get("state")),
+        "observer": _state((observer or {}).get("state")),
     }
     overall = max(sources.values(), key=lambda item: _SEVERITY[item])
 

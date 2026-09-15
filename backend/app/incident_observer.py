@@ -7,6 +7,9 @@ from .incident_engine import build_incident_snapshot
 from .incident_lifecycle import apply_incident_snapshot
 from .incident_store import IncidentStore, IncidentStoreConflict
 from .operational_slo import build_operational_slo
+from .observer_metrics import observer_health_metrics
+from .observer_runtime import observer_runtime
+from .observer_slo import build_observer_slo
 
 
 def observe_incidents(
@@ -22,7 +25,9 @@ def observe_incidents(
     slo = build_operational_slo(metrics)
     budget = build_error_budget_status(telemetry)
     watchdog = metrics.get("worker_watchdog") or {"status": "error"}
-    snapshot = build_incident_snapshot(watchdog, slo, budget)
+    observer_metrics = observer_health_metrics(observer_runtime().snapshot())
+    observer_slo = build_observer_slo(observer_metrics)
+    snapshot = build_incident_snapshot(watchdog, slo, budget, observer_slo)
 
     for attempt in range(max_conflict_retries):
         history, version = store.read()
