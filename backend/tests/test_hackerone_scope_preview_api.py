@@ -1,9 +1,13 @@
 import pytest
 from fastapi import HTTPException
+from pydantic import ValidationError
 
 from app.main import (
+    HackerOneProgramPolicyInput,
+    HackerOneRulesPreviewInput,
     HackerOneScopePreviewInput,
     app,
+    preview_hackerone_rules,
     preview_hackerone_scope,
 )
 
@@ -85,3 +89,87 @@ def test_hackerone_scope_preview_route_is_in_authenticated_api_namespace():
 def test_hackerone_scope_preview_input_requires_document():
     with pytest.raises(Exception):
         HackerOneScopePreviewInput()
+
+
+def test_hackerone_rules_preview_requires_explicit_policy_and_does_not_persist():
+    payload = HackerOneRulesPreviewInput(
+        document={
+            "data": [
+                _resource("example.com", "Domain", True),
+                _resource("blocked.example.com", "Domain", False),
+            ]
+        },
+        policy=HackerOneProgramPolicyInput(
+            authorization_reference="H1-PROGRAM-42",
+            automated_scanning=False,
+            max_requests_per_second=1.25,
+        ),
+    )
+
+    result = preview_hackerone_rules(payload)
+
+    assert result["provider"] == "hackerone"
+    assert result["complete"] is True
+    assert result["requires_review"] is True
+    assert result["persisted"] is False
+    assert result["campaign_created"] is False
+    assert result["rules"] == {
+        "authorization_reference": "H1-PROGRAM-42",
+        "allowed_targets": ["example.com"],
+        "denied_targets": ["blocked.example.com"],
+        "max_requests_per_second": 1.25,
+        "destructive_testing": False,
+        "denial_of_service": False,
+        "social_engineering": False,
+        "credential_attacks": False,
+        "automated_scanning": False,
+        "notes": (
+            "Imported from HackerOne StructuredScope with explicit HackerOne "
+            "program policy; destructive, denial-of-service, social-engineering, "
+            "and credential-attack capabilities remain disabled."
+        ),
+    }
+
+
+@pytest.mark.parametrize(
+    "policy",
+    [
+        {"authorization_reference": "H1-PROGRAM-42", "max_requests_per_second": 1.0},
+        {"authorization_reference": "H1-PROGRAM-42", "automated_scanning": False},
+    ],
+)
+def test_hackerone_rules_preview_has_no_automation_or_rate_defaults(policy):
+    with pytest.raises(ValidationError):
+        HackerOneRulesPreviewInput(
+            document={"data": [_resource("example.com", "Domain", True)]},
+            policy=policy,
+        )
+
+
+def test_hackerone_rules_preview_rejects_unsupported_scope_fail_closed():
+    payload = HackerOneRulesPreviewInput(
+        document={
+            "data": [
+                _resource("example.com", "Domain", True),
+                _resource("https://example.com/admin", "Url", True),
+            ]
+        },
+        policy=HackerOneProgramPolicyInput(
+            authorization_reference="H1-PROGRAM-42",
+            automated_scanning=False,
+            max_requests_per_second=1.0,
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        preview_hackerone_rules(payload)
+
+    assert exc.value.status_code == 400
+    assert "cannot be converted" in str(exc.value.detail)
+
+
+def test_hackerone_rules_preview_route_is_in_authenticated_api_namespace():
+    schema = app.openapi()
+
+    assert "/api/imports/hackerone/rules-preview" in schema["paths"]
+    assert "post" in schema["paths"]["/api/imports/hackerone/rules-preview"]
