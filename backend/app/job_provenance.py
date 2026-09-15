@@ -67,7 +67,7 @@ def build_job_provenance(
                 "reasons": binding["reasons"],
             },
         )
-    return {
+    provenance = {
         "schema": PROVENANCE_SCHEMA,
         "campaign_id": str(campaign.id),
         "job_kind": str(job_kind),
@@ -76,6 +76,10 @@ def build_job_provenance(
         "policy_fingerprint": policy_fingerprint,
         "request_rate_limit": snapshot["max_requests_per_second"],
     }
+    if binding["required"]:
+        provenance["external_policy_provider"] = "hackerone"
+        provenance["external_policy_fingerprint"] = binding["binding_fingerprint"]
+    return provenance
 
 
 def attach_job_provenance(
@@ -121,6 +125,20 @@ def verify_job_provenance(job: dict[str, Any], campaign: Any) -> dict[str, Any]:
     actual = str(provenance.get("policy_fingerprint") or "")
     if actual != expected:
         reasons.append("policy_fingerprint_mismatch")
+
+    binding = verify_hackerone_campaign_binding(
+        campaign,
+        current_policy_fingerprint=expected,
+    )
+    if binding["required"]:
+        if not binding["valid"]:
+            reasons.append("external_policy_binding_invalid")
+        if provenance.get("external_policy_provider") != "hackerone":
+            reasons.append("external_policy_provider_mismatch")
+        if str(provenance.get("external_policy_fingerprint") or "") != str(
+            binding.get("binding_fingerprint") or ""
+        ):
+            reasons.append("external_policy_fingerprint_mismatch")
 
     snapshot = stable_policy_snapshot(campaign)
     if str(provenance.get("scope_host") or "").lower() != snapshot["host"]:
