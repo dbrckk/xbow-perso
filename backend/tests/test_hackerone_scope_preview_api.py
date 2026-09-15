@@ -171,3 +171,12 @@ def test_hackerone_rules_preview_route_is_in_authenticated_api_namespace():
 
     assert "/api/imports/hackerone/rules-preview" in schema["paths"]
     assert "post" in schema["paths"]["/api/imports/hackerone/rules-preview"]
+
+
+def test_hackerone_policy_requires_review_metadata_before_rules_preview():
+    with pytest.raises(ValidationError):
+        HackerOneProgramPolicyInput(
+            authorization_reference="H1-PROGRAM-42",
+            automated_scanning=False,
+            max_requests_per_second=1.0,
+        )
