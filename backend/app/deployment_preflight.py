@@ -10,6 +10,17 @@ def _configured(name: str) -> bool:
     return bool((os.getenv(name) or "").strip())
 
 
+def _production_mode() -> bool:
+    return (os.getenv("XBOW_DEPLOYMENT_ENV") or "").strip().lower() == "production"
+
+
+def _image_digest_configured(name: str) -> bool:
+    value = (os.getenv(name) or "").strip()
+    if not value:
+        return False
+    return "@sha256:" in value and len(value.rsplit("@sha256:", 1)[-1]) == 64
+
+
 def build_deployment_preflight(
     dependencies: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -17,6 +28,21 @@ def build_deployment_preflight(
 
     pentagi = safe_pentagi_runtime_capability()
     issues: list[dict[str, Any]] = []
+    production = _production_mode()
+
+    if production:
+        for env_name, code in (
+            ("XBOW_BACKEND_IMAGE", "backend_image_digest_missing"),
+            ("XBOW_FRONTEND_IMAGE", "frontend_image_digest_missing"),
+        ):
+            if not _image_digest_configured(env_name):
+                issues.append(
+                    {
+                        "code": code,
+                        "severity": "error",
+                        "component": "supply_chain",
+                    }
+                )
 
     if dependencies is not None and not bool(dependencies.get("ok")):
         issues.append(
@@ -113,6 +139,11 @@ def build_deployment_preflight(
     return {
         "status": status,
         "issues": issues,
+        "deployment_integrity": {
+            "production_mode": production,
+            "backend_image_digest_configured": _image_digest_configured("XBOW_BACKEND_IMAGE"),
+            "frontend_image_digest_configured": _image_digest_configured("XBOW_FRONTEND_IMAGE"),
+        },
         "dependencies_ready": (
             bool(dependencies.get("ok"))
             if dependencies is not None

@@ -1,0 +1,69 @@
+from __future__ import annotations
+
+from typing import Any, Callable
+
+from .error_budget import build_error_budget_status
+from .incident_domains import build_domain_incidents
+from .domain_incident_lifecycle import apply_domain_incidents
+from .incident_store import IncidentFenceConflict, IncidentStore, IncidentStoreConflict
+from .operational_slo import build_operational_slo
+from .observer_metrics import observer_health_metrics
+from .observer_runtime import observer_runtime
+from .observer_slo import build_observer_slo
+
+
+def observe_incidents(
+    store: IncidentStore,
+    metrics: dict[str, Any],
+    telemetry: dict[str, Any],
+    *,
+    max_conflict_retries: int = 3,
+    fence_owner: str | None = None,
+    fence_generation: int | None = None,
+) -> dict[str, Any]:
+    """Evaluate and persist operational incident state without execution side effects."""
+    slo = build_operational_slo(metrics)
+    budget = build_error_budget_status(telemetry)
+    watchdog = metrics.get("worker_watchdog") or {"status": "error"}
+    observer_metrics = observer_health_metrics(observer_runtime().snapshot())
+    observer_slo = build_observer_slo(observer_metrics)
+    snapshot = build_domain_incidents(watchdog, slo, budget, observer_slo)
+
+    for attempt in range(max_conflict_retries):
+        history, version = store.read()
+        updated = apply_domain_incidents(history, snapshot)
+        if updated == history:
+            return {
+                "changed": False,
+                "version": version,
+                "state": snapshot["state"],
+                "conflict_retries": attempt,
+            }
+        try:
+            new_version = store.write(
+                updated,
+                expected_version=version,
+                fence_owner=fence_owner,
+                fence_generation=fence_generation,
+            )
+            return {
+                "changed": True,
+                "version": new_version,
+                "state": snapshot["state"],
+                "conflict_retries": attempt,
+            }
+        except IncidentFenceConflict:
+            raise
+        except IncidentStoreConflict:
+            continue
+
+    raise IncidentStoreConflict("incident observer conflict retry budget exhausted")
+
+
+def run_incident_observation(
+    store: IncidentStore,
+    metrics_provider: Callable[[], dict[str, Any]],
+    telemetry_provider: Callable[[], dict[str, Any]],
+) -> dict[str, Any]:
+    """Single scheduler-friendly observation pass."""
+    return observe_incidents(store, metrics_provider(), telemetry_provider())

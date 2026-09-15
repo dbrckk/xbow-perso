@@ -6,6 +6,7 @@ from typing import Any
 
 from .queue_backend import create_queue
 from .storage_backend import create_storage
+from .metrics import build_operational_metrics
 
 
 # Backward-compatible test seam; runtime still resolves through create_storage().
@@ -48,15 +49,27 @@ def readiness() -> dict[str, Any]:
     else:
         artifacts = _artifact_store_ready(store.artifact_root)
 
+    try:
+        operational = (
+            build_operational_metrics(queue_backend=JobQueue(), storage_backend=store)
+            if store is not None
+            else {}
+        )
+        watchdog = operational.get("worker_watchdog") or {"status": "error"}
+    except Exception:
+        watchdog = {"status": "error"}
+
     return {
         "ok": (
             bool(queue.get("ok"))
             and bool(metadata.get("ok"))
             and bool(artifacts.get("ok"))
+            and watchdog.get("status") != "error"
         ),
         "queue": queue,
         "metadata": metadata,
         "artifacts": artifacts,
+        "worker_watchdog": watchdog,
     }
 
 
