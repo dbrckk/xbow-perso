@@ -15,6 +15,8 @@ def observe_incidents(
     telemetry: dict[str, Any],
     *,
     max_conflict_retries: int = 3,
+    fence_owner: str | None = None,
+    fence_generation: int | None = None,
 ) -> dict[str, Any]:
     """Evaluate and persist operational incident state without execution side effects."""
     slo = build_operational_slo(metrics)
@@ -33,7 +35,12 @@ def observe_incidents(
                 "conflict_retries": attempt,
             }
         try:
-            new_version = store.write(updated, expected_version=version)
+            new_version = store.write(
+                updated,
+                expected_version=version,
+                fence_owner=fence_owner,
+                fence_generation=fence_generation,
+            )
             return {
                 "changed": True,
                 "version": new_version,
