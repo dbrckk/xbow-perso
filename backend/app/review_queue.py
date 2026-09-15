@@ -10,6 +10,10 @@ from .hypothesis_engine import build_hypotheses
 from .hypothesis_memory import summarize_hypothesis_stability
 from .knowledge_memory import build_knowledge_snapshot, review_severity_bonus
 from .observation_graph import ObservationGraph, load_observation_graph
+from .reporting_governance import (
+    assess_report_artifact_freshness,
+    build_reporting_governance_snapshot,
+)
 
 ReviewKind = Literal[
     "validate_finding",
@@ -208,12 +212,43 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
         for item in summarize_hypothesis_stability(snapshots)
     }
     severities = {str(item.id): str(item.severity) for item in campaign.findings}
+    reporting = build_reporting_governance_snapshot(campaign.findings, graph)
+    stale_reports: list[dict[str, Any]] = []
+    for artifact in storage().list_artifacts(campaign.id):
+        if artifact.get("kind") != "report":
+            continue
+        generated = next(
+            (
+                event
+                for event in reversed(campaign.events)
+                if event.get("type") == "report_generated"
+                and event.get("artifact_id") == artifact["id"]
+            ),
+            None,
+        )
+        stale_reports.append(
+            assess_report_artifact_freshness(
+                artifact_id=str(artifact["id"]),
+                generated_governance_fingerprint=(
+                    generated.get("reporting_governance_fingerprint")
+                    if generated
+                    else None
+                ),
+                generated_provenance_fingerprint=(
+                    generated.get("report_provenance_fingerprint")
+                    if generated
+                    else None
+                ),
+                current=reporting,
+            )
+        )
     tasks = build_review_queue(
         graph,
         limit=limit,
         scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),
         stability=stability,
         severities=severities,
+        stale_reports=stale_reports,
     )
     return {
         "campaign_id": campaign.id,
@@ -221,6 +256,9 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
         "summary": {
             "total": len(tasks),
             "highest_priority": max((item.priority for item in tasks), default=0.0),
+            "stale_report_reviews": sum(
+                item.kind == "review_stale_report" for item in tasks
+            ),
         },
         "read_only": True,
         "advisory_only": True,
