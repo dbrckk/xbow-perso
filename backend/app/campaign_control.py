@@ -5,12 +5,14 @@ from fastapi import APIRouter, HTTPException
 from .campaign_runtime import campaign_runtime_limit_from_env, runtime_status
 from .circuit_breaker import circuit_breaker_state, record_circuit_reset
 from .decision_timeline import planner_stability_from_graph
+from .hackerone_api import router as hackerone_router
 from .observation_graph import load_observation_graph
 from .planner_budget import budget_usage, planner_budget_from_env
 from .planner_limits import planner_limits
 from .runtime_capabilities import safe_scanner_runtime_capability
 
 router = APIRouter()
+router.routes.extend(hackerone_router.routes)
 
 
 def _recon_telemetry(events: list[dict]) -> dict:
