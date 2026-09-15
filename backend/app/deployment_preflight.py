@@ -10,6 +10,18 @@ def _configured(name: str) -> bool:
     return bool((os.getenv(name) or "").strip())
 
 
+def _bool_env(name: str, default: bool = False) -> tuple[bool, bool]:
+    raw = os.getenv(name)
+    if raw is None:
+        return default, True
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True, True
+    if value in {"0", "false", "no", "off"}:
+        return False, True
+    return default, False
+
+
 def _production_mode() -> bool:
     return (os.getenv("XBOW_DEPLOYMENT_ENV") or "").strip().lower() == "production"
 
@@ -29,6 +41,26 @@ def build_deployment_preflight(
     pentagi = safe_pentagi_runtime_capability()
     issues: list[dict[str, Any]] = []
     production = _production_mode()
+    legacy_jobs_enabled, legacy_jobs_valid = _bool_env(
+        "XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS"
+    )
+
+    if not legacy_jobs_valid:
+        issues.append(
+            {
+                "code": "invalid_legacy_provenance_flag",
+                "severity": "error",
+                "component": "job_provenance",
+            }
+        )
+    elif legacy_jobs_enabled:
+        issues.append(
+            {
+                "code": "legacy_unprovenanced_jobs_enabled",
+                "severity": "warning",
+                "component": "job_provenance",
+            }
+        )
 
     if production:
         for env_name, code in (
@@ -159,6 +191,12 @@ def build_deployment_preflight(
             "model_provider_configured": _configured(
                 "XBOW_PENTAGI_MODEL_PROVIDER"
             ),
+        },
+        "job_provenance": {
+            "strict_by_default": True,
+            "legacy_unprovenanced_jobs_enabled": legacy_jobs_enabled,
+            "configuration_valid": legacy_jobs_valid,
+            "schema": "job-provenance-v1",
         },
         "read_only": True,
         "contains_secrets": False,

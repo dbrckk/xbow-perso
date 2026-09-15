@@ -9,6 +9,11 @@ from contextlib import contextmanager
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .campaign_audit import append_campaign_event
 from .evidence_quality import build_evidence_quality
+from .job_provenance import (
+    JobProvenanceError,
+    provenance_required_for_job_kind,
+    require_job_provenance,
+)
 from .jobqueue import JobQueue
 from .learning_memory import worker_outcome_event
 from .queue_backend import create_queue
@@ -447,6 +452,30 @@ def _worker_bool(name: str, default: bool) -> bool:
     raise ValueError(f"{name} must be a boolean")
 
 
+def _legacy_unprovenanced_jobs_allowed() -> bool:
+    return _worker_bool("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", False)
+
+
+def _verify_policy_bound_job(job: dict, store: Storage) -> None:
+    payload = job.get("payload") if isinstance(job.get("payload"), dict) else {}
+    has_provenance = "_provenance" in payload
+    required = provenance_required_for_job_kind(str(job.get("kind") or ""))
+
+    if required and not has_provenance:
+        if _legacy_unprovenanced_jobs_allowed():
+            return
+        raise WorkerPolicyError("job provenance rejected: provenance_missing")
+
+    if not has_provenance:
+        return
+
+    campaign, _version = _campaign(store, job["campaign_id"])
+    try:
+        require_job_provenance(job, campaign)
+    except JobProvenanceError as exc:
+        raise WorkerPolicyError(str(exc)) from exc
+
+
 def _active_scanner_execution_requested() -> bool:
     return (
         _worker_bool("XBOW_ENABLE_ACTIVE_SCANS", False)
@@ -473,6 +502,7 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
     if not job:
         return False
     try:
+        _verify_policy_bound_job(job, store)
         with _lease_heartbeat(queue, job["id"], worker_id):
             if job["kind"] == "strix_scan":
                 process_strix_scan(job, queue, store)

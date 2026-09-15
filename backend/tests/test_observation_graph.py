@@ -61,6 +61,7 @@ def test_planner_progresses_through_bounded_phases():
     assert AdaptivePlanner().plan(active_campaign, graph)[0].kind == "validate"
 
     graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+    graph.add(Observation("ve1", "evidence", "validation-artifact", "validator", parent_ids=("v1",)))
     assert AdaptivePlanner().plan(active_campaign, graph)[0].kind == "stop"
 
     active_campaign.findings[0].status = "confirmed"
@@ -84,6 +85,7 @@ def test_planner_waits_for_explicit_resolution_after_observed_validation():
     graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
     graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
     graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+    graph.add(Observation("ve1", "evidence", "validation-artifact", "validator", parent_ids=("v1",)))
 
     action = AdaptivePlanner().plan(campaign(findings=(finding(),)), graph)[0]
 
@@ -97,6 +99,7 @@ def test_planner_does_not_generate_report_when_all_findings_are_rejected():
     graph.add(Observation("e1", "endpoint", "/api", "crawler", parent_ids=("a1",)))
     graph.add(Observation("f1", "finding", "candidate", "scanner", parent_ids=("e1",)))
     graph.add(Observation("v1", "validation", "observed", "validator", parent_ids=("f1",)))
+    graph.add(Observation("ve1", "evidence", "validation-artifact", "validator", parent_ids=("v1",)))
 
     action = AdaptivePlanner().plan(campaign(findings=(finding(status="rejected"),)), graph)[0]
 

@@ -17,6 +17,7 @@ from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .incident_api import IncidentApiConflict, acknowledge_incident_versioned, read_incident_status
 from .incident_store import IncidentStore
+from .job_provenance import attach_job_provenance, verify_job_provenance
 from .observer_metrics import observer_health_metrics
 from .observer_runtime import observer_runtime
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
@@ -26,7 +27,7 @@ from .readiness import readiness as dependency_readiness
 from .storage import ArtifactIntegrityError, CampaignConflictError
 from .storage_backend import StorageBackend, create_storage
 from .totp_auth import require_totp_for_mutation
-from .validation_state import has_observed_independent_validation
+from .validation_state import has_evidence_backed_independent_validation
 
 app = FastAPI(title="xbow-perso", version="0.4.0")
 
@@ -214,9 +215,9 @@ def _campaign_graph(campaign_id: str):
     return ObservationGraph.from_records(storage().list_observations(campaign_id))
 
 
-def _has_observed_independent_validation(campaign_id: str, finding: Finding) -> bool:
+def _has_evidence_backed_independent_validation(campaign_id: str, finding: Finding) -> bool:
     graph = _campaign_graph(campaign_id)
-    return has_observed_independent_validation(graph, f"finding:{finding.id}")
+    return has_evidence_backed_independent_validation(graph, f"finding:{finding.id}")
 
 
 def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]:
@@ -245,7 +246,12 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
     )
 
 
-def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[str, Any]:
+def sanitized_scan_payload(
+    campaign: Campaign,
+    receipt: dict[str, Any],
+    *,
+    job_kind: str = "strix_scan",
+) -> dict[str, Any]:
     """Return deterministic worker input suitable for queue idempotency.
 
     The audit receipt keeps its timestamp in campaign events/API responses, but
@@ -253,7 +259,7 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
     """
     transient = {"timestamp", "receipt_hash", "signature", "signature_alg", "integrity_mode"}
     stable_receipt = {key: value for key, value in receipt.items() if key not in transient}
-    return {
+    payload = {
         "campaign_id": campaign.id,
         "target": str(campaign.target.primary_url),
         "policy": stable_receipt,
@@ -268,6 +274,12 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
             "automated_scanning": campaign.target.rules.automated_scanning,
         },
     }
+    return attach_job_provenance(
+        payload,
+        campaign,
+        job_kind=job_kind,
+        action="automated_scan",
+    )
 
 
 @app.get("/live")
@@ -328,6 +340,7 @@ def system_capabilities():
             "optimistic_campaign_versioning": True,
             "crash_safe_outbox": True,
             "outbox_observability": True,
+            "policy_bound_job_provenance": True,
         },
         "execution": {
             "strix_scanning": "gated",
@@ -1189,6 +1202,24 @@ def get_job(job_id: str):
     return job
 
 
+@app.get("/api/jobs/{job_id}/provenance")
+def get_job_provenance_status(job_id: str):
+    job = queue().get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    campaign = assert_campaign_exists(str(job["campaign_id"]))
+    verification = verify_job_provenance(job, campaign)
+    return {
+        "job_id": job["id"],
+        "campaign_id": campaign.id,
+        "job_kind": job["kind"],
+        "provenance": verification,
+        "read_only": True,
+        "payload_exposed": False,
+        "fail_closed_capable": True,
+    }
+
+
 def _validation_request_id(finding_id: str) -> str:
     return f"validation:{finding_id}"
 
@@ -1306,7 +1337,16 @@ def add_finding(campaign_id: str, finding: Finding):
     validation_job = queue().enqueue(
         campaign.id,
         "independent_validation",
-        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": current.asset},
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "finding_id": finding.id,
+                "asset": current.asset,
+            },
+            latest,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key=request_id,
     )
@@ -1438,7 +1478,12 @@ def _ensure_completion_report(campaign: Campaign, version: int) -> Campaign:
     report_job = queue().enqueue(
         campaign.id,
         "report",
-        {"campaign_id": campaign.id, "platform": platform},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": platform},
+            latest,
+            job_kind="report",
+            action="report",
+        ),
         max_attempts=2,
         dedupe_key=request_id,
     )
@@ -1462,8 +1507,14 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
         raise HTTPException(status_code=404, detail="Finding not found")
     if validator == finding.discovered_by:
         raise HTTPException(status_code=409, detail="Discovery agent cannot validate its own finding")
-    if not _has_observed_independent_validation(campaign_id, finding):
-        raise HTTPException(status_code=409, detail="Finding requires observed independent validation evidence before resolution")
+    if not _has_evidence_backed_independent_validation(campaign_id, finding):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Finding requires evidence-backed independent validation "
+                "before resolution"
+            ),
+        )
 
     desired_status = "confirmed" if confirmed else "rejected"
     if finding.status == desired_status and finding.validated_by == validator:
@@ -1536,7 +1587,12 @@ def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bu
     job = queue().enqueue(
         campaign.id,
         "report",
-        {"campaign_id": campaign.id, "platform": platform},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": platform},
+            latest,
+            job_kind="report",
+            action="report",
+        ),
         max_attempts=2,
         dedupe_key=f"report:{platform}:{request_id}",
     )

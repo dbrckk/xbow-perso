@@ -80,6 +80,39 @@ def test_report_readiness_requires_complete_independent_evidence():
     assert item.score == 1.0
     assert item.ready_for_human_review is True
     assert item.blockers == ()
+    assert item.evidence_backed_independent_validation is True
+    assert item.consensus_level == "single_evidence_backed_validator"
+
+
+def test_observed_but_unevidenced_validation_remains_blocked():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "validation:v1",
+            "validation",
+            "observed",
+            "independent-validator",
+            parent_ids=("finding:f1",),
+        )
+    )
+
+    item = build_report_readiness([_finding("f1", "confirmed")], graph)[0]
+
+    assert item.independent_validation_observed is True
+    assert item.evidence_backed_independent_validation is False
+    assert item.consensus_level == "none"
+    assert item.ready_for_human_review is False
+    assert "missing_evidence_backed_independent_validation" in item.blockers
 
 
 def test_report_readiness_duplicate_requires_review():
@@ -96,7 +129,6 @@ def test_report_readiness_duplicate_requires_review():
 
 def test_report_readiness_route_is_exposed():
     assert "/api/campaigns/{campaign_id}/report-readiness" in app.openapi()["paths"]
-
 
 
 def test_report_readiness_distinguishes_human_review_from_submission_completeness():

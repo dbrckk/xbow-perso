@@ -2,6 +2,8 @@ from app.observation_graph import Observation, ObservationGraph
 from app.validation_state import (
     analyze_validation_state,
     attempted_finding_ids,
+    evidence_backed_independent_finding_ids,
+    has_evidence_backed_independent_validation,
     has_observed_independent_validation,
     observed_independent_finding_ids,
 )
@@ -141,3 +143,67 @@ def test_non_finding_validation_parent_is_ignored():
     assert state.finding_ids == frozenset()
     assert state.attempted_finding_ids == frozenset()
     assert state.observed_independent_finding_ids == frozenset()
+
+
+def test_observed_validation_without_child_evidence_is_not_evidence_backed():
+    graph = _graph()
+
+    state = analyze_validation_state(graph)
+
+    assert state.observed_independent_finding_ids == {"finding:f1"}
+    assert state.evidence_backed_independent_finding_ids == frozenset()
+    assert state.unevidenced_finding_ids == {"finding:f1"}
+    assert has_evidence_backed_independent_validation(graph, "finding:f1") is False
+
+
+def test_evidence_child_of_independent_observed_validation_is_evidence_backed():
+    graph = _graph()
+    graph.add(
+        Observation(
+            id="evidence:e1",
+            kind="evidence",
+            value="artifact-reference",
+            source="validator",
+            parent_ids=("validation:v1",),
+        )
+    )
+
+    state = analyze_validation_state(graph)
+
+    assert evidence_backed_independent_finding_ids(graph) == {"finding:f1"}
+    assert state.unevidenced_finding_ids == frozenset()
+    assert state.all_evidence_backed_independently is True
+
+
+def test_evidence_attached_directly_to_finding_does_not_count():
+    graph = _graph()
+    graph.add(
+        Observation(
+            id="evidence:e1",
+            kind="evidence",
+            value="artifact-reference",
+            source="validator",
+            parent_ids=("finding:f1",),
+        )
+    )
+
+    assert evidence_backed_independent_finding_ids(graph) == set()
+
+
+def test_evidence_on_self_validation_does_not_count_as_independent():
+    graph = _graph(validation_source="scanner")
+    graph.add(
+        Observation(
+            id="evidence:e1",
+            kind="evidence",
+            value="artifact-reference",
+            source="scanner",
+            parent_ids=("validation:v1",),
+        )
+    )
+
+    state = analyze_validation_state(graph)
+
+    assert state.observed_independent_finding_ids == frozenset()
+    assert state.evidence_backed_independent_finding_ids == frozenset()
+    assert state.all_evidence_backed_independently is False

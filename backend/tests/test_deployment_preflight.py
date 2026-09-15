@@ -14,6 +14,7 @@ _ENV_NAMES = (
     "XBOW_DEPLOYMENT_ENV",
     "XBOW_BACKEND_IMAGE",
     "XBOW_FRONTEND_IMAGE",
+    "XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS",
 )
 
 
@@ -171,4 +172,41 @@ def test_production_preflight_rejects_mutable_tags(monkeypatch):
     assert {item["code"] for item in result["issues"]} == {
         "backend_image_digest_missing",
         "frontend_image_digest_missing",
+    }
+
+
+def test_preflight_reports_strict_job_provenance_by_default(monkeypatch):
+    _clear(monkeypatch)
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["job_provenance"] == {
+        "strict_by_default": True,
+        "legacy_unprovenanced_jobs_enabled": False,
+        "configuration_valid": True,
+        "schema": "job-provenance-v1",
+    }
+
+
+def test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", "true")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "warning"
+    assert "legacy_unprovenanced_jobs_enabled" in {
+        item["code"] for item in result["issues"]
+    }
+
+
+def test_preflight_rejects_invalid_legacy_provenance_boolean(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", "maybe")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert "invalid_legacy_provenance_flag" in {
+        item["code"] for item in result["issues"]
     }
