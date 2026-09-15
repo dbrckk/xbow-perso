@@ -5,7 +5,7 @@ from typing import Any, Callable
 from .error_budget import build_error_budget_status
 from .incident_domains import build_domain_incidents
 from .domain_incident_lifecycle import apply_domain_incidents
-from .incident_store import IncidentStore, IncidentStoreConflict
+from .incident_store import IncidentFenceConflict, IncidentStore, IncidentStoreConflict
 from .operational_slo import build_operational_slo
 from .observer_metrics import observer_health_metrics
 from .observer_runtime import observer_runtime
@@ -52,6 +52,8 @@ def observe_incidents(
                 "state": snapshot["state"],
                 "conflict_retries": attempt,
             }
+        except IncidentFenceConflict:
+            raise
         except IncidentStoreConflict:
             continue
 
