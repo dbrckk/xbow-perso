@@ -29,7 +29,7 @@ def seeded_store(tmp_path):
 
 def test_read_contract_exposes_active_history_and_version(tmp_path):
     result = read_incident_status(seeded_store(tmp_path))
-    assert result["active"]["fingerprint"] == "abc"
+    assert result["active"][0]["fingerprint"] == "abc"
     assert result["version"] >= 2
     assert result["read_only"] is True
 
