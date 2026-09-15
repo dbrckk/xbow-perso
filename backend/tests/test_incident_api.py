@@ -13,8 +13,9 @@ def seeded_store(tmp_path):
     _, version = store.read()
     store.write(
         [{
+            "domain": "workload",
             "fingerprint": "abc",
-            "dedupe_key": "operational:abc",
+            "dedupe_key": "operational:workload:abc",
             "severity": "degraded",
             "status": "opened",
             "opened_at": "2026-09-15T12:00:00+00:00",
