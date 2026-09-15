@@ -271,6 +271,8 @@ def campaign_review_queue_history(
     campaign_id: str,
     limit: int = Query(default=50, ge=1, le=200),
 ) -> dict[str, Any]:
+    from .main import assert_campaign_exists, storage
+
     campaign = assert_campaign_exists(campaign_id)
     rows = storage().list_review_queue_snapshots(campaign.id, limit=limit)
     chronological = list(reversed(rows))
