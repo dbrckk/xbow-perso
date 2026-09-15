@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 from app.observation_graph import Observation, ObservationGraph
 from app.reporting_governance import (
+    assess_report_artifact_freshness,
     build_reporting_governance_snapshot,
     verify_reporting_governance_snapshot,
 )
@@ -112,3 +113,39 @@ def test_reporting_governance_snapshot_verifier_detects_tampering():
         verification["expected_fingerprint"]
         != verification["computed_fingerprint"]
     )
+
+
+
+def test_report_artifact_freshness_matches_current_governance():
+    snapshot = build_reporting_governance_snapshot([_finding()], _graph())
+
+    result = assess_report_artifact_freshness(
+        artifact_id="report-1",
+        generated_governance_fingerprint=snapshot.governance_fingerprint,
+        generated_provenance_fingerprint=snapshot.provenance_fingerprint,
+        current=snapshot,
+    )
+
+    assert result["fresh"] is True
+    assert result["stale"] is False
+    assert result["stale_reasons"] == []
+    assert result["read_only"] is True
+    assert result["automatic_mutation"] is False
+
+
+def test_report_artifact_freshness_explains_governance_and_provenance_drift():
+    snapshot = build_reporting_governance_snapshot([_finding()], _graph())
+
+    result = assess_report_artifact_freshness(
+        artifact_id="report-1",
+        generated_governance_fingerprint="0" * 64,
+        generated_provenance_fingerprint="1" * 64,
+        current=snapshot,
+    )
+
+    assert result["fresh"] is False
+    assert result["stale"] is True
+    assert result["stale_reasons"] == [
+        "reporting_governance_changed",
+        "report_provenance_changed",
+    ]
