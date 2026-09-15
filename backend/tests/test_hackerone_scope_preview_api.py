@@ -316,15 +316,16 @@ def test_hackerone_conservative_admission_blocks_nontrivial_policy(
     api = FastAPI()
     api.include_router(hackerone_router)
     client = TestClient(api)
+    admission_policy = {
+        "automated_scanning": True,
+        "additional_restrictions": [],
+    }
+    admission_policy.update(policy_overrides)
     response = client.post(
         "/api/imports/hackerone/campaigns",
         json={
             "document": {"data": [_resource("example.com", "Domain", True)]},
-            "policy": _policy_values(
-                automated_scanning=True,
-                additional_restrictions=[],
-                **policy_overrides,
-            ),
+            "policy": _policy_values(**admission_policy),
             "target": {
                 "name": "HackerOne blocked fixture",
                 "primary_url": "https://example.com",
