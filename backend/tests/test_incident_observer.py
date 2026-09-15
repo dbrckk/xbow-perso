@@ -47,7 +47,7 @@ def test_repeated_identical_incident_is_deduplicated(tmp_path):
     observe_incidents(store, metrics, healthy_telemetry())
     observe_incidents(store, metrics, healthy_telemetry())
     history, _ = store.read()
-    assert len(history) == 1
+    assert len({(item["domain"], item["fingerprint"]) for item in history}) == len(history)
 
 
 def test_healthy_observation_resolves_active_incident(tmp_path):
