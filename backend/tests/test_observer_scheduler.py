@@ -26,7 +26,8 @@ def test_scheduler_runs_only_for_leader(tmp_path):
     lease.acquire("other", ttl_seconds=90, now=datetime.now(timezone.utc))
     called = []
     result = run_scheduled_observation(lease, "me", lambda owner, generation: called.append((owner, generation)) or {"ok": True})
-    assert result["ran"] is False\n    assert result["reason"] == "not_leader"
+    assert result["ran"] is False
+    assert result["reason"] == "not_leader"
     assert called == []
 
 
