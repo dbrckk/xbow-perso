@@ -2,14 +2,12 @@ import pytest
 from fastapi import HTTPException
 from pydantic import ValidationError
 
-from app.main import (
+from app.hackerone_api import (
     HackerOneProgramPolicyInput,
     HackerOneRulesPreviewInput,
-    HackerOneScopePreviewInput,
-    app,
     preview_hackerone_rules,
-    preview_hackerone_scope,
 )
+from app.main import HackerOneScopePreviewInput, app, preview_hackerone_scope
 
 
 def _resource(identifier: str, asset_type: str, eligible: bool):
