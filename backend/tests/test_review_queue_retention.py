@@ -4,6 +4,7 @@ from uuid import uuid4
 import pytest
 
 from app.postgres_storage import PostgresStorage
+from app.review_queue import persist_review_queue_snapshot
 from app.storage import Storage
 
 
@@ -29,10 +30,10 @@ def _snapshot(index: int) -> tuple[str, dict[str, object]]:
 def _assert_retention(store, campaign_id: str) -> None:
     store.save_campaign(_campaign(campaign_id))
     for index in range(3):
-        fingerprint, document = _snapshot(index)
-        store.put_review_queue_snapshot(
+        _fingerprint, document = _snapshot(index)
+        persist_review_queue_snapshot(
+            store,
             campaign_id,
-            fingerprint,
             document,
             retention_limit=2,
         )
@@ -62,9 +63,9 @@ def test_review_queue_snapshot_retention_is_campaign_scoped(tmp_path):
     second_id = "retention-b"
     store.save_campaign(_campaign(second_id))
     fingerprint, document = _snapshot(9)
-    store.put_review_queue_snapshot(
+    persist_review_queue_snapshot(
+        store,
         second_id,
-        fingerprint,
         document,
         retention_limit=2,
     )
@@ -74,6 +75,24 @@ def test_review_queue_snapshot_retention_is_campaign_scoped(tmp_path):
         row["fingerprint"]
         for row in store.list_review_queue_snapshots(second_id, limit=10)
     ] == [fingerprint]
+
+
+def test_review_queue_snapshot_retention_rejects_unsafe_bounds(tmp_path):
+    store = Storage(
+        str(tmp_path / "db.sqlite3"),
+        str(tmp_path / "artifacts"),
+    )
+    store.save_campaign(_campaign("retention-bounds"))
+    _fingerprint, document = _snapshot(1)
+
+    for invalid in (0, 501):
+        with pytest.raises(ValueError, match="between 1 and 500"):
+            persist_review_queue_snapshot(
+                store,
+                "retention-bounds",
+                document,
+                retention_limit=invalid,
+            )
 
 
 POSTGRES_URL = os.getenv("XBOW_TEST_POSTGRES_URL")
