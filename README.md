@@ -361,3 +361,10 @@ These reasons are observational only: they explain why a report returned to revi
 Generated Markdown report drafts now embed a read-only Governance & Audit Manifest containing the `reporting-governance-v1` fingerprint, provenance fingerprint, verification status, represented finding count, and submission-ready count.
 
 The same fingerprints and verification flag are persisted in report artifact metadata and the `report_generated` campaign event. This binds the draft to the exact governance state used at generation time and makes later review/reapproval decisions auditable without authorizing external submission.
+
+
+### Report artifact freshness
+
+Generated report artifacts can be assessed read-only against the campaign's current reporting-governance snapshot through `GET /api/campaigns/{campaign_id}/reports/{artifact_id}/freshness`.
+
+The assessment compares the governance and provenance fingerprints captured by the `report_generated` event with the current `reporting-governance-v1` state. It returns explicit drift reasons such as `reporting_governance_changed`, `report_provenance_changed`, or missing generation fingerprints. The check never regenerates, reapproves, submits, or mutates a report automatically.
