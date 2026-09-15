@@ -246,3 +246,4 @@ def test_overview_surfaces_stale_report_artifact(tmp_path, monkeypatch):
         result["reports"]["freshness"][0]["stale_reasons"]
     )
     assert "stale_report_artifact" in result["attention_reasons"]
+    assert result["review_queue"]["stale_report_reviews"] == 1
