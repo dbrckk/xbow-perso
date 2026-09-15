@@ -226,3 +226,10 @@ def test_hackerone_rules_preview_route_is_in_authenticated_api_namespace():
 
     assert "/api/imports/hackerone/rules-preview" in schema["paths"]
     assert "post" in schema["paths"]["/api/imports/hackerone/rules-preview"]
+
+
+def test_hackerone_conservative_campaign_admission_route_exists():
+    schema = app.openapi()
+
+    assert "/api/imports/hackerone/campaigns" in schema["paths"]
+    assert "post" in schema["paths"]["/api/imports/hackerone/campaigns"]
