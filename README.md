@@ -371,3 +371,6 @@ The assessment compares the governance and provenance fingerprints captured by t
 
 
 Campaign overview aggregates report freshness with `fresh` / `stale` counts and per-report drift reasons. Any stale generated report raises the read-only attention reason `stale_report_artifact`, making governance drift visible to operators without automatically regenerating or reapproving the report.
+
+
+Stale reports are also converted into bounded advisory `review_stale_report` tasks in the campaign overview review queue. These tasks reference only the report artifact identifier and drift reasons, have no execution authority, and require explicit human re-review rather than automatic regeneration or approval.
