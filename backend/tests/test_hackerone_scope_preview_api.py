@@ -278,3 +278,63 @@ def test_hackerone_conservative_admission_persists_policy_binding(tmp_path, monk
     assert bound[0]["mode"] == "conservative"
     assert bound[0]["policy_snapshot_sha256"] == result["policy_binding"]["policy_snapshot_sha256"]
     assert bound[0]["binding_fingerprint"] == result["policy_binding"]["binding_fingerprint"]
+
+
+@pytest.mark.parametrize(
+    ("policy_overrides", "reason"),
+    [
+        ({"safe_harbor_confirmed": False}, "safe_harbor_required"),
+        ({"automated_scanning": False}, "automated_scanning_not_authorized"),
+        (
+            {
+                "test_account_required": True,
+                "test_account_constraints": "Use program-issued account only",
+            },
+            "test_account_workflow_not_supported",
+        ),
+        (
+            {"test_account_constraints": "Use a dedicated tenant"},
+            "test_account_constraints_not_supported",
+        ),
+        (
+            {"additional_restrictions": ["Do not access customer records"]},
+            "additional_restrictions_require_manual_enforcement",
+        ),
+    ],
+)
+def test_hackerone_conservative_admission_blocks_nontrivial_policy(
+    tmp_path,
+    monkeypatch,
+    policy_overrides,
+    reason,
+):
+    db = str(tmp_path / "blocked.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    api = FastAPI()
+    api.include_router(hackerone_router)
+    client = TestClient(api)
+    response = client.post(
+        "/api/imports/hackerone/campaigns",
+        json={
+            "document": {"data": [_resource("example.com", "Domain", True)]},
+            "policy": _policy_values(
+                automated_scanning=True,
+                additional_restrictions=[],
+                **policy_overrides,
+            ),
+            "target": {
+                "name": "HackerOne blocked fixture",
+                "primary_url": "https://example.com",
+            },
+        },
+    )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == {
+        "message": "HackerOne conservative admission blocked",
+        "reason": reason,
+    }
+    assert Storage(db, artifacts).list_campaigns() == []
