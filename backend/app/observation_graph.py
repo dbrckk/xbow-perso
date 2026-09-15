@@ -163,7 +163,17 @@ class AdaptivePlanner:
                 )
             ]
 
-        if findings and validation_state.all_observed_independently:
+        if findings and validation_state.unevidenced_finding_ids:
+            return [
+                PlannedAction(
+                    "stop",
+                    host,
+                    "independent validation is observed but lacks attached evidence",
+                    100,
+                )
+            ]
+
+        if findings and validation_state.all_evidence_backed_independently:
             unresolved_findings = [
                 item
                 for item in campaign_findings
