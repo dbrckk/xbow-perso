@@ -25,6 +25,7 @@ from .red_team_decision import build_red_team_decisions, router as red_team_deci
 from .report_quality import summarize_report_quality
 from .report_readiness import router as report_readiness_router
 from .reporting_governance import (
+    assess_report_artifact_freshness,
     build_reporting_governance_snapshot,
     verify_reporting_governance_snapshot,
 )
@@ -109,6 +110,7 @@ def campaign_overview(campaign_id: str):
     report_states = Counter()
     report_integrity_errors = 0
     reports = []
+    report_freshness = []
     report_artifact_ids: list[str] = []
     for artifact in store.list_artifacts(campaign.id):
         if artifact.get("kind") != "report":
@@ -126,6 +128,31 @@ def campaign_overview(campaign_id: str):
         ).to_dict()
         reports.append(status)
         report_states[status["state"]] += 1
+        generated = next(
+            (
+                event
+                for event in reversed(campaign.events)
+                if event.get("type") == "report_generated"
+                and event.get("artifact_id") == artifact["id"]
+            ),
+            None,
+        )
+        report_freshness.append(
+            assess_report_artifact_freshness(
+                artifact_id=str(artifact["id"]),
+                generated_governance_fingerprint=(
+                    generated.get("reporting_governance_fingerprint")
+                    if generated
+                    else None
+                ),
+                generated_provenance_fingerprint=(
+                    generated.get("report_provenance_fingerprint")
+                    if generated
+                    else None
+                ),
+                current=reporting,
+            )
+        )
 
     submission_audit = audit_campaign_submissions(
         campaign,
@@ -142,6 +169,8 @@ def campaign_overview(campaign_id: str):
     attention_reasons = []
     if report_integrity_errors:
         attention_reasons.append("report_integrity_error")
+    if any(item["stale"] for item in report_freshness):
+        attention_reasons.append("stale_report_artifact")
     if not submission_audit["valid"]:
         attention_reasons.append("submission_event_audit_invalid")
     if blocked:
@@ -351,6 +380,9 @@ def campaign_overview(campaign_id: str):
             "submission_audit": submission_audit,
             "verified": len(reports),
             "integrity_errors": report_integrity_errors,
+            "fresh": sum(item["fresh"] for item in report_freshness),
+            "stale": sum(item["stale"] for item in report_freshness),
+            "freshness": report_freshness,
             "submission_ready": report_states.get("approved", 0),
             "submitted": report_states.get("submitted", 0),
             "by_state": {
