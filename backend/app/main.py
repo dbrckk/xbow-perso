@@ -15,6 +15,8 @@ from pydantic import BaseModel, Field, HttpUrl, model_validator
 from .api_outbox import has_event, outbox_snapshot, pending_request_id
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
+from .incident_api import IncidentApiConflict, acknowledge_incident_versioned, read_incident_status
+from .incident_store import IncidentStore
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
 from .policy_integrity import seal_policy_receipt, verify_policy_receipt
 from .queue_backend import QueueBackend, create_queue
@@ -52,6 +54,14 @@ def storage() -> StorageBackend:
 
 def queue() -> QueueBackend:
     return create_queue()
+
+
+def incident_store() -> IncidentStore:
+    store = storage()
+    db_path = getattr(store, "db_path", None)
+    if not db_path:
+        raise HTTPException(status_code=503, detail="Incident persistence unavailable")
+    return IncidentStore(str(db_path))
 
 
 def _stable_key(prefix: str, *parts: str) -> str:
@@ -140,6 +150,11 @@ class EvidenceInput(BaseModel):
 
 class HackerOneScopePreviewInput(BaseModel):
     document: dict[str, Any]
+
+
+class IncidentAcknowledgeInput(BaseModel):
+    fingerprint: str = Field(min_length=1, max_length=64, pattern=r"^[0-9a-f]+$")
+    expected_version: int = Field(ge=1)
 
 
 def normalize_pattern(pattern: str) -> str:
@@ -359,6 +374,26 @@ def system_capabilities():
             ),
         },
     }
+
+
+@app.get("/api/incidents")
+def get_incidents():
+    return read_incident_status(incident_store())
+
+
+@app.post("/api/incidents/acknowledge")
+def acknowledge_incident(payload: IncidentAcknowledgeInput):
+    try:
+        return acknowledge_incident_versioned(
+            incident_store(),
+            payload.fingerprint,
+            expected_version=payload.expected_version,
+        )
+    except IncidentApiConflict as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Incident state changed concurrently; reload and retry",
+        ) from exc
 
 
 @app.get("/api/agents")
