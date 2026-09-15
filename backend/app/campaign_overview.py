@@ -158,6 +158,7 @@ def campaign_overview(campaign_id: str):
         scope_checker=scope_checker,
         stale_reports=report_freshness,
     )
+    review_snapshot = review_queue_snapshot(review_tasks)
 
     submission_audit = audit_campaign_submissions(
         campaign,
@@ -317,6 +318,7 @@ def campaign_overview(campaign_id: str):
             "scope_aware": True,
         },
         "review_queue": {
+            "snapshot": review_snapshot,
             "total": len(review_tasks),
             "highest_priority": max((item.priority for item in review_tasks), default=0.0),
             "stale_report_reviews": sum(
