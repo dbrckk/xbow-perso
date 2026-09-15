@@ -215,6 +215,30 @@ def build_review_queue(
     )[:limit]
 
 
+def review_queue_snapshot(tasks: list[ReviewTask]) -> dict[str, Any]:
+    task_ids = sorted(item.task_id for item in tasks)
+    canonical = json.dumps(
+        {
+            "schema": "review-queue-snapshot-v1",
+            "task_ids": task_ids,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    by_kind: dict[str, int] = {}
+    for item in tasks:
+        by_kind[item.kind] = by_kind.get(item.kind, 0) + 1
+    return {
+        "schema": "review-queue-snapshot-v1",
+        "fingerprint": hashlib.sha256(canonical).hexdigest(),
+        "task_count": len(tasks),
+        "task_ids": task_ids,
+        "by_kind": dict(sorted(by_kind.items())),
+        "read_only": True,
+        "advisory_only": True,
+    }
+
+
 @router.get("/api/campaigns/{campaign_id}/review-queue")
 def campaign_review_queue(campaign_id: str, limit: int = 25):
     from .main import assert_campaign_exists, is_host_allowed, storage
@@ -266,8 +290,10 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
         severities=severities,
         stale_reports=stale_reports,
     )
+    snapshot = review_queue_snapshot(tasks)
     return {
         "campaign_id": campaign.id,
+        "snapshot": snapshot,
         "tasks": [item.to_dict() for item in tasks],
         "summary": {
             "total": len(tasks),
