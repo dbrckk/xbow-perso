@@ -32,6 +32,11 @@ class FakeStorage:
 def test_readiness_requires_database_and_artifact_store(tmp_path, monkeypatch):
     monkeypatch.setattr(readiness, "JobQueue", HealthyQueue)
     monkeypatch.setattr(readiness, "Storage", lambda: FakeStorage(tmp_path / "artifacts"))
+    monkeypatch.setattr(
+        readiness,
+        "build_operational_metrics",
+        lambda **kwargs: {"worker_watchdog": {"status": "ok"}},
+    )
 
     result = readiness.readiness()
 

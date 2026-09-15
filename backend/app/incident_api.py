@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from .incident_lifecycle import acknowledge_incident, incident_reliability_stats
+from .domain_incident_lifecycle import active_incidents_by_domain
 from .incident_store import IncidentStore, IncidentStoreConflict
 
 
@@ -12,10 +13,12 @@ class IncidentApiConflict(RuntimeError):
 
 def read_incident_status(store: IncidentStore) -> dict[str, Any]:
     history, version = store.read()
-    active = next((item for item in reversed(history) if item.get("status") != "resolved"), None)
+    active_by_domain = active_incidents_by_domain(history)
+    active = [item for item in active_by_domain.values() if item is not None]
     return {
         "version": version,
         "active": active,
+        "active_by_domain": active_by_domain,
         "history": history,
         "reliability": incident_reliability_stats(history),
         "read_only": True,

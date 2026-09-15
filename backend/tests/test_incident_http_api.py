@@ -35,7 +35,7 @@ def test_incident_read_returns_versioned_state(monkeypatch, tmp_path):
     payload = response.json()
     assert payload["version"] >= 1
     assert payload["history"] == []
-    assert payload["active"] is None
+    assert payload["active"] == []
 
 
 def test_acknowledge_unknown_incident_is_safe_noop(monkeypatch, tmp_path):

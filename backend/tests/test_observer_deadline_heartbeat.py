@@ -1,5 +1,3 @@
-import time
-
 import pytest
 
 from app.observer_heartbeat import with_lease_heartbeat
