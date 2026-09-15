@@ -114,3 +114,33 @@ def test_hackerone_provenance_rejects_binding_substitution(tmp_path, monkeypatch
 
     assert verification["valid"] is False
     assert "external_policy_fingerprint_mismatch" in verification["reasons"]
+
+
+def test_hackerone_conservative_dry_run_queues_one_verified_job(tmp_path, monkeypatch):
+    db = str(tmp_path / "campaigns.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    queue_db = str(tmp_path / "jobs.sqlite3")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    admitted = admit_hackerone_campaign(_admission_payload())
+    campaign_id = admitted["campaign"]["id"]
+    jobs = JobQueue(queue_db)
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+
+    started = main.start_campaign(campaign_id)
+
+    assert started.state == main.CampaignState.running
+    assert jobs.stats()["total"] == 1
+    started_events = [event for event in started.events if event.get("type") == "campaign_started"]
+    assert len(started_events) == 1
+    job = jobs.get(started_events[0]["job_id"])
+    assert job is not None
+    assert job["status"] == "queued"
+    verification = verify_job_provenance(job, started)
+    assert verification["valid"] is True
+    assert verification["reasons"] == []
+    assert (
+        job["payload"]["_provenance"]["external_policy_fingerprint"]
+        == admitted["policy_binding"]["binding_fingerprint"]
+    )
