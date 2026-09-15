@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from .error_budget import build_error_budget_status
-from .incident_engine import build_incident_snapshot
-from .incident_lifecycle import apply_incident_snapshot
+from .incident_domains import build_domain_incidents
+from .domain_incident_lifecycle import apply_domain_incidents
 from .incident_store import IncidentStore, IncidentStoreConflict
 from .operational_slo import build_operational_slo
 from .observer_metrics import observer_health_metrics
@@ -27,11 +27,11 @@ def observe_incidents(
     watchdog = metrics.get("worker_watchdog") or {"status": "error"}
     observer_metrics = observer_health_metrics(observer_runtime().snapshot())
     observer_slo = build_observer_slo(observer_metrics)
-    snapshot = build_incident_snapshot(watchdog, slo, budget, observer_slo)
+    snapshot = build_domain_incidents(watchdog, slo, budget, observer_slo)
 
     for attempt in range(max_conflict_retries):
         history, version = store.read()
-        updated = apply_incident_snapshot(history, snapshot)
+        updated = apply_domain_incidents(history, snapshot)
         if updated == history:
             return {
                 "changed": False,
