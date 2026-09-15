@@ -5,12 +5,6 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, StrictBool
 
-from .hackerone_scope_import import (
-    HackerOneProgramPolicy,
-    HackerOneScopeImportError,
-    import_hackerone_structured_scope,
-)
-
 router = APIRouter()
 
 
@@ -28,6 +22,12 @@ class HackerOneRulesPreviewInput(BaseModel):
 @router.post("/api/imports/hackerone/rules-preview")
 def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
     """Preview exact executable rules without persisting or starting a campaign."""
+
+    from .hackerone_scope_import import (
+        HackerOneProgramPolicy,
+        HackerOneScopeImportError,
+        import_hackerone_structured_scope,
+    )
 
     try:
         preview = import_hackerone_structured_scope(payload.document)
