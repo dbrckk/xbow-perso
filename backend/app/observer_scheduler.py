@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import time
 from typing import Any, Callable
 
 from .observer_lease import ObserverLease
@@ -14,7 +15,14 @@ def scheduler_config() -> dict[str, int]:
         raise ValueError("observer interval must be between 10 and 3600 seconds")
     if not max(10, interval * 2) <= ttl <= 3600:
         raise ValueError("observer lease TTL must be at least 2x interval and <= 3600")
-    return {"interval_seconds": interval, "lease_ttl_seconds": ttl}
+    deadline = int(os.getenv("XBOW_INCIDENT_OBSERVER_DEADLINE_SECONDS", "60"))
+    if not 5 <= deadline < ttl:
+        raise ValueError("observer deadline must be >= 5 seconds and below lease TTL")
+    return {
+        "interval_seconds": interval,
+        "lease_ttl_seconds": ttl,
+        "deadline_seconds": deadline,
+    }
 
 
 def run_scheduled_observation(
@@ -35,11 +43,22 @@ def run_scheduled_observation(
     try:
         if not lease.is_current(owner, generation):
             return {"ran": False, "reason": "leadership_lost", "generation": generation}
+        started = time.monotonic()
         try:
             result = observe_once(owner, generation)
         except Exception:
             health.failure()
             raise
+        elapsed = time.monotonic() - started
+        if elapsed > config["deadline_seconds"]:
+            health.failure()
+            return {
+                "ran": False,
+                "reason": "deadline_exceeded",
+                "generation": generation,
+                "elapsed_seconds": elapsed,
+                "health": health.snapshot(),
+            }
         if not lease.is_current(owner, generation):
             return {"ran": False, "reason": "leadership_lost_after_observation", "generation": generation}
         health.success()
