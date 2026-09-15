@@ -134,3 +134,35 @@ def build_reporting_governance_snapshot(
         provenance_fingerprint=provenance_fingerprint,
         governance_fingerprint=reporting_governance_fingerprint(document),
     )
+
+
+
+def assess_report_artifact_freshness(
+    *,
+    artifact_id: str,
+    generated_governance_fingerprint: str | None,
+    generated_provenance_fingerprint: str | None,
+    current: ReportingGovernanceSnapshot,
+) -> dict[str, Any]:
+    reasons: list[str] = []
+    if not generated_governance_fingerprint:
+        reasons.append("missing_generated_governance_fingerprint")
+    elif generated_governance_fingerprint != current.governance_fingerprint:
+        reasons.append("reporting_governance_changed")
+    if not generated_provenance_fingerprint:
+        reasons.append("missing_generated_provenance_fingerprint")
+    elif generated_provenance_fingerprint != current.provenance_fingerprint:
+        reasons.append("report_provenance_changed")
+    return {
+        "schema": "report-artifact-freshness-v1",
+        "artifact_id": artifact_id,
+        "fresh": not reasons,
+        "stale": bool(reasons),
+        "stale_reasons": reasons,
+        "generated_governance_fingerprint": generated_governance_fingerprint,
+        "current_governance_fingerprint": current.governance_fingerprint,
+        "generated_provenance_fingerprint": generated_provenance_fingerprint,
+        "current_provenance_fingerprint": current.provenance_fingerprint,
+        "read_only": True,
+        "automatic_mutation": False,
+    }
