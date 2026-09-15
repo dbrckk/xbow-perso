@@ -379,3 +379,8 @@ Stale reports are also converted into bounded advisory `review_stale_report` tas
 ### Deterministic review task identity
 
 Every advisory review task now exposes a stable SHA-256 `task_id` derived only from the `review-task-identity-v1` schema, task kind, and target. The identifier is independent of queue ordering, priority changes, reason text, and score components, allowing dashboards and audit clients to track the same logical review request across recomputations without persisting executable task state.
+
+
+### Review queue snapshot fingerprint
+
+The review-queue endpoint now exposes a deterministic `review-queue-snapshot-v1` fingerprint over the sorted set of stable task identifiers. The snapshot also includes task count and aggregate counts by review kind. Ordering, reason wording, and score presentation do not affect the fingerprint, while adding or removing a logical review request does. This remains read-only and advisory-only.
