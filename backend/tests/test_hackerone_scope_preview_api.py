@@ -21,6 +21,28 @@ def _resource(identifier: str, asset_type: str, eligible: bool):
     }
 
 
+def _policy_values(**overrides):
+    values = {
+        "authorization_reference": "H1-PROGRAM-42",
+        "policy_version": "2026-09-15",
+        "reviewed_at": "2026-09-15T20:00:00+02:00",
+        "reviewed_by": "human-reviewer",
+        "safe_harbor_confirmed": True,
+        "automated_scanning": False,
+        "max_requests_per_second": 1.25,
+        "test_account_required": False,
+        "test_account_constraints": "",
+        "additional_restrictions": ["Do not access unrelated customer data"],
+        "program_notes": "Reviewed against the current HackerOne program policy.",
+    }
+    values.update(overrides)
+    return values
+
+
+def _policy_input(**overrides):
+    return HackerOneProgramPolicyInput(**_policy_values(**overrides))
+
+
 def test_hackerone_scope_preview_api_is_non_persisting():
     result = preview_hackerone_scope(
         HackerOneScopePreviewInput(
@@ -97,11 +119,7 @@ def test_hackerone_rules_preview_requires_explicit_policy_and_does_not_persist()
                 _resource("blocked.example.com", "Domain", False),
             ]
         },
-        policy=HackerOneProgramPolicyInput(
-            authorization_reference="H1-PROGRAM-42",
-            automated_scanning=False,
-            max_requests_per_second=1.25,
-        ),
+        policy=_policy_input(),
     )
 
     result = preview_hackerone_rules(payload)
@@ -111,6 +129,19 @@ def test_hackerone_rules_preview_requires_explicit_policy_and_does_not_persist()
     assert result["requires_review"] is True
     assert result["persisted"] is False
     assert result["campaign_created"] is False
+    assert result["policy_snapshot"] == {
+        "authorization_reference": "H1-PROGRAM-42",
+        "policy_version": "2026-09-15",
+        "reviewed_at": "2026-09-15T18:00:00+00:00",
+        "reviewed_by": "human-reviewer",
+        "safe_harbor_confirmed": True,
+        "automated_scanning": False,
+        "max_requests_per_second": 1.25,
+        "test_account_required": False,
+        "test_account_constraints": "",
+        "additional_restrictions": ["Do not access unrelated customer data"],
+        "program_notes": "Reviewed against the current HackerOne program policy.",
+    }
     assert result["rules"] == {
         "authorization_reference": "H1-PROGRAM-42",
         "allowed_targets": ["example.com"],
@@ -123,25 +154,53 @@ def test_hackerone_rules_preview_requires_explicit_policy_and_does_not_persist()
         "automated_scanning": False,
         "notes": (
             "Imported from HackerOne StructuredScope with explicit HackerOne "
-            "program policy; destructive, denial-of-service, social-engineering, "
-            "and credential-attack capabilities remain disabled."
+            "program policy 2026-09-15; destructive, denial-of-service, "
+            "social-engineering, and credential-attack capabilities remain disabled."
         ),
     }
 
 
-@pytest.mark.parametrize(
-    "policy",
-    [
-        {"authorization_reference": "H1-PROGRAM-42", "max_requests_per_second": 1.0},
-        {"authorization_reference": "H1-PROGRAM-42", "automated_scanning": False},
-    ],
-)
-def test_hackerone_rules_preview_has_no_automation_or_rate_defaults(policy):
+@pytest.mark.parametrize("missing", ["automated_scanning", "max_requests_per_second"])
+def test_hackerone_rules_preview_has_no_automation_or_rate_defaults(missing):
+    policy = _policy_values()
+    policy.pop(missing)
+
     with pytest.raises(ValidationError):
         HackerOneRulesPreviewInput(
             document={"data": [_resource("example.com", "Domain", True)]},
             policy=policy,
         )
+
+
+@pytest.mark.parametrize(
+    "missing",
+    [
+        "policy_version",
+        "reviewed_at",
+        "reviewed_by",
+        "safe_harbor_confirmed",
+        "test_account_required",
+        "test_account_constraints",
+        "additional_restrictions",
+        "program_notes",
+    ],
+)
+def test_hackerone_policy_requires_review_metadata_before_rules_preview(missing):
+    policy = _policy_values()
+    policy.pop(missing)
+
+    with pytest.raises(ValidationError):
+        HackerOneProgramPolicyInput(**policy)
+
+
+def test_hackerone_policy_rejects_naive_review_timestamp():
+    with pytest.raises(ValidationError, match="timezone"):
+        _policy_input(reviewed_at="2026-09-15T20:00:00")
+
+
+def test_hackerone_policy_rejects_implicit_boolean_request_rate():
+    with pytest.raises(ValidationError, match="explicit number"):
+        _policy_input(max_requests_per_second=True)
 
 
 def test_hackerone_rules_preview_rejects_unsupported_scope_fail_closed():
@@ -152,11 +211,7 @@ def test_hackerone_rules_preview_rejects_unsupported_scope_fail_closed():
                 _resource("https://example.com/admin", "Url", True),
             ]
         },
-        policy=HackerOneProgramPolicyInput(
-            authorization_reference="H1-PROGRAM-42",
-            automated_scanning=False,
-            max_requests_per_second=1.0,
-        ),
+        policy=_policy_input(max_requests_per_second=1.0),
     )
 
     with pytest.raises(HTTPException) as exc:
@@ -171,12 +226,3 @@ def test_hackerone_rules_preview_route_is_in_authenticated_api_namespace():
 
     assert "/api/imports/hackerone/rules-preview" in schema["paths"]
     assert "post" in schema["paths"]["/api/imports/hackerone/rules-preview"]
-
-
-def test_hackerone_policy_requires_review_metadata_before_rules_preview():
-    with pytest.raises(ValidationError):
-        HackerOneProgramPolicyInput(
-            authorization_reference="H1-PROGRAM-42",
-            automated_scanning=False,
-            max_requests_per_second=1.0,
-        )
