@@ -5,6 +5,10 @@ import json
 from typing import Any
 from urllib.parse import urlparse
 
+from fastapi import HTTPException
+
+from .hackerone_binding import verify_hackerone_campaign_binding
+
 
 PROVENANCE_SCHEMA = "job-provenance-v1"
 
@@ -50,15 +54,32 @@ def build_job_provenance(
     action: str,
 ) -> dict[str, Any]:
     snapshot = stable_policy_snapshot(campaign)
-    return {
+    policy_fingerprint = policy_snapshot_fingerprint(campaign)
+    binding = verify_hackerone_campaign_binding(
+        campaign,
+        current_policy_fingerprint=policy_fingerprint,
+    )
+    if binding["required"] and not binding["valid"]:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne policy binding invalid",
+                "reasons": binding["reasons"],
+            },
+        )
+    provenance = {
         "schema": PROVENANCE_SCHEMA,
         "campaign_id": str(campaign.id),
         "job_kind": str(job_kind),
         "action": str(action),
         "scope_host": snapshot["host"],
-        "policy_fingerprint": policy_snapshot_fingerprint(campaign),
+        "policy_fingerprint": policy_fingerprint,
         "request_rate_limit": snapshot["max_requests_per_second"],
     }
+    if binding["required"]:
+        provenance["external_policy_provider"] = "hackerone"
+        provenance["external_policy_fingerprint"] = binding["binding_fingerprint"]
+    return provenance
 
 
 def attach_job_provenance(
@@ -104,6 +125,20 @@ def verify_job_provenance(job: dict[str, Any], campaign: Any) -> dict[str, Any]:
     actual = str(provenance.get("policy_fingerprint") or "")
     if actual != expected:
         reasons.append("policy_fingerprint_mismatch")
+
+    binding = verify_hackerone_campaign_binding(
+        campaign,
+        current_policy_fingerprint=expected,
+    )
+    if binding["required"]:
+        if not binding["valid"]:
+            reasons.append("external_policy_binding_invalid")
+        if provenance.get("external_policy_provider") != "hackerone":
+            reasons.append("external_policy_provider_mismatch")
+        if str(provenance.get("external_policy_fingerprint") or "") != str(
+            binding.get("binding_fingerprint") or ""
+        ):
+            reasons.append("external_policy_fingerprint_mismatch")
 
     snapshot = stable_policy_snapshot(campaign)
     if str(provenance.get("scope_host") or "").lower() != snapshot["host"]:

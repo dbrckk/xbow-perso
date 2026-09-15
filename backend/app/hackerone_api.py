@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator
 
 router = APIRouter()
 
@@ -46,31 +48,68 @@ class HackerOneRulesPreviewInput(BaseModel):
     policy: HackerOneProgramPolicyInput
 
 
+class HackerOneCampaignTargetInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=2, max_length=120)
+    primary_url: HttpUrl
+
+
+class HackerOneCampaignAdmissionInput(HackerOneRulesPreviewInput):
+    target: HackerOneCampaignTargetInput
+
+
+def _policy_from_input(payload: HackerOneProgramPolicyInput):
+    from .hackerone_scope_import import HackerOneProgramPolicy
+
+    return HackerOneProgramPolicy(
+        authorization_reference=payload.authorization_reference,
+        policy_version=payload.policy_version,
+        reviewed_at=payload.reviewed_at.isoformat(),
+        reviewed_by=payload.reviewed_by,
+        safe_harbor_confirmed=payload.safe_harbor_confirmed,
+        automated_scanning=payload.automated_scanning,
+        max_requests_per_second=payload.max_requests_per_second,
+        test_account_required=payload.test_account_required,
+        test_account_constraints=payload.test_account_constraints,
+        additional_restrictions=tuple(payload.additional_restrictions),
+        program_notes=payload.program_notes,
+    )
+
+
+def _json_sha256(value: Any) -> str:
+    encoded = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _conservative_admission_reason(policy: Any) -> str | None:
+    if not policy.safe_harbor_confirmed:
+        return "safe_harbor_required"
+    if not policy.automated_scanning:
+        return "automated_scanning_not_authorized"
+    if policy.test_account_required:
+        return "test_account_workflow_not_supported"
+    if policy.test_account_constraints:
+        return "test_account_constraints_not_supported"
+    if policy.additional_restrictions:
+        return "additional_restrictions_require_manual_enforcement"
+    return None
+
+
 @router.post("/api/imports/hackerone/rules-preview")
 def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
     """Preview exact executable rules without persisting or starting a campaign."""
 
-    from .hackerone_scope_import import (
-        HackerOneProgramPolicy,
-        HackerOneScopeImportError,
-        import_hackerone_structured_scope,
-    )
+    from .hackerone_scope_import import HackerOneScopeImportError, import_hackerone_structured_scope
 
     try:
         preview = import_hackerone_structured_scope(payload.document)
-        policy = HackerOneProgramPolicy(
-            authorization_reference=payload.policy.authorization_reference,
-            policy_version=payload.policy.policy_version,
-            reviewed_at=payload.policy.reviewed_at.isoformat(),
-            reviewed_by=payload.policy.reviewed_by,
-            safe_harbor_confirmed=payload.policy.safe_harbor_confirmed,
-            automated_scanning=payload.policy.automated_scanning,
-            max_requests_per_second=payload.policy.max_requests_per_second,
-            test_account_required=payload.policy.test_account_required,
-            test_account_constraints=payload.policy.test_account_constraints,
-            additional_restrictions=tuple(payload.policy.additional_restrictions),
-            program_notes=payload.policy.program_notes,
-        )
+        policy = _policy_from_input(payload.policy)
         rules = preview.to_program_rules(policy=policy)
     except HackerOneScopeImportError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -83,4 +122,78 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
         "campaign_created": False,
         "policy_snapshot": policy.to_snapshot(),
         "rules": rules.model_dump(mode="json"),
+    }
+
+
+@router.post("/api/imports/hackerone/campaigns")
+def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
+    from .campaign_audit import append_campaign_event
+    from .hackerone_scope_import import HackerOneScopeImportError, import_hackerone_structured_scope
+    from .job_provenance import policy_snapshot_fingerprint
+    from .main import Campaign, CampaignState, TargetInput, save_campaign, utcnow
+
+    try:
+        preview = import_hackerone_structured_scope(payload.document)
+        policy = _policy_from_input(payload.policy)
+        reason = _conservative_admission_reason(policy)
+        if reason:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne conservative admission blocked",
+                    "reason": reason,
+                },
+            )
+        rules = preview.to_program_rules(policy=policy)
+        target = TargetInput(
+            name=payload.target.name,
+            primary_url=payload.target.primary_url,
+            rules=rules,
+        )
+    except HTTPException:
+        raise
+    except (HackerOneScopeImportError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    campaign = Campaign(target=target, state=CampaignState.ready)
+    policy_snapshot = policy.to_snapshot()
+    policy_snapshot_sha256 = _json_sha256(policy_snapshot)
+    campaign_policy_fingerprint = policy_snapshot_fingerprint(campaign)
+    binding_fingerprint = _json_sha256(
+        {
+            "provider": "hackerone",
+            "mode": "conservative",
+            "policy_snapshot_sha256": policy_snapshot_sha256,
+            "campaign_policy_fingerprint": campaign_policy_fingerprint,
+        }
+    )
+
+    append_campaign_event(
+        campaign.events,
+        {"type": "campaign_created", "at": utcnow()},
+    )
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "hackerone_policy_bound",
+            "at": utcnow(),
+            "provider": "hackerone",
+            "mode": "conservative",
+            "policy_snapshot": policy_snapshot,
+            "policy_snapshot_sha256": policy_snapshot_sha256,
+            "campaign_policy_fingerprint": campaign_policy_fingerprint,
+            "binding_fingerprint": binding_fingerprint,
+        },
+    )
+    save_campaign(campaign, expected_version=0)
+
+    return {
+        "provider": "hackerone",
+        "campaign_created": True,
+        "campaign": campaign.model_dump(mode="json"),
+        "policy_binding": {
+            "mode": "conservative",
+            "policy_snapshot_sha256": policy_snapshot_sha256,
+            "binding_fingerprint": binding_fingerprint,
+        },
     }
