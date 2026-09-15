@@ -1,13 +1,16 @@
 import pytest
-from fastapi import HTTPException
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from app.hackerone_api import (
     HackerOneProgramPolicyInput,
     HackerOneRulesPreviewInput,
     preview_hackerone_rules,
+    router as hackerone_router,
 )
 from app.main import HackerOneScopePreviewInput, app, preview_hackerone_scope
+from app.storage import Storage
 
 
 def _resource(identifier: str, asset_type: str, eligible: bool):
@@ -233,3 +236,45 @@ def test_hackerone_conservative_campaign_admission_route_exists():
 
     assert "/api/imports/hackerone/campaigns" in schema["paths"]
     assert "post" in schema["paths"]["/api/imports/hackerone/campaigns"]
+
+
+def test_hackerone_conservative_admission_persists_policy_binding(tmp_path, monkeypatch):
+    db = str(tmp_path / "hackerone.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    api = FastAPI()
+    api.include_router(hackerone_router)
+    client = TestClient(api)
+    response = client.post(
+        "/api/imports/hackerone/campaigns",
+        json={
+            "document": {"data": [_resource("example.com", "Domain", True)]},
+            "policy": _policy_values(
+                automated_scanning=True,
+                additional_restrictions=[],
+            ),
+            "target": {
+                "name": "HackerOne fixture",
+                "primary_url": "https://example.com",
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["provider"] == "hackerone"
+    assert result["campaign_created"] is True
+    assert result["campaign"]["state"] == "ready"
+    assert len(result["policy_binding"]["policy_snapshot_sha256"]) == 64
+    assert len(result["policy_binding"]["binding_fingerprint"]) == 64
+
+    persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
+    assert persisted is not None
+    bound = [event for event in persisted["events"] if event.get("type") == "hackerone_policy_bound"]
+    assert len(bound) == 1
+    assert bound[0]["provider"] == "hackerone"
+    assert bound[0]["mode"] == "conservative"
+    assert bound[0]["policy_snapshot_sha256"] == result["policy_binding"]["policy_snapshot_sha256"]
+    assert bound[0]["binding_fingerprint"] == result["policy_binding"]["binding_fingerprint"]
