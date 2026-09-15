@@ -1,5 +1,6 @@
 import pytest
 
+from app.job_provenance import attach_job_provenance
 from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput
 from app.storage import CampaignConflictError, Storage
@@ -62,7 +63,6 @@ def test_worker_poll_interval_is_bounded(monkeypatch):
     assert _worker_poll_seconds() == 60.0
 
 
-
 def test_validation_worker_rejects_resolved_finding_before_probe(tmp_path):
     store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
     campaign = make_campaign()
@@ -117,7 +117,6 @@ def test_validation_worker_rejects_completed_campaign_before_probe(tmp_path):
         process_validation(job, store)
 
 
-
 def test_stale_validation_job_is_cancelled_without_retry(tmp_path):
     db = str(tmp_path / "db.sqlite3")
     store = Storage(db, str(tmp_path / "artifacts"))
@@ -139,11 +138,16 @@ def test_stale_validation_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "independent_validation",
-        {
-            "campaign_id": campaign.id,
-            "finding_id": "f1",
-            "asset": "https://example.test",
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "finding_id": "f1",
+                "asset": "https://example.test",
+            },
+            campaign,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key="validation:f1",
     )
@@ -179,11 +183,16 @@ def test_completed_campaign_validation_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "independent_validation",
-        {
-            "campaign_id": campaign.id,
-            "finding_id": "f1",
-            "asset": "https://example.test",
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "finding_id": "f1",
+                "asset": "https://example.test",
+            },
+            campaign,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key="validation:f1",
     )
@@ -197,7 +206,6 @@ def test_completed_campaign_validation_job_is_cancelled_without_retry(tmp_path):
     assert queue.claim("worker-retry") is None
 
 
-
 def test_completed_campaign_browser_job_is_cancelled_without_retry(tmp_path):
     db = str(tmp_path / "db.sqlite3")
     store = Storage(db, str(tmp_path / "artifacts"))
@@ -208,18 +216,23 @@ def test_completed_campaign_browser_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "browser_flow",
-        {
-            "campaign_id": campaign.id,
-            "steps": [
-                {
-                    "operation": "navigate",
-                    "url": "https://example.test",
-                    "selector": None,
-                    "secret_env": None,
-                    "timeout_ms": 1000,
-                }
-            ],
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "steps": [
+                    {
+                        "operation": "navigate",
+                        "url": "https://example.test",
+                        "selector": None,
+                        "secret_env": None,
+                        "timeout_ms": 1000,
+                    }
+                ],
+            },
+            campaign,
+            job_kind="browser_flow",
+            action="crawl",
+        ),
         max_attempts=2,
         dedupe_key="browser:stale-completed",
     )
