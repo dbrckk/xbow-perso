@@ -384,3 +384,8 @@ Every advisory review task now exposes a stable SHA-256 `task_id` derived only f
 ### Review queue snapshot fingerprint
 
 The review-queue endpoint now exposes a deterministic `review-queue-snapshot-v1` fingerprint over the sorted set of stable task identifiers. The snapshot also includes task count and aggregate counts by review kind. Ordering, reason wording, and score presentation do not affect the fingerprint, while adding or removing a logical review request does. This remains read-only and advisory-only.
+
+
+### Review queue snapshot diff
+
+`diff_review_queue_snapshots` compares two `review-queue-snapshot-v1` documents and returns a deterministic `review-queue-diff-v1` containing added, removed, and unchanged stable task identifiers plus before/after fingerprints. Queue ordering alone never creates a change. The helper is read-only and advisory-only and performs no task persistence or execution.
