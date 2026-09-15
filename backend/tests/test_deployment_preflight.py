@@ -11,6 +11,9 @@ _ENV_NAMES = (
     "XBOW_PENTAGI_BASE_URL",
     "XBOW_PENTAGI_MODEL_PROVIDER",
     "DRY_RUN",
+    "XBOW_DEPLOYMENT_ENV",
+    "XBOW_BACKEND_IMAGE",
+    "XBOW_FRONTEND_IMAGE",
 )
 
 
@@ -123,3 +126,49 @@ def test_preflight_endpoint_uses_dependency_readiness(monkeypatch):
     assert result["status"] == "error"
     assert result["dependencies_ready"] is False
     assert "/api/deployment/preflight" in main.app.openapi()["paths"]
+
+
+def test_production_preflight_requires_digest_pinned_images(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_DEPLOYMENT_ENV", "production")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert {item["code"] for item in result["issues"]} == {
+        "backend_image_digest_missing",
+        "frontend_image_digest_missing",
+    }
+    assert result["deployment_integrity"]["production_mode"] is True
+    assert result["deployment_integrity"]["backend_image_digest_configured"] is False
+    assert result["deployment_integrity"]["frontend_image_digest_configured"] is False
+
+
+def test_production_preflight_accepts_digest_pinned_images(monkeypatch):
+    _clear(monkeypatch)
+    digest = "a" * 64
+    monkeypatch.setenv("XBOW_DEPLOYMENT_ENV", "production")
+    monkeypatch.setenv("XBOW_BACKEND_IMAGE", f"ghcr.io/example/backend@sha256:{digest}")
+    monkeypatch.setenv("XBOW_FRONTEND_IMAGE", f"ghcr.io/example/frontend@sha256:{digest}")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "ok"
+    assert result["deployment_integrity"]["production_mode"] is True
+    assert result["deployment_integrity"]["backend_image_digest_configured"] is True
+    assert result["deployment_integrity"]["frontend_image_digest_configured"] is True
+
+
+def test_production_preflight_rejects_mutable_tags(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_DEPLOYMENT_ENV", "production")
+    monkeypatch.setenv("XBOW_BACKEND_IMAGE", "ghcr.io/example/backend:latest")
+    monkeypatch.setenv("XBOW_FRONTEND_IMAGE", "ghcr.io/example/frontend:v1")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert {item["code"] for item in result["issues"]} == {
+        "backend_image_digest_missing",
+        "frontend_image_digest_missing",
+    }
