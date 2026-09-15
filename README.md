@@ -368,3 +368,6 @@ The same fingerprints and verification flag are persisted in report artifact met
 Generated report artifacts can be assessed read-only against the campaign's current reporting-governance snapshot through `GET /api/campaigns/{campaign_id}/reports/{artifact_id}/freshness`.
 
 The assessment compares the governance and provenance fingerprints captured by the `report_generated` event with the current `reporting-governance-v1` state. It returns explicit drift reasons such as `reporting_governance_changed`, `report_provenance_changed`, or missing generation fingerprints. The check never regenerates, reapproves, submits, or mutates a report automatically.
+
+
+Campaign overview aggregates report freshness with `fresh` / `stale` counts and per-report drift reasons. Any stale generated report raises the read-only attention reason `stale_report_artifact`, making governance drift visible to operators without automatically regenerating or reapproving the report.
