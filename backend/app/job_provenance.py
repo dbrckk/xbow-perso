@@ -5,6 +5,10 @@ import json
 from typing import Any
 from urllib.parse import urlparse
 
+from fastapi import HTTPException
+
+from .hackerone_binding import verify_hackerone_campaign_binding
+
 
 PROVENANCE_SCHEMA = "job-provenance-v1"
 
@@ -50,13 +54,26 @@ def build_job_provenance(
     action: str,
 ) -> dict[str, Any]:
     snapshot = stable_policy_snapshot(campaign)
+    policy_fingerprint = policy_snapshot_fingerprint(campaign)
+    binding = verify_hackerone_campaign_binding(
+        campaign,
+        current_policy_fingerprint=policy_fingerprint,
+    )
+    if binding["required"] and not binding["valid"]:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne policy binding invalid",
+                "reasons": binding["reasons"],
+            },
+        )
     return {
         "schema": PROVENANCE_SCHEMA,
         "campaign_id": str(campaign.id),
         "job_kind": str(job_kind),
         "action": str(action),
         "scope_host": snapshot["host"],
-        "policy_fingerprint": policy_snapshot_fingerprint(campaign),
+        "policy_fingerprint": policy_fingerprint,
         "request_rate_limit": snapshot["max_requests_per_second"],
     }
 
