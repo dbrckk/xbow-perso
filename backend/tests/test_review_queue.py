@@ -320,3 +320,44 @@ def test_review_queue_unknown_severity_fails_closed_to_zero_bonus():
     task = build_review_queue(graph, severities={"f1": "unexpected"})[0]
 
     assert task.score_components["severity"] == 0.00
+
+
+
+def test_review_queue_prioritizes_stale_report_for_human_review():
+    task = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-1",
+                "stale": True,
+                "stale_reasons": [
+                    "reporting_governance_changed",
+                    "report_provenance_changed",
+                ],
+            }
+        ],
+    )[0]
+
+    assert task.kind == "review_stale_report"
+    assert task.target == "report-1"
+    assert task.priority == 0.92
+    assert "human re-review is required" in task.reason
+    assert "reporting_governance_changed" in task.reason
+    assert task.evidence_ids == ()
+    assert task.score_components["governance_drift"] == 1.0
+
+
+def test_review_queue_ignores_fresh_reports():
+    tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-1",
+                "fresh": True,
+                "stale": False,
+                "stale_reasons": [],
+            }
+        ],
+    )
+
+    assert tasks == []
