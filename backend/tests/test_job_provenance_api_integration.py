@@ -12,6 +12,7 @@ from app.storage import Storage
 def _campaign(*, findings=None):
     return Campaign(
         id="campaign-api-provenance",
+        state="ready",
         target=TargetInput(
             name="fixture",
             primary_url="https://example.test",
