@@ -1,5 +1,6 @@
 import pytest
 
+from app.job_provenance import attach_job_provenance
 from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput, add_finding, cancel_campaign, queue_report, validate_finding
 from app.storage import Storage
@@ -97,7 +98,17 @@ def test_completed_campaign_cannot_be_cancelled(tmp_path, monkeypatch):
 def test_running_job_becomes_cancelled_when_worker_observes_cancelled_campaign(tmp_path, monkeypatch):
     db, store, campaign = _setup(tmp_path, monkeypatch)
     jobs = JobQueue(db)
-    job = jobs.enqueue(campaign.id, "report", {"campaign_id": campaign.id}, max_attempts=2)
+    job = jobs.enqueue(
+        campaign.id,
+        "report",
+        attach_job_provenance(
+            {"campaign_id": campaign.id},
+            campaign,
+            job_kind="report",
+            action="report",
+        ),
+        max_attempts=2,
+    )
     claimed = jobs.claim("worker-a")
     assert claimed is not None and claimed["id"] == job["id"]
 
