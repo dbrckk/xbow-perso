@@ -18,6 +18,7 @@ ReviewKind = Literal[
     "review_form_surface",
     "review_technology_surface",
     "review_protection_surface",
+    "review_stale_report",
 ]
 
 router = APIRouter()
@@ -48,6 +49,7 @@ def build_review_queue(
     scope_checker: Callable[[str], bool] | None = None,
     stability: dict[str, dict[str, Any]] | None = None,
     severities: dict[str, str] | None = None,
+    stale_reports: list[dict[str, Any]] | None = None,
 ) -> list[ReviewTask]:
     """Build a deterministic, bounded and optionally scope-aware review queue."""
     if not 1 <= limit <= 100:
@@ -155,6 +157,30 @@ def build_review_queue(
                     evidence_ids=hypothesis.evidence_ids,
                 )
             )
+
+    for report in stale_reports or []:
+        if not report.get("stale"):
+            continue
+        reasons = tuple(str(item) for item in report.get("stale_reasons", ()))
+        tasks.append(
+            ReviewTask(
+                kind="review_stale_report",
+                target=str(report.get("artifact_id", "unknown-report")),
+                priority=0.92,
+                reason=(
+                    "generated report governance state is stale; "
+                    "human re-review is required"
+                    + (f" ({', '.join(reasons)})" if reasons else "")
+                ),
+                evidence_ids=(),
+                score_components={
+                    "base": 0.92,
+                    "governance_drift": 1.0 if reasons else 0.0,
+                    "raw_total": 0.92,
+                    "capped_total": 0.92,
+                },
+            )
+        )
 
     deduped: dict[tuple[str, str], ReviewTask] = {}
     for task in tasks:
