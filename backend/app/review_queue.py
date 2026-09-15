@@ -27,6 +27,8 @@ ReviewKind = Literal[
     "review_stale_report",
 ]
 
+REVIEW_QUEUE_HISTORY_RETENTION = 100
+
 router = APIRouter()
 
 
@@ -88,7 +90,10 @@ def build_review_queue(
             chain = chains.get(graph_finding_id)
             chain_penalty = 0.0 if chain and chain.complete else 0.08
             current_confidence = confidence.get(graph_finding_id, 0.35)
-            temporal = (stability or {}).get(graph_finding_id.removeprefix("finding:"), {})
+            temporal = (stability or {}).get(
+                graph_finding_id.removeprefix("finding:"),
+                {},
+            )
             temporal_state = temporal.get("stability")
             temporal_bonus = 0.0
             temporal_reason = ""
@@ -119,7 +124,10 @@ def build_review_queue(
                     kind="validate_finding",
                     target=hypothesis.target,
                     priority=priority,
-                    reason="independent validation evidence is incomplete" + temporal_reason,
+                    reason=(
+                        "independent validation evidence is incomplete"
+                        + temporal_reason
+                    ),
                     evidence_ids=hypothesis.evidence_ids,
                     score_components=components,
                 )
@@ -130,7 +138,9 @@ def build_review_queue(
                     kind="review_authorization_surface",
                     target=hypothesis.target,
                     priority=0.68,
-                    reason="authorization-sensitive surface requires bounded review",
+                    reason=(
+                        "authorization-sensitive surface requires bounded review"
+                    ),
                     evidence_ids=hypothesis.evidence_ids,
                     parameter_names=hypothesis.parameter_names,
                 )
@@ -141,7 +151,9 @@ def build_review_queue(
                     kind="review_form_surface",
                     target=hypothesis.target,
                     priority=0.64,
-                    reason="observed form surface requires bounded non-destructive review",
+                    reason=(
+                        "observed form surface requires bounded non-destructive review"
+                    ),
                     evidence_ids=hypothesis.evidence_ids,
                     parameter_names=hypothesis.parameter_names,
                 )
@@ -163,7 +175,9 @@ def build_review_queue(
                     kind="review_protection_surface",
                     target=hypothesis.target,
                     priority=0.50,
-                    reason="observed protection layer should constrain review planning",
+                    reason=(
+                        "observed protection layer should constrain review planning"
+                    ),
                     evidence_ids=hypothesis.evidence_ids,
                 )
             )
@@ -264,6 +278,35 @@ def diff_review_queue_snapshots(
     }
 
 
+def persist_review_queue_snapshot(
+    storage_backend: Any,
+    campaign_id: str,
+    snapshot: dict[str, Any],
+    *,
+    retention_limit: int = REVIEW_QUEUE_HISTORY_RETENTION,
+) -> dict[str, Any]:
+    if not 1 <= retention_limit <= 500:
+        raise ValueError("review queue retention limit must be between 1 and 500")
+
+    stored = storage_backend.put_review_queue_snapshot(
+        campaign_id,
+        str(snapshot["fingerprint"]),
+        snapshot,
+    )
+    with storage_backend.connect() as db:
+        rows = db.execute(
+            """SELECT fingerprint FROM review_queue_snapshots
+               WHERE campaign_id=?
+               ORDER BY created_at DESC, fingerprint DESC""",
+            (campaign_id,),
+        ).fetchall()
+        for row in rows[retention_limit:]:
+            db.execute(
+                """DELETE FROM review_queue_snapshots
+                   WHERE campaign_id=? AND fingerprint=?""",
+                (campaign_id, row["fingerprint"]),
+            )
+    return stored
 
 
 @router.get("/api/campaigns/{campaign_id}/review-queue/history")
@@ -293,6 +336,7 @@ def campaign_review_queue_history(
         "snapshot_count": len(rows),
         "transition_count": len(transitions),
     }
+
 
 @router.get("/api/campaigns/{campaign_id}/review-queue")
 def campaign_review_queue(campaign_id: str, limit: int = 25):
@@ -340,24 +384,27 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
     tasks = build_review_queue(
         graph,
         limit=limit,
-        scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),
+        scope_checker=lambda host: is_host_allowed(
+            host,
+            rules.allowed_targets,
+            rules.denied_targets,
+        ),
         stability=stability,
         severities=severities,
         stale_reports=stale_reports,
     )
     snapshot = review_queue_snapshot(tasks)
-    storage().put_review_queue_snapshot(
-        campaign.id,
-        snapshot["fingerprint"],
-        snapshot,
-    )
+    persist_review_queue_snapshot(storage(), campaign.id, snapshot)
     return {
         "campaign_id": campaign.id,
         "snapshot": snapshot,
         "tasks": [item.to_dict() for item in tasks],
         "summary": {
             "total": len(tasks),
-            "highest_priority": max((item.priority for item in tasks), default=0.0),
+            "highest_priority": max(
+                (item.priority for item in tasks),
+                default=0.0,
+            ),
             "stale_report_reviews": sum(
                 item.kind == "review_stale_report" for item in tasks
             ),
