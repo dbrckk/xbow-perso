@@ -19,7 +19,7 @@ def scheduler_config() -> dict[str, int]:
 def run_scheduled_observation(
     lease: ObserverLease,
     owner: str,
-    observe_once: Callable[[], dict[str, Any]],
+    observe_once: Callable[[str, int], dict[str, Any]],
 ) -> dict[str, Any]:
     """Perform one leader-gated observation pass; external scheduler controls timing."""
     config = scheduler_config()
@@ -29,7 +29,7 @@ def run_scheduled_observation(
     try:
         if not lease.is_current(owner, generation):
             return {"ran": False, "reason": "leadership_lost", "generation": generation}
-        result = observe_once()
+        result = observe_once(owner, generation)
         if not lease.is_current(owner, generation):
             return {"ran": False, "reason": "leadership_lost_after_observation", "generation": generation}
         return {"ran": True, "result": result, "generation": generation}
