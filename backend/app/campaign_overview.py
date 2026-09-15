@@ -79,11 +79,6 @@ def campaign_overview(campaign_id: str):
     report_quality = list(reporting.quality_gates)
     review_state = build_campaign_review_state(campaign.findings, graph)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
-    review_tasks = build_review_queue(
-        graph,
-        scope_checker=scope_checker,
-        stale_reports=report_freshness,
-    )
     decisions = build_red_team_decisions(
         campaign.findings,
         graph,
@@ -157,6 +152,12 @@ def campaign_overview(campaign_id: str):
                 current=reporting,
             )
         )
+
+    review_tasks = build_review_queue(
+        graph,
+        scope_checker=scope_checker,
+        stale_reports=report_freshness,
+    )
 
     submission_audit = audit_campaign_submissions(
         campaign,
