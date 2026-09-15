@@ -1,0 +1,106 @@
+name: release-quality-gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_ref:
+        description: "Immutable release tag or commit to validate"
+        required: true
+        type: string
+      backend_image:
+        description: "Backend image pinned as ghcr.io/...@sha256:..."
+        required: true
+        type: string
+      frontend_image:
+        description: "Frontend image pinned as ghcr.io/...@sha256:..."
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+  attestations: read
+  id-token: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production-candidate
+    steps:
+      - name: Reject mutable image references
+        shell: bash
+        env:
+          BACKEND_IMAGE: ${{ inputs.backend_image }}
+          FRONTEND_IMAGE: ${{ inputs.frontend_image }}
+        run: |
+          pattern='^ghcr\.io/.+@sha256:[0-9a-f]{64}$'
+          [[ "$BACKEND_IMAGE" =~ $pattern ]] || { echo "backend image is not digest-pinned"; exit 1; }
+          [[ "$FRONTEND_IMAGE" =~ $pattern ]] || { echo "frontend image is not digest-pinned"; exit 1; }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_ref }}
+
+      - name: Verify backend provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE: ${{ inputs.backend_image }}
+        run: gh attestation verify "oci://$IMAGE" --repo "${{ github.repository }}"
+
+      - name: Verify frontend provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE: ${{ inputs.frontend_image }}
+        run: gh attestation verify "oci://$IMAGE" --repo "${{ github.repository }}"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      - name: Install backend test dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Dependency consistency
+        run: python -m pip check
+
+      - name: Backend tests
+        working-directory: backend
+        env:
+          DRY_RUN: "true"
+          XBOW_ENABLE_ACTIVE_SCANS: "false"
+        run: pytest -q
+
+      - name: Static checks
+        working-directory: backend
+        run: ruff check app tests
+
+      - name: Audit runtime dependencies
+        working-directory: backend
+        run: pip-audit -r requirements.txt
+
+      - name: Build production preflight evidence
+        env:
+          BACKEND_IMAGE: ${{ inputs.backend_image }}
+          FRONTEND_IMAGE: ${{ inputs.frontend_image }}
+        shell: bash
+        run: |
+          mkdir -p release-gate
+          printf '%s\n' "release_ref=${{ inputs.release_ref }}" > release-gate/manifest.txt
+          printf '%s\n' "backend=$BACKEND_IMAGE" >> release-gate/manifest.txt
+          printf '%s\n' "frontend=$FRONTEND_IMAGE" >> release-gate/manifest.txt
+          printf '%s\n' "validated_commit=${{ github.sha }}" >> release-gate/manifest.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-candidate-${{ github.run_id }}
+          path: release-gate/manifest.txt
+          if-no-files-found: error
+          retention-days: 90
