@@ -7,6 +7,7 @@ from typing import Any, Callable
 from .observer_lease import ObserverLease
 from .observer_resilience import ObserverHealth
 from .observer_heartbeat import with_lease_heartbeat
+from .observer_runtime import observer_runtime
 
 
 def scheduler_config() -> dict[str, int]:
@@ -34,7 +35,7 @@ def run_scheduled_observation(
 ) -> dict[str, Any]:
     """Perform one leader-gated observation pass; external scheduler controls timing."""
     config = scheduler_config()
-    health = health or ObserverHealth()
+    health = health or observer_runtime().health
     if health.circuit_open():
         return {"ran": False, "reason": "circuit_open", "health": health.snapshot()}
     generation = lease.acquire(owner, ttl_seconds=config["lease_ttl_seconds"])

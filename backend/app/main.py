@@ -17,6 +17,8 @@ from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .incident_api import IncidentApiConflict, acknowledge_incident_versioned, read_incident_status
 from .incident_store import IncidentStore
+from .observer_metrics import observer_health_metrics
+from .observer_runtime import observer_runtime
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
 from .policy_integrity import seal_policy_receipt, verify_policy_receipt
 from .queue_backend import QueueBackend, create_queue
@@ -374,6 +376,11 @@ def system_capabilities():
             ),
         },
     }
+
+
+@app.get("/api/observer/health")
+def get_observer_health():
+    return observer_health_metrics(observer_runtime().snapshot())
 
 
 @app.get("/api/incidents")
