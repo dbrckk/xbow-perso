@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import APIRouter
 
 from .api_outbox import outbox_snapshot
+from .review_queue_observability import aggregate_review_queue_churn
 from .submission_audit import audit_storage_submissions
 
 router = APIRouter()
@@ -101,7 +102,13 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
     health_trend = (
         "unknown"
         if health_delta is None
-        else ("improving" if health_delta > 0 else "degrading" if health_delta < 0 else "stable")
+        else (
+            "improving"
+            if health_delta > 0
+            else "degrading"
+            if health_delta < 0
+            else "stable"
+        )
     )
     health_transitions = 0
     health_to_blocked = 0
@@ -141,8 +148,7 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         else []
     )
     readiness_counts: Counter[str] = Counter(
-        str(item.get("decision") or "unknown")
-        for item in readiness_snapshots
+        str(item.get("decision") or "unknown") for item in readiness_snapshots
     )
     readiness_transitions = 0
     ready_to_block_regressions = 0
@@ -156,6 +162,10 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
                 ready_to_block_regressions += 1
         previous_decision = decision
 
+    review_queue_churn = aggregate_review_queue_churn(
+        storage_backend,
+        [str(item.get("id") or "") for item in campaigns],
+    )
     submission_integrity = audit_storage_submissions(storage_backend)
 
     metrics = {
@@ -163,8 +173,7 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "campaigns_by_state": dict(sorted(states.items())),
         "jobs_total": int(queue_stats.get("total") or 0),
         "jobs_by_status": {
-            key: int(value)
-            for key, value in sorted(by_status.items())
+            key: int(value) for key, value in sorted(by_status.items())
         },
         "queue_storage": str(queue_stats.get("storage") or "unknown"),
         "oldest_queued_age_seconds": oldest_queued_age_seconds,
@@ -172,6 +181,7 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "pending_outbox_total": pending_outbox_total,
         "pending_outbox_by_kind": dict(sorted(pending_outbox_by_kind.items())),
         "oldest_outbox_pending_age_seconds": oldest_outbox_age_seconds,
+        "review_queue_churn": review_queue_churn,
         "control_plane_health": {
             "supported": callable(health_history_fn),
             "latest_score": health_latest_score,
