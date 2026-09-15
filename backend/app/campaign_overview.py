@@ -79,7 +79,11 @@ def campaign_overview(campaign_id: str):
     report_quality = list(reporting.quality_gates)
     review_state = build_campaign_review_state(campaign.findings, graph)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
-    review_tasks = build_review_queue(graph, scope_checker=scope_checker)
+    review_tasks = build_review_queue(
+        graph,
+        scope_checker=scope_checker,
+        stale_reports=report_freshness,
+    )
     decisions = build_red_team_decisions(
         campaign.findings,
         graph,
@@ -314,6 +318,9 @@ def campaign_overview(campaign_id: str):
         "review_queue": {
             "total": len(review_tasks),
             "highest_priority": max((item.priority for item in review_tasks), default=0.0),
+            "stale_report_reviews": sum(
+                item.kind == "review_stale_report" for item in review_tasks
+            ),
             "advisory_only": True,
             "read_only": True,
             "scope_aware": True,
