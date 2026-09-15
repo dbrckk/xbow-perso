@@ -128,7 +128,8 @@ def test_hackerone_conservative_dry_run_queues_one_verified_job(tmp_path, monkey
     jobs = JobQueue(queue_db)
     monkeypatch.setattr(main, "queue", lambda: jobs)
 
-    started = main.start_campaign(campaign_id)
+    started_document = main.start_campaign(campaign_id)
+    started = main.Campaign.model_validate(started_document)
 
     assert started.state == main.CampaignState.running
     assert jobs.stats()["total"] == 1
