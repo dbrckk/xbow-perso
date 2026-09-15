@@ -3,6 +3,7 @@ from app.observation_graph import Observation, ObservationGraph
 from app.review_queue import (
     build_review_queue,
     campaign_review_queue,
+    diff_review_queue_snapshots,
     review_queue_snapshot,
 )
 from app.storage import Storage
@@ -500,3 +501,82 @@ def test_review_queue_snapshot_changes_when_logical_task_set_changes():
         review_queue_snapshot(one)["fingerprint"]
         != review_queue_snapshot(two)["fingerprint"]
     )
+
+
+
+def test_review_queue_snapshot_diff_is_deterministic():
+    previous_tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+        ],
+    )
+    current_tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+            {
+                "artifact_id": "report-c",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+        ],
+    )
+
+    result = diff_review_queue_snapshots(
+        review_queue_snapshot(previous_tasks),
+        review_queue_snapshot(current_tasks),
+    )
+
+    previous_ids = {item.target: item.task_id for item in previous_tasks}
+    current_ids = {item.target: item.task_id for item in current_tasks}
+    assert result["schema"] == "review-queue-diff-v1"
+    assert result["changed"] is True
+    assert result["added_task_ids"] == [current_ids["report-c"]]
+    assert result["removed_task_ids"] == [previous_ids["report-a"]]
+    assert result["unchanged_task_ids"] == [current_ids["report-b"]]
+    assert result["added_count"] == 1
+    assert result["removed_count"] == 1
+    assert result["unchanged_count"] == 1
+    assert result["read_only"] is True
+    assert result["advisory_only"] is True
+
+
+def test_review_queue_snapshot_diff_ignores_order_only_changes():
+    tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+        ],
+    )
+    result = diff_review_queue_snapshots(
+        review_queue_snapshot(tasks),
+        review_queue_snapshot(list(reversed(tasks))),
+    )
+
+    assert result["changed"] is False
+    assert result["added_task_ids"] == []
+    assert result["removed_task_ids"] == []
+    assert result["unchanged_count"] == 2
