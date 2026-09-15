@@ -25,14 +25,14 @@ def test_scheduler_runs_only_for_leader(tmp_path):
     lease = ObserverLease(str(tmp_path / "lease.sqlite3"))
     lease.acquire("other", ttl_seconds=90, now=datetime.now(timezone.utc))
     called = []
-    result = run_scheduled_observation(lease, "me", lambda: called.append(True) or {"ok": True})
+    result = run_scheduled_observation(lease, "me", lambda owner, generation: called.append((owner, generation)) or {"ok": True})
     assert result == {"ran": False, "reason": "not_leader"}
     assert called == []
 
 
 def test_scheduler_releases_lease_after_pass(tmp_path):
     lease = ObserverLease(str(tmp_path / "lease.sqlite3"))
-    result = run_scheduled_observation(lease, "me", lambda: {"ok": True})
+    result = run_scheduled_observation(lease, "me", lambda owner, generation: {"ok": True})
     assert result["ran"] is True
     assert lease.acquire("other", ttl_seconds=90) is True
 
