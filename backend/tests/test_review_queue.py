@@ -361,3 +361,29 @@ def test_review_queue_ignores_fresh_reports():
     )
 
     assert tasks == []
+
+
+
+def test_review_queue_deduplicates_same_stale_report():
+    tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-1",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-1",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+        ],
+    )
+
+    matching = [
+        item
+        for item in tasks
+        if item.kind == "review_stale_report" and item.target == "report-1"
+    ]
+    assert len(matching) == 1
