@@ -17,6 +17,7 @@ from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .incident_api import IncidentApiConflict, acknowledge_incident_versioned, read_incident_status
 from .incident_store import IncidentStore
+from .job_provenance import attach_job_provenance
 from .observer_metrics import observer_health_metrics
 from .observer_runtime import observer_runtime
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
@@ -245,7 +246,12 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
     )
 
 
-def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[str, Any]:
+def sanitized_scan_payload(
+    campaign: Campaign,
+    receipt: dict[str, Any],
+    *,
+    job_kind: str = "strix_scan",
+) -> dict[str, Any]:
     """Return deterministic worker input suitable for queue idempotency.
 
     The audit receipt keeps its timestamp in campaign events/API responses, but
@@ -253,7 +259,7 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
     """
     transient = {"timestamp", "receipt_hash", "signature", "signature_alg", "integrity_mode"}
     stable_receipt = {key: value for key, value in receipt.items() if key not in transient}
-    return {
+    payload = {
         "campaign_id": campaign.id,
         "target": str(campaign.target.primary_url),
         "policy": stable_receipt,
@@ -268,6 +274,12 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
             "automated_scanning": campaign.target.rules.automated_scanning,
         },
     }
+    return attach_job_provenance(
+        payload,
+        campaign,
+        job_kind=job_kind,
+        action="automated_scan",
+    )
 
 
 @app.get("/live")
