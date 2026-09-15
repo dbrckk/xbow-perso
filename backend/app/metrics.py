@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import APIRouter
 
 from .api_outbox import outbox_snapshot
+from .worker_watchdog import build_worker_watchdog
 
 router = APIRouter()
 
@@ -76,6 +77,18 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "contains_secrets": False,
         "contains_outbox_identities": False,
     }
+    try:
+        watchdog = build_worker_watchdog(metrics)
+    except ValueError:
+        watchdog = {
+            "status": "error",
+            "issues": [{"code": "watchdog_configuration_invalid", "severity": "error"}],
+            "read_only": True,
+            "contains_targets": False,
+            "contains_payloads": False,
+            "contains_secrets": False,
+        }
+    metrics["worker_watchdog"] = watchdog
     return metrics
 
 
