@@ -82,9 +82,8 @@ def verify_hackerone_campaign_binding(
         reasons.append("test_account_workflow_not_supported")
     if snapshot.get("test_account_constraints") not in {"", None}:
         reasons.append("test_account_constraints_not_supported")
-    if snapshot.get("additional_restrictions") not in {(), None} and snapshot.get(
-        "additional_restrictions"
-    ) != []:
+    restrictions = snapshot.get("additional_restrictions")
+    if restrictions not in ([], (), None):
         reasons.append("additional_restrictions_require_manual_enforcement")
 
     declared_policy_fingerprint = str(binding.get("campaign_policy_fingerprint") or "")
