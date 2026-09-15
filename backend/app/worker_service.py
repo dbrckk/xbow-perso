@@ -195,12 +195,6 @@ def process_validation(job: dict, store: Storage) -> None:
             "probe_status": result.status,
             "http_status": result.http_status,
             "artifact_id": artifact["id"],
-            "reporting_governance_fingerprint": (
-                reporting.governance_fingerprint
-            ),
-            "report_provenance_fingerprint": (
-                reporting.provenance_fingerprint
-            ),
             "at": utcnow(),
         },
     )
@@ -448,6 +442,12 @@ def process_report(job: dict, store: Storage) -> None:
             "job_id": job["id"],
             "platform": platform,
             "artifact_id": artifact["id"],
+            "reporting_governance_fingerprint": (
+                reporting.governance_fingerprint
+            ),
+            "report_provenance_fingerprint": (
+                reporting.provenance_fingerprint
+            ),
             "at": utcnow(),
         },
     )
