@@ -546,10 +546,17 @@ def test_storage_health_reports_sqlite_ready(tmp_path):
 
 
 
+
 def test_review_queue_snapshot_storage_deduplicates_fingerprint(tmp_path):
     store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
-    campaign = _campaign()
-    store.save_campaign(campaign.model_dump(mode="json"))
+    campaign = {
+        "id": "review-history",
+        "state": "ready",
+        "created_at": "2026-09-15T00:00:00+00:00",
+        "updated_at": "2026-09-15T00:00:00+00:00",
+        "target": {"name": "demo"},
+    }
+    store.save_campaign(campaign)
     document = {
         "schema": "review-queue-snapshot-v1",
         "fingerprint": "a" * 64,
@@ -558,18 +565,18 @@ def test_review_queue_snapshot_storage_deduplicates_fingerprint(tmp_path):
     }
 
     first = store.put_review_queue_snapshot(
-        campaign.id,
+        campaign["id"],
         "a" * 64,
         document,
     )
     second = store.put_review_queue_snapshot(
-        campaign.id,
+        campaign["id"],
         "a" * 64,
         document,
     )
 
     assert first["created_at"] == second["created_at"]
-    rows = store.list_review_queue_snapshots(campaign.id)
+    rows = store.list_review_queue_snapshots(campaign["id"])
     assert len(rows) == 1
     assert rows[0]["fingerprint"] == "a" * 64
     assert rows[0]["document"] == document
