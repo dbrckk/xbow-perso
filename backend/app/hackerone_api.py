@@ -84,3 +84,8 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
         "policy_snapshot": policy.to_snapshot(),
         "rules": rules.model_dump(mode="json"),
     }
+
+
+@router.post("/api/imports/hackerone/campaigns")
+def admit_hackerone_campaign(payload: HackerOneRulesPreviewInput):
+    raise HTTPException(status_code=501, detail="HackerOne conservative admission is not implemented")
