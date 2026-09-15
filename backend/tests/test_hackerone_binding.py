@@ -3,6 +3,7 @@ from fastapi import HTTPException
 
 from app import main
 from app.hackerone_api import HackerOneCampaignAdmissionInput, admit_hackerone_campaign
+from app.job_provenance import attach_job_provenance, verify_job_provenance
 from app.jobqueue import JobQueue
 from app.storage import Storage
 
@@ -41,6 +42,15 @@ def _admission_payload():
     )
 
 
+def _admitted_campaign(tmp_path, monkeypatch):
+    db = str(tmp_path / "campaigns.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    admitted = admit_hackerone_campaign(_admission_payload())
+    return admitted, main.Campaign.model_validate(admitted["campaign"])
+
+
 def test_hackerone_start_rejects_policy_drift_before_enqueue(tmp_path, monkeypatch):
     db = str(tmp_path / "campaigns.sqlite3")
     artifacts = str(tmp_path / "artifacts")
@@ -66,3 +76,41 @@ def test_hackerone_start_rejects_policy_drift_before_enqueue(tmp_path, monkeypat
     assert exc.value.detail["message"] == "HackerOne policy binding invalid"
     assert "campaign_policy_fingerprint_mismatch" in exc.value.detail["reasons"]
     assert jobs.stats()["total"] == 0
+
+
+def test_hackerone_binding_is_embedded_in_job_provenance(tmp_path, monkeypatch):
+    admitted, campaign = _admitted_campaign(tmp_path, monkeypatch)
+
+    payload = attach_job_provenance(
+        {"campaign_id": campaign.id},
+        campaign,
+        job_kind="strix_scan",
+        action="automated_scan",
+    )
+
+    assert payload["_provenance"]["external_policy_provider"] == "hackerone"
+    assert (
+        payload["_provenance"]["external_policy_fingerprint"]
+        == admitted["policy_binding"]["binding_fingerprint"]
+    )
+
+
+def test_hackerone_provenance_rejects_binding_substitution(tmp_path, monkeypatch):
+    _, campaign = _admitted_campaign(tmp_path, monkeypatch)
+    payload = attach_job_provenance(
+        {"campaign_id": campaign.id},
+        campaign,
+        job_kind="strix_scan",
+        action="automated_scan",
+    )
+    payload["_provenance"]["external_policy_fingerprint"] = "0" * 64
+    job = {
+        "campaign_id": campaign.id,
+        "kind": "strix_scan",
+        "payload": payload,
+    }
+
+    verification = verify_job_provenance(job, campaign)
+
+    assert verification["valid"] is False
+    assert "external_policy_fingerprint_mismatch" in verification["reasons"]
