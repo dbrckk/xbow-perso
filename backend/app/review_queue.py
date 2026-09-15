@@ -293,6 +293,7 @@ def persist_review_queue_snapshot(
         str(snapshot["fingerprint"]),
         snapshot,
     )
+    pruned_on_write = 0
     with storage_backend.connect() as db:
         rows = db.execute(
             """SELECT fingerprint FROM review_queue_snapshots
@@ -306,7 +307,17 @@ def persist_review_queue_snapshot(
                    WHERE campaign_id=? AND fingerprint=?""",
                 (campaign_id, row["fingerprint"]),
             )
-    return stored
+            pruned_on_write += 1
+    retained_snapshots = min(len(rows), retention_limit)
+    return {
+        **stored,
+        "retention": {
+            "limit": retention_limit,
+            "retained_snapshots": retained_snapshots,
+            "pruned_on_write": pruned_on_write,
+            "at_capacity": retained_snapshots >= retention_limit,
+        },
+    }
 
 
 @router.get("/api/campaigns/{campaign_id}/review-queue/history")
@@ -394,10 +405,11 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
         stale_reports=stale_reports,
     )
     snapshot = review_queue_snapshot(tasks)
-    persist_review_queue_snapshot(storage(), campaign.id, snapshot)
+    persistence = persist_review_queue_snapshot(storage(), campaign.id, snapshot)
     return {
         "campaign_id": campaign.id,
         "snapshot": snapshot,
+        "history_retention": persistence["retention"],
         "tasks": [item.to_dict() for item in tasks],
         "summary": {
             "total": len(tasks),
