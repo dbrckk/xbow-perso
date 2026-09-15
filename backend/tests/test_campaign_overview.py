@@ -215,3 +215,34 @@ def test_overview_clears_validation_evidence_gap_after_attached_evidence(tmp_pat
     assert result["validation"]["unevidenced"] == 0
     assert result["validation"]["all_evidence_backed_independently"] is True
     assert "validation_missing_evidence" not in result["attention_reasons"]
+
+
+
+def test_overview_surfaces_stale_report_artifact(tmp_path, monkeypatch):
+    campaign, store = _setup(tmp_path, monkeypatch)
+    artifact = store.put_artifact(
+        campaign.id,
+        "report",
+        b"# report",
+        media_type="text/markdown",
+    )
+    campaign.events.append(
+        {
+            "type": "report_generated",
+            "artifact_id": artifact["id"],
+            "reporting_governance_fingerprint": "0" * 64,
+            "report_provenance_fingerprint": "1" * 64,
+            "at": "2026-09-15T05:00:00Z",
+        }
+    )
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
+
+    result = campaign_overview(campaign.id)
+
+    assert result["reports"]["stale"] == 1
+    assert result["reports"]["fresh"] == 0
+    assert result["reports"]["freshness"][0]["stale"] is True
+    assert "reporting_governance_changed" in (
+        result["reports"]["freshness"][0]["stale_reasons"]
+    )
+    assert "stale_report_artifact" in result["attention_reasons"]
