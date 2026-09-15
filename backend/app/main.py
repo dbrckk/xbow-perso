@@ -339,6 +339,7 @@ def system_capabilities():
             "report_provenance_verification": True,
             "reporting_governance_fingerprint": True,
             "report_governance_manifest": True,
+            "report_artifact_freshness": True,
             "verified_submission_gate": True,
             "approval_provenance_binding": True,
             "approval_governance_binding": True,
@@ -1706,6 +1707,45 @@ def add_text_artifact(campaign_id: str, evidence: EvidenceInput = Body(...)):
 def list_artifacts(campaign_id: str):
     assert_campaign_exists(campaign_id)
     return storage().list_artifacts(campaign_id)
+
+
+@app.get("/api/campaigns/{campaign_id}/reports/{artifact_id}/freshness")
+def report_artifact_freshness(campaign_id: str, artifact_id: str):
+    from .reporting_governance import (
+        assess_report_artifact_freshness,
+        build_reporting_governance_snapshot,
+    )
+
+    campaign = assert_campaign_exists(campaign_id)
+    artifact = storage().get_artifact(campaign_id, artifact_id)
+    if not artifact or artifact.get("kind") != "report":
+        raise HTTPException(status_code=404, detail="Report artifact not found")
+
+    generated = next(
+        (
+            event
+            for event in reversed(campaign.events)
+            if event.get("type") == "report_generated"
+            and event.get("artifact_id") == artifact_id
+        ),
+        None,
+    )
+    graph = _campaign_graph(campaign_id)
+    current = build_reporting_governance_snapshot(campaign.findings, graph)
+    return assess_report_artifact_freshness(
+        artifact_id=artifact_id,
+        generated_governance_fingerprint=(
+            generated.get("reporting_governance_fingerprint")
+            if generated
+            else None
+        ),
+        generated_provenance_fingerprint=(
+            generated.get("report_provenance_fingerprint")
+            if generated
+            else None
+        ),
+        current=current,
+    )
 
 
 @app.get("/api/campaigns/{campaign_id}/artifacts/{artifact_id}")
