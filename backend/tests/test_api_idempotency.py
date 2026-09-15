@@ -65,6 +65,16 @@ def _record_observed_validation(db, artifacts, finding_id="f1"):
             parent_ids=(f"finding:{finding_id}",),
         ).to_dict(),
     )
+    store.put_observation(
+        "c1",
+        Observation(
+            "validation-evidence:v1",
+            "evidence",
+            "validation-artifact",
+            "independent-http-validator",
+            parent_ids=("v1",),
+        ).to_dict(),
+    )
 
 
 def test_duplicate_finding_retry_returns_existing_and_keeps_one_job(tmp_path, monkeypatch):
@@ -555,7 +565,12 @@ def test_manual_report_retry_reuses_pending_request_and_job(tmp_path, monkeypatc
     existing = jobs.enqueue(
         campaign.id,
         "report",
-        {"campaign_id": campaign.id, "platform": "generic"},
+        main.attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": "generic"},
+            campaign,
+            job_kind="report",
+            action="report",
+        ),
         max_attempts=2,
         dedupe_key=f"report:generic:{request_id}",
     )
