@@ -64,7 +64,28 @@ jobs:
               '''    job = queue().enqueue(\n        campaign.id,\n        "report",\n        attach_job_provenance(\n            {"campaign_id": campaign.id, "platform": platform},\n            latest,\n            job_kind="report",\n            action="report",\n        ),\n        max_attempts=2,\n        dedupe_key=f"report:{platform}:{request_id}",\n    )\n''',
               "manual report enqueue",
           )
+          path.write_text(text)
 
+          path = Path("backend/tests/test_api_idempotency.py")
+          text = path.read_text()
+
+          def test_replace_once(old, new, label):
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{label}: expected one match, found {count}")
+              text = text.replace(old, new, 1)
+
+          test_replace_once(
+              '''    store.put_observation(\n        "c1",\n        Observation(\n            "v1",\n            "validation",\n            "observed",\n            "independent-http-validator",\n            parent_ids=(f"finding:{finding_id}",),\n        ).to_dict(),\n    )\n''',
+              '''    store.put_observation(\n        "c1",\n        Observation(\n            "v1",\n            "validation",\n            "observed",\n            "independent-http-validator",\n            parent_ids=(f"finding:{finding_id}",),\n        ).to_dict(),\n    )\n    store.put_observation(\n        "c1",\n        Observation(\n            "validation-evidence:v1",\n            "evidence",\n            "validation-artifact",\n            "independent-http-validator",\n            parent_ids=("v1",),\n        ).to_dict(),\n    )\n''',
+              "evidence-backed validation fixture",
+          )
+          test_replace_once(
+              '''    existing = jobs.enqueue(\n        campaign.id,\n        "report",\n        {"campaign_id": campaign.id, "platform": "generic"},\n        max_attempts=2,\n        dedupe_key=f"report:generic:{request_id}",\n    )\n''',
+              '''    existing = jobs.enqueue(\n        campaign.id,\n        "report",\n        main.attach_job_provenance(\n            {"campaign_id": campaign.id, "platform": "generic"},\n            campaign,\n            job_kind="report",\n            action="report",\n        ),\n        max_attempts=2,\n        dedupe_key=f"report:generic:{request_id}",\n    )\n''',
+              "provenanced report retry fixture",
+          )
           path.write_text(text)
           PY
 
@@ -82,16 +103,16 @@ jobs:
       - name: Verify focused API provenance regressions
         run: |
           python -m py_compile backend/app/main.py
-          ruff check backend/app/main.py backend/tests/test_job_provenance_api_integration.py
+          ruff check backend/app/main.py backend/tests/test_job_provenance_api_integration.py backend/tests/test_api_idempotency.py
           PYTHONPATH=backend pytest -q \
             backend/tests/test_job_provenance_api_integration.py \
             backend/tests/test_job_provenance_integration.py \
             backend/tests/test_api_idempotency.py
 
-      - name: Commit production change
+      - name: Commit production and fixture changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add backend/app/main.py
+          git add backend/app/main.py backend/tests/test_api_idempotency.py
           git commit -m "feat: bind direct api jobs to policy provenance"
           git push origin HEAD:governance/pr151-selective-migration
