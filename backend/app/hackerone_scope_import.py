@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ipaddress
+import math
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlparse
@@ -14,6 +15,48 @@ _MAX_IDENTIFIER_CHARS = 2048
 
 class HackerOneScopeImportError(RuntimeError):
     pass
+
+
+@dataclass(frozen=True)
+class HackerOneProgramPolicy:
+    """Human-reviewed HackerOne program constraints required for rule conversion.
+
+    HackerOne StructuredScope data describes assets, not permission to automate
+    testing or a safe request rate. Those values therefore have no defaults here:
+    callers must provide both explicitly before a scope can become executable
+    ProgramRules.
+    """
+
+    authorization_reference: str
+    automated_scanning: bool
+    max_requests_per_second: float
+
+    def __post_init__(self) -> None:
+        reference = self.authorization_reference
+        if (
+            not isinstance(reference, str)
+            or len(reference) < 3
+            or reference != reference.strip()
+            or any(ord(ch) < 32 or ord(ch) == 127 for ch in reference)
+        ):
+            raise HackerOneScopeImportError(
+                "HackerOne authorization reference must be an explicit non-empty string"
+            )
+        if type(self.automated_scanning) is not bool:
+            raise HackerOneScopeImportError(
+                "HackerOne automated_scanning permission must be an explicit boolean"
+            )
+        rate = self.max_requests_per_second
+        if isinstance(rate, bool) or not isinstance(rate, (int, float)):
+            raise HackerOneScopeImportError(
+                "HackerOne request rate must be an explicit number"
+            )
+        normalized_rate = float(rate)
+        if not math.isfinite(normalized_rate) or not 0 < normalized_rate <= 20:
+            raise HackerOneScopeImportError(
+                "HackerOne request rate must be greater than 0 and at most 20 requests/second"
+            )
+        object.__setattr__(self, "max_requests_per_second", normalized_rate)
 
 
 @dataclass(frozen=True)
@@ -38,9 +81,12 @@ class HackerOneScopePreview:
     def to_program_rules(
         self,
         *,
-        authorization_reference: str,
-        max_requests_per_second: float = 2.0,
+        policy: HackerOneProgramPolicy,
     ) -> ProgramRules:
+        if not isinstance(policy, HackerOneProgramPolicy):
+            raise HackerOneScopeImportError(
+                "explicit HackerOne program policy is required before rule conversion"
+            )
         if not self.complete:
             raise HackerOneScopeImportError(
                 "HackerOne scope cannot be converted without resolving unsupported or conflicting assets"
@@ -50,16 +96,20 @@ class HackerOneScopePreview:
                 "HackerOne scope contains no compatible in-scope targets"
             )
         return ProgramRules(
-            authorization_reference=authorization_reference,
+            authorization_reference=policy.authorization_reference,
             allowed_targets=list(self.allowed_targets),
             denied_targets=list(self.denied_targets),
-            max_requests_per_second=max_requests_per_second,
+            max_requests_per_second=policy.max_requests_per_second,
             destructive_testing=False,
             denial_of_service=False,
             social_engineering=False,
             credential_attacks=False,
-            automated_scanning=True,
-            notes="Imported from HackerOne StructuredScope preview; review before campaign creation.",
+            automated_scanning=policy.automated_scanning,
+            notes=(
+                "Imported from HackerOne StructuredScope with explicit HackerOne "
+                "program policy; destructive, denial-of-service, social-engineering, "
+                "and credential-attack capabilities remain disabled."
+            ),
         )
 
 
