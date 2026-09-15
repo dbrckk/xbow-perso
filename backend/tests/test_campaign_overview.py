@@ -247,3 +247,8 @@ def test_overview_surfaces_stale_report_artifact(tmp_path, monkeypatch):
     )
     assert "stale_report_artifact" in result["attention_reasons"]
     assert result["review_queue"]["stale_report_reviews"] == 1
+    snapshot = result["review_queue"]["snapshot"]
+    assert snapshot["schema"] == "review-queue-snapshot-v1"
+    assert len(snapshot["fingerprint"]) == 64
+    assert snapshot["task_count"] == result["review_queue"]["total"]
+    assert snapshot["by_kind"]["review_stale_report"] == 1
