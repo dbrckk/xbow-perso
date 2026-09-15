@@ -5,7 +5,7 @@ import hashlib
 import json
 from typing import Any, Callable, Literal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from .evidence_chain import build_evidence_chains
 from .hypothesis_engine import build_hypotheses
