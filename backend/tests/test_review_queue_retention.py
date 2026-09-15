@@ -29,15 +29,23 @@ def _snapshot(index: int) -> tuple[str, dict[str, object]]:
 
 def _assert_retention(store, campaign_id: str) -> None:
     store.save_campaign(_campaign(campaign_id))
+    result = None
     for index in range(3):
         _fingerprint, document = _snapshot(index)
-        persist_review_queue_snapshot(
+        result = persist_review_queue_snapshot(
             store,
             campaign_id,
             document,
             retention_limit=2,
         )
 
+    assert result is not None
+    assert result["retention"] == {
+        "limit": 2,
+        "retained_snapshots": 2,
+        "pruned_on_write": 1,
+        "at_capacity": True,
+    }
     rows = store.list_review_queue_snapshots(campaign_id, limit=10)
     assert [row["fingerprint"] for row in rows] == [
         f"{2:064x}",
@@ -63,13 +71,16 @@ def test_review_queue_snapshot_retention_is_campaign_scoped(tmp_path):
     second_id = "retention-b"
     store.save_campaign(_campaign(second_id))
     fingerprint, document = _snapshot(9)
-    persist_review_queue_snapshot(
+    result = persist_review_queue_snapshot(
         store,
         second_id,
         document,
         retention_limit=2,
     )
 
+    assert result["retention"]["retained_snapshots"] == 1
+    assert result["retention"]["pruned_on_write"] == 0
+    assert result["retention"]["at_capacity"] is False
     assert len(store.list_review_queue_snapshots("retention-a", limit=10)) == 2
     assert [
         row["fingerprint"]
