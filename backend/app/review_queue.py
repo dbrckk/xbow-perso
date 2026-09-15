@@ -239,6 +239,31 @@ def review_queue_snapshot(tasks: list[ReviewTask]) -> dict[str, Any]:
     }
 
 
+def diff_review_queue_snapshots(
+    previous: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    previous_ids = set(str(item) for item in previous.get("task_ids", ()))
+    current_ids = set(str(item) for item in current.get("task_ids", ()))
+    added = sorted(current_ids - previous_ids)
+    removed = sorted(previous_ids - current_ids)
+    unchanged = sorted(previous_ids & current_ids)
+    return {
+        "schema": "review-queue-diff-v1",
+        "previous_fingerprint": previous.get("fingerprint"),
+        "current_fingerprint": current.get("fingerprint"),
+        "changed": bool(added or removed),
+        "added_task_ids": added,
+        "removed_task_ids": removed,
+        "unchanged_task_ids": unchanged,
+        "added_count": len(added),
+        "removed_count": len(removed),
+        "unchanged_count": len(unchanged),
+        "read_only": True,
+        "advisory_only": True,
+    }
+
+
 @router.get("/api/campaigns/{campaign_id}/review-queue")
 def campaign_review_queue(campaign_id: str, limit: int = 25):
     from .main import assert_campaign_exists, is_host_allowed, storage
