@@ -1,6 +1,7 @@
 import pytest
 
 from app.hackerone_scope_import import (
+    HackerOneProgramPolicy,
     HackerOneScopeImportError,
     import_hackerone_structured_scope,
 )
@@ -24,6 +25,24 @@ def _resource(
             "instruction": None,
         },
     }
+
+
+def _policy(**overrides):
+    values = {
+        "authorization_reference": "H1-PROGRAM-42",
+        "policy_version": "2026-09-15",
+        "reviewed_at": "2026-09-15T20:00:00+02:00",
+        "reviewed_by": "human-reviewer",
+        "safe_harbor_confirmed": True,
+        "automated_scanning": False,
+        "max_requests_per_second": 1.0,
+        "test_account_required": False,
+        "test_account_constraints": "",
+        "additional_restrictions": (),
+        "program_notes": "Reviewed against the current HackerOne program policy.",
+    }
+    values.update(overrides)
+    return HackerOneProgramPolicy(**values)
 
 
 def test_hackerone_scope_preview_maps_host_safe_assets():
@@ -50,25 +69,82 @@ def test_hackerone_scope_preview_maps_host_safe_assets():
     assert all(asset.compatible for asset in preview.assets)
 
 
-def test_hackerone_scope_conversion_requires_explicit_authorization_reference():
+def test_hackerone_scope_conversion_requires_explicit_program_policy():
     preview = import_hackerone_structured_scope(
         {"data": [_resource("example.com", "Domain", True)]}
     )
+    policy = _policy(max_requests_per_second=1.25)
 
-    rules = preview.to_program_rules(
-        authorization_reference="H1-PROGRAM-42",
-        max_requests_per_second=1.25,
-    )
+    rules = preview.to_program_rules(policy=policy)
 
     assert rules.authorization_reference == "H1-PROGRAM-42"
     assert rules.allowed_targets == ["example.com"]
     assert rules.denied_targets == []
     assert rules.max_requests_per_second == 1.25
-    assert rules.automated_scanning is True
+    assert rules.automated_scanning is False
     assert rules.destructive_testing is False
     assert rules.denial_of_service is False
     assert rules.social_engineering is False
     assert rules.credential_attacks is False
+    assert "explicit HackerOne program policy" in rules.notes
+
+
+def test_hackerone_policy_snapshot_is_normalized_and_complete():
+    policy = _policy(
+        test_account_required=True,
+        test_account_constraints="Use the program-issued test tenant only.",
+        additional_restrictions=("No production data access", "No production data access"),
+    )
+
+    assert policy.to_snapshot() == {
+        "authorization_reference": "H1-PROGRAM-42",
+        "policy_version": "2026-09-15",
+        "reviewed_at": "2026-09-15T18:00:00+00:00",
+        "reviewed_by": "human-reviewer",
+        "safe_harbor_confirmed": True,
+        "automated_scanning": False,
+        "max_requests_per_second": 1.0,
+        "test_account_required": True,
+        "test_account_constraints": "Use the program-issued test tenant only.",
+        "additional_restrictions": ["No production data access"],
+        "program_notes": "Reviewed against the current HackerOne program policy.",
+    }
+
+
+def test_hackerone_policy_can_explicitly_allow_automated_scanning():
+    preview = import_hackerone_structured_scope(
+        {"data": [_resource("example.com", "Domain", True)]}
+    )
+    policy = _policy(automated_scanning=True, max_requests_per_second=0.5)
+
+    rules = preview.to_program_rules(policy=policy)
+
+    assert rules.automated_scanning is True
+    assert rules.max_requests_per_second == 0.5
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"authorization_reference": ""},
+        {"policy_version": ""},
+        {"reviewed_at": "2026-09-15T20:00:00"},
+        {"reviewed_by": ""},
+        {"safe_harbor_confirmed": "yes"},
+        {"automated_scanning": "yes"},
+        {"max_requests_per_second": 0},
+        {"max_requests_per_second": 21},
+        {"test_account_required": "no"},
+        {
+            "test_account_required": True,
+            "test_account_constraints": "",
+        },
+        {"additional_restrictions": ("",)},
+    ],
+)
+def test_invalid_hackerone_program_policy_fails_closed(kwargs):
+    with pytest.raises(HackerOneScopeImportError):
+        _policy(**kwargs)
 
 
 @pytest.mark.parametrize(
@@ -98,7 +174,7 @@ def test_unsupported_scope_assets_block_rule_conversion(identifier, asset_type, 
     assert preview.unsupported == (f"{asset_type}:{identifier}",)
 
     with pytest.raises(HackerOneScopeImportError, match="cannot be converted"):
-        preview.to_program_rules(authorization_reference="AUTH-1")
+        preview.to_program_rules(policy=_policy(authorization_reference="AUTH-1"))
 
 
 def test_out_of_scope_unsupported_asset_also_blocks_conversion():
@@ -114,7 +190,7 @@ def test_out_of_scope_unsupported_asset_also_blocks_conversion():
     assert preview.complete is False
     assert preview.allowed_targets == ("*.example.com",)
     with pytest.raises(HackerOneScopeImportError, match="cannot be converted"):
-        preview.to_program_rules(authorization_reference="AUTH-1")
+        preview.to_program_rules(policy=_policy(authorization_reference="AUTH-1"))
 
 
 def test_conflicting_scope_entries_fail_closed():
@@ -132,7 +208,7 @@ def test_conflicting_scope_entries_fail_closed():
     assert preview.denied_targets == ("example.com",)
     assert preview.allowed_targets == ()
     with pytest.raises(HackerOneScopeImportError, match="cannot be converted"):
-        preview.to_program_rules(authorization_reference="AUTH-1")
+        preview.to_program_rules(policy=_policy(authorization_reference="AUTH-1"))
 
 
 def test_duplicate_same_scope_entries_are_deduplicated():
