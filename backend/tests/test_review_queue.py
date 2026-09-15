@@ -433,3 +433,66 @@ def test_review_task_identity_changes_for_distinct_report():
     )[0]
 
     assert first.task_id != second.task_id
+
+
+
+def test_review_queue_snapshot_is_order_independent():
+    first = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+        ],
+    )
+    second = list(reversed(first))
+
+    snapshot_a = review_queue_snapshot(first)
+    snapshot_b = review_queue_snapshot(second)
+
+    assert snapshot_a["fingerprint"] == snapshot_b["fingerprint"]
+    assert snapshot_a["task_ids"] == snapshot_b["task_ids"]
+    assert snapshot_a["task_count"] == 2
+    assert snapshot_a["by_kind"]["review_stale_report"] == 2
+    assert snapshot_a["read_only"] is True
+    assert snapshot_a["advisory_only"] is True
+
+
+def test_review_queue_snapshot_changes_when_logical_task_set_changes():
+    one = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            }
+        ],
+    )
+    two = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+        ],
+    )
+
+    assert (
+        review_queue_snapshot(one)["fingerprint"]
+        != review_queue_snapshot(two)["fingerprint"]
+    )
