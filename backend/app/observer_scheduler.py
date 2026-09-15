@@ -23,10 +23,15 @@ def run_scheduled_observation(
 ) -> dict[str, Any]:
     """Perform one leader-gated observation pass; external scheduler controls timing."""
     config = scheduler_config()
-    if not lease.acquire(owner, ttl_seconds=config["lease_ttl_seconds"]):
+    generation = lease.acquire(owner, ttl_seconds=config["lease_ttl_seconds"])
+    if generation is None:
         return {"ran": False, "reason": "not_leader"}
     try:
+        if not lease.is_current(owner, generation):
+            return {"ran": False, "reason": "leadership_lost", "generation": generation}
         result = observe_once()
-        return {"ran": True, "result": result}
+        if not lease.is_current(owner, generation):
+            return {"ran": False, "reason": "leadership_lost_after_observation", "generation": generation}
+        return {"ran": True, "result": result, "generation": generation}
     finally:
-        lease.release(owner)
+        lease.release(owner, generation)
