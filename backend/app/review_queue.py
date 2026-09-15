@@ -264,6 +264,34 @@ def diff_review_queue_snapshots(
     }
 
 
+
+
+@router.get("/api/campaigns/{campaign_id}/review-queue/history")
+def campaign_review_queue_history(
+    campaign_id: str,
+    limit: int = Query(default=50, ge=1, le=200),
+) -> dict[str, Any]:
+    campaign = assert_campaign_exists(campaign_id)
+    rows = storage().list_review_queue_snapshots(campaign.id, limit=limit)
+    chronological = list(reversed(rows))
+    transitions = [
+        diff_review_queue_snapshots(
+            chronological[index - 1]["document"],
+            chronological[index]["document"],
+        )
+        for index in range(1, len(chronological))
+    ]
+    return {
+        "campaign_id": campaign.id,
+        "schema": "review-queue-history-v1",
+        "read_only": True,
+        "advisory_only": True,
+        "snapshots": rows,
+        "transitions": transitions,
+        "snapshot_count": len(rows),
+        "transition_count": len(transitions),
+    }
+
 @router.get("/api/campaigns/{campaign_id}/review-queue")
 def campaign_review_queue(campaign_id: str, limit: int = 25):
     from .main import assert_campaign_exists, is_host_allowed, storage
@@ -316,6 +344,11 @@ def campaign_review_queue(campaign_id: str, limit: int = 25):
         stale_reports=stale_reports,
     )
     snapshot = review_queue_snapshot(tasks)
+    storage().put_review_queue_snapshot(
+        campaign.id,
+        snapshot["fingerprint"],
+        snapshot,
+    )
     return {
         "campaign_id": campaign.id,
         "snapshot": snapshot,
