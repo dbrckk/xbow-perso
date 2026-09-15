@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import hashlib
+import json
 from typing import Any, Callable, Literal
 
 from fastapi import APIRouter
@@ -38,8 +40,22 @@ class ReviewTask:
     parameter_names: tuple[str, ...] = ()
     score_components: dict[str, float] | None = None
 
+    @property
+    def task_id(self) -> str:
+        identity = json.dumps(
+            {
+                "schema": "review-task-identity-v1",
+                "kind": self.kind,
+                "target": self.target,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        return hashlib.sha256(identity).hexdigest()
+
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
+        payload["task_id"] = self.task_id
         payload["evidence_ids"] = list(self.evidence_ids)
         payload["parameter_names"] = list(self.parameter_names)
         payload["score_components"] = dict(self.score_components or {})
