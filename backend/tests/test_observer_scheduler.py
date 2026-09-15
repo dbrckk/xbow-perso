@@ -12,7 +12,7 @@ NOW = datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
 def test_only_one_owner_holds_active_lease(tmp_path):
     lease = ObserverLease(str(tmp_path / "lease.sqlite3"))
     assert lease.acquire("one", ttl_seconds=90, now=NOW) == 1
-    assert lease.acquire("two", ttl_seconds=90, now=NOW) is False
+    assert lease.acquire("two", ttl_seconds=90, now=NOW) is None
 
 
 def test_expired_lease_can_be_taken_over(tmp_path):
