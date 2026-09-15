@@ -1,5 +1,6 @@
 import pytest
 
+from app import main
 from app.job_provenance import (
     GOVERNED_JOB_KINDS,
     JobProvenanceError,
@@ -147,3 +148,62 @@ def test_governed_job_registry_is_explicit_and_closed():
     )
     assert all(provenance_required_for_job_kind(kind) for kind in GOVERNED_JOB_KINDS)
     assert provenance_required_for_job_kind("maintenance") is False
+
+
+def test_job_provenance_status_route_is_registered():
+    assert "/api/jobs/{job_id}/provenance" in main.app.openapi()["paths"]
+
+
+def test_job_provenance_status_is_redacted(monkeypatch):
+    campaign = _campaign()
+    payload = attach_job_provenance(
+        {
+            "campaign_id": campaign.id,
+            "target": str(campaign.target.primary_url),
+            "secret": "secret-value",
+        },
+        campaign,
+        job_kind="strix_scan",
+        action="automated_scan",
+    )
+    job = {
+        "id": "job-1",
+        "campaign_id": campaign.id,
+        "kind": "strix_scan",
+        "payload": payload,
+    }
+
+    class FakeQueue:
+        def get(self, job_id):
+            return job if job_id == job["id"] else None
+
+    monkeypatch.setattr(main, "queue", lambda: FakeQueue())
+    monkeypatch.setattr(main, "assert_campaign_exists", lambda campaign_id: campaign)
+
+    result = main.get_job_provenance_status("job-1")
+
+    assert result["job_id"] == "job-1"
+    assert result["campaign_id"] == campaign.id
+    assert result["job_kind"] == "strix_scan"
+    assert result["provenance"]["valid"] is True
+    assert result["read_only"] is True
+    assert result["payload_exposed"] is False
+    assert result["fail_closed_capable"] is True
+    assert set(result) == {
+        "job_id",
+        "campaign_id",
+        "job_kind",
+        "provenance",
+        "read_only",
+        "payload_exposed",
+        "fail_closed_capable",
+    }
+    rendered = str(result)
+    assert "authorization-1" not in rendered
+    assert "https://example.test" not in rendered
+    assert "secret-value" not in rendered
+    assert "_provenance" not in rendered
+
+
+def test_capabilities_advertise_policy_bound_job_provenance():
+    assert main.system_capabilities()["campaign_control"]["policy_bound_job_provenance"] is True
