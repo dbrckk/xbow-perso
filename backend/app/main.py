@@ -344,6 +344,7 @@ def system_capabilities():
             "approval_provenance_binding": True,
             "approval_governance_binding": True,
             "approval_staleness_reasons": True,
+            "deterministic_review_task_identity": True,
             "submission_event_audit": True,
             "submission_integrity_metrics": True,
             "submission_audit_fingerprint": True,
