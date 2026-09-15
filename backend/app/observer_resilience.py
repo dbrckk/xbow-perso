@@ -13,6 +13,9 @@ class ObserverHealth:
     leadership_changes: int = 0
     last_generation: int | None = None
     circuit_open_until: str | None = None
+    last_cycle_duration_seconds: float | None = None
+    deadline_exceeded_count: int = 0
+    leadership_lost_count: int = 0
 
     def note_generation(self, generation: int) -> None:
         if self.last_generation is not None and generation != self.last_generation:
@@ -24,6 +27,15 @@ class ObserverHealth:
             return False
         current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
         return datetime.fromisoformat(self.circuit_open_until) > current
+
+    def note_cycle_duration(self, seconds: float) -> None:
+        self.last_cycle_duration_seconds = max(0.0, float(seconds))
+
+    def note_deadline_exceeded(self) -> None:
+        self.deadline_exceeded_count += 1
+
+    def note_leadership_lost(self) -> None:
+        self.leadership_lost_count += 1
 
     def success(self, now: datetime | None = None) -> None:
         current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
@@ -54,6 +66,9 @@ class ObserverHealth:
             "leadership_changes": self.leadership_changes,
             "last_generation": self.last_generation,
             "circuit_open_until": self.circuit_open_until,
+            "last_cycle_duration_seconds": self.last_cycle_duration_seconds,
+            "deadline_exceeded_count": self.deadline_exceeded_count,
+            "leadership_lost_count": self.leadership_lost_count,
             "contains_targets": False,
             "contains_payloads": False,
             "contains_secrets": False,
