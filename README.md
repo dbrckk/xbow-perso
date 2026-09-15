@@ -374,3 +374,8 @@ Campaign overview aggregates report freshness with `fresh` / `stale` counts and 
 
 
 Stale reports are also converted into bounded advisory `review_stale_report` tasks in the campaign overview review queue. These tasks reference only the report artifact identifier and drift reasons, have no execution authority, and require explicit human re-review rather than automatic regeneration or approval.
+
+
+### Deterministic review task identity
+
+Every advisory review task now exposes a stable SHA-256 `task_id` derived only from the `review-task-identity-v1` schema, task kind, and target. The identifier is independent of queue ordering, priority changes, reason text, and score components, allowing dashboards and audit clients to track the same logical review request across recomputations without persisting executable task state.
