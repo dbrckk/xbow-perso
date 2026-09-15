@@ -34,9 +34,12 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
 
     campaigns = storage_backend.list_campaigns()
     submission_audit = audit_storage_submissions(storage_backend)
-    campaign_states = Counter(str(item.get("state") or "unknown") for item in campaigns)
+    campaign_states = Counter(
+        str(item.get("state") or "unknown") for item in campaigns
+    )
     failed_jobs = int((metrics.get("jobs_by_status") or {}).get("failed") or 0)
     queue_audit = metrics.get("queue_transition_audit") or {}
+    review_queue_churn = metrics.get("review_queue_churn") or {}
     recovery = metrics.get("recovery_readiness") or {}
 
     critical_alerts = sum(
@@ -96,7 +99,9 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
             "jobs_total": int(metrics.get("jobs_total") or 0),
             "jobs_by_status": dict(metrics.get("jobs_by_status") or {}),
             "failed_jobs": failed_jobs,
-            "pending_outbox_total": int(metrics.get("pending_outbox_total") or 0),
+            "pending_outbox_total": int(
+                metrics.get("pending_outbox_total") or 0
+            ),
             "critical_alerts": critical_alerts,
             "warning_alerts": warning_alerts,
         },
@@ -109,6 +114,7 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
             ),
             "recent_transitions": history.get("transitions") or [],
         },
+        "review_queue_churn": review_queue_churn,
         "submission_integrity": {
             **submission_audit,
             "verification": (
@@ -126,19 +132,29 @@ def build_operations_dashboard(queue_backend, storage_backend) -> dict[str, Any]
         "queue_integrity": {
             "storage": metrics.get("queue_storage"),
             "audit_valid": queue_audit.get("valid"),
-            "audit_campaigns_checked": int(queue_audit.get("campaigns_checked") or 0),
+            "audit_campaigns_checked": int(
+                queue_audit.get("campaigns_checked") or 0
+            ),
             "audit_events_checked": int(queue_audit.get("events_checked") or 0),
-            "audit_invalid_campaigns": int(queue_audit.get("invalid_campaigns") or 0),
+            "audit_invalid_campaigns": int(
+                queue_audit.get("invalid_campaigns") or 0
+            ),
             "audit_invalid_jobs": int(queue_audit.get("invalid_jobs") or 0),
         },
         "alerts": alerts.get("alerts") or [],
         "drilldowns": {
             "campaign_overview": "/api/campaigns/{campaign_id}/overview",
+            "review_queue_history": (
+                "/api/campaigns/{campaign_id}/review-queue/history"
+            ),
             "recovery_readiness": "/api/recovery/readiness",
             "recovery_history": "/api/recovery/readiness/history",
             "metrics": "/api/metrics",
             "alerts": "/api/alerts",
-            "submission_audit": "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-audit",
+            "submission_audit": (
+                "/api/campaigns/{campaign_id}/reports/"
+                "{artifact_id}/submission-audit"
+            ),
         },
         "read_only": True,
         "aggregate_only": True,
