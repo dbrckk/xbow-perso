@@ -43,7 +43,8 @@ def run_scheduled_observation(
     health.note_generation(generation)
     try:
         if not lease.is_current(owner, generation):
-            return {"ran": False, "reason": "leadership_lost", "generation": generation}
+            health.note_leadership_lost()
+            return {"ran": False, "reason": "leadership_lost", "generation": generation, "health": health.snapshot()}
         started = time.monotonic()
         try:
             result = with_lease_heartbeat(
@@ -57,7 +58,9 @@ def run_scheduled_observation(
             health.failure()
             raise
         elapsed = time.monotonic() - started
+        health.note_cycle_duration(elapsed)
         if elapsed > config["deadline_seconds"]:
+            health.note_deadline_exceeded()
             health.failure()
             return {
                 "ran": False,
@@ -67,7 +70,8 @@ def run_scheduled_observation(
                 "health": health.snapshot(),
             }
         if not lease.is_current(owner, generation):
-            return {"ran": False, "reason": "leadership_lost_after_observation", "generation": generation}
+            health.note_leadership_lost()
+            return {"ran": False, "reason": "leadership_lost_after_observation", "generation": generation, "health": health.snapshot()}
         health.success()
         return {
             "ran": True,
