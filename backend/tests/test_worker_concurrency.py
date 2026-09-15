@@ -368,9 +368,30 @@ def test_report_worker_persists_governance_fingerprints(tmp_path):
         if item.get("kind") == "report"
     ]
     assert len(reports) == 1
-    metadata = reports[0].get("metadata") or {}
-    assert len(metadata["reporting_governance_fingerprint"]) == 64
-    assert len(metadata["report_provenance_fingerprint"]) == 64
+    saved = store.get_campaign(campaign.id)
+    report_event = next(
+        event
+        for event in saved["events"]
+        if event.get("type") == "report_generated"
+        and event.get("artifact_id") == reports[0]["id"]
+    )
+    assert len(report_event["reporting_governance_fingerprint"]) == 64
+    assert len(report_event["report_provenance_fingerprint"]) == 64
+
+    observations = store.list_observations(campaign.id)
+    report_observation = next(
+        item
+        for item in observations
+        if item.get("artifact_id") == reports[0]["id"]
+        or (
+            item.get("metadata", {}).get("artifact_kind") == "report"
+            and item.get("metadata", {}).get(
+                "reporting_governance_fingerprint"
+            )
+            == report_event["reporting_governance_fingerprint"]
+        )
+    )
+    metadata = report_observation.get("metadata") or {}
     assert metadata["reporting_governance_verified"] is True
 
     _artifact, content = store.read_artifact(
@@ -379,4 +400,4 @@ def test_report_worker_persists_governance_fingerprints(tmp_path):
     )
     rendered = content.decode("utf-8")
     assert "## Governance & audit manifest" in rendered
-    assert metadata["reporting_governance_fingerprint"] in rendered
+    assert report_event["reporting_governance_fingerprint"] in rendered
