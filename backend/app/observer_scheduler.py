@@ -6,6 +6,7 @@ from typing import Any, Callable
 
 from .observer_lease import ObserverLease
 from .observer_resilience import ObserverHealth
+from .observer_heartbeat import with_lease_heartbeat
 
 
 def scheduler_config() -> dict[str, int]:
@@ -45,7 +46,13 @@ def run_scheduled_observation(
             return {"ran": False, "reason": "leadership_lost", "generation": generation}
         started = time.monotonic()
         try:
-            result = observe_once(owner, generation)
+            result = with_lease_heartbeat(
+                lease,
+                owner,
+                generation,
+                config["lease_ttl_seconds"],
+                lambda: observe_once(owner, generation),
+            )
         except Exception:
             health.failure()
             raise
