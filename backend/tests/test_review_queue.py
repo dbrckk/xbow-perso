@@ -387,3 +387,49 @@ def test_review_queue_deduplicates_same_stale_report():
         if item.kind == "review_stale_report" and item.target == "report-1"
     ]
     assert len(matching) == 1
+
+
+
+def test_review_task_identity_is_deterministic_and_order_independent():
+    stale = {
+        "artifact_id": "report-identity",
+        "stale": True,
+        "stale_reasons": ["reporting_governance_changed"],
+    }
+    first = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[stale],
+    )[0]
+    second = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[dict(stale)],
+    )[0]
+
+    assert first.task_id == second.task_id
+    assert len(first.task_id) == 64
+    assert first.to_dict()["task_id"] == first.task_id
+
+
+def test_review_task_identity_changes_for_distinct_report():
+    first = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            }
+        ],
+    )[0]
+    second = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            }
+        ],
+    )[0]
+
+    assert first.task_id != second.task_id
