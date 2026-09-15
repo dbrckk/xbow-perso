@@ -204,6 +204,39 @@ class Storage:
                 "CREATE INDEX IF NOT EXISTS advisory_focus_snapshots_campaign_created "
                 "ON advisory_focus_snapshots(campaign_id, created_at DESC)"
             )
+            db.execute("""CREATE TABLE IF NOT EXISTS review_queue_snapshots (
+                campaign_id TEXT NOT NULL,
+                fingerprint TEXT NOT NULL,
+                document TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                PRIMARY KEY(campaign_id, fingerprint),
+                FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS review_queue_snapshots_campaign_created "
+                "ON review_queue_snapshots(campaign_id, created_at DESC)"
+            )
+            db.execute("""CREATE TABLE IF NOT EXISTS recovery_readiness_snapshots (
+                fingerprint TEXT PRIMARY KEY,
+                decision TEXT NOT NULL,
+                document TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS recovery_readiness_snapshots_created "
+                "ON recovery_readiness_snapshots(created_at DESC)"
+            )
+            db.execute("""CREATE TABLE IF NOT EXISTS control_plane_health_snapshots (
+                fingerprint TEXT PRIMARY KEY,
+                score INTEGER NOT NULL,
+                state TEXT NOT NULL,
+                document TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS control_plane_health_snapshots_created "
+                "ON control_plane_health_snapshots(created_at DESC)"
+            )
 
     def health(self) -> dict[str, Any]:
         try:
@@ -457,6 +490,201 @@ class Storage:
             {
                 "fingerprint": row["fingerprint"],
                 "advisory": json.loads(row["document"]),
+                "created_at": row["created_at"],
+            }
+            for row in rows
+        ]
+
+
+
+    def put_review_queue_snapshot(
+        self,
+        campaign_id: str,
+        fingerprint: str,
+        document: dict[str, Any],
+    ) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        fingerprint = _bounded_identifier(fingerprint, "fingerprint", max_length=64)
+        encoded = json.dumps(
+            document,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
+        if len(encoded.encode("utf-8")) > 65536:
+            raise ValueError("review queue snapshot exceeds size limit")
+        now = utcnow()
+        with self.connect() as db:
+            existing = db.execute(
+                """SELECT document,created_at FROM review_queue_snapshots
+                   WHERE campaign_id=? AND fingerprint=?""",
+                (campaign_id, fingerprint),
+            ).fetchone()
+            if existing:
+                return {
+                    "campaign_id": campaign_id,
+                    "fingerprint": fingerprint,
+                    "document": json.loads(existing["document"]),
+                    "created_at": existing["created_at"],
+                }
+            db.execute(
+                """INSERT INTO review_queue_snapshots(
+                       campaign_id,fingerprint,document,created_at
+                   ) VALUES(?,?,?,?)""",
+                (campaign_id, fingerprint, encoded, now),
+            )
+        return {
+            "campaign_id": campaign_id,
+            "fingerprint": fingerprint,
+            "document": document,
+            "created_at": now,
+        }
+
+    def list_review_queue_snapshots(
+        self,
+        campaign_id: str,
+        *,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        if not 1 <= limit <= 500:
+            raise ValueError("review queue snapshot limit must be between 1 and 500")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT fingerprint,document,created_at
+                   FROM review_queue_snapshots
+                   WHERE campaign_id=?
+                   ORDER BY created_at DESC LIMIT ?""",
+                (campaign_id, limit),
+            ).fetchall()
+        return [
+            {
+                "campaign_id": campaign_id,
+                "fingerprint": row["fingerprint"],
+                "document": json.loads(row["document"]),
+                "created_at": row["created_at"],
+            }
+            for row in rows
+        ]
+
+
+    def put_control_plane_health_snapshot(
+        self,
+        fingerprint: str,
+        score: int,
+        state: str,
+        document: dict[str, Any],
+    ) -> dict[str, Any]:
+        fingerprint = _bounded_identifier(fingerprint, "fingerprint", max_length=64)
+        if not 0 <= int(score) <= 100:
+            raise ValueError("control plane health score must be between 0 and 100")
+        if state not in {"HEALTHY", "DEGRADED", "BLOCKED"}:
+            raise ValueError("invalid control plane health state")
+        encoded = json.dumps(document, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        if len(encoded.encode("utf-8")) > 65536:
+            raise ValueError("control plane health snapshot exceeds size limit")
+        now = utcnow()
+        with self.connect() as db:
+            existing = db.execute(
+                "SELECT score,state,document,created_at FROM control_plane_health_snapshots WHERE fingerprint=?",
+                (fingerprint,),
+            ).fetchone()
+            if existing:
+                return {
+                    "fingerprint": fingerprint,
+                    "score": int(existing["score"]),
+                    "state": existing["state"],
+                    "document": json.loads(existing["document"]),
+                    "created_at": existing["created_at"],
+                }
+            db.execute(
+                """INSERT INTO control_plane_health_snapshots(
+                       fingerprint,score,state,document,created_at
+                   ) VALUES(?,?,?,?,?)""",
+                (fingerprint, int(score), state, encoded, now),
+            )
+        return {
+            "fingerprint": fingerprint,
+            "score": int(score),
+            "state": state,
+            "document": document,
+            "created_at": now,
+        }
+
+    def list_control_plane_health_snapshots(self, *, limit: int = 100) -> list[dict[str, Any]]:
+        if not 1 <= limit <= 500:
+            raise ValueError("control plane health snapshot limit must be between 1 and 500")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT fingerprint,score,state,document,created_at
+                   FROM control_plane_health_snapshots
+                   ORDER BY created_at DESC LIMIT ?""",
+                (limit,),
+            ).fetchall()
+        return [
+            {
+                "fingerprint": row["fingerprint"],
+                "score": int(row["score"]),
+                "state": row["state"],
+                "document": json.loads(row["document"]),
+                "created_at": row["created_at"],
+            }
+            for row in rows
+        ]
+
+    def put_recovery_readiness_snapshot(
+        self,
+        fingerprint: str,
+        decision: str,
+        document: dict[str, Any],
+    ) -> dict[str, Any]:
+        fingerprint = _bounded_identifier(fingerprint, "fingerprint", max_length=64)
+        if decision not in {"BLOCK", "REVIEW", "READY"}:
+            raise ValueError("invalid recovery readiness decision")
+        encoded = json.dumps(document, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        if len(encoded.encode("utf-8")) > 65536:
+            raise ValueError("recovery readiness snapshot exceeds size limit")
+        now = utcnow()
+        with self.connect() as db:
+            existing = db.execute(
+                "SELECT document,created_at FROM recovery_readiness_snapshots WHERE fingerprint=?",
+                (fingerprint,),
+            ).fetchone()
+            if existing:
+                return {
+                    "fingerprint": fingerprint,
+                    "decision": decision,
+                    "document": json.loads(existing["document"]),
+                    "created_at": existing["created_at"],
+                }
+            db.execute(
+                """INSERT INTO recovery_readiness_snapshots(
+                       fingerprint,decision,document,created_at
+                   ) VALUES(?,?,?,?)""",
+                (fingerprint, decision, encoded, now),
+            )
+        return {
+            "fingerprint": fingerprint,
+            "decision": decision,
+            "document": document,
+            "created_at": now,
+        }
+
+    def list_recovery_readiness_snapshots(self, *, limit: int = 100) -> list[dict[str, Any]]:
+        if not 1 <= limit <= 500:
+            raise ValueError("recovery readiness snapshot limit must be between 1 and 500")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT fingerprint,decision,document,created_at
+                   FROM recovery_readiness_snapshots
+                   ORDER BY created_at DESC LIMIT ?""",
+                (limit,),
+            ).fetchall()
+        return [
+            {
+                "fingerprint": row["fingerprint"],
+                "decision": row["decision"],
+                "document": json.loads(row["document"]),
                 "created_at": row["created_at"],
             }
             for row in rows

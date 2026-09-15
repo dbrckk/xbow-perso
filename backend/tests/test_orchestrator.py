@@ -130,6 +130,16 @@ def test_advance_queues_only_unvalidated_findings_then_waits_for_resolution_and_
         campaign.id,
         Observation("v1", "validation", "observed", "validator", parent_ids=("finding:f1",)).to_dict(),
     )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "ev1",
+            "evidence",
+            "validation-artifact",
+            "validator",
+            parent_ids=("v1",),
+        ).to_dict(),
+    )
 
     result = advance_campaign(campaign, queue, store)
     queued = queue.get(result["job_ids"][0])
@@ -137,12 +147,22 @@ def test_advance_queues_only_unvalidated_findings_then_waits_for_resolution_and_
     assert result["agent"]["role"] == "validation"
     assert queued["payload"]["finding_id"] == "f2"
     confidence = {item["finding_id"]: item["score"] for item in result["memory"]["finding_confidence"]}
-    assert confidence["finding:f1"] == 0.75
+    assert confidence["finding:f1"] == 0.95
     assert confidence["finding:f2"] == 0.35
 
     store.put_observation(
         campaign.id,
         Observation("v2", "validation", "observed", "validator", parent_ids=("finding:f2",)).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "ev2",
+            "evidence",
+            "validation-artifact",
+            "validator",
+            parent_ids=("v2",),
+        ).to_dict(),
     )
     waiting = advance_campaign(campaign, queue, store)
     assert waiting["action"]["kind"] == "stop"

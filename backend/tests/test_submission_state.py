@@ -34,6 +34,24 @@ def _artifact() -> dict:
     return {"id": "report-1", "kind": "report", "sha256": "a" * 64}
 
 
+def _quality_gate(
+    *,
+    grade: str = "B",
+    submission_ready: bool = True,
+    provenance_complete: bool = True,
+    provenance_verified: bool = True,
+) -> dict:
+    return {
+        "finding_id": "f1",
+        "grade": grade,
+        "submission_ready": submission_ready,
+        "checks": {
+            "provenance_complete": provenance_complete,
+            "provenance_verified": provenance_verified,
+        },
+    }
+
+
 def test_report_starts_as_draft():
     status = submission_status(_campaign(), _artifact())
     assert status.state == "draft"
@@ -45,7 +63,7 @@ def test_current_human_approval_unlocks_submission():
     artifact = _artifact()
     campaign.events.append(approval_event(campaign, artifact, "reviewer", "2026-09-10T08:00:00Z"))
 
-    status = assert_submission_allowed(campaign, artifact)
+    status = assert_submission_allowed(campaign, artifact, [_quality_gate()])
 
     assert status.state == "approved"
     assert status.reviewer == "reviewer"
@@ -134,7 +152,7 @@ def test_campaign_change_makes_approval_stale_and_reblocks_submission():
 
 def test_unapproved_submission_attempt_is_rejected():
     try:
-        assert_submission_allowed(_campaign(), _artifact())
+        assert_submission_allowed(_campaign(), _artifact(), [_quality_gate()])
     except ValueError as exc:
         assert "current human approval" in str(exc)
     else:
@@ -155,3 +173,99 @@ def test_submission_event_requires_complete_metadata():
             pass
         else:
             raise AssertionError("invalid submission metadata must be rejected")
+
+
+
+def test_submission_rejects_unverified_report_provenance():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(
+        approval_event(campaign, artifact, "reviewer", "2026-09-10T08:00:00Z")
+    )
+
+    try:
+        assert_submission_allowed(
+            campaign,
+            artifact,
+            [_quality_gate(provenance_verified=False)],
+        )
+    except ValueError as exc:
+        assert "provenance verification failed" in str(exc)
+    else:
+        raise AssertionError("tampered provenance must block submission")
+
+
+def test_submission_rejects_incomplete_report_provenance():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(
+        approval_event(campaign, artifact, "reviewer", "2026-09-10T08:00:00Z")
+    )
+
+    try:
+        assert_submission_allowed(
+            campaign,
+            artifact,
+            [_quality_gate(provenance_complete=False)],
+        )
+    except ValueError as exc:
+        assert "provenance is incomplete" in str(exc)
+    else:
+        raise AssertionError("incomplete provenance must block submission")
+
+
+def test_submission_rejects_quality_grade_below_threshold():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(
+        approval_event(campaign, artifact, "reviewer", "2026-09-10T08:00:00Z")
+    )
+
+    try:
+        assert_submission_allowed(
+            campaign,
+            artifact,
+            [_quality_gate(grade="C")],
+        )
+    except ValueError as exc:
+        assert "quality grade below submission threshold" in str(exc)
+    else:
+        raise AssertionError("grade C must block submission")
+
+
+def test_submission_rejects_missing_confirmed_finding_quality_gate():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(
+        approval_event(campaign, artifact, "reviewer", "2026-09-10T08:00:00Z")
+    )
+
+    try:
+        assert_submission_allowed(campaign, artifact, [])
+    except ValueError as exc:
+        assert "missing quality gate coverage" in str(exc)
+    else:
+        raise AssertionError("all confirmed findings require quality coverage")
+
+
+
+def test_approval_status_exposes_provenance_binding():
+    campaign = _campaign()
+    artifact = _artifact()
+    campaign.events.append(
+        approval_event(
+            campaign,
+            artifact,
+            "reviewer",
+            "2026-09-10T08:00:00Z",
+            provenance_fingerprint="a" * 64,
+        )
+    )
+
+    status = submission_status(
+        campaign,
+        artifact,
+        provenance_fingerprint="a" * 64,
+    )
+
+    assert status.state == "approved"

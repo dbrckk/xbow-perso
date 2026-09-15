@@ -15,6 +15,11 @@ class ReportApprovalStatus:
     reviewer: str | None
     approved_at: str | None
     basis_digest: str
+    approved_provenance_fingerprint: str | None
+    current_provenance_fingerprint: str | None
+    approved_governance_fingerprint: str | None
+    current_governance_fingerprint: str | None
+    stale_reasons: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -26,7 +31,13 @@ def _finding_payload(finding: Any) -> dict[str, Any]:
     return dict(finding)
 
 
-def report_basis_digest(campaign: Any, artifact: dict[str, Any]) -> str:
+def report_basis_digest(
+    campaign: Any,
+    artifact: dict[str, Any],
+    *,
+    provenance_fingerprint: str | None = None,
+    governance_fingerprint: str | None = None,
+) -> str:
     """Bind approval to the exact report artifact and submission-relevant campaign state."""
     confirmed = [
         _finding_payload(finding)
@@ -46,12 +57,22 @@ def report_basis_digest(campaign: Any, artifact: dict[str, Any]) -> str:
         "allowed_targets": sorted(rules.allowed_targets),
         "denied_targets": sorted(rules.denied_targets),
         "confirmed_findings": confirmed,
+        "report_provenance_fingerprint": provenance_fingerprint,
+        "reporting_governance_fingerprint": governance_fingerprint,
     }
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 
 
-def approval_event(campaign: Any, artifact: dict[str, Any], reviewer: str, at: str) -> dict[str, Any]:
+def approval_event(
+    campaign: Any,
+    artifact: dict[str, Any],
+    reviewer: str,
+    at: str,
+    *,
+    provenance_fingerprint: str | None = None,
+    governance_fingerprint: str | None = None,
+) -> dict[str, Any]:
     reviewer = reviewer.strip()
     if not reviewer:
         raise ValueError("reviewer is required")
@@ -61,7 +82,14 @@ def approval_event(campaign: Any, artifact: dict[str, Any], reviewer: str, at: s
         "type": "report_approved",
         "artifact_id": artifact["id"],
         "artifact_sha256": artifact["sha256"],
-        "basis_digest": report_basis_digest(campaign, artifact),
+        "basis_digest": report_basis_digest(
+            campaign,
+            artifact,
+            provenance_fingerprint=provenance_fingerprint,
+            governance_fingerprint=governance_fingerprint,
+        ),
+        "report_provenance_fingerprint": provenance_fingerprint,
+        "reporting_governance_fingerprint": governance_fingerprint,
         "reviewer": reviewer,
         "at": at,
     }
@@ -73,6 +101,9 @@ def approval_event_from_storage(
     artifact_id: str,
     reviewer: str,
     at: str,
+    *,
+    provenance_fingerprint: str | None = None,
+    governance_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     """Create approval only after Storage has verified the exact report bytes.
 
@@ -81,7 +112,14 @@ def approval_event_from_storage(
     durable database record before approval is recorded.
     """
     artifact, _content = store.read_artifact(campaign.id, artifact_id)
-    return approval_event(campaign, artifact, reviewer, at)
+    return approval_event(
+        campaign,
+        artifact,
+        reviewer,
+        at,
+        provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
+    )
 
 
 def revocation_event(artifact_id: str, reviewer: str, at: str) -> dict[str, Any]:
@@ -96,8 +134,19 @@ def revocation_event(artifact_id: str, reviewer: str, at: str) -> dict[str, Any]
     }
 
 
-def approval_status(campaign: Any, artifact: dict[str, Any]) -> ReportApprovalStatus:
-    current_digest = report_basis_digest(campaign, artifact)
+def approval_status(
+    campaign: Any,
+    artifact: dict[str, Any],
+    *,
+    provenance_fingerprint: str | None = None,
+    governance_fingerprint: str | None = None,
+) -> ReportApprovalStatus:
+    current_digest = report_basis_digest(
+        campaign,
+        artifact,
+        provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
+    )
     relevant = [
         event
         for event in campaign.events
@@ -113,6 +162,11 @@ def approval_status(campaign: Any, artifact: dict[str, Any]) -> ReportApprovalSt
             reviewer=None,
             approved_at=None,
             basis_digest=current_digest,
+            approved_provenance_fingerprint=None,
+            current_provenance_fingerprint=provenance_fingerprint,
+            approved_governance_fingerprint=None,
+            current_governance_fingerprint=governance_fingerprint,
+            stale_reasons=(),
         )
 
     latest = relevant[-1]
@@ -125,12 +179,31 @@ def approval_status(campaign: Any, artifact: dict[str, Any]) -> ReportApprovalSt
             reviewer=latest.get("reviewer"),
             approved_at=None,
             basis_digest=current_digest,
+            approved_provenance_fingerprint=None,
+            current_provenance_fingerprint=provenance_fingerprint,
+            approved_governance_fingerprint=None,
+            current_governance_fingerprint=governance_fingerprint,
+            stale_reasons=(),
         )
 
-    stale = (
-        latest.get("artifact_sha256") != artifact["sha256"]
-        or latest.get("basis_digest") != current_digest
-    )
+    stale_reasons: list[str] = []
+    if latest.get("artifact_sha256") != artifact["sha256"]:
+        stale_reasons.append("artifact_sha256_changed")
+    if latest.get("basis_digest") != current_digest:
+        stale_reasons.append("approval_basis_changed")
+    if (
+        latest.get("report_provenance_fingerprint") is not None
+        and latest.get("report_provenance_fingerprint")
+        != provenance_fingerprint
+    ):
+        stale_reasons.append("report_provenance_changed")
+    if (
+        latest.get("reporting_governance_fingerprint") is not None
+        and latest.get("reporting_governance_fingerprint")
+        != governance_fingerprint
+    ):
+        stale_reasons.append("reporting_governance_changed")
+    stale = bool(stale_reasons)
     return ReportApprovalStatus(
         artifact_id=artifact["id"],
         artifact_sha256=artifact["sha256"],
@@ -139,12 +212,33 @@ def approval_status(campaign: Any, artifact: dict[str, Any]) -> ReportApprovalSt
         reviewer=latest.get("reviewer"),
         approved_at=latest.get("at"),
         basis_digest=current_digest,
+        approved_provenance_fingerprint=latest.get(
+            "report_provenance_fingerprint"
+        ),
+        current_provenance_fingerprint=provenance_fingerprint,
+        approved_governance_fingerprint=latest.get(
+            "reporting_governance_fingerprint"
+        ),
+        current_governance_fingerprint=governance_fingerprint,
+        stale_reasons=tuple(stale_reasons),
     )
 
 
-def approval_status_from_storage(campaign: Any, store: Any, artifact_id: str) -> ReportApprovalStatus:
+def approval_status_from_storage(
+    campaign: Any,
+    store: Any,
+    artifact_id: str,
+    *,
+    provenance_fingerprint: str | None = None,
+    governance_fingerprint: str | None = None,
+) -> ReportApprovalStatus:
     """Return approval status only for report bytes that still pass integrity checks."""
     artifact, _content = store.read_artifact(campaign.id, artifact_id)
     if artifact.get("kind") != "report":
         raise ValueError("only report artifacts have approval status")
-    return approval_status(campaign, artifact)
+    return approval_status(
+        campaign,
+        artifact,
+        provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
+    )

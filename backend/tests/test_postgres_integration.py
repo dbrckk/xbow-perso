@@ -50,3 +50,41 @@ def test_postgres_campaign_version_conflict_fails_closed(tmp_path):
             {**updated, "state": "completed", "updated_at": "z"},
             expected_version=1,
         )
+
+
+
+def test_postgres_review_queue_snapshot_roundtrip_and_deduplication(tmp_path):
+    store = _store(tmp_path)
+    campaign_id = f"ci-{uuid4()}"
+    store.save_campaign(
+        {
+            "id": campaign_id,
+            "state": "ready",
+            "created_at": "x",
+            "updated_at": "x",
+        }
+    )
+    fingerprint = "a" * 64
+    document = {
+        "schema": "review-queue-snapshot-v1",
+        "fingerprint": fingerprint,
+        "task_ids": [],
+        "task_count": 0,
+    }
+
+    first = store.put_review_queue_snapshot(
+        campaign_id,
+        fingerprint,
+        document,
+    )
+    second = store.put_review_queue_snapshot(
+        campaign_id,
+        fingerprint,
+        document,
+    )
+    rows = store.list_review_queue_snapshots(campaign_id)
+
+    assert first["created_at"] == second["created_at"]
+    assert len(rows) == 1
+    assert rows[0]["fingerprint"] == fingerprint
+    assert rows[0]["document"] == document

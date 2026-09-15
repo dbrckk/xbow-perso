@@ -9,6 +9,7 @@ from .campaign_audit import append_campaign_event
 from .campaign_overview import router as overview_router
 from .campaign_review_state import router as review_state_router
 from .report_readiness import build_report_readiness
+from .reporting_governance import build_reporting_governance_snapshot
 from .observation_graph import load_observation_graph
 from .report_approval import (
     approval_event_from_storage,
@@ -16,6 +17,7 @@ from .report_approval import (
     revocation_event,
 )
 from .storage import ArtifactIntegrityError
+from .submission_audit import audit_submission_events, verify_submission_audit
 from .submission_state import assert_submission_allowed, submission_event, submission_status
 
 router = APIRouter()
@@ -48,6 +50,33 @@ def _save(campaign, version: int) -> None:
     save_campaign(campaign, expected_version=version)
 
 
+def _submission_governance(campaign, store):
+    graph = load_observation_graph(store, campaign.id)
+    snapshot = build_reporting_governance_snapshot(
+        campaign.findings,
+        graph,
+    )
+    return (
+        list(snapshot.quality_gates),
+        snapshot.provenance_fingerprint,
+        snapshot.governance_fingerprint,
+    )
+
+
+def _current_provenance_fingerprint(campaign, store) -> str:
+    _quality_gates, fingerprint, _governance_fingerprint = (
+        _submission_governance(campaign, store)
+    )
+    return fingerprint
+
+
+def _current_governance_fingerprint(campaign, store) -> str:
+    _quality_gates, _provenance_fingerprint, fingerprint = (
+        _submission_governance(campaign, store)
+    )
+    return fingerprint
+
+
 def _assert_report_review_ready(campaign, store) -> None:
     confirmed = [item for item in campaign.findings if str(item.status) == "confirmed"]
     if not confirmed:
@@ -78,8 +107,16 @@ def list_submission_states(campaign_id: str):
         for artifact in store.list_artifacts(campaign.id)
         if artifact.get("kind") == "report"
     ]
+    _quality_gates, provenance_fingerprint, governance_fingerprint = (
+        _submission_governance(campaign, store)
+    )
     states = [
-        submission_status(campaign, _verified_report(campaign, store, artifact_id)).to_dict()
+        submission_status(
+            campaign,
+            _verified_report(campaign, store, artifact_id),
+            provenance_fingerprint=provenance_fingerprint,
+            governance_fingerprint=governance_fingerprint,
+        ).to_dict()
         for artifact_id in report_ids
     ]
     counts = Counter(item["state"] for item in states)
@@ -94,11 +131,41 @@ def list_submission_states(campaign_id: str):
     }
 
 
+@router.get("/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-audit")
+def get_submission_audit(campaign_id: str, artifact_id: str):
+    campaign, _version, store = _context(campaign_id)
+    _verified_report(campaign, store, artifact_id)
+    audit = audit_submission_events(
+        campaign,
+        artifact_id,
+        current_provenance_fingerprint=_current_provenance_fingerprint(
+            campaign,
+            store,
+        ),
+        current_governance_fingerprint=_current_governance_fingerprint(
+            campaign,
+            store,
+        ),
+    )
+    return {
+        **audit,
+        "verification": verify_submission_audit(audit),
+    }
+
+
 @router.get("/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state")
 def get_submission_state(campaign_id: str, artifact_id: str):
     campaign, _version, store = _context(campaign_id)
     artifact = _verified_report(campaign, store, artifact_id)
-    return submission_status(campaign, artifact).to_dict()
+    _quality_gates, provenance_fingerprint, governance_fingerprint = (
+        _submission_governance(campaign, store)
+    )
+    return submission_status(
+        campaign,
+        artifact,
+        provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
+    ).to_dict()
 
 
 @router.post("/api/campaigns/{campaign_id}/reports/{artifact_id}/approve")
@@ -109,12 +176,29 @@ def approve_report(campaign_id: str, artifact_id: str, reviewer: str):
     artifact = _verified_report(campaign, store, artifact_id)
     try:
         _assert_report_review_ready(campaign, store)
-        current = approval_status_from_storage(campaign, store, artifact_id)
+        _quality_gates, provenance_fingerprint, governance_fingerprint = (
+            _submission_governance(
+                campaign,
+                store,
+            )
+        )
+        current = approval_status_from_storage(
+            campaign,
+            store,
+            artifact_id,
+            provenance_fingerprint=provenance_fingerprint,
+            governance_fingerprint=governance_fingerprint,
+        )
         reviewer = reviewer.strip()
         if not reviewer:
             raise ValueError("reviewer is required")
         if current.approved and current.reviewer == reviewer:
-            return submission_status(campaign, artifact).to_dict()
+            return submission_status(
+                campaign,
+                artifact,
+                provenance_fingerprint=provenance_fingerprint,
+                governance_fingerprint=governance_fingerprint,
+            ).to_dict()
         append_campaign_event(
             campaign.events,
             approval_event_from_storage(
@@ -123,13 +207,26 @@ def approve_report(campaign_id: str, artifact_id: str, reviewer: str):
                 artifact_id,
                 reviewer,
                 utcnow(),
+                provenance_fingerprint=provenance_fingerprint,
+                governance_fingerprint=governance_fingerprint,
             ),
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     campaign.updated_at = utcnow()
     _save(campaign, version)
-    return submission_status(campaign, artifact).to_dict()
+    return submission_status(
+        campaign,
+        artifact,
+        provenance_fingerprint=_current_provenance_fingerprint(
+            campaign,
+            store,
+        ),
+        governance_fingerprint=_current_governance_fingerprint(
+            campaign,
+            store,
+        ),
+    ).to_dict()
 
 
 @router.post("/api/campaigns/{campaign_id}/reports/{artifact_id}/revoke-approval")
@@ -148,14 +245,36 @@ def revoke_report_approval(campaign_id: str, artifact_id: str, reviewer: str):
         and event.get("type") in {"report_approved", "report_approval_revoked"}
     ]
     if relevant and relevant[-1].get("type") == "report_approval_revoked":
-        return submission_status(campaign, artifact).to_dict()
+        return submission_status(
+            campaign,
+            artifact,
+            provenance_fingerprint=_current_provenance_fingerprint(
+                campaign,
+                store,
+            ),
+            governance_fingerprint=_current_governance_fingerprint(
+                campaign,
+                store,
+            ),
+        ).to_dict()
     append_campaign_event(
         campaign.events,
         revocation_event(artifact_id, reviewer, utcnow()),
     )
     campaign.updated_at = utcnow()
     _save(campaign, version)
-    return submission_status(campaign, artifact).to_dict()
+    return submission_status(
+        campaign,
+        artifact,
+        provenance_fingerprint=_current_provenance_fingerprint(
+            campaign,
+            store,
+        ),
+        governance_fingerprint=_current_governance_fingerprint(
+            campaign,
+            store,
+        ),
+    ).to_dict()
 
 
 @router.post("/api/campaigns/{campaign_id}/reports/{artifact_id}/mark-submitted")
@@ -169,14 +288,31 @@ def mark_report_submitted(
 
     campaign, version, store = _context(campaign_id)
     artifact = _verified_report(campaign, store, artifact_id)
-    current = submission_status(campaign, artifact)
+    quality_gates, provenance_fingerprint, governance_fingerprint = (
+        _submission_governance(
+            campaign,
+            store,
+        )
+    )
+    current = submission_status(
+        campaign,
+        artifact,
+        provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
+    )
     actor = actor.strip()
     if current.state == "submitted":
         if current.submitted_by == actor and current.platform == platform:
             return current.to_dict()
         raise HTTPException(status_code=409, detail="Report is already marked submitted with different metadata")
     try:
-        assert_submission_allowed(campaign, artifact)
+        assert_submission_allowed(
+            campaign,
+            artifact,
+            quality_gates,
+            provenance_fingerprint=provenance_fingerprint,
+            governance_fingerprint=governance_fingerprint,
+        )
         append_campaign_event(
             campaign.events,
             submission_event(artifact_id, actor, platform, utcnow()),
@@ -185,4 +321,9 @@ def mark_report_submitted(
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     campaign.updated_at = utcnow()
     _save(campaign, version)
-    return submission_status(campaign, artifact).to_dict()
+    return submission_status(
+        campaign,
+        artifact,
+        provenance_fingerprint=provenance_fingerprint,
+        governance_fingerprint=governance_fingerprint,
+    ).to_dict()

@@ -4,6 +4,15 @@ import argparse
 import json
 from pathlib import Path
 
+from .queue_backend import create_queue
+from .recovery_attestation import (
+    RecoveryAttestationError,
+    build_recovery_attestation,
+    collect_recovery_campaign_audits,
+    load_and_verify_recovery_attestation,
+    write_recovery_attestation,
+)
+from .storage import Storage
 from .dr_manifest import (
     DisasterRecoveryError,
     build_backup_manifest,
@@ -30,6 +39,27 @@ def _parser() -> argparse.ArgumentParser:
     verify.add_argument("--postgres-dump", required=True)
     verify.add_argument("--redis-snapshot", required=True)
     verify.add_argument("--vault-copy", required=True)
+
+    sub.add_parser(
+        "queue-check",
+        help="Read-only post-restore queue consistency and lease assessment.",
+    )
+
+    attest = sub.add_parser(
+        "attest",
+        help="Create a signed recovery attestation after all recovery checks pass.",
+    )
+    attest.add_argument("--manifest", required=True)
+    attest.add_argument("--postgres-dump", required=True)
+    attest.add_argument("--redis-snapshot", required=True)
+    attest.add_argument("--vault-copy", required=True)
+    attest.add_argument("--output", required=True)
+
+    verify_attestation = sub.add_parser(
+        "verify-attestation",
+        help="Verify a signed recovery attestation.",
+    )
+    verify_attestation.add_argument("--attestation", required=True)
 
     return parser
 
@@ -59,7 +89,7 @@ def main() -> int:
                 "manifest": args.output,
                 "artifacts": len(manifest["artifacts"]),
             }
-        else:
+        elif args.command == "verify":
             verification = verify_backup_manifest(
                 args.manifest,
                 postgres_dump=args.postgres_dump,
@@ -70,7 +100,44 @@ def main() -> int:
             if not verification["valid"]:
                 print(json.dumps(result, sort_keys=True))
                 return 1
-    except DisasterRecoveryError as exc:
+        elif args.command == "queue-check":
+            assessment = create_queue().recovery_assessment()
+            result = {"ok": bool(assessment["safe_to_resume"]), **assessment}
+            if not result["ok"]:
+                print(json.dumps(result, sort_keys=True))
+                return 1
+        elif args.command == "attest":
+            verification = verify_backup_manifest(
+                args.manifest,
+                postgres_dump=args.postgres_dump,
+                redis_snapshot=args.redis_snapshot,
+                vault_copy=args.vault_copy,
+            )
+            queue_backend = create_queue()
+            assessment = queue_backend.recovery_assessment()
+            audits = collect_recovery_campaign_audits(
+                Storage(),
+                queue_backend,
+            )
+            attestation = build_recovery_attestation(
+                backup_verification=verification,
+                queue_assessment=assessment,
+                campaign_audits=audits,
+            )
+            write_recovery_attestation(attestation, args.output)
+            result = {
+                "ok": True,
+                "attestation": args.output,
+                "attestation_digest": attestation["attestation_digest"],
+                "campaigns_checked": attestation["campaign_audits"]["campaigns_checked"],
+            }
+        else:
+            verification = load_and_verify_recovery_attestation(args.attestation)
+            result = {"ok": bool(verification["valid"]), **verification}
+            if not result["ok"]:
+                print(json.dumps(result, sort_keys=True))
+                return 1
+    except (DisasterRecoveryError, RecoveryAttestationError) as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
         return 1
 

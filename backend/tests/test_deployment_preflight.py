@@ -11,6 +11,7 @@ _ENV_NAMES = (
     "XBOW_PENTAGI_BASE_URL",
     "XBOW_PENTAGI_MODEL_PROVIDER",
     "DRY_RUN",
+    "XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS",
 )
 
 
@@ -28,6 +29,9 @@ def test_preflight_is_ok_with_optional_pentagi_disabled(monkeypatch):
     assert result["issues"] == []
     assert result["dependencies_ready"] is True
     assert result["pentagi"]["mode"] == "disabled"
+    assert result["job_provenance"]["strict_by_default"] is True
+    assert result["job_provenance"]["legacy_unprovenanced_jobs_enabled"] is False
+    assert result["job_provenance"]["configuration_valid"] is True
     assert result["read_only"] is True
     assert result["contains_secrets"] is False
     assert result["contains_endpoint_values"] is False
@@ -123,3 +127,30 @@ def test_preflight_endpoint_uses_dependency_readiness(monkeypatch):
     assert result["status"] == "error"
     assert result["dependencies_ready"] is False
     assert "/api/deployment/preflight" in main.app.openapi()["paths"]
+
+
+
+def test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", "true")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "warning"
+    assert [item["code"] for item in result["issues"]] == [
+        "legacy_unprovenanced_jobs_enabled"
+    ]
+    assert result["job_provenance"]["legacy_unprovenanced_jobs_enabled"] is True
+
+
+def test_preflight_rejects_invalid_legacy_provenance_flag(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", "sometimes")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert [item["code"] for item in result["issues"]] == [
+        "invalid_legacy_provenance_flag"
+    ]
+    assert result["job_provenance"]["configuration_valid"] is False

@@ -1,6 +1,11 @@
 from app.main import Campaign, ProgramRules, TargetInput, app
 from app.observation_graph import Observation, ObservationGraph
-from app.review_queue import build_review_queue, campaign_review_queue
+from app.review_queue import (
+    build_review_queue,
+    campaign_review_queue,
+    diff_review_queue_snapshots,
+    review_queue_snapshot,
+)
 from app.storage import Storage
 
 
@@ -320,3 +325,258 @@ def test_review_queue_unknown_severity_fails_closed_to_zero_bonus():
     task = build_review_queue(graph, severities={"f1": "unexpected"})[0]
 
     assert task.score_components["severity"] == 0.00
+
+
+
+def test_review_queue_prioritizes_stale_report_for_human_review():
+    task = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-1",
+                "stale": True,
+                "stale_reasons": [
+                    "reporting_governance_changed",
+                    "report_provenance_changed",
+                ],
+            }
+        ],
+    )[0]
+
+    assert task.kind == "review_stale_report"
+    assert task.target == "report-1"
+    assert task.priority == 0.92
+    assert "human re-review is required" in task.reason
+    assert "reporting_governance_changed" in task.reason
+    assert task.evidence_ids == ()
+    assert task.score_components["governance_drift"] == 1.0
+
+
+def test_review_queue_ignores_fresh_reports():
+    tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-1",
+                "fresh": True,
+                "stale": False,
+                "stale_reasons": [],
+            }
+        ],
+    )
+
+    assert tasks == []
+
+
+
+def test_review_queue_deduplicates_same_stale_report():
+    tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-1",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-1",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+        ],
+    )
+
+    matching = [
+        item
+        for item in tasks
+        if item.kind == "review_stale_report" and item.target == "report-1"
+    ]
+    assert len(matching) == 1
+
+
+
+def test_review_task_identity_is_deterministic_and_order_independent():
+    stale = {
+        "artifact_id": "report-identity",
+        "stale": True,
+        "stale_reasons": ["reporting_governance_changed"],
+    }
+    first = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[stale],
+    )[0]
+    second = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[dict(stale)],
+    )[0]
+
+    assert first.task_id == second.task_id
+    assert len(first.task_id) == 64
+    assert first.to_dict()["task_id"] == first.task_id
+
+
+def test_review_task_identity_changes_for_distinct_report():
+    first = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            }
+        ],
+    )[0]
+    second = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            }
+        ],
+    )[0]
+
+    assert first.task_id != second.task_id
+
+
+
+def test_review_queue_snapshot_is_order_independent():
+    first = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+        ],
+    )
+    second = list(reversed(first))
+
+    snapshot_a = review_queue_snapshot(first)
+    snapshot_b = review_queue_snapshot(second)
+
+    assert snapshot_a["fingerprint"] == snapshot_b["fingerprint"]
+    assert snapshot_a["task_ids"] == snapshot_b["task_ids"]
+    assert snapshot_a["task_count"] == 2
+    assert snapshot_a["by_kind"]["review_stale_report"] == 2
+    assert snapshot_a["read_only"] is True
+    assert snapshot_a["advisory_only"] is True
+
+
+def test_review_queue_snapshot_changes_when_logical_task_set_changes():
+    one = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            }
+        ],
+    )
+    two = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+        ],
+    )
+
+    assert (
+        review_queue_snapshot(one)["fingerprint"]
+        != review_queue_snapshot(two)["fingerprint"]
+    )
+
+
+
+def test_review_queue_snapshot_diff_is_deterministic():
+    previous_tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+        ],
+    )
+    current_tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+            {
+                "artifact_id": "report-c",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+        ],
+    )
+
+    result = diff_review_queue_snapshots(
+        review_queue_snapshot(previous_tasks),
+        review_queue_snapshot(current_tasks),
+    )
+
+    previous_ids = {item.target: item.task_id for item in previous_tasks}
+    current_ids = {item.target: item.task_id for item in current_tasks}
+    assert result["schema"] == "review-queue-diff-v1"
+    assert result["changed"] is True
+    assert result["added_task_ids"] == [current_ids["report-c"]]
+    assert result["removed_task_ids"] == [previous_ids["report-a"]]
+    assert result["unchanged_task_ids"] == [current_ids["report-b"]]
+    assert result["added_count"] == 1
+    assert result["removed_count"] == 1
+    assert result["unchanged_count"] == 1
+    assert result["read_only"] is True
+    assert result["advisory_only"] is True
+
+
+def test_review_queue_snapshot_diff_ignores_order_only_changes():
+    tasks = build_review_queue(
+        ObservationGraph(),
+        stale_reports=[
+            {
+                "artifact_id": "report-a",
+                "stale": True,
+                "stale_reasons": ["reporting_governance_changed"],
+            },
+            {
+                "artifact_id": "report-b",
+                "stale": True,
+                "stale_reasons": ["report_provenance_changed"],
+            },
+        ],
+    )
+    result = diff_review_queue_snapshots(
+        review_queue_snapshot(tasks),
+        review_queue_snapshot(list(reversed(tasks))),
+    )
+
+    assert result["changed"] is False
+    assert result["added_task_ids"] == []
+    assert result["removed_task_ids"] == []
+    assert result["unchanged_count"] == 2

@@ -9,6 +9,11 @@ from contextlib import contextmanager
 from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_result
 from .campaign_audit import append_campaign_event
 from .evidence_quality import build_evidence_quality
+from .job_provenance import (
+    JobProvenanceError,
+    provenance_required_for_job_kind,
+    require_job_provenance,
+)
 from .jobqueue import JobQueue
 from .learning_memory import worker_outcome_event
 from .queue_backend import create_queue
@@ -27,6 +32,10 @@ from .planner_lock import campaign_planner_lock
 from .recon_worker import ReconPolicyError, execute_recon_task
 from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_nuclei_job, run_strix_job
 from .report import render_markdown
+from .reporting_governance import (
+    build_reporting_governance_snapshot,
+    verify_reporting_governance_snapshot,
+)
 from .storage import CampaignConflictError, Storage
 from .storage_backend import create_storage
 from .validator import ValidationPolicyError, safe_http_probe
@@ -113,6 +122,12 @@ def _lease_heartbeat(queue: JobQueue, job_id: str, worker_id: str):
 
 def _process_scanner_job(job: dict, queue: JobQueue, store: Storage, runner) -> None:
     campaign, version = _campaign(store, job["campaign_id"])
+    payload = job.get("payload") if isinstance(job.get("payload"), dict) else {}
+    if "policy" in payload:
+        try:
+            require_job_provenance(job, campaign)
+        except JobProvenanceError as exc:
+            raise WorkerPolicyError(str(exc)) from exc
     result = runner(job, campaign, queue, store)
     _append_event_once(campaign, result.event)
     _save(store, campaign, version)
@@ -373,10 +388,26 @@ def process_report(job: dict, store: Storage) -> None:
         item.finding_id: item.to_dict()
         for item in build_evidence_quality(graph)
     }
+    reporting = build_reporting_governance_snapshot(
+        campaign.findings,
+        graph,
+    )
+    reporting_verification = verify_reporting_governance_snapshot(reporting)
+    governance_manifest = {
+        "schema": "reporting-governance-v1",
+        "governance_fingerprint": reporting.governance_fingerprint,
+        "provenance_fingerprint": reporting.provenance_fingerprint,
+        "verification_valid": bool(reporting_verification["valid"]),
+        "findings": len(reporting.readiness),
+        "submission_ready": sum(
+            item.submission_ready for item in reporting.quality_gates
+        ),
+    }
     report = render_markdown(
         campaign,
         platform=platform,
         evidence_quality=quality,
+        governance_manifest=governance_manifest,
     ).encode("utf-8")
     artifact = store.put_artifact(
         campaign.id,
@@ -390,7 +421,19 @@ def process_report(job: dict, store: Storage) -> None:
         campaign,
         artifact,
         source="report-engine",
-        metadata={"platform": platform, "artifact_kind": "report"},
+        metadata={
+            "platform": platform,
+            "artifact_kind": "report",
+            "reporting_governance_fingerprint": (
+                reporting.governance_fingerprint
+            ),
+            "report_provenance_fingerprint": (
+                reporting.provenance_fingerprint
+            ),
+            "reporting_governance_verified": bool(
+                reporting_verification["valid"]
+            ),
+        },
     )
     _append_event_once(
         campaign,
@@ -399,6 +442,12 @@ def process_report(job: dict, store: Storage) -> None:
             "job_id": job["id"],
             "platform": platform,
             "artifact_id": artifact["id"],
+            "reporting_governance_fingerprint": (
+                reporting.governance_fingerprint
+            ),
+            "report_provenance_fingerprint": (
+                reporting.provenance_fingerprint
+            ),
             "at": utcnow(),
         },
     )
@@ -454,6 +503,30 @@ def _active_scanner_execution_requested() -> bool:
     )
 
 
+def _legacy_unprovenanced_jobs_allowed() -> bool:
+    return _worker_bool("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", False)
+
+
+def _verify_policy_bound_job(job: dict, store: Storage) -> None:
+    payload = job.get("payload") if isinstance(job.get("payload"), dict) else {}
+    has_provenance = "_provenance" in payload
+    required = provenance_required_for_job_kind(str(job.get("kind") or ""))
+
+    if required and not has_provenance:
+        if _legacy_unprovenanced_jobs_allowed():
+            return
+        raise WorkerPolicyError("job provenance rejected: provenance_missing")
+
+    if not has_provenance:
+        return
+
+    campaign, _version = _campaign(store, job["campaign_id"])
+    try:
+        require_job_provenance(job, campaign)
+    except JobProvenanceError as exc:
+        raise WorkerPolicyError(str(exc)) from exc
+
+
 def _claim_for_role(queue: JobQueue, worker_id: str):
     role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
     if not role:
@@ -473,6 +546,7 @@ def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:
     if not job:
         return False
     try:
+        _verify_policy_bound_job(job, store)
         with _lease_heartbeat(queue, job["id"], worker_id):
             if job["kind"] == "strix_scan":
                 process_strix_scan(job, queue, store)

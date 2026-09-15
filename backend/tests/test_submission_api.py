@@ -30,6 +30,11 @@ def _setup(tmp_path, monkeypatch, *, report_ready=True):
                 severity="medium",
                 asset="https://example.test",
                 summary="bounded fixture",
+                impact="bounded impact",
+                remediation="apply bounded remediation",
+                reproduction_steps=["observe bounded fixture"],
+                cwe="CWE-200",
+                cvss=5.3,
                 status="confirmed",
                 discovered_by="scanner",
                 validated_by="independent-validator",
@@ -71,6 +76,10 @@ def _setup(tmp_path, monkeypatch, *, report_ready=True):
                 "artifact-reference",
                 "independent-validator",
                 parent_ids=("validation:v1",),
+                metadata={
+                    "artifact_id": "validation-artifact-f1",
+                    "artifact_sha256": "b" * 64,
+                },
             ).to_dict(),
         )
     artifact = store.put_artifact(campaign.id, "report", b"report", media_type="text/markdown")
@@ -82,6 +91,7 @@ def test_submission_routes_are_mounted():
     expected = {
         "/api/campaigns/{campaign_id}/reports/submission-states",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-state",
+        "/api/campaigns/{campaign_id}/reports/{artifact_id}/submission-audit",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/approve",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/revoke-approval",
         "/api/campaigns/{campaign_id}/reports/{artifact_id}/mark-submitted",
@@ -233,3 +243,97 @@ def test_submission_mutations_preserve_campaign_audit_chain(tmp_path, monkeypatc
         "report_submitted",
         "report_approval_revoked",
     ]
+
+
+
+def test_provenance_change_after_approval_makes_approval_stale(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+
+    approved = submission_api.approve_report(
+        campaign.id,
+        artifact["id"],
+        "reviewer",
+    )
+    assert approved["state"] == "approved"
+    assert approved["stale"] is False
+
+    store = Storage()
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "evidence:e2",
+            "evidence",
+            "artifact-reference",
+            "independent-validator",
+            parent_ids=("validation:v1",),
+            metadata={
+                "artifact_id": "validation-artifact-f1-secondary",
+                "artifact_sha256": "c" * 64,
+            },
+        ).to_dict(),
+    )
+
+    status = submission_api.get_submission_state(
+        campaign.id,
+        artifact["id"],
+    )
+
+    assert status["state"] == "review_required"
+    assert status["approved"] is False
+    assert status["stale"] is True
+    assert "report_provenance_changed" in status["stale_reasons"]
+    assert "reporting_governance_changed" in status["stale_reasons"]
+
+    audit = submission_api.get_submission_audit(
+        campaign.id,
+        artifact["id"],
+    )
+    assert audit["valid"] is False
+    assert "approval_provenance_stale" in audit["issues"]
+
+
+
+def test_submission_audit_accepts_valid_approval_and_submission(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+    submission_api.approve_report(campaign.id, artifact["id"], "reviewer")
+    submission_api.mark_report_submitted(
+        campaign.id,
+        artifact["id"],
+        "operator",
+        "generic",
+    )
+
+    audit = submission_api.get_submission_audit(
+        campaign.id,
+        artifact["id"],
+    )
+
+    assert audit["valid"] is True
+    assert audit["submissions"] == 1
+    assert audit["approval_active"] is True
+    assert audit["issues"] == []
+    assert audit["latest_approval_provenance_fingerprint"]
+
+
+def test_submission_audit_detects_submission_without_approval(tmp_path, monkeypatch):
+    campaign, artifact = _setup(tmp_path, monkeypatch)
+    store = Storage()
+    persisted = store.get_campaign(campaign.id)
+    persisted["events"].append(
+        {
+            "type": "report_submitted",
+            "artifact_id": artifact["id"],
+            "actor": "operator",
+            "platform": "generic",
+            "at": "2026-09-14T18:30:00Z",
+        }
+    )
+    store.save_campaign(persisted, expected_version=1)
+
+    audit = submission_api.get_submission_audit(
+        campaign.id,
+        artifact["id"],
+    )
+
+    assert audit["valid"] is False
+    assert "submission_without_active_approval" in audit["issues"]

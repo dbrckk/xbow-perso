@@ -20,6 +20,7 @@ from .decision_timeline import planner_stability_breaker_reason, planner_stabili
 from .evidence_quality import build_evidence_quality
 from .finding_correlation import cluster_findings
 from .hypothesis_memory import build_hypotheses
+from .job_provenance import attach_job_provenance
 from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
 from .learning_memory import build_learning_memory, summarize_worker_outcomes
@@ -288,20 +289,25 @@ def _enqueue_recon_tasks(
                 queue.enqueue(
                     campaign.id,
                     "browser_flow",
-                    {
-                        "campaign_id": campaign.id,
-                        "steps": [
-                            {
-                                "operation": "navigate",
-                                "url": task.target,
-                                "timeout_ms": 10000,
-                            },
-                            {
-                                "operation": "screenshot",
-                                "timeout_ms": 10000,
-                            },
-                        ],
-                    },
+                    attach_job_provenance(
+                        {
+                            "campaign_id": campaign.id,
+                            "steps": [
+                                {
+                                    "operation": "navigate",
+                                    "url": task.target,
+                                    "timeout_ms": 10000,
+                                },
+                                {
+                                    "operation": "screenshot",
+                                    "timeout_ms": 10000,
+                                },
+                            ],
+                        },
+                        campaign,
+                        job_kind="browser_flow",
+                        action="crawl",
+                    ),
                     max_attempts=2,
                     dedupe_key=f"recon:browser:{fingerprint}:{task.target}",
                 )
@@ -311,14 +317,19 @@ def _enqueue_recon_tasks(
             queue.enqueue(
                 campaign.id,
                 "recon_task",
-                {
-                    "campaign_id": campaign.id,
-                    "kind": task.kind,
-                    "target": task.target,
-                    "max_requests": task.max_requests,
-                    "allowed_methods": list(task.allowed_methods),
-                    "same_origin_only": task.same_origin_only,
-                },
+                attach_job_provenance(
+                    {
+                        "campaign_id": campaign.id,
+                        "kind": task.kind,
+                        "target": task.target,
+                        "max_requests": task.max_requests,
+                        "allowed_methods": list(task.allowed_methods),
+                        "same_origin_only": task.same_origin_only,
+                    },
+                    campaign,
+                    job_kind="recon_task",
+                    action="crawl",
+                ),
                 max_attempts=2,
                 dedupe_key=f"recon:{task.kind}:{fingerprint}:{task.target}",
             )
@@ -354,11 +365,15 @@ def _enqueue_action(
         if not receipt["allowed"]:
             return []
         stable_receipt = {key: value for key, value in receipt.items() if key != "timestamp"}
-        payload = sanitized_scan_payload(campaign, stable_receipt)
         jobs = []
         engines = scan_engines if scan_engines is not None else _scan_engines()
         for engine in engines:
             kind = "strix_scan" if engine == "strix" else "nuclei_scan"
+            payload = sanitized_scan_payload(
+                campaign,
+                stable_receipt,
+                job_kind=kind,
+            )
             jobs.append(
                 queue.enqueue(
                     campaign.id,
@@ -380,7 +395,12 @@ def _enqueue_action(
                 queue.enqueue(
                     campaign.id,
                     "independent_validation",
-                    {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
+                    attach_job_provenance(
+                        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
+                        campaign,
+                        job_kind="independent_validation",
+                        action="validate",
+                    ),
                     max_attempts=2,
                     dedupe_key=f"validation:{finding.id}",
                 )
@@ -392,7 +412,12 @@ def _enqueue_action(
             queue.enqueue(
                 campaign.id,
                 "report",
-                {"campaign_id": campaign.id, "platform": "generic"},
+                attach_job_provenance(
+                    {"campaign_id": campaign.id, "platform": "generic"},
+                    campaign,
+                    job_kind="report",
+                    action="report",
+                ),
                 max_attempts=2,
                 dedupe_key=f"planner:report:{fingerprint}",
             )

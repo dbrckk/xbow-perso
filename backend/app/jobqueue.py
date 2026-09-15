@@ -9,6 +9,9 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from .queue_audit import build_transition_event, verify_transition_events
+from .queue_recovery import analyze_queue_recovery
+
 TERMINAL = {"completed", "failed", "cancelled"}
 
 
@@ -103,6 +106,146 @@ class JobQueue:
             db.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS jobs_dedupe ON jobs(campaign_id,kind,dedupe_key) WHERE dedupe_key IS NOT NULL"
             )
+            db.execute("""CREATE TABLE IF NOT EXISTS job_transitions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                job_id TEXT NOT NULL,
+                campaign_id TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                seq INTEGER NOT NULL,
+                from_status TEXT,
+                to_status TEXT NOT NULL,
+                actor TEXT NOT NULL,
+                reason TEXT NOT NULL,
+                at TEXT NOT NULL,
+                previous_hash TEXT,
+                event_hash TEXT NOT NULL,
+                UNIQUE(job_id, seq)
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS job_transitions_campaign ON job_transitions(campaign_id, id)"
+            )
+
+    def _append_transition(
+        self,
+        db: sqlite3.Connection,
+        row: sqlite3.Row | dict[str, Any],
+        *,
+        from_status: str | None,
+        to_status: str,
+        actor: str,
+        reason: str,
+        at: str,
+    ) -> dict[str, Any]:
+        job_id = str(row["id"])
+        latest = db.execute(
+            "SELECT seq,event_hash,to_status FROM job_transitions WHERE job_id=? ORDER BY seq DESC LIMIT 1",
+            (job_id,),
+        ).fetchone()
+        seq = int(latest["seq"]) + 1 if latest else 1
+        previous_hash = str(latest["event_hash"]) if latest else None
+        if latest and latest["to_status"] != from_status:
+            raise RuntimeError("queue transition audit status discontinuity")
+        event = build_transition_event(
+            job_id=job_id,
+            campaign_id=str(row["campaign_id"]),
+            kind=str(row["kind"]),
+            seq=seq,
+            from_status=from_status,
+            to_status=to_status,
+            actor=actor,
+            reason=reason,
+            at=at,
+            previous_hash=previous_hash,
+        )
+        db.execute(
+            """INSERT INTO job_transitions(
+                   job_id,campaign_id,kind,seq,from_status,to_status,actor,reason,at,previous_hash,event_hash
+               ) VALUES(?,?,?,?,?,?,?,?,?,?,?)""",
+            (
+                event["job_id"],
+                event["campaign_id"],
+                event["kind"],
+                event["seq"],
+                event["from_status"],
+                event["to_status"],
+                event["actor"],
+                event["reason"],
+                event["at"],
+                event["previous_hash"],
+                event["event_hash"],
+            ),
+        )
+        return event
+
+    def job_transitions(self, job_id: str) -> list[dict[str, Any]]:
+        job_id = _bounded_identifier(job_id, "job_id")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT job_id,campaign_id,kind,seq,from_status,to_status,actor,reason,at,previous_hash,event_hash
+                   FROM job_transitions WHERE job_id=? ORDER BY seq""",
+                (job_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def verify_job_transitions(self, job_id: str) -> dict[str, Any]:
+        events = self.job_transitions(job_id)
+        verification = verify_transition_events(events)
+        current = self.get(job_id)
+        if current is None:
+            return {**verification, "valid": False, "reason": "job missing"}
+        if verification["valid"] and verification.get("final_status") != current["status"]:
+            return {
+                **verification,
+                "valid": False,
+                "reason": "audit final status does not match job status",
+            }
+        return verification
+
+    def campaign_transition_audit(self, campaign_id: str) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        with self.connect() as db:
+            job_ids = [
+                row["id"]
+                for row in db.execute(
+                    "SELECT id FROM jobs WHERE campaign_id=? ORDER BY created_at,id",
+                    (campaign_id,),
+                ).fetchall()
+            ]
+        invalid: list[dict[str, Any]] = []
+        checked_events = 0
+        for job_id in job_ids:
+            result = self.verify_job_transitions(job_id)
+            checked_events += int(result.get("checked", 0))
+            if not result.get("valid"):
+                invalid.append({"job_id": job_id, "reason": result.get("reason")})
+        return {
+            "campaign_id": campaign_id,
+            "jobs": len(job_ids),
+            "events": checked_events,
+            "valid": not invalid,
+            "invalid_jobs": invalid,
+        }
+
+    def recovery_assessment(self) -> dict[str, Any]:
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT id,campaign_id,kind,status,attempts,max_attempts,
+                          claimed_by,claimed_at,created_at,updated_at
+                   FROM jobs ORDER BY created_at,id"""
+            ).fetchall()
+        jobs = [dict(row) for row in rows]
+        audits = {
+            str(job["id"]): self.verify_job_transitions(str(job["id"]))
+            for job in jobs
+        }
+        return {
+            **analyze_queue_recovery(
+                jobs,
+                lease_seconds=_job_lease_seconds(),
+                audit_results=audits,
+            ),
+            "storage": "sqlite",
+        }
 
     def health(self) -> dict[str, Any]:
         """Return minimal storage health without exposing job payloads."""
@@ -139,6 +282,7 @@ class JobQueue:
         encoded_payload = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
         if len(encoded_payload.encode("utf-8")) > _max_job_payload_bytes():
             raise ValueError("job payload exceeds size limit")
+
         if dedupe_key is not None:
             with self.connect() as db:
                 existing = db.execute(
@@ -154,12 +298,24 @@ class JobQueue:
         job_id, now = str(uuid4()), utcnow()
         try:
             with self.connect() as db:
+                db.execute("BEGIN IMMEDIATE")
                 db.execute(
                     """INSERT INTO jobs(
                            id,campaign_id,kind,payload,status,max_attempts,created_at,updated_at,dedupe_key
                        ) VALUES(?,?,?,?,?,?,?,?,?)""",
                     (job_id, campaign_id, kind, encoded_payload, "queued", max_attempts, now, now, dedupe_key),
                 )
+                row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
+                self._append_transition(
+                    db,
+                    row,
+                    from_status=None,
+                    to_status="queued",
+                    actor="queue",
+                    reason="job enqueued",
+                    at=now,
+                )
+                db.execute("COMMIT")
         except sqlite3.IntegrityError:
             if dedupe_key is None:
                 raise
@@ -174,6 +330,7 @@ class JobQueue:
             if json.dumps(decoded["payload"], sort_keys=True, separators=(",", ":"), ensure_ascii=False) != encoded_payload:
                 raise ValueError("dedupe_key reused with different job payload")
             return decoded
+
         result = self.get(job_id)
         if result is None:
             raise RuntimeError("queued job disappeared")
@@ -252,14 +409,31 @@ class JobQueue:
         campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         now = utcnow()
         with self.connect() as db:
-            cursor = db.execute(
-                """UPDATE jobs
-                   SET status='cancelled', updated_at=?, claimed_by=NULL, claimed_at=NULL,
-                       last_error='campaign cancelled before execution'
-                   WHERE campaign_id=? AND status='queued'""",
-                (now, campaign_id),
-            )
-        return int(cursor.rowcount)
+            db.execute("BEGIN IMMEDIATE")
+            rows = db.execute(
+                "SELECT * FROM jobs WHERE campaign_id=? AND status='queued' ORDER BY created_at,id",
+                (campaign_id,),
+            ).fetchall()
+            for row in rows:
+                cursor = db.execute(
+                    """UPDATE jobs
+                       SET status='cancelled', updated_at=?, claimed_by=NULL, claimed_at=NULL,
+                           last_error='campaign cancelled before execution'
+                       WHERE id=? AND status='queued'""",
+                    (now, row["id"]),
+                )
+                if cursor.rowcount == 1:
+                    self._append_transition(
+                        db,
+                        row,
+                        from_status="queued",
+                        to_status="cancelled",
+                        actor="campaign-control",
+                        reason="campaign cancelled before execution",
+                        at=now,
+                    )
+            db.execute("COMMIT")
+        return len(rows)
 
     def cancel_owned(self, job_id: str, worker_id: str, reason: str = "campaign cancelled") -> dict[str, Any] | None:
         """Cancel a running job only when the caller still owns its lease."""
@@ -270,15 +444,33 @@ class JobQueue:
             reason = reason[-4000:]
         if any(ord(ch) < 32 and ch not in "\t" for ch in reason):
             raise ValueError("cancel reason contains invalid characters")
+        now = utcnow()
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
+            row = db.execute(
+                "SELECT * FROM jobs WHERE id=? AND status='running' AND claimed_by=?",
+                (job_id, worker_id),
+            ).fetchone()
+            if not row:
+                db.execute("COMMIT")
+                return None
             cursor = db.execute(
                 """UPDATE jobs
                    SET status='cancelled', updated_at=?, last_error=?,
                        claimed_by=NULL, claimed_at=NULL
                    WHERE id=? AND status='running' AND claimed_by=?""",
-                (utcnow(), reason[-4000:] or None, job_id, worker_id),
+                (now, reason[-4000:] or None, job_id, worker_id),
             )
+            if cursor.rowcount == 1:
+                self._append_transition(
+                    db,
+                    row,
+                    from_status="running",
+                    to_status="cancelled",
+                    actor=worker_id,
+                    reason=reason or "campaign cancelled",
+                    at=now,
+                )
             db.execute("COMMIT")
         if cursor.rowcount != 1:
             return None
@@ -288,19 +480,29 @@ class JobQueue:
         lease_seconds = _job_lease_seconds()
         cutoff = (now - timedelta(seconds=lease_seconds)).isoformat()
         stale = db.execute(
-            "SELECT id,attempts,max_attempts FROM jobs WHERE status='running' AND claimed_at IS NOT NULL AND claimed_at < ?",
+            "SELECT * FROM jobs WHERE status='running' AND claimed_at IS NOT NULL AND claimed_at < ?",
             (cutoff,),
         ).fetchall()
         for row in stale:
             exhausted = row["attempts"] >= row["max_attempts"]
             status = "failed" if exhausted else "queued"
-            db.execute(
+            cursor = db.execute(
                 """UPDATE jobs
                    SET status=?, updated_at=?, claimed_by=NULL, claimed_at=NULL,
                        last_error='worker lease expired before completion'
                    WHERE id=? AND status='running'""",
                 (status, now.isoformat(), row["id"]),
             )
+            if cursor.rowcount == 1:
+                self._append_transition(
+                    db,
+                    row,
+                    from_status="running",
+                    to_status=status,
+                    actor="lease-recovery",
+                    reason="worker lease expired before completion",
+                    at=now.isoformat(),
+                )
         return len(stale)
 
     def recover_expired_leases(self) -> int:
@@ -318,22 +520,33 @@ class JobQueue:
             now_dt = datetime.now(timezone.utc)
             self._recover_expired_leases(db, now_dt)
             row = db.execute(
-                "SELECT id FROM jobs WHERE status='queued' AND kind NOT IN ('pentagi_flow','pentagi_status') AND attempts < max_attempts ORDER BY created_at LIMIT 1"
+                "SELECT * FROM jobs WHERE status='queued' AND kind NOT IN ('pentagi_flow','pentagi_status') AND attempts < max_attempts ORDER BY created_at,id LIMIT 1"
             ).fetchone()
             if not row:
                 db.execute("COMMIT")
                 return None
             now = now_dt.isoformat()
-            db.execute(
+            cursor = db.execute(
                 """UPDATE jobs
                    SET status='running', attempts=attempts+1, claimed_by=?, claimed_at=?, updated_at=?
                    WHERE id=? AND status='queued'""",
                 (worker_id, now, now, row["id"]),
             )
+            if cursor.rowcount != 1:
+                db.execute("ROLLBACK")
+                return None
+            self._append_transition(
+                db,
+                row,
+                from_status="queued",
+                to_status="running",
+                actor=worker_id,
+                reason="job claimed",
+                at=now,
+            )
             claimed = db.execute("SELECT * FROM jobs WHERE id=?", (row["id"],)).fetchone()
             db.execute("COMMIT")
         return self._decode(claimed)
-
 
     def claim_allowed(self, worker_id: str, kinds: tuple[str, ...] | list[str]) -> dict[str, Any] | None:
         """Atomically claim the oldest queued job among an explicit set of kinds."""
@@ -359,7 +572,7 @@ class JobQueue:
             now_dt = datetime.now(timezone.utc)
             self._recover_expired_leases(db, now_dt)
             row = db.execute(
-                f"SELECT id FROM jobs WHERE status='queued' AND kind IN ({placeholders}) "
+                f"SELECT * FROM jobs WHERE status='queued' AND kind IN ({placeholders}) "
                 "AND attempts < max_attempts ORDER BY created_at,id LIMIT 1",
                 normalized,
             ).fetchone()
@@ -376,10 +589,18 @@ class JobQueue:
             if cursor.rowcount != 1:
                 db.execute("ROLLBACK")
                 return None
+            self._append_transition(
+                db,
+                row,
+                from_status="queued",
+                to_status="running",
+                actor=worker_id,
+                reason="job claimed",
+                at=now,
+            )
             claimed = db.execute("SELECT * FROM jobs WHERE id=?", (row["id"],)).fetchone()
             db.execute("COMMIT")
         return self._decode(claimed)
-
 
     def claim_kind(self, worker_id: str, kind: str) -> dict[str, Any] | None:
         """Atomically claim only one explicitly requested job kind."""
@@ -393,7 +614,7 @@ class JobQueue:
             now_dt = datetime.now(timezone.utc)
             self._recover_expired_leases(db, now_dt)
             row = db.execute(
-                "SELECT id FROM jobs WHERE status='queued' AND kind=? AND attempts < max_attempts ORDER BY created_at LIMIT 1",
+                "SELECT * FROM jobs WHERE status='queued' AND kind=? AND attempts < max_attempts ORDER BY created_at,id LIMIT 1",
                 (kind,),
             ).fetchone()
             if not row:
@@ -409,6 +630,15 @@ class JobQueue:
             if cursor.rowcount != 1:
                 db.execute("ROLLBACK")
                 return None
+            self._append_transition(
+                db,
+                row,
+                from_status="queued",
+                to_status="running",
+                actor=worker_id,
+                reason="job claimed",
+                at=now,
+            )
             claimed = db.execute("SELECT * FROM jobs WHERE id=?", (row["id"],)).fetchone()
             db.execute("COMMIT")
         return self._decode(claimed)
@@ -433,11 +663,7 @@ class JobQueue:
         success: bool,
         error: str | None = None,
     ) -> dict[str, Any] | None:
-        """Finish a job only if the caller still owns its running lease.
-
-        Returns None when ownership has already been lost. This prevents a stale
-        worker from completing or requeueing work that another worker has claimed.
-        """
+        """Finish a job only if the caller still owns its running lease."""
         job_id = _bounded_identifier(job_id, "job_id")
         worker_id = _bounded_identifier(worker_id, "worker_id")
         with self.connect() as db:
@@ -451,12 +677,27 @@ class JobQueue:
                 return None
             status = "completed" if success else ("queued" if row["attempts"] < row["max_attempts"] else "failed")
             now = utcnow()
+            reason = (
+                "job completed"
+                if success
+                else ("job requeued after failure" if status == "queued" else "job failed")
+            )
             cursor = db.execute(
                 """UPDATE jobs
                    SET status=?, updated_at=?, last_error=?, claimed_by=NULL, claimed_at=NULL
                    WHERE id=? AND status='running' AND claimed_by=?""",
                 (status, now, (error or "")[-4000:] or None, job_id, worker_id),
             )
+            if cursor.rowcount == 1:
+                self._append_transition(
+                    db,
+                    row,
+                    from_status="running",
+                    to_status=status,
+                    actor=worker_id,
+                    reason=reason,
+                    at=now,
+                )
             db.execute("COMMIT")
         if cursor.rowcount != 1:
             return None

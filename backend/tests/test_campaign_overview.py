@@ -53,6 +53,8 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
     assert result["target"] == {"name": "fixture", "primary_url": "https://example.test/"}
     assert result["policy"]["authorization_reference"] == "explicit-test-authorization"
     assert result["policy"]["automated_scanning"] is True
+    assert len(result["policy"]["fingerprint"]) == 64
+    assert result["policy"]["provenance_schema"] == "job-provenance-v1"
     assert result["policy"]["destructive_testing"] is False
     assert result["runtime"]["limit"]["max_runtime_seconds"] == 21600
     assert result["runtime"]["status"]["exhausted"] is False
@@ -66,6 +68,8 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
     assert result["findings"]["resolution_ratio"] == 0.0
     assert result["findings"]["by_status"]["validation_required"] == 1
     assert result["validation"]["observed_independent"] == 1
+    assert result["validation"]["evidence_backed_independent"] == 0
+    assert result["validation"]["unevidenced"] == 1
     assert result["validation"]["unresolved"] == 0
     assert result["jobs"]["inflight"] == 0
     assert result["jobs"]["terminal"] == 0
@@ -73,10 +77,12 @@ def test_overview_aggregates_findings_jobs_validation_and_budget(tmp_path, monke
     assert result["reports"]["total"] == 0
     assert result["reports"]["submission_ready"] == 0
     assert result["reports"]["submitted"] == 0
+    assert len(result["report_readiness"]["governance_fingerprint"]) == 64
+    assert result["report_readiness"]["governance_verification"]["valid"] is True
     assert result["activity"]["event_count"] == 0
     assert result["activity"]["latest_event_type"] is None
-    assert result["attention_required"] is False
-    assert result["attention_reasons"] == []
+    assert result["attention_required"] is True
+    assert result["attention_reasons"] == ["validation_missing_evidence"]
 
 
 def test_overview_resolution_progress_tracks_terminal_findings(tmp_path, monkeypatch):
@@ -173,3 +179,76 @@ def test_overview_reports_human_review_readiness_after_complete_validation(tmp_p
     assert result["finding_lifecycle"]["human_decision_required"] == 1
     assert result["report_readiness"]["ready_for_human_review"] == 1
     assert result["report_readiness"]["blocked"] == 0
+
+
+
+def test_overview_clears_validation_evidence_gap_after_attached_evidence(tmp_path, monkeypatch):
+    campaign, store = _setup(tmp_path, monkeypatch)
+    store.put_observation(
+        campaign.id,
+        Observation("finding:f1", "finding", "fixture", "scanner").to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "validation:f1",
+            "validation",
+            "observed",
+            "independent-validator",
+            parent_ids=("finding:f1",),
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "evidence:f1",
+            "evidence",
+            "artifact-reference",
+            "independent-validator",
+            parent_ids=("validation:f1",),
+        ).to_dict(),
+    )
+
+    result = campaign_overview(campaign.id)
+
+    assert result["validation"]["evidence_backed_independent"] == 1
+    assert result["validation"]["unevidenced"] == 0
+    assert result["validation"]["all_evidence_backed_independently"] is True
+    assert "validation_missing_evidence" not in result["attention_reasons"]
+
+
+
+def test_overview_surfaces_stale_report_artifact(tmp_path, monkeypatch):
+    campaign, store = _setup(tmp_path, monkeypatch)
+    artifact = store.put_artifact(
+        campaign.id,
+        "report",
+        b"# report",
+        media_type="text/markdown",
+    )
+    campaign.events.append(
+        {
+            "type": "report_generated",
+            "artifact_id": artifact["id"],
+            "reporting_governance_fingerprint": "0" * 64,
+            "report_provenance_fingerprint": "1" * 64,
+            "at": "2026-09-15T05:00:00Z",
+        }
+    )
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=1)
+
+    result = campaign_overview(campaign.id)
+
+    assert result["reports"]["stale"] == 1
+    assert result["reports"]["fresh"] == 0
+    assert result["reports"]["freshness"][0]["stale"] is True
+    assert "reporting_governance_changed" in (
+        result["reports"]["freshness"][0]["stale_reasons"]
+    )
+    assert "stale_report_artifact" in result["attention_reasons"]
+    assert result["review_queue"]["stale_report_reviews"] == 1
+    snapshot = result["review_queue"]["snapshot"]
+    assert snapshot["schema"] == "review-queue-snapshot-v1"
+    assert len(snapshot["fingerprint"]) == 64
+    assert snapshot["task_count"] == result["review_queue"]["total"]
+    assert snapshot["by_kind"]["review_stale_report"] == 1

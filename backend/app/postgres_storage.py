@@ -160,3 +160,41 @@ class PostgresStorage(Storage):
                 """CREATE INDEX IF NOT EXISTS advisory_focus_snapshots_campaign_created
                    ON advisory_focus_snapshots(campaign_id, created_at DESC)"""
             )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS review_queue_snapshots (
+                    campaign_id TEXT NOT NULL REFERENCES campaigns(id),
+                    fingerprint TEXT NOT NULL,
+                    document TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    PRIMARY KEY(campaign_id, fingerprint)
+                )"""
+            )
+            db.execute(
+                """CREATE INDEX IF NOT EXISTS review_queue_snapshots_campaign_created
+                   ON review_queue_snapshots(campaign_id, created_at DESC)"""
+            )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS recovery_readiness_snapshots (
+                    fingerprint TEXT PRIMARY KEY,
+                    decision TEXT NOT NULL,
+                    document TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )"""
+            )
+            db.execute(
+                """CREATE INDEX IF NOT EXISTS recovery_readiness_snapshots_created
+                   ON recovery_readiness_snapshots(created_at DESC)"""
+            )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS control_plane_health_snapshots (
+                    fingerprint TEXT PRIMARY KEY,
+                    score INTEGER NOT NULL,
+                    state TEXT NOT NULL,
+                    document TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )"""
+            )
+            db.execute(
+                """CREATE INDEX IF NOT EXISTS control_plane_health_snapshots_created
+                   ON control_plane_health_snapshots(created_at DESC)"""
+            )

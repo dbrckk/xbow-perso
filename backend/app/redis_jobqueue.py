@@ -10,6 +10,8 @@ from uuid import uuid4
 import redis
 
 from .jobqueue import _bounded_identifier, _job_lease_seconds, _max_job_payload_bytes, utcnow
+from .queue_audit import build_transition_event, verify_transition_events
+from .queue_recovery import analyze_queue_recovery
 
 _ALLOWED_KINDS = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status"}
 _STATUSES = ("queued", "running", "completed", "failed", "cancelled")
@@ -59,6 +61,81 @@ class RedisJobQueue:
     def _job_key(self, job_id: str) -> str:
         return f"{self.prefix}:job:{job_id}"
 
+    def _audit_key(self, job_id: str) -> str:
+        return f"{self.prefix}:audit:{job_id}"
+
+    def _append_transition(
+        self,
+        row: dict[str, Any],
+        *,
+        from_status: str | None,
+        to_status: str,
+        actor: str,
+        reason: str,
+        at: str,
+    ) -> dict[str, Any]:
+        job_id = str(row["id"])
+        raw = self.redis.lindex(self._audit_key(job_id), -1)
+        previous = json.loads(raw) if raw else None
+        seq = int(previous["seq"]) + 1 if previous else 1
+        previous_hash = str(previous["event_hash"]) if previous else None
+        if previous and previous.get("to_status") != from_status:
+            raise RuntimeError("queue transition audit status discontinuity")
+        event = build_transition_event(
+            job_id=job_id,
+            campaign_id=str(row["campaign_id"]),
+            kind=str(row["kind"]),
+            seq=seq,
+            from_status=from_status,
+            to_status=to_status,
+            actor=actor,
+            reason=reason,
+            at=at,
+            previous_hash=previous_hash,
+        )
+        self.redis.rpush(
+            self._audit_key(job_id),
+            json.dumps(event, sort_keys=True, separators=(",", ":"), ensure_ascii=False),
+        )
+        return event
+
+    def job_transitions(self, job_id: str) -> list[dict[str, Any]]:
+        job_id = _bounded_identifier(job_id, "job_id")
+        rows = self.redis.lrange(self._audit_key(job_id), 0, -1)
+        return [json.loads(row) for row in rows]
+
+    def verify_job_transitions(self, job_id: str) -> dict[str, Any]:
+        events = self.job_transitions(job_id)
+        verification = verify_transition_events(events)
+        current = self.get(job_id)
+        if current is None:
+            return {**verification, "valid": False, "reason": "job missing"}
+        if verification["valid"] and verification.get("final_status") != current["status"]:
+            return {
+                **verification,
+                "valid": False,
+                "reason": "audit final status does not match job status",
+            }
+        return verification
+
+    def campaign_transition_audit(self, campaign_id: str) -> dict[str, Any]:
+        campaign_id = _bounded_identifier(campaign_id, "campaign_id")
+        job_ids = sorted(self._campaign_members(campaign_id))
+        invalid: list[dict[str, Any]] = []
+        checked_events = 0
+        for job_id in job_ids:
+            result = self.verify_job_transitions(job_id)
+            checked_events += int(result.get("checked", 0))
+            if not result.get("valid"):
+                invalid.append({"job_id": job_id, "reason": result.get("reason")})
+        return {
+            "campaign_id": campaign_id,
+            "jobs": len(job_ids),
+            "events": checked_events,
+            "valid": not invalid,
+            "invalid_jobs": invalid,
+        }
+
     def _campaign_key(self, campaign_id: str) -> str:
         digest = hashlib.sha256(campaign_id.encode("utf-8")).hexdigest()
         return f"{self.prefix}:campaign:{digest}"
@@ -79,6 +156,41 @@ class RedisJobQueue:
             if result.get(key, "") == "":
                 result[key] = None
         return result
+
+    def recovery_assessment(self) -> dict[str, Any]:
+        job_ids = sorted(self.redis.smembers(self._all))
+        jobs: list[dict[str, Any]] = []
+        audits: dict[str, dict[str, Any]] = {}
+        for job_id in job_ids:
+            job = self.get(str(job_id))
+            if job is None:
+                continue
+            jobs.append(
+                {
+                    key: job.get(key)
+                    for key in (
+                        "id",
+                        "campaign_id",
+                        "kind",
+                        "status",
+                        "attempts",
+                        "max_attempts",
+                        "claimed_by",
+                        "claimed_at",
+                        "created_at",
+                        "updated_at",
+                    )
+                }
+            )
+            audits[str(job_id)] = self.verify_job_transitions(str(job_id))
+        return {
+            **analyze_queue_recovery(
+                jobs,
+                lease_seconds=_job_lease_seconds(),
+                audit_results=audits,
+            ),
+            "storage": "redis",
+        }
 
     def health(self) -> dict[str, Any]:
         try:
@@ -136,6 +248,14 @@ class RedisJobQueue:
                 pipe.sadd(self._all, job_id)
                 pipe.sadd(self._campaign_key(campaign_id), job_id)
                 pipe.execute()
+            self._append_transition(
+                row,
+                from_status=None,
+                to_status="queued",
+                actor="queue",
+                reason="job enqueued",
+                at=now,
+            )
             created = self.get(job_id)
             if created is None:
                 raise RuntimeError("queued job disappeared")
@@ -171,6 +291,14 @@ class RedisJobQueue:
             except redis.WatchError:
                 continue
 
+        self._append_transition(
+            row,
+            from_status=None,
+            to_status="queued",
+            actor="queue",
+            reason="job enqueued",
+            at=now,
+        )
         created = self.get(job_id)
         if created is None:
             raise RuntimeError("queued job disappeared")
@@ -289,6 +417,14 @@ class RedisJobQueue:
                         pipe.zrem(self._queued, job_id)
                         pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                         pipe.execute()
+                        self._append_transition(
+                            row,
+                            from_status="queued",
+                            to_status="cancelled",
+                            actor="campaign-control",
+                            reason="campaign cancelled before execution",
+                            at=now,
+                        )
                         count += 1
                         break
                 except redis.WatchError:
@@ -326,6 +462,14 @@ class RedisJobQueue:
                     )
                     pipe.zrem(self._running, job_id)
                     pipe.execute()
+                    self._append_transition(
+                        row,
+                        from_status="running",
+                        to_status="cancelled",
+                        actor=worker_id,
+                        reason=reason or "campaign cancelled",
+                        at=utcnow(),
+                    )
                     return self.get(job_id)
             except redis.WatchError:
                 continue
@@ -366,6 +510,14 @@ class RedisJobQueue:
                                 pipe.zadd(self._queued, {job_id: time.time()})
                             pipe.zadd(self._queued_kind(row.get("kind", "")), {job_id: time.time()})
                         pipe.execute()
+                        self._append_transition(
+                            row,
+                            from_status="running",
+                            to_status=status,
+                            actor="lease-recovery",
+                            reason="worker lease expired before completion",
+                            at=now,
+                        )
                         recovered += 1
                         break
                 except redis.WatchError:
@@ -417,6 +569,14 @@ class RedisJobQueue:
                         pipe.zrem(self._queued, job_id)
                         pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                         pipe.execute()
+                        self._append_transition(
+                            row,
+                            from_status="queued",
+                            to_status="failed",
+                            actor="queue",
+                            reason="retry budget exhausted",
+                            at=utcnow(),
+                        )
                         continue
 
                     now = utcnow()
@@ -436,6 +596,14 @@ class RedisJobQueue:
                     pipe.zrem(self._queued_kind(row.get("kind", "")), job_id)
                     pipe.zadd(self._running, {job_id: score})
                     pipe.execute()
+                    self._append_transition(
+                        row,
+                        from_status="queued",
+                        to_status="running",
+                        actor=worker_id,
+                        reason="job claimed",
+                        at=now,
+                    )
                     return self.get(job_id)
             except redis.WatchError:
                 continue
@@ -515,6 +683,14 @@ class RedisJobQueue:
                         pipe.zrem(queued_kind, job_id)
                         pipe.zadd(self._running, {job_id: time.time()})
                         pipe.execute()
+                        self._append_transition(
+                            row,
+                            from_status="queued",
+                            to_status="running",
+                            actor=worker_id,
+                            reason="job claimed",
+                            at=now,
+                        )
                         return self.get(job_id)
                 except redis.WatchError:
                     continue
@@ -581,6 +757,18 @@ class RedisJobQueue:
                             pipe.zadd(self._queued, {job_id: time.time()})
                         pipe.zadd(self._queued_kind(row.get("kind", "")), {job_id: time.time()})
                     pipe.execute()
+                    self._append_transition(
+                        row,
+                        from_status="running",
+                        to_status=status,
+                        actor=worker_id,
+                        reason=(
+                            "job completed"
+                            if success
+                            else ("job requeued after failure" if status == "queued" else "job failed")
+                        ),
+                        at=now,
+                    )
                     return self.get(job_id)
             except redis.WatchError:
                 continue

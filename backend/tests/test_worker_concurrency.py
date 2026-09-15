@@ -1,5 +1,6 @@
 import pytest
 
+from app.job_provenance import attach_job_provenance
 from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput
 from app.storage import CampaignConflictError, Storage
@@ -139,11 +140,16 @@ def test_stale_validation_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "independent_validation",
-        {
-            "campaign_id": campaign.id,
-            "finding_id": "f1",
-            "asset": "https://example.test",
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "finding_id": "f1",
+                "asset": "https://example.test",
+            },
+            campaign,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key="validation:f1",
     )
@@ -179,11 +185,16 @@ def test_completed_campaign_validation_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "independent_validation",
-        {
-            "campaign_id": campaign.id,
-            "finding_id": "f1",
-            "asset": "https://example.test",
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "finding_id": "f1",
+                "asset": "https://example.test",
+            },
+            campaign,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key="validation:f1",
     )
@@ -208,18 +219,23 @@ def test_completed_campaign_browser_job_is_cancelled_without_retry(tmp_path):
     job = queue.enqueue(
         campaign.id,
         "browser_flow",
-        {
-            "campaign_id": campaign.id,
-            "steps": [
-                {
-                    "operation": "navigate",
-                    "url": "https://example.test",
-                    "selector": None,
-                    "secret_env": None,
-                    "timeout_ms": 1000,
-                }
-            ],
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "steps": [
+                    {
+                        "operation": "navigate",
+                        "url": "https://example.test",
+                        "selector": None,
+                        "secret_env": None,
+                        "timeout_ms": 1000,
+                    }
+                ],
+            },
+            campaign,
+            job_kind="browser_flow",
+            action="crawl",
+        ),
         max_attempts=2,
         dedupe_key="browser:stale-completed",
     )
@@ -232,3 +248,156 @@ def test_completed_campaign_browser_job_is_cancelled_without_retry(tmp_path):
     assert final["attempts"] == 1
     assert final["claimed_by"] is None
     assert queue.claim("worker-browser-retry") is None
+
+
+
+def test_worker_rejects_policy_bound_job_after_scope_policy_changes(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    payload = attach_job_provenance(
+        {"campaign_id": campaign.id, "platform": "generic"},
+        campaign,
+        job_kind="report",
+        action="report",
+    )
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        payload,
+        max_attempts=1,
+        dedupe_key="report:stale-policy",
+    )
+
+    document, version = store.get_campaign_record(campaign.id)
+    document["target"]["rules"]["max_requests_per_second"] = 1.0
+    store.save_campaign(document, expected_version=version)
+
+    assert process_one(queue, store, "worker-policy-check") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "failed"
+    assert final["attempts"] == 1
+    assert "policy_fingerprint_mismatch" in str(final["last_error"])
+
+
+
+def test_worker_rejects_unprovenanced_governed_job_by_default(tmp_path, monkeypatch):
+    monkeypatch.delenv("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", raising=False)
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": "generic"},
+        max_attempts=1,
+        dedupe_key="report:unprovenanced",
+    )
+
+    assert process_one(queue, store, "worker-strict-provenance") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "failed"
+    assert final["attempts"] == 1
+    assert "provenance_missing" in str(final["last_error"])
+
+
+def test_legacy_unprovenanced_job_requires_explicit_compatibility_flag(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS", "true")
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": "generic"},
+        max_attempts=1,
+        dedupe_key="report:legacy-compatible",
+    )
+
+    assert process_one(queue, store, "worker-legacy-provenance") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "completed"
+
+
+
+def test_report_worker_persists_governance_fingerprints(tmp_path):
+    db = str(tmp_path / "db.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        attach_job_provenance(
+            {
+                "campaign_id": campaign.id,
+                "platform": "generic",
+            },
+            campaign,
+            job_kind="report",
+            action="report",
+        ),
+        max_attempts=1,
+        dedupe_key="report:governance-manifest",
+    )
+
+    assert process_one(queue, store, "worker-report-governance") is True
+
+    final = queue.get(job["id"])
+    assert final is not None
+    assert final["status"] == "completed"
+
+    reports = [
+        item
+        for item in store.list_artifacts(campaign.id)
+        if item.get("kind") == "report"
+    ]
+    assert len(reports) == 1
+    saved = store.get_campaign(campaign.id)
+    report_event = next(
+        event
+        for event in saved["events"]
+        if event.get("type") == "report_generated"
+        and event.get("artifact_id") == reports[0]["id"]
+    )
+    assert len(report_event["reporting_governance_fingerprint"]) == 64
+    assert len(report_event["report_provenance_fingerprint"]) == 64
+
+    observations = store.list_observations(campaign.id)
+    report_observation = next(
+        item
+        for item in observations
+        if item.get("artifact_id") == reports[0]["id"]
+        or (
+            item.get("metadata", {}).get("artifact_kind") == "report"
+            and item.get("metadata", {}).get(
+                "reporting_governance_fingerprint"
+            )
+            == report_event["reporting_governance_fingerprint"]
+        )
+    )
+    metadata = report_observation.get("metadata") or {}
+    assert metadata["reporting_governance_verified"] is True
+
+    _artifact, content = store.read_artifact(
+        campaign.id,
+        reports[0]["id"],
+    )
+    rendered = content.decode("utf-8")
+    assert "## Governance & audit manifest" in rendered
+    assert report_event["reporting_governance_fingerprint"] in rendered

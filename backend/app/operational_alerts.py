@@ -44,6 +44,28 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     running_lease_age = metrics.get("oldest_running_lease_age_seconds")
     pending_outbox = int(metrics.get("pending_outbox_total") or 0)
     outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
+    recovery = metrics.get("recovery_readiness") or {}
+    health = metrics.get("control_plane_health") or {}
+    submission_integrity = metrics.get("submission_integrity") or {}
+    slo = metrics.get("slo")
+    if slo is None:
+        required_slo_inputs = {
+            "jobs_total",
+            "queue_transition_audit",
+            "recovery_readiness",
+            "control_plane_health",
+            "pending_outbox_total",
+        }
+        if required_slo_inputs.issubset(metrics):
+            from .slo import build_platform_slos
+
+            slo = build_platform_slos(metrics)
+        else:
+            slo = {}
+    latest_recovery_decision = recovery.get("latest_decision")
+    ready_to_block_regressions = int(
+        recovery.get("ready_to_block_regressions") or 0
+    )
 
     alerts: list[dict[str, Any]] = []
     if failed >= failed_limit:
@@ -112,6 +134,122 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
                 "severity": "critical",
                 "value": int(outbox_age),
                 "threshold": outbox_age_limit,
+            }
+        )
+
+    if latest_recovery_decision == "BLOCK":
+        alerts.append(
+            {
+                "code": "recovery_readiness_block",
+                "severity": "critical",
+                "value": "BLOCK",
+                "threshold": None,
+            }
+        )
+    if ready_to_block_regressions > 0:
+        alerts.append(
+            {
+                "code": "recovery_ready_to_block_regression",
+                "severity": "critical",
+                "value": ready_to_block_regressions,
+                "threshold": 1,
+            }
+        )
+
+    if (
+        submission_integrity.get("supported")
+        and submission_integrity.get("valid") is False
+    ):
+        alerts.append(
+            {
+                "code": "submission_event_audit_invalid",
+                "severity": "warning",
+                "value": {
+                    "invalid_reports": int(
+                        submission_integrity.get("invalid_reports") or 0
+                    ),
+                    "issue_class_counts": dict(
+                        submission_integrity.get("issue_class_counts") or {}
+                    ),
+                    "severity": dict(
+                        submission_integrity.get("severity") or {}
+                    ),
+                },
+                "threshold": 0,
+            }
+        )
+
+    if bool(health.get("persistent_degradation")):
+        alerts.append(
+            {
+                "code": "control_plane_persistent_degradation",
+                "severity": "critical",
+                "value": str(health.get("latest_state") or "unknown"),
+                "threshold": 3,
+            }
+        )
+    if str(health.get("trend") or "") == "degrading":
+        alerts.append(
+            {
+                "code": "control_plane_health_degrading",
+                "severity": "warning",
+                "value": int(health.get("delta") or 0),
+                "threshold": 0,
+            }
+        )
+
+    if str(slo.get("state") or "") == "EXHAUSTED":
+        alerts.append(
+            {
+                "code": "slo_error_budget_exhausted",
+                "severity": "critical",
+                "value": list((slo.get("summary") or {}).get("exhausted_slos") or []),
+                "threshold": 0,
+            }
+        )
+    elif str(slo.get("state") or "") == "AT_RISK":
+        alerts.append(
+            {
+                "code": "slo_error_budget_at_risk",
+                "severity": "warning",
+                "value": list((slo.get("summary") or {}).get("at_risk_slos") or []),
+                "threshold": 0,
+            }
+        )
+
+    policy = slo.get("multiwindow_policy") or {}
+    fast_policy = policy.get("fast_burn") or {}
+    slow_policy = policy.get("slow_burn") or {}
+    historical = slo.get("historical") or {}
+    windows = historical.get("windows") or {}
+    one_hour = windows.get("1h") or {}
+    day = windows.get("24h") or {}
+    week = windows.get("7d") or {}
+
+    if bool(fast_policy.get("triggered")):
+        alerts.append(
+            {
+                "code": "slo_fast_burn_multiwindow",
+                "severity": "critical",
+                "value": {
+                    "1h": one_hour.get("burn_rate"),
+                    "24h": day.get("burn_rate"),
+                },
+                "threshold": fast_policy.get("thresholds")
+                or {"1h": 2.0, "24h": 1.0},
+            }
+        )
+    elif bool(slow_policy.get("triggered")):
+        alerts.append(
+            {
+                "code": "slo_slow_burn_multiwindow",
+                "severity": "warning",
+                "value": {
+                    "24h": day.get("burn_rate"),
+                    "7d": week.get("burn_rate"),
+                },
+                "threshold": slow_policy.get("thresholds")
+                or {"24h": 1.0, "7d": 1.0},
             }
         )
 

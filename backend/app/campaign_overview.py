@@ -14,6 +14,7 @@ from .finding_correlation import correlate_findings
 from .finding_lifecycle import build_finding_lifecycle, router as finding_lifecycle_router
 from .finding_triage import build_finding_triage, router as finding_triage_router
 from .hypothesis_engine import build_hypotheses
+from .job_provenance import policy_snapshot_fingerprint
 from .knowledge_memory import build_knowledge_snapshot
 from .learning_memory import build_learning_memory, router as learning_memory_router
 from .observation_graph import load_observation_graph
@@ -21,9 +22,20 @@ from .planner_budget import PlannerBudget, budget_usage
 from .recon_swarm import build_recon_plan, router as recon_swarm_router
 from .red_team_coverage import build_red_team_coverage, router as red_team_coverage_router
 from .red_team_decision import build_red_team_decisions, router as red_team_decision_router
-from .report_readiness import build_report_readiness, router as report_readiness_router
-from .review_queue import build_review_queue, router as review_queue_router
+from .report_quality import summarize_report_quality
+from .report_readiness import router as report_readiness_router
+from .reporting_governance import (
+    assess_report_artifact_freshness,
+    build_reporting_governance_snapshot,
+    verify_reporting_governance_snapshot,
+)
+from .review_queue import (
+    build_review_queue,
+    review_queue_snapshot,
+    router as review_queue_router,
+)
 from .storage import ArtifactIntegrityError
+from .submission_audit import audit_campaign_submissions
 from .submission_state import submission_status
 from .validation_state import analyze_validation_state
 
@@ -63,10 +75,14 @@ def campaign_overview(campaign_id: str):
     correlations = correlate_findings(campaign.findings)
     triage = build_finding_triage(campaign.findings, graph)
     lifecycle = build_finding_lifecycle(campaign.findings, graph)
-    report_readiness = build_report_readiness(campaign.findings, graph)
+    reporting = build_reporting_governance_snapshot(
+        campaign.findings,
+        graph,
+    )
+    report_readiness = list(reporting.readiness)
+    report_quality = list(reporting.quality_gates)
     review_state = build_campaign_review_state(campaign.findings, graph)
     coverage = build_red_team_coverage(graph, scope_checker=scope_checker)
-    review_tasks = build_review_queue(graph, scope_checker=scope_checker)
     decisions = build_red_team_decisions(
         campaign.findings,
         graph,
@@ -97,25 +113,76 @@ def campaign_overview(campaign_id: str):
     report_states = Counter()
     report_integrity_errors = 0
     reports = []
+    report_freshness = []
+    report_artifact_ids: list[str] = []
     for artifact in store.list_artifacts(campaign.id):
         if artifact.get("kind") != "report":
             continue
+        report_artifact_ids.append(str(artifact["id"]))
         try:
             verified, _content = store.read_artifact(campaign.id, artifact["id"])
         except ArtifactIntegrityError:
             report_integrity_errors += 1
             continue
-        status = submission_status(campaign, verified).to_dict()
+        status = submission_status(
+            campaign,
+            verified,
+            provenance_fingerprint=reporting.provenance_fingerprint,
+        ).to_dict()
         reports.append(status)
         report_states[status["state"]] += 1
+        generated = next(
+            (
+                event
+                for event in reversed(campaign.events)
+                if event.get("type") == "report_generated"
+                and event.get("artifact_id") == artifact["id"]
+            ),
+            None,
+        )
+        report_freshness.append(
+            assess_report_artifact_freshness(
+                artifact_id=str(artifact["id"]),
+                generated_governance_fingerprint=(
+                    generated.get("reporting_governance_fingerprint")
+                    if generated
+                    else None
+                ),
+                generated_provenance_fingerprint=(
+                    generated.get("report_provenance_fingerprint")
+                    if generated
+                    else None
+                ),
+                current=reporting,
+            )
+        )
+
+    review_tasks = build_review_queue(
+        graph,
+        scope_checker=scope_checker,
+        stale_reports=report_freshness,
+    )
+    review_snapshot = review_queue_snapshot(review_tasks)
+
+    submission_audit = audit_campaign_submissions(
+        campaign,
+        report_artifact_ids,
+        current_provenance_fingerprint=reporting.provenance_fingerprint,
+        current_governance_fingerprint=reporting.governance_fingerprint,
+    )
 
     job_kinds = jobs.campaign_job_counts(campaign.id)
     job_statuses = jobs.campaign_job_status_counts(campaign.id)
+    queue_transition_audit = jobs.campaign_transition_audit(campaign.id)
     blocked = dict(budget.blocked_actions)
     terminal_campaign = campaign.state.value in {"completed", "failed", "cancelled"}
     attention_reasons = []
     if report_integrity_errors:
         attention_reasons.append("report_integrity_error")
+    if any(item["stale"] for item in report_freshness):
+        attention_reasons.append("stale_report_artifact")
+    if not submission_audit["valid"]:
+        attention_reasons.append("submission_event_audit_invalid")
     if blocked:
         attention_reasons.append("budget_blocked")
     if runtime.exhausted and not terminal_campaign:
@@ -126,6 +193,8 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("out_of_scope_observations")
     if validation.unresolved_finding_ids:
         attention_reasons.append("unresolved_validation")
+    if validation.unevidenced_finding_ids:
+        attention_reasons.append("validation_missing_evidence")
     if any(not item.graph_observed for item in lifecycle):
         attention_reasons.append("finding_graph_mismatch")
     if any(not item.evidence_chain_integrity_ok and item.graph_observed for item in lifecycle):
@@ -138,6 +207,8 @@ def campaign_overview(campaign_id: str):
         attention_reasons.append("campaign_risk_elevated")
     if job_statuses["failed"]:
         attention_reasons.append("failed_jobs")
+    if not queue_transition_audit["valid"]:
+        attention_reasons.append("queue_transition_audit_invalid")
 
     latest_event = campaign.events[-1] if campaign.events else None
     total_findings = len(campaign.findings)
@@ -153,6 +224,8 @@ def campaign_overview(campaign_id: str):
         },
         "policy": {
             "authorization_reference": rules.authorization_reference,
+            "fingerprint": policy_snapshot_fingerprint(campaign),
+            "provenance_schema": "job-provenance-v1",
             "automated_scanning": rules.automated_scanning,
             "max_requests_per_second": rules.max_requests_per_second,
             "allowed_target_count": len(rules.allowed_targets),
@@ -214,6 +287,11 @@ def campaign_overview(campaign_id: str):
         },
         "report_readiness": {
             "total": len(report_readiness),
+            "governance_fingerprint": reporting.governance_fingerprint,
+            "governance_verification": verify_reporting_governance_snapshot(
+                reporting
+            ),
+            "quality": summarize_report_quality(report_quality),
             "ready_for_human_review": sum(item.ready_for_human_review for item in report_readiness),
             "blocked": sum(not item.ready_for_human_review for item in report_readiness),
             "highest_score": max((item.score for item in report_readiness), default=0.0),
@@ -225,9 +303,16 @@ def campaign_overview(campaign_id: str):
             "graph_findings": len(validation.finding_ids),
             "attempted": len(validation.attempted_finding_ids),
             "observed_independent": len(validation.observed_independent_finding_ids),
+            "evidence_backed_independent": len(
+                validation.evidence_backed_independent_finding_ids
+            ),
+            "unevidenced": len(validation.unevidenced_finding_ids),
             "unresolved": len(validation.unresolved_finding_ids),
             "unattempted": len(validation.unattempted_finding_ids),
             "all_observed_independently": validation.all_observed_independently,
+            "all_evidence_backed_independently": (
+                validation.all_evidence_backed_independently
+            ),
         },
         "hypotheses": {
             "total": len(hypotheses),
@@ -237,8 +322,12 @@ def campaign_overview(campaign_id: str):
             "scope_aware": True,
         },
         "review_queue": {
+            "snapshot": review_snapshot,
             "total": len(review_tasks),
             "highest_priority": max((item.priority for item in review_tasks), default=0.0),
+            "stale_report_reviews": sum(
+                item.kind == "review_stale_report" for item in review_tasks
+            ),
             "advisory_only": True,
             "read_only": True,
             "scope_aware": True,
@@ -286,6 +375,13 @@ def campaign_overview(campaign_id: str):
             "by_status": job_statuses,
             "inflight": job_statuses["queued"] + job_statuses["running"],
             "terminal": job_statuses["completed"] + job_statuses["failed"] + job_statuses["cancelled"],
+            "transition_audit": {
+                "jobs": queue_transition_audit["jobs"],
+                "events": queue_transition_audit["events"],
+                "valid": queue_transition_audit["valid"],
+                "invalid_job_count": len(queue_transition_audit["invalid_jobs"]),
+                "read_only": True,
+            },
         },
         "budget": {
             "limits": limits.to_dict(),
@@ -295,8 +391,12 @@ def campaign_overview(campaign_id: str):
         },
         "reports": {
             "total": len(reports) + report_integrity_errors,
+            "submission_audit": submission_audit,
             "verified": len(reports),
             "integrity_errors": report_integrity_errors,
+            "fresh": sum(item["fresh"] for item in report_freshness),
+            "stale": sum(item["stale"] for item in report_freshness),
+            "freshness": report_freshness,
             "submission_ready": report_states.get("approved", 0),
             "submitted": report_states.get("submitted", 0),
             "by_state": {

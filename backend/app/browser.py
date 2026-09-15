@@ -12,6 +12,7 @@ from urllib.parse import urljoin, urlparse
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
+from .job_provenance import attach_job_provenance
 from .api_outbox import has_event, pending_request_id
 from .campaign_audit import append_campaign_event
 from .queue_backend import QueueBackend, create_queue
@@ -281,10 +282,15 @@ def queue_browser_flow(campaign_id: str, flow: BrowserFlowInput):
     job = jobs.enqueue(
         latest.id,
         "browser_flow",
-        {
-            "campaign_id": latest.id,
-            "steps": flow.model_dump(mode="json")["steps"],
-        },
+        attach_job_provenance(
+            {
+                "campaign_id": latest.id,
+                "steps": flow.model_dump(mode="json")["steps"],
+            },
+            latest,
+            job_kind="browser_flow",
+            action="crawl",
+        ),
         max_attempts=2,
         dedupe_key=f"browser:{request_id}",
     )

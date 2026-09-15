@@ -16,13 +16,14 @@ from .api_outbox import has_event, outbox_snapshot, pending_request_id
 from .api_rate_limit import api_rate_limit_middleware
 from .auth import AuthError, require_api_token
 from .campaign_audit import append_campaign_event, verify_campaign_event_chain
+from .job_provenance import attach_job_provenance, verify_job_provenance
 from .policy_integrity import seal_policy_receipt, verify_policy_receipt
 from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
 from .storage import ArtifactIntegrityError, CampaignConflictError
 from .storage_backend import StorageBackend, create_storage
 from .totp_auth import require_totp_for_mutation
-from .validation_state import has_observed_independent_validation
+from .validation_state import has_evidence_backed_independent_validation
 
 app = FastAPI(title="xbow-perso", version="0.4.0")
 
@@ -197,9 +198,9 @@ def _campaign_graph(campaign_id: str):
     return ObservationGraph.from_records(storage().list_observations(campaign_id))
 
 
-def _has_observed_independent_validation(campaign_id: str, finding: Finding) -> bool:
+def _has_evidence_backed_independent_validation(campaign_id: str, finding: Finding) -> bool:
     graph = _campaign_graph(campaign_id)
-    return has_observed_independent_validation(graph, f"finding:{finding.id}")
+    return has_evidence_backed_independent_validation(graph, f"finding:{finding.id}")
 
 
 def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]:
@@ -228,7 +229,12 @@ def policy_receipt(campaign: Campaign, host: str, action: str) -> dict[str, Any]
     )
 
 
-def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[str, Any]:
+def sanitized_scan_payload(
+    campaign: Campaign,
+    receipt: dict[str, Any],
+    *,
+    job_kind: str = "strix_scan",
+) -> dict[str, Any]:
     """Return deterministic worker input suitable for queue idempotency.
 
     The audit receipt keeps its timestamp in campaign events/API responses, but
@@ -236,7 +242,7 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
     """
     transient = {"timestamp", "receipt_hash", "signature", "signature_alg", "integrity_mode"}
     stable_receipt = {key: value for key, value in receipt.items() if key not in transient}
-    return {
+    payload = {
         "campaign_id": campaign.id,
         "target": str(campaign.target.primary_url),
         "policy": stable_receipt,
@@ -251,6 +257,12 @@ def sanitized_scan_payload(campaign: Campaign, receipt: dict[str, Any]) -> dict[
             "automated_scanning": campaign.target.rules.automated_scanning,
         },
     }
+    return attach_job_provenance(
+        payload,
+        campaign,
+        job_kind=job_kind,
+        action="automated_scan",
+    )
 
 
 @app.get("/live")
@@ -311,6 +323,35 @@ def system_capabilities():
             "optimistic_campaign_versioning": True,
             "crash_safe_outbox": True,
             "outbox_observability": True,
+            "policy_bound_job_provenance": True,
+            "queue_transition_audit": True,
+            "queue_recovery_assessment": True,
+            "signed_recovery_attestation": True,
+            "recovery_readiness_gate": True,
+            "operations_dashboard": True,
+            "control_plane_health_model": True,
+            "control_plane_health_history": True,
+            "slo_error_budgets": True,
+            "historical_slo_windows": True,
+            "multiwindow_slo_policy": True,
+            "report_quality_gate": True,
+            "report_provenance_manifest": True,
+            "report_provenance_verification": True,
+            "reporting_governance_fingerprint": True,
+            "report_governance_manifest": True,
+            "report_artifact_freshness": True,
+            "verified_submission_gate": True,
+            "approval_provenance_binding": True,
+            "approval_governance_binding": True,
+            "approval_staleness_reasons": True,
+            "deterministic_review_task_identity": True,
+            "submission_event_audit": True,
+            "submission_integrity_metrics": True,
+            "submission_audit_fingerprint": True,
+            "submission_audit_governance_staleness": True,
+            "submission_audit_aggregate_fingerprints": True,
+            "reporting_governance_snapshot": True,
+            "multiwindow_slo_burn_rates": True,
         },
         "execution": {
             "strix_scanning": "gated",
@@ -793,6 +834,18 @@ def campaign_event_audit(campaign_id: str):
     }
 
 
+@app.get("/api/campaigns/{campaign_id}/audit/queue-transitions")
+def campaign_queue_transition_audit(campaign_id: str):
+    campaign = assert_campaign_exists(campaign_id)
+    return {
+        **queue().campaign_transition_audit(campaign.id),
+        "read_only": True,
+        "payload_exposed": False,
+        "errors_exposed": False,
+        "worker_identity_exposed": False,
+    }
+
+
 @app.get("/api/campaigns/{campaign_id}/audit/workers")
 def campaign_worker_audit(campaign_id: str):
     from .worker_audit import verify_worker_audit_chain
@@ -1075,7 +1128,7 @@ def start_campaign(campaign_id: str):
         save_campaign(campaign, expected_version=version)
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
 
-    payload = sanitized_scan_payload(campaign, receipt)
+    payload = sanitized_scan_payload(campaign, receipt, job_kind="strix_scan")
     request_id = _pending_campaign_start_request(campaign) or str(uuid4())
     _record_campaign_start_intent(
         campaign,
@@ -1145,6 +1198,99 @@ def get_job(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+
+@app.get("/api/recovery/readiness")
+def recovery_readiness_gate():
+    from .recovery_readiness import (
+        current_recovery_readiness,
+        record_recovery_readiness,
+    )
+
+    dependencies = dependency_readiness()
+    store = storage()
+    result = current_recovery_readiness(
+        store,
+        queue(),
+        dependencies=dependencies,
+    )
+    return record_recovery_readiness(store, result)
+
+
+@app.get("/api/recovery/readiness/history")
+def recovery_readiness_history(limit: int = 100):
+    from .recovery_readiness import recovery_readiness_history as build_history
+
+    try:
+        return build_history(storage(), limit=limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/recovery/queue")
+def queue_recovery_assessment():
+    assessment = queue().recovery_assessment()
+    return {
+        **assessment,
+        "read_only": True,
+        "automatic_requeue": False,
+        "automatic_job_creation": False,
+        "automatic_mutation": False,
+        "payloads_exposed": False,
+        "raw_errors_exposed": False,
+    }
+
+
+@app.get("/api/jobs/{job_id}/transitions")
+def get_job_transition_audit(job_id: str):
+    jobs = queue()
+    job = jobs.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    verification = jobs.verify_job_transitions(job_id)
+    events = jobs.job_transitions(job_id)
+    return {
+        "job_id": job_id,
+        "campaign_id": job["campaign_id"],
+        "job_kind": job["kind"],
+        "verification": verification,
+        "transitions": [
+            {
+                key: event.get(key)
+                for key in (
+                    "seq",
+                    "from_status",
+                    "to_status",
+                    "at",
+                    "previous_hash",
+                    "event_hash",
+                )
+            }
+            for event in events
+        ],
+        "read_only": True,
+        "payload_exposed": False,
+        "errors_exposed": False,
+        "worker_identity_exposed": False,
+    }
+
+
+@app.get("/api/jobs/{job_id}/provenance")
+def get_job_provenance_status(job_id: str):
+    job = queue().get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    campaign = assert_campaign_exists(str(job["campaign_id"]))
+    verification = verify_job_provenance(job, campaign)
+    return {
+        "job_id": job["id"],
+        "campaign_id": campaign.id,
+        "job_kind": job["kind"],
+        "provenance": verification,
+        "read_only": True,
+        "payload_exposed": False,
+        "fail_closed_capable": True,
+    }
 
 
 def _validation_request_id(finding_id: str) -> str:
@@ -1264,7 +1410,12 @@ def add_finding(campaign_id: str, finding: Finding):
     validation_job = queue().enqueue(
         campaign.id,
         "independent_validation",
-        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": current.asset},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "finding_id": finding.id, "asset": current.asset},
+            latest,
+            job_kind="independent_validation",
+            action="validate",
+        ),
         max_attempts=2,
         dedupe_key=request_id,
     )
@@ -1396,7 +1547,12 @@ def _ensure_completion_report(campaign: Campaign, version: int) -> Campaign:
     report_job = queue().enqueue(
         campaign.id,
         "report",
-        {"campaign_id": campaign.id, "platform": platform},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": platform},
+            latest,
+            job_kind="report",
+            action="report",
+        ),
         max_attempts=2,
         dedupe_key=request_id,
     )
@@ -1420,8 +1576,11 @@ def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validat
         raise HTTPException(status_code=404, detail="Finding not found")
     if validator == finding.discovered_by:
         raise HTTPException(status_code=409, detail="Discovery agent cannot validate its own finding")
-    if not _has_observed_independent_validation(campaign_id, finding):
-        raise HTTPException(status_code=409, detail="Finding requires observed independent validation evidence before resolution")
+    if not _has_evidence_backed_independent_validation(campaign_id, finding):
+        raise HTTPException(
+            status_code=409,
+            detail="Finding requires evidence-backed independent validation before resolution",
+        )
 
     desired_status = "confirmed" if confirmed else "rejected"
     if finding.status == desired_status and finding.validated_by == validator:
@@ -1494,7 +1653,12 @@ def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bu
     job = queue().enqueue(
         campaign.id,
         "report",
-        {"campaign_id": campaign.id, "platform": platform},
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": platform},
+            latest,
+            job_kind="report",
+            action="report",
+        ),
         max_attempts=2,
         dedupe_key=f"report:{platform}:{request_id}",
     )
@@ -1546,6 +1710,45 @@ def list_artifacts(campaign_id: str):
     return storage().list_artifacts(campaign_id)
 
 
+@app.get("/api/campaigns/{campaign_id}/reports/{artifact_id}/freshness")
+def report_artifact_freshness(campaign_id: str, artifact_id: str):
+    from .reporting_governance import (
+        assess_report_artifact_freshness,
+        build_reporting_governance_snapshot,
+    )
+
+    campaign = assert_campaign_exists(campaign_id)
+    artifact = storage().get_artifact(campaign_id, artifact_id)
+    if not artifact or artifact.get("kind") != "report":
+        raise HTTPException(status_code=404, detail="Report artifact not found")
+
+    generated = next(
+        (
+            event
+            for event in reversed(campaign.events)
+            if event.get("type") == "report_generated"
+            and event.get("artifact_id") == artifact_id
+        ),
+        None,
+    )
+    graph = _campaign_graph(campaign_id)
+    current = build_reporting_governance_snapshot(campaign.findings, graph)
+    return assess_report_artifact_freshness(
+        artifact_id=artifact_id,
+        generated_governance_fingerprint=(
+            generated.get("reporting_governance_fingerprint")
+            if generated
+            else None
+        ),
+        generated_provenance_fingerprint=(
+            generated.get("report_provenance_fingerprint")
+            if generated
+            else None
+        ),
+        current=current,
+    )
+
+
 @app.get("/api/campaigns/{campaign_id}/artifacts/{artifact_id}")
 def download_artifact(campaign_id: str, artifact_id: str):
     assert_campaign_exists(campaign_id)
@@ -1578,8 +1781,10 @@ from .finding_correlation import router as finding_correlation_router  # noqa: E
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
+from .operations_dashboard import router as operations_dashboard_router  # noqa: E402
 from .report_readiness import router as report_readiness_router  # noqa: E402
 from .review_queue import router as review_queue_router  # noqa: E402
+from .slo import router as slo_router  # noqa: E402
 
 app.include_router(browser_router)
 app.include_router(campaign_control_router)
@@ -1593,5 +1798,7 @@ app.include_router(finding_intelligence_router)
 app.include_router(finding_readiness_router)
 app.include_router(metrics_router)
 app.include_router(alerts_router)
+app.include_router(operations_dashboard_router)
 app.include_router(report_readiness_router)
 app.include_router(review_queue_router)
+app.include_router(slo_router)

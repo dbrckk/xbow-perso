@@ -10,6 +10,18 @@ def _configured(name: str) -> bool:
     return bool((os.getenv(name) or "").strip())
 
 
+def _bool_env(name: str, default: bool = False) -> tuple[bool, bool]:
+    raw = os.getenv(name)
+    if raw is None:
+        return default, True
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True, True
+    if value in {"0", "false", "no", "off"}:
+        return False, True
+    return default, False
+
+
 def build_deployment_preflight(
     dependencies: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -17,6 +29,27 @@ def build_deployment_preflight(
 
     pentagi = safe_pentagi_runtime_capability()
     issues: list[dict[str, Any]] = []
+    legacy_provenance_mode, provenance_flag_valid = _bool_env(
+        "XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS",
+        False,
+    )
+
+    if not provenance_flag_valid:
+        issues.append(
+            {
+                "code": "invalid_legacy_provenance_flag",
+                "severity": "error",
+                "component": "job_provenance",
+            }
+        )
+    elif legacy_provenance_mode:
+        issues.append(
+            {
+                "code": "legacy_unprovenanced_jobs_enabled",
+                "severity": "warning",
+                "component": "job_provenance",
+            }
+        )
 
     if dependencies is not None and not bool(dependencies.get("ok")):
         issues.append(
@@ -118,6 +151,12 @@ def build_deployment_preflight(
             if dependencies is not None
             else None
         ),
+        "job_provenance": {
+            "strict_by_default": True,
+            "legacy_unprovenanced_jobs_enabled": legacy_provenance_mode,
+            "configuration_valid": provenance_flag_valid,
+            "schema": "job-provenance-v1",
+        },
         "pentagi": {
             "mode": pentagi.get("mode"),
             "dispatch_ready": bool(pentagi.get("dispatch_ready")),
