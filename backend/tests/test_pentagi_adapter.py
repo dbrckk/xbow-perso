@@ -144,3 +144,36 @@ def test_pentagi_plan_refuses_unsafe_campaign_flags(flag):
             base_url="https://pentagi.example.test",
             model_provider="openai",
         )
+
+
+def test_controlled_pentagi_plan_is_execution_capable_without_direct_tools(monkeypatch):
+    monkeypatch.setenv("XBOW_PENTAGI_CONTROLLED_FUNCTIONS", "true")
+    plan = build_pentagi_flow_plan(
+        _campaign(),
+        base_url="https://pentagi.example.test",
+        model_provider="openai",
+    )
+
+    assert plan.dry_run is False
+    assert plan.execution_supported is True
+    assert plan.payload["variables"]["functions"]["terminal"] is False
+    assert plan.payload["variables"]["functions"]["browser"] is False
+    assert plan.payload["variables"]["functions"]["external"] == [
+        "request_recon",
+        "request_nuclei_scan",
+        "get_job_status",
+        "get_findings",
+        "request_validation",
+    ]
+
+
+def test_controlled_pentagi_plan_stays_preview_only_without_contract(monkeypatch):
+    monkeypatch.delenv("XBOW_PENTAGI_CONTROLLED_FUNCTIONS", raising=False)
+    plan = build_pentagi_flow_plan(
+        _campaign(),
+        base_url="https://pentagi.example.test",
+        model_provider="openai",
+    )
+
+    assert plan.dry_run is True
+    assert plan.execution_supported is False
