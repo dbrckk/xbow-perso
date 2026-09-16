@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from urllib.parse import urlparse
 
 from .main import Campaign, CampaignState, is_host_allowed
-from .pentagi_adapter import build_pentagi_flow_plan
+from .pentagi_adapter import PentagiFlowPlan
 from .pentagi_admission import evaluate_pentagi_admission
 
 
@@ -17,6 +17,8 @@ class PentagiFlowBinding:
     flow_id: str
     campaign_id: str
     policy_fingerprint: str
+    endpoint: str
+    model_provider: str
 
 
 @dataclass(frozen=True)
@@ -28,6 +30,19 @@ class PentagiAuthorizedAction:
 
 
 _TARGET_ACTIONS = {"request_recon", "request_nuclei_scan", "request_validation"}
+
+
+def _bound_execution_plan(binding: PentagiFlowBinding, campaign: Campaign) -> PentagiFlowPlan:
+    """Reconstruct only the policy identity needed to revalidate a bound flow."""
+
+    return PentagiFlowPlan(
+        endpoint=binding.endpoint,
+        payload={},
+        target=str(campaign.target.primary_url),
+        model_provider=binding.model_provider,
+        dry_run=False,
+        execution_supported=True,
+    )
 
 
 def authorize_pentagi_action(
@@ -45,20 +60,28 @@ def authorize_pentagi_action(
     if campaign.state == CampaignState.cancelled:
         raise PentagiActionGatewayError("campaign is cancelled")
 
-    plan = build_pentagi_flow_plan(campaign)
-    decision = evaluate_pentagi_admission(campaign, plan)
+    decision = evaluate_pentagi_admission(
+        campaign,
+        _bound_execution_plan(binding, campaign),
+    )
     if not decision.allowed:
         raise PentagiActionGatewayError("current campaign policy is not admissible")
     if binding.policy_fingerprint != decision.policy_fingerprint:
         raise PentagiActionGatewayError("campaign policy changed after flow binding")
 
-    parsed = urlparse(target)
-    host = (parsed.hostname or "").lower().rstrip(".")
+    try:
+        parsed = urlparse(target)
+        host = (parsed.hostname or "").lower().rstrip(".")
+        port = parsed.port
+    except ValueError as exc:
+        raise PentagiActionGatewayError("target is outside campaign scope") from exc
     if (
         parsed.scheme not in {"http", "https"}
         or not host
         or parsed.username
         or parsed.password
+        or port is not None and not 1 <= port <= 65535
+        or parsed.fragment
         or not is_host_allowed(
             host,
             campaign.target.rules.allowed_targets,
