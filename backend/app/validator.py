@@ -7,7 +7,7 @@ import os
 import time
 from dataclasses import asdict, dataclass
 from urllib.error import HTTPError, URLError
-from urllib.parse import parse_qsl, urlencode, urljoin, urlparse
+from urllib.parse import parse_qsl, quote, quote_plus, urlencode, urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
@@ -93,6 +93,26 @@ def _preview_body(body: bytes, content_type: str | None) -> str:
     if not text_like:
         return ""
     return body.decode("utf-8", errors="replace")[:_validation_preview_chars()]
+
+
+def _redact_query_values(preview: str, url: str) -> str:
+    """Remove original query values from persisted evidence previews."""
+    if not preview:
+        return preview
+    values = {
+        value
+        for _key, value in parse_qsl(urlparse(url).query, keep_blank_values=True)
+        if value
+    }
+    redacted = preview
+    candidates: set[str] = set()
+    for value in values:
+        candidates.add(value)
+        candidates.add(quote(value, safe=""))
+        candidates.add(quote_plus(value, safe=""))
+    for candidate in sorted((item for item in candidates if item), key=len, reverse=True):
+        redacted = redacted.replace(candidate, "[redacted]")
+    return redacted
 
 
 def _validation_max_bytes() -> int:
@@ -187,6 +207,8 @@ def build_probe_url(campaign, finding) -> str:
     if candidate.startswith("/"):
         candidate = urljoin(primary, candidate)
     elif "://" not in candidate:
+        # Bare hosts are not sufficient for an HTTP reproduction. Falling back to
+        # the campaign primary URL avoids guessing a path or scheme.
         candidate = primary
 
     parsed = urlparse(candidate)
@@ -267,12 +289,13 @@ def safe_http_probe(campaign, finding) -> ProbeResult:
                     and marker_bytes not in baseline.body,
                 }
 
+    preview = _preview_body(baseline.body, baseline.content_type)
     return ProbeResult(
         status="observed",
         url=evidence_url,
         parameter_names=parameter_names,
         http_status=baseline.http_status,
         content_type=baseline.content_type,
-        body_preview=_preview_body(baseline.body, baseline.content_type),
+        body_preview=_redact_query_values(preview, url),
         differential=differential,
     )
