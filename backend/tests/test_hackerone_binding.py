@@ -157,3 +157,36 @@ def test_hackerone_conservative_dry_run_queues_one_verified_nuclei_job(tmp_path,
         job["payload"]["_provenance"]["external_policy_fingerprint"]
         == admitted["policy_binding"]["binding_fingerprint"]
     )
+
+
+def test_non_hackerone_start_keeps_strix_routing(tmp_path, monkeypatch):
+    db = str(tmp_path / "campaigns.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    queue_db = str(tmp_path / "jobs.sqlite3")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    campaign = main.Campaign(
+        id="manual-campaign",
+        state=main.CampaignState.ready,
+        target=main.TargetInput(
+            name="Manual fixture",
+            primary_url="https://example.test",
+            rules=main.ProgramRules(
+                authorization_reference="manual-authorization",
+                allowed_targets=["example.test"],
+            ),
+        ),
+    )
+    Storage(db, artifacts).save_campaign(campaign.model_dump(mode="json"))
+    jobs = JobQueue(queue_db)
+    monkeypatch.setattr(main, "queue", lambda: jobs)
+
+    start_result = main.start_campaign(campaign.id)
+
+    assert start_result["job"]["kind"] == "strix_scan"
+    provenance = start_result["job"]["payload"]["_provenance"]
+    assert provenance["job_kind"] == "strix_scan"
+    assert "external_policy_provider" not in provenance
+    assert "external_policy_fingerprint" not in provenance
+    assert jobs.stats()["total"] == 1
