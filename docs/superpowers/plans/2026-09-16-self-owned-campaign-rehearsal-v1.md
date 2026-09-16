@@ -2,76 +2,55 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a deterministic CI rehearsal that exercises XBOW's existing scope, provenance, queue durability, outbox recovery, cancellation, and secret-confinement controls entirely against loopback/in-memory fixtures.
+**Goal:** Build a deterministic CI rehearsal that proves XBOW's existing scope, provenance, queue durability, outbox recovery, cancellation, and secret-confinement controls using only loopback/in-memory target execution.
 
-**Architecture:** Add a small production-side rehearsal coordinator that only aggregates named scenario callbacks and emits a redacted machine-readable report. Keep all target simulation in test-only fixtures. Add one narrow dependency-injection seam to the HTTP validator so tests can route declared fixture hostnames to loopback without public DNS; all other scenarios call the existing queue, worker, outbox, cancellation, provenance, storage, and vault code paths directly.
+**Architecture:** Add a small production-side coordinator for redacted scenario results, plus test-only fixture/scenario modules that invoke the real XBOW code paths. Add one narrow dependency-injection seam to `safe_http_probe` so fixture hostnames can be routed to loopback without public DNS. No scanner, exploit, browser, PentAGI, submission, or production rehearsal endpoint is added.
 
-**Tech Stack:** Python 3.12, pytest, stdlib `http.server`, `urllib.request`, SQLite-backed `Storage`/`JobQueue`, existing FastAPI/domain models, Ruff, GitHub Actions.
+**Tech Stack:** Python 3.12, pytest, stdlib `http.server` / `urllib.request`, SQLite `Storage` and `JobQueue`, existing XBOW models/workers, Ruff, GitHub Actions.
 
 **Spec:** `docs/superpowers/specs/2026-09-16-self-owned-campaign-rehearsal-v1-design.md`
 
 ## Global Constraints
 
-- Rehearsal target execution is loopback/in-memory only; no public target traffic and no public DNS lookup is required.
-- Do not run Nuclei, Strix, PentAGI, browser automation, arbitrary shell jobs, exploit payloads, fuzzing, credential attacks, DoS, social engineering, or destructive testing as part of the rehearsal.
-- Do not add a production endpoint that accepts an arbitrary rehearsal target.
-- In-scope redirects remain non-followed by the current validator; the rehearsal verifies that the redirect destination is scope-valid without changing redirect behavior.
-- Out-of-scope redirects and denied/undeclared fixture hosts must receive zero requests.
-- `429` handling must remain bounded by existing semantics; v1 adds no new generic retry algorithm.
-- Failure injection exists only in test/rehearsal code and never bypasses provenance, scope, or sandbox checks.
-- Raw sentinel secrets must not appear in campaign events, public observations, persisted rehearsal evidence, non-secret job payloads, or the public rehearsal report.
-- Differential evidence must not auto-confirm findings.
-- Any ambiguous scenario outcome fails closed.
-- Rehearsal errors expose stable reason/class codes only, never raw exception messages.
-- v1 remains test/rehearsal infrastructure; it does not enable a new production execution mode or external HackerOne submission.
-
----
+- Target execution in the rehearsal is loopback/in-memory only; no public target connection and no public DNS lookup is required.
+- Do not run Nuclei, Strix, PentAGI, browser automation, arbitrary shell jobs, exploits, fuzzing, credential attacks, denial of service, social engineering, or destructive tests.
+- Do not add a production API that accepts a rehearsal target.
+- In-scope redirects remain non-followed; the rehearsal verifies current no-follow behavior rather than enabling redirect traversal.
+- Out-of-scope redirects and denied/undeclared fixture hosts receive zero follow-up requests.
+- `429` remains observational and bounded by current behavior; add no generic retry algorithm.
+- Failure injection remains test-only and never bypasses scope/provenance/sandbox gates.
+- Raw sentinel secrets must be absent from campaign events, public observations, persisted evidence, non-secret queue payloads, and the public rehearsal report.
+- Differential evidence never auto-confirms a finding.
+- Ambiguous outcomes fail closed.
+- Unexpected errors are represented by stable exception-class reason codes only; never persist raw exception messages in the rehearsal report.
+- v1 is test/rehearsal infrastructure only and does not enable external HackerOne submission or a new production execution mode.
 
 ## File Structure
 
-**Create `backend/app/self_owned_rehearsal.py`**
-- Owns `ScenarioResult`, `RehearsalReport`, mandatory scenario-name validation, redacted report aggregation, stable unexpected-exception classification, and pure secret-surface checking helpers.
-- Does not import test fixtures, create Internet clients, or implement policy/queue/retry behavior.
-
-**Create `backend/tests/rehearsal_fixture.py`**
-- Owns the loopback HTTP server, deterministic routes, request log, explicit hostname-to-loopback mapping, and an opener that refuses unmapped/non-loopback destinations before DNS/network access.
-
-**Create `backend/tests/test_self_owned_rehearsal.py`**
-- Unit tests for report aggregation, mandatory scenario coverage, exception sanitization, and secret-surface detection.
-
-**Create `backend/tests/test_self_owned_rehearsal_http.py`**
-- Integration tests for redirects, mapped subdomains, denied/unknown hosts, and `429` behavior through `safe_http_probe`.
-
-**Create `backend/tests/test_self_owned_rehearsal_resilience.py`**
-- Integration tests for worker failure/lease recovery and crash-window outbox recovery.
-
-**Create `backend/tests/test_self_owned_rehearsal_controls.py`**
-- Integration tests for cancellation, policy/scope drift provenance rejection, and secret confinement.
-
-**Modify `backend/app/validator.py`**
-- Add optional `opener` and `sleep_fn` dependency seams to `safe_http_probe`; production defaults stay exactly as today.
-
-**No workflow file is required initially.** Existing `.github/workflows/ci.yml` already executes all `backend/tests`, Ruff, compileall, readiness, pip check, pip-audit, and Docker build. Only modify CI if the new tests cannot be discovered by the existing command; discovery is the expected path.
+- Create `backend/app/self_owned_rehearsal.py`: redacted result types, mandatory scenario set, report aggregation, raw-value checker.
+- Create `backend/tests/rehearsal_fixture.py`: loopback HTTP server and explicit mapped opener with no DNS fallback.
+- Create `backend/tests/rehearsal_scenarios.py`: the eight test-only scenario runners that call existing XBOW production functions.
+- Create `backend/tests/test_rehearsal_fixture.py`: fixture/network-isolation unit tests.
+- Create `backend/tests/test_self_owned_rehearsal.py`: coordinator plus aggregate rehearsal tests.
+- Create `backend/tests/test_self_owned_rehearsal_http.py`: redirect, subdomain, and `429` tests.
+- Create `backend/tests/test_self_owned_rehearsal_resilience.py`: worker-failure and outbox-crash tests.
+- Create `backend/tests/test_self_owned_rehearsal_controls.py`: cancellation, policy-drift, and secret-confinement tests.
+- Modify `backend/app/validator.py`: optional `opener` / `sleep_fn` dependency seams only; default production behavior is unchanged.
+- Do not modify `.github/workflows/ci.yml` unless test discovery itself is proven broken; the existing workflow already runs all `backend/tests`.
 
 ---
 
-### Task 1: Redacted rehearsal report coordinator
+### Task 1: Redacted rehearsal coordinator
 
 **Files:**
 - Create: `backend/app/self_owned_rehearsal.py`
 - Create: `backend/tests/test_self_owned_rehearsal.py`
 
 **Interfaces:**
-- Produces:
-  - `MANDATORY_SCENARIOS: tuple[str, ...]`
-  - `ScenarioReferences(campaign_id: str | None, job_ids: tuple[str, ...], event_types: tuple[str, ...], counters: dict[str, int])`
-  - `ScenarioResult(name: str, status: Literal["pass", "fail"], reason: str, references: ScenarioReferences, external_network_used: bool = False, contains_secrets: bool = False)`
-  - `RehearsalReport(status: Literal["pass", "fail"], scenarios: tuple[ScenarioResult, ...], external_network_used: bool, contains_secrets: bool)`
-  - `run_rehearsal(scenarios: Mapping[str, Callable[[], ScenarioResult]]) -> RehearsalReport`
-  - `contains_raw_value(value: str, surfaces: Iterable[object]) -> bool`
-- Consumes: no new runtime dependencies beyond stdlib/dataclasses/typing/json.
+- Produces `MANDATORY_SCENARIOS`, `ScenarioReferences`, `ScenarioResult`, `RehearsalReport`, `run_rehearsal(...)`, and `contains_raw_value(...)`.
+- Consumes stdlib only.
 
-- [ ] **Step 1: Write failing report/coordinator tests**
+- [ ] **Step 1: Write the failing coordinator tests**
 
 ```python
 # backend/tests/test_self_owned_rehearsal.py
@@ -93,7 +72,7 @@ def _pass(name: str) -> ScenarioResult:
     )
 
 
-def test_run_rehearsal_requires_exact_mandatory_scenario_set():
+def test_run_rehearsal_requires_all_mandatory_scenarios():
     scenarios = {name: (lambda name=name: _pass(name)) for name in MANDATORY_SCENARIOS}
     report = run_rehearsal(scenarios)
     assert report.status == "pass"
@@ -102,7 +81,7 @@ def test_run_rehearsal_requires_exact_mandatory_scenario_set():
     assert report.contains_secrets is False
 
 
-def test_run_rehearsal_fails_closed_on_missing_scenario():
+def test_missing_scenario_fails_closed():
     scenarios = {name: (lambda name=name: _pass(name)) for name in MANDATORY_SCENARIOS[:-1]}
     report = run_rehearsal(scenarios)
     assert report.status == "fail"
@@ -110,7 +89,7 @@ def test_run_rehearsal_fails_closed_on_missing_scenario():
     assert report.scenarios[-1].reason == "scenario_missing"
 
 
-def test_run_rehearsal_sanitizes_unexpected_exception_message():
+def test_unexpected_exception_message_is_not_exposed():
     marker = "SECRET-MUST-NOT-LEAK"
     scenarios = {name: (lambda name=name: _pass(name)) for name in MANDATORY_SCENARIOS}
 
@@ -119,27 +98,25 @@ def test_run_rehearsal_sanitizes_unexpected_exception_message():
 
     scenarios[MANDATORY_SCENARIOS[0]] = explode
     report = run_rehearsal(scenarios)
-    encoded = str(report)
-    assert report.status == "fail"
     assert report.scenarios[0].reason == "unexpected_RuntimeError"
-    assert marker not in encoded
+    assert marker not in str(report)
 
 
-def test_contains_raw_value_checks_nested_text_and_bytes():
-    marker = "sentinel-raw-value"
-    assert contains_raw_value(marker, [{"nested": [b"prefix sentinel-raw-value suffix"]}]) is True
-    assert contains_raw_value(marker, [{"nested": ["redacted"]}]) is False
+def test_contains_raw_value_detects_nested_text_and_bytes():
+    marker = "rehearsal-sentinel"
+    assert contains_raw_value(marker, [{"nested": [b"xxrehearsal-sentinelxx"]}]) is True
+    assert contains_raw_value(marker, [{"nested": ["[redacted]"]}]) is False
 ```
 
-- [ ] **Step 2: Run the tests to verify RED**
+- [ ] **Step 2: Verify RED**
 
 Run:
 ```bash
 PYTHONPATH=backend pytest -q backend/tests/test_self_owned_rehearsal.py
 ```
-Expected: collection/import failure because `app.self_owned_rehearsal` does not exist.
+Expected: import/collection failure because `app.self_owned_rehearsal` does not exist.
 
-- [ ] **Step 3: Implement the minimal coordinator and redaction-safe data types**
+- [ ] **Step 3: Implement the minimal coordinator**
 
 ```python
 # backend/app/self_owned_rehearsal.py
@@ -187,12 +164,17 @@ class RehearsalReport:
     contains_secrets: bool
 
 
-def _unexpected_result(name: str, exc: Exception) -> ScenarioResult:
-    return ScenarioResult(
-        name=name,
-        status="fail",
-        reason=f"unexpected_{exc.__class__.__name__}",
-    )
+def contains_raw_value(value: str, surfaces: Iterable[object]) -> bool:
+    if not value:
+        return False
+    needle = value.encode("utf-8")
+    for surface in surfaces:
+        encoded = surface if isinstance(surface, bytes) else json.dumps(
+            surface, ensure_ascii=False, default=str
+        ).encode("utf-8")
+        if needle in encoded:
+            return True
+    return False
 
 
 def run_rehearsal(
@@ -207,7 +189,11 @@ def run_rehearsal(
         try:
             result = runner()
         except Exception as exc:
-            result = _unexpected_result(name, exc)
+            result = ScenarioResult(
+                name=name,
+                status="fail",
+                reason=f"unexpected_{exc.__class__.__name__}",
+            )
         if result.name != name:
             result = ScenarioResult(name=name, status="fail", reason="scenario_name_mismatch")
         results.append(result)
@@ -220,41 +206,18 @@ def run_rehearsal(
         external_network_used=external,
         contains_secrets=secrets,
     )
-
-
-def contains_raw_value(value: str, surfaces: Iterable[object]) -> bool:
-    if not value:
-        return False
-    needle = value.encode("utf-8")
-    for surface in surfaces:
-        if isinstance(surface, bytes):
-            encoded = surface
-        else:
-            encoded = json.dumps(surface, ensure_ascii=False, default=str).encode("utf-8")
-        if needle in encoded:
-            return True
-    return False
 ```
 
-Do not add arbitrary detail/message fields to `ScenarioResult`; stable reason codes are the deliberate leak-prevention boundary.
-
-- [ ] **Step 4: Run Task 1 tests to verify GREEN**
+- [ ] **Step 4: Verify GREEN and lint**
 
 Run:
 ```bash
 PYTHONPATH=backend pytest -q backend/tests/test_self_owned_rehearsal.py
-```
-Expected: all Task 1 tests PASS.
-
-- [ ] **Step 5: Run Ruff on the new unit**
-
-Run:
-```bash
 ruff check backend/app/self_owned_rehearsal.py backend/tests/test_self_owned_rehearsal.py
 ```
-Expected: `All checks passed!`
+Expected: tests PASS; Ruff prints `All checks passed!`.
 
-- [ ] **Step 6: Commit Task 1**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add backend/app/self_owned_rehearsal.py backend/tests/test_self_owned_rehearsal.py
@@ -263,19 +226,15 @@ git commit -m "test(rehearsal): add redacted scenario coordinator"
 
 ---
 
-### Task 2: Loopback-only HTTP fixture and mapped opener
+### Task 2: Loopback-only target fixture
 
 **Files:**
 - Create: `backend/tests/rehearsal_fixture.py`
 - Create: `backend/tests/test_rehearsal_fixture.py`
 
 **Interfaces:**
-- Produces:
-  - `ExternalTargetAttempt(RuntimeError)`
-  - `RequestRecord(host: str, path: str, status_hint: int | None = None)`
-  - `LocalRehearsalServer` context manager with `.port`, `.requests`, `.base_url`
-  - `MappedLoopbackOpener(mapping: Mapping[str, tuple[str, int]])` with `.open(request, timeout)` and `.blocked_hosts`
-- Consumes: stdlib `ThreadingHTTPServer`, `BaseHTTPRequestHandler`, `urllib.request`, `urllib.parse`; production `_NoRedirect` is not imported here to keep the fixture self-contained.
+- Produces `ExternalTargetAttempt`, `RequestRecord`, `LocalRehearsalServer`, and `MappedLoopbackOpener`.
+- `MappedLoopbackOpener.open(request, timeout)` accepts only explicitly mapped fixture hostnames and connects only to `127.0.0.1` / `::1`.
 
 - [ ] **Step 1: Write failing fixture tests**
 
@@ -289,7 +248,7 @@ import pytest
 from rehearsal_fixture import ExternalTargetAttempt, LocalRehearsalServer, MappedLoopbackOpener
 
 
-def test_fixture_binds_loopback_and_serves_deterministic_routes():
+def test_mapped_fixture_uses_loopback_and_preserves_fixture_host():
     with LocalRehearsalServer() as server:
         opener = MappedLoopbackOpener({"allowed.rehearsal.test": ("127.0.0.1", server.port)})
         with opener.open(Request("http://allowed.rehearsal.test/ok", method="GET"), timeout=1) as response:
@@ -299,7 +258,7 @@ def test_fixture_binds_loopback_and_serves_deterministic_routes():
         assert opener.blocked_hosts == []
 
 
-def test_mapped_opener_refuses_unmapped_host_without_fallback():
+def test_unmapped_host_is_rejected_before_network_fallback():
     with LocalRehearsalServer() as server:
         opener = MappedLoopbackOpener({"allowed.rehearsal.test": ("127.0.0.1", server.port)})
         with pytest.raises(ExternalTargetAttempt, match="unmapped_target"):
@@ -308,16 +267,16 @@ def test_mapped_opener_refuses_unmapped_host_without_fallback():
         assert server.requests == []
 
 
-def test_fixture_redirect_is_not_followed_by_mapped_opener():
+def test_fixture_redirect_is_not_followed():
     with LocalRehearsalServer() as server:
         opener = MappedLoopbackOpener({"allowed.rehearsal.test": ("127.0.0.1", server.port)})
         with pytest.raises(HTTPError) as exc:
             opener.open(Request("http://allowed.rehearsal.test/redirect-in-scope", method="GET"), timeout=1)
         assert exc.value.code == 302
-        assert len(server.requests) == 1
+        assert [item.path for item in server.requests] == ["/redirect-in-scope"]
 ```
 
-- [ ] **Step 2: Run fixture tests to verify RED**
+- [ ] **Step 2: Verify RED**
 
 Run:
 ```bash
@@ -325,12 +284,12 @@ PYTHONPATH=backend:backend/tests pytest -q backend/tests/test_rehearsal_fixture.
 ```
 Expected: import failure because `rehearsal_fixture.py` does not exist.
 
-- [ ] **Step 3: Implement `LocalRehearsalServer`**
+- [ ] **Step 3: Implement deterministic routes and no-DNS mapped opener**
 
-Use `ThreadingHTTPServer(("127.0.0.1", 0), Handler)` and a daemon thread. The handler must implement only `GET` and these exact routes:
+Implement `ThreadingHTTPServer(("127.0.0.1", 0), Handler)` with a daemon thread and these exact route semantics:
 
 ```python
-ROUTES = {
+STATIC_ROUTES = {
     "/ok": (200, {}, b"ok"),
     "/redirect-in-scope": (302, {"Location": "/ok"}, b""),
     "/redirect-out-of-scope": (302, {"Location": "http://outside.rehearsal.test/ok"}, b""),
@@ -338,35 +297,20 @@ ROUTES = {
 }
 ```
 
-For `/echo` and `/secret-echo`, return the query value in the body only so validation/redaction tests can inspect what would have been reflected. Suppress access logging by overriding `log_message` to return `None`. Record only Host/path/method metadata in memory; do not record Authorization/Cookie headers or body values.
+`/echo` and `/secret-echo` may reflect only the first query value in the response body. Request logging stores method, Host, and path only; never request bodies, Authorization, Cookie, or secret values. Override `log_message` to suppress stdout.
 
-- [ ] **Step 4: Implement `MappedLoopbackOpener` with no DNS fallback**
+`MappedLoopbackOpener` must parse the original hostname, look it up in the explicit map before any network call, require mapped address in `{127.0.0.1, ::1}`, rewrite only the connection destination, preserve the original Host header, and use a local `_NoRedirect(HTTPRedirectHandler)` whose `redirect_request` returns `None`.
 
-The opener must:
-1. parse the original hostname;
-2. reject absent/unmapped hostnames with `ExternalTargetAttempt("unmapped_target")` before calling any network API;
-3. require the mapped IP to be `127.0.0.1` or `::1`;
-4. rewrite the connection destination to the mapped loopback IP/port;
-5. preserve the original Host header;
-6. use an inner `build_opener(_NoRedirect())` where the test-only `_NoRedirect` subclass returns `None` from `redirect_request`.
-
-```python
-class _NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
-```
-
-No code path may call `socket.getaddrinfo()` for an unmapped rehearsal hostname.
-
-- [ ] **Step 5: Run fixture tests to verify GREEN**
+- [ ] **Step 4: Verify GREEN**
 
 Run:
 ```bash
 PYTHONPATH=backend:backend/tests pytest -q backend/tests/test_rehearsal_fixture.py
+ruff check backend/tests/rehearsal_fixture.py backend/tests/test_rehearsal_fixture.py
 ```
-Expected: all fixture tests PASS.
+Expected: all tests PASS and Ruff is clean.
 
-- [ ] **Step 6: Commit Task 2**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add backend/tests/rehearsal_fixture.py backend/tests/test_rehearsal_fixture.py
@@ -375,145 +319,69 @@ git commit -m "test(rehearsal): add loopback-only target fixture"
 
 ---
 
-### Task 3: Validator injection seam plus redirect/subdomain/429 rehearsal
+### Task 3: Validator injection seam and HTTP safety scenarios
 
 **Files:**
 - Modify: `backend/app/validator.py` in `safe_http_probe`
+- Create: `backend/tests/rehearsal_scenarios.py`
 - Create: `backend/tests/test_self_owned_rehearsal_http.py`
-- Modify: `backend/tests/test_validator.py` only if an existing assertion relies on the exact function signature; otherwise leave it untouched.
 
 **Interfaces:**
-- Produces changed signature:
-  - `safe_http_probe(campaign, finding, *, opener=None, sleep_fn=time.sleep) -> ProbeResult`
-- Consumes Task 2 `LocalRehearsalServer`, `MappedLoopbackOpener`.
-- Production call sites continue calling `safe_http_probe(campaign, finding)` unchanged.
+- Changes signature to `safe_http_probe(campaign, finding, *, opener=None, sleep_fn=time.sleep) -> ProbeResult`.
+- Produces test-only runners `run_redirect_scope_scenario(root, monkeypatch)`, `run_subdomain_scope_scenario(root, monkeypatch)`, and `run_http_429_scenario(root, monkeypatch)` returning `ScenarioResult`.
+- Production call sites keep using `safe_http_probe(campaign, finding)` unchanged.
 
-- [ ] **Step 1: Write failing injection and HTTP-safety tests**
+- [ ] **Step 1: Write failing scenario tests**
 
 ```python
 # backend/tests/test_self_owned_rehearsal_http.py
-from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput
-from app.validator import safe_http_probe
-from rehearsal_fixture import LocalRehearsalServer, MappedLoopbackOpener
+from rehearsal_scenarios import (
+    run_http_429_scenario,
+    run_redirect_scope_scenario,
+    run_subdomain_scope_scenario,
+)
 
 
-def _campaign(host: str = "allowed.rehearsal.test") -> Campaign:
-    return Campaign(
-        id="rehearsal-http",
-        state=CampaignState.validating,
-        target=TargetInput(
-            name="rehearsal",
-            primary_url=f"http://{host}",
-            rules=ProgramRules(
-                authorization_reference="self-owned-rehearsal",
-                allowed_targets=[host, "*.allowed.rehearsal.test"],
-                denied_targets=["denied.allowed.rehearsal.test"],
-                max_requests_per_second=20.0,
-            ),
-        ),
-    )
+def test_redirect_scope_scenario(tmp_path, monkeypatch):
+    result = run_redirect_scope_scenario(tmp_path, monkeypatch)
+    assert result.status == "pass"
+    assert result.reason == "redirects_observed_without_followup"
+    assert result.external_network_used is False
+    assert result.references.counters["requests_observed"] == 2
 
 
-def _finding(endpoint: str) -> Finding:
-    return Finding(
-        id="finding-http",
-        title="fixture",
-        severity="low",
-        asset="http://allowed.rehearsal.test",
-        endpoint=endpoint,
-        summary="fixture",
-        status="validation_required",
-        discovered_by="fixture-scanner",
-    )
+def test_subdomain_scope_scenario(tmp_path, monkeypatch):
+    result = run_subdomain_scope_scenario(tmp_path, monkeypatch)
+    assert result.status == "pass"
+    assert result.reason == "denied_host_blocked_before_transport"
+    assert result.references.counters["requests_observed"] == 1
 
 
-def test_in_scope_redirect_is_observed_but_not_followed(monkeypatch):
-    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
-    monkeypatch.delenv("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", raising=False)
-    with LocalRehearsalServer() as server:
-        opener = MappedLoopbackOpener({"allowed.rehearsal.test": ("127.0.0.1", server.port)})
-        result = safe_http_probe(
-            _campaign(),
-            _finding("http://allowed.rehearsal.test/redirect-in-scope"),
-            opener=opener,
-            sleep_fn=lambda _: None,
-        )
-        assert result.status == "observed"
-        assert result.http_status == 302
-        assert [item.path for item in server.requests] == ["/redirect-in-scope"]
-
-
-def test_out_of_scope_redirect_receives_zero_followup_requests(monkeypatch):
-    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
-    with LocalRehearsalServer() as server:
-        opener = MappedLoopbackOpener({"allowed.rehearsal.test": ("127.0.0.1", server.port)})
-        result = safe_http_probe(
-            _campaign(),
-            _finding("http://allowed.rehearsal.test/redirect-out-of-scope"),
-            opener=opener,
-            sleep_fn=lambda _: None,
-        )
-        assert result.http_status == 302
-        assert [item.path for item in server.requests] == ["/redirect-out-of-scope"]
-        assert opener.blocked_hosts == []
-
-
-def test_allowed_subdomain_maps_to_loopback_while_denied_subdomain_is_blocked_before_transport(monkeypatch):
-    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
-    campaign = _campaign()
-    with LocalRehearsalServer() as server:
-        opener = MappedLoopbackOpener({"api.allowed.rehearsal.test": ("127.0.0.1", server.port)})
-        allowed = safe_http_probe(
-            campaign,
-            _finding("http://api.allowed.rehearsal.test/ok"),
-            opener=opener,
-            sleep_fn=lambda _: None,
-        )
-        denied = safe_http_probe(
-            campaign,
-            _finding("http://denied.allowed.rehearsal.test/ok"),
-            opener=opener,
-            sleep_fn=lambda _: None,
-        )
-        assert allowed.http_status == 200
-        assert denied.status == "blocked"
-        assert len(server.requests) == 1
-
-
-def test_429_is_observed_once_without_new_retry_loop(monkeypatch):
-    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
-    monkeypatch.delenv("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", raising=False)
-    with LocalRehearsalServer() as server:
-        opener = MappedLoopbackOpener({"allowed.rehearsal.test": ("127.0.0.1", server.port)})
-        result = safe_http_probe(
-            _campaign(),
-            _finding("http://allowed.rehearsal.test/throttle"),
-            opener=opener,
-            sleep_fn=lambda _: None,
-        )
-        assert result.status == "observed"
-        assert result.http_status == 429
-        assert len(server.requests) == 1
+def test_http_429_scenario(tmp_path, monkeypatch):
+    result = run_http_429_scenario(tmp_path, monkeypatch)
+    assert result.status == "pass"
+    assert result.reason == "http_429_observed_once"
+    assert result.references.counters["requests_observed"] == 1
 ```
 
-- [ ] **Step 2: Run HTTP rehearsal tests to verify RED**
+- [ ] **Step 2: Verify RED**
 
 Run:
 ```bash
 PYTHONPATH=backend:backend/tests pytest -q backend/tests/test_self_owned_rehearsal_http.py
 ```
-Expected: FAIL with `TypeError` because `safe_http_probe` does not yet accept `opener` / `sleep_fn`.
+Expected: import failure because `rehearsal_scenarios.py` and its runners do not exist.
 
-- [ ] **Step 3: Add the narrow dependency seam without changing production defaults**
+- [ ] **Step 3: Add the narrow validator seam**
 
-Modify only the construction/use points in `safe_http_probe`:
+In `safe_http_probe`, replace only the opener/sleep construction points:
 
 ```python
 def safe_http_probe(campaign, finding, *, opener=None, sleep_fn=time.sleep) -> ProbeResult:
-    # existing gates and URL/scope validation stay unchanged
+    # existing gates/scope checks remain unchanged
     request_opener = opener if opener is not None else build_opener(_NoRedirect())
     baseline = _request_get(request_opener, url, timeout=timeout, max_bytes=max_bytes)
-    # existing redaction stays unchanged
+    # existing redaction remains unchanged
     if differential_enabled and marker_url is not None:
         sleep_fn(1.0 / campaign.target.rules.max_requests_per_second)
         marker_result = _request_get(
@@ -522,240 +390,173 @@ def safe_http_probe(campaign, finding, *, opener=None, sleep_fn=time.sleep) -> P
             timeout=timeout,
             max_bytes=max_bytes,
         )
-        # existing differential metadata stays unchanged
+        # existing differential comparison remains unchanged
 ```
 
-Do not add resolver hooks, redirect-following flags, retry flags, or production environment switches.
+Do not add redirect, retry, resolver, or network environment flags.
 
-- [ ] **Step 4: Run existing validator tests and new HTTP rehearsal tests**
+- [ ] **Step 4: Implement the three HTTP scenario runners**
+
+Use a campaign whose allowed hosts are `allowed.rehearsal.test` and `*.allowed.rehearsal.test`, with `denied.allowed.rehearsal.test` explicitly denied. Enable only `XBOW_ENABLE_HTTP_VALIDATION=true`; keep differential validation disabled for these scenarios.
+
+Runner invariants:
+- redirect runner performs one GET to `/redirect-in-scope` and one to `/redirect-out-of-scope`; both return observed `302`; exactly two fixture requests total; neither destination is followed;
+- subdomain runner maps `api.allowed.rehearsal.test` to loopback and receives `200`, then passes a denied hostname to `safe_http_probe` and gets `status="blocked"` before opener use; exactly one fixture request total;
+- `429` runner GETs `/throttle`, observes status `429`, performs exactly one request, and adds no retry.
+
+Return only stable reason codes and counters; never URLs/bodies in `ScenarioReferences`.
+
+- [ ] **Step 5: Verify GREEN plus existing validator regression**
 
 Run:
 ```bash
 PYTHONPATH=backend:backend/tests pytest -q \
   backend/tests/test_validator.py \
   backend/tests/test_self_owned_rehearsal_http.py
+ruff check backend/app/validator.py backend/tests/rehearsal_scenarios.py backend/tests/test_self_owned_rehearsal_http.py
 ```
-Expected: all selected tests PASS.
+Expected: all selected tests PASS and Ruff is clean.
 
-- [ ] **Step 5: Commit Task 3**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add backend/app/validator.py backend/tests/test_self_owned_rehearsal_http.py backend/tests/test_validator.py
+git add backend/app/validator.py backend/tests/rehearsal_scenarios.py backend/tests/test_self_owned_rehearsal_http.py
 git commit -m "test(rehearsal): exercise local HTTP safety invariants"
 ```
 
-If `backend/tests/test_validator.py` is unchanged, omit it from `git add`.
-
 ---
 
-### Task 4: Worker failure and expired-lease durability scenario
+### Task 4: Worker failure and lease-recovery scenario
 
 **Files:**
+- Modify: `backend/tests/rehearsal_scenarios.py`
 - Create: `backend/tests/test_self_owned_rehearsal_resilience.py`
-- No production file change expected.
 
 **Interfaces:**
-- Consumes existing `JobQueue.enqueue`, `claim`, `finish`, `recover_expired_leases`, and `worker_service.process_one`.
-- Produces test helper `_runtime(tmp_path) -> tuple[Campaign, Storage, JobQueue]` local to the test module.
+- Produces `run_worker_failure_scenario(root, monkeypatch) -> ScenarioResult`.
+- Consumes existing `JobQueue.enqueue`, `claim`, `recover_expired_leases`, `worker_service.process_one`, and `attach_job_provenance`.
 
-- [ ] **Step 1: Write a failing durability test that encodes the rehearsal invariant**
-
-Use a real queue row with `max_attempts=2`. Claim it, simulate worker disappearance by expiring its lease directly in the test database, call the public `recover_expired_leases()`, reclaim it, then force the production worker path to fail once. The assertions must prove no false success and bounded attempts.
+- [ ] **Step 1: Write the failing scenario test**
 
 ```python
-from datetime import datetime, timedelta, timezone
-
-from app.job_provenance import attach_job_provenance
-from app.worker_service import process_one
+# backend/tests/test_self_owned_rehearsal_resilience.py
+from rehearsal_scenarios import run_worker_failure_scenario
 
 
-def test_worker_failure_and_lease_recovery_never_fabricate_success(tmp_path, monkeypatch):
-    campaign, store, queue = _runtime(tmp_path)
-    payload = attach_job_provenance(
-        {"campaign_id": campaign.id, "platform": "generic"},
-        campaign,
-        job_kind="report",
-        action="report",
-    )
-    job = queue.enqueue(campaign.id, "report", payload, max_attempts=2, dedupe_key="rehearsal-worker-failure")
-    claimed = queue.claim("worker-crashed")
-    assert claimed is not None and claimed["id"] == job["id"]
-
-    expired = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
-    with queue.connect() as conn:
-        conn.execute("UPDATE jobs SET lease_expires_at=? WHERE id=?", (expired, job["id"]))
-
-    assert queue.recover_expired_leases() == 1
-    recovered = queue.get(job["id"])
-    assert recovered["status"] == "queued"
-    assert recovered["attempts"] == 1
-
-    def fail_report(job, store):
-        raise RuntimeError("injected-rehearsal-failure")
-
-    monkeypatch.setattr("app.worker_service.process_report", fail_report)
-    monkeypatch.setattr(
-        "app.worker_service.advance_campaign",
-        lambda campaign, queue, store: {"action": {"kind": "stop"}},
-    )
-    assert process_one(queue, store, "worker-retry") is True
-
-    final = queue.get(job["id"])
-    assert final["status"] == "failed"
-    assert final["attempts"] == 2
-    events = store.get_campaign(campaign.id)["events"]
-    assert not any(
-        event.get("type") == "worker_outcome"
-        and event.get("job_id") == job["id"]
-        and event.get("success") is True
-        for event in events
-    )
+def test_worker_failure_scenario_is_durable_and_bounded(tmp_path, monkeypatch):
+    result = run_worker_failure_scenario(tmp_path, monkeypatch)
+    assert result.status == "pass"
+    assert result.reason == "expired_lease_recovered_then_failed_at_attempt_limit"
+    assert result.references.counters == {
+        "attempts": 2,
+        "successful_outcomes": 0,
+    }
 ```
 
-The local `_runtime` must create a ready campaign with `example.test`, temp SQLite DB/artifact root, and persist it before returning.
-
-- [ ] **Step 2: Run the new durability test**
+- [ ] **Step 2: Verify RED**
 
 Run:
 ```bash
-PYTHONPATH=backend pytest -q backend/tests/test_self_owned_rehearsal_resilience.py::test_worker_failure_and_lease_recovery_never_fabricate_success
+PYTHONPATH=backend:backend/tests pytest -q \
+  backend/tests/test_self_owned_rehearsal_resilience.py::test_worker_failure_scenario_is_durable_and_bounded
 ```
-Expected before any fix: if the existing queue semantics already satisfy the invariant, PASS is acceptable because this task is primarily regression coverage. If it fails, the failure must identify an actual mismatch in existing lease/failure semantics before any production change is made.
+Expected: import error for the missing runner.
 
-- [ ] **Step 3: If RED exposed a real bug, implement only the minimal queue/worker correction**
+- [ ] **Step 3: Implement the runner using the existing queue semantics**
 
-Allowed production files if required:
-- `backend/app/jobqueue.py` only for incorrect expired-lease attempt/status transitions.
-- `backend/app/worker_service.py` only for incorrect worker-outcome recording.
+The runner must:
+1. create an isolated ready campaign, `Storage`, and `JobQueue` under `root`;
+2. enqueue a provenance-bound `report` job with `max_attempts=2`;
+3. claim it as `worker-crashed`;
+4. update only that test queue row's `lease_expires_at` to one hour in the past;
+5. call `queue.recover_expired_leases()` and assert it returns `1`;
+6. monkeypatch `worker_service.process_report` to raise `RuntimeError("injected-rehearsal-failure")` and `advance_campaign` to stop;
+7. call `process_one(queue, store, "worker-retry")`;
+8. verify final status `failed`, attempts `2`, and zero `worker_outcome` events with `success=True` for the job.
 
-Required invariant after any fix:
-```text
-expired lease with attempts < max_attempts -> queued
-next claim increments attempts
-failed second attempt at max_attempts -> failed
-no success worker_outcome event exists
-```
+The runner returns `pass` only when all invariants hold; otherwise return `fail` with one of these stable reasons: `lease_not_requeued`, `attempt_limit_mismatch`, `false_success_recorded`.
 
-Do not add a retry scheduler or change max-attempt defaults.
-
-- [ ] **Step 4: Run existing queue/watchdog tests plus the rehearsal durability test**
+- [ ] **Step 4: Verify queue/worker regressions**
 
 Run:
 ```bash
-PYTHONPATH=backend pytest -q \
+PYTHONPATH=backend:backend/tests pytest -q \
+  backend/tests/test_self_owned_rehearsal_resilience.py \
   backend/tests/test_jobqueue.py \
-  backend/tests/test_worker_watchdog.py \
-  backend/tests/test_self_owned_rehearsal_resilience.py
+  backend/tests/test_worker_watchdog.py
 ```
 Expected: all selected tests PASS.
 
-- [ ] **Step 5: Commit Task 4**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add backend/tests/test_self_owned_rehearsal_resilience.py backend/app/jobqueue.py backend/app/worker_service.py
+git add backend/tests/rehearsal_scenarios.py backend/tests/test_self_owned_rehearsal_resilience.py
 git commit -m "test(rehearsal): cover worker failure durability"
 ```
 
-Only stage production files if they actually changed.
-
 ---
 
-### Task 5: Crash-window outbox recovery without duplicate logical work
+### Task 5: Crash-window outbox recovery scenario
 
 **Files:**
+- Modify: `backend/tests/rehearsal_scenarios.py`
 - Modify: `backend/tests/test_self_owned_rehearsal_resilience.py`
-- No production change expected; use existing `outbox_recovery` / `main.reconcile_campaign_outbox_local` behavior.
 
 **Interfaces:**
-- Consumes `append_campaign_event`, `JobQueue.enqueue`, `get_by_dedupe`, and `main.reconcile_campaign_outbox_local`.
-- Produces no new application interface.
+- Produces `run_outbox_recovery_scenario(root, monkeypatch) -> ScenarioResult`.
+- Consumes `append_campaign_event`, `JobQueue.enqueue/get_by_dedupe`, and `main.reconcile_campaign_outbox_local`.
 
-- [ ] **Step 1: Add the crash-window scenario test**
+- [ ] **Step 1: Add the failing scenario test**
 
 ```python
-from app import main
-from app.campaign_audit import append_campaign_event
+from rehearsal_scenarios import run_outbox_recovery_scenario
 
 
-def test_crash_after_enqueue_reconciles_audit_without_duplicate_job(tmp_path, monkeypatch):
-    campaign, store, queue = _runtime(tmp_path, campaign_id="rehearsal-outbox", state="running")
-    request_id = "rehearsal-report-crash-window"
-    document, version = store.get_campaign_record(campaign.id)
-    interrupted = main.Campaign.model_validate(document)
-    append_campaign_event(
-        interrupted.events,
-        {
-            "type": "report_requested",
-            "request_id": request_id,
-            "platform": "generic",
-            "purpose": "manual",
-            "at": main.utcnow(),
-        },
-    )
-    store.save_campaign(interrupted.model_dump(mode="json"), expected_version=version)
-
-    existing = queue.enqueue(
-        campaign.id,
-        "report",
-        {"campaign_id": campaign.id, "platform": "generic"},
-        max_attempts=2,
-        dedupe_key=f"report:generic:{request_id}",
-    )
-    assert queue.stats()["total"] == 1
-
-    result = main.reconcile_campaign_outbox_local(campaign.id)
-
-    assert result["repaired"] == 1
-    assert result["remaining"] == []
-    assert result["automatic_job_creation"] is False
-    assert JobQueue(queue.db_path).stats()["total"] == 1
-    same = JobQueue(queue.db_path).get_by_dedupe(
-        campaign.id,
-        "report",
-        f"report:generic:{request_id}",
-    )
-    assert same["id"] == existing["id"]
+def test_outbox_crash_window_reconciles_without_duplicate_job(tmp_path, monkeypatch):
+    result = run_outbox_recovery_scenario(tmp_path, monkeypatch)
+    assert result.status == "pass"
+    assert result.reason == "audit_reconciled_without_job_recreation"
+    assert result.references.counters == {
+        "jobs_before": 1,
+        "jobs_after": 1,
+        "repaired_events": 1,
+    }
 ```
 
-Update `_runtime` to accept explicit `campaign_id` and state using real `CampaignState` values, not raw unvalidated campaign documents.
-
-- [ ] **Step 2: Run crash recovery tests**
+- [ ] **Step 2: Verify RED**
 
 Run:
 ```bash
-PYTHONPATH=backend pytest -q \
-  backend/tests/test_self_owned_rehearsal_resilience.py::test_crash_after_enqueue_reconciles_audit_without_duplicate_job \
-  backend/tests/test_outbox_chaos.py
+PYTHONPATH=backend:backend/tests pytest -q \
+  backend/tests/test_self_owned_rehearsal_resilience.py::test_outbox_crash_window_reconciles_without_duplicate_job
 ```
-Expected: all tests PASS with the existing local-repair behavior. If the new scenario is RED, diagnose whether the test diverges from the existing outbox contract before modifying production code.
+Expected: import error for the missing runner.
 
-- [ ] **Step 3: Add a negative assertion for missing jobs**
+- [ ] **Step 3: Implement the crash-window runner**
 
-Extend the scenario module with one assertion that an intent with no corresponding queue row stays `job_missing` and does not create work:
+Use the established `report_requested` / `report:generic:{request_id}` pattern from `backend/tests/test_outbox_chaos.py`:
+- persist `report_requested` intent;
+- enqueue exactly one `report` row with stable dedupe key;
+- instantiate/reuse the queue after the simulated process-memory loss;
+- call `main.reconcile_campaign_outbox_local(campaign.id)`;
+- verify `repaired == 1`, `remaining == []`, `automatic_job_creation is False`, queue total remains `1`, dedupe lookup returns the same job ID, and exactly one `report_queued` event exists with `reconciled_locally=True`.
 
-```python
-assert result["repaired"] == 0
-assert result["remaining"][0]["diagnosis"] == "job_missing"
-assert result["automatic_job_creation"] is False
-assert queue.stats()["total"] == 0
-```
+Also exercise the missing-job negative case inside the runner using a second isolated campaign: local reconciliation must report `job_missing`, repair `0`, and keep queue total `0`.
 
-This prevents a future implementation from turning rehearsal recovery into automatic job recreation.
-
-- [ ] **Step 4: Re-run resilience/outbox suite**
+- [ ] **Step 4: Verify outbox regressions**
 
 Run:
 ```bash
-PYTHONPATH=backend pytest -q \
+PYTHONPATH=backend:backend/tests pytest -q \
   backend/tests/test_self_owned_rehearsal_resilience.py \
   backend/tests/test_outbox_chaos.py
 ```
 Expected: all selected tests PASS.
 
-- [ ] **Step 5: Commit Task 5**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add backend/tests/test_self_owned_rehearsal_resilience.py
+git add backend/tests/rehearsal_scenarios.py backend/tests/test_self_owned_rehearsal_resilience.py
 git commit -m "test(rehearsal): prove crash-safe outbox recovery"
 ```
 
@@ -764,337 +565,261 @@ git commit -m "test(rehearsal): prove crash-safe outbox recovery"
 ### Task 6: Cancellation enforcement scenario
 
 **Files:**
+- Modify: `backend/tests/rehearsal_scenarios.py`
 - Create: `backend/tests/test_self_owned_rehearsal_controls.py`
-- No production change expected.
 
 **Interfaces:**
-- Consumes existing `main.cancel_campaign`, `JobQueue.cancel_queued`, and `worker_service.process_one` behavior.
-- Produces test helper `_configured_campaign(tmp_path, monkeypatch, *, campaign_id: str) -> tuple[Campaign, Storage, JobQueue]`.
+- Produces `run_cancellation_scenario(root, monkeypatch) -> ScenarioResult`.
+- Consumes existing `main.cancel_campaign`, queue status counts, and cancellation guards.
 
-- [ ] **Step 1: Write cancellation rehearsal test**
-
-```python
-from app.job_provenance import attach_job_provenance
-from app.main import CampaignState, cancel_campaign
-from app.worker_service import process_one
-
-
-def test_cancellation_cancels_queued_work_and_blocks_new_worker_execution(tmp_path, monkeypatch):
-    campaign, store, queue = _configured_campaign(tmp_path, monkeypatch, campaign_id="rehearsal-cancel")
-    queued = queue.enqueue(
-        campaign.id,
-        "report",
-        attach_job_provenance(
-            {"campaign_id": campaign.id, "platform": "generic"},
-            campaign,
-            job_kind="report",
-            action="report",
-        ),
-        max_attempts=2,
-        dedupe_key="rehearsal-cancel-queued",
-    )
-    running = queue.enqueue(
-        campaign.id,
-        "report",
-        attach_job_provenance(
-            {"campaign_id": campaign.id, "platform": "generic"},
-            campaign,
-            job_kind="report",
-            action="report",
-        ),
-        max_attempts=2,
-        dedupe_key="rehearsal-cancel-running",
-    )
-    claimed = queue.claim("running-worker")
-    assert claimed is not None
-
-    result = cancel_campaign(campaign.id)
-
-    assert result["state"] == CampaignState.cancelled
-    assert result["cancelled_queued_jobs"] == 1
-    assert result["running_jobs"] == 1
-    assert result["running_jobs_not_forcibly_terminated"] is True
-    assert queue.get(queued["id"])["status"] == "cancelled"
-    assert queue.get(running["id"])["status"] == "running"
-```
-
-Ensure enqueue order makes the first claimed row the intended `running` job; if necessary enqueue `running` first, claim it, then enqueue `queued`, matching the established test pattern in `test_campaign_cancel.py`.
-
-- [ ] **Step 2: Add post-cancellation admission/worker assertions**
-
-Continue the same test or a second focused test:
+- [ ] **Step 1: Write the failing cancellation test**
 
 ```python
-from fastapi import HTTPException
-from app.main import queue_report
+# backend/tests/test_self_owned_rehearsal_controls.py
+from rehearsal_scenarios import run_cancellation_scenario
 
-with pytest.raises(HTTPException) as exc:
-    queue_report(campaign.id)
-assert exc.value.status_code == 409
-assert "cancelled" in str(exc.value.detail).lower()
+
+def test_cancellation_scenario_blocks_new_work_and_reports_running_truthfully(tmp_path, monkeypatch):
+    result = run_cancellation_scenario(tmp_path, monkeypatch)
+    assert result.status == "pass"
+    assert result.reason == "queued_cancelled_running_reported_new_work_blocked"
+    assert result.references.counters == {
+        "queued_cancelled": 1,
+        "running_jobs": 1,
+        "post_cancel_admissions": 0,
+    }
 ```
 
-For a previously claimed job that is returned to queued state only to exercise `process_one`, assert the worker cancels it rather than executing report logic, following the existing `test_running_job_becomes_cancelled_when_worker_observes_cancelled_campaign` pattern.
-
-- [ ] **Step 3: Run cancellation regression set**
+- [ ] **Step 2: Verify RED**
 
 Run:
 ```bash
-PYTHONPATH=backend pytest -q \
+PYTHONPATH=backend:backend/tests pytest -q \
+  backend/tests/test_self_owned_rehearsal_controls.py::test_cancellation_scenario_blocks_new_work_and_reports_running_truthfully
+```
+Expected: import error for the missing runner.
+
+- [ ] **Step 3: Implement the cancellation runner**
+
+Match the existing proven sequence in `test_campaign_cancel.py`:
+1. configure `XBOW_DB_PATH` / `XBOW_ARTIFACT_ROOT` to the isolated root;
+2. persist a running campaign;
+3. enqueue a provenance-bound `report` job, claim it as the running job;
+4. enqueue a second governed queued job;
+5. call `main.cancel_campaign(campaign.id)`;
+6. verify campaign state `cancelled`, `cancelled_queued_jobs == 1`, `running_jobs == 1`, and `running_jobs_not_forcibly_terminated is True`;
+7. verify queued row `cancelled`, claimed row still `running`;
+8. call `main.queue_report(campaign.id)` and require HTTP 409 containing `cancelled`;
+9. set `post_cancel_admissions` to zero because no new queue row was created.
+
+Never terminate the running job from the cancellation endpoint.
+
+- [ ] **Step 4: Verify cancellation regressions**
+
+Run:
+```bash
+PYTHONPATH=backend:backend/tests pytest -q \
   backend/tests/test_self_owned_rehearsal_controls.py \
   backend/tests/test_campaign_cancel.py
 ```
 Expected: all selected tests PASS.
 
-- [ ] **Step 4: Commit Task 6**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add backend/tests/test_self_owned_rehearsal_controls.py
+git add backend/tests/rehearsal_scenarios.py backend/tests/test_self_owned_rehearsal_controls.py
 git commit -m "test(rehearsal): prove cancellation enforcement"
 ```
 
 ---
 
-### Task 7: Policy/scope drift must fail before execution
+### Task 7: Policy drift must block stale work before dispatch
 
 **Files:**
+- Modify: `backend/tests/rehearsal_scenarios.py`
 - Modify: `backend/tests/test_self_owned_rehearsal_controls.py`
-- No production change expected unless the rehearsal exposes a provenance regression.
 
 **Interfaces:**
-- Consumes `attach_job_provenance`, `worker_service.process_one`, and the existing policy fingerprint verification.
-- Produces no new application interface.
+- Produces `run_policy_drift_scenario(root, monkeypatch) -> ScenarioResult` for mandatory scenario name `scope_drift_blocks_execution`.
+- Consumes `attach_job_provenance` and `worker_service.process_one`.
 
-- [ ] **Step 1: Write the fail-before-dispatch test**
-
-Use a report job because it is governed by provenance and has a safe stub-able processor. The key invariant is that the processor spy remains uncalled after campaign policy drift.
+- [ ] **Step 1: Add the failing policy-drift test**
 
 ```python
-from app import worker_service
-from app.job_provenance import attach_job_provenance
+from rehearsal_scenarios import run_policy_drift_scenario
 
 
-def test_scope_or_policy_drift_rejects_stale_job_before_dispatch(tmp_path, monkeypatch):
-    campaign, store, queue = _configured_campaign(tmp_path, monkeypatch, campaign_id="rehearsal-drift")
-    payload = attach_job_provenance(
-        {"campaign_id": campaign.id, "platform": "generic"},
-        campaign,
-        job_kind="report",
-        action="report",
-    )
-    job = queue.enqueue(campaign.id, "report", payload, max_attempts=1, dedupe_key="rehearsal-drift")
-
-    raw, version = store.get_campaign_record(campaign.id)
-    current = worker_service.Campaign.model_validate(raw)
-    current.target.rules.allowed_targets = ["changed.rehearsal.test"]
-    store.save_campaign(current.model_dump(mode="json"), expected_version=version)
-
-    dispatched = []
-    monkeypatch.setattr(worker_service, "process_report", lambda job, store: dispatched.append(job["id"]))
-    monkeypatch.setattr(
-        worker_service,
-        "advance_campaign",
-        lambda campaign, queue, store: {"action": {"kind": "stop"}},
-    )
-
-    assert worker_service.process_one(queue, store, "worker-drift") is True
-    final = queue.get(job["id"])
-    assert final["status"] == "failed"
-    assert "policy_fingerprint_mismatch" in (final["last_error"] or "")
-    assert dispatched == []
+def test_policy_drift_blocks_stale_job_before_processor_dispatch(tmp_path, monkeypatch):
+    result = run_policy_drift_scenario(tmp_path, monkeypatch)
+    assert result.name == "scope_drift_blocks_execution"
+    assert result.status == "pass"
+    assert result.reason == "policy_fingerprint_mismatch_before_dispatch"
+    assert result.references.counters == {"processor_calls": 0}
 ```
 
-If replacing `allowed_targets` makes the stored campaign invalid because its primary URL is no longer allowed, mutate `max_requests_per_second` from `2.0` to `3.0` in this test and add a separate pure `is_host_allowed` assertion for scope drift. Do not weaken model validation solely for the rehearsal.
-
-- [ ] **Step 2: Run provenance tests to verify behavior**
+- [ ] **Step 2: Verify RED**
 
 Run:
 ```bash
-PYTHONPATH=backend pytest -q \
-  backend/tests/test_self_owned_rehearsal_controls.py::test_scope_or_policy_drift_rejects_stale_job_before_dispatch \
+PYTHONPATH=backend:backend/tests pytest -q \
+  backend/tests/test_self_owned_rehearsal_controls.py::test_policy_drift_blocks_stale_job_before_processor_dispatch
+```
+Expected: import error for the missing runner.
+
+- [ ] **Step 3: Implement a model-valid policy drift and processor spy**
+
+The runner must:
+1. persist a ready campaign with `max_requests_per_second=2.0`;
+2. create a provenance-bound `report` job from that snapshot with `max_attempts=1`;
+3. reload the campaign and change only `target.rules.max_requests_per_second` to `3.0`, then save with the expected version;
+4. monkeypatch `worker_service.process_report` to append to a local `processor_calls` list, and `advance_campaign` to stop;
+5. call `worker_service.process_one(queue, store, "worker-drift")`;
+6. verify the job becomes `failed`, `last_error` contains `policy_fingerprint_mismatch`, and `processor_calls` remains empty.
+
+This is the execution-side drift proof. The subdomain scenario from Task 3 independently proves scope allow/deny enforcement; do not persist an invalid campaign whose primary target is outside its own allowed scope.
+
+- [ ] **Step 4: Verify provenance regressions**
+
+Run:
+```bash
+PYTHONPATH=backend:backend/tests pytest -q \
+  backend/tests/test_self_owned_rehearsal_controls.py \
   backend/tests/test_worker_job_provenance.py \
   backend/tests/test_job_provenance_integration.py
 ```
-Expected: all selected tests PASS; processor spy remains empty.
+Expected: all selected tests PASS and the processor spy remains unused.
 
-- [ ] **Step 3: If RED exposes a provenance ordering regression, fix verification ordering only**
-
-Permitted minimal correction in `backend/app/worker_service.py`:
-
-```python
-job = _claim_for_role(queue, worker_id)
-if not job:
-    return False
-try:
-    _verify_policy_bound_job(job, store)  # must remain before any process_* dispatch
-    with _lease_heartbeat(...):
-        ...
-```
-
-Do not move verification into individual processors and do not permit stale jobs conditionally.
-
-- [ ] **Step 4: Commit Task 7**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add backend/tests/test_self_owned_rehearsal_controls.py backend/app/worker_service.py
+git add backend/tests/rehearsal_scenarios.py backend/tests/test_self_owned_rehearsal_controls.py
 git commit -m "test(rehearsal): prove stale provenance blocks dispatch"
 ```
 
-Only stage `worker_service.py` if it changed.
-
 ---
 
-### Task 8: Sentinel-secret confinement across persisted/public surfaces
+### Task 8: Sentinel-secret confinement scenario
 
 **Files:**
+- Modify: `backend/tests/rehearsal_scenarios.py`
 - Modify: `backend/tests/test_self_owned_rehearsal_controls.py`
-- Reuse: `backend/app/self_owned_rehearsal.py::contains_raw_value`
-- No production change expected unless a real leak is discovered.
 
 **Interfaces:**
-- Consumes existing `secret_vault.set_secret`, `Storage` campaign/observation/artifact APIs, and queue payload inspection.
-- Produces no new application interface.
+- Produces `run_secret_confinement_scenario(root, monkeypatch) -> ScenarioResult`.
+- Consumes `secret_vault.set_secret`, `Storage.put/list/read` APIs, `JobQueue`, and `contains_raw_value`.
 
-- [ ] **Step 1: Add vault configuration helper and secret-confinement test**
-
-```python
-import base64
-
-from app.secret_vault import set_secret
-from app.self_owned_rehearsal import contains_raw_value
-
-
-def _configure_vault(monkeypatch, tmp_path):
-    monkeypatch.setenv("XBOW_VAULT_ENABLED", "true")
-    monkeypatch.setenv(
-        "XBOW_VAULT_MASTER_KEY",
-        base64.urlsafe_b64encode(b"r" * 32).decode("ascii"),
-    )
-    monkeypatch.setenv("XBOW_VAULT_PATH", str(tmp_path / "rehearsal-vault.json"))
-
-
-def test_secret_sentinel_never_escapes_vault_into_public_or_persisted_surfaces(tmp_path, monkeypatch):
-    marker = "REHEARSAL-SENTINEL-7c44f1"
-    _configure_vault(monkeypatch, tmp_path)
-    set_secret("llm_api_key", marker)
-    campaign, store, queue = _configured_campaign(tmp_path, monkeypatch, campaign_id="rehearsal-secret")
-
-    observation = store.put_observation(
-        campaign.id,
-        {
-            "id": "secret-check-observation",
-            "kind": "evidence",
-            "value": "redacted",
-            "source": "self-owned-rehearsal",
-            "metadata": {"secret_present": False},
-        },
-    )
-    artifact = store.put_artifact(
-        campaign.id,
-        "validation",
-        b'{"secret":"[redacted]"}',
-        media_type="application/json",
-        idempotency_key="rehearsal-secret-artifact",
-    )
-    job = queue.enqueue(
-        campaign.id,
-        "report",
-        {"campaign_id": campaign.id, "platform": "generic"},
-        max_attempts=1,
-        dedupe_key="rehearsal-secret-job",
-    )
-
-    public_surfaces = [
-        store.get_campaign(campaign.id),
-        store.list_observations(campaign.id),
-        observation,
-        artifact,
-        store.read_artifact(artifact["id"]),
-        queue.get(job["id"]),
-    ]
-    assert contains_raw_value(marker, public_surfaces) is False
-```
-
-Use the actual `Storage.read_artifact` signature from `storage.py`. If it accepts `(campaign_id, artifact_id)` rather than one ID, call it with that exact signature; do not bypass storage integrity checks by opening artifact files directly.
-
-- [ ] **Step 2: Add a positive-control assertion for the checker**
+- [ ] **Step 1: Add the failing secret-confinement test**
 
 ```python
-assert contains_raw_value(marker, [{"accidental": marker}]) is True
+from rehearsal_scenarios import run_secret_confinement_scenario
+
+
+def test_secret_sentinel_is_confined_to_vault(tmp_path, monkeypatch):
+    result = run_secret_confinement_scenario(tmp_path, monkeypatch)
+    assert result.status == "pass"
+    assert result.reason == "raw_sentinel_absent_from_public_surfaces"
+    assert result.contains_secrets is False
+    assert result.references.counters["checked_surfaces"] >= 6
 ```
 
-This proves the scenario would fail if a raw secret actually appeared.
-
-- [ ] **Step 3: Run secret/vault regressions**
+- [ ] **Step 2: Verify RED**
 
 Run:
 ```bash
-PYTHONPATH=backend pytest -q \
+PYTHONPATH=backend:backend/tests pytest -q \
+  backend/tests/test_self_owned_rehearsal_controls.py::test_secret_sentinel_is_confined_to_vault
+```
+Expected: import error for the missing runner.
+
+- [ ] **Step 3: Implement vault setup and exact persistence-surface inspection**
+
+Configure the test vault exactly as existing vault tests do:
+
+```python
+monkeypatch.setenv("XBOW_VAULT_ENABLED", "true")
+monkeypatch.setenv(
+    "XBOW_VAULT_MASTER_KEY",
+    base64.urlsafe_b64encode(b"r" * 32).decode("ascii"),
+)
+monkeypatch.setenv("XBOW_VAULT_PATH", str(root / "rehearsal-vault.json"))
+marker = "REHEARSAL-SENTINEL-7c44f1"
+set_secret("llm_api_key", marker)
+```
+
+Persist only redacted non-secret data into the campaign, one `evidence` observation, one `validation` artifact, and one non-secret queued report payload. Read the artifact through integrity-checking storage API:
+
+```python
+artifact = store.put_artifact(
+    campaign.id,
+    "validation",
+    b'{"secret":"[redacted]"}',
+    media_type="application/json",
+    idempotency_key="rehearsal-secret-artifact",
+)
+artifact_metadata, artifact_content = store.read_artifact(campaign.id, artifact["id"])
+public_surfaces = [
+    store.get_campaign(campaign.id),
+    store.list_observations(campaign.id),
+    store.list_artifacts(campaign.id),
+    artifact_metadata,
+    artifact_content,
+    queue.get(job["id"]),
+]
+leaked = contains_raw_value(marker, public_surfaces)
+```
+
+Add a positive control inside the runner/test path: `contains_raw_value(marker, [{"accidental": marker}])` must be true. Never inspect or include the vault file itself in public surfaces; the vault is the approved secret boundary.
+
+- [ ] **Step 4: Verify vault/secret regressions**
+
+Run:
+```bash
+PYTHONPATH=backend:backend/tests pytest -q \
   backend/tests/test_self_owned_rehearsal_controls.py \
   backend/tests/test_worker_secrets.py \
   backend/tests/test_secret_vault.py
 ```
 Expected: all selected tests PASS.
 
-- [ ] **Step 4: If a leak is found, fix the producing boundary rather than weakening the checker**
-
-Allowed fix locations depend on the proven leak source:
-- validation artifact leak -> `backend/app/validator.py` / validation persistence path;
-- observation metadata leak -> `backend/app/observation_writer.py`;
-- worker event leak -> `backend/app/worker_audit.py` / `worker_service.py`;
-- queue payload leak -> payload construction call site.
-
-The fix must replace/drop the secret before persistence. Do not merely omit that surface from the rehearsal.
-
-- [ ] **Step 5: Commit Task 8**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add backend/tests/test_self_owned_rehearsal_controls.py backend/app/validator.py backend/app/observation_writer.py backend/app/worker_audit.py backend/app/worker_service.py
+git add backend/tests/rehearsal_scenarios.py backend/tests/test_self_owned_rehearsal_controls.py
 git commit -m "test(rehearsal): enforce sentinel secret confinement"
 ```
 
-Only stage files that actually changed.
-
 ---
 
-### Task 9: Aggregate all eight scenarios into one deterministic rehearsal report
+### Task 9: Aggregate all eight scenarios and prove determinism
 
 **Files:**
+- Modify: `backend/tests/rehearsal_scenarios.py`
 - Modify: `backend/tests/test_self_owned_rehearsal.py`
-- Modify: `backend/app/self_owned_rehearsal.py` only for small reference/counter helpers proven necessary by the aggregate test.
-- Reuse scenario helper functions from the three rehearsal integration test modules; if importing tests across modules becomes brittle, move only shared scenario builders into `backend/tests/rehearsal_scenarios.py` and keep assertions in the test files.
 
 **Interfaces:**
-- Consumes Task 1 `run_rehearsal` and all eight scenario runners.
-- Produces one aggregate CI test `test_full_self_owned_rehearsal_report_passes_all_mandatory_scenarios`.
+- Produces `build_rehearsal_scenarios(root_factory, monkeypatch) -> dict[str, Callable[[], ScenarioResult]]`.
+- Consumes all eight runners and Task 1 `run_rehearsal`.
 
-- [ ] **Step 1: Refactor each integration scenario into a callable returning `ScenarioResult` while keeping its direct test**
-
-Each runner must return only stable codes/IDs/counters. Example shape:
+- [ ] **Step 1: Write the failing aggregate test**
 
 ```python
-return ScenarioResult(
-    name="http_429_bounded",
-    status="pass" if result.http_status == 429 and len(server.requests) == 1 else "fail",
-    reason="http_429_observed_once" if len(server.requests) == 1 else "http_429_request_count_mismatch",
-    references=ScenarioReferences(
-        campaign_id=campaign.id,
-        counters={"requests_observed": len(server.requests)},
-    ),
-    external_network_used=bool(opener.blocked_hosts),
-)
-```
+from pathlib import Path
 
-Do not put URLs, response bodies, exception text, policy receipts, or secrets in `reason`/references.
-
-- [ ] **Step 2: Add the aggregate report test**
-
-```python
 from app.self_owned_rehearsal import MANDATORY_SCENARIOS, run_rehearsal
+from rehearsal_scenarios import build_rehearsal_scenarios
 
 
-def test_full_self_owned_rehearsal_report_passes_all_mandatory_scenarios(rehearsal_scenarios):
-    report = run_rehearsal(rehearsal_scenarios)
+def test_full_self_owned_rehearsal_passes_all_mandatory_scenarios(tmp_path, monkeypatch):
+    counter = 0
+
+    def make_root(name: str) -> Path:
+        nonlocal counter
+        counter += 1
+        root = tmp_path / f"{counter:02d}-{name}"
+        root.mkdir()
+        return root
+
+    report = run_rehearsal(build_rehearsal_scenarios(make_root, monkeypatch))
     assert report.status == "pass"
     assert [item.name for item in report.scenarios] == list(MANDATORY_SCENARIOS)
     assert all(item.status == "pass" for item in report.scenarios)
@@ -1102,23 +827,60 @@ def test_full_self_owned_rehearsal_report_passes_all_mandatory_scenarios(rehears
     assert report.contains_secrets is False
 ```
 
-Implement `rehearsal_scenarios` as a pytest fixture in `backend/tests/conftest.py` only if it can be built without hidden global state. Otherwise construct the mapping explicitly in this test using factory functions from `rehearsal_scenarios.py`.
+- [ ] **Step 2: Verify RED**
 
-- [ ] **Step 3: Add deterministic repeated-run assertion**
+Run:
+```bash
+PYTHONPATH=backend:backend/tests pytest -q \
+  backend/tests/test_self_owned_rehearsal.py::test_full_self_owned_rehearsal_passes_all_mandatory_scenarios
+```
+Expected: import error for missing `build_rehearsal_scenarios`.
 
-Run the scenario set twice with fresh temporary runtime factories and compare only semantic fields, not generated UUIDs:
+- [ ] **Step 3: Implement the exact mandatory mapping**
 
 ```python
-first = run_rehearsal(build_scenarios("run-a"))
-second = run_rehearsal(build_scenarios("run-b"))
+def build_rehearsal_scenarios(root_factory, monkeypatch):
+    return {
+        "redirect_scope_enforcement": lambda: run_redirect_scope_scenario(
+            root_factory("redirect"), monkeypatch
+        ),
+        "subdomain_scope_enforcement": lambda: run_subdomain_scope_scenario(
+            root_factory("subdomain"), monkeypatch
+        ),
+        "http_429_bounded": lambda: run_http_429_scenario(
+            root_factory("429"), monkeypatch
+        ),
+        "worker_failure_durability": lambda: run_worker_failure_scenario(
+            root_factory("worker-failure"), monkeypatch
+        ),
+        "crash_window_outbox_recovery": lambda: run_outbox_recovery_scenario(
+            root_factory("outbox"), monkeypatch
+        ),
+        "cancellation_enforcement": lambda: run_cancellation_scenario(
+            root_factory("cancel"), monkeypatch
+        ),
+        "secret_sentinel_confinement": lambda: run_secret_confinement_scenario(
+            root_factory("secret"), monkeypatch
+        ),
+        "scope_drift_blocks_execution": lambda: run_policy_drift_scenario(
+            root_factory("drift"), monkeypatch
+        ),
+    }
+```
+
+- [ ] **Step 4: Add a repeated-run semantic determinism test**
+
+Build two fresh mappings with separate roots and compare only `(name, status, reason)` tuples, never generated campaign/job IDs:
+
+```python
+first = run_rehearsal(build_rehearsal_scenarios(make_root_a, monkeypatch))
+second = run_rehearsal(build_rehearsal_scenarios(make_root_b, monkeypatch))
 assert [(x.name, x.status, x.reason) for x in first.scenarios] == [
     (x.name, x.status, x.reason) for x in second.scenarios
 ]
 ```
 
-This guards against wall-clock/random-order instability while allowing campaign/job IDs to differ.
-
-- [ ] **Step 4: Run all rehearsal tests**
+- [ ] **Step 5: Verify all rehearsal tests**
 
 Run:
 ```bash
@@ -1129,49 +891,42 @@ PYTHONPATH=backend:backend/tests pytest -q \
   backend/tests/test_self_owned_rehearsal_resilience.py \
   backend/tests/test_self_owned_rehearsal_controls.py
 ```
-Expected: all rehearsal tests PASS, aggregate report status `pass`, external network false, contains secrets false.
+Expected: all rehearsal tests PASS; aggregate report has `status="pass"`, `external_network_used=False`, `contains_secrets=False`.
 
-- [ ] **Step 5: Commit Task 9**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add backend/app/self_owned_rehearsal.py backend/tests/test_self_owned_rehearsal.py backend/tests/test_self_owned_rehearsal_http.py backend/tests/test_self_owned_rehearsal_resilience.py backend/tests/test_self_owned_rehearsal_controls.py backend/tests/rehearsal_scenarios.py backend/tests/conftest.py
-git commit -m "test(rehearsal): aggregate self-owned campaign safety scenarios"
+git add backend/tests/rehearsal_scenarios.py backend/tests/test_self_owned_rehearsal.py
+git commit -m "test(rehearsal): aggregate self-owned safety scenarios"
 ```
-
-Stage `rehearsal_scenarios.py` / `conftest.py` only if created or modified.
 
 ---
 
-### Task 10: Full regression, security, and CI verification
+### Task 10: Full verification and merge gate
 
 **Files:**
-- No feature file change expected.
-- Modify `.github/workflows/ci.yml` only if pytest discovery proves the rehearsal files are not executed by the current existing command; they should already be discovered.
+- No feature file changes expected.
 
 **Interfaces:**
-- Consumes the complete implementation.
-- Produces verification evidence for PR review/merge.
+- Produces final PR evidence only.
 
-- [ ] **Step 1: Run compile and lint exactly as CI does**
+- [ ] **Step 1: Run compile/lint exactly as CI does**
 
-Run:
 ```bash
 python -m compileall -q backend/app backend/tests
 ruff check backend/app backend/tests
 ```
-Expected: compile exits 0 and Ruff prints `All checks passed!`.
+Expected: exit 0; Ruff reports `All checks passed!`.
 
-- [ ] **Step 2: Run the complete backend test suite with strict settings**
+- [ ] **Step 2: Run the complete backend test suite with the repository's strict settings**
 
-Run:
 ```bash
 PYTHONPATH=backend pytest -q --strict-config --strict-markers backend/tests
 ```
-Expected: all existing and new tests PASS. No rehearsal test may require public Internet access.
+Expected: all existing and new tests PASS; rehearsal tests require no public Internet target access.
 
-- [ ] **Step 3: Run package/readiness checks**
+- [ ] **Step 3: Run package/readiness/audit gates**
 
-Run:
 ```bash
 python -m pip check
 PYTHONPATH=backend \
@@ -1180,11 +935,10 @@ XBOW_ARTIFACT_ROOT=/tmp/xbow-rehearsal-readiness-artifacts \
 python -m app.readiness
 pip-audit -r backend/requirements.txt
 ```
-Expected: no broken requirements; readiness exits 0; dependency audit reports no known vulnerable installed requirements according to the repository's existing gate.
+Expected: no broken requirements; readiness exits 0; dependency audit meets the repository's existing zero-known-vulnerability gate.
 
-- [ ] **Step 4: Verify Docker/config build gates using existing CI commands**
+- [ ] **Step 4: Run config/frontend syntax gates from CI**
 
-Run:
 ```bash
 node --check frontend/app.js
 node --check frontend/sw.js
@@ -1199,40 +953,25 @@ docker compose -f docker-compose.yml -f docker-compose.tls.yml config --quiet
 ```
 Expected: every command exits 0.
 
-- [ ] **Step 5: Inspect the final diff for forbidden capability expansion**
+- [ ] **Step 5: Review final diff for forbidden capability expansion**
 
-Run:
 ```bash
 git diff main...HEAD -- backend/app backend/tests .github/workflows
 ```
-Reviewer checklist:
-- no new production endpoint for rehearsal;
-- no scanner/PentAGI/browser activation;
-- no new payload/fuzz/exploit logic;
-- no redirect-following enablement;
-- no generic retry loop for 429;
-- no public DNS fallback in rehearsal fixture;
-- provenance verification still precedes worker dispatch;
-- raw secret values are not included in report/event additions.
-
-- [ ] **Step 6: Commit any verification-only cleanup**
-
-If formatting/import cleanup was needed:
-```bash
-git add backend/app backend/tests .github/workflows/ci.yml
-git commit -m "chore(rehearsal): finalize CI verification"
-```
-If no files changed, do not create an empty commit.
-
-- [ ] **Step 7: Open/update PR and require all repository workflows green before merge**
-
-PR summary must state:
-- rehearsal is loopback/in-memory only;
-- eight scenarios covered;
-- no new offensive execution capability;
+Required review findings:
 - no production rehearsal endpoint;
-- validator production defaults unchanged;
-- exact pytest count from the final CI run;
-- security and supply-chain workflow status.
+- no scanner/PentAGI/browser activation;
+- no exploit/fuzz/payload feature;
+- no redirect-following enablement;
+- no `429` retry loop;
+- no public-DNS fallback in rehearsal fixture;
+- worker provenance verification still occurs before `process_*` dispatch;
+- no raw secret values added to persisted/public outputs.
 
-Merge only after CI, security, and supply-chain are green on the exact final head SHA, then verify the corresponding `main` workflows on the merge SHA before declaring completion.
+- [ ] **Step 6: Open/update the PR and verify exact-head workflows**
+
+The PR description records: loopback/in-memory only, eight scenarios, no new offensive capability, production validator defaults unchanged, exact final pytest count, and security/supply-chain results. Require CI, security, and supply-chain green on the exact final head SHA before merge.
+
+- [ ] **Step 7: Merge and verify `main` on the exact merge SHA**
+
+After merge, verify CI, security, and supply-chain runs attached to the merge SHA. Do not declare completion from PR-head evidence alone.
