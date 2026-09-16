@@ -1,13 +1,16 @@
 import pytest
-from fastapi import HTTPException
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from app.hackerone_api import (
     HackerOneProgramPolicyInput,
     HackerOneRulesPreviewInput,
     preview_hackerone_rules,
+    router as hackerone_router,
 )
 from app.main import HackerOneScopePreviewInput, app, preview_hackerone_scope
+from app.storage import Storage
 
 
 def _resource(identifier: str, asset_type: str, eligible: bool):
@@ -226,3 +229,113 @@ def test_hackerone_rules_preview_route_is_in_authenticated_api_namespace():
 
     assert "/api/imports/hackerone/rules-preview" in schema["paths"]
     assert "post" in schema["paths"]["/api/imports/hackerone/rules-preview"]
+
+
+def test_hackerone_conservative_campaign_admission_route_exists():
+    schema = app.openapi()
+
+    assert "/api/imports/hackerone/campaigns" in schema["paths"]
+    assert "post" in schema["paths"]["/api/imports/hackerone/campaigns"]
+
+
+def test_hackerone_conservative_admission_persists_policy_binding(tmp_path, monkeypatch):
+    db = str(tmp_path / "hackerone.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    api = FastAPI()
+    api.include_router(hackerone_router)
+    client = TestClient(api)
+    response = client.post(
+        "/api/imports/hackerone/campaigns",
+        json={
+            "document": {"data": [_resource("example.com", "Domain", True)]},
+            "policy": _policy_values(
+                automated_scanning=True,
+                additional_restrictions=[],
+            ),
+            "target": {
+                "name": "HackerOne fixture",
+                "primary_url": "https://example.com",
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["provider"] == "hackerone"
+    assert result["campaign_created"] is True
+    assert result["campaign"]["state"] == "ready"
+    assert len(result["policy_binding"]["policy_snapshot_sha256"]) == 64
+    assert len(result["policy_binding"]["binding_fingerprint"]) == 64
+
+    persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
+    assert persisted is not None
+    bound = [event for event in persisted["events"] if event.get("type") == "hackerone_policy_bound"]
+    assert len(bound) == 1
+    assert bound[0]["provider"] == "hackerone"
+    assert bound[0]["mode"] == "conservative"
+    assert bound[0]["policy_snapshot_sha256"] == result["policy_binding"]["policy_snapshot_sha256"]
+    assert bound[0]["binding_fingerprint"] == result["policy_binding"]["binding_fingerprint"]
+
+
+@pytest.mark.parametrize(
+    ("policy_overrides", "reason"),
+    [
+        ({"safe_harbor_confirmed": False}, "safe_harbor_required"),
+        ({"automated_scanning": False}, "automated_scanning_not_authorized"),
+        (
+            {
+                "test_account_required": True,
+                "test_account_constraints": "Use program-issued account only",
+            },
+            "test_account_workflow_not_supported",
+        ),
+        (
+            {"test_account_constraints": "Use a dedicated tenant"},
+            "test_account_constraints_not_supported",
+        ),
+        (
+            {"additional_restrictions": ["Do not access customer records"]},
+            "additional_restrictions_require_manual_enforcement",
+        ),
+    ],
+)
+def test_hackerone_conservative_admission_blocks_nontrivial_policy(
+    tmp_path,
+    monkeypatch,
+    policy_overrides,
+    reason,
+):
+    db = str(tmp_path / "blocked.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    api = FastAPI()
+    api.include_router(hackerone_router)
+    client = TestClient(api)
+    admission_policy = {
+        "automated_scanning": True,
+        "additional_restrictions": [],
+    }
+    admission_policy.update(policy_overrides)
+    response = client.post(
+        "/api/imports/hackerone/campaigns",
+        json={
+            "document": {"data": [_resource("example.com", "Domain", True)]},
+            "policy": _policy_values(**admission_policy),
+            "target": {
+                "name": "HackerOne blocked fixture",
+                "primary_url": "https://example.com",
+            },
+        },
+    )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == {
+        "message": "HackerOne conservative admission blocked",
+        "reason": reason,
+    }
+    assert Storage(db, artifacts).list_campaigns() == []
