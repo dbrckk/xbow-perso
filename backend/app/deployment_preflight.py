@@ -3,7 +3,10 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from .runtime_capabilities import safe_pentagi_runtime_capability
+from .runtime_capabilities import (
+    safe_pentagi_runtime_capability,
+    safe_scanner_runtime_capability,
+)
 
 
 def _configured(name: str) -> bool:
@@ -39,6 +42,7 @@ def build_deployment_preflight(
     """Return redacted deployment diagnostics without changing runtime state."""
 
     pentagi = safe_pentagi_runtime_capability()
+    scanner = safe_scanner_runtime_capability()
     issues: list[dict[str, Any]] = []
     production = _production_mode()
     legacy_jobs_enabled, legacy_jobs_valid = _bool_env(
@@ -91,6 +95,15 @@ def build_deployment_preflight(
                 "code": "pentagi_invalid_boolean_configuration",
                 "severity": "error",
                 "component": "pentagi",
+            }
+        )
+
+    if scanner.get("mode") == "configuration_error":
+        issues.append(
+            {
+                "code": "scanner_invalid_boolean_configuration",
+                "severity": "error",
+                "component": "scanner",
             }
         )
 
@@ -160,6 +173,41 @@ def build_deployment_preflight(
             }
         )
 
+    scanner_execution_intent = bool(scanner.get("nuclei_execution_intent"))
+    if scanner_execution_intent and scanner.get("mode") != "configuration_error":
+        if not scanner.get("scanner_worker_enabled"):
+            issues.append(
+                {
+                    "code": "scanner_worker_disabled",
+                    "severity": "error",
+                    "component": "scanner",
+                }
+            )
+        if scanner.get("sandbox_profile") != "restricted-v1":
+            issues.append(
+                {
+                    "code": "scanner_sandbox_profile_required",
+                    "severity": "error",
+                    "component": "scanner",
+                }
+            )
+        if not scanner.get("nuclei_allowlisted"):
+            issues.append(
+                {
+                    "code": "nuclei_not_allowlisted",
+                    "severity": "error",
+                    "component": "scanner",
+                }
+            )
+        if not scanner.get("nuclei_version_configured"):
+            issues.append(
+                {
+                    "code": "nuclei_version_allowlist_missing",
+                    "severity": "error",
+                    "component": "scanner",
+                }
+            )
+
     severities = {str(item["severity"]) for item in issues}
     if "error" in severities:
         status = "error"
@@ -191,6 +239,17 @@ def build_deployment_preflight(
             "model_provider_configured": _configured(
                 "XBOW_PENTAGI_MODEL_PROVIDER"
             ),
+        },
+        "scanner": {
+            "execution_intent": scanner_execution_intent,
+            "nuclei_enabled": bool(scanner.get("nuclei_enabled")),
+            "worker_enabled": bool(scanner.get("scanner_worker_enabled")),
+            "sandbox_profile": scanner.get("sandbox_profile"),
+            "nuclei_allowlisted": bool(scanner.get("nuclei_allowlisted")),
+            "nuclei_version_configured": bool(
+                scanner.get("nuclei_version_configured")
+            ),
+            "dispatch_ready": bool(scanner.get("dispatch_ready")),
         },
         "job_provenance": {
             "strict_by_default": True,
