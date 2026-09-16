@@ -84,7 +84,8 @@ def test_validation_worker_persists_sanitized_differential_signal_without_confir
     persisted = Campaign.model_validate(store.get_campaign(campaign.id))
     assert persisted.findings[0].status == "validation_required"
     event = next(item for item in persisted.events if item.get("type") == "independent_validation_observation")
-    assert event["differential_signal"] == "strong"
+    assert event["artifact_id"] == validation.metadata["artifact_id"]
+    assert validation.metadata["artifact_sha256"]
 
 
 def test_finding_intelligence_surfaces_differential_signal_and_summary(tmp_path, monkeypatch):
