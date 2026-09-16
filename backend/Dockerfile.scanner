@@ -29,7 +29,7 @@ RUN apt-get update \
     && mkdir -p /opt/nuclei-templates \
     && tar -xzf /tmp/nuclei-templates.tar.gz --strip-components=1 -C /opt/nuclei-templates \
     && test -f /opt/nuclei-templates/templates-checksum.txt \
-    && printf 'nuclei-templates-v%s\n' "$NUCLEI_TEMPLATES_VERSION" > /opt/nuclei-templates/.xbow-version \
+    && printf 'nuclei-templates-v10.4.8\n' > /opt/nuclei-templates/.xbow-version \
     && rm -rf /tmp/* /var/lib/apt/lists/*
 
 WORKDIR /app
