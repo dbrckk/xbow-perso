@@ -1,7 +1,7 @@
 # Active Validation v2 — Design
 
 Date: 2026-09-16
-Status: Design approved in chat; implementation not started
+Status: Draft spec for user review; implementation not started
 Repository: `dbrckk/xbow-perso`
 
 ## 1. Purpose
@@ -222,7 +222,7 @@ The replacement destination uses a reserved inert HTTPS host such as:
 
 The validator never follows the redirect.
 
-A strong redirect signal requires the target response itself to return a redirect status and a `Location` header that resolves to the exact inert destination or an unambiguous transformation of it.
+A strong redirect signal requires the target response itself to return a redirect status and a `Location` header whose normalized parsed URL has scheme `https`, hostname exactly `xbow.invalid`, and path exactly `/redirect-check` (an optional empty fragment is ignored). Matching by substring is forbidden.
 
 The system does not request the destination and does not chain the redirect into another vulnerability class.
 
@@ -243,6 +243,8 @@ Recommended bounded configuration:
 
 - `XBOW_VALIDATION_MAX_PARAMETERS`: default 5, hard maximum 10;
 - `XBOW_VALIDATION_MAX_REQUESTS`: default 8, hard maximum 16;
+- the baseline request counts toward `XBOW_VALIDATION_MAX_REQUESTS`;
+- every CORS, parameter, or redirect probe also consumes one unit from the same per-run budget;
 - existing timeout and byte limits remain authoritative;
 - campaign `max_requests_per_second` remains authoritative;
 - local validation RPS must never exceed campaign policy.
@@ -355,7 +357,7 @@ Implementation follows TDD. Tests are added before production behavior.
 - deterministic markers;
 - duplicate parameter handling;
 - parameter cap enforced;
-- request budget enforced;
+- request budget enforced, including the baseline request;
 - redirect-like allowlist enforced;
 - inert destination is reserved and fixed;
 - no unsupported HTTP method can be planned.
@@ -371,8 +373,9 @@ Implementation follows TDD. Tests are added before production behavior.
 
 ### Unit tests: redirect analysis
 
-- 3xx plus exact inert `Location` produces a strong redirect signal;
-- relative/local redirect does not falsely match external destination;
+- 3xx plus exact normalized inert `Location` produces a strong redirect signal;
+- substring-only matches never produce a strong signal;
+- relative/local redirect does not falsely match the inert destination;
 - non-redirect status does not produce a strong signal;
 - destination is never followed.
 
@@ -392,7 +395,7 @@ Implementation follows TDD. Tests are added before production behavior.
 - campaign rate limit is respected;
 - no redirects are followed;
 - sensitive query values are redacted from persisted previews;
-- request count never exceeds configured budget;
+- baseline plus probes never exceed configured request budget;
 - no result automatically marks a finding confirmed;
 - no result triggers automatic submission.
 
