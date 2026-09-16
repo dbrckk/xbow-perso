@@ -18,7 +18,7 @@ mutation CreateFlow($provider: String!, $input: String!) {
 }
 """.strip()
 
-_PROVIDER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
+_PROVIDER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")\n_CONTROLLED_EXTERNAL_FUNCTIONS = [\n    "request_recon",\n    "request_nuclei_scan",\n    "get_job_status",\n    "get_findings",\n    "request_validation",\n]
 
 
 class PentagiPolicyError(RuntimeError):
