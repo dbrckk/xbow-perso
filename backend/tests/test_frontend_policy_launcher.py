@@ -15,7 +15,7 @@ def test_hackerone_single_mutation_launch_route_exists():
 
 def test_frontend_requires_authorization_and_scope_review_before_launch():
     html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
-    javascript = (ROOT / "frontend" / "app.js").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
 
     required_ids = (
         "h1Name",
@@ -43,6 +43,9 @@ def test_frontend_requires_authorization_and_scope_review_before_launch():
     for element_id in required_ids:
         assert f'id="{element_id}"' in html
 
-    assert "api('/imports/hackerone/rules-preview'" in javascript
-    assert "api('/imports/hackerone/campaigns/launch'" in javascript
-    assert 'id="h1Launch"' in html
+    assert '<script src="/hackerone.js" defer></script>' in html
+    assert "api('/imports/hackerone/rules-preview'" in launcher
+    assert "api('/imports/hackerone/campaigns/launch'" in launcher
+    assert '<button id="h1Launch" disabled>' in html
+    assert "approvedPreview" in launcher
+    assert "invalidatePreview" in launcher
