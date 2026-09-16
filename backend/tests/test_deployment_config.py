@@ -5,6 +5,10 @@ def _compose() -> str:
     return (Path(__file__).resolve().parents[2] / "docker-compose.yml").read_text(encoding="utf-8")
 
 
+def _env_example() -> str:
+    return (Path(__file__).resolve().parents[2] / ".env.example").read_text(encoding="utf-8")
+
+
 def test_compose_declares_backend_and_worker_healthchecks():
     compose = _compose()
     assert compose.count("healthcheck:") >= 2
@@ -22,10 +26,15 @@ def test_compose_keeps_services_hardened():
     assert compose.count("restart: unless-stopped") >= 3
     assert "XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}" in compose
     assert "XBOW_ENABLE_HTTP_VALIDATION: ${XBOW_ENABLE_HTTP_VALIDATION:-false}" in compose
+    assert "XBOW_ENABLE_DIFFERENTIAL_VALIDATION: ${XBOW_ENABLE_DIFFERENTIAL_VALIDATION:-false}" in compose
     assert "XBOW_ENABLE_BROWSER_AUTOMATION: ${XBOW_ENABLE_BROWSER_AUTOMATION:-false}" in compose
     assert "XBOW_VALIDATION_PREVIEW_CHARS: ${XBOW_VALIDATION_PREVIEW_CHARS:-4096}" in compose
     assert compose.count("XBOW_MAX_JOB_PAYLOAD_BYTES: ${XBOW_MAX_JOB_PAYLOAD_BYTES:-65536}") == 2
     assert "XBOW_MAX_AUTONOMOUS_RPS: ${XBOW_MAX_AUTONOMOUS_RPS:-2.0}" in compose
+
+
+def test_differential_validation_gate_is_disabled_in_example_environment():
+    assert "XBOW_ENABLE_DIFFERENTIAL_VALIDATION=false" in _env_example()
 
 
 def test_compose_keeps_state_private_and_shared_only_where_needed():
