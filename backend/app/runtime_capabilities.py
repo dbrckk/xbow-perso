@@ -73,7 +73,6 @@ def pentagi_runtime_capability() -> dict[str, Any]:
     }
 
 
-
 def safe_pentagi_runtime_capability() -> dict[str, Any]:
     """Return a fail-closed public capability document on configuration errors."""
 
@@ -99,10 +98,10 @@ def safe_pentagi_runtime_capability() -> dict[str, Any]:
         }
 
 
-
 def scanner_runtime_capability() -> dict[str, Any]:
     active_scans_enabled = _strict_bool("XBOW_ENABLE_ACTIVE_SCANS", False)
     scanner_worker_enabled = _strict_bool("XBOW_ENABLE_SCANNER_WORKER", False)
+    nuclei_enabled = _strict_bool("XBOW_ENABLE_NUCLEI", False)
     dry_run = _strict_bool("DRY_RUN", True)
     profile = (os.getenv("XBOW_SCANNER_SANDBOX_PROFILE") or "").strip().lower()
     engines = tuple(
@@ -116,6 +115,13 @@ def scanner_runtime_capability() -> dict[str, Any]:
     )
     supported_engines = {"nuclei", "strix"}
     unsupported_engines = [item for item in engines if item not in supported_engines]
+    nuclei_allowlisted = "nuclei" in engines
+    nuclei_version_configured = bool(
+        (os.getenv("XBOW_NUCLEI_ALLOWED_VERSION") or "").strip()
+    )
+    nuclei_execution_intent = bool(
+        active_scans_enabled and nuclei_enabled and not dry_run
+    )
 
     reasons: list[str] = []
     if not active_scans_enabled:
@@ -130,11 +136,19 @@ def scanner_runtime_capability() -> dict[str, Any]:
         reasons.append("no_scanner_engine_allowlisted")
     if unsupported_engines:
         reasons.append("unsupported_scanner_engine")
+    if nuclei_execution_intent and not nuclei_allowlisted:
+        reasons.append("nuclei_not_allowlisted")
+    if nuclei_execution_intent and not nuclei_version_configured:
+        reasons.append("nuclei_version_allowlist_missing")
 
     return {
         "mode": "active_gated" if active_scans_enabled else "disabled",
         "active_scans_enabled": active_scans_enabled,
         "scanner_worker_enabled": scanner_worker_enabled,
+        "nuclei_enabled": nuclei_enabled,
+        "nuclei_execution_intent": nuclei_execution_intent,
+        "nuclei_allowlisted": nuclei_allowlisted,
+        "nuclei_version_configured": nuclei_version_configured,
         "dry_run": dry_run,
         "sandbox_profile": profile or "unconfigured",
         "allowed_engines": list(engines),
@@ -153,6 +167,10 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "mode": "configuration_error",
             "active_scans_enabled": False,
             "scanner_worker_enabled": False,
+            "nuclei_enabled": False,
+            "nuclei_execution_intent": False,
+            "nuclei_allowlisted": False,
+            "nuclei_version_configured": False,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
             "allowed_engines": [],
