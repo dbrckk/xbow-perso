@@ -1130,7 +1130,12 @@ def start_campaign(campaign_id: str):
         save_campaign(campaign, expected_version=version)
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
 
-    payload = sanitized_scan_payload(campaign, receipt)
+    hackerone_bound = any(
+        isinstance(event, dict) and event.get("type") == "hackerone_policy_bound"
+        for event in campaign.events
+    )
+    job_kind = "nuclei_scan" if hackerone_bound else "strix_scan"
+    payload = sanitized_scan_payload(campaign, receipt, job_kind=job_kind)
     request_id = _pending_campaign_start_request(campaign) or str(uuid4())
     _record_campaign_start_intent(
         campaign,
@@ -1140,7 +1145,7 @@ def start_campaign(campaign_id: str):
     )
     job = queue().enqueue(
         campaign.id,
-        "strix_scan",
+        job_kind,
         payload,
         max_attempts=2,
         dedupe_key=f"api:start:{request_id}",
