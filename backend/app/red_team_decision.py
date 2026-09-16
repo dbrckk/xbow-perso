@@ -6,6 +6,7 @@ from typing import Any, Callable, Literal
 from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface
+from .differential_intelligence import build_differential_signals, differential_signal_rank
 from .evidence_chain import build_evidence_chains
 from .finding_cluster_consensus import build_cluster_consensus
 from .finding_readiness import build_finding_readiness
@@ -78,6 +79,20 @@ def build_red_team_decisions(
             blocked_cluster_members.update(cluster.finding_ids)
     chains = build_evidence_chains(graph)
     hypotheses = build_hypotheses(graph, limit=100, scope_checker=scope_checker)
+    differential_signals = build_differential_signals(graph)
+
+    def prioritize_finding_ids(finding_ids: tuple[str, ...]) -> tuple[str, ...]:
+        return tuple(
+            sorted(
+                finding_ids,
+                key=lambda finding_id: -differential_signal_rank(
+                    differential_signals[finding_id].signal
+                    if finding_id in differential_signals
+                    else "none"
+                ),
+            )
+        )
+
     decisions: list[RedTeamDecision] = []
 
     integrity_count = (
@@ -114,16 +129,18 @@ def build_red_team_decisions(
             )
         )
 
-    validation_ids = tuple(
-        item.finding_id
-        for item in triage
-        if item.recommended_state == "validate"
-        and readiness_by_id.get(item.finding_id) is not None
-        and readiness_by_id[item.finding_id].readiness not in {
-            "report_review_ready",
-            "blocked",
-        }
-        and cluster_status_by_member.get(item.finding_id) != "blocked"
+    validation_ids = prioritize_finding_ids(
+        tuple(
+            item.finding_id
+            for item in triage
+            if item.recommended_state == "validate"
+            and readiness_by_id.get(item.finding_id) is not None
+            and readiness_by_id[item.finding_id].readiness not in {
+                "report_review_ready",
+                "blocked",
+            }
+            and cluster_status_by_member.get(item.finding_id) != "blocked"
+        )
     )
     if validation_ids:
         decisions.append(
@@ -137,12 +154,15 @@ def build_red_team_decisions(
 
     incomplete = [item for item in chains if not item.complete]
     if incomplete:
+        incomplete_ids = prioritize_finding_ids(
+            tuple(item.finding_id.removeprefix("finding:") for item in incomplete)
+        )
         decisions.append(
             RedTeamDecision(
                 kind="strengthen_evidence",
                 priority=0.84,
                 reason="finding support chains are incomplete",
-                finding_ids=tuple(item.finding_id.removeprefix("finding:") for item in incomplete[:10]),
+                finding_ids=incomplete_ids[:10],
             )
         )
 
@@ -169,14 +189,16 @@ def build_red_team_decisions(
             )
         )
 
-    report_ids = tuple(
-        item.finding_id
-        for item in readiness
-        if item.readiness == "report_review_ready"
-        and cluster_status_by_member.get(
-            item.finding_id,
-            "report_review_ready",
-        ) == "report_review_ready"
+    report_ids = prioritize_finding_ids(
+        tuple(
+            item.finding_id
+            for item in readiness
+            if item.readiness == "report_review_ready"
+            and cluster_status_by_member.get(
+                item.finding_id,
+                "report_review_ready",
+            ) == "report_review_ready"
+        )
     )
     if report_ids:
         decisions.append(

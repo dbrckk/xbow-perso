@@ -4,6 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .differential_intelligence import DifferentialSignal, build_differential_signals
 from .finding_cluster_consensus import build_cluster_consensus
 from .finding_cluster_saturation import build_cluster_saturation
 from .finding_correlation import cluster_findings
@@ -39,6 +40,7 @@ def build_finding_intelligence(
         graph,
         threshold=threshold,
     )
+    differential_signals = build_differential_signals(graph)
 
     readiness_by_id = {item.finding_id: item for item in readiness}
     triage_by_id = {item.finding_id: item for item in triage}
@@ -57,6 +59,10 @@ def build_finding_intelligence(
         triage_item = triage_by_id.get(finding_id)
         cluster = cluster_by_member.get(finding_id)
         cluster_id = cluster.cluster_id if cluster else None
+        differential_item = differential_signals.get(
+            finding_id,
+            DifferentialSignal(finding_id=finding_id, signal="none"),
+        )
         finding_rows.append(
             {
                 "finding_id": finding_id,
@@ -64,6 +70,7 @@ def build_finding_intelligence(
                 "status": str(getattr(finding, "status", "")),
                 "readiness": readiness_item.to_dict() if readiness_item else None,
                 "triage": triage_item.to_dict() if triage_item else None,
+                "differential": differential_item.to_dict(),
                 "cluster_id": cluster_id,
                 "cluster_status": (
                     consensus_by_cluster[cluster_id].status
@@ -114,6 +121,14 @@ def build_finding_intelligence(
             "blocked_findings": sum(
                 bool(row["readiness"])
                 and row["readiness"]["readiness"] == "blocked"
+                for row in finding_rows
+            ),
+            "strong_differential_findings": sum(
+                row["differential"]["signal"] == "strong"
+                for row in finding_rows
+            ),
+            "weak_differential_findings": sum(
+                row["differential"]["signal"] == "weak"
                 for row in finding_rows
             ),
             "saturated_clusters": sum(
