@@ -128,13 +128,22 @@ def test_hackerone_conservative_dry_run_queues_one_verified_job(tmp_path, monkey
     jobs = JobQueue(queue_db)
     monkeypatch.setattr(main, "queue", lambda: jobs)
 
-    started_document = main.start_campaign(campaign_id)
-    started = main.Campaign.model_validate(started_document)
+    start_result = main.start_campaign(campaign_id)
 
-    assert started.state == main.CampaignState.running
+    assert start_result["campaign_id"] == campaign_id
+    assert start_result["state"] == main.CampaignState.running
+    assert start_result["audit_reconciled"] is True
     assert jobs.stats()["total"] == 1
+
+    persisted = Storage(db, artifacts).get_campaign(campaign_id)
+    assert persisted is not None
+    started = main.Campaign.model_validate(persisted)
+    assert started.state == main.CampaignState.running
+
     started_events = [event for event in started.events if event.get("type") == "campaign_started"]
     assert len(started_events) == 1
+    assert started_events[0]["job_id"] == start_result["job"]["id"]
+
     job = jobs.get(started_events[0]["job_id"])
     assert job is not None
     assert job["status"] == "queued"
