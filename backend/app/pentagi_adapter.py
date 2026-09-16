@@ -19,13 +19,6 @@ mutation CreateFlow($provider: String!, $input: String!) {
 """.strip()
 
 _PROVIDER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
-_CONTROLLED_EXTERNAL_FUNCTIONS = [
-    "request_recon",
-    "request_nuclei_scan",
-    "get_job_status",
-    "get_findings",
-    "request_validation",
-]
 
 
 class PentagiPolicyError(RuntimeError):
@@ -134,11 +127,14 @@ def build_pentagi_flow_plan(
     base_url: str | None = None,
     model_provider: str | None = None,
 ) -> PentagiFlowPlan:
-    """Build a non-executing PentAGI request plan.
+    """Build a fail-closed preview plan for PentAGI's GraphQL createFlow API.
 
-    This first adapter stage intentionally cannot submit a PentAGI flow. It creates
-    a deterministic, scope-constrained GraphQL request only after the same campaign
-    safety invariants used by active scanner workers have been satisfied.
+    The current upstream GraphQL mutation accepts only provider, input and resource
+    IDs. It cannot enforce the custom-function restrictions required for XBOW to
+    mediate all target access. Therefore this adapter never marks a GraphQL plan as
+    execution-capable, even when a controlled-functions flag is present. Active
+    PentAGI dispatch requires a separate transport whose request schema can enforce
+    the reviewed function contract.
     """
 
     target = _safe_campaign_target(campaign)
@@ -153,31 +149,18 @@ def build_pentagi_flow_plan(
     if not _PROVIDER_RE.fullmatch(provider):
         raise PentagiPolicyError("PentAGI model provider is invalid")
 
-    controlled = (os.getenv("XBOW_PENTAGI_CONTROLLED_FUNCTIONS") or "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }
-    variables: dict[str, object] = {
-        "provider": provider,
-        "input": _flow_input(campaign, target),
-    }
-    if controlled:
-        variables["functions"] = {
-            "terminal": False,
-            "browser": False,
-            "external": list(_CONTROLLED_EXTERNAL_FUNCTIONS),
-        }
     payload: dict[str, object] = {
         "query": _CREATE_FLOW_MUTATION,
-        "variables": variables,
+        "variables": {
+            "provider": provider,
+            "input": _flow_input(campaign, target),
+        },
     }
     return PentagiFlowPlan(
         endpoint=endpoint,
         payload=payload,
         target=target,
         model_provider=provider,
-        dry_run=not controlled,
-        execution_supported=controlled,
+        dry_run=True,
+        execution_supported=False,
     )
