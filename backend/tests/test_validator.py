@@ -54,15 +54,16 @@ class _Response:
 
 
 class _EchoingOpener:
-    def __init__(self):
+    def __init__(self, *, baseline_body: bytes = b"baseline"):
         self.urls: list[str] = []
+        self.baseline_body = baseline_body
 
     def open(self, request, timeout=None):
         del timeout
         url = request.full_url
         self.urls.append(url)
         if len(self.urls) == 1:
-            return _Response(b"baseline")
+            return _Response(self.baseline_body)
         values = dict(parse_qsl(urlparse(url).query, keep_blank_values=True))
         return _Response(f"echo:{values.get('q', '')}".encode())
 
@@ -186,6 +187,24 @@ def test_differential_validation_uses_inert_marker_on_existing_query_parameter(m
     assert "private-value" not in serialized
     assert "fragment" not in serialized
     assert "xbowv1-" not in serialized
+
+
+def test_active_validation_redacts_query_values_reflected_in_body_preview(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", "false")
+    opener = _EchoingOpener(baseline_body=b"echoed private-value and 42")
+    monkeypatch.setattr(validator, "build_opener", lambda *_handlers: opener)
+
+    result = safe_http_probe(
+        campaign(),
+        finding(endpoint="https://app.example.test/search?q=private-value&id=42"),
+    )
+    payload = json.loads(result.json_bytes())
+
+    assert payload["body_preview"] == "echoed [redacted] and [redacted]"
+    serialized = json.dumps(payload, sort_keys=True)
+    assert "private-value" not in serialized
+    assert '"42"' not in serialized
 
 
 def test_differential_validation_does_not_invent_query_parameters(monkeypatch):
