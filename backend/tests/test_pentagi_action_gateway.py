@@ -1,5 +1,3 @@
-from dataclasses import replace
-
 import pytest
 
 from app.main import Campaign, CampaignState, ProgramRules, TargetInput
@@ -30,7 +28,6 @@ def _campaign(*, rps=1.0):
 
 
 def _binding(monkeypatch, campaign):
-    monkeypatch.setenv("XBOW_PENTAGI_CONTROLLED_FUNCTIONS", "true")
     monkeypatch.setenv("XBOW_ENABLE_PENTAGI", "true")
     monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
     monkeypatch.setenv("DRY_RUN", "false")
@@ -39,12 +36,22 @@ def _binding(monkeypatch, campaign):
         base_url="https://pentagi.example.test",
         model_provider="openai",
     )
-    decision = evaluate_pentagi_admission(campaign, plan)
+    execution_plan = plan.__class__(
+        endpoint=plan.endpoint,
+        payload=plan.payload,
+        target=plan.target,
+        model_provider=plan.model_provider,
+        dry_run=False,
+        execution_supported=True,
+    )
+    decision = evaluate_pentagi_admission(campaign, execution_plan)
     assert decision.allowed
     return PentagiFlowBinding(
         flow_id="flow-123",
         campaign_id=campaign.id,
         policy_fingerprint=decision.policy_fingerprint,
+        endpoint=execution_plan.endpoint,
+        model_provider=execution_plan.model_provider,
     )
 
 
@@ -66,7 +73,7 @@ def test_gateway_derives_campaign_from_server_binding(monkeypatch):
 def test_gateway_rejects_wrong_campaign_for_binding(monkeypatch):
     campaign = _campaign()
     binding = _binding(monkeypatch, campaign)
-    other = replace(campaign, id="other")
+    other = campaign.model_copy(update={"id": "other"})
     with pytest.raises(PentagiActionGatewayError, match="campaign binding"):
         authorize_pentagi_action(
             binding, other, kind="request_recon",
@@ -92,6 +99,23 @@ def test_gateway_rejects_policy_change(monkeypatch):
     with pytest.raises(PentagiActionGatewayError, match="policy"):
         authorize_pentagi_action(
             binding, campaign, kind="request_recon",
+            target="https://app.example.test", requested_rps=0.5,
+        )
+
+
+def test_gateway_rejects_binding_transport_change(monkeypatch):
+    campaign = _campaign()
+    binding = _binding(monkeypatch, campaign)
+    tampered = PentagiFlowBinding(
+        flow_id=binding.flow_id,
+        campaign_id=binding.campaign_id,
+        policy_fingerprint=binding.policy_fingerprint,
+        endpoint="https://other.example.test/api/v1/graphql",
+        model_provider=binding.model_provider,
+    )
+    with pytest.raises(PentagiActionGatewayError, match="policy"):
+        authorize_pentagi_action(
+            tampered, campaign, kind="request_recon",
             target="https://app.example.test", requested_rps=0.5,
         )
 
