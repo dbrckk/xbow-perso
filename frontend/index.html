@@ -8,6 +8,7 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="stylesheet" href="/app.css" />
   <script src="/app.js" defer></script>
+  <script src="/hackerone.js" defer></script>
 </head>
 <body>
 <main>
@@ -33,6 +34,17 @@
       <button id="start" disabled>Démarrer la campagne chargée</button>
     </div>
   </section>
+
+  <div class="hidden" aria-hidden="true">
+    <input id="name" disabled />
+    <input id="url" disabled />
+    <input id="auth" disabled />
+    <textarea id="allowed" disabled></textarea>
+    <textarea id="denied" disabled></textarea>
+    <input id="rps" type="number" value="1" disabled />
+    <input id="notes" disabled />
+    <button id="create" disabled>Créer</button>
+  </div>
 
   <section class="card launcher-card">
     <div class="finding-head">
@@ -93,11 +105,11 @@
     </div>
 
     <label>Contraintes de compte de test</label>
-    <textarea id="h1TestAccountConstraints" rows="2" placeholder="Laisser vide si aucune contrainte."></textarea>
+    <textarea id="h1TestAccountConstraints" rows="2" maxlength="4096" placeholder="Laisser vide si aucune contrainte."></textarea>
     <label>Restrictions additionnelles (une par ligne)</label>
     <textarea id="h1AdditionalRestrictions" rows="3" placeholder="Toute restriction nécessitant une application manuelle bloque le mode conservateur."></textarea>
     <label>Notes du programme</label>
-    <textarea id="h1Notes" rows="3" placeholder="Notes de revue de la policy."></textarea>
+    <textarea id="h1Notes" rows="3" maxlength="8192" placeholder="Notes de revue de la policy."></textarea>
 
     <div class="safety-locks">
       <strong>Verrous permanents</strong>
