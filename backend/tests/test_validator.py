@@ -1,7 +1,10 @@
 import json
+import time
+from urllib.parse import parse_qsl, urlparse
 
 import pytest
 
+import app.validator as validator
 from app.main import Campaign, Finding, ProgramRules, TargetInput
 from app.validator import ValidationPolicyError, _preview_body, build_probe_url, safe_http_probe
 
@@ -15,6 +18,7 @@ def campaign() -> Campaign:
                 authorization_reference="test-program",
                 allowed_targets=["app.example.test", "api.example.test"],
                 denied_targets=["admin.example.test"],
+                max_requests_per_second=2.0,
             ),
         )
     )
@@ -31,6 +35,36 @@ def finding(**kwargs) -> Finding:
     }
     data.update(kwargs)
     return Finding(**data)
+
+
+class _Response:
+    def __init__(self, body: bytes, *, status: int = 200, content_type: str = "text/plain"):
+        self._body = body
+        self.status = status
+        self.headers = {"Content-Type": content_type}
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def read(self, _limit: int) -> bytes:
+        return self._body
+
+
+class _EchoingOpener:
+    def __init__(self):
+        self.urls: list[str] = []
+
+    def open(self, request, timeout=None):
+        del timeout
+        url = request.full_url
+        self.urls.append(url)
+        if len(self.urls) == 1:
+            return _Response(b"baseline")
+        values = dict(parse_qsl(urlparse(url).query, keep_blank_values=True))
+        return _Response(f"echo:{values.get('q', '')}".encode())
 
 
 def test_probe_resolves_relative_endpoint_inside_scope():
@@ -117,3 +151,69 @@ def test_invalid_validation_preview_limit_fails_closed(monkeypatch):
         monkeypatch.setenv("XBOW_VALIDATION_PREVIEW_CHARS", value)
         with pytest.raises(ValidationPolicyError, match="XBOW_VALIDATION_PREVIEW_CHARS"):
             _preview_body(b"text", "text/plain")
+
+
+def test_differential_validation_uses_inert_marker_on_existing_query_parameter(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", "true")
+    opener = _EchoingOpener()
+    monkeypatch.setattr(validator, "build_opener", lambda *_handlers: opener)
+    sleeps: list[float] = []
+    monkeypatch.setattr(time, "sleep", lambda seconds: sleeps.append(seconds))
+
+    result = safe_http_probe(
+        campaign(),
+        finding(endpoint="https://app.example.test/search?q=private-value#fragment"),
+    )
+    payload = json.loads(result.json_bytes())
+
+    assert len(opener.urls) == 2
+    assert opener.urls[0] == "https://app.example.test/search?q=private-value#fragment"
+    assert opener.urls[1].startswith("https://app.example.test/search?q=xbowv1-")
+    assert sleeps == [pytest.approx(0.5)]
+    assert payload["url"] == "https://app.example.test/search"
+    assert payload["parameter_names"] == ["q"]
+    assert payload["differential"] == {
+        "eligible": True,
+        "parameter": "q",
+        "baseline_status": 200,
+        "marker_status": 200,
+        "status_changed": False,
+        "body_changed": True,
+        "marker_reflected": True,
+    }
+    serialized = json.dumps(payload, sort_keys=True)
+    assert "private-value" not in serialized
+    assert "fragment" not in serialized
+    assert "xbowv1-" not in serialized
+
+
+def test_differential_validation_does_not_invent_query_parameters(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", "true")
+    opener = _EchoingOpener()
+    monkeypatch.setattr(validator, "build_opener", lambda *_handlers: opener)
+
+    result = safe_http_probe(campaign(), finding(endpoint="/account"))
+    payload = json.loads(result.json_bytes())
+
+    assert len(opener.urls) == 1
+    assert payload["differential"] == {
+        "eligible": False,
+        "reason": "no_existing_query_parameter",
+    }
+
+
+def test_invalid_differential_validation_gate_fails_closed_before_network(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", "sometimes")
+    opener = _EchoingOpener()
+    monkeypatch.setattr(validator, "build_opener", lambda *_handlers: opener)
+
+    with pytest.raises(ValidationPolicyError, match="XBOW_ENABLE_DIFFERENTIAL_VALIDATION"):
+        safe_http_probe(
+            campaign(),
+            finding(endpoint="https://app.example.test/search?q=value"),
+        )
+
+    assert opener.urls == []
