@@ -1,7 +1,13 @@
 from __future__ import annotations
 
-from app.main import Campaign, Finding, ProgramRules, TargetInput
+from datetime import datetime, timedelta, timezone
+
+from app import worker_service
+from app.job_provenance import attach_job_provenance
+from app.jobqueue import JobQueue
+from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput
 from app.self_owned_rehearsal import ScenarioReferences, ScenarioResult
+from app.storage import Storage
 from app.validator import ValidationPolicyError, safe_http_probe
 from rehearsal_fixture import LocalRehearsalServer, MappedLoopbackOpener
 
@@ -19,6 +25,22 @@ def _http_campaign() -> Campaign:
                     "*.allowed.rehearsal.test",
                 ],
                 denied_targets=["denied.allowed.rehearsal.test"],
+                max_requests_per_second=2.0,
+            ),
+        ),
+    )
+
+
+def _durable_campaign(campaign_id: str) -> Campaign:
+    return Campaign(
+        id=campaign_id,
+        state=CampaignState.ready,
+        target=TargetInput(
+            name="Self-owned durable rehearsal",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="self-owned-rehearsal",
+                allowed_targets=["example.test"],
                 max_requests_per_second=2.0,
             ),
         ),
@@ -158,5 +180,110 @@ def run_http_429_scenario(root, monkeypatch) -> ScenarioResult:
         references=ScenarioReferences(
             campaign_id=campaign.id,
             counters={"requests_observed": requests_observed},
+        ),
+    )
+
+
+def run_worker_failure_scenario(root, monkeypatch) -> ScenarioResult:
+    db_path = str(root / "worker-failure.sqlite3")
+    artifact_root = str(root / "worker-failure-artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db_path)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifact_root)
+    monkeypatch.setenv("XBOW_JOB_LEASE_SECONDS", "60")
+    monkeypatch.delenv("XBOW_WORKER_ROLE", raising=False)
+
+    store = Storage(db_path, artifact_root)
+    queue = JobQueue(db_path)
+    campaign = _durable_campaign("self-owned-worker-failure")
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+
+    payload = attach_job_provenance(
+        {"campaign_id": campaign.id, "platform": "generic"},
+        campaign,
+        job_kind="report",
+        action="report",
+    )
+    job = queue.enqueue(
+        campaign.id,
+        "report",
+        payload,
+        max_attempts=2,
+        dedupe_key="rehearsal-worker-failure",
+    )
+    first_claim = queue.claim("worker-crashed")
+    if first_claim is None or first_claim["id"] != job["id"]:
+        return ScenarioResult(
+            name="worker_failure_durability",
+            status="fail",
+            reason="initial_claim_failed",
+        )
+
+    expired_at = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
+    with queue.connect() as conn:
+        conn.execute(
+            "UPDATE jobs SET claimed_at=?, updated_at=? WHERE id=?",
+            (expired_at, expired_at, job["id"]),
+        )
+
+    if queue.recover_expired_leases() != 1:
+        return ScenarioResult(
+            name="worker_failure_durability",
+            status="fail",
+            reason="lease_not_requeued",
+            references=ScenarioReferences(campaign_id=campaign.id, job_ids=(job["id"],)),
+        )
+
+    recovered = queue.get(job["id"])
+    if recovered is None or recovered["status"] != "queued":
+        return ScenarioResult(
+            name="worker_failure_durability",
+            status="fail",
+            reason="lease_not_requeued",
+            references=ScenarioReferences(campaign_id=campaign.id, job_ids=(job["id"],)),
+        )
+
+    def injected_failure(_job, _store):
+        raise RuntimeError("injected-rehearsal-failure")
+
+    monkeypatch.setattr(worker_service, "process_report", injected_failure)
+    monkeypatch.setattr(
+        worker_service,
+        "advance_campaign",
+        lambda campaign, queue, store: {"action": {"kind": "stop"}},
+    )
+
+    worker_service.process_one(queue, store, "worker-retry")
+    final = queue.get(job["id"])
+    persisted = store.get_campaign(campaign.id) or {}
+    successful_outcomes = sum(
+        1
+        for event in persisted.get("events", [])
+        if event.get("type") == "worker_outcome"
+        and event.get("job_id") == job["id"]
+        and event.get("success") is True
+    )
+    attempts = int(final["attempts"]) if final is not None else -1
+
+    if final is None or final["status"] != "failed" or attempts != 2:
+        reason = "attempt_limit_mismatch"
+        valid = False
+    elif successful_outcomes != 0:
+        reason = "false_success_recorded"
+        valid = False
+    else:
+        reason = "expired_lease_recovered_then_failed_at_attempt_limit"
+        valid = True
+
+    return ScenarioResult(
+        name="worker_failure_durability",
+        status="pass" if valid else "fail",
+        reason=reason,
+        references=ScenarioReferences(
+            campaign_id=campaign.id,
+            job_ids=(job["id"],),
+            counters={
+                "attempts": attempts,
+                "successful_outcomes": successful_outcomes,
+            },
         ),
     )
