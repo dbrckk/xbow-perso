@@ -197,3 +197,20 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
             "binding_fingerprint": binding_fingerprint,
         },
     }
+
+
+@router.post("/api/imports/hackerone/campaigns/launch")
+def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
+    """Admit a reviewed HackerOne policy and start it in one authenticated mutation."""
+
+    from .main import assert_campaign_exists, start_campaign
+
+    admitted = admit_hackerone_campaign(payload)
+    campaign_id = admitted["campaign"]["id"]
+    started = start_campaign(campaign_id)
+    campaign = assert_campaign_exists(campaign_id)
+    return {
+        **admitted,
+        "campaign": campaign.model_dump(mode="json"),
+        "start": started,
+    }
