@@ -20,6 +20,9 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
+_DEFAULT_SLEEP = time.sleep
+
+
 @dataclass(frozen=True)
 class ProbeResult:
     status: str
@@ -223,7 +226,13 @@ def build_probe_url(campaign, finding) -> str:
     return candidate
 
 
-def safe_http_probe(campaign, finding) -> ProbeResult:
+def safe_http_probe(
+    campaign,
+    finding,
+    *,
+    opener=None,
+    sleep_fn=_DEFAULT_SLEEP,
+) -> ProbeResult:
     """Capture bounded HTTP evidence and optionally one inert differential sample.
 
     Active validation and differential validation are independently gated off by
@@ -243,8 +252,8 @@ def safe_http_probe(campaign, finding) -> ProbeResult:
     differential_enabled = _bool_env("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", False)
     timeout = _validation_timeout_seconds()
     max_bytes = _validation_max_bytes()
-    opener = build_opener(_NoRedirect())
-    baseline = _request_get(opener, url, timeout=timeout, max_bytes=max_bytes)
+    request_opener = opener if opener is not None else build_opener(_NoRedirect())
+    baseline = _request_get(request_opener, url, timeout=timeout, max_bytes=max_bytes)
     if baseline.status == "error":
         return ProbeResult(
             status="error",
@@ -263,9 +272,10 @@ def safe_http_probe(campaign, finding) -> ProbeResult:
             }
         else:
             marker_url, parameter, marker = marker_request
-            time.sleep(1.0 / _validation_rps(campaign))
+            effective_sleep = time.sleep if sleep_fn is _DEFAULT_SLEEP else sleep_fn
+            effective_sleep(1.0 / _validation_rps(campaign))
             marker_observation = _request_get(
-                opener,
+                request_opener,
                 marker_url,
                 timeout=timeout,
                 max_bytes=max_bytes,
