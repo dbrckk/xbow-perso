@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from app import worker_service
+from app import main, worker_service
+from app.campaign_audit import append_campaign_event
 from app.job_provenance import attach_job_provenance
 from app.jobqueue import JobQueue
 from app.main import Campaign, CampaignState, Finding, ProgramRules, TargetInput
@@ -284,6 +285,99 @@ def run_worker_failure_scenario(root, monkeypatch) -> ScenarioResult:
             counters={
                 "attempts": attempts,
                 "successful_outcomes": successful_outcomes,
+            },
+        ),
+    )
+
+
+def run_outbox_recovery_scenario(root, monkeypatch) -> ScenarioResult:
+    db_path = str(root / "outbox.sqlite3")
+    artifact_root = str(root / "outbox-artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db_path)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifact_root)
+
+    store = Storage(db_path, artifact_root)
+    queue = JobQueue(db_path)
+
+    campaign = _durable_campaign("self-owned-outbox-repair")
+    campaign.state = CampaignState.running
+    request_id = "rehearsal-report-after-enqueue"
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "report_requested",
+            "request_id": request_id,
+            "platform": "generic",
+            "purpose": "manual",
+            "at": main.utcnow(),
+        },
+    )
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+
+    existing = queue.enqueue(
+        campaign.id,
+        "report",
+        {"campaign_id": campaign.id, "platform": "generic"},
+        max_attempts=2,
+        dedupe_key=f"report:generic:{request_id}",
+    )
+    jobs_before = int(queue.stats()["total"])
+    repair = main.reconcile_campaign_outbox_local(campaign.id)
+    jobs_after_repair = int(queue.stats()["total"])
+    persisted = store.get_campaign(campaign.id) or {}
+    queued_events = [
+        event
+        for event in persisted.get("events", [])
+        if event.get("type") == "report_queued"
+        and event.get("request_id") == request_id
+    ]
+
+    missing = _durable_campaign("self-owned-outbox-missing")
+    missing.state = CampaignState.validating
+    append_campaign_event(
+        missing.events,
+        {
+            "type": "validation_requested",
+            "request_id": "validation:missing-rehearsal",
+            "finding_id": "missing-rehearsal",
+            "at": main.utcnow(),
+        },
+    )
+    store.save_campaign(missing.model_dump(mode="json"), expected_version=0)
+    missing_result = main.reconcile_campaign_outbox_local(missing.id)
+    jobs_after = int(queue.stats()["total"])
+
+    repaired_events = int(repair.get("repaired", 0))
+    valid = (
+        jobs_before == 1
+        and jobs_after_repair == 1
+        and jobs_after == 1
+        and repaired_events == 1
+        and repair.get("remaining") == []
+        and len(queued_events) == 1
+        and queued_events[0].get("job_id") == existing["id"]
+        and queued_events[0].get("reconciled_locally") is True
+        and missing_result.get("repaired") == 0
+        and bool(missing_result.get("remaining"))
+        and missing_result["remaining"][0].get("diagnosis") == "job_missing"
+        and missing_result.get("automatic_job_creation") is False
+    )
+    return ScenarioResult(
+        name="crash_window_outbox_recovery",
+        status="pass" if valid else "fail",
+        reason=(
+            "audit_reconciled_without_job_recreation"
+            if valid
+            else "outbox_recovery_invariant_failed"
+        ),
+        references=ScenarioReferences(
+            campaign_id=campaign.id,
+            job_ids=(existing["id"],),
+            event_types=("report_requested", "report_queued"),
+            counters={
+                "jobs_before": jobs_before,
+                "jobs_after": jobs_after,
+                "repaired_events": repaired_events,
             },
         ),
     )
