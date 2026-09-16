@@ -120,7 +120,9 @@ services:
 
   scanner-worker:
     profiles: ["scanner"]
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.scanner
     command: ["python", "-m", "app.worker_service"]
     restart: unless-stopped
     init: true
@@ -140,7 +142,7 @@ services:
       XBOW_SANDBOX_NO_NEW_PRIVILEGES: "true"
       XBOW_SANDBOX_CAP_DROP_ALL: "true"
       XBOW_SCANNER_ALLOWED_ENGINES: ${XBOW_SCANNER_ALLOWED_ENGINES:-nuclei}
-      XBOW_NUCLEI_ALLOWED_VERSION: ${XBOW_NUCLEI_ALLOWED_VERSION:-}
+      XBOW_NUCLEI_ALLOWED_VERSION: ${XBOW_NUCLEI_ALLOWED_VERSION:-3.11.1}
       XBOW_MAX_AUTONOMOUS_RPS: ${XBOW_MAX_AUTONOMOUS_RPS:-2.0}
       WORKER_TIMEOUT_SECONDS: ${WORKER_TIMEOUT_SECONDS:-7200}
       XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
