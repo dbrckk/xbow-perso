@@ -146,7 +146,7 @@ def test_pentagi_plan_refuses_unsafe_campaign_flags(flag):
         )
 
 
-def test_controlled_pentagi_plan_is_execution_capable_without_direct_tools(monkeypatch):
+def test_controlled_flag_cannot_claim_graphql_function_enforcement(monkeypatch):
     monkeypatch.setenv("XBOW_PENTAGI_CONTROLLED_FUNCTIONS", "true")
     plan = build_pentagi_flow_plan(
         _campaign(),
@@ -154,17 +154,9 @@ def test_controlled_pentagi_plan_is_execution_capable_without_direct_tools(monke
         model_provider="openai",
     )
 
-    assert plan.dry_run is False
-    assert plan.execution_supported is True
-    assert plan.payload["variables"]["functions"]["terminal"] is False
-    assert plan.payload["variables"]["functions"]["browser"] is False
-    assert plan.payload["variables"]["functions"]["external"] == [
-        "request_recon",
-        "request_nuclei_scan",
-        "get_job_status",
-        "get_findings",
-        "request_validation",
-    ]
+    assert plan.dry_run is True
+    assert plan.execution_supported is False
+    assert "functions" not in plan.payload["variables"]
 
 
 def test_controlled_pentagi_plan_stays_preview_only_without_contract(monkeypatch):
