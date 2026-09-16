@@ -116,7 +116,7 @@ def test_hackerone_provenance_rejects_binding_substitution(tmp_path, monkeypatch
     assert "external_policy_fingerprint_mismatch" in verification["reasons"]
 
 
-def test_hackerone_conservative_dry_run_queues_one_verified_job(tmp_path, monkeypatch):
+def test_hackerone_conservative_dry_run_queues_one_verified_nuclei_job(tmp_path, monkeypatch):
     db = str(tmp_path / "campaigns.sqlite3")
     artifacts = str(tmp_path / "artifacts")
     queue_db = str(tmp_path / "jobs.sqlite3")
@@ -133,6 +133,8 @@ def test_hackerone_conservative_dry_run_queues_one_verified_job(tmp_path, monkey
     assert start_result["campaign_id"] == campaign_id
     assert start_result["state"] == main.CampaignState.running
     assert start_result["audit_reconciled"] is True
+    assert start_result["job"]["kind"] == "nuclei_scan"
+    assert start_result["job"]["payload"]["_provenance"]["job_kind"] == "nuclei_scan"
     assert jobs.stats()["total"] == 1
 
     persisted = Storage(db, artifacts).get_campaign(campaign_id)
@@ -147,6 +149,7 @@ def test_hackerone_conservative_dry_run_queues_one_verified_job(tmp_path, monkey
     job = jobs.get(started_events[0]["job_id"])
     assert job is not None
     assert job["status"] == "queued"
+    assert job["kind"] == "nuclei_scan"
     verification = verify_job_provenance(job, started)
     assert verification["valid"] is True
     assert verification["reasons"] == []
