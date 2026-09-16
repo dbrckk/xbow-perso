@@ -81,8 +81,9 @@ def test_nuclei_plan_is_http_only_bounded_and_non_destructive(monkeypatch, tmp_p
     command = plan.command
 
     assert command[command.index("-type") + 1] == "http"
+    assert command[command.index("-templates") + 1] == "/opt/nuclei-templates"
     assert command[command.index("-tags") + 1] == "tech,misconfig,exposure"
-    assert command[command.index("-exclude-tags") + 1] == "dos,fuzz"
+    assert command[command.index("-exclude-tags") + 1] == "dos,fuzz,intrusive,default-login,bruteforce"
     assert command[command.index("-rate-limit") + 1] == "2"
     assert command[command.index("-concurrency") + 1] == "1"
     assert command[command.index("-bulk-size") + 1] == "1"
@@ -119,7 +120,7 @@ def test_nuclei_plan_fails_closed_outside_scope(monkeypatch, tmp_path):
         build_nuclei_plan(campaign, str(root / "job-1"))
 
 
-def test_nuclei_execution_uses_isolated_home(monkeypatch, tmp_path):
+def test_nuclei_execution_uses_isolated_home_and_blocks_template_downloads(monkeypatch, tmp_path):
     root = _configure_run_root(monkeypatch, tmp_path)
     monkeypatch.setenv("DRY_RUN", "false")
     monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
@@ -155,6 +156,14 @@ def test_nuclei_execution_uses_isolated_home(monkeypatch, tmp_path):
     assert captured["env"]["HOME"] != "/tmp/untrusted-home"
     assert "LLM_API_KEY" not in captured["env"]
     assert os.path.isdir(captured["env"]["HOME"])
+    for name in (
+        "DISABLE_NUCLEI_TEMPLATES_PUBLIC_DOWNLOAD",
+        "DISABLE_NUCLEI_TEMPLATES_GITHUB_DOWNLOAD",
+        "DISABLE_NUCLEI_TEMPLATES_GITLAB_DOWNLOAD",
+        "DISABLE_NUCLEI_TEMPLATES_AWS_DOWNLOAD",
+        "DISABLE_NUCLEI_TEMPLATES_AZURE_DOWNLOAD",
+    ):
+        assert captured["env"][name] == "true"
 
 
 def test_nuclei_active_execution_requires_allowlisted_runtime(monkeypatch, tmp_path):
