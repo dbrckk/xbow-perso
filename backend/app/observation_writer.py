@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 
 from .main import Campaign, Finding
 from .observation_graph import Observation
@@ -104,6 +105,34 @@ def record_finding_chain(
     return observation.id
 
 
+def _differential_artifact_metadata(
+    store: Storage,
+    campaign: Campaign,
+    artifact: dict,
+    *,
+    source: str,
+    kind: str,
+) -> dict[str, object]:
+    if (
+        kind != "validation"
+        or source != "independent-http-validator"
+        or artifact.get("kind") != "validation"
+        or artifact.get("media_type") != "application/json"
+    ):
+        return {}
+    _metadata, content = store.read_artifact(campaign.id, str(artifact["id"]))
+    try:
+        payload = json.loads(content.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    from .differential_intelligence import differential_signal_metadata
+
+    differential = payload.get("differential")
+    return differential_signal_metadata(differential if isinstance(differential, dict) else None)
+
+
 def record_artifact(
     store: Storage,
     campaign: Campaign,
@@ -125,13 +154,20 @@ def record_artifact(
     artifact_metadata = {
         key: value for key, value in artifact_metadata.items() if value is not None
     }
+    differential_metadata = _differential_artifact_metadata(
+        store,
+        campaign,
+        artifact,
+        source=source,
+        kind=kind,
+    )
     observation = Observation(
         id=f"{kind}:{artifact['id']}",
         kind=kind,
         value=value or artifact["id"],
         source=source,
         parent_ids=parent_ids,
-        metadata={**(metadata or {}), **artifact_metadata},
+        metadata={**(metadata or {}), **differential_metadata, **artifact_metadata},
     )
     store.put_observation(campaign.id, observation.to_dict())
     return observation.id
