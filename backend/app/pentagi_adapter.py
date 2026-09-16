@@ -153,16 +153,31 @@ def build_pentagi_flow_plan(
     if not _PROVIDER_RE.fullmatch(provider):
         raise PentagiPolicyError("PentAGI model provider is invalid")
 
+    controlled = (os.getenv("XBOW_PENTAGI_CONTROLLED_FUNCTIONS") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    variables: dict[str, object] = {
+        "provider": provider,
+        "input": _flow_input(campaign, target),
+    }
+    if controlled:
+        variables["functions"] = {
+            "terminal": False,
+            "browser": False,
+            "external": list(_CONTROLLED_EXTERNAL_FUNCTIONS),
+        }
     payload: dict[str, object] = {
         "query": _CREATE_FLOW_MUTATION,
-        "variables": {
-            "provider": provider,
-            "input": _flow_input(campaign, target),
-        },
+        "variables": variables,
     }
     return PentagiFlowPlan(
         endpoint=endpoint,
         payload=payload,
         target=target,
         model_provider=provider,
+        dry_run=not controlled,
+        execution_supported=controlled,
     )
