@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
+from fastapi import HTTPException
+
 from app import main, worker_service
 from app.campaign_audit import append_campaign_event
 from app.job_provenance import attach_job_provenance
@@ -378,6 +380,98 @@ def run_outbox_recovery_scenario(root, monkeypatch) -> ScenarioResult:
                 "jobs_before": jobs_before,
                 "jobs_after": jobs_after,
                 "repaired_events": repaired_events,
+            },
+        ),
+    )
+
+
+def run_cancellation_scenario(root, monkeypatch) -> ScenarioResult:
+    db_path = str(root / "cancel.sqlite3")
+    artifact_root = str(root / "cancel-artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db_path)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifact_root)
+
+    store = Storage(db_path, artifact_root)
+    queue = JobQueue(db_path)
+    campaign = _durable_campaign("self-owned-cancellation")
+    campaign.state = CampaignState.running
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+
+    running = queue.enqueue(
+        campaign.id,
+        "report",
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": "generic"},
+            campaign,
+            job_kind="report",
+            action="report",
+        ),
+        max_attempts=2,
+        dedupe_key="rehearsal-cancel-running",
+    )
+    claimed = queue.claim("worker-cancel-rehearsal")
+    if claimed is None or claimed["id"] != running["id"]:
+        return ScenarioResult(
+            name="cancellation_enforcement",
+            status="fail",
+            reason="running_job_claim_failed",
+        )
+
+    queued = queue.enqueue(
+        campaign.id,
+        "report",
+        attach_job_provenance(
+            {"campaign_id": campaign.id, "platform": "generic"},
+            campaign,
+            job_kind="report",
+            action="report",
+        ),
+        max_attempts=2,
+        dedupe_key="rehearsal-cancel-queued",
+    )
+    before_admission = int(queue.stats()["total"])
+    cancelled = main.cancel_campaign(campaign.id)
+
+    admission_blocked = False
+    try:
+        main.queue_report(campaign.id)
+    except HTTPException as exc:
+        admission_blocked = exc.status_code == 409 and "cancelled" in str(exc.detail).lower()
+    after_admission = int(queue.stats()["total"])
+
+    running_final = queue.get(running["id"])
+    queued_final = queue.get(queued["id"])
+    persisted = store.get_campaign(campaign.id) or {}
+    post_cancel_admissions = max(0, after_admission - before_admission)
+    valid = (
+        cancelled.get("state") == CampaignState.cancelled
+        and cancelled.get("cancelled_queued_jobs") == 1
+        and cancelled.get("running_jobs") == 1
+        and cancelled.get("running_jobs_not_forcibly_terminated") is True
+        and running_final is not None
+        and running_final.get("status") == "running"
+        and queued_final is not None
+        and queued_final.get("status") == "cancelled"
+        and persisted.get("state") == "cancelled"
+        and admission_blocked
+        and post_cancel_admissions == 0
+    )
+    return ScenarioResult(
+        name="cancellation_enforcement",
+        status="pass" if valid else "fail",
+        reason=(
+            "queued_cancelled_running_reported_new_work_blocked"
+            if valid
+            else "cancellation_invariant_failed"
+        ),
+        references=ScenarioReferences(
+            campaign_id=campaign.id,
+            job_ids=(running["id"], queued["id"]),
+            event_types=("campaign_cancelled",),
+            counters={
+                "queued_cancelled": int(cancelled.get("cancelled_queued_jobs", -1)),
+                "running_jobs": int(cancelled.get("running_jobs", -1)),
+                "post_cancel_admissions": post_cancel_admissions,
             },
         ),
     )
