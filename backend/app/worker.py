@@ -124,7 +124,7 @@ def build_nuclei_plan(campaign: Campaign, output_dir: str = "/data/nuclei_runs")
         "-tags",
         "tech,misconfig,exposure",
         "-exclude-tags",
-        "dos,fuzz",
+        "dos,fuzz,intrusive,default-login,bruteforce",
         "-disable-unsigned-templates",
         "-no-interactsh",
         "-restrict-local-network-access",
