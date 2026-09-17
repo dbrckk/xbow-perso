@@ -91,3 +91,4 @@ jobs:
             caddy:2.11.4-alpine \
             caddy validate --config /etc/caddy/Caddyfile
       - run: docker compose build --pull
+      - run: docker compose --profile scanner build --pull scanner-worker
