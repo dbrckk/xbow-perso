@@ -8,6 +8,7 @@ from app.pentagi_action_gateway import (
 )
 from app.pentagi_adapter import build_pentagi_flow_plan
 from app.pentagi_admission import evaluate_pentagi_admission
+from app.storage import Storage
 
 
 def _campaign(*, rps=1.0):
@@ -147,4 +148,53 @@ def test_gateway_rejects_unknown_action(monkeypatch):
         authorize_pentagi_action(
             binding, campaign, kind="shell",
             target="https://app.example.test", requested_rps=0.5,
+        )
+
+
+def test_storage_persists_and_loads_pentagi_flow_binding(monkeypatch, tmp_path):
+    campaign = _campaign()
+    binding = _binding(monkeypatch, campaign)
+    store = Storage(str(tmp_path / "xbow.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    stored = store.put_pentagi_flow_binding(
+        {
+            "flow_id": binding.flow_id,
+            "campaign_id": binding.campaign_id,
+            "policy_fingerprint": binding.policy_fingerprint,
+            "endpoint": binding.endpoint,
+            "model_provider": binding.model_provider,
+        }
+    )
+
+    assert stored["flow_id"] == binding.flow_id
+    assert store.get_pentagi_flow_binding(binding.flow_id) == stored
+
+
+def test_storage_rejects_pentagi_flow_rebinding(monkeypatch, tmp_path):
+    campaign = _campaign()
+    binding = _binding(monkeypatch, campaign)
+    store = Storage(str(tmp_path / "xbow.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign(campaign.model_dump(mode="json"))
+    store.put_pentagi_flow_binding(
+        {
+            "flow_id": binding.flow_id,
+            "campaign_id": binding.campaign_id,
+            "policy_fingerprint": binding.policy_fingerprint,
+            "endpoint": binding.endpoint,
+            "model_provider": binding.model_provider,
+        }
+    )
+
+    other = campaign.model_copy(update={"id": "campaign-other"})
+    store.save_campaign(other.model_dump(mode="json"))
+    with pytest.raises(ValueError, match="flow binding conflict"):
+        store.put_pentagi_flow_binding(
+            {
+                "flow_id": binding.flow_id,
+                "campaign_id": other.id,
+                "policy_fingerprint": binding.policy_fingerprint,
+                "endpoint": binding.endpoint,
+                "model_provider": binding.model_provider,
+            }
         )
