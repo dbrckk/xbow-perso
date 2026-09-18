@@ -263,16 +263,73 @@
       item?.kind==='report'&&String(item?.idempotency_key||'').endsWith(':report:hackerone')
     );
     const button=el('h1ReportDraft');
+    const download=el('h1ReportDownload');
     const status=el('h1ReportStatus');
     if(reportArtifact){
       button.disabled=true;
-      status.textContent='Brouillon HackerOne généré · artifact '+String(reportArtifact.id||'');
+      download.disabled=false;
+      download.classList.remove('hidden');
+      download.dataset.artifactId=String(reportArtifact.id||'');
+      const sha=String(reportArtifact.sha256||'');
+      status.textContent='Brouillon HackerOne généré · artifact '+String(reportArtifact.id||'')+
+        (sha?' · SHA-256 '+sha.slice(0,12)+'…':'');
     }else if(ready>0){
       button.disabled=false;
+      download.disabled=true;
+      download.classList.add('hidden');
+      delete download.dataset.artifactId;
       status.textContent=ready+' finding(s) prêt(s) à soumettre · validation humaine requise avant envoi.';
     }else{
       button.disabled=true;
+      download.disabled=true;
+      download.classList.add('hidden');
+      delete download.dataset.artifactId;
       status.textContent='Brouillon bloqué · '+blocked+' finding(s) incomplet(s) ou non validé(s).';
+    }
+  }
+
+  async function downloadHackerOneReport(){
+    if(!runMonitorCampaignId)return;
+    const button=el('h1ReportDownload');
+    const artifactId=String(button.dataset.artifactId||'');
+    if(!artifactId)return;
+    button.disabled=true;
+    el('h1ReportStatus').textContent='Téléchargement du brouillon HackerOne…';
+    try{
+      const headers={};
+      const token=String(el('token')?.value||'').trim();
+      if(token)headers.authorization='Bearer '+token;
+      const response=await fetch(
+        '/api/campaigns/'+encodeURIComponent(runMonitorCampaignId)+
+        '/artifacts/'+encodeURIComponent(artifactId),
+        {headers}
+      );
+      if(!response.ok){
+        let detail='HTTP '+response.status;
+        try{
+          const body=await response.json();
+          detail=body?.detail
+            ?(typeof body.detail==='string'?body.detail:JSON.stringify(body.detail))
+            :detail;
+        }catch{}
+        throw new Error(detail);
+      }
+      const blob=await response.blob();
+      const objectUrl=URL.createObjectURL(blob);
+      const link=document.createElement('a');
+      link.href=objectUrl;
+      link.download='hackerone-report-'+artifactId+'.md';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(objectUrl),0);
+      const sha=String(response.headers.get('x-content-sha256')||'');
+      el('h1ReportStatus').textContent='Brouillon HackerOne téléchargé'+
+        (sha?' · SHA-256 '+sha.slice(0,12)+'…':'')+'.';
+    }catch(error){
+      el('h1ReportStatus').textContent='Téléchargement impossible : '+error.message;
+    }finally{
+      button.disabled=false;
     }
   }
 
@@ -715,6 +772,7 @@
   });
   el('h1Launch').addEventListener('click',launch);
   el('h1ReportDraft').addEventListener('click',()=>void queueHackerOneReport());
+  el('h1ReportDownload').addEventListener('click',()=>void downloadHackerOneReport());
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
 })();
