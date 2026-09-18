@@ -120,6 +120,7 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
         "h1NeedsInfoRequest",
         "h1NeedsInfoCopy",
         "h1NeedsInfoDraft",
+        "h1ActivitySummary",
         "h1ReportTimeline",
         "h1ReportStatus",
     ):
@@ -134,7 +135,13 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
     assert "renderHackerOneNeedsInfo" in launcher
     assert "copyHackerOneNeedsInfoDraft" in launcher
     assert "renderHackerOneReportTimeline" in launcher
+    assert "hackerOneActivityLabel" in launcher
     assert "hackerone_report_status_synced" in launcher
+    assert "hackerone_public_activity_observed" in launcher
+    assert "activity-bounty-awarded" in launcher
+    assert "activity-bug-duplicate" in launcher
+    assert "activity-bug-informative" in launcher
+    assert "activity-bug-resolved" in launcher
     assert "revokeHackerOneReportApproval" in launcher
     assert "report-readiness" in launcher
     assert "reports?platform=hackerone" in launcher
