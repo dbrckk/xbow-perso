@@ -136,6 +136,17 @@ def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(
     assert counts["nuclei_scan"] == 1
     assert counts["independent_validation"] == 1
 
+    validation_job = queue.get_by_dedupe(
+        campaign_id,
+        "independent_validation",
+        f"validation:{finding['id']}",
+    )
+    assert validation_job is not None
+    provenance = validation_job["payload"]["_provenance"]
+    assert provenance["job_kind"] == "independent_validation"
+    assert provenance["action"] == "validate"
+    assert provenance["external_policy_provider"] == "hackerone"
+
     artifacts_written = store.list_artifacts(campaign_id)
     assert any(item["kind"] == "scanner_stdout" for item in artifacts_written)
 
