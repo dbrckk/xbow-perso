@@ -127,7 +127,11 @@ function renderHackerOneReportTimeline(campaignData,artifactId)
 ⋮----
 function renderHackerOneRemoteReportStatus(remoteStatus)
 ⋮----
-function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval,remoteReportStatus)
+function renderHackerOneNeedsInfo(remoteStatus,needsInfoDraft)
+⋮----
+async function copyHackerOneNeedsInfoDraft()
+⋮----
+function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval,remoteReportStatus,needsInfoDraft)
 ⋮----
 async function refreshRunMonitor(campaignId)
 ⋮----

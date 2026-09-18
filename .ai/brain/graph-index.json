@@ -139,6 +139,7 @@
         "backend/tests/test_finding_review_metadata.py",
         "backend/tests/test_finding_triage.py",
         "backend/tests/test_frontend_policy_launcher.py",
+        "backend/tests/test_hackerone_needs_info.py",
         "backend/tests/test_hackerone_outbound_submission.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
         "backend/tests/test_hackerone_report_sync_worker.py",
@@ -199,7 +200,7 @@
         "backend/tests/test_worker_parser.py",
         "backend/tests/test_worker_state.py"
       ],
-      "in_degree": 142,
+      "in_degree": 143,
       "out_degree": 48,
       "path": "backend/app/main.py"
     },
@@ -257,6 +258,7 @@
         "backend/tests/test_hackerone_client.py",
         "backend/tests/test_hackerone_control_center_api.py",
         "backend/tests/test_hackerone_launch_api.py",
+        "backend/tests/test_hackerone_needs_info.py",
         "backend/tests/test_hackerone_nuclei_e2e.py",
         "backend/tests/test_hackerone_outbound_submission.py",
         "backend/tests/test_hackerone_remote_binding.py",
@@ -376,7 +378,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 169,
+      "in_degree": 170,
       "out_degree": 0,
       "path": "frontend/app.js"
     },
@@ -516,6 +518,7 @@
         "backend/tests/test_finding_triage.py",
         "backend/tests/test_hackerone_binding.py",
         "backend/tests/test_hackerone_launch_api.py",
+        "backend/tests/test_hackerone_needs_info.py",
         "backend/tests/test_hackerone_nuclei_e2e.py",
         "backend/tests/test_hackerone_outbound_submission.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
@@ -551,7 +554,7 @@
         "backend/tests/test_worker_observations.py",
         "backend/tests/test_worker_outcome_memory.py"
       ],
-      "in_degree": 67,
+      "in_degree": 68,
       "out_degree": 0,
       "path": "backend/app/storage.py"
     },
@@ -744,6 +747,63 @@
     },
     {
       "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/hackerone_client.py",
+        "backend/app/hackerone_needs_info.py",
+        "backend/app/hackerone_report_tracking.py",
+        "backend/app/hackerone_scope_import.py",
+        "backend/app/job_provenance.py",
+        "backend/app/main.py",
+        "backend/app/report_approval.py",
+        "backend/app/storage.py",
+        "backend/app/submission_state.py"
+      ],
+      "dependents": [
+        "backend/app/campaign_control.py",
+        "backend/tests/test_hackerone_binding.py",
+        "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_launch_api.py",
+        "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_nuclei_e2e.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_remote_binding.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_hackerone_scope_preview_api.py"
+      ],
+      "in_degree": 10,
+      "out_degree": 10,
+      "path": "backend/app/hackerone_api.py"
+    },
+    {
+      "dependencies": [
+        "backend/app/secret_vault.py"
+      ],
+      "dependents": [
+        "backend/app/browser.py",
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_binding.py",
+        "backend/app/hackerone_report_sync_worker.py",
+        "backend/app/main.py",
+        "backend/app/report_approval_api.py",
+        "backend/app/submission_api.py",
+        "backend/app/worker_service.py",
+        "backend/tests/test_api_idempotency.py",
+        "backend/tests/test_browser.py",
+        "backend/tests/test_campaign_audit.py",
+        "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_report_sync_worker.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_outbox_chaos.py",
+        "backend/tests/test_submission_api.py",
+        "backend/tests/test_worker_outcome_memory.py"
+      ],
+      "in_degree": 18,
+      "out_degree": 1,
+      "path": "backend/app/campaign_audit.py"
+    },
+    {
+      "dependencies": [
         "backend/app/attack_surface.py",
         "backend/app/differential_intelligence.py",
         "backend/app/evidence_chain.py",
@@ -769,60 +829,6 @@
       "in_degree": 9,
       "out_degree": 10,
       "path": "backend/app/red_team_decision.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/secret_vault.py"
-      ],
-      "dependents": [
-        "backend/app/browser.py",
-        "backend/app/hackerone_api.py",
-        "backend/app/hackerone_binding.py",
-        "backend/app/hackerone_report_sync_worker.py",
-        "backend/app/main.py",
-        "backend/app/report_approval_api.py",
-        "backend/app/submission_api.py",
-        "backend/app/worker_service.py",
-        "backend/tests/test_api_idempotency.py",
-        "backend/tests/test_browser.py",
-        "backend/tests/test_campaign_audit.py",
-        "backend/tests/test_hackerone_outbound_submission.py",
-        "backend/tests/test_hackerone_report_sync_worker.py",
-        "backend/tests/test_hackerone_report_tracking.py",
-        "backend/tests/test_outbox_chaos.py",
-        "backend/tests/test_submission_api.py",
-        "backend/tests/test_worker_outcome_memory.py"
-      ],
-      "in_degree": 17,
-      "out_degree": 1,
-      "path": "backend/app/campaign_audit.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/campaign_audit.py",
-        "backend/app/hackerone_client.py",
-        "backend/app/hackerone_report_tracking.py",
-        "backend/app/hackerone_scope_import.py",
-        "backend/app/job_provenance.py",
-        "backend/app/main.py",
-        "backend/app/report_approval.py",
-        "backend/app/storage.py",
-        "backend/app/submission_state.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_control.py",
-        "backend/tests/test_hackerone_binding.py",
-        "backend/tests/test_hackerone_control_center_api.py",
-        "backend/tests/test_hackerone_launch_api.py",
-        "backend/tests/test_hackerone_nuclei_e2e.py",
-        "backend/tests/test_hackerone_outbound_submission.py",
-        "backend/tests/test_hackerone_remote_binding.py",
-        "backend/tests/test_hackerone_report_tracking.py",
-        "backend/tests/test_hackerone_scope_preview_api.py"
-      ],
-      "in_degree": 9,
-      "out_degree": 9,
-      "path": "backend/app/hackerone_api.py"
     },
     {
       "dependencies": [
@@ -1812,8 +1818,8 @@
       "path": "backend/app/finding_consensus.py"
     }
   ],
-  "edge_count": 1052,
+  "edge_count": 1059,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 297,
+  "node_count": 299,
   "schema_version": 1
 }

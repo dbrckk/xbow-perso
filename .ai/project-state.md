@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T20:23:50Z
+Generated: 2026-09-18T20:49:07Z
 
 ### Git
 - Branch: `main`
-- Head: `14fecdb2744f`
-- Commit date: 2026-09-18T22:23:40+02:00
-- Commit: Merge pull request #221 from dbrckk/feat/hackerone-report-sync-worker-v3
-- Tracked files: 457
+- Head: `8bfe996d3fde`
+- Commit date: 2026-09-18T22:48:46+02:00
+- Commit: Merge pull request #222 from dbrckk/feat/hackerone-needs-info-drafts
+- Tracked files: 459
 
 ### Recently changed files
+- `backend/app/hackerone_report_tracking.py`
+- `README.md`
 - `frontend/sw.js`
-- `frontend/index.html`
+- `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/hackerone.js`
-- `docker-compose.yml`
-- `docker-compose.distributed.yml`
 
 ### Project signals
 - `pyproject.toml`

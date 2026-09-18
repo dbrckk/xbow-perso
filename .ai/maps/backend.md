@@ -79,6 +79,7 @@ app/
   hackerone_api.py
   hackerone_binding.py
   hackerone_client.py
+  hackerone_needs_info.py
   hackerone_report_sync_worker.py
   hackerone_report_tracking.py
   hackerone_scope_import.py
@@ -219,6 +220,7 @@ tests/
   test_hackerone_client.py
   test_hackerone_control_center_api.py
   test_hackerone_launch_api.py
+  test_hackerone_needs_info.py
   test_hackerone_nuclei_e2e.py
   test_hackerone_outbound_submission.py
   test_hackerone_remote_binding.py
@@ -2648,6 +2650,9 @@ remote_report_id = remote["remote_report_id"]
 ⋮----
 document = HackerOneClient().get_json(
 ⋮----
+status = project_remote_report_status(
+request = status.get("needs_more_info")
+⋮----
 store = storage()
 ⋮----
 current_state = submission_status(campaign, artifact)
@@ -2857,6 +2862,12 @@ canonical = {
 digest = hashlib.sha256(
 ```
 
+## File: app/hackerone_needs_info.py
+```python
+confirmed = [
+lines = [
+```
+
 ## File: app/hackerone_report_sync_worker.py
 ```python
 class HackerOneReportSyncError(RuntimeError)
@@ -2904,14 +2915,21 @@ team_handle = str(submission["team_handle"]).strip()
 ⋮----
 document = client.get_json(f"hackers/reports/{remote_report_id}")
 status = project_remote_report_status(
+needs_more_info = project_needs_more_info_request(
 ⋮----
 record = store.get_campaign_record(campaign_id)
 ⋮----
 latest_submission = latest_remote_submission(current, artifact_id)
 ⋮----
+events = current.setdefault("events", [])
+observed_at = utcnow()
+changed = False
+⋮----
 previous = _last_synced(current, artifact_id)
 ⋮----
-event = {
+changed = True
+⋮----
+previous_nmi = _last_needs_more_info(current, artifact_id)
 ⋮----
 def sync_once(store=None, client: HackerOneClient | None = None) -> dict[str, int]
 ⋮----
@@ -2935,6 +2953,9 @@ stats = sync_once()
 
 ## File: app/hackerone_report_tracking.py
 ```python
+MAX_ACTIVITY_MESSAGE_CHARS = 8192
+NEEDS_MORE_INFO_ACTIVITY_TYPE = "activity-bug-needs-more-info"
+⋮----
 TRACKED_TIMESTAMP_FIELDS = (
 ⋮----
 def _campaign_events(campaign: Any) -> list[dict[str, Any]]
@@ -2954,6 +2975,23 @@ team_handle = remote.get("team_handle")
 ⋮----
 data = document.get("data")
 ⋮----
+relationships = data.get("relationships")
+⋮----
+activities = relationships.get("activities")
+⋮----
+records = activities.get("data")
+⋮----
+activity_id = activity.get("id")
+attributes = activity.get("attributes")
+⋮----
+report_id = attributes.get("report_id")
+⋮----
+message = attributes.get("message")
+⋮----
+message = message.strip()[:MAX_ACTIVITY_MESSAGE_CHARS]
+created_at = attributes.get("created_at")
+updated_at = attributes.get("updated_at")
+⋮----
 attributes = data.get("attributes")
 ⋮----
 state = attributes.get("state")
@@ -2961,6 +2999,8 @@ state = attributes.get("state")
 projected = {
 ⋮----
 value = attributes.get(key)
+⋮----
+needs_more_info = project_needs_more_info_request(
 ⋮----
 def status_fingerprint_fields(status: dict[str, Any]) -> dict[str, Any]
 ```
@@ -9924,6 +9964,8 @@ def test_frontend_exposes_hackerone_live_run_monitor_contract()
 def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract()
 ⋮----
 def test_frontend_exposes_hackerone_human_review_controls()
+⋮----
+def test_frontend_needs_info_flow_has_no_remote_send_action()
 ```
 
 ## File: tests/test_hackerone_binding.py
@@ -10124,6 +10166,42 @@ result = response.json()
 persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
 ⋮----
 event_types = [event.get("type") for event in persisted["events"]]
+```
+
+## File: tests/test_hackerone_needs_info.py
+```python
+def _report_document(*, activity_type="activity-bug-needs-more-info", internal=False)
+⋮----
+def test_needs_more_info_projection_keeps_only_public_bounded_fields()
+⋮----
+result = project_needs_more_info_request(
+⋮----
+def test_needs_more_info_projection_ignores_internal_or_unrelated_activity()
+⋮----
+def _setup_campaign(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "db.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+campaign = Campaign(
+⋮----
+store = Storage(db, artifacts)
+⋮----
+def test_remote_status_includes_public_needs_more_info_request(tmp_path, monkeypatch)
+⋮----
+campaign = _setup_campaign(tmp_path, monkeypatch)
+⋮----
+result = hackerone_api.get_hackerone_remote_report_status(
+⋮----
+def test_needs_more_info_draft_is_local_and_contains_no_send_action(tmp_path, monkeypatch)
+⋮----
+result = hackerone_api.get_hackerone_needs_more_info_draft(
+⋮----
+draft = result["draft_markdown"]
+⋮----
+def test_needs_more_info_draft_requires_active_public_request(tmp_path, monkeypatch)
+⋮----
+document = _report_document(activity_type="activity-comment")
 ```
 
 ## File: tests/test_hackerone_nuclei_e2e.py
@@ -10401,6 +10479,19 @@ def test_sync_is_bounded_to_recent_campaign_limit(tmp_path, monkeypatch)
 older = Campaign(
 ⋮----
 client = _Client([_report("new", last_activity_at="2026-09-18T18:30:00Z")])
+⋮----
+def _needs_more_info_report()
+⋮----
+document = _report(
+⋮----
+def test_sync_records_public_needs_more_info_once(tmp_path, monkeypatch)
+⋮----
+response = _needs_more_info_report()
+⋮----
+first = _needs_more_info_report()
+second = _needs_more_info_report()
+⋮----
+stats = sync_once(store, _Client([second]))
 ```
 
 ## File: tests/test_hackerone_report_tracking.py
