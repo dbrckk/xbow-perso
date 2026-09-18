@@ -144,3 +144,28 @@ def test_pentagi_plan_refuses_unsafe_campaign_flags(flag):
             base_url="https://pentagi.example.test",
             model_provider="openai",
         )
+
+
+def test_controlled_flag_cannot_claim_graphql_function_enforcement(monkeypatch):
+    monkeypatch.setenv("XBOW_PENTAGI_CONTROLLED_FUNCTIONS", "true")
+    plan = build_pentagi_flow_plan(
+        _campaign(),
+        base_url="https://pentagi.example.test",
+        model_provider="openai",
+    )
+
+    assert plan.dry_run is True
+    assert plan.execution_supported is False
+    assert "functions" not in plan.payload["variables"]
+
+
+def test_controlled_pentagi_plan_stays_preview_only_without_contract(monkeypatch):
+    monkeypatch.delenv("XBOW_PENTAGI_CONTROLLED_FUNCTIONS", raising=False)
+    plan = build_pentagi_flow_plan(
+        _campaign(),
+        base_url="https://pentagi.example.test",
+        model_provider="openai",
+    )
+
+    assert plan.dry_run is True
+    assert plan.execution_supported is False
