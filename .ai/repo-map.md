@@ -149,6 +149,7 @@ backend/
     red_team_coverage.py
     red_team_decision.py
     redis_jobqueue.py
+    report_approval_api.py
     report_approval.py
     report_readiness.py
     report.py
@@ -310,6 +311,7 @@ backend/
     test_redis_integration.py
     test_redis_jobqueue_integration.py
     test_redis_jobqueue.py
+    test_report_approval_api.py
     test_report_approval.py
     test_report_readiness.py
     test_report.py
@@ -4559,6 +4561,7 @@ from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
 from .report_readiness import router as report_readiness_router  # noqa: E402
+from .report_approval_api import router as report_approval_router  # noqa: E402
 from .review_queue import router as review_queue_router  # noqa: E402
 ````
 
@@ -6728,6 +6731,38 @@ def heartbeat(self, job_id: str, worker_id: str) -> bool
 attempts = int(row["attempts"])
 max_attempts = int(row["max_attempts"])
 status = "completed" if success else ("queued" if attempts < max_attempts else "failed")
+````
+
+## File: backend/app/report_approval_api.py
+````python
+router = APIRouter()
+⋮----
+class ReportApprovalInput(BaseModel)
+⋮----
+reviewer: str = Field(min_length=1, max_length=120)
+⋮----
+@field_validator("reviewer")
+@classmethod
+    def normalize_reviewer(cls, value: str) -> str
+⋮----
+reviewer = value.strip()
+⋮----
+def _status(campaign_id: str, artifact_id: str)
+⋮----
+campaign = assert_campaign_exists(campaign_id)
+⋮----
+@router.get("/api/campaigns/{campaign_id}/reports/{artifact_id}/approval")
+def report_approval_status(campaign_id: str, artifact_id: str)
+⋮----
+store = storage()
+⋮----
+current = approval_status_from_storage(campaign, store, artifact_id)
+⋮----
+event = approval_event_from_storage(
+⋮----
+latest = assert_campaign_exists(campaign_id)
+⋮----
+relevant = [
 ````
 
 ## File: backend/app/report_approval.py
@@ -13309,6 +13344,58 @@ def fake_claim_kind(worker_id, kind)
 claimed = queue.claim_allowed(
 ````
 
+## File: backend/tests/test_report_approval_api.py
+````python
+TOKEN = "report-approval-test-" + "a" * 32
+⋮----
+def _setup(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "approval.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+campaign = Campaign(
+store = Storage(db, artifacts)
+⋮----
+artifact = store.put_artifact(
+⋮----
+def _headers()
+⋮----
+def test_report_approval_api_binds_exact_artifact_and_campaign_state(tmp_path, monkeypatch)
+⋮----
+client = TestClient(app)
+⋮----
+initial = client.get(
+⋮----
+approved = client.post(
+⋮----
+body = approved.json()
+⋮----
+persisted = store.get_campaign("h1-report-approval")
+event = next(item for item in persisted["events"] if item.get("type") == "report_approved")
+⋮----
+def test_report_approval_becomes_stale_when_submission_state_changes(tmp_path, monkeypatch)
+⋮----
+endpoint = f"/api/campaigns/h1-report-approval/reports/{artifact['id']}/approval"
+⋮----
+status = client.get(endpoint, headers=_headers())
+⋮----
+def test_report_approval_can_be_revoked_explicitly(tmp_path, monkeypatch)
+⋮----
+revoked = client.post(
+⋮----
+def test_report_approval_rejects_tampered_report_bytes(tmp_path, monkeypatch)
+⋮----
+metadata = store.get_artifact("h1-report-approval", artifact["id"])
+⋮----
+response = TestClient(app).post(
+⋮----
+def test_report_approval_route_rejects_non_report_artifact(tmp_path, monkeypatch)
+⋮----
+evidence = store.put_artifact(
+⋮----
+response = TestClient(app).get(
+````
+
 ## File: backend/tests/test_report_approval.py
 ````python
 def _campaign() -> Campaign
@@ -14688,13 +14775,19 @@ async function resolveHackerOneFinding(findingId,confirmed,editor)
 ⋮----
 function buildFindingReviewEditor(finding,readiness)
 ⋮----
-function renderHackerOneFindings(campaignData,artifacts,reportReadiness)
+function renderHackerOneFindings(campaignData,artifacts,reportReadiness,reportApproval)
 ⋮----
 async function downloadHackerOneReport()
 ⋮----
+function hackerOneReportReviewer()
+⋮----
+async function approveHackerOneReport()
+⋮----
+async function revokeHackerOneReportApproval()
+⋮----
 async function queueHackerOneReport()
 ⋮----
-function renderRunMonitor(campaignData,control,artifacts,reportReadiness)
+function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval)
 ⋮----
 async function refreshRunMonitor(campaignId)
 ⋮----

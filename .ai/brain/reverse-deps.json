@@ -132,10 +132,11 @@
         "backend/app/hackerone_api.py",
         "backend/app/hackerone_binding.py",
         "backend/app/main.py",
+        "backend/app/report_approval_api.py",
         "backend/app/submission_api.py",
         "backend/app/worker_service.py"
       ],
-      "in_degree": 6,
+      "in_degree": 7,
       "out_degree": 1
     },
     "backend/app/campaign_control.py": {
@@ -771,6 +772,7 @@
         "backend/app/policy_integrity.py",
         "backend/app/queue_backend.py",
         "backend/app/readiness.py",
+        "backend/app/report_approval_api.py",
         "backend/app/report_readiness.py",
         "backend/app/review_queue.py",
         "backend/app/runtime_capabilities.py",
@@ -823,6 +825,7 @@
         "backend/app/red_team_coverage.py",
         "backend/app/red_team_decision.py",
         "backend/app/report.py",
+        "backend/app/report_approval_api.py",
         "backend/app/report_readiness.py",
         "backend/app/review_queue.py",
         "backend/app/scanner_ingestion.py",
@@ -835,8 +838,8 @@
         "backend/app/worker.py",
         "backend/app/worker_service.py"
       ],
-      "in_degree": 53,
-      "out_degree": 47
+      "in_degree": 54,
+      "out_degree": 48
     },
     "backend/app/metrics.py": {
       "dependencies": [
@@ -1428,11 +1431,25 @@
     "backend/app/report_approval.py": {
       "dependencies": [],
       "dependents": [
+        "backend/app/report_approval_api.py",
         "backend/app/submission_api.py",
         "backend/app/submission_state.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 0
+    },
+    "backend/app/report_approval_api.py": {
+      "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/main.py",
+        "backend/app/report_approval.py",
+        "backend/app/storage.py"
+      ],
+      "dependents": [
+        "backend/app/main.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 4
     },
     "backend/app/report_readiness.py": {
       "dependencies": [
@@ -1581,6 +1598,7 @@
         "backend/app/observation_writer.py",
         "backend/app/orchestrator.py",
         "backend/app/postgres_storage.py",
+        "backend/app/report_approval_api.py",
         "backend/app/scanner_ingestion.py",
         "backend/app/scanner_worker.py",
         "backend/app/storage_backend.py",
@@ -1588,7 +1606,7 @@
         "backend/app/worker.py",
         "backend/app/worker_service.py"
       ],
-      "in_degree": 12,
+      "in_degree": 13,
       "out_degree": 0
     },
     "backend/app/storage_backend.py": {
@@ -2832,6 +2850,14 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "backend/tests/test_report_approval_api.py": {
+      "dependencies": [
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
     "backend/tests/test_report_readiness.py": {
       "dependencies": [
         "frontend/app.js"
@@ -3224,6 +3250,7 @@
         "backend/tests/test_redis_jobqueue_integration.py",
         "backend/tests/test_report.py",
         "backend/tests/test_report_approval.py",
+        "backend/tests/test_report_approval_api.py",
         "backend/tests/test_report_readiness.py",
         "backend/tests/test_review_queue.py",
         "backend/tests/test_rolling_telemetry.py",
@@ -3257,7 +3284,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 165,
+      "in_degree": 166,
       "out_degree": 0
     }
   },

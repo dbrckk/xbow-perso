@@ -109,13 +109,19 @@ async function resolveHackerOneFinding(findingId,confirmed,editor)
 ⋮----
 function buildFindingReviewEditor(finding,readiness)
 ⋮----
-function renderHackerOneFindings(campaignData,artifacts,reportReadiness)
+function renderHackerOneFindings(campaignData,artifacts,reportReadiness,reportApproval)
 ⋮----
 async function downloadHackerOneReport()
 ⋮----
+function hackerOneReportReviewer()
+⋮----
+async function approveHackerOneReport()
+⋮----
+async function revokeHackerOneReportApproval()
+⋮----
 async function queueHackerOneReport()
 ⋮----
-function renderRunMonitor(campaignData,control,artifacts,reportReadiness)
+function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval)
 ⋮----
 async function refreshRunMonitor(campaignId)
 ⋮----

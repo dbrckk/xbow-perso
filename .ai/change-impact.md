@@ -1,10 +1,13 @@
 # Change impact
 
-Base: d5c2e1571feaf68276c6cd603bc1bb9dd18fb69d
-Head: 4157e32610e85ad33c84a0396c8e245bb772bbf8
+Base: 742eb4e3b10c15f313179f366accc6159dcf63a7
+Head: 9136de874d60fde230eac49b9da156dac1f16c46
 
 ## Changed files
+- M backend/app/main.py
+- A backend/app/report_approval_api.py
 - M backend/tests/test_frontend_policy_launcher.py
+- A backend/tests/test_report_approval_api.py
 - M frontend/hackerone.js
 - M frontend/index.html
 - M frontend/sw.js

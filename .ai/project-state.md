@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T19:35:43Z
+Generated: 2026-09-18T19:41:53Z
 
 ### Git
 - Branch: `main`
-- Head: `4157e32610e8`
-- Commit date: 2026-09-18T21:35:07+02:00
-- Commit: Merge pull request #216 from dbrckk/feat/hackerone-report-download
-- Tracked files: 402
+- Head: `9136de874d60`
+- Commit date: 2026-09-18T21:41:41+02:00
+- Commit: Merge pull request #217 from dbrckk/feat/hackerone-report-approval
+- Tracked files: 418
 
 ### Recently changed files
-- `AGENTS.md`
-- `.github/workflows/ai-repo-map.yml`
-- `.repo-standards.yml`
 - `frontend/sw.js`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/hackerone.js`
+- `frontend/index.html`
+- `backend/app/main.py`
 
 ### Project signals
 - `pyproject.toml`
