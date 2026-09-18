@@ -160,7 +160,7 @@ def sync_once(store=None, client: HackerOneClient | None = None) -> dict[str, in
     store = store or create_storage()
     client = client or HackerOneClient()
 
-    campaigns = store.list_campaigns()[: _max_campaigns()]
+    campaigns = store.list_campaigns(limit=_max_campaigns())
     stats = {
         "campaigns_checked": 0,
         "reports_checked": 0,
