@@ -1,21 +1,13 @@
 # Change impact
 
-Base: c316f5c77f75a4ed9d74ee1d184084d795d433e4
-Head: 08665ef72e13e0f563079c76c27b75ed89dcba78
+Base: d59cbfe78a7dd8ec8d9ec3ccf393c534a27170ff
+Head: 7253221b1f6dabfd0759bb1d84241242067b2a7e
 
 ## Changed files
-- M README.md
-- M backend/app/hackerone_api.py
-- M backend/tests/test_frontend_policy_launcher.py
-- A backend/tests/test_hackerone_report_tracking.py
-- M frontend/hackerone.js
-- M frontend/index.html
-- M frontend/sw.js
+- M .repo-standards.yml
 
 ## Affected areas
 - (root)
-- backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

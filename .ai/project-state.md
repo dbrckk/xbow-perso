@@ -22,21 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T20:05:41Z
+Generated: 2026-09-18T20:11:19Z
 
 ### Git
 - Branch: `main`
-- Head: `08665ef72e13`
-- Commit date: 2026-09-18T22:05:26+02:00
-- Commit: Merge pull request #219 from dbrckk/feat/hackerone-report-tracking-v2
+- Head: `7253221b1f6d`
+- Commit date: 2026-09-18T22:10:57+02:00
+- Commit: chore(ai): enable Kotlin Java graph resolver
 - Tracked files: 425
 
 ### Recently changed files
+- `.repo-standards.yml`
 - `frontend/sw.js`
 - `frontend/index.html`
 - `frontend/hackerone.js`
-- `backend/tests/test_hackerone_report_tracking.py`
-- `backend/tests/test_frontend_policy_launcher.py`
 
 ### Project signals
 - `pyproject.toml`

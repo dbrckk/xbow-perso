@@ -14,9 +14,10 @@
       ],
       "dependents": [
         "backend/app/orchestrator.py",
-        "backend/app/recon_swarm.py"
+        "backend/app/recon_swarm.py",
+        "backend/tests/test_adaptive_cycle.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 9
     },
     "backend/app/agent_registry.py": {
@@ -25,9 +26,10 @@
         "backend/app/main.py",
         "backend/app/orchestrator.py",
         "backend/app/pipeline_swarm.py",
-        "backend/app/swarm_coordinator.py"
+        "backend/app/swarm_coordinator.py",
+        "backend/tests/test_agent_registry.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 0
     },
     "backend/app/alert_delivery.py": {
@@ -35,9 +37,10 @@
         "backend/app/secret_vault.py"
       ],
       "dependents": [
-        "backend/app/operational_alerts.py"
+        "backend/app/operational_alerts.py",
+        "backend/tests/test_alert_delivery.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "backend/app/api_outbox.py": {
@@ -46,17 +49,20 @@
         "backend/app/browser.py",
         "backend/app/main.py",
         "backend/app/metrics.py",
-        "backend/app/outbox_recovery.py"
+        "backend/app/outbox_recovery.py",
+        "backend/tests/test_api_outbox.py",
+        "backend/tests/test_browser.py"
       ],
-      "in_degree": 4,
+      "in_degree": 6,
       "out_degree": 0
     },
     "backend/app/api_rate_limit.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_api_rate_limit.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "backend/app/attack_surface.py": {
@@ -71,9 +77,11 @@
         "backend/app/coverage.py",
         "backend/app/orchestrator.py",
         "backend/app/red_team_coverage.py",
-        "backend/app/red_team_decision.py"
+        "backend/app/red_team_decision.py",
+        "backend/tests/test_attack_surface.py",
+        "backend/tests/test_attack_surface_scope.py"
       ],
-      "in_degree": 6,
+      "in_degree": 8,
       "out_degree": 3
     },
     "backend/app/auth.py": {
@@ -82,9 +90,11 @@
       ],
       "dependents": [
         "backend/app/main.py",
-        "backend/app/totp_auth.py"
+        "backend/app/totp_auth.py",
+        "backend/tests/test_auth.py",
+        "backend/tests/test_totp_auth.py"
       ],
-      "in_degree": 2,
+      "in_degree": 4,
       "out_degree": 1
     },
     "backend/app/autonomy_gate.py": {
@@ -100,9 +110,11 @@
       "dependents": [
         "backend/app/adaptive_cycle.py",
         "backend/app/orchestrator.py",
-        "backend/app/recon_swarm.py"
+        "backend/app/recon_swarm.py",
+        "backend/tests/test_adaptive_cycle.py",
+        "backend/tests/test_autonomy_gate.py"
       ],
-      "in_degree": 3,
+      "in_degree": 5,
       "out_degree": 7
     },
     "backend/app/browser.py": {
@@ -118,9 +130,10 @@
       ],
       "dependents": [
         "backend/app/main.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_browser.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 8
     },
     "backend/app/campaign_audit.py": {
@@ -134,9 +147,17 @@
         "backend/app/main.py",
         "backend/app/report_approval_api.py",
         "backend/app/submission_api.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_api_idempotency.py",
+        "backend/tests/test_browser.py",
+        "backend/tests/test_campaign_audit.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_outbox_chaos.py",
+        "backend/tests/test_submission_api.py",
+        "backend/tests/test_worker_outcome_memory.py"
       ],
-      "in_degree": 7,
+      "in_degree": 15,
       "out_degree": 1
     },
     "backend/app/campaign_control.py": {
@@ -152,9 +173,10 @@
         "backend/app/runtime_capabilities.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_campaign_circuit_breaker.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 9
     },
     "backend/app/campaign_overview.py": {
@@ -184,9 +206,11 @@
         "backend/app/validation_state.py"
       ],
       "dependents": [
-        "backend/app/submission_api.py"
+        "backend/app/submission_api.py",
+        "backend/tests/test_campaign_overview.py",
+        "backend/tests/test_overview_reasoning.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 23
     },
     "backend/app/campaign_review_state.py": {
@@ -198,9 +222,10 @@
       ],
       "dependents": [
         "backend/app/campaign_overview.py",
-        "backend/app/submission_api.py"
+        "backend/app/submission_api.py",
+        "backend/tests/test_campaign_review_state.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 4
     },
     "backend/app/campaign_risk.py": {
@@ -217,9 +242,11 @@
         "backend/app/adaptive_cycle.py",
         "backend/app/autonomy_gate.py",
         "backend/app/campaign_overview.py",
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_autonomy_gate.py",
+        "backend/tests/test_campaign_risk.py"
       ],
-      "in_degree": 4,
+      "in_degree": 6,
       "out_degree": 7
     },
     "backend/app/campaign_runtime.py": {
@@ -229,17 +256,23 @@
         "backend/app/autonomy_gate.py",
         "backend/app/campaign_control.py",
         "backend/app/campaign_overview.py",
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_campaign_runtime.py",
+        "backend/tests/test_orchestrator.py",
+        "backend/tests/test_runtime_budget_config.py"
       ],
-      "in_degree": 5,
+      "in_degree": 9,
       "out_degree": 0
     },
     "backend/app/chain_detector.py": {
       "dependencies": [
         "backend/app/observation_graph.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "backend/tests/test_chain_detector.py"
+      ],
+      "in_degree": 1,
       "out_degree": 1
     },
     "backend/app/circuit_breaker.py": {
@@ -248,9 +281,11 @@
       ],
       "dependents": [
         "backend/app/campaign_control.py",
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_orchestrator.py"
       ],
-      "in_degree": 2,
+      "in_degree": 4,
       "out_degree": 1
     },
     "backend/app/coverage.py": {
@@ -262,9 +297,10 @@
       ],
       "dependents": [
         "backend/app/main.py",
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_coverage.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 4
     },
     "backend/app/decision_audit.py": {
@@ -275,9 +311,10 @@
       "dependents": [
         "backend/app/decision_timeline.py",
         "backend/app/main.py",
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_decision_audit.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 2
     },
     "backend/app/decision_consensus.py": {
@@ -291,9 +328,11 @@
         "backend/app/autonomy_gate.py",
         "backend/app/campaign_overview.py",
         "backend/app/campaign_risk.py",
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_autonomy_gate.py",
+        "backend/tests/test_decision_consensus.py"
       ],
-      "in_degree": 5,
+      "in_degree": 7,
       "out_degree": 3
     },
     "backend/app/decision_timeline.py": {
@@ -306,9 +345,10 @@
       "dependents": [
         "backend/app/campaign_control.py",
         "backend/app/main.py",
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_decision_timeline.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 4
     },
     "backend/app/deployment_preflight.py": {
@@ -316,9 +356,11 @@
         "backend/app/runtime_capabilities.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_deployment_preflight.py",
+        "backend/tests/test_nuclei_preflight.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 1
     },
     "backend/app/differential_intelligence.py": {
@@ -328,18 +370,20 @@
       "dependents": [
         "backend/app/finding_intelligence.py",
         "backend/app/observation_writer.py",
-        "backend/app/red_team_decision.py"
+        "backend/app/red_team_decision.py",
+        "backend/tests/test_differential_intelligence.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 1
     },
     "backend/app/domain_incident_lifecycle.py": {
       "dependencies": [],
       "dependents": [
         "backend/app/incident_api.py",
-        "backend/app/incident_observer.py"
+        "backend/app/incident_observer.py",
+        "backend/tests/test_domain_incident_lifecycle.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 0
     },
     "backend/app/dr_cli.py": {
@@ -355,17 +399,19 @@
         "backend/app/secret_vault.py"
       ],
       "dependents": [
-        "backend/app/dr_cli.py"
+        "backend/app/dr_cli.py",
+        "backend/tests/test_dr_manifest.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "backend/app/error_budget.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/incident_observer.py"
+        "backend/app/incident_observer.py",
+        "backend/tests/test_error_budget.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "backend/app/evidence_chain.py": {
@@ -384,9 +430,10 @@
         "backend/app/red_team_coverage.py",
         "backend/app/red_team_decision.py",
         "backend/app/report_readiness.py",
-        "backend/app/review_queue.py"
+        "backend/app/review_queue.py",
+        "backend/tests/test_evidence_chain.py"
       ],
-      "in_degree": 9,
+      "in_degree": 10,
       "out_degree": 4
     },
     "backend/app/evidence_quality.py": {
@@ -403,9 +450,10 @@
         "backend/app/main.py",
         "backend/app/orchestrator.py",
         "backend/app/report_readiness.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_evidence_quality.py"
       ],
-      "in_degree": 7,
+      "in_degree": 8,
       "out_degree": 4
     },
     "backend/app/finding_cluster_consensus.py": {
@@ -418,9 +466,10 @@
       "dependents": [
         "backend/app/finding_intelligence.py",
         "backend/app/main.py",
-        "backend/app/red_team_decision.py"
+        "backend/app/red_team_decision.py",
+        "backend/tests/test_finding_cluster_consensus.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 4
     },
     "backend/app/finding_cluster_saturation.py": {
@@ -433,9 +482,10 @@
       ],
       "dependents": [
         "backend/app/finding_intelligence.py",
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_finding_cluster_saturation.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 5
     },
     "backend/app/finding_consensus.py": {
@@ -447,9 +497,10 @@
         "backend/app/evidence_quality.py",
         "backend/app/finding_readiness.py",
         "backend/app/finding_triage.py",
-        "backend/app/report_readiness.py"
+        "backend/app/report_readiness.py",
+        "backend/tests/test_finding_consensus.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 2
     },
     "backend/app/finding_correlation.py": {
@@ -466,9 +517,10 @@
         "backend/app/finding_triage.py",
         "backend/app/main.py",
         "backend/app/orchestrator.py",
-        "backend/app/report_readiness.py"
+        "backend/app/report_readiness.py",
+        "backend/tests/test_finding_correlation.py"
       ],
-      "in_degree": 10,
+      "in_degree": 11,
       "out_degree": 1
     },
     "backend/app/finding_intelligence.py": {
@@ -483,9 +535,11 @@
         "backend/app/observation_graph.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_finding_intelligence.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 8
     },
     "backend/app/finding_lifecycle.py": {
@@ -498,9 +552,10 @@
       ],
       "dependents": [
         "backend/app/campaign_overview.py",
-        "backend/app/campaign_review_state.py"
+        "backend/app/campaign_review_state.py",
+        "backend/tests/test_finding_lifecycle.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 5
     },
     "backend/app/finding_readiness.py": {
@@ -516,9 +571,10 @@
         "backend/app/finding_cluster_consensus.py",
         "backend/app/finding_intelligence.py",
         "backend/app/main.py",
-        "backend/app/red_team_decision.py"
+        "backend/app/red_team_decision.py",
+        "backend/tests/test_finding_readiness.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 6
     },
     "backend/app/finding_triage.py": {
@@ -535,9 +591,10 @@
         "backend/app/campaign_overview.py",
         "backend/app/campaign_risk.py",
         "backend/app/finding_intelligence.py",
-        "backend/app/red_team_decision.py"
+        "backend/app/red_team_decision.py",
+        "backend/tests/test_finding_triage.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 7
     },
     "backend/app/hackerone_api.py": {
@@ -552,9 +609,17 @@
         "backend/app/submission_state.py"
       ],
       "dependents": [
-        "backend/app/campaign_control.py"
+        "backend/app/campaign_control.py",
+        "backend/tests/test_hackerone_binding.py",
+        "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_launch_api.py",
+        "backend/tests/test_hackerone_nuclei_e2e.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_remote_binding.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_hackerone_scope_preview_api.py"
       ],
-      "in_degree": 1,
+      "in_degree": 9,
       "out_degree": 8
     },
     "backend/app/hackerone_binding.py": {
@@ -573,9 +638,14 @@
         "backend/app/secret_vault.py"
       ],
       "dependents": [
-        "backend/app/hackerone_api.py"
+        "backend/app/hackerone_api.py",
+        "backend/tests/test_hackerone_client.py",
+        "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_remote_snapshot.py",
+        "backend/tests/test_hackerone_report_tracking.py"
       ],
-      "in_degree": 1,
+      "in_degree": 6,
       "out_degree": 2
     },
     "backend/app/hackerone_scope_import.py": {
@@ -585,9 +655,11 @@
       "dependents": [
         "backend/app/hackerone_api.py",
         "backend/app/hackerone_client.py",
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_hackerone_remote_snapshot.py",
+        "backend/tests/test_hackerone_scope_import.py"
       ],
-      "in_degree": 3,
+      "in_degree": 5,
       "out_degree": 1
     },
     "backend/app/hypothesis_engine.py": {
@@ -602,9 +674,11 @@
         "backend/app/campaign_overview.py",
         "backend/app/red_team_coverage.py",
         "backend/app/red_team_decision.py",
-        "backend/app/review_queue.py"
+        "backend/app/review_queue.py",
+        "backend/tests/test_form_waf_reasoning.py",
+        "backend/tests/test_hypothesis_engine.py"
       ],
-      "in_degree": 5,
+      "in_degree": 7,
       "out_degree": 4
     },
     "backend/app/hypothesis_memory.py": {
@@ -615,9 +689,10 @@
         "backend/app/finding_readiness.py",
         "backend/app/main.py",
         "backend/app/orchestrator.py",
-        "backend/app/review_queue.py"
+        "backend/app/review_queue.py",
+        "backend/tests/test_hypothesis_memory.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 1
     },
     "backend/app/incident_api.py": {
@@ -627,15 +702,26 @@
         "backend/app/incident_store.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_domain_lifecycle_integration.py",
+        "backend/tests/test_incident_api.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 3
     },
     "backend/app/incident_domains.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/incident_observer.py"
+        "backend/app/incident_observer.py",
+        "backend/tests/test_incident_domains.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 0
+    },
+    "backend/app/incident_engine.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/tests/test_incident_engine.py"
       ],
       "in_degree": 1,
       "out_degree": 0
@@ -643,9 +729,10 @@
     "backend/app/incident_lifecycle.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/incident_api.py"
+        "backend/app/incident_api.py",
+        "backend/tests/test_incident_lifecycle.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "backend/app/incident_observer.py": {
@@ -659,8 +746,12 @@
         "backend/app/observer_slo.py",
         "backend/app/operational_slo.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "backend/tests/test_domain_lifecycle_integration.py",
+        "backend/tests/test_incident_observer.py",
+        "backend/tests/test_observer_fencing_integration.py"
+      ],
+      "in_degree": 3,
       "out_degree": 8
     },
     "backend/app/incident_store.py": {
@@ -668,9 +759,15 @@
       "dependents": [
         "backend/app/incident_api.py",
         "backend/app/incident_observer.py",
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_domain_lifecycle_integration.py",
+        "backend/tests/test_incident_api.py",
+        "backend/tests/test_incident_observer.py",
+        "backend/tests/test_incident_store.py",
+        "backend/tests/test_incident_store_fencing.py",
+        "backend/tests/test_observer_fencing_integration.py"
       ],
-      "in_degree": 3,
+      "in_degree": 9,
       "out_degree": 0
     },
     "backend/app/job_provenance.py": {
@@ -682,9 +779,16 @@
         "backend/app/main.py",
         "backend/app/orchestrator.py",
         "backend/app/scanner_ingestion.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_campaign_cancel.py",
+        "backend/tests/test_hackerone_binding.py",
+        "backend/tests/test_job_provenance.py",
+        "backend/tests/test_job_provenance_api_integration.py",
+        "backend/tests/test_job_provenance_integration.py",
+        "backend/tests/test_worker_concurrency.py",
+        "backend/tests/test_worker_job_provenance.py"
       ],
-      "in_degree": 5,
+      "in_degree": 12,
       "out_degree": 1
     },
     "backend/app/jobqueue.py": {
@@ -696,9 +800,37 @@
         "backend/app/redis_jobqueue.py",
         "backend/app/scanner_ingestion.py",
         "backend/app/scanner_worker.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_api_idempotency.py",
+        "backend/tests/test_api_outbox.py",
+        "backend/tests/test_browser.py",
+        "backend/tests/test_campaign_cancel.py",
+        "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_control_views.py",
+        "backend/tests/test_distributed_concurrency.py",
+        "backend/tests/test_hackerone_binding.py",
+        "backend/tests/test_hackerone_nuclei_e2e.py",
+        "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+        "backend/tests/test_job_provenance_api_integration.py",
+        "backend/tests/test_job_provenance_integration.py",
+        "backend/tests/test_jobqueue.py",
+        "backend/tests/test_nuclei_queue_lifecycle.py",
+        "backend/tests/test_orchestrator.py",
+        "backend/tests/test_outbox_chaos.py",
+        "backend/tests/test_pentagi_control_api.py",
+        "backend/tests/test_pentagi_dispatch.py",
+        "backend/tests/test_pentagi_status_worker_service.py",
+        "backend/tests/test_pentagi_worker_service.py",
+        "backend/tests/test_planner_budget.py",
+        "backend/tests/test_queue_backend.py",
+        "backend/tests/test_queue_health.py",
+        "backend/tests/test_runtime_budget_config.py",
+        "backend/tests/test_scanner_ingestion.py",
+        "backend/tests/test_scanner_worker.py",
+        "backend/tests/test_worker_concurrency.py",
+        "backend/tests/test_worker_job_provenance.py"
       ],
-      "in_degree": 7,
+      "in_degree": 35,
       "out_degree": 0
     },
     "backend/app/knowledge_memory.py": {
@@ -714,9 +846,10 @@
         "backend/app/orchestrator.py",
         "backend/app/planner_advisory.py",
         "backend/app/planner_budget.py",
-        "backend/app/review_queue.py"
+        "backend/app/review_queue.py",
+        "backend/tests/test_knowledge_memory.py"
       ],
-      "in_degree": 9,
+      "in_degree": 10,
       "out_degree": 1
     },
     "backend/app/learning_memory.py": {
@@ -729,9 +862,12 @@
         "backend/app/campaign_overview.py",
         "backend/app/orchestrator.py",
         "backend/app/scanner_adaptation.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_adaptive_cycle.py",
+        "backend/tests/test_learning_memory.py",
+        "backend/tests/test_scanner_adaptation.py"
       ],
-      "in_degree": 5,
+      "in_degree": 8,
       "out_degree": 2
     },
     "backend/app/main.py": {
@@ -839,9 +975,96 @@
         "backend/app/submission_api.py",
         "backend/app/validator.py",
         "backend/app/worker.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_adaptive_cycle.py",
+        "backend/tests/test_api_idempotency.py",
+        "backend/tests/test_api_outbox.py",
+        "backend/tests/test_attack_surface.py",
+        "backend/tests/test_attack_surface_scope.py",
+        "backend/tests/test_auth.py",
+        "backend/tests/test_autonomy_gate.py",
+        "backend/tests/test_browser.py",
+        "backend/tests/test_campaign_cancel.py",
+        "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_campaign_overview.py",
+        "backend/tests/test_campaign_review_state.py",
+        "backend/tests/test_campaign_risk.py",
+        "backend/tests/test_control_views.py",
+        "backend/tests/test_coverage.py",
+        "backend/tests/test_decision_timeline.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_evidence_chain.py",
+        "backend/tests/test_evidence_quality.py",
+        "backend/tests/test_finding_cluster_consensus.py",
+        "backend/tests/test_finding_cluster_saturation.py",
+        "backend/tests/test_finding_consensus.py",
+        "backend/tests/test_finding_correlation.py",
+        "backend/tests/test_finding_intelligence.py",
+        "backend/tests/test_finding_lifecycle.py",
+        "backend/tests/test_finding_readiness.py",
+        "backend/tests/test_finding_review_metadata.py",
+        "backend/tests/test_finding_triage.py",
+        "backend/tests/test_frontend_policy_launcher.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_hackerone_scope_preview_api.py",
+        "backend/tests/test_health.py",
+        "backend/tests/test_hypothesis_engine.py",
+        "backend/tests/test_job_provenance.py",
+        "backend/tests/test_job_provenance_api_integration.py",
+        "backend/tests/test_job_provenance_integration.py",
+        "backend/tests/test_learning_memory.py",
+        "backend/tests/test_metrics.py",
+        "backend/tests/test_nuclei_queue_lifecycle.py",
+        "backend/tests/test_nuclei_worker_plan.py",
+        "backend/tests/test_observation_writer_provenance.py",
+        "backend/tests/test_openapi_integrity.py",
+        "backend/tests/test_operational_alerts.py",
+        "backend/tests/test_orchestrator.py",
+        "backend/tests/test_orchestrator_validation_alignment.py",
+        "backend/tests/test_outbox_chaos.py",
+        "backend/tests/test_overview_reasoning.py",
+        "backend/tests/test_pentagi_action_gateway.py",
+        "backend/tests/test_pentagi_adapter.py",
+        "backend/tests/test_pentagi_admission.py",
+        "backend/tests/test_pentagi_control.py",
+        "backend/tests/test_pentagi_control_api.py",
+        "backend/tests/test_pentagi_dispatch.py",
+        "backend/tests/test_pentagi_execution_guard.py",
+        "backend/tests/test_pentagi_transport.py",
+        "backend/tests/test_pentagi_worker_service.py",
+        "backend/tests/test_plan_evidence_quality.py",
+        "backend/tests/test_policy_integrity.py",
+        "backend/tests/test_policy_invariants.py",
+        "backend/tests/test_recon_swarm.py",
+        "backend/tests/test_recon_worker.py",
+        "backend/tests/test_red_team_coverage.py",
+        "backend/tests/test_red_team_decision.py",
+        "backend/tests/test_report.py",
+        "backend/tests/test_report_approval.py",
+        "backend/tests/test_report_approval_api.py",
+        "backend/tests/test_report_readiness.py",
+        "backend/tests/test_review_queue.py",
+        "backend/tests/test_runtime_budget_config.py",
+        "backend/tests/test_scan_payload_idempotency.py",
+        "backend/tests/test_scanner_ingestion.py",
+        "backend/tests/test_scanner_normalization.py",
+        "backend/tests/test_scanner_observation_chain.py",
+        "backend/tests/test_scanner_worker.py",
+        "backend/tests/test_scope.py",
+        "backend/tests/test_submission_api.py",
+        "backend/tests/test_submission_state.py",
+        "backend/tests/test_totp_auth.py",
+        "backend/tests/test_validator.py",
+        "backend/tests/test_worker_concurrency.py",
+        "backend/tests/test_worker_job_provenance.py",
+        "backend/tests/test_worker_observations.py",
+        "backend/tests/test_worker_outcome_memory.py",
+        "backend/tests/test_worker_parser.py",
+        "backend/tests/test_worker_state.py"
       ],
-      "in_degree": 54,
+      "in_degree": 141,
       "out_degree": 48
     },
     "backend/app/metrics.py": {
@@ -853,9 +1076,12 @@
       "dependents": [
         "backend/app/main.py",
         "backend/app/operational_alerts.py",
-        "backend/app/readiness.py"
+        "backend/app/readiness.py",
+        "backend/tests/test_metrics.py",
+        "backend/tests/test_queue_age_metrics.py",
+        "backend/tests/test_watchdog_observability.py"
       ],
-      "in_degree": 3,
+      "in_degree": 6,
       "out_degree": 3
     },
     "backend/app/nuclei_parser.py": {
@@ -864,9 +1090,10 @@
         "backend/app/scanner_normalization.py"
       ],
       "dependents": [
-        "backend/app/scanner_registry.py"
+        "backend/app/scanner_registry.py",
+        "backend/tests/test_scanner_normalization.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 2
     },
     "backend/app/observation_graph.py": {
@@ -914,9 +1141,58 @@
         "backend/app/review_queue.py",
         "backend/app/scanner_worker.py",
         "backend/app/submission_api.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_adaptive_cycle.py",
+        "backend/tests/test_api_idempotency.py",
+        "backend/tests/test_attack_surface.py",
+        "backend/tests/test_attack_surface_scope.py",
+        "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_campaign_overview.py",
+        "backend/tests/test_campaign_review_state.py",
+        "backend/tests/test_campaign_risk.py",
+        "backend/tests/test_chain_detector.py",
+        "backend/tests/test_control_views.py",
+        "backend/tests/test_coverage.py",
+        "backend/tests/test_decision_audit.py",
+        "backend/tests/test_decision_timeline.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_differential_intelligence.py",
+        "backend/tests/test_evidence_backed_planner.py",
+        "backend/tests/test_evidence_chain.py",
+        "backend/tests/test_evidence_quality.py",
+        "backend/tests/test_finding_cluster_consensus.py",
+        "backend/tests/test_finding_cluster_saturation.py",
+        "backend/tests/test_finding_consensus.py",
+        "backend/tests/test_finding_intelligence.py",
+        "backend/tests/test_finding_lifecycle.py",
+        "backend/tests/test_finding_readiness.py",
+        "backend/tests/test_finding_triage.py",
+        "backend/tests/test_form_waf_reasoning.py",
+        "backend/tests/test_hypothesis_engine.py",
+        "backend/tests/test_hypothesis_memory.py",
+        "backend/tests/test_job_provenance_api_integration.py",
+        "backend/tests/test_job_provenance_integration.py",
+        "backend/tests/test_knowledge_memory.py",
+        "backend/tests/test_learning_memory.py",
+        "backend/tests/test_observation_graph.py",
+        "backend/tests/test_orchestrator.py",
+        "backend/tests/test_orchestrator_validation_alignment.py",
+        "backend/tests/test_overview_reasoning.py",
+        "backend/tests/test_planner_advisory.py",
+        "backend/tests/test_planner_budget.py",
+        "backend/tests/test_planner_limits.py",
+        "backend/tests/test_recon_swarm.py",
+        "backend/tests/test_red_team_coverage.py",
+        "backend/tests/test_red_team_decision.py",
+        "backend/tests/test_report_readiness.py",
+        "backend/tests/test_review_queue.py",
+        "backend/tests/test_scanner_ingestion.py",
+        "backend/tests/test_submission_api.py",
+        "backend/tests/test_swarm_coordinator.py",
+        "backend/tests/test_validation_state.py",
+        "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 40,
+      "in_degree": 89,
       "out_degree": 2
     },
     "backend/app/observation_writer.py": {
@@ -929,9 +1205,10 @@
       "dependents": [
         "backend/app/scanner_ingestion.py",
         "backend/app/scanner_worker.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_observation_writer_provenance.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 4
     },
     "backend/app/observer_heartbeat.py": {
@@ -939,36 +1216,45 @@
         "backend/app/observer_lease.py"
       ],
       "dependents": [
-        "backend/app/observer_scheduler.py"
+        "backend/app/observer_scheduler.py",
+        "backend/tests/test_observer_deadline_heartbeat.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "backend/app/observer_lease.py": {
       "dependencies": [],
       "dependents": [
         "backend/app/observer_heartbeat.py",
-        "backend/app/observer_scheduler.py"
+        "backend/app/observer_scheduler.py",
+        "backend/tests/test_incident_store_fencing.py",
+        "backend/tests/test_observer_deadline_heartbeat.py",
+        "backend/tests/test_observer_fencing.py",
+        "backend/tests/test_observer_fencing_integration.py",
+        "backend/tests/test_observer_scheduler.py"
       ],
-      "in_degree": 2,
+      "in_degree": 7,
       "out_degree": 0
     },
     "backend/app/observer_metrics.py": {
       "dependencies": [],
       "dependents": [
         "backend/app/incident_observer.py",
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_observer_health_metrics.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 0
     },
     "backend/app/observer_resilience.py": {
       "dependencies": [],
       "dependents": [
         "backend/app/observer_runtime.py",
-        "backend/app/observer_scheduler.py"
+        "backend/app/observer_scheduler.py",
+        "backend/tests/test_observer_health_metrics.py",
+        "backend/tests/test_observer_resilience.py"
       ],
-      "in_degree": 2,
+      "in_degree": 4,
       "out_degree": 0
     },
     "backend/app/observer_runtime.py": {
@@ -978,9 +1264,11 @@
       "dependents": [
         "backend/app/incident_observer.py",
         "backend/app/main.py",
-        "backend/app/observer_scheduler.py"
+        "backend/app/observer_scheduler.py",
+        "backend/tests/test_observer_health_http.py",
+        "backend/tests/test_observer_runtime.py"
       ],
-      "in_degree": 3,
+      "in_degree": 5,
       "out_degree": 1
     },
     "backend/app/observer_scheduler.py": {
@@ -990,16 +1278,21 @@
         "backend/app/observer_resilience.py",
         "backend/app/observer_runtime.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "backend/tests/test_observer_deadline_heartbeat.py",
+        "backend/tests/test_observer_fencing_integration.py",
+        "backend/tests/test_observer_scheduler.py"
+      ],
+      "in_degree": 3,
       "out_degree": 4
     },
     "backend/app/observer_slo.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/incident_observer.py"
+        "backend/app/incident_observer.py",
+        "backend/tests/test_observer_slo.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "backend/app/operational_alerts.py": {
@@ -1009,17 +1302,20 @@
         "backend/app/metrics.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_operational_alerts.py",
+        "backend/tests/test_queue_age_metrics.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 3
     },
     "backend/app/operational_slo.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/incident_observer.py"
+        "backend/app/incident_observer.py",
+        "backend/tests/test_operational_slo.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "backend/app/orchestrator.py": {
@@ -1054,9 +1350,15 @@
         "backend/app/validation_state.py"
       ],
       "dependents": [
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_job_provenance_integration.py",
+        "backend/tests/test_nuclei_queue_lifecycle.py",
+        "backend/tests/test_orchestrator.py",
+        "backend/tests/test_orchestrator_validation_alignment.py",
+        "backend/tests/test_runtime_budget_config.py"
       ],
-      "in_degree": 1,
+      "in_degree": 7,
       "out_degree": 28
     },
     "backend/app/outbox_recovery.py": {
@@ -1076,8 +1378,10 @@
         "backend/app/pentagi_adapter.py",
         "backend/app/pentagi_admission.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "backend/tests/test_pentagi_action_gateway.py"
+      ],
+      "in_degree": 1,
       "out_degree": 3
     },
     "backend/app/pentagi_adapter.py": {
@@ -1092,9 +1396,16 @@
         "backend/app/pentagi_dispatch.py",
         "backend/app/pentagi_execution_guard.py",
         "backend/app/pentagi_transport.py",
-        "backend/app/pentagi_worker_service.py"
+        "backend/app/pentagi_worker_service.py",
+        "backend/tests/test_pentagi_action_gateway.py",
+        "backend/tests/test_pentagi_adapter.py",
+        "backend/tests/test_pentagi_admission.py",
+        "backend/tests/test_pentagi_dispatch.py",
+        "backend/tests/test_pentagi_execution_guard.py",
+        "backend/tests/test_pentagi_transport.py",
+        "backend/tests/test_pentagi_worker_service.py"
       ],
-      "in_degree": 8,
+      "in_degree": 15,
       "out_degree": 1
     },
     "backend/app/pentagi_admission.py": {
@@ -1107,9 +1418,11 @@
         "backend/app/pentagi_action_gateway.py",
         "backend/app/pentagi_control.py",
         "backend/app/pentagi_execution_guard.py",
-        "backend/app/pentagi_worker_service.py"
+        "backend/app/pentagi_worker_service.py",
+        "backend/tests/test_pentagi_action_gateway.py",
+        "backend/tests/test_pentagi_admission.py"
       ],
-      "in_degree": 5,
+      "in_degree": 7,
       "out_degree": 2
     },
     "backend/app/pentagi_auth.py": {
@@ -1118,9 +1431,12 @@
       ],
       "dependents": [
         "backend/app/pentagi_flow_status.py",
-        "backend/app/pentagi_transport.py"
+        "backend/app/pentagi_transport.py",
+        "backend/tests/test_pentagi_auth.py",
+        "backend/tests/test_pentagi_flow_status.py",
+        "backend/tests/test_pentagi_transport.py"
       ],
-      "in_degree": 2,
+      "in_degree": 5,
       "out_degree": 1
     },
     "backend/app/pentagi_control.py": {
@@ -1130,9 +1446,10 @@
         "backend/app/pentagi_admission.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_pentagi_control.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 3
     },
     "backend/app/pentagi_dispatch.py": {
@@ -1143,9 +1460,11 @@
         "backend/app/queue_backend.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_pentagi_dispatch.py",
+        "backend/tests/test_pentagi_worker_service.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 4
     },
     "backend/app/pentagi_execution_guard.py": {
@@ -1158,9 +1477,12 @@
         "backend/app/main.py",
         "backend/app/pentagi_dispatch.py",
         "backend/app/pentagi_transport.py",
-        "backend/app/pentagi_worker_service.py"
+        "backend/app/pentagi_worker_service.py",
+        "backend/tests/test_pentagi_dispatch.py",
+        "backend/tests/test_pentagi_execution_guard.py",
+        "backend/tests/test_pentagi_transport.py"
       ],
-      "in_degree": 4,
+      "in_degree": 7,
       "out_degree": 3
     },
     "backend/app/pentagi_flow_status.py": {
@@ -1169,9 +1491,11 @@
         "backend/app/pentagi_transport.py"
       ],
       "dependents": [
-        "backend/app/pentagi_status_tracker.py"
+        "backend/app/pentagi_status_tracker.py",
+        "backend/tests/test_pentagi_flow_status.py",
+        "backend/tests/test_pentagi_status_tracker.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 2
     },
     "backend/app/pentagi_status_poller.py": {
@@ -1179,9 +1503,11 @@
         "backend/app/pentagi_status_tracker.py"
       ],
       "dependents": [
-        "backend/app/pentagi_status_worker_service.py"
+        "backend/app/pentagi_status_worker_service.py",
+        "backend/tests/test_pentagi_status_poller.py",
+        "backend/tests/test_pentagi_status_worker_service.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 1
     },
     "backend/app/pentagi_status_tracker.py": {
@@ -1190,9 +1516,11 @@
       ],
       "dependents": [
         "backend/app/pentagi_status_poller.py",
-        "backend/app/pentagi_status_worker_service.py"
+        "backend/app/pentagi_status_worker_service.py",
+        "backend/tests/test_pentagi_status_poller.py",
+        "backend/tests/test_pentagi_status_tracker.py"
       ],
-      "in_degree": 2,
+      "in_degree": 4,
       "out_degree": 1
     },
     "backend/app/pentagi_status_worker_service.py": {
@@ -1204,8 +1532,10 @@
         "backend/app/queue_backend.py",
         "backend/app/storage_backend.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "backend/tests/test_pentagi_status_worker_service.py"
+      ],
+      "in_degree": 1,
       "out_degree": 6
     },
     "backend/app/pentagi_transport.py": {
@@ -1217,9 +1547,12 @@
       "dependents": [
         "backend/app/pentagi_flow_status.py",
         "backend/app/pentagi_status_worker_service.py",
-        "backend/app/pentagi_worker_service.py"
+        "backend/app/pentagi_worker_service.py",
+        "backend/tests/test_pentagi_flow_status.py",
+        "backend/tests/test_pentagi_transport.py",
+        "backend/tests/test_pentagi_worker_service.py"
       ],
-      "in_degree": 3,
+      "in_degree": 6,
       "out_degree": 3
     },
     "backend/app/pentagi_worker_service.py": {
@@ -1233,9 +1566,10 @@
         "backend/app/storage_backend.py"
       ],
       "dependents": [
-        "backend/app/pentagi_status_worker_service.py"
+        "backend/app/pentagi_status_worker_service.py",
+        "backend/tests/test_pentagi_worker_service.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 7
     },
     "backend/app/pipeline_swarm.py": {
@@ -1244,9 +1578,10 @@
         "backend/app/planner_budget.py"
       ],
       "dependents": [
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_pipeline_swarm.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 2
     },
     "backend/app/planner_advisory.py": {
@@ -1255,9 +1590,10 @@
         "backend/app/observation_graph.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_planner_advisory.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 2
     },
     "backend/app/planner_budget.py": {
@@ -1273,26 +1609,32 @@
         "backend/app/campaign_overview.py",
         "backend/app/main.py",
         "backend/app/orchestrator.py",
-        "backend/app/pipeline_swarm.py"
+        "backend/app/pipeline_swarm.py",
+        "backend/tests/test_orchestrator.py",
+        "backend/tests/test_pipeline_swarm.py",
+        "backend/tests/test_planner_budget.py",
+        "backend/tests/test_runtime_budget_config.py"
       ],
-      "in_degree": 7,
+      "in_degree": 11,
       "out_degree": 3
     },
     "backend/app/planner_limits.py": {
       "dependencies": [],
       "dependents": [
         "backend/app/campaign_control.py",
-        "backend/app/observation_graph.py"
+        "backend/app/observation_graph.py",
+        "backend/tests/test_planner_limits.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 0
     },
     "backend/app/planner_lock.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_distributed_concurrency.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "backend/app/policy_integrity.py": {
@@ -1300,9 +1642,10 @@
         "backend/app/secret_vault.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_policy_integrity.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "backend/app/postgres_storage.py": {
@@ -1310,9 +1653,12 @@
         "backend/app/storage.py"
       ],
       "dependents": [
-        "backend/app/storage_backend.py"
+        "backend/app/storage_backend.py",
+        "backend/tests/test_distributed_concurrency.py",
+        "backend/tests/test_postgres_integration.py",
+        "backend/tests/test_postgres_storage.py"
       ],
-      "in_degree": 1,
+      "in_degree": 4,
       "out_degree": 1
     },
     "backend/app/queue_backend.py": {
@@ -1328,9 +1674,10 @@
         "backend/app/pentagi_status_worker_service.py",
         "backend/app/pentagi_worker_service.py",
         "backend/app/readiness.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_queue_backend.py"
       ],
-      "in_degree": 8,
+      "in_degree": 9,
       "out_degree": 2
     },
     "backend/app/readiness.py": {
@@ -1340,9 +1687,10 @@
         "backend/app/storage_backend.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_readiness.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 3
     },
     "backend/app/recon_swarm.py": {
@@ -1355,9 +1703,11 @@
       "dependents": [
         "backend/app/campaign_overview.py",
         "backend/app/orchestrator.py",
-        "backend/app/swarm_coordinator.py"
+        "backend/app/swarm_coordinator.py",
+        "backend/tests/test_recon_swarm.py",
+        "backend/tests/test_swarm_coordinator.py"
       ],
-      "in_degree": 3,
+      "in_degree": 5,
       "out_degree": 4
     },
     "backend/app/recon_worker.py": {
@@ -1365,9 +1715,10 @@
         "backend/app/main.py"
       ],
       "dependents": [
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_recon_worker.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "backend/app/red_team_coverage.py": {
@@ -1382,9 +1733,11 @@
       "dependents": [
         "backend/app/campaign_overview.py",
         "backend/app/campaign_risk.py",
-        "backend/app/red_team_decision.py"
+        "backend/app/red_team_decision.py",
+        "backend/tests/test_form_waf_reasoning.py",
+        "backend/tests/test_red_team_coverage.py"
       ],
-      "in_degree": 3,
+      "in_degree": 5,
       "out_degree": 6
     },
     "backend/app/red_team_decision.py": {
@@ -1406,9 +1759,12 @@
         "backend/app/campaign_overview.py",
         "backend/app/campaign_risk.py",
         "backend/app/decision_consensus.py",
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_decision_consensus.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_red_team_decision.py"
       ],
-      "in_degree": 6,
+      "in_degree": 9,
       "out_degree": 10
     },
     "backend/app/redis_jobqueue.py": {
@@ -1416,9 +1772,14 @@
         "backend/app/jobqueue.py"
       ],
       "dependents": [
-        "backend/app/queue_backend.py"
+        "backend/app/queue_backend.py",
+        "backend/tests/test_distributed_concurrency.py",
+        "backend/tests/test_redis_chaos.py",
+        "backend/tests/test_redis_integration.py",
+        "backend/tests/test_redis_jobqueue.py",
+        "backend/tests/test_redis_jobqueue_integration.py"
       ],
-      "in_degree": 1,
+      "in_degree": 6,
       "out_degree": 1
     },
     "backend/app/report.py": {
@@ -1426,9 +1787,10 @@
         "backend/app/main.py"
       ],
       "dependents": [
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_report.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "backend/app/report_approval.py": {
@@ -1437,9 +1799,12 @@
         "backend/app/hackerone_api.py",
         "backend/app/report_approval_api.py",
         "backend/app/submission_api.py",
-        "backend/app/submission_state.py"
+        "backend/app/submission_state.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_report_approval.py",
+        "backend/tests/test_submission_state.py"
       ],
-      "in_degree": 4,
+      "in_degree": 7,
       "out_degree": 0
     },
     "backend/app/report_approval_api.py": {
@@ -1469,9 +1834,10 @@
         "backend/app/campaign_overview.py",
         "backend/app/campaign_review_state.py",
         "backend/app/main.py",
-        "backend/app/submission_api.py"
+        "backend/app/submission_api.py",
+        "backend/tests/test_report_readiness.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 7
     },
     "backend/app/review_queue.py": {
@@ -1485,19 +1851,31 @@
       ],
       "dependents": [
         "backend/app/campaign_overview.py",
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_form_waf_reasoning.py",
+        "backend/tests/test_review_queue.py"
       ],
-      "in_degree": 2,
+      "in_degree": 4,
       "out_degree": 6
+    },
+    "backend/app/rolling_telemetry.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/tests/test_rolling_telemetry.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 0
     },
     "backend/app/runtime_capabilities.py": {
       "dependencies": [],
       "dependents": [
         "backend/app/campaign_control.py",
         "backend/app/deployment_preflight.py",
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_nuclei_preflight.py",
+        "backend/tests/test_runtime_capabilities.py"
       ],
-      "in_degree": 3,
+      "in_degree": 5,
       "out_degree": 0
     },
     "backend/app/scanner_adaptation.py": {
@@ -1505,9 +1883,10 @@
         "backend/app/learning_memory.py"
       ],
       "dependents": [
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_scanner_adaptation.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "backend/app/scanner_ingestion.py": {
@@ -1520,9 +1899,10 @@
         "backend/app/storage.py"
       ],
       "dependents": [
-        "backend/app/scanner_worker.py"
+        "backend/app/scanner_worker.py",
+        "backend/tests/test_scanner_ingestion.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 6
     },
     "backend/app/scanner_normalization.py": {
@@ -1531,9 +1911,10 @@
       ],
       "dependents": [
         "backend/app/nuclei_parser.py",
-        "backend/app/strix_parser.py"
+        "backend/app/strix_parser.py",
+        "backend/tests/test_scanner_normalization.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 1
     },
     "backend/app/scanner_registry.py": {
@@ -1544,17 +1925,19 @@
       ],
       "dependents": [
         "backend/app/scanner_ingestion.py",
-        "backend/app/worker.py"
+        "backend/app/worker.py",
+        "backend/tests/test_scanner_normalization.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 3
     },
     "backend/app/scanner_sandbox.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/worker.py"
+        "backend/app/worker.py",
+        "backend/tests/test_scanner_sandbox.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "backend/app/scanner_worker.py": {
@@ -1568,9 +1951,11 @@
         "backend/app/worker.py"
       ],
       "dependents": [
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_nuclei_queue_lifecycle.py",
+        "backend/tests/test_scanner_worker.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 7
     },
     "backend/app/secret_vault.py": {
@@ -1588,9 +1973,16 @@
         "backend/app/totp_auth.py",
         "backend/app/vault_cli.py",
         "backend/app/worker.py",
-        "backend/app/worker_audit.py"
+        "backend/app/worker_audit.py",
+        "backend/tests/test_auth.py",
+        "backend/tests/test_browser.py",
+        "backend/tests/test_hackerone_client.py",
+        "backend/tests/test_pentagi_auth.py",
+        "backend/tests/test_secret_vault.py",
+        "backend/tests/test_totp_auth.py",
+        "backend/tests/test_worker_secrets.py"
       ],
-      "in_degree": 13,
+      "in_degree": 20,
       "out_degree": 0
     },
     "backend/app/storage.py": {
@@ -1609,9 +2001,60 @@
         "backend/app/storage_backend.py",
         "backend/app/submission_api.py",
         "backend/app/worker.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_api_idempotency.py",
+        "backend/tests/test_attack_surface.py",
+        "backend/tests/test_attack_surface_scope.py",
+        "backend/tests/test_browser.py",
+        "backend/tests/test_campaign_cancel.py",
+        "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_campaign_overview.py",
+        "backend/tests/test_campaign_risk.py",
+        "backend/tests/test_control_views.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_distributed_concurrency.py",
+        "backend/tests/test_evidence_chain.py",
+        "backend/tests/test_evidence_quality.py",
+        "backend/tests/test_finding_correlation.py",
+        "backend/tests/test_finding_review_metadata.py",
+        "backend/tests/test_finding_triage.py",
+        "backend/tests/test_hackerone_binding.py",
+        "backend/tests/test_hackerone_launch_api.py",
+        "backend/tests/test_hackerone_nuclei_e2e.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_hackerone_scope_preview_api.py",
+        "backend/tests/test_hypothesis_engine.py",
+        "backend/tests/test_job_provenance_api_integration.py",
+        "backend/tests/test_learning_memory.py",
+        "backend/tests/test_nuclei_queue_lifecycle.py",
+        "backend/tests/test_observation_writer_provenance.py",
+        "backend/tests/test_orchestrator.py",
+        "backend/tests/test_outbox_chaos.py",
+        "backend/tests/test_overview_reasoning.py",
+        "backend/tests/test_pentagi_action_gateway.py",
+        "backend/tests/test_plan_evidence_quality.py",
+        "backend/tests/test_postgres_integration.py",
+        "backend/tests/test_recon_swarm.py",
+        "backend/tests/test_red_team_coverage.py",
+        "backend/tests/test_red_team_decision.py",
+        "backend/tests/test_report_approval.py",
+        "backend/tests/test_report_approval_api.py",
+        "backend/tests/test_review_queue.py",
+        "backend/tests/test_runtime_budget_config.py",
+        "backend/tests/test_scanner_ingestion.py",
+        "backend/tests/test_scanner_observation_chain.py",
+        "backend/tests/test_scanner_worker.py",
+        "backend/tests/test_storage.py",
+        "backend/tests/test_storage_backend.py",
+        "backend/tests/test_submission_api.py",
+        "backend/tests/test_worker_concurrency.py",
+        "backend/tests/test_worker_job_provenance.py",
+        "backend/tests/test_worker_observations.py",
+        "backend/tests/test_worker_outcome_memory.py"
       ],
-      "in_degree": 14,
+      "in_degree": 65,
       "out_degree": 0
     },
     "backend/app/storage_backend.py": {
@@ -1625,9 +2068,10 @@
         "backend/app/pentagi_status_worker_service.py",
         "backend/app/pentagi_worker_service.py",
         "backend/app/readiness.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_storage_backend.py"
       ],
-      "in_degree": 6,
+      "in_degree": 7,
       "out_degree": 2
     },
     "backend/app/strix_parser.py": {
@@ -1655,9 +2099,10 @@
         "backend/app/submission_state.py"
       ],
       "dependents": [
-        "backend/app/browser.py"
+        "backend/app/browser.py",
+        "backend/tests/test_submission_api.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 9
     },
     "backend/app/submission_state.py": {
@@ -1667,9 +2112,10 @@
       "dependents": [
         "backend/app/campaign_overview.py",
         "backend/app/hackerone_api.py",
-        "backend/app/submission_api.py"
+        "backend/app/submission_api.py",
+        "backend/tests/test_submission_state.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 1
     },
     "backend/app/swarm_coordinator.py": {
@@ -1678,9 +2124,10 @@
         "backend/app/recon_swarm.py"
       ],
       "dependents": [
-        "backend/app/orchestrator.py"
+        "backend/app/orchestrator.py",
+        "backend/tests/test_swarm_coordinator.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 2
     },
     "backend/app/totp_auth.py": {
@@ -1689,9 +2136,11 @@
         "backend/app/secret_vault.py"
       ],
       "dependents": [
-        "backend/app/main.py"
+        "backend/app/main.py",
+        "backend/tests/test_distributed_concurrency.py",
+        "backend/tests/test_totp_auth.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 2
     },
     "backend/app/validation_state.py": {
@@ -1707,9 +2156,10 @@
         "backend/app/observation_graph.py",
         "backend/app/orchestrator.py",
         "backend/app/red_team_coverage.py",
-        "backend/app/report_readiness.py"
+        "backend/app/report_readiness.py",
+        "backend/tests/test_validation_state.py"
       ],
-      "in_degree": 11,
+      "in_degree": 12,
       "out_degree": 0
     },
     "backend/app/validator.py": {
@@ -1717,9 +2167,13 @@
         "backend/app/main.py"
       ],
       "dependents": [
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+        "backend/tests/test_validator.py",
+        "backend/tests/test_worker_concurrency.py"
       ],
-      "in_degree": 1,
+      "in_degree": 5,
       "out_degree": 1
     },
     "backend/app/vault_cli.py": {
@@ -1741,9 +2195,12 @@
       ],
       "dependents": [
         "backend/app/scanner_worker.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_nuclei_worker_plan.py",
+        "backend/tests/test_worker_parser.py",
+        "backend/tests/test_worker_secrets.py"
       ],
-      "in_degree": 2,
+      "in_degree": 5,
       "out_degree": 6
     },
     "backend/app/worker_audit.py": {
@@ -1752,9 +2209,10 @@
       ],
       "dependents": [
         "backend/app/main.py",
-        "backend/app/worker_service.py"
+        "backend/app/worker_service.py",
+        "backend/tests/test_worker_outcome_memory.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 1
     },
     "backend/app/worker_service.py": {
@@ -1780,257 +2238,367 @@
         "backend/app/worker.py",
         "backend/app/worker_audit.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "backend/tests/test_campaign_cancel.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_scanner_observation_chain.py",
+        "backend/tests/test_worker_concurrency.py",
+        "backend/tests/test_worker_observations.py",
+        "backend/tests/test_worker_outcome_memory.py",
+        "backend/tests/test_worker_roles.py",
+        "backend/tests/test_worker_state.py"
+      ],
+      "in_degree": 8,
       "out_degree": 20
     },
     "backend/app/worker_watchdog.py": {
       "dependencies": [],
       "dependents": [
-        "backend/app/metrics.py"
+        "backend/app/metrics.py",
+        "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "backend/tests/test_adaptive_cycle.py": {
       "dependencies": [
+        "backend/app/adaptive_cycle.py",
+        "backend/app/autonomy_gate.py",
+        "backend/app/learning_memory.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_agent_registry.py": {
       "dependencies": [
+        "backend/app/agent_registry.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_alert_delivery.py": {
       "dependencies": [
+        "backend/app/alert_delivery.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_api_idempotency.py": {
       "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_api_outbox.py": {
       "dependencies": [
+        "backend/app/api_outbox.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_api_rate_limit.py": {
       "dependencies": [
+        "backend/app/api_rate_limit.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_attack_surface.py": {
       "dependencies": [
+        "backend/app/attack_surface.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_attack_surface_scope.py": {
       "dependencies": [
+        "backend/app/attack_surface.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_auth.py": {
       "dependencies": [
+        "backend/app/auth.py",
+        "backend/app/main.py",
+        "backend/app/secret_vault.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_autonomy_gate.py": {
       "dependencies": [
+        "backend/app/autonomy_gate.py",
+        "backend/app/campaign_risk.py",
+        "backend/app/decision_consensus.py",
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_browser.py": {
       "dependencies": [
+        "backend/app/api_outbox.py",
+        "backend/app/browser.py",
+        "backend/app/campaign_audit.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/secret_vault.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 8
     },
     "backend/tests/test_campaign_audit.py": {
       "dependencies": [
+        "backend/app/campaign_audit.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_campaign_cancel.py": {
       "dependencies": [
+        "backend/app/job_provenance.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
+        "backend/app/worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_campaign_circuit_breaker.py": {
       "dependencies": [
+        "backend/app/campaign_control.py",
+        "backend/app/campaign_runtime.py",
+        "backend/app/circuit_breaker.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/orchestrator.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 9
     },
     "backend/tests/test_campaign_overview.py": {
       "dependencies": [
+        "backend/app/campaign_overview.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_campaign_review_state.py": {
       "dependencies": [
+        "backend/app/campaign_review_state.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_campaign_risk.py": {
       "dependencies": [
+        "backend/app/campaign_risk.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_campaign_runtime.py": {
       "dependencies": [
+        "backend/app/campaign_runtime.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_chain_detector.py": {
       "dependencies": [
+        "backend/app/chain_detector.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_control_views.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_coverage.py": {
       "dependencies": [
+        "backend/app/coverage.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_decision_audit.py": {
       "dependencies": [
+        "backend/app/decision_audit.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_decision_consensus.py": {
       "dependencies": [
+        "backend/app/decision_consensus.py",
+        "backend/app/red_team_decision.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_decision_timeline.py": {
       "dependencies": [
+        "backend/app/decision_timeline.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_deployment_preflight.py": {
       "dependencies": [
+        "backend/app/deployment_preflight.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_differential_evidence_integration.py": {
       "dependencies": [
+        "backend/app/finding_intelligence.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/red_team_decision.py",
+        "backend/app/storage.py",
+        "backend/app/validator.py",
+        "backend/app/worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 8
     },
     "backend/tests/test_differential_intelligence.py": {
       "dependencies": [
+        "backend/app/differential_intelligence.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_distributed_concurrency.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/planner_lock.py",
+        "backend/app/postgres_storage.py",
+        "backend/app/redis_jobqueue.py",
+        "backend/app/storage.py",
+        "backend/app/totp_auth.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 7
     },
     "backend/tests/test_domain_incident_lifecycle.py": {
       "dependencies": [
+        "backend/app/domain_incident_lifecycle.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_domain_lifecycle_integration.py": {
       "dependencies": [
+        "backend/app/incident_api.py",
+        "backend/app/incident_observer.py",
+        "backend/app/incident_store.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_dr_cli.py": {
       "dependencies": [
@@ -2042,275 +2610,364 @@
     },
     "backend/tests/test_dr_manifest.py": {
       "dependencies": [
+        "backend/app/dr_manifest.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_error_budget.py": {
       "dependencies": [
+        "backend/app/error_budget.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_evidence_backed_planner.py": {
       "dependencies": [
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_evidence_chain.py": {
       "dependencies": [
+        "backend/app/evidence_chain.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_evidence_quality.py": {
       "dependencies": [
+        "backend/app/evidence_quality.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_finding_cluster_consensus.py": {
       "dependencies": [
+        "backend/app/finding_cluster_consensus.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_finding_cluster_saturation.py": {
       "dependencies": [
+        "backend/app/finding_cluster_saturation.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_finding_consensus.py": {
       "dependencies": [
+        "backend/app/finding_consensus.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_finding_correlation.py": {
       "dependencies": [
+        "backend/app/finding_correlation.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_finding_intelligence.py": {
       "dependencies": [
+        "backend/app/finding_intelligence.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_finding_lifecycle.py": {
       "dependencies": [
+        "backend/app/finding_lifecycle.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_finding_readiness.py": {
       "dependencies": [
+        "backend/app/finding_readiness.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_finding_review_metadata.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_finding_triage.py": {
       "dependencies": [
+        "backend/app/finding_triage.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_form_waf_reasoning.py": {
       "dependencies": [
+        "backend/app/hypothesis_engine.py",
+        "backend/app/observation_graph.py",
+        "backend/app/red_team_coverage.py",
+        "backend/app/review_queue.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_frontend_policy_launcher.py": {
       "dependencies": [
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_hackerone_binding.py": {
       "dependencies": [
+        "backend/app/hackerone_api.py",
+        "backend/app/job_provenance.py",
+        "backend/app/jobqueue.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_hackerone_client.py": {
       "dependencies": [
+        "backend/app/hackerone_client.py",
+        "backend/app/secret_vault.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_hackerone_control_center_api.py": {
       "dependencies": [
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_client.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_hackerone_launch_api.py": {
       "dependencies": [
+        "backend/app/hackerone_api.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_hackerone_nuclei_e2e.py": {
       "dependencies": [
+        "backend/app/hackerone_api.py",
+        "backend/app/jobqueue.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_hackerone_outbound_submission.py": {
       "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_client.py",
+        "backend/app/main.py",
+        "backend/app/report_approval.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 7
     },
     "backend/tests/test_hackerone_remote_binding.py": {
       "dependencies": [
+        "backend/app/hackerone_api.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_hackerone_remote_snapshot.py": {
       "dependencies": [
+        "backend/app/hackerone_client.py",
+        "backend/app/hackerone_scope_import.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_hackerone_report_lifecycle_e2e.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
+        "backend/app/validator.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_hackerone_report_tracking.py": {
       "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_client.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_hackerone_scope_import.py": {
       "dependencies": [
+        "backend/app/hackerone_scope_import.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_hackerone_scope_preview_api.py": {
       "dependencies": [
+        "backend/app/hackerone_api.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_health.py": {
       "dependencies": [
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_hypothesis_engine.py": {
       "dependencies": [
+        "backend/app/hypothesis_engine.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_hypothesis_memory.py": {
       "dependencies": [
+        "backend/app/hypothesis_memory.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_incident_api.py": {
       "dependencies": [
+        "backend/app/incident_api.py",
+        "backend/app/incident_store.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_incident_domains.py": {
       "dependencies": [
+        "backend/app/incident_domains.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_incident_engine.py": {
       "dependencies": [
+        "backend/app/incident_engine.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_incident_http_api.py": {
       "dependencies": [
@@ -2322,819 +2979,1078 @@
     },
     "backend/tests/test_incident_lifecycle.py": {
       "dependencies": [
+        "backend/app/incident_lifecycle.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_incident_observer.py": {
       "dependencies": [
+        "backend/app/incident_observer.py",
+        "backend/app/incident_store.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_incident_store.py": {
       "dependencies": [
+        "backend/app/incident_store.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_incident_store_fencing.py": {
       "dependencies": [
+        "backend/app/incident_store.py",
+        "backend/app/observer_lease.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_job_provenance.py": {
       "dependencies": [
+        "backend/app/job_provenance.py",
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_job_provenance_api_integration.py": {
       "dependencies": [
+        "backend/app/job_provenance.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_job_provenance_integration.py": {
       "dependencies": [
+        "backend/app/job_provenance.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/orchestrator.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_jobqueue.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_knowledge_memory.py": {
       "dependencies": [
+        "backend/app/knowledge_memory.py",
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_learning_memory.py": {
       "dependencies": [
+        "backend/app/learning_memory.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_metrics.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/metrics.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_nuclei_preflight.py": {
       "dependencies": [
+        "backend/app/deployment_preflight.py",
+        "backend/app/runtime_capabilities.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_nuclei_queue_lifecycle.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/orchestrator.py",
+        "backend/app/scanner_worker.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_nuclei_worker_plan.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/worker.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_observation_graph.py": {
       "dependencies": [
+        "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_observation_writer_provenance.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_writer.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_observer_deadline_heartbeat.py": {
       "dependencies": [
+        "backend/app/observer_heartbeat.py",
+        "backend/app/observer_lease.py",
+        "backend/app/observer_scheduler.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_observer_fencing.py": {
       "dependencies": [
+        "backend/app/observer_lease.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_observer_fencing_integration.py": {
       "dependencies": [
+        "backend/app/incident_observer.py",
+        "backend/app/incident_store.py",
+        "backend/app/observer_lease.py",
+        "backend/app/observer_scheduler.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_observer_health_http.py": {
       "dependencies": [
+        "backend/app/observer_runtime.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_observer_health_metrics.py": {
       "dependencies": [
+        "backend/app/observer_metrics.py",
+        "backend/app/observer_resilience.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_observer_resilience.py": {
       "dependencies": [
+        "backend/app/observer_resilience.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_observer_runtime.py": {
       "dependencies": [
+        "backend/app/observer_runtime.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_observer_scheduler.py": {
       "dependencies": [
+        "backend/app/observer_lease.py",
+        "backend/app/observer_scheduler.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_observer_slo.py": {
       "dependencies": [
+        "backend/app/observer_slo.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_openapi_integrity.py": {
       "dependencies": [
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_operational_alerts.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/operational_alerts.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_operational_slo.py": {
       "dependencies": [
+        "backend/app/operational_slo.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_orchestrator.py": {
       "dependencies": [
+        "backend/app/campaign_runtime.py",
+        "backend/app/circuit_breaker.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/orchestrator.py",
+        "backend/app/planner_budget.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 9
     },
     "backend/tests/test_orchestrator_validation_alignment.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/orchestrator.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_outbox_chaos.py": {
       "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_overview_reasoning.py": {
       "dependencies": [
+        "backend/app/campaign_overview.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_pentagi_action_gateway.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/pentagi_action_gateway.py",
+        "backend/app/pentagi_adapter.py",
+        "backend/app/pentagi_admission.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_pentagi_adapter.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/pentagi_adapter.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_pentagi_admission.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/pentagi_adapter.py",
+        "backend/app/pentagi_admission.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_pentagi_auth.py": {
       "dependencies": [
+        "backend/app/pentagi_auth.py",
+        "backend/app/secret_vault.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_pentagi_control.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/pentagi_control.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_pentagi_control_api.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_pentagi_dispatch.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/pentagi_adapter.py",
+        "backend/app/pentagi_dispatch.py",
+        "backend/app/pentagi_execution_guard.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_pentagi_execution_guard.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/pentagi_adapter.py",
+        "backend/app/pentagi_execution_guard.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_pentagi_flow_status.py": {
       "dependencies": [
+        "backend/app/pentagi_auth.py",
+        "backend/app/pentagi_flow_status.py",
+        "backend/app/pentagi_transport.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_pentagi_status_poller.py": {
       "dependencies": [
+        "backend/app/pentagi_status_poller.py",
+        "backend/app/pentagi_status_tracker.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_pentagi_status_tracker.py": {
       "dependencies": [
+        "backend/app/pentagi_flow_status.py",
+        "backend/app/pentagi_status_tracker.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_pentagi_status_worker_service.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/pentagi_status_poller.py",
+        "backend/app/pentagi_status_worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_pentagi_transport.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/pentagi_adapter.py",
+        "backend/app/pentagi_auth.py",
+        "backend/app/pentagi_execution_guard.py",
+        "backend/app/pentagi_transport.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_pentagi_worker_service.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/pentagi_adapter.py",
+        "backend/app/pentagi_dispatch.py",
+        "backend/app/pentagi_transport.py",
+        "backend/app/pentagi_worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 7
     },
     "backend/tests/test_pipeline_swarm.py": {
       "dependencies": [
+        "backend/app/pipeline_swarm.py",
+        "backend/app/planner_budget.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_plan_evidence_quality.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_planner_advisory.py": {
       "dependencies": [
+        "backend/app/observation_graph.py",
+        "backend/app/planner_advisory.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_planner_budget.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/observation_graph.py",
+        "backend/app/planner_budget.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_planner_limits.py": {
       "dependencies": [
+        "backend/app/observation_graph.py",
+        "backend/app/planner_limits.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_policy_integrity.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/policy_integrity.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_policy_invariants.py": {
       "dependencies": [
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_postgres_integration.py": {
       "dependencies": [
+        "backend/app/postgres_storage.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_postgres_storage.py": {
       "dependencies": [
+        "backend/app/postgres_storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_queue_age_metrics.py": {
       "dependencies": [
+        "backend/app/metrics.py",
+        "backend/app/operational_alerts.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_queue_backend.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/queue_backend.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_queue_health.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_readiness.py": {
       "dependencies": [
+        "backend/app/readiness.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_recon_swarm.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/recon_swarm.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_recon_worker.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/recon_worker.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_red_team_coverage.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/red_team_coverage.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_red_team_decision.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/red_team_decision.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_redis_chaos.py": {
       "dependencies": [
+        "backend/app/redis_jobqueue.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_redis_integration.py": {
       "dependencies": [
+        "backend/app/redis_jobqueue.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_redis_jobqueue.py": {
       "dependencies": [
+        "backend/app/redis_jobqueue.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_redis_jobqueue_integration.py": {
       "dependencies": [
+        "backend/app/redis_jobqueue.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_report.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/report.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_report_approval.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/report_approval.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_report_approval_api.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_report_readiness.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/report_readiness.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_review_queue.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/review_queue.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_rolling_telemetry.py": {
       "dependencies": [
+        "backend/app/rolling_telemetry.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_runtime_budget_config.py": {
       "dependencies": [
+        "backend/app/campaign_runtime.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/orchestrator.py",
+        "backend/app/planner_budget.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 7
     },
     "backend/tests/test_runtime_capabilities.py": {
       "dependencies": [
+        "backend/app/runtime_capabilities.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_scan_payload_idempotency.py": {
       "dependencies": [
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_scanner_adaptation.py": {
       "dependencies": [
+        "backend/app/learning_memory.py",
+        "backend/app/scanner_adaptation.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_scanner_ingestion.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/scanner_ingestion.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_scanner_normalization.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/nuclei_parser.py",
+        "backend/app/scanner_normalization.py",
+        "backend/app/scanner_registry.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_scanner_observation_chain.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/storage.py",
+        "backend/app/worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_scanner_sandbox.py": {
       "dependencies": [
+        "backend/app/scanner_sandbox.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_scanner_worker.py": {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/scanner_worker.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_scope.py": {
       "dependencies": [
+        "backend/app/main.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_secret_vault.py": {
       "dependencies": [
+        "backend/app/secret_vault.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_storage.py": {
       "dependencies": [
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_storage_backend.py": {
       "dependencies": [
+        "backend/app/storage.py",
+        "backend/app/storage_backend.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_submission_api.py": {
       "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
+        "backend/app/submission_api.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_submission_state.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/report_approval.py",
+        "backend/app/submission_state.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_swarm_coordinator.py": {
       "dependencies": [
+        "backend/app/observation_graph.py",
+        "backend/app/recon_swarm.py",
+        "backend/app/swarm_coordinator.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 4
     },
     "backend/tests/test_totp_auth.py": {
       "dependencies": [
+        "backend/app/auth.py",
+        "backend/app/main.py",
+        "backend/app/secret_vault.py",
+        "backend/app/totp_auth.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_validation_state.py": {
       "dependencies": [
+        "backend/app/observation_graph.py",
+        "backend/app/validation_state.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_validator.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/validator.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_watchdog_observability.py": {
       "dependencies": [
+        "backend/app/metrics.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_worker_concurrency.py": {
       "dependencies": [
+        "backend/app/job_provenance.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
+        "backend/app/validator.py",
+        "backend/app/worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 7
     },
     "backend/tests/test_worker_job_provenance.py": {
       "dependencies": [
+        "backend/app/job_provenance.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_worker_observations.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
+        "backend/app/worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "backend/tests/test_worker_outcome_memory.py": {
       "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/main.py",
+        "backend/app/storage.py",
+        "backend/app/worker_audit.py",
+        "backend/app/worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "backend/tests/test_worker_parser.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/worker.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_worker_roles.py": {
       "dependencies": [
+        "backend/app/worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/tests/test_worker_secrets.py": {
       "dependencies": [
+        "backend/app/secret_vault.py",
+        "backend/app/worker.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_worker_state.py": {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/worker_service.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "backend/tests/test_worker_watchdog.py": {
       "dependencies": [
+        "backend/app/worker_watchdog.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "frontend/app.js": {
       "dependencies": [],
