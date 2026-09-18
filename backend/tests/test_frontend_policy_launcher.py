@@ -101,3 +101,22 @@ def test_frontend_exposes_hackerone_live_run_monitor_contract():
     assert "api('/campaigns/'+encodeURIComponent(campaignId)+'/control-status')" in launcher
     assert "api('/campaigns/'+encodeURIComponent(campaignId)+'/artifacts')" in launcher
     assert "setInterval" in launcher
+
+
+def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    for element_id in (
+        "h1RunFindingList",
+        "h1ReportDraft",
+        "h1ReportStatus",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert "renderHackerOneFindings" in launcher
+    assert "queueHackerOneReport" in launcher
+    assert "report-readiness" in launcher
+    assert "reports?platform=hackerone" in launcher
+    assert "submission_ready" in launcher
+    assert "human" in html.lower()
