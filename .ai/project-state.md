@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T20:50:48Z
+Generated: 2026-09-18T21:00:58Z
 
 ### Git
 - Branch: `main`
-- Head: `e64f11aef6b8`
-- Commit date: 2026-09-18T22:50:36+02:00
-- Commit: chore(ai): enable same-package symbol graph enrichment
-- Tracked files: 459
+- Head: `f3999daa84db`
+- Commit date: 2026-09-18T22:59:18+02:00
+- Commit: chore(ai): adopt repo standards v15
+- Tracked files: 461
 
 ### Recently changed files
 - `.repo-standards.yml`
-- `backend/app/hackerone_report_tracking.py`
-- `README.md`
 - `frontend/sw.js`
-- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
+- `frontend/hackerone.js`
+- `backend/tests/test_hackerone_report_sync_worker.py`
 
 ### Project signals
 - `pyproject.toml`

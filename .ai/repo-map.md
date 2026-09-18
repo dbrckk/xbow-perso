@@ -231,6 +231,7 @@ backend/
     test_finding_triage.py
     test_form_waf_reasoning.py
     test_frontend_policy_launcher.py
+    test_hackerone_activity_summary.py
     test_hackerone_binding.py
     test_hackerone_client.py
     test_hackerone_control_center_api.py
@@ -3413,6 +3414,7 @@ team_handle = str(submission["team_handle"]).strip()
 document = client.get_json(f"hackers/reports/{remote_report_id}")
 status = project_remote_report_status(
 needs_more_info = project_needs_more_info_request(
+public_activities = project_public_report_activities(
 ⋮----
 record = store.get_campaign_record(campaign_id)
 ⋮----
@@ -3427,6 +3429,12 @@ previous = _last_synced(current, artifact_id)
 changed = True
 ⋮----
 previous_nmi = _last_needs_more_info(current, artifact_id)
+⋮----
+observed_activity_ids = _observed_public_activity_ids(
+⋮----
+activity_id = str(activity["activity_id"])
+⋮----
+event = {
 ⋮----
 def sync_once(store=None, client: HackerOneClient | None = None) -> dict[str, int]
 ⋮----
@@ -3452,6 +3460,8 @@ stats = sync_once()
 ````python
 MAX_ACTIVITY_MESSAGE_CHARS = 8192
 NEEDS_MORE_INFO_ACTIVITY_TYPE = "activity-bug-needs-more-info"
+MAX_PUBLIC_ACTIVITIES = 20
+PUBLIC_ACTIVITY_TYPES = {
 ⋮----
 TRACKED_TIMESTAMP_FIELDS = (
 ⋮----
@@ -3478,12 +3488,21 @@ activities = relationships.get("activities")
 ⋮----
 records = activities.get("data")
 ⋮----
+projected: list[dict[str, Any]] = []
+⋮----
+activity_type = activity.get("type")
+⋮----
 activity_id = activity.get("id")
 attributes = activity.get("attributes")
 ⋮----
 report_id = attributes.get("report_id")
 ⋮----
 message = attributes.get("message")
+item: dict[str, Any] = {
+⋮----
+value = attributes.get(key)
+⋮----
+original_report_id = attributes.get("original_report_id")
 ⋮----
 message = message.strip()[:MAX_ACTIVITY_MESSAGE_CHARS]
 created_at = attributes.get("created_at")
@@ -3495,9 +3514,9 @@ state = attributes.get("state")
 ⋮----
 projected = {
 ⋮----
-value = attributes.get(key)
-⋮----
 needs_more_info = project_needs_more_info_request(
+⋮----
+public_activities = project_public_report_activities(
 ⋮----
 def status_fingerprint_fields(status: dict[str, Any]) -> dict[str, Any]
 ````
@@ -10465,6 +10484,23 @@ def test_frontend_exposes_hackerone_human_review_controls()
 def test_frontend_needs_info_flow_has_no_remote_send_action()
 ````
 
+## File: backend/tests/test_hackerone_activity_summary.py
+````python
+def _activity(activity_id, activity_type, *, message="", internal=False, **extra)
+⋮----
+def _document(activities)
+⋮----
+def test_public_activity_projection_is_allowlisted_bounded_and_redacted()
+⋮----
+result = project_public_report_activities(
+⋮----
+def test_public_activity_projection_ignores_internal_and_unknown_types()
+⋮----
+def test_public_activity_projection_caps_count_and_message_length()
+⋮----
+records = [
+````
+
 ## File: backend/tests/test_hackerone_binding.py
 ````python
 def _admission_payload()
@@ -10989,6 +11025,21 @@ first = _needs_more_info_report()
 second = _needs_more_info_report()
 ⋮----
 stats = sync_once(store, _Client([second]))
+⋮----
+def _public_activity_report(activity_id="a1", activity_type="activity-comment")
+⋮----
+attributes = {
+⋮----
+def test_sync_records_public_activity_once(tmp_path, monkeypatch)
+⋮----
+response = _public_activity_report()
+⋮----
+def test_sync_records_bounty_and_duplicate_metadata(tmp_path, monkeypatch)
+⋮----
+bounty = _public_activity_report(
+duplicate = _public_activity_report(
+⋮----
+by_id = {event["activity_id"]: event for event in events}
 ````
 
 ## File: backend/tests/test_hackerone_report_tracking.py
@@ -15218,6 +15269,8 @@ async function revokeHackerOneReportApproval()
 ⋮----
 async function queueHackerOneReport()
 ⋮----
+function hackerOneActivityLabel(event)
+⋮----
 function renderHackerOneReportTimeline(campaignData,artifactId)
 ⋮----
 function renderHackerOneRemoteReportStatus(remoteStatus)
@@ -15276,7 +15329,7 @@ async function importScopeFile()
 ````yaml
 source: dbrckk/repo-standards
 ref: main
-version: 14
+version: 15
 adopted: true
 workflow_mode: unified-single-commit
 repo_brain: dbrckk/repo-brain@main
@@ -15285,6 +15338,7 @@ hotset_fallback: recent-project-state
 graph_routing: compact-sharded-reverse-deps
 graph_resolver: java-kotlin-tail-v2
 graph_enrichment: unique-type-symbol-references-v1
+context_budget: confidence-dynamic-3-6-12
 ai_context:
   index: .ai/index.md
   project_state: .ai/project-state.md
@@ -16006,6 +16060,9 @@ Optional historical synchronization is provided by the separate `hackerone-repor
 
 
 When HackerOne returns a public `activity-bug-needs-more-info` activity on a submitted report, the sync worker records a bounded `hackerone_needs_more_info_observed` audit event once per activity ID. The Control Center exposes the public request and generates a local deterministic response draft from already-confirmed findings and stored validation context. The draft endpoint is read-only and explicitly reports `send_supported=false`; no HackerOne reply/comment mutation is implemented by this feature.
+
+
+The same report response is also reduced to an allowlisted public activity feed for `activity-comment`, `activity-bounty-awarded`, `activity-bug-duplicate`, `activity-bug-informative`, and `activity-bug-resolved`. Internal activities, actors, attachments, and unknown activity types are discarded. The worker records each accepted activity ID once as `hackerone_public_activity_observed`; the Control Center renders these together with synchronized report-state changes and NMI requests in a local timeline and compact activity summary.
 
 ## Disaster recovery integrity
 
