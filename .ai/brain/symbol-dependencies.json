@@ -5,143 +5,13 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_resource": {
+    "test_hackerone_single_mutation_launch_route_exists": {
       "source": {
-        "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-        "start": 16,
-        "end": 24
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_launch_payload": {
-      "source": {
-        "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-        "start": 27,
-        "end": 47
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 9,
+        "end": 13
       },
       "symbol_dependencies": [
-        {
-          "symbol": "_resource",
-          "definitions": [
-            {
-              "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_headers": {
-      "source": {
-        "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-        "start": 50,
-        "end": 51
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_hackerone_full_lifecycle_produces_downloadable_report": {
-      "source": {
-        "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-        "start": 54,
-        "end": 249
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/readiness.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ProbeResult",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/readiness.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/storage_core.py",
-              "line": 90,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_queue_age_metrics.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_headers",
-          "definitions": [
-            {
-              "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_launch_payload",
-          "definitions": [
-            {
-              "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
         {
           "symbol": "api",
           "definitions": [
@@ -153,15 +23,405 @@
             }
           ],
           "relation": "imported_module"
-        },
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_frontend_requires_authorization_and_scope_review_before_launch": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 16,
+        "end": 51
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "fake_execute",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-              "line": 75,
+              "file": "frontend/app.js",
+              "line": 14,
               "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_frontend_exposes_remote_hackerone_control_center_contract": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 55,
+        "end": 78
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 14,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_frontend_exposes_hackerone_live_run_monitor_contract": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 82,
+        "end": 103
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 14,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_frontend_exposes_hackerone_finding_review_and_report_draft_contract": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 106,
+        "end": 128
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_frontend_exposes_hackerone_human_review_controls": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 131,
+        "end": 144
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "setLauncherStatus": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 16,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 119,
+              "kind": "class",
               "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "buildFindingReviewEditor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 121,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resolveHackerOneFinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 93,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewField",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 35,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewValue",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 45,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveFindingReviewMetadata",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 50,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setConnectionState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 20,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stopRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 26,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "setConnectionState": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 20,
+        "end": 140
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 119,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "buildFindingReviewEditor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 121,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resolveHackerOneFinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 93,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewField",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 35,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewValue",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 45,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveFindingReviewMetadata",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 50,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stopRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 26,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "stopRunMonitor": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 26,
+        "end": 146
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 119,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "buildFindingReviewEditor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 121,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resolveHackerOneFinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 93,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewField",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 35,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewValue",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 45,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveFindingReviewMetadata",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 50,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
@@ -169,37 +429,19 @@
       ],
       "dependency_count": 7
     },
-    "fake_execute": {
+    "reviewField": {
       "source": {
-        "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-        "start": 75,
-        "end": 195
+        "file": "frontend/hackerone.js",
+        "start": 35,
+        "end": 155
       },
       "symbol_dependencies": [
         {
-          "symbol": "JobQueue",
+          "symbol": "Finding",
           "definitions": [
             {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/readiness.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "ProbeResult",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 24,
+              "file": "backend/app/main.py",
+              "line": 119,
               "kind": "class",
               "language": "python"
             }
@@ -207,79 +449,3349 @@
           "relation": "class_like"
         },
         {
-          "symbol": "Storage",
+          "symbol": "buildFindingReviewEditor",
           "definitions": [
             {
-              "file": "backend/app/readiness.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/storage_core.py",
-              "line": 90,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_queue_age_metrics.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_headers",
-          "definitions": [
-            {
-              "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_launch_payload",
-          "definitions": [
-            {
-              "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 14,
+              "file": "frontend/hackerone.js",
+              "line": 121,
               "kind": "function",
               "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resolveHackerOneFinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 93,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewValue",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 45,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveFindingReviewMetadata",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 50,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 6
+    },
+    "reviewValue": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 45,
+        "end": 165
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 119,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "buildFindingReviewEditor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 121,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resolveHackerOneFinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 93,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewField",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 35,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveFindingReviewMetadata",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 50,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "saveFindingReviewMetadata": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 50,
+        "end": 170
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 119,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "buildFindingReviewEditor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 121,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resolveHackerOneFinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 93,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewField",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 35,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewValue",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 45,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "resolveHackerOneFinding": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 93,
+        "end": 213
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 119,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "buildFindingReviewEditor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 121,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewField",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 35,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewValue",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 45,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveFindingReviewMetadata",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 50,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "buildFindingReviewEditor": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 121,
+        "end": 241
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 119,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "renderHackerOneFindings",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 216,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resolveHackerOneFinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 93,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewField",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 35,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveFindingReviewMetadata",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 50,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "renderHackerOneFindings": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 216,
+        "end": 336
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 119,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "buildFindingReviewEditor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 121,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "downloadHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 290,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queueHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 335,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "downloadHackerOneReport": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 290,
+        "end": 410
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "queueHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 335,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneFindings",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 216,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 351,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stopRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 26,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "queueHackerOneReport": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 335,
+        "end": 455
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneFindings",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 216,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRemoteScope",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 444,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 351,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stopRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 26,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "renderRunMonitor": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 351,
+        "end": 471
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneFindings",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 216,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRemoteScope",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 444,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stopRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 26,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "refreshRunMonitor": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 375,
+        "end": 495
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRemoteScope",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 444,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 351,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stopRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 26,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "startRunMonitor": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 404,
+        "end": 524
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "initRemoteControlCenter",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 519,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refreshRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 375,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRemoteScope",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 444,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setConnectionState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 20,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stopRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 26,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "clearRemoteBinding": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 414,
+        "end": 534
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "initRemoteControlCenter",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 519,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRemoteScope",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 444,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setConnectionState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 20,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "renderProgramOptions": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 423,
+        "end": 543
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "initRemoteControlCenter",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 519,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRemoteScope",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 444,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setConnectionState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 20,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "renderRemoteScope": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 444,
+        "end": 564
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPolicy",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 563,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "initRemoteControlCenter",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 519,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "parseScopeDocument",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 544,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewedAtIso",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 555,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setConnectionState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 20,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "loadRemoteProgram": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 483,
+        "end": 603
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "buildPolicy",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 563,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "initRemoteControlCenter",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 519,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "parseScopeDocument",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 544,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderRemoteScope",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 444,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewedAtIso",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 555,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setConnectionState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 20,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "initRemoteControlCenter": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 519,
+        "end": 639
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "buildPolicy",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 563,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "parseScopeDocument",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 544,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewedAtIso",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 555,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setConnectionState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 20,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "parseScopeDocument": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 544,
+        "end": 664
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "buildPolicy",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 563,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewedAtIso",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 555,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "reviewedAtIso": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 555,
+        "end": 675
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "buildPolicy",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 563,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "parseScopeDocument",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 544,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "buildPolicy": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 563,
+        "end": 683
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "parseScopeDocument",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 544,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewedAtIso",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 555,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "buildPayload": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 589,
+        "end": 709
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPolicy",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 563,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 704,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "parseScopeDocument",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 544,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "conservativeBlockers": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 607,
+        "end": 727
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 704,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "payloadFingerprint": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 617,
+        "end": 737
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 704,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "invalidatePreview": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 621,
+        "end": 741
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "importScopeFile",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 737,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 704,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "renderScopeList": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 633,
+        "end": 753
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "importScopeFile",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 737,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 704,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "renderPreview": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 647,
+        "end": 767
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "importScopeFile",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 737,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 704,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderScopeList",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 633,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "preview": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 678,
+        "end": 798
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "downloadHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 290,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "importScopeFile",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 737,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "initRemoteControlCenter",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 519,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 704,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queueHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 335,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderPreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 647,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 15
+    },
+    "launch": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 704,
+        "end": 824
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "buildPayload",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 589,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "conservativeBlockers",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 607,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "downloadHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 290,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "importScopeFile",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 737,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "initRemoteControlCenter",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 519,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payloadFingerprint",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 617,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queueHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 335,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 404,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "importScopeFile": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 737,
+        "end": 857
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "clearRemoteBinding",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 414,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "downloadHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 290,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "initRemoteControlCenter",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 519,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invalidatePreview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 621,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 704,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadRemoteProgram",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 483,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preview",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 678,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queueHackerOneReport",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 335,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderProgramOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 423,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setLauncherStatus",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
     }
   }
 }

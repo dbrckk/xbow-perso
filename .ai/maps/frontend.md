@@ -111,6 +111,8 @@ function buildFindingReviewEditor(finding,readiness)
 ⋮----
 function renderHackerOneFindings(campaignData,artifacts,reportReadiness)
 ⋮----
+async function downloadHackerOneReport()
+⋮----
 async function queueHackerOneReport()
 ⋮----
 function renderRunMonitor(campaignData,control,artifacts,reportReadiness)

@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T19:29:36Z
+Generated: 2026-09-18T19:35:43Z
 
 ### Git
 - Branch: `main`
-- Head: `cd68f51719f7`
-- Commit date: 2026-09-18T21:29:02+02:00
-- Commit: Merge pull request #215 from dbrckk/test/hackerone-report-lifecycle-e2e
+- Head: `4157e32610e8`
+- Commit date: 2026-09-18T21:35:07+02:00
+- Commit: Merge pull request #216 from dbrckk/feat/hackerone-report-download
 - Tracked files: 402
 
 ### Recently changed files
-- `backend/tests/test_hackerone_report_lifecycle_e2e.py`
-- `backend/tests/test_finding_review_metadata.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/app.css`
+- `AGENTS.md`
+- `.github/workflows/ai-repo-map.yml`
+- `.repo-standards.yml`
+- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`

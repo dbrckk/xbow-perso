@@ -1,13 +1,17 @@
 # Change impact
 
-Base: ce9b289abdbfc2c115c3e8db1a9423b3da9558b6
-Head: cd68f51719f77b080b64938924a2d0fb88c176ff
+Base: d5c2e1571feaf68276c6cd603bc1bb9dd18fb69d
+Head: 4157e32610e85ad33c84a0396c8e245bb772bbf8
 
 ## Changed files
-- A backend/tests/test_hackerone_report_lifecycle_e2e.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M frontend/hackerone.js
+- M frontend/index.html
+- M frontend/sw.js
 
 ## Affected areas
 - backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

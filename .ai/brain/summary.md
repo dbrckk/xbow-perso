@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 294
-- Files reparsed this run: 1
-- Symbols: 2538
+- Files reparsed this run: 3
+- Symbols: 2539
 - Internal import edges: 581
-- Impacted files: 1
-- Selected tests: 2
+- Impacted files: 3
+- Selected tests: 14
 
 ## Languages
 - python: 291 files
@@ -16,8 +16,8 @@
 - backend/app/main.py: 85 symbols
 - backend/tests/test_storage.py: 36 symbols
 - backend/tests/test_jobqueue.py: 32 symbols
+- frontend/hackerone.js: 31 symbols
 - backend/app/storage_core.py: 30 symbols
-- frontend/hackerone.js: 30 symbols
 - backend/tests/test_browser.py: 28 symbols
 - backend/tests/test_recon_worker.py: 28 symbols
 - backend/app/redis_jobqueue.py: 27 symbols
@@ -43,7 +43,7 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 1
+- AST files reparsed this run: 3
 - outline files retained: 293
 - top-level items retained: 3702
 - direct members retained: 897
