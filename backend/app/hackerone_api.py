@@ -430,7 +430,6 @@ def submit_hackerone_report(
 
     from .campaign_audit import append_campaign_event
     from .main import (
-        Campaign,
         assert_campaign_record,
         assert_campaign_exists,
         save_campaign,
