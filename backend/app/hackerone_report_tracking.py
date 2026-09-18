@@ -5,6 +5,9 @@ from typing import Any
 from fastapi import HTTPException
 
 
+MAX_ACTIVITY_MESSAGE_CHARS = 8192
+NEEDS_MORE_INFO_ACTIVITY_TYPE = "activity-bug-needs-more-info"
+
 TRACKED_TIMESTAMP_FIELDS = (
     "created_at",
     "triaged_at",
@@ -62,6 +65,65 @@ def remote_submission_for_artifact(
     }
 
 
+def project_needs_more_info_request(
+    document: dict[str, Any],
+    *,
+    expected_report_id: str,
+) -> dict[str, Any] | None:
+    data = document.get("data")
+    if not isinstance(data, dict):
+        raise HTTPException(
+            status_code=502,
+            detail="HackerOne remote report response is invalid",
+        )
+    if data.get("type") != "report" or data.get("id") != expected_report_id:
+        raise HTTPException(
+            status_code=502,
+            detail="HackerOne remote report identity mismatch",
+        )
+    relationships = data.get("relationships")
+    if not isinstance(relationships, dict):
+        return None
+    activities = relationships.get("activities")
+    if not isinstance(activities, dict):
+        return None
+    records = activities.get("data")
+    if not isinstance(records, list):
+        return None
+
+    for activity in records:
+        if not isinstance(activity, dict):
+            continue
+        if activity.get("type") != NEEDS_MORE_INFO_ACTIVITY_TYPE:
+            continue
+        activity_id = activity.get("id")
+        attributes = activity.get("attributes")
+        if not isinstance(activity_id, str) or not activity_id.strip():
+            continue
+        if not isinstance(attributes, dict):
+            continue
+        if attributes.get("internal") is not False:
+            continue
+        report_id = attributes.get("report_id")
+        if report_id is not None and str(report_id) != expected_report_id:
+            continue
+        message = attributes.get("message")
+        if not isinstance(message, str) or not message.strip():
+            continue
+        message = message.strip()[:MAX_ACTIVITY_MESSAGE_CHARS]
+        created_at = attributes.get("created_at")
+        updated_at = attributes.get("updated_at")
+        return {
+            "activity_id": activity_id.strip(),
+            "activity_type": NEEDS_MORE_INFO_ACTIVITY_TYPE,
+            "message": message,
+            "created_at": created_at if isinstance(created_at, str) else None,
+            "updated_at": updated_at if isinstance(updated_at, str) else None,
+            "internal": False,
+        }
+    return None
+
+
 def project_remote_report_status(
     document: dict[str, Any],
     *,
@@ -102,6 +164,10 @@ def project_remote_report_status(
     for key in TRACKED_TIMESTAMP_FIELDS:
         value = attributes.get(key)
         projected[key] = value if value is None or isinstance(value, str) else None
+    projected["needs_more_info"] = project_needs_more_info_request(
+        document,
+        expected_report_id=expected_report_id,
+    )
     projected["read_only"] = True
     return projected
 
