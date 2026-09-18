@@ -8,6 +8,13 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator
 
+from .hackerone_client import (
+    HackerOneClient,
+    HackerOneClientError,
+    fetch_hackerone_program_snapshot,
+    load_hackerone_credentials,
+)
+
 router = APIRouter()
 
 
@@ -99,6 +106,72 @@ def _conservative_admission_reason(policy: Any) -> str | None:
     if policy.additional_restrictions:
         return "additional_restrictions_require_manual_enforcement"
     return None
+
+
+
+def _upstream_error(exc: HackerOneClientError) -> HTTPException:
+    if exc.status_code in {401, 403}:
+        return HTTPException(status_code=502, detail="HackerOne upstream authentication failed")
+    if exc.status_code == 429 or (exc.status_code is not None and exc.status_code >= 500):
+        return HTTPException(status_code=503, detail="HackerOne upstream temporarily unavailable")
+    return HTTPException(status_code=502, detail="HackerOne upstream request failed")
+
+
+def _program_list_item(resource: Any) -> dict[str, Any]:
+    if not isinstance(resource, dict):
+        raise HackerOneClientError("HackerOne program list contains an invalid resource")
+    attributes = resource.get("attributes")
+    if not isinstance(attributes, dict):
+        raise HackerOneClientError("HackerOne program list contains invalid attributes")
+    handle = attributes.get("handle")
+    name = attributes.get("name")
+    if not isinstance(handle, str) or not handle or not isinstance(name, str) or not name:
+        raise HackerOneClientError("HackerOne program list contains invalid identity fields")
+    return {
+        "handle": handle,
+        "name": name,
+        "submission_state": attributes.get("submission_state"),
+        "state": attributes.get("state"),
+        "offers_bounties": attributes.get("offers_bounties"),
+        "gold_standard_safe_harbor": attributes.get("gold_standard_safe_harbor"),
+    }
+
+
+@router.get("/api/imports/hackerone/connection")
+def hackerone_connection():
+    try:
+        load_hackerone_credentials()
+    except HackerOneClientError:
+        return {"provider": "hackerone", "configured": False}
+    return {"provider": "hackerone", "configured": True}
+
+
+@router.get("/api/imports/hackerone/programs")
+def list_hackerone_programs():
+    try:
+        resources = HackerOneClient().get_all_pages("hackers/programs")
+        programs = [_program_list_item(resource) for resource in resources]
+    except HackerOneClientError as exc:
+        raise _upstream_error(exc) from exc
+    programs.sort(key=lambda item: (str(item["name"]).lower(), str(item["handle"])))
+    return {"provider": "hackerone", "programs": programs}
+
+
+@router.get("/api/imports/hackerone/programs/{handle}/snapshot")
+def get_hackerone_program_snapshot(handle: str):
+    try:
+        snapshot = fetch_hackerone_program_snapshot(handle)
+    except HackerOneClientError as exc:
+        raise _upstream_error(exc) from exc
+    return {
+        "provider": "hackerone",
+        "handle": snapshot.handle,
+        "program": snapshot.program,
+        "document": snapshot.document,
+        "scope_exclusions": list(snapshot.scope_exclusions),
+        "preview": snapshot.preview,
+        "snapshot_sha256": snapshot.snapshot_sha256,
+    }
 
 
 @router.post("/api/imports/hackerone/rules-preview")
