@@ -33,6 +33,187 @@
     runMonitorBusy=false;
   }
 
+  function reviewField(labelText,control,name){
+    const label=document.createElement('label');
+    label.className='h1-review-field';
+    const caption=document.createElement('span');
+    caption.textContent=labelText;
+    control.dataset.reviewField=name;
+    label.append(caption,control);
+    return label;
+  }
+
+  function reviewValue(editor,name){
+    const control=editor.querySelector('[data-review-field="'+name+'"]');
+    return String(control?.value||'').trim();
+  }
+
+  async function saveFindingReviewMetadata(findingId,editor){
+    if(!runMonitorCampaignId)return false;
+    const status=editor.querySelector('[data-review-status]');
+    const reviewer=reviewValue(editor,'reviewer');
+    const cvss=Number(reviewValue(editor,'cvss'));
+    const payload={
+      summary:reviewValue(editor,'summary'),
+      impact:reviewValue(editor,'impact'),
+      reproduction_steps:splitLines(reviewValue(editor,'reproduction_steps')),
+      remediation:reviewValue(editor,'remediation'),
+      cwe:reviewValue(editor,'cwe').toUpperCase(),
+      cvss,
+      reviewer
+    };
+    if(!payload.summary||!payload.impact||!payload.reproduction_steps.length||!payload.remediation||!payload.cwe||!reviewer){
+      status.textContent='Tous les champs de revue sont requis avant sauvegarde.';
+      status.className='muted compact err-text';
+      return false;
+    }
+    if(!Number.isFinite(cvss)||cvss<0||cvss>10){
+      status.textContent='CVSS doit être compris entre 0 et 10.';
+      status.className='muted compact err-text';
+      return false;
+    }
+    try{
+      status.textContent='Sauvegarde de la revue humaine…';
+      status.className='muted compact';
+      await api(
+        '/campaigns/'+encodeURIComponent(runMonitorCampaignId)+
+        '/findings/'+encodeURIComponent(findingId)+'/review-metadata',
+        {method:'PUT',body:JSON.stringify(payload)}
+      );
+      status.textContent='Métadonnées HackerOne sauvegardées. La confirmation reste une action séparée.';
+      status.className='muted compact ok-text';
+      await refreshRunMonitor(runMonitorCampaignId);
+      return true;
+    }catch(error){
+      status.textContent='Sauvegarde impossible : '+error.message;
+      status.className='muted compact err-text';
+      return false;
+    }
+  }
+
+  async function resolveHackerOneFinding(findingId,confirmed,editor){
+    if(!runMonitorCampaignId)return;
+    const reviewer=reviewValue(editor,'reviewer');
+    const status=editor.querySelector('[data-review-status]');
+    if(!reviewer){
+      status.textContent='Nom ou pseudo du relecteur requis.';
+      status.className='muted compact err-text';
+      return;
+    }
+    try{
+      const decision=confirmed?'confirmation':'rejet';
+      status.textContent='Enregistrement de la '+decision+' humaine…';
+      status.className='muted compact';
+      await api(
+        '/campaigns/'+encodeURIComponent(runMonitorCampaignId)+
+        '/findings/'+encodeURIComponent(findingId)+'/validate?confirmed='+
+        String(Boolean(confirmed))+'&validator='+encodeURIComponent(reviewer),
+        {method:'POST'}
+      );
+      status.textContent=confirmed?'Finding confirmé par revue humaine.':'Finding rejeté par revue humaine.';
+      status.className='muted compact ok-text';
+      await refreshRunMonitor(runMonitorCampaignId);
+    }catch(error){
+      status.textContent='Décision refusée : '+error.message;
+      status.className='muted compact err-text';
+    }
+  }
+
+  function buildFindingReviewEditor(finding,readiness){
+    const details=document.createElement('details');
+    details.className='h1-review-editor';
+    const summary=document.createElement('summary');
+    summary.textContent='Revue humaine et métadonnées HackerOne';
+    details.appendChild(summary);
+
+    const grid=document.createElement('div');
+    grid.className='h1-review-grid';
+
+    const reviewer=document.createElement('input');
+    reviewer.type='text';
+    reviewer.maxLength=120;
+    reviewer.value=String(finding.validated_by||el('h1ReviewedBy').value||'');
+    grid.appendChild(reviewField('Relecteur',reviewer,'reviewer'));
+
+    const summaryInput=document.createElement('textarea');
+    summaryInput.rows=3;
+    summaryInput.maxLength=8000;
+    summaryInput.value=String(finding.summary||'');
+    grid.appendChild(reviewField('Résumé',summaryInput,'summary'));
+
+    const impact=document.createElement('textarea');
+    impact.rows=3;
+    impact.maxLength=8000;
+    impact.value=String(finding.impact||'');
+    grid.appendChild(reviewField('Impact',impact,'impact'));
+
+    const reproduction=document.createElement('textarea');
+    reproduction.rows=4;
+    reproduction.value=Array.isArray(finding.reproduction_steps)?finding.reproduction_steps.join('\n'):'';
+    reproduction.placeholder='Une étape par ligne';
+    grid.appendChild(reviewField('Étapes de reproduction',reproduction,'reproduction_steps'));
+
+    const remediation=document.createElement('textarea');
+    remediation.rows=3;
+    remediation.maxLength=8000;
+    remediation.value=String(finding.remediation||'');
+    grid.appendChild(reviewField('Remédiation',remediation,'remediation'));
+
+    const cwe=document.createElement('input');
+    cwe.type='text';
+    cwe.placeholder='CWE-200';
+    cwe.value=String(finding.cwe||'');
+    grid.appendChild(reviewField('CWE',cwe,'cwe'));
+
+    const cvss=document.createElement('input');
+    cvss.type='number';
+    cvss.min='0';
+    cvss.max='10';
+    cvss.step='0.1';
+    cvss.inputMode='decimal';
+    cvss.value=finding.cvss===null||finding.cvss===undefined?'':String(finding.cvss);
+    grid.appendChild(reviewField('CVSS',cvss,'cvss'));
+
+    details.appendChild(grid);
+
+    const blockers=document.createElement('p');
+    blockers.className='muted compact';
+    const metadataBlockers=Array.isArray(readiness?.metadata_blockers)?readiness.metadata_blockers:[];
+    blockers.textContent=metadataBlockers.length
+      ?'Champs bloquant le brouillon : '+metadataBlockers.join(' · ')
+      :'Métadonnées de soumission complètes.';
+    details.appendChild(blockers);
+
+    const actions=document.createElement('div');
+    actions.className='h1-review-actions';
+    const save=document.createElement('button');
+    save.type='button';
+    save.textContent='Sauvegarder la revue';
+    save.addEventListener('click',()=>void saveFindingReviewMetadata(finding.id,details));
+    actions.appendChild(save);
+
+    if(!['confirmed','rejected'].includes(String(finding.status||''))){
+      const confirm=document.createElement('button');
+      confirm.type='button';
+      confirm.textContent='Confirmer le finding';
+      confirm.addEventListener('click',()=>void resolveHackerOneFinding(finding.id,true,details));
+      const reject=document.createElement('button');
+      reject.type='button';
+      reject.className='danger';
+      reject.textContent='Rejeter le finding';
+      reject.addEventListener('click',()=>void resolveHackerOneFinding(finding.id,false,details));
+      actions.append(confirm,reject);
+    }
+    details.appendChild(actions);
+
+    const status=document.createElement('p');
+    status.dataset.reviewStatus='true';
+    status.className='muted compact';
+    status.textContent='La sauvegarde des métadonnées ne confirme jamais automatiquement le finding.';
+    details.appendChild(status);
+    return details;
+  }
+
   function renderHackerOneFindings(campaignData,artifacts,reportReadiness){
     const list=el('h1RunFindingList');
     list.replaceChildren();
@@ -65,6 +246,12 @@
           .filter(item=>String(item.finding_id||'')===String(finding.id||'')).length;
         meta.textContent=severity+' · '+endpoint+' · '+evidenceCount+' preuve(s)';
         row.append(head,meta);
+        const readinessItem=Array.isArray(reportReadiness?.findings)
+          ?reportReadiness.findings.find(item=>String(item.finding_id||'')===String(finding.id||''))
+          :null;
+        if(findingStatus!=='rejected'){
+          row.appendChild(buildFindingReviewEditor(finding,readinessItem));
+        }
         list.appendChild(row);
       }
     }

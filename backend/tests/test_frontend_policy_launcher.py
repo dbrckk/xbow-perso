@@ -120,3 +120,19 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
     assert "reports?platform=hackerone" in launcher
     assert "submission_ready" in launcher
     assert "humaine" in html.lower()
+
+
+def test_frontend_exposes_hackerone_human_review_controls():
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    assert "buildFindingReviewEditor" in launcher
+    assert "saveFindingReviewMetadata" in launcher
+    assert "resolveHackerOneFinding" in launcher
+    assert "/review-metadata" in launcher
+    assert "/validate?confirmed=" in launcher
+    assert "Sauvegarder la revue" in launcher
+    assert "Confirmer le finding" in launcher
+    assert "Rejeter le finding" in launcher
+    assert "CWE" in launcher
+    assert "CVSS" in launcher
+    assert "ne confirme jamais automatiquement" in launcher
