@@ -33,7 +33,79 @@
     runMonitorBusy=false;
   }
 
-  function renderRunMonitor(campaignData,control,artifacts){
+  function renderHackerOneFindings(campaignData,artifacts,reportReadiness){
+    const list=el('h1RunFindingList');
+    list.replaceChildren();
+    const findings=Array.isArray(campaignData?.findings)?campaignData.findings:[];
+    if(!findings.length){
+      list.textContent='Aucun finding détecté pour le moment.';
+    }else{
+      for(const finding of findings){
+        const row=document.createElement('div');
+        row.className='h1-run-finding';
+
+        const head=document.createElement('div');
+        head.className='finding-head';
+        const title=document.createElement('strong');
+        title.textContent=String(finding.title||finding.id||'Finding');
+        const status=document.createElement('span');
+        const findingStatus=String(finding.status||'unknown');
+        status.className='pill '+(
+          findingStatus==='confirmed'?'ok':
+          findingStatus==='rejected'?'err':'warn'
+        );
+        status.textContent=findingStatus.replaceAll('_',' ');
+        head.append(title,status);
+
+        const meta=document.createElement('div');
+        meta.className='muted';
+        const severity=String(finding.severity||'unknown');
+        const endpoint=String(finding.endpoint||finding.asset||'—');
+        const evidenceCount=(Array.isArray(artifacts)?artifacts:[])
+          .filter(item=>String(item.finding_id||'')===String(finding.id||'')).length;
+        meta.textContent=severity+' · '+endpoint+' · '+evidenceCount+' preuve(s)';
+        row.append(head,meta);
+        list.appendChild(row);
+      }
+    }
+
+    const summary=reportReadiness?.summary||{};
+    const ready=Number(summary.submission_ready)||0;
+    const blocked=Number(summary.submission_blocked)||0;
+    const reportArtifact=(Array.isArray(artifacts)?artifacts:[]).find(item=>
+      item?.kind==='report'&&String(item?.idempotency_key||'').endsWith(':report:hackerone')
+    );
+    const button=el('h1ReportDraft');
+    const status=el('h1ReportStatus');
+    if(reportArtifact){
+      button.disabled=true;
+      status.textContent='Brouillon HackerOne généré · artifact '+String(reportArtifact.id||'');
+    }else if(ready>0){
+      button.disabled=false;
+      status.textContent=ready+' finding(s) prêt(s) à soumettre · validation humaine requise avant envoi.';
+    }else{
+      button.disabled=true;
+      status.textContent='Brouillon bloqué · '+blocked+' finding(s) incomplet(s) ou non validé(s).';
+    }
+  }
+
+  async function queueHackerOneReport(){
+    if(!runMonitorCampaignId)return;
+    const button=el('h1ReportDraft');
+    button.disabled=true;
+    el('h1ReportStatus').textContent='Mise en file du brouillon HackerOne…';
+    try{
+      const encoded=encodeURIComponent(runMonitorCampaignId);
+      await api('/campaigns/'+encoded+'/reports?platform=hackerone',{method:'POST'});
+      el('h1ReportStatus').textContent='Brouillon HackerOne en file de génération.';
+      await refreshRunMonitor(runMonitorCampaignId);
+    }catch(error){
+      el('h1ReportStatus').textContent='Brouillon non généré : '+error.message;
+      await refreshRunMonitor(runMonitorCampaignId);
+    }
+  }
+
+  function renderRunMonitor(campaignData,control,artifacts,reportReadiness){
     const panel=el('h1RunPanel');
     panel.classList.remove('hidden');
     const state=String(campaignData?.state||control?.campaign_state||'unknown');
@@ -53,6 +125,7 @@
       Array.isArray(campaignData?.findings)?campaignData.findings.length:0
     );
     el('h1RunArtifacts').textContent=String(Array.isArray(artifacts)?artifacts.length:0);
+    renderHackerOneFindings(campaignData,artifacts,reportReadiness);
     el('h1RunUpdated').textContent='Actualisé à '+new Date().toLocaleTimeString();
   }
 
@@ -61,19 +134,20 @@
     runMonitorBusy=true;
     try{
       const encoded=encodeURIComponent(campaignId);
-      const [campaignData,control,artifacts]=await Promise.all([
+      const [campaignData,control,artifacts,reportReadiness]=await Promise.all([
         api('/campaigns/'+encodeURIComponent(campaignId)),
         api('/campaigns/'+encodeURIComponent(campaignId)+'/control-status'),
-        api('/campaigns/'+encodeURIComponent(campaignId)+'/artifacts')
+        api('/campaigns/'+encodeURIComponent(campaignId)+'/artifacts'),
+        api('/campaigns/'+encodeURIComponent(campaignId)+'/report-readiness')
       ]);
-      renderRunMonitor(campaignData,control,artifacts);
+      renderRunMonitor(campaignData,control,artifacts,reportReadiness);
       if(typeof refreshDashboard==='function'&&campaign?.id===campaignId){
         await refreshDashboard();
       }
       if(['completed','cancelled','failed'].includes(String(campaignData?.state||''))){
         stopRunMonitor();
       }
-      return {campaign:campaignData,control,artifacts,encoded};
+      return {campaign:campaignData,control,artifacts,reportReadiness,encoded};
     }catch(error){
       el('h1RunPanel').classList.remove('hidden');
       el('h1RunState').textContent='indisponible';
@@ -453,6 +527,7 @@
     el('h1Launch').disabled=!(approvedPreview&&el('h1Confirm').checked);
   });
   el('h1Launch').addEventListener('click',launch);
+  el('h1ReportDraft').addEventListener('click',()=>void queueHackerOneReport());
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
 })();
