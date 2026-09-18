@@ -165,3 +165,41 @@ def test_get_all_pages_collects_until_short_page(monkeypatch):
         ("hackers/programs", {"page[number]": 1, "page[size]": 100}),
         ("hackers/programs", {"page[number]": 2, "page[size]": 100}),
     ]
+
+
+def test_client_post_json_uses_fixed_origin_and_bounded_json_body(monkeypatch):
+    response = _Response(b'{"data":{"id":"4242","type":"report"}}', status=201)
+    opener = _Opener(response)
+    monkeypatch.setattr("app.hackerone_client.urllib.request.build_opener", lambda *args: opener)
+    credentials = HackerOneCredentials(username="researcher", token="token-value-1234567890")
+    client = HackerOneClient(credentials)
+
+    payload = {
+        "data": {
+            "type": "report",
+            "attributes": {
+                "team_handle": "security",
+                "title": "Fixture",
+                "vulnerability_information": "Approved report body",
+                "impact": "Fixture impact",
+                "severity_rating": "medium",
+            },
+        }
+    }
+    result = client.post_json("hackers/reports", payload)
+
+    assert result["data"]["id"] == "4242"
+    request = opener.requests[0]
+    assert request.full_url == "https://api.hackerone.com/v1/hackers/reports"
+    assert request.get_method() == "POST"
+    assert request.get_header("Content-type") == "application/json"
+    assert json.loads(request.data.decode("utf-8")) == payload
+
+
+def test_client_post_json_rejects_non_object_payload():
+    client = HackerOneClient(
+        HackerOneCredentials(username="researcher", token="token-value-1234567890")
+    )
+
+    with pytest.raises(HackerOneClientError, match="payload"):
+        client.post_json("hackers/reports", ["not", "an", "object"])
