@@ -237,6 +237,7 @@ backend/
     test_hackerone_remote_binding.py
     test_hackerone_remote_snapshot.py
     test_hackerone_report_lifecycle_e2e.py
+    test_hackerone_report_tracking.py
     test_hackerone_scope_import.py
     test_hackerone_scope_preview_api.py
     test_health.py
@@ -3140,11 +3141,33 @@ def _latest_remote_submission(campaign, artifact_id: str) -> dict[str, Any] | No
 ⋮----
 matches = [
 ⋮----
+def _remote_submission_for_artifact(campaign, artifact_id: str) -> dict[str, Any]
+⋮----
+remote = _latest_remote_submission(campaign, artifact_id)
+⋮----
+remote_report_id = remote.get("remote_report_id")
+team_handle = remote.get("team_handle")
+⋮----
+data = document.get("data")
+⋮----
+attributes = data.get("attributes")
+⋮----
+state = attributes.get("state")
+⋮----
+allowed_timestamps = (
+projected = {
+⋮----
+value = attributes.get(key)
+⋮----
+remote = _remote_submission_for_artifact(campaign, artifact_id)
+remote_report_id = remote["remote_report_id"]
+⋮----
+document = HackerOneClient().get_json(
+⋮----
 store = storage()
 ⋮----
 current_state = submission_status(campaign, artifact)
 ⋮----
-remote = _latest_remote_submission(campaign, artifact_id)
 result = current_state.to_dict()
 ⋮----
 approval = approval_status_from_storage(campaign, store, artifact_id)
@@ -10738,6 +10761,29 @@ persisted = store.get_campaign(campaign_id)
 event_types = [event.get("type") for event in persisted["events"]]
 ````
 
+## File: backend/tests/test_hackerone_report_tracking.py
+````python
+def _campaign_with_remote_report(tmp_path, monkeypatch, *, remote_report_id="4242")
+⋮----
+db = str(tmp_path / "db.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+campaign = Campaign(
+⋮----
+def test_remote_report_status_projects_safe_operational_fields(tmp_path, monkeypatch)
+⋮----
+campaign = _campaign_with_remote_report(tmp_path, monkeypatch)
+calls = []
+⋮----
+def get_json(self, path, query=None)
+⋮----
+result = hackerone_api.get_hackerone_remote_report_status(
+⋮----
+def test_remote_report_status_requires_recorded_hackerone_submission(tmp_path, monkeypatch)
+⋮----
+def test_remote_report_status_maps_upstream_unavailability(tmp_path, monkeypatch)
+````
+
 ## File: backend/tests/test_hackerone_scope_preview_api.py
 ````python
 def _resource(identifier: str, asset_type: str, eligible: bool)
@@ -14938,7 +14984,9 @@ async function revokeHackerOneReportApproval()
 ⋮----
 async function queueHackerOneReport()
 ⋮----
-function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval)
+function renderHackerOneRemoteReportStatus(remoteStatus)
+⋮----
+function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval,remoteReportStatus)
 ⋮----
 async function refreshRunMonitor(campaignId)
 ⋮----
@@ -15655,6 +15703,9 @@ Remote-bound previews carry a deterministic SHA-256 snapshot of the program meta
 The HackerOne API timeout defaults to 10 seconds and its bounded response size to 2 MiB; see `.env.example` for `XBOW_HACKERONE_TIMEOUT_SECONDS` and `XBOW_HACKERONE_MAX_RESPONSE_BYTES`.
 
 Direct HackerOne submission is fail-closed: it requires a current human approval of the exact integrity-verified report artifact, a verified remote program binding, exactly one confirmed finding, an explicit UI confirmation, and the server-side `XBOW_ENABLE_HACKERONE_SUBMISSION=true` gate. The approved report bytes are sent as the report body. Ambiguous transport failures are recorded and automatic retry is blocked to avoid duplicate HackerOne reports.
+
+
+After a successful direct submission, the Control Center can read the remote report with HackerOne's `GET /v1/hackers/reports/{id}` endpoint. The local API exposes only bounded operational fields (remote report ID, program handle, state, and activity/triage/closure timestamps); report content, relationships, attachments, and user data are intentionally omitted. This status lookup is read-only and does not mutate the campaign audit log.
 
 ## Disaster recovery integrity
 

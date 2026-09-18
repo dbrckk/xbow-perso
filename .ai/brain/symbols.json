@@ -1719,8 +1719,29 @@
       "file": "backend/app/hackerone_api.py",
       "language": "python",
       "kind": "function",
+      "name": "_remote_submission_for_artifact",
+      "line": 421
+    },
+    {
+      "file": "backend/app/hackerone_api.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_project_remote_report_status",
+      "line": 447
+    },
+    {
+      "file": "backend/app/hackerone_api.py",
+      "language": "python",
+      "kind": "function",
+      "name": "get_hackerone_remote_report_status",
+      "line": 502
+    },
+    {
+      "file": "backend/app/hackerone_api.py",
+      "language": "python",
+      "kind": "function",
       "name": "submit_hackerone_report",
-      "line": 424
+      "line": 528
     },
     {
       "file": "backend/app/hackerone_binding.py",
@@ -9924,7 +9945,7 @@
       "language": "python",
       "kind": "function",
       "name": "test_frontend_exposes_hackerone_human_review_controls",
-      "line": 145
+      "line": 148
     },
     {
       "file": "backend/tests/test_hackerone_binding.py",
@@ -10492,6 +10513,62 @@
       "kind": "function",
       "name": "fake_execute",
       "line": 75
+    },
+    {
+      "file": "backend/tests/test_hackerone_report_tracking.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_campaign_with_remote_report",
+      "line": 11
+    },
+    {
+      "file": "backend/tests/test_hackerone_report_tracking.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_remote_report_status_projects_safe_operational_fields",
+      "line": 54
+    },
+    {
+      "file": "backend/tests/test_hackerone_report_tracking.py",
+      "language": "python",
+      "kind": "function",
+      "name": "get_json",
+      "line": 58
+    },
+    {
+      "file": "backend/tests/test_hackerone_report_tracking.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_remote_report_status_requires_recorded_hackerone_submission",
+      "line": 113
+    },
+    {
+      "file": "backend/tests/test_hackerone_report_tracking.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_remote_report_status_rejects_mismatched_or_invalid_upstream_payload",
+      "line": 143
+    },
+    {
+      "file": "backend/tests/test_hackerone_report_tracking.py",
+      "language": "python",
+      "kind": "function",
+      "name": "get_json",
+      "line": 149
+    },
+    {
+      "file": "backend/tests/test_hackerone_report_tracking.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_remote_report_status_maps_upstream_unavailability",
+      "line": 169
+    },
+    {
+      "file": "backend/tests/test_hackerone_report_tracking.py",
+      "language": "python",
+      "kind": "function",
+      "name": "get_json",
+      "line": 172
     },
     {
       "file": "backend/tests/test_hackerone_scope_import.py",
@@ -17876,154 +17953,161 @@
       "language": "javascript",
       "kind": "function",
       "name": "revokeHackerOneReportApproval",
-      "line": 471
+      "line": 472
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "queueHackerOneReport",
-      "line": 497
+      "line": 498
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "renderHackerOneRemoteReportStatus",
+      "line": 514
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderRunMonitor",
-      "line": 513
+      "line": 535
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "refreshRunMonitor",
-      "line": 537
+      "line": 560
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "startRunMonitor",
-      "line": 580
+      "line": 633
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "clearRemoteBinding",
-      "line": 590
+      "line": 643
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderProgramOptions",
-      "line": 599
+      "line": 652
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderRemoteScope",
-      "line": 620
+      "line": 673
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "loadRemoteProgram",
-      "line": 659
+      "line": 712
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "initRemoteControlCenter",
-      "line": 695
+      "line": 748
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "parseScopeDocument",
-      "line": 720
+      "line": 773
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "reviewedAtIso",
-      "line": 731
+      "line": 784
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "buildPolicy",
-      "line": 739
+      "line": 792
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "buildPayload",
-      "line": 765
+      "line": 818
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "conservativeBlockers",
-      "line": 783
+      "line": 836
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "payloadFingerprint",
-      "line": 793
+      "line": 846
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "invalidatePreview",
-      "line": 797
+      "line": 850
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderScopeList",
-      "line": 809
+      "line": 862
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderPreview",
-      "line": 823
+      "line": 876
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "preview",
-      "line": 854
+      "line": 907
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "launch",
-      "line": 880
+      "line": 933
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "importScopeFile",
-      "line": 913
+      "line": 966
     }
   ]
 }

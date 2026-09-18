@@ -222,6 +222,7 @@ tests/
   test_hackerone_remote_binding.py
   test_hackerone_remote_snapshot.py
   test_hackerone_report_lifecycle_e2e.py
+  test_hackerone_report_tracking.py
   test_hackerone_scope_import.py
   test_hackerone_scope_preview_api.py
   test_health.py
@@ -2643,11 +2644,33 @@ def _latest_remote_submission(campaign, artifact_id: str) -> dict[str, Any] | No
 ⋮----
 matches = [
 ⋮----
+def _remote_submission_for_artifact(campaign, artifact_id: str) -> dict[str, Any]
+⋮----
+remote = _latest_remote_submission(campaign, artifact_id)
+⋮----
+remote_report_id = remote.get("remote_report_id")
+team_handle = remote.get("team_handle")
+⋮----
+data = document.get("data")
+⋮----
+attributes = data.get("attributes")
+⋮----
+state = attributes.get("state")
+⋮----
+allowed_timestamps = (
+projected = {
+⋮----
+value = attributes.get(key)
+⋮----
+remote = _remote_submission_for_artifact(campaign, artifact_id)
+remote_report_id = remote["remote_report_id"]
+⋮----
+document = HackerOneClient().get_json(
+⋮----
 store = storage()
 ⋮----
 current_state = submission_status(campaign, artifact)
 ⋮----
-remote = _latest_remote_submission(campaign, artifact_id)
 result = current_state.to_dict()
 ⋮----
 approval = approval_status_from_storage(campaign, store, artifact_id)
@@ -10239,6 +10262,29 @@ download = client.get(
 persisted = store.get_campaign(campaign_id)
 ⋮----
 event_types = [event.get("type") for event in persisted["events"]]
+```
+
+## File: tests/test_hackerone_report_tracking.py
+```python
+def _campaign_with_remote_report(tmp_path, monkeypatch, *, remote_report_id="4242")
+⋮----
+db = str(tmp_path / "db.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+campaign = Campaign(
+⋮----
+def test_remote_report_status_projects_safe_operational_fields(tmp_path, monkeypatch)
+⋮----
+campaign = _campaign_with_remote_report(tmp_path, monkeypatch)
+calls = []
+⋮----
+def get_json(self, path, query=None)
+⋮----
+result = hackerone_api.get_hackerone_remote_report_status(
+⋮----
+def test_remote_report_status_requires_recorded_hackerone_submission(tmp_path, monkeypatch)
+⋮----
+def test_remote_report_status_maps_upstream_unavailability(tmp_path, monkeypatch)
 ```
 
 ## File: tests/test_hackerone_scope_preview_api.py
