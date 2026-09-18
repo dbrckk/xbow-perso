@@ -265,6 +265,7 @@
     const button=el('h1ReportDraft');
     const download=el('h1ReportDownload');
     const approve=el('h1ReportApprove');
+    const submit=el('h1ReportSubmit');
     const revoke=el('h1ReportRevoke');
     const status=el('h1ReportStatus');
     const approvalStatus=el('h1ReportApprovalStatus');
@@ -275,6 +276,7 @@
       download.classList.remove('hidden');
       download.dataset.artifactId=artifactId;
       approve.dataset.artifactId=artifactId;
+      submit.dataset.artifactId=artifactId;
       revoke.dataset.artifactId=artifactId;
       const sha=String(reportArtifact.sha256||'');
       status.textContent='Brouillon HackerOne généré · artifact '+artifactId+
@@ -283,6 +285,8 @@
       if(reportApproval?.error){
         approve.disabled=true;
         approve.classList.remove('hidden');
+        submit.disabled=true;
+        submit.classList.add('hidden');
         revoke.disabled=true;
         revoke.classList.add('hidden');
         approvalStatus.className='muted compact err-text';
@@ -290,6 +294,8 @@
       }else if(reportApproval?.approved){
         approve.disabled=true;
         approve.classList.add('hidden');
+        submit.disabled=false;
+        submit.classList.remove('hidden');
         revoke.disabled=false;
         revoke.classList.remove('hidden');
         approvalStatus.className='muted compact ok-text';
@@ -301,6 +307,8 @@
       }else{
         approve.disabled=false;
         approve.classList.remove('hidden');
+        submit.disabled=true;
+        submit.classList.add('hidden');
         revoke.disabled=true;
         revoke.classList.add('hidden');
         approvalStatus.className='muted compact '+(reportApproval?.stale?'err-text':'');
@@ -314,10 +322,13 @@
       download.classList.add('hidden');
       approve.disabled=true;
       approve.classList.add('hidden');
+      submit.disabled=true;
+      submit.classList.add('hidden');
       revoke.disabled=true;
       revoke.classList.add('hidden');
       delete download.dataset.artifactId;
       delete approve.dataset.artifactId;
+      delete submit.dataset.artifactId;
       delete revoke.dataset.artifactId;
       approvalStatus.className='muted compact';
       approvalStatus.textContent='Aucun brouillon à approuver.';
@@ -328,10 +339,13 @@
       download.classList.add('hidden');
       approve.disabled=true;
       approve.classList.add('hidden');
+      submit.disabled=true;
+      submit.classList.add('hidden');
       revoke.disabled=true;
       revoke.classList.add('hidden');
       delete download.dataset.artifactId;
       delete approve.dataset.artifactId;
+      delete submit.dataset.artifactId;
       delete revoke.dataset.artifactId;
       approvalStatus.className='muted compact';
       approvalStatus.textContent='Aucun brouillon à approuver.';
@@ -412,6 +426,45 @@
     }catch(error){
       el('h1ReportApprovalStatus').className='muted compact err-text';
       el('h1ReportApprovalStatus').textContent='Approbation refusée : '+error.message;
+      button.disabled=false;
+    }
+  }
+
+  async function submitHackerOneReport(){
+    if(!runMonitorCampaignId)return;
+    const button=el('h1ReportSubmit');
+    const artifactId=String(button.dataset.artifactId||'');
+    const actor=hackerOneReportReviewer();
+    if(!artifactId)return;
+    if(!actor){
+      el('h1ReportApprovalStatus').className='muted compact err-text';
+      el('h1ReportApprovalStatus').textContent='Identité opérateur requise avant soumission.';
+      return;
+    }
+    if(!window.confirm(
+      'Soumettre ce rapport approuvé à HackerOne ? Cette action crée un rapport externe.'
+    ))return;
+    button.disabled=true;
+    el('h1ReportApprovalStatus').className='muted compact';
+    el('h1ReportApprovalStatus').textContent='Soumission explicite à HackerOne…';
+    try{
+      const result=await api(
+        '/campaigns/'+encodeURIComponent(runMonitorCampaignId)+
+        '/reports/'+encodeURIComponent(artifactId)+'/submit-to-hackerone',
+        {
+          method:'POST',
+          body:JSON.stringify({actor,confirm_submission:true})
+        }
+      );
+      button.disabled=true;
+      button.classList.add('hidden');
+      const remoteId=String(result?.remote_report_id||'');
+      el('h1ReportApprovalStatus').className='muted compact ok-text';
+      el('h1ReportApprovalStatus').textContent='Rapport soumis à HackerOne'+
+        (remoteId?' · report '+remoteId:'')+'.';
+    }catch(error){
+      el('h1ReportApprovalStatus').className='muted compact err-text';
+      el('h1ReportApprovalStatus').textContent='Soumission HackerOne refusée : '+error.message;
       button.disabled=false;
     }
   }
@@ -897,6 +950,7 @@
   el('h1ReportDraft').addEventListener('click',()=>void queueHackerOneReport());
   el('h1ReportDownload').addEventListener('click',()=>void downloadHackerOneReport());
   el('h1ReportApprove').addEventListener('click',()=>void approveHackerOneReport());
+  el('h1ReportSubmit').addEventListener('click',()=>void submitHackerOneReport());
   el('h1ReportRevoke').addEventListener('click',()=>void revokeHackerOneReportApproval());
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();

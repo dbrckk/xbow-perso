@@ -177,6 +177,81 @@ class HackerOneClient:
             raise HackerOneClientError("HackerOne response must be a JSON object")
         return document
 
+    def post_json(
+        self,
+        path: str,
+        payload: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        safe_path = _validate_path(path)
+        if not isinstance(payload, Mapping):
+            raise HackerOneClientError("HackerOne JSON payload must be an object")
+        url = urllib.parse.urljoin(_API_ROOT, safe_path)
+        if not url.startswith(_API_ROOT):
+            raise HackerOneClientError("HackerOne API path escaped fixed origin")
+
+        try:
+            body = json.dumps(
+                dict(payload),
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode("utf-8")
+        except (TypeError, ValueError) as exc:
+            raise HackerOneClientError("HackerOne JSON payload is invalid") from exc
+        if len(body) > _max_response_bytes():
+            raise HackerOneClientError("HackerOne JSON payload exceeds configured size limit")
+
+        headers = self.credentials.headers()
+        headers["Content-Type"] = "application/json"
+        request = urllib.request.Request(
+            url,
+            data=body,
+            method="POST",
+            headers=headers,
+        )
+        opener = urllib.request.build_opener(
+            _NoRedirect(),
+            urllib.request.HTTPSHandler(context=ssl.create_default_context()),
+        )
+        timeout = _timeout_seconds()
+        try:
+            response = opener.open(request, timeout=timeout)
+            status = int(getattr(response, "status", response.getcode()))
+            content_type = (response.headers.get("Content-Type") or "").lower()
+            if "application/json" not in content_type:
+                raise HackerOneClientError("HackerOne response is not JSON")
+            raw = _read_bounded(response, _max_response_bytes())
+        except HackerOneClientError:
+            raise
+        except urllib.error.HTTPError as exc:
+            raise HackerOneClientError(
+                f"HackerOne returned HTTP {exc.code}",
+                status_code=int(exc.code),
+            ) from exc
+        except urllib.error.URLError as exc:
+            raise HackerOneClientError("HackerOne transport connection failed") from exc
+        except (TimeoutError, socket.timeout) as exc:
+            raise HackerOneClientError("HackerOne transport timed out") from exc
+        except OSError as exc:
+            raise HackerOneClientError("HackerOne transport I/O failed") from exc
+
+        if status < 200 or status >= 300:
+            raise HackerOneClientError(
+                f"HackerOne returned HTTP {status}",
+                status_code=status,
+            )
+        try:
+            document = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise HackerOneClientError(
+                "HackerOne response contains invalid JSON"
+            ) from exc
+        if not isinstance(document, dict):
+            raise HackerOneClientError(
+                "HackerOne response must be a JSON object"
+            )
+        return document
+
     def get_all_pages(self, path: str) -> list[dict[str, Any]]:
         items: list[dict[str, Any]] = []
         for page_number in range(1, _MAX_PAGES + 1):

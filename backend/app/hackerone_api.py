@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator, model_validator
@@ -75,6 +75,21 @@ class HackerOneCampaignTargetInput(BaseModel):
 
 class HackerOneCampaignAdmissionInput(HackerOneRulesPreviewInput):
     target: HackerOneCampaignTargetInput
+
+
+class HackerOneReportSubmissionInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    actor: str = Field(min_length=1, max_length=120)
+    confirm_submission: Literal[True]
+
+    @field_validator("actor")
+    @classmethod
+    def normalize_actor(cls, value: str) -> str:
+        actor = value.strip()
+        if not actor:
+            raise ValueError("actor must not be blank")
+        return actor
 
 
 def _policy_from_input(payload: HackerOneProgramPolicyInput):
@@ -338,3 +353,267 @@ def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
         "campaign": campaign.model_dump(mode="json"),
         "start": started,
     }
+
+
+def _hackerone_submission_enabled() -> bool:
+    import os
+
+    raw = (os.getenv("XBOW_ENABLE_HACKERONE_SUBMISSION") or "false").strip().lower()
+    if raw in {"1", "true", "yes", "on"}:
+        return True
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    raise HTTPException(
+        status_code=503,
+        detail="XBOW_ENABLE_HACKERONE_SUBMISSION must be a boolean",
+    )
+
+
+def _verified_remote_team_handle(campaign) -> str:
+    for event in reversed(campaign.events):
+        if event.get("type") != "hackerone_policy_bound":
+            continue
+        binding = event.get("remote_binding")
+        if (
+            isinstance(binding, dict)
+            and binding.get("verified") is True
+            and isinstance(binding.get("handle"), str)
+            and binding["handle"].strip()
+        ):
+            return binding["handle"].strip()
+        break
+    raise HTTPException(
+        status_code=409,
+        detail="HackerOne external submission requires a verified remote program binding",
+    )
+
+
+def _unresolved_hackerone_attempt(campaign, artifact_id: str) -> dict[str, Any] | None:
+    attempts = [
+        (index, event)
+        for index, event in enumerate(campaign.events)
+        if event.get("type") == "hackerone_submission_attempted"
+        and event.get("artifact_id") == artifact_id
+    ]
+    if not attempts:
+        return None
+    index, latest = attempts[-1]
+    request_id = latest.get("request_id")
+    resolved = any(
+        event.get("request_id") == request_id
+        and event.get("type")
+        in {"hackerone_report_submitted", "hackerone_submission_rejected"}
+        for event in campaign.events[index + 1 :]
+    )
+    return None if resolved else latest
+
+
+def _latest_remote_submission(campaign, artifact_id: str) -> dict[str, Any] | None:
+    matches = [
+        event
+        for event in campaign.events
+        if event.get("type") == "hackerone_report_submitted"
+        and event.get("artifact_id") == artifact_id
+    ]
+    return matches[-1] if matches else None
+
+
+@router.post(
+    "/api/campaigns/{campaign_id}/reports/{artifact_id}/submit-to-hackerone"
+)
+def submit_hackerone_report(
+    campaign_id: str,
+    artifact_id: str,
+    payload: HackerOneReportSubmissionInput,
+):
+    from uuid import uuid4
+
+    from .campaign_audit import append_campaign_event
+    from .main import (
+        assert_campaign_record,
+        assert_campaign_exists,
+        save_campaign,
+        storage,
+        utcnow,
+    )
+    from .report_approval import approval_status_from_storage
+    from .storage import ArtifactIntegrityError
+    from .submission_state import submission_event, submission_status
+
+    if not _hackerone_submission_enabled():
+        raise HTTPException(
+            status_code=409,
+            detail="HackerOne external submission is disabled",
+        )
+
+    campaign, version = assert_campaign_record(campaign_id)
+    store = storage()
+    try:
+        artifact, report_bytes = store.read_artifact(campaign.id, artifact_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Report artifact not found") from exc
+    except ArtifactIntegrityError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Report artifact integrity verification failed",
+        ) from exc
+    if artifact.get("kind") != "report":
+        raise HTTPException(status_code=409, detail="Artifact is not a report")
+
+    current_state = submission_status(campaign, artifact)
+    if current_state.state == "submitted":
+        if current_state.platform != "hackerone":
+            raise HTTPException(
+                status_code=409,
+                detail="Report is already marked submitted to another platform",
+            )
+        remote = _latest_remote_submission(campaign, artifact_id)
+        result = current_state.to_dict()
+        result["remote_report_id"] = remote.get("remote_report_id") if remote else None
+        result["team_handle"] = remote.get("team_handle") if remote else None
+        return result
+
+    if _unresolved_hackerone_attempt(campaign, artifact_id) is not None:
+        raise HTTPException(
+            status_code=409,
+            detail="Previous HackerOne submission attempt is unresolved; reconcile it before retrying",
+        )
+
+    try:
+        approval = approval_status_from_storage(campaign, store, artifact_id)
+    except (KeyError, ValueError, ArtifactIntegrityError) as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Report approval could not be verified",
+        ) from exc
+    if not approval.approved or approval.stale:
+        raise HTTPException(
+            status_code=409,
+            detail="HackerOne submission requires current human approval",
+        )
+
+    confirmed = [finding for finding in campaign.findings if finding.status == "confirmed"]
+    if len(confirmed) != 1:
+        raise HTTPException(
+            status_code=409,
+            detail="HackerOne direct submission requires exactly one confirmed finding",
+        )
+    finding = confirmed[0]
+    if not finding.impact.strip():
+        raise HTTPException(
+            status_code=409,
+            detail="HackerOne direct submission requires reviewed impact text",
+        )
+
+    team_handle = _verified_remote_team_handle(campaign)
+    try:
+        report_text = report_bytes.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Approved report artifact is not valid UTF-8",
+        ) from exc
+
+    severity_rating = "none" if finding.severity == "info" else finding.severity
+    outbound = {
+        "data": {
+            "type": "report",
+            "attributes": {
+                "team_handle": team_handle,
+                "title": finding.title,
+                "vulnerability_information": report_text,
+                "impact": finding.impact,
+                "severity_rating": severity_rating,
+            },
+        }
+    }
+
+    request_id = str(uuid4())
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "hackerone_submission_attempted",
+            "artifact_id": artifact_id,
+            "artifact_sha256": artifact["sha256"],
+            "request_id": request_id,
+            "team_handle": team_handle,
+            "actor": payload.actor,
+            "at": utcnow(),
+        },
+    )
+    campaign.updated_at = utcnow()
+    save_campaign(campaign, expected_version=version)
+
+    try:
+        response = HackerOneClient().post_json("hackers/reports", outbound)
+    except HackerOneClientError as exc:
+        if exc.status_code is not None and 400 <= exc.status_code < 500:
+            current, current_version = assert_campaign_record(campaign_id)
+            append_campaign_event(
+                current.events,
+                {
+                    "type": "hackerone_submission_rejected",
+                    "artifact_id": artifact_id,
+                    "request_id": request_id,
+                    "status_code": exc.status_code,
+                    "at": utcnow(),
+                },
+            )
+            current.updated_at = utcnow()
+            save_campaign(current, expected_version=current_version)
+            status = 422 if exc.status_code == 422 else 502
+            raise HTTPException(
+                status_code=status,
+                detail="HackerOne rejected the approved report submission",
+            ) from exc
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                "HackerOne submission outcome is unresolved; "
+                "automatic retry is blocked to prevent duplicate reports"
+            ),
+        ) from exc
+
+    data = response.get("data")
+    remote_report_id = data.get("id") if isinstance(data, dict) else None
+    if (
+        not isinstance(data, dict)
+        or data.get("type") != "report"
+        or not isinstance(remote_report_id, str)
+        or not remote_report_id.strip()
+    ):
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                "HackerOne submission outcome is unresolved because the success "
+                "response was invalid; automatic retry is blocked"
+            ),
+        )
+
+    current, current_version = assert_campaign_record(campaign_id)
+    at = utcnow()
+    append_campaign_event(
+        current.events,
+        {
+            "type": "hackerone_report_submitted",
+            "artifact_id": artifact_id,
+            "artifact_sha256": artifact["sha256"],
+            "request_id": request_id,
+            "remote_report_id": remote_report_id,
+            "team_handle": team_handle,
+            "actor": payload.actor,
+            "at": at,
+        },
+    )
+    append_campaign_event(
+        current.events,
+        submission_event(artifact_id, payload.actor, "hackerone", at),
+    )
+    current.updated_at = at
+    save_campaign(current, expected_version=current_version)
+
+    latest = assert_campaign_exists(campaign_id)
+    result = submission_status(latest, artifact).to_dict()
+    result["remote_report_id"] = remote_report_id
+    result["team_handle"] = team_handle
+    return result

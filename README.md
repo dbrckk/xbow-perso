@@ -65,7 +65,7 @@ The default configuration uses `DRY_RUN=true`; external testing engines are not 
 
 ## HackerOne Control Center
 
-The PWA can load HackerOne programs and complete StructuredScope data through the server-side Hacker API client. This integration is read-only: it discovers program metadata, scope, exclusions and policy text; it does not submit reports or mutate HackerOne.
+The PWA loads HackerOne programs and complete StructuredScope data through the server-side Hacker API client. Discovery is read-only by default. Optional direct report creation is separately gated and remains disabled unless `XBOW_ENABLE_HACKERONE_SUBMISSION=true` is explicitly configured.
 
 Configure HackerOne credentials only on the server:
 
@@ -88,6 +88,8 @@ Safe launch workflow:
 Remote-bound previews carry a deterministic SHA-256 snapshot of the program metadata, complete scope and exclusions. Launch re-fetches HackerOne before campaign creation. If the remote snapshot changed after review, xbow-perso returns `409 stale_hackerone_snapshot` and requires a fresh review. Unsupported or conflicting scope data remains fail-closed.
 
 The HackerOne API timeout defaults to 10 seconds and its bounded response size to 2 MiB; see `.env.example` for `XBOW_HACKERONE_TIMEOUT_SECONDS` and `XBOW_HACKERONE_MAX_RESPONSE_BYTES`.
+
+Direct HackerOne submission is fail-closed: it requires a current human approval of the exact integrity-verified report artifact, a verified remote program binding, exactly one confirmed finding, an explicit UI confirmation, and the server-side `XBOW_ENABLE_HACKERONE_SUBMISSION=true` gate. The approved report bytes are sent as the report body. Ambiguous transport failures are recorded and automatic retry is blocked to avoid duplicate HackerOne reports.
 
 ## Disaster recovery integrity
 
