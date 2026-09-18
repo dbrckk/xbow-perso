@@ -512,33 +512,85 @@
     }
   }
 
+  function hackerOneActivityLabel(event){
+    const type=String(event?.activity_type||'');
+    if(type==='activity-comment')return 'Commentaire public';
+    if(type==='activity-bounty-awarded')return 'Bounty attribuée';
+    if(type==='activity-bug-duplicate')return 'Classé duplicate';
+    if(type==='activity-bug-informative')return 'Classé informative';
+    if(type==='activity-bug-resolved')return 'Résolu';
+    return type||'Activité HackerOne';
+  }
+
   function renderHackerOneReportTimeline(campaignData,artifactId){
-    const node=el('h1ReportTimeline');
-    const events=(Array.isArray(campaignData?.events)?campaignData.events:[])
-      .filter(event=>
-        event?.type==='hackerone_report_status_synced'&&
-        String(event?.artifact_id||'')===String(artifactId||'')
-      )
-      .slice(-8);
+    const timeline=el('h1ReportTimeline');
+    const summary=el('h1ActivitySummary');
+    const all=(Array.isArray(campaignData?.events)?campaignData.events:[])
+      .filter(event=>String(event?.artifact_id||'')===String(artifactId||''));
+    const activities=all.filter(event=>event?.type==='hackerone_public_activity_observed');
+    const statusEvents=all.filter(event=>event?.type==='hackerone_report_status_synced');
+    const needsInfo=all.filter(event=>event?.type==='hackerone_needs_more_info_observed');
+
+    if(!activities.length){
+      summary.className='muted compact';
+      summary.textContent='Aucune activité publique HackerOne synchronisée.';
+    }else{
+      const bounty=activities.filter(event=>event?.activity_type==='activity-bounty-awarded');
+      const comments=activities.filter(event=>event?.activity_type==='activity-comment');
+      const classifications=activities.filter(event=>
+        ['activity-bug-duplicate','activity-bug-informative','activity-bug-resolved']
+          .includes(String(event?.activity_type||''))
+      );
+      summary.className='muted compact ok-text';
+      summary.textContent=activities.length+' activité(s) publique(s) · '+
+        comments.length+' commentaire(s) · '+bounty.length+' bounty · '+
+        classifications.length+' changement(s) de classification';
+    }
+
+    const events=[...statusEvents,...needsInfo,...activities]
+      .sort((a,b)=>{
+        const left=Date.parse(String(a?.observed_at||a?.created_at||''))||0;
+        const right=Date.parse(String(b?.observed_at||b?.created_at||''))||0;
+        return left-right;
+      })
+      .slice(-12);
     if(!events.length){
-      node.className='muted compact';
-      node.textContent='Aucun historique HackerOne synchronisé.';
+      timeline.className='muted compact';
+      timeline.textContent='Aucun historique HackerOne synchronisé.';
       return;
     }
-    node.className='muted compact';
-    node.replaceChildren();
+
+    timeline.className='muted compact';
+    timeline.replaceChildren();
     const list=document.createElement('ol');
     list.className='compact';
     for(const event of events){
       const item=document.createElement('li');
-      const state=String(event?.state||'unknown');
       const observed=event?.observed_at
         ?new Date(event.observed_at).toLocaleString()
         :'heure inconnue';
-      item.textContent=state+' · observé '+observed;
+      if(event?.type==='hackerone_report_status_synced'){
+        item.textContent='État : '+String(event?.state||'unknown')+' · '+observed;
+      }else if(event?.type==='hackerone_needs_more_info_observed'){
+        item.textContent='Informations demandées · '+observed;
+      }else{
+        let detail=hackerOneActivityLabel(event);
+        const message=String(event?.message||'').trim();
+        if(event?.activity_type==='activity-bounty-awarded'){
+          const amount=String(event?.bounty_amount||'').trim();
+          const bonus=String(event?.bonus_amount||'').trim();
+          if(amount)detail+=' · $'+amount;
+          if(bonus&&bonus!=='0')detail+=' + bonus $'+bonus;
+        }else if(event?.activity_type==='activity-bug-duplicate'){
+          const original=String(event?.original_report_id||'').trim();
+          if(original)detail+=' · report #'+original;
+        }
+        if(message)detail+=' · '+message;
+        item.textContent=detail+' · '+observed;
+      }
       list.appendChild(item);
     }
-    node.appendChild(list);
+    timeline.appendChild(list);
   }
 
   function renderHackerOneRemoteReportStatus(remoteStatus){
