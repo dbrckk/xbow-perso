@@ -137,11 +137,15 @@
         return;
       }
       setConnectionState('connecté','ok');
+      el('h1ProgramSearch').disabled=false;
+      el('h1ProgramSelect').disabled=false;
       const result=await api('/imports/hackerone/programs');
       hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
       renderProgramOptions();
     }catch(error){
       setConnectionState('indisponible','err');
+      el('h1ProgramSearch').disabled=true;
+      el('h1ProgramSelect').disabled=true;
       el('h1LoadProgram').disabled=true;
       setLauncherStatus('HackerOne API indisponible : '+error.message+'. Le mode manuel reste disponible.','err');
     }
@@ -375,5 +379,6 @@
     el('h1Launch').disabled=!(approvedPreview&&el('h1Confirm').checked);
   });
   el('h1Launch').addEventListener('click',launch);
+  el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
 })();
