@@ -21,15 +21,52 @@ def _binding_fingerprint(
     *,
     policy_snapshot_sha256: str,
     campaign_policy_fingerprint: str,
+    remote_binding: dict[str, Any] | None = None,
 ) -> str:
-    return canonical_json_sha256(
-        {
-            "provider": "hackerone",
-            "mode": "conservative",
-            "policy_snapshot_sha256": policy_snapshot_sha256,
-            "campaign_policy_fingerprint": campaign_policy_fingerprint,
-        }
-    )
+    payload: dict[str, Any] = {
+        "provider": "hackerone",
+        "mode": "conservative",
+        "policy_snapshot_sha256": policy_snapshot_sha256,
+        "campaign_policy_fingerprint": campaign_policy_fingerprint,
+    }
+    if remote_binding is not None:
+        payload["remote_binding"] = remote_binding
+    return canonical_json_sha256(payload)
+
+
+def _validated_remote_binding(value: Any, reasons: list[str]) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        reasons.append("remote_binding_invalid")
+        return None
+
+    handle = value.get("handle")
+    snapshot_sha256 = value.get("snapshot_sha256")
+    verified = value.get("verified")
+    if (
+        not isinstance(handle, str)
+        or not handle
+        or handle != handle.lower()
+        or any(ch not in "abcdefghijklmnopqrstuvwxyz0123456789_-" for ch in handle)
+    ):
+        reasons.append("remote_binding_handle_invalid")
+    if (
+        not isinstance(snapshot_sha256, str)
+        or len(snapshot_sha256) != 64
+        or any(ch not in "0123456789abcdef" for ch in snapshot_sha256)
+    ):
+        reasons.append("remote_binding_snapshot_sha256_invalid")
+    if verified is not True:
+        reasons.append("remote_binding_not_verified")
+
+    if any(reason.startswith("remote_binding_") for reason in reasons):
+        return None
+    return {
+        "handle": handle,
+        "snapshot_sha256": snapshot_sha256,
+        "verified": True,
+    }
 
 
 def verify_hackerone_campaign_binding(
@@ -90,9 +127,11 @@ def verify_hackerone_campaign_binding(
     if declared_policy_fingerprint != current_policy_fingerprint:
         reasons.append("campaign_policy_fingerprint_mismatch")
 
+    remote_binding = _validated_remote_binding(binding.get("remote_binding"), reasons)
     expected_binding_fingerprint = _binding_fingerprint(
         policy_snapshot_sha256=actual_snapshot_hash,
         campaign_policy_fingerprint=current_policy_fingerprint,
+        remote_binding=remote_binding,
     )
     declared_binding_fingerprint = str(binding.get("binding_fingerprint") or "")
     if declared_binding_fingerprint != expected_binding_fingerprint:
