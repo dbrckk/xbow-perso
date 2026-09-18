@@ -125,7 +125,8 @@ def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(
     finding = persisted["findings"][0]
     assert finding["discovered_by"] == "nuclei"
     assert finding["status"] == "validation_required"
-    assert finding["target"] == "https://example.com/profile"
+    assert finding["asset"] == "https://example.com"
+    assert finding["endpoint"] == "https://example.com/profile"
 
     event_types = [event.get("type") for event in persisted["events"]]
     assert "hackerone_policy_bound" in event_types
