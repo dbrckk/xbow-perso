@@ -151,6 +151,14 @@ def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(
     artifacts_written = store.list_artifacts(campaign_id)
     assert any(item["kind"] == "scanner_stdout" for item in artifacts_written)
 
+    evidence = [
+        item for item in artifacts_written if item["kind"] == "http_evidence"
+    ]
+    assert len(evidence) == 1
+    metadata, content = store.read_artifact(campaign_id, evidence[0]["id"])
+    assert metadata["media_type"] == "application/x-ndjson"
+    assert b'"template-id": "e2e-exposure"' in content
+
     observations = store.list_observations(campaign_id)
     assert any(
         item["kind"] == "evidence"
