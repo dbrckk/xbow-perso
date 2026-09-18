@@ -134,6 +134,31 @@ class Finding(BaseModel):
     validated_by: str | None = None
 
 
+class FindingReviewMetadataInput(BaseModel):
+    summary: str = Field(min_length=1, max_length=8000)
+    impact: str = Field(min_length=1, max_length=8000)
+    reproduction_steps: list[str] = Field(min_length=1, max_length=30)
+    remediation: str = Field(min_length=1, max_length=8000)
+    cwe: str = Field(min_length=5, max_length=12, pattern=r"^CWE-[1-9][0-9]{0,5}$")
+    cvss: float = Field(ge=0, le=10)
+    reviewer: str = Field(min_length=1, max_length=120)
+
+    @model_validator(mode="after")
+    def normalize_review_metadata(self):
+        self.summary = self.summary.strip()
+        self.impact = self.impact.strip()
+        self.remediation = self.remediation.strip()
+        self.reviewer = self.reviewer.strip()
+        self.reproduction_steps = [
+            item.strip() for item in self.reproduction_steps if item.strip()
+        ]
+        if not all((self.summary, self.impact, self.remediation, self.reviewer)):
+            raise ValueError("review metadata fields must not be blank")
+        if not self.reproduction_steps:
+            raise ValueError("at least one reproduction step is required")
+        return self
+
+
 class Campaign(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     target: TargetInput
@@ -1501,6 +1526,57 @@ def _ensure_completion_report(campaign: Campaign, version: int) -> Campaign:
         completion_type="campaign_completed",
         mark_completed=True,
     )
+
+
+@app.put("/api/campaigns/{campaign_id}/findings/{finding_id}/review-metadata")
+def update_finding_review_metadata(
+    campaign_id: str,
+    finding_id: str,
+    payload: FindingReviewMetadataInput,
+):
+    campaign, version = assert_campaign_record(campaign_id)
+    _reject_cancelled_campaign(campaign)
+    finding = next((item for item in campaign.findings if item.id == finding_id), None)
+    if not finding:
+        raise HTTPException(status_code=404, detail="Finding not found")
+    if finding.status == "rejected":
+        raise HTTPException(
+            status_code=409,
+            detail="Rejected finding review metadata is immutable",
+        )
+    if finding.status not in {"validation_required", "confirmed"}:
+        raise HTTPException(
+            status_code=409,
+            detail="Finding must reach human review before metadata can be edited",
+        )
+
+    next_values = {
+        "summary": payload.summary,
+        "impact": payload.impact,
+        "reproduction_steps": list(payload.reproduction_steps),
+        "remediation": payload.remediation,
+        "cwe": payload.cwe,
+        "cvss": payload.cvss,
+    }
+    changed = any(getattr(finding, key) != value for key, value in next_values.items())
+    if not changed:
+        return finding
+
+    for key, value in next_values.items():
+        setattr(finding, key, value)
+
+    campaign.updated_at = utcnow()
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "finding_review_metadata_updated",
+            "finding_id": finding.id,
+            "reviewer": payload.reviewer,
+            "at": utcnow(),
+        },
+    )
+    save_campaign(campaign, expected_version=version)
+    return finding
 
 
 @app.post("/api/campaigns/{campaign_id}/findings/{finding_id}/validate")
