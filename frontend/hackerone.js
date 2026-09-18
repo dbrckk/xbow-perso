@@ -285,6 +285,8 @@
       if(reportApproval?.error){
         approve.disabled=true;
         approve.classList.remove('hidden');
+        submit.disabled=true;
+        submit.classList.add('hidden');
         revoke.disabled=true;
         revoke.classList.add('hidden');
         approvalStatus.className='muted compact err-text';
@@ -337,10 +339,13 @@
       download.classList.add('hidden');
       approve.disabled=true;
       approve.classList.add('hidden');
+      submit.disabled=true;
+      submit.classList.add('hidden');
       revoke.disabled=true;
       revoke.classList.add('hidden');
       delete download.dataset.artifactId;
       delete approve.dataset.artifactId;
+      delete submit.dataset.artifactId;
       delete revoke.dataset.artifactId;
       approvalStatus.className='muted compact';
       approvalStatus.textContent='Aucun brouillon à approuver.';
