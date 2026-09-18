@@ -91,6 +91,9 @@ The HackerOne API timeout defaults to 10 seconds and its bounded response size t
 
 Direct HackerOne submission is fail-closed: it requires a current human approval of the exact integrity-verified report artifact, a verified remote program binding, exactly one confirmed finding, an explicit UI confirmation, and the server-side `XBOW_ENABLE_HACKERONE_SUBMISSION=true` gate. The approved report bytes are sent as the report body. Ambiguous transport failures are recorded and automatic retry is blocked to avoid duplicate HackerOne reports.
 
+
+After a successful direct submission, the Control Center can read the remote report with HackerOne's `GET /v1/hackers/reports/{id}` endpoint. The local API exposes only bounded operational fields (remote report ID, program handle, state, and activity/triage/closure timestamps); report content, relationships, attachments, and user data are intentionally omitted. This status lookup is read-only and does not mutate the campaign audit log.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
