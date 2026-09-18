@@ -261,3 +261,82 @@ def test_sync_records_new_needs_more_info_activity_even_when_state_is_unchanged(
         if event.get("type") == "hackerone_needs_more_info_observed"
     ]
     assert [event["activity_id"] for event in events] == ["9001", "9002"]
+
+
+def _public_activity_report(activity_id="a1", activity_type="activity-comment"):
+    document = _report(
+        "triaged",
+        last_activity_at="2026-09-18T20:30:00Z",
+    )
+    attributes = {
+        "report_id": "4242",
+        "message": "Public program update.",
+        "internal": False,
+        "created_at": "2026-09-18T20:30:00Z",
+        "updated_at": "2026-09-18T20:31:00Z",
+    }
+    if activity_type == "activity-bounty-awarded":
+        attributes["bounty_amount"] = "500"
+        attributes["bonus_amount"] = "50"
+    if activity_type == "activity-bug-duplicate":
+        attributes["original_report_id"] = 1336
+    document["data"]["relationships"] = {
+        "activities": {
+            "data": [
+                {
+                    "id": activity_id,
+                    "type": activity_type,
+                    "attributes": attributes,
+                }
+            ]
+        }
+    }
+    return document
+
+
+def test_sync_records_public_activity_once(tmp_path, monkeypatch):
+    store = _setup(tmp_path, monkeypatch)
+    response = _public_activity_report()
+
+    first = sync_once(store, _Client([response]))
+    second = sync_once(store, _Client([response]))
+
+    assert first["changes_recorded"] == 1
+    assert second["changes_recorded"] == 0
+    persisted = store.get_campaign("h1-sync")
+    events = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "hackerone_public_activity_observed"
+    ]
+    assert len(events) == 1
+    assert events[0]["activity_id"] == "a1"
+    assert events[0]["activity_type"] == "activity-comment"
+    assert events[0]["message"] == "Public program update."
+
+
+def test_sync_records_bounty_and_duplicate_metadata(tmp_path, monkeypatch):
+    store = _setup(tmp_path, monkeypatch)
+
+    bounty = _public_activity_report(
+        activity_id="bounty-1",
+        activity_type="activity-bounty-awarded",
+    )
+    duplicate = _public_activity_report(
+        activity_id="dup-1",
+        activity_type="activity-bug-duplicate",
+    )
+
+    sync_once(store, _Client([bounty]))
+    sync_once(store, _Client([duplicate]))
+
+    persisted = store.get_campaign("h1-sync")
+    events = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "hackerone_public_activity_observed"
+    ]
+    by_id = {event["activity_id"]: event for event in events}
+    assert by_id["bounty-1"]["bounty_amount"] == "500"
+    assert by_id["bounty-1"]["bonus_amount"] == "50"
+    assert by_id["dup-1"]["original_report_id"] == "1336"
