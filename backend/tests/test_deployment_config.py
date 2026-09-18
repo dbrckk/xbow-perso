@@ -41,14 +41,16 @@ def test_compose_keeps_state_private_and_shared_only_where_needed():
     compose = _compose()
     assert "XBOW_DB_PATH: /data/xbow.sqlite3" in compose
     assert "XBOW_ARTIFACT_ROOT: /data/artifacts" in compose
-    # Control plane, generic worker, dedicated scanner worker, PentAGI creator
-    # and PentAGI status tracker require private shared state. Frontend is stateless.
-    assert compose.count("- xbow-data:/data") == 5
+    # Control plane, generic worker, dedicated scanner worker, PentAGI creator,
+    # PentAGI status tracker and HackerOne report sync worker require private
+    # shared state. Frontend is stateless.
+    assert compose.count("- xbow-data:/data") == 6
     assert "  backend:" in compose
     assert "  worker:" in compose
     assert "  scanner-worker:" in compose
     assert "  pentagi-worker:" in compose
     assert "  pentagi-status-worker:" in compose
+    assert "  hackerone-report-sync-worker:" in compose
     frontend = compose.split("  frontend:", 1)[1]
     assert "- xbow-data:/data" not in frontend
     assert '"${XBOW_PORT:-8080}:80"' in compose
