@@ -113,7 +113,8 @@ def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(
 
     finished_scan = queue.get(scan_job["id"])
     assert finished_scan is not None
-    assert finished_scan["status"] == "completed", finished_scan
+    assert finished_scan["last_error"] is None, finished_scan["last_error"]
+    assert finished_scan["status"] == "completed"
     assert finished_scan["attempts"] == 1
 
     persisted = store.get_campaign(campaign_id)
