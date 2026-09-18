@@ -15,10 +15,18 @@ TRACKED_TIMESTAMP_FIELDS = (
 )
 
 
+def _campaign_events(campaign: Any) -> list[dict[str, Any]]:
+    if isinstance(campaign, dict):
+        events = campaign.get("events")
+    else:
+        events = getattr(campaign, "events", None)
+    return events if isinstance(events, list) else []
+
+
 def latest_remote_submission(campaign: Any, artifact_id: str) -> dict[str, Any] | None:
     matches = [
         event
-        for event in campaign.events
+        for event in _campaign_events(campaign)
         if event.get("type") == "hackerone_report_submitted"
         and event.get("artifact_id") == artifact_id
     ]
