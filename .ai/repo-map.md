@@ -10127,6 +10127,8 @@ required_ids = (
 def test_frontend_exposes_remote_hackerone_control_center_contract()
 ⋮----
 def test_frontend_exposes_hackerone_live_run_monitor_contract()
+⋮----
+def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract()
 ````
 
 ## File: backend/tests/test_hackerone_binding.py
@@ -14562,7 +14564,11 @@ function setConnectionState(label,type='')
 ⋮----
 function stopRunMonitor()
 ⋮----
-function renderRunMonitor(campaignData,control,artifacts)
+function renderHackerOneFindings(campaignData,artifacts,reportReadiness)
+⋮----
+async function queueHackerOneReport()
+⋮----
+function renderRunMonitor(campaignData,control,artifacts,reportReadiness)
 ⋮----
 async function refreshRunMonitor(campaignId)
 ⋮----

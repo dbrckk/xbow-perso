@@ -73,6 +73,23 @@
       ],
       "occurrence_count": 1
     },
+    "test_frontend_exposes_hackerone_finding_review_and_report_draft_contract": {
+      "definition": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "line": 106,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_frontend_policy_launcher.py",
+          "line": 106,
+          "preview": "def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
     "setLauncherStatus": {
       "definition": {
         "file": "frontend/hackerone.js",
@@ -89,79 +106,79 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 174,
+          "line": 248,
           "preview": "setLauncherStatus('Chargement du programme HackerOne\u2026');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 193,
+          "line": 267,
           "preview": "setLauncherStatus('Programme HackerOne charg\u00e9. V\u00e9rifie la policy, le d\u00e9bit autoris\u00e9 et la cible principale avant pr\u00e9visualisation.','ok');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 196,
+          "line": 270,
           "preview": "setLauncherStatus(error.message,'err');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 223,
+          "line": 297,
           "preview": "setLauncherStatus('HackerOne API indisponible : '+error.message+'. Le mode manuel reste disponible.','err');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 353,
+          "line": 427,
           "preview": "setLauncherStatus('Scope et policy v\u00e9rifi\u00e9s. Confirme la pr\u00e9visualisation puis saisis un nouveau TOTP pour lancer.','ok');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 357,
+          "line": 431,
           "preview": "setLauncherStatus('Lancement bloqu\u00e9 : '+(blockers.join(' \u00b7 ')||'scope incomplet ou incompatible')+'.','err');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 366,
+          "line": 440,
           "preview": "setLauncherStatus('V\u00e9rification HackerOne en cours\u2026');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 381,
+          "line": 455,
           "preview": "setLauncherStatus(error.message,'err');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 400,
+          "line": 474,
           "preview": "setLauncherStatus('Admission et d\u00e9marrage HackerOne\u2026');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 411,
+          "line": 485,
           "preview": "setLauncherStatus('Campagne HackerOne admise et d\u00e9marr\u00e9e avec policy li\u00e9e.','ok');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 413,
+          "line": 487,
           "preview": "setLauncherStatus(error.message,'err');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 430,
+          "line": 504,
           "preview": "setLauncherStatus('Export StructuredScope charg\u00e9. V\u00e9rification requise avant lancement.');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 433,
+          "line": 507,
           "preview": "setLauncherStatus(error.message,'err');",
           "definition_candidate": false
         }
@@ -184,19 +201,19 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 206,
+          "line": 280,
           "preview": "setConnectionState('non configur\u00e9','warn');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 212,
+          "line": 286,
           "preview": "setConnectionState('connect\u00e9','ok');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 219,
+          "line": 293,
           "preview": "setConnectionState('indisponible','err');",
           "definition_candidate": false
         }
@@ -225,20 +242,20 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 74,
+          "line": 148,
           "preview": "stopRunMonitor();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 88,
+          "line": 162,
           "preview": "stopRunMonitor();",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 4
     },
-    "renderRunMonitor": {
+    "renderHackerOneFindings": {
       "definition": {
         "file": "frontend/hackerone.js",
         "line": 35,
@@ -247,15 +264,73 @@
       },
       "occurrences": [
         {
-          "file": "frontend/hackerone.js",
-          "line": 36,
-          "preview": "function renderRunMonitor(campaignData,control,artifacts){",
+          "file": "backend/tests/test_frontend_policy_launcher.py",
+          "line": 117,
+          "preview": "assert \"renderHackerOneFindings\" in launcher",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 69,
-          "preview": "renderRunMonitor(campaignData,control,artifacts);",
+          "line": 36,
+          "preview": "function renderHackerOneFindings(campaignData,artifacts,reportReadiness){",
+          "definition_candidate": false
+        },
+        {
+          "file": "frontend/hackerone.js",
+          "line": 128,
+          "preview": "renderHackerOneFindings(campaignData,artifacts,reportReadiness);",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "queueHackerOneReport": {
+      "definition": {
+        "file": "frontend/hackerone.js",
+        "line": 91,
+        "kind": "function",
+        "language": "javascript"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_frontend_policy_launcher.py",
+          "line": 118,
+          "preview": "assert \"queueHackerOneReport\" in launcher",
+          "definition_candidate": false
+        },
+        {
+          "file": "frontend/hackerone.js",
+          "line": 92,
+          "preview": "async function queueHackerOneReport(){",
+          "definition_candidate": false
+        },
+        {
+          "file": "frontend/hackerone.js",
+          "line": 530,
+          "preview": "el('h1ReportDraft').addEventListener('click',()=>void queueHackerOneReport());",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "renderRunMonitor": {
+      "definition": {
+        "file": "frontend/hackerone.js",
+        "line": 107,
+        "kind": "function",
+        "language": "javascript"
+      },
+      "occurrences": [
+        {
+          "file": "frontend/hackerone.js",
+          "line": 108,
+          "preview": "function renderRunMonitor(campaignData,control,artifacts,reportReadiness){",
+          "definition_candidate": false
+        },
+        {
+          "file": "frontend/hackerone.js",
+          "line": 143,
+          "preview": "renderRunMonitor(campaignData,control,artifacts,reportReadiness);",
           "definition_candidate": false
         }
       ],
@@ -264,7 +339,7 @@
     "refreshRunMonitor": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 58,
+        "line": 131,
         "kind": "function",
         "language": "javascript"
       },
@@ -277,29 +352,41 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 59,
+          "line": 101,
+          "preview": "await refreshRunMonitor(runMonitorCampaignId);",
+          "definition_candidate": false
+        },
+        {
+          "file": "frontend/hackerone.js",
+          "line": 104,
+          "preview": "await refreshRunMonitor(runMonitorCampaignId);",
+          "definition_candidate": false
+        },
+        {
+          "file": "frontend/hackerone.js",
+          "line": 132,
           "preview": "async function refreshRunMonitor(campaignId){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 91,
+          "line": 165,
           "preview": "void refreshRunMonitor(runMonitorCampaignId);",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 93,
+          "line": 167,
           "preview": "if(runMonitorCampaignId)void refreshRunMonitor(runMonitorCampaignId);",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 4
+      "occurrence_count": 6
     },
     "startRunMonitor": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 86,
+        "line": 160,
         "kind": "function",
         "language": "javascript"
       },
@@ -312,13 +399,13 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 87,
+          "line": 161,
           "preview": "function startRunMonitor(campaignId){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 410,
+          "line": 484,
           "preview": "startRunMonitor(result.campaign.id);",
           "definition_candidate": false
         }
@@ -328,7 +415,7 @@
     "clearRemoteBinding": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 96,
+        "line": 170,
         "kind": "function",
         "language": "javascript"
       },
@@ -341,31 +428,31 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 97,
+          "line": 171,
           "preview": "function clearRemoteBinding(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 169,
+          "line": 243,
           "preview": "clearRemoteBinding();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 195,
+          "line": 269,
           "preview": "clearRemoteBinding();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 429,
+          "line": 503,
           "preview": "clearRemoteBinding();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 443,
+          "line": 517,
           "preview": "if(remoteBinding)clearRemoteBinding();",
           "definition_candidate": false
         }
@@ -375,26 +462,26 @@
     "renderProgramOptions": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 105,
+        "line": 179,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 106,
+          "line": 180,
           "preview": "function renderProgramOptions(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 217,
+          "line": 291,
           "preview": "renderProgramOptions();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 445,
+          "line": 519,
           "preview": "el('h1ProgramSearch').addEventListener('input',renderProgramOptions);",
           "definition_candidate": false
         }
@@ -404,7 +491,7 @@
     "renderRemoteScope": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 126,
+        "line": 200,
         "kind": "function",
         "language": "javascript"
       },
@@ -417,13 +504,13 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 127,
+          "line": 201,
           "preview": "function renderRemoteScope(snapshot){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 191,
+          "line": 265,
           "preview": "renderRemoteScope(snapshot);",
           "definition_candidate": false
         }
@@ -433,20 +520,20 @@
     "loadRemoteProgram": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 165,
+        "line": 239,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 166,
+          "line": 240,
           "preview": "async function loadRemoteProgram(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 449,
+          "line": 523,
           "preview": "el('h1LoadProgram').addEventListener('click',loadRemoteProgram);",
           "definition_candidate": false
         }
@@ -456,26 +543,26 @@
     "initRemoteControlCenter": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 201,
+        "line": 275,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 202,
+          "line": 276,
           "preview": "async function initRemoteControlCenter(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 456,
+          "line": 531,
           "preview": "el('token').addEventListener('change',initRemoteControlCenter);",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 457,
+          "line": 532,
           "preview": "initRemoteControlCenter();",
           "definition_candidate": false
         }
@@ -485,20 +572,20 @@
     "parseScopeDocument": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 226,
+        "line": 300,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 227,
+          "line": 301,
           "preview": "function parseScopeDocument(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 279,
+          "line": 353,
           "preview": "document:parseScopeDocument(),",
           "definition_candidate": false
         }
@@ -508,20 +595,20 @@
     "reviewedAtIso": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 237,
+        "line": 311,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 238,
+          "line": 312,
           "preview": "function reviewedAtIso(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 260,
+          "line": 334,
           "preview": "reviewed_at:reviewedAtIso(),",
           "definition_candidate": false
         }
@@ -531,20 +618,20 @@
     "buildPolicy": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 245,
+        "line": 319,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 246,
+          "line": 320,
           "preview": "function buildPolicy(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 280,
+          "line": 354,
           "preview": "policy:buildPolicy(),",
           "definition_candidate": false
         }
@@ -554,26 +641,26 @@
     "buildPayload": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 271,
+        "line": 345,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 272,
+          "line": 346,
           "preview": "function buildPayload(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 363,
+          "line": 437,
           "preview": "const payload=buildPayload();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 389,
+          "line": 463,
           "preview": "const payload=buildPayload();",
           "definition_candidate": false
         }
@@ -583,26 +670,26 @@
     "conservativeBlockers": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 289,
+        "line": 363,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 290,
+          "line": 364,
           "preview": "function conservativeBlockers(policy){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 364,
+          "line": 438,
           "preview": "const blockers=conservativeBlockers(payload.policy);",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 395,
+          "line": 469,
           "preview": "const blockers=conservativeBlockers(payload.policy);",
           "definition_candidate": false
         }
@@ -612,26 +699,26 @@
     "payloadFingerprint": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 299,
+        "line": 373,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 300,
+          "line": 374,
           "preview": "function payloadFingerprint(payload){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 352,
+          "line": 426,
           "preview": "approvedPreview=payloadFingerprint(payload);",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 390,
+          "line": 464,
           "preview": "const current=payloadFingerprint(payload);",
           "definition_candidate": false
         }
@@ -641,7 +728,7 @@
     "invalidatePreview": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 303,
+        "line": 377,
         "kind": "function",
         "language": "javascript"
       },
@@ -654,37 +741,37 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 103,
+          "line": 177,
           "preview": "invalidatePreview();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 192,
+          "line": 266,
           "preview": "invalidatePreview();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 304,
+          "line": 378,
           "preview": "function invalidatePreview(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 379,
+          "line": 453,
           "preview": "invalidatePreview();",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 439,
+          "line": 513,
           "preview": "node.addEventListener('input',invalidatePreview);",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 440,
+          "line": 514,
           "preview": "node.addEventListener('change',invalidatePreview);",
           "definition_candidate": false
         }
@@ -694,26 +781,26 @@
     "renderScopeList": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 315,
+        "line": 389,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 316,
+          "line": 390,
           "preview": "function renderScopeList(targetId,values,emptyLabel){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 333,
+          "line": 407,
           "preview": "renderScopeList('h1AllowedPreview',rules.allowed_targets,'Aucune cible autoris\u00e9e');",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 334,
+          "line": 408,
           "preview": "renderScopeList('h1DeniedPreview',rules.denied_targets,'Aucune exclusion explicite');",
           "definition_candidate": false
         }
@@ -723,20 +810,20 @@
     "renderPreview": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 329,
+        "line": 403,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 330,
+          "line": 404,
           "preview": "function renderPreview(preview,payload,blockers){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 376,
+          "line": 450,
           "preview": "renderPreview(result,payload,blockers);",
           "definition_candidate": false
         }
@@ -746,7 +833,7 @@
     "preview": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 360,
+        "line": 434,
         "kind": "function",
         "language": "javascript"
       },
@@ -1477,7 +1564,7 @@
     "launch": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 386,
+        "line": 460,
         "kind": "function",
         "language": "javascript"
       },
@@ -1556,19 +1643,19 @@
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 387,
+          "line": 461,
           "preview": "async function launch(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 401,
+          "line": 475,
           "preview": "const result=await api('/imports/hackerone/campaigns/launch',{",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 455,
+          "line": 529,
           "preview": "el('h1Launch').addEventListener('click',launch);",
           "definition_candidate": false
         }
@@ -1578,20 +1665,20 @@
     "importScopeFile": {
       "definition": {
         "file": "frontend/hackerone.js",
-        "line": 419,
+        "line": 493,
         "kind": "function",
         "language": "javascript"
       },
       "occurrences": [
         {
           "file": "frontend/hackerone.js",
-          "line": 420,
+          "line": 494,
           "preview": "async function importScopeFile(){",
           "definition_candidate": false
         },
         {
           "file": "frontend/hackerone.js",
-          "line": 450,
+          "line": 524,
           "preview": "el('h1ScopeFile').addEventListener('change',importScopeFile);",
           "definition_candidate": false
         }

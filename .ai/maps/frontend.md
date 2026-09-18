@@ -99,7 +99,11 @@ function setConnectionState(label,type='')
 ⋮----
 function stopRunMonitor()
 ⋮----
-function renderRunMonitor(campaignData,control,artifacts)
+function renderHackerOneFindings(campaignData,artifacts,reportReadiness)
+⋮----
+async function queueHackerOneReport()
+⋮----
+function renderRunMonitor(campaignData,control,artifacts,reportReadiness)
 ⋮----
 async function refreshRunMonitor(campaignId)
 ⋮----

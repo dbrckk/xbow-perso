@@ -22,21 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T18:18:30Z
+Generated: 2026-09-18T18:29:36Z
 
 ### Git
 - Branch: `main`
-- Head: `6b1ab6ece387`
-- Commit date: 2026-09-18T20:18:17+02:00
-- Commit: Merge pull request #211 from dbrckk/feat/hackerone-live-run-monitor
+- Head: `6486f73a4789`
+- Commit date: 2026-09-18T20:29:24+02:00
+- Commit: Merge pull request #212 from dbrckk/feat/hackerone-finding-review
 - Tracked files: 400
 
 ### Recently changed files
-- `frontend/sw.js`
-- `frontend/app.css`
-- `frontend/hackerone.js`
 - `frontend/index.html`
 - `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/sw.js`
+- `frontend/app.css`
 
 ### Project signals
 - `pyproject.toml`
