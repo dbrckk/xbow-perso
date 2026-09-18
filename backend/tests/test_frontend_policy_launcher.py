@@ -116,6 +116,7 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
         "h1ReportRevoke",
         "h1ReportApprovalStatus",
         "h1ReportRemoteStatus",
+        "h1ReportTimeline",
         "h1ReportStatus",
     ):
         assert f'id="{element_id}"' in html
@@ -126,6 +127,8 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
     assert "approveHackerOneReport" in launcher
     assert "submitHackerOneReport" in launcher
     assert "renderHackerOneRemoteReportStatus" in launcher
+    assert "renderHackerOneReportTimeline" in launcher
+    assert "hackerone_report_status_synced" in launcher
     assert "revokeHackerOneReportApproval" in launcher
     assert "report-readiness" in launcher
     assert "reports?platform=hackerone" in launcher
