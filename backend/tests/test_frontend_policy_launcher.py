@@ -76,3 +76,28 @@ def test_frontend_exposes_remote_hackerone_control_center_contract():
     assert "remote_snapshot_sha256" in launcher
     assert "clearRemoteBinding" in launcher
     assert "renderRemoteScope" in launcher
+
+
+
+def test_frontend_exposes_hackerone_live_run_monitor_contract():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    required_ids = (
+        "h1RunPanel",
+        "h1RunState",
+        "h1RunJobs",
+        "h1RunFindings",
+        "h1RunArtifacts",
+        "h1RunUpdated",
+    )
+    for element_id in required_ids:
+        assert f'id="{element_id}"' in html
+
+    assert "startRunMonitor" in launcher
+    assert "stopRunMonitor" in launcher
+    assert "refreshRunMonitor" in launcher
+    assert "api('/campaigns/'+encodeURIComponent(campaignId))" in launcher
+    assert "api('/campaigns/'+encodeURIComponent(campaignId)+'/control-status')" in launcher
+    assert "api('/campaigns/'+encodeURIComponent(campaignId)+'/artifacts')" in launcher
+    assert "setInterval" in launcher
