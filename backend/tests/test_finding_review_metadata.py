@@ -10,6 +10,9 @@ def _setup(tmp_path, monkeypatch):
     monkeypatch.setenv("XBOW_DB_PATH", db)
     monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
     monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+    # Authentication behavior is covered separately; keep these route-semantic
+    # tests deterministic even when the CI environment enables mutation TOTP.
+    monkeypatch.setenv("XBOW_TOTP_ENABLED", "false")
 
     campaign = Campaign(
         id="h1-review",
