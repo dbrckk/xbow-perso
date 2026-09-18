@@ -7,6 +7,14 @@ from fastapi import HTTPException
 
 MAX_ACTIVITY_MESSAGE_CHARS = 8192
 NEEDS_MORE_INFO_ACTIVITY_TYPE = "activity-bug-needs-more-info"
+MAX_PUBLIC_ACTIVITIES = 20
+PUBLIC_ACTIVITY_TYPES = {
+    "activity-comment",
+    "activity-bounty-awarded",
+    "activity-bug-duplicate",
+    "activity-bug-informative",
+    "activity-bug-resolved",
+}
 
 TRACKED_TIMESTAMP_FIELDS = (
     "created_at",
@@ -65,6 +73,94 @@ def remote_submission_for_artifact(
     }
 
 
+def _report_activity_records(
+    document: dict[str, Any],
+    *,
+    expected_report_id: str,
+) -> list[dict[str, Any]]:
+    data = document.get("data")
+    if not isinstance(data, dict):
+        raise HTTPException(
+            status_code=502,
+            detail="HackerOne remote report response is invalid",
+        )
+    if data.get("type") != "report" or data.get("id") != expected_report_id:
+        raise HTTPException(
+            status_code=502,
+            detail="HackerOne remote report identity mismatch",
+        )
+    relationships = data.get("relationships")
+    if not isinstance(relationships, dict):
+        return []
+    activities = relationships.get("activities")
+    if not isinstance(activities, dict):
+        return []
+    records = activities.get("data")
+    return records if isinstance(records, list) else []
+
+
+def project_public_report_activities(
+    document: dict[str, Any],
+    *,
+    expected_report_id: str,
+) -> list[dict[str, Any]]:
+    projected: list[dict[str, Any]] = []
+    for activity in _report_activity_records(
+        document,
+        expected_report_id=expected_report_id,
+    ):
+        if len(projected) >= MAX_PUBLIC_ACTIVITIES:
+            break
+        if not isinstance(activity, dict):
+            continue
+        activity_type = activity.get("type")
+        if activity_type not in PUBLIC_ACTIVITY_TYPES:
+            continue
+        activity_id = activity.get("id")
+        attributes = activity.get("attributes")
+        if not isinstance(activity_id, str) or not activity_id.strip():
+            continue
+        if not isinstance(attributes, dict):
+            continue
+        if attributes.get("internal") is not False:
+            continue
+        report_id = attributes.get("report_id")
+        if report_id is not None and str(report_id) != expected_report_id:
+            continue
+
+        message = attributes.get("message")
+        item: dict[str, Any] = {
+            "activity_id": activity_id.strip(),
+            "activity_type": activity_type,
+            "created_at": (
+                attributes.get("created_at")
+                if isinstance(attributes.get("created_at"), str)
+                else None
+            ),
+            "updated_at": (
+                attributes.get("updated_at")
+                if isinstance(attributes.get("updated_at"), str)
+                else None
+            ),
+            "internal": False,
+        }
+        if isinstance(message, str) and message.strip():
+            item["message"] = message.strip()[:MAX_ACTIVITY_MESSAGE_CHARS]
+
+        if activity_type == "activity-bounty-awarded":
+            for key in ("bounty_amount", "bonus_amount"):
+                value = attributes.get(key)
+                if isinstance(value, str):
+                    item[key] = value[:64]
+        elif activity_type == "activity-bug-duplicate":
+            original_report_id = attributes.get("original_report_id")
+            if original_report_id is not None:
+                item["original_report_id"] = str(original_report_id)[:64]
+
+        projected.append(item)
+    return projected
+
+
 def project_needs_more_info_request(
     document: dict[str, Any],
     *,
@@ -81,17 +177,10 @@ def project_needs_more_info_request(
             status_code=502,
             detail="HackerOne remote report identity mismatch",
         )
-    relationships = data.get("relationships")
-    if not isinstance(relationships, dict):
-        return None
-    activities = relationships.get("activities")
-    if not isinstance(activities, dict):
-        return None
-    records = activities.get("data")
-    if not isinstance(records, list):
-        return None
-
-    for activity in records:
+    for activity in _report_activity_records(
+        document,
+        expected_report_id=expected_report_id,
+    ):
         if not isinstance(activity, dict):
             continue
         if activity.get("type") != NEEDS_MORE_INFO_ACTIVITY_TYPE:
@@ -170,6 +259,12 @@ def project_remote_report_status(
     )
     if needs_more_info is not None:
         projected["needs_more_info"] = needs_more_info
+    public_activities = project_public_report_activities(
+        document,
+        expected_report_id=expected_report_id,
+    )
+    if public_activities:
+        projected["activities"] = public_activities
     projected["read_only"] = True
     return projected
 
