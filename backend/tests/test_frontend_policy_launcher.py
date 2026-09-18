@@ -119,4 +119,4 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
     assert "report-readiness" in launcher
     assert "reports?platform=hackerone" in launcher
     assert "submission_ready" in launcher
-    assert "human" in html.lower()
+    assert "humaine" in html.lower()
