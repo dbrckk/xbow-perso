@@ -15,6 +15,12 @@ def _setup(tmp_path, monkeypatch, *, confirmed=1, remote=True):
     monkeypatch.setenv("XBOW_DB_PATH", db)
     monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
     monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_HACKERONE_API_USERNAME", "researcher")
+    monkeypatch.setenv(
+        "XBOW_HACKERONE_API_TOKEN",
+        "test-token-value-1234567890",
+    )
 
     campaign = Campaign(
         id="h1-submit",
