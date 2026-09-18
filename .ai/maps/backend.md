@@ -108,6 +108,7 @@ app/
   operational_slo.py
   orchestrator.py
   outbox_recovery.py
+  pentagi_action_gateway.py
   pentagi_adapter.py
   pentagi_admission.py
   pentagi_auth.py
@@ -148,6 +149,7 @@ app/
   scanner_worker.py
   secret_vault.py
   storage_backend.py
+  storage_core.py
   storage.py
   strix_parser.py
   submission_api.py
@@ -256,6 +258,7 @@ tests/
   test_orchestrator.py
   test_outbox_chaos.py
   test_overview_reasoning.py
+  test_pentagi_action_gateway.py
   test_pentagi_adapter.py
   test_pentagi_admission.py
   test_pentagi_auth.py
@@ -302,6 +305,7 @@ tests/
   test_scanner_ingestion.py
   test_scanner_normalization.py
   test_scanner_observation_chain.py
+  test_scanner_runtime_contract.py
   test_scanner_sandbox.py
   test_scanner_worker.py
   test_scope.py
@@ -4703,6 +4707,43 @@ event: dict[str, Any] = {
 kind = intent.get("kind")
 ```
 
+## File: app/pentagi_action_gateway.py
+```python
+class PentagiActionGatewayError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class PentagiFlowBinding
+⋮----
+flow_id: str
+campaign_id: str
+policy_fingerprint: str
+endpoint: str
+model_provider: str
+⋮----
+@dataclass(frozen=True)
+class PentagiAuthorizedAction
+⋮----
+kind: str
+target: str
+max_requests_per_second: float
+⋮----
+_TARGET_ACTIONS = {"request_recon", "request_nuclei_scan", "request_validation"}
+⋮----
+def _bound_execution_plan(binding: PentagiFlowBinding, campaign: Campaign) -> PentagiFlowPlan
+⋮----
+"""Reconstruct only the policy identity needed to revalidate a bound flow."""
+⋮----
+decision = evaluate_pentagi_admission(
+⋮----
+parsed = urlparse(target)
+host = (parsed.hostname or "").lower().rstrip(".")
+port = parsed.port
+⋮----
+rate = float(requested_rps)
+⋮----
+campaign_cap = float(campaign.target.rules.max_requests_per_second)
+```
+
 ## File: app/pentagi_adapter.py
 ```python
 _CREATE_FLOW_MUTATION = """
@@ -4751,11 +4792,14 @@ def _flow_input(campaign: Campaign, target: str) -> str
 allowed = ", ".join(sorted(str(item) for item in rules.allowed_targets))
 denied = ", ".join(sorted(str(item) for item in rules.denied_targets)) or "(none)"
 ⋮----
-"""Build a non-executing PentAGI request plan.
+"""Build a fail-closed preview plan for PentAGI's GraphQL createFlow API.
 
-    This first adapter stage intentionally cannot submit a PentAGI flow. It creates
-    a deterministic, scope-constrained GraphQL request only after the same campaign
-    safety invariants used by active scanner workers have been satisfied.
+    The current upstream GraphQL mutation accepts only provider, input and resource
+    IDs. It cannot enforce the custom-function restrictions required for XBOW to
+    mediate all target access. Therefore this adapter never marks a GraphQL plan as
+    execution-capable, even when a controlled-functions flag is present. Active
+    PentAGI dispatch requires a separate transport whose request schema can enforce
+    the reviewed function contract.
     """
 ⋮----
 target = _safe_campaign_target(campaign)
@@ -6877,6 +6921,8 @@ def put_hypothesis_snapshot(self, campaign_id: str, graph_fingerprint: str, hypo
 def list_hypothesis_snapshots(self, campaign_id: str, *, limit: int = 50) -> list[dict]: ...
 def put_advisory_focus_snapshot(self, campaign_id: str, fingerprint: str, advisory: dict) -> dict: ...
 def list_advisory_focus_snapshots(self, campaign_id: str, *, limit: int = 50) -> list[dict]: ...
+def put_pentagi_flow_binding(self, binding: dict) -> dict: ...
+def get_pentagi_flow_binding(self, flow_id: str): ...
 def put_artifact(self, campaign_id: str, kind: str, content: bytes, **kwargs) -> dict: ...
 def list_artifacts(self, campaign_id: str) -> list[dict]: ...
 def read_artifact(self, campaign_id: str, artifact_id: str): ...
@@ -6894,7 +6940,7 @@ def create_storage() -> StorageBackend
 backend = storage_backend_name()
 ```
 
-## File: app/storage.py
+## File: app/storage_core.py
 ```python
 def utcnow() -> str
 ⋮----
@@ -7073,6 +7119,55 @@ path = (self.artifact_root / metadata["relative_path"]).resolve()
 content = path.read_bytes()
 ⋮----
 public_metadata = {key: value for key, value in metadata.items() if key != "relative_path"}
+```
+
+## File: app/storage.py
+```python
+ArtifactIntegrityError = _core.ArtifactIntegrityError
+CampaignConflictError = _core.CampaignConflictError
+utcnow = _core.utcnow
+_max_artifact_bytes = _core._max_artifact_bytes
+_max_campaign_document_bytes = _core._max_campaign_document_bytes
+_max_observation_bytes = _core._max_observation_bytes
+_bounded_identifier = _core._bounded_identifier
+_harden_private_path = _core._harden_private_path
+_validate_media_type = _core._validate_media_type
+⋮----
+class Storage(_core.Storage)
+⋮----
+"""Storage core extended with durable PentAGI flow-to-campaign bindings."""
+⋮----
+@staticmethod
+    def _ensure_pentagi_flow_bindings(db) -> None
+⋮----
+@staticmethod
+    def _normalize_pentagi_flow_binding(binding: dict[str, Any]) -> dict[str, str]
+⋮----
+required = {
+⋮----
+flow_id = _bounded_identifier(str(binding["flow_id"]), "flow_id")
+campaign_id = _bounded_identifier(str(binding["campaign_id"]), "campaign_id")
+policy_fingerprint = _bounded_identifier(
+⋮----
+endpoint = _bounded_identifier(
+model_provider = _bounded_identifier(
+⋮----
+def put_pentagi_flow_binding(self, binding: dict[str, Any]) -> dict[str, str]
+⋮----
+requested = self._normalize_pentagi_flow_binding(binding)
+⋮----
+existing = db.execute(
+⋮----
+record = dict(existing)
+comparable = {
+⋮----
+created_at = utcnow()
+⋮----
+def get_pentagi_flow_binding(self, flow_id: str) -> dict[str, str] | None
+⋮----
+flow_id = _bounded_identifier(flow_id, "flow_id")
+⋮----
+row = db.execute(
 ```
 
 ## File: app/strix_parser.py
@@ -10686,7 +10781,7 @@ def test_nuclei_plan_fails_closed_outside_scope(monkeypatch, tmp_path)
 ⋮----
 campaign = _campaign()
 ⋮----
-def test_nuclei_execution_uses_isolated_home(monkeypatch, tmp_path)
+def test_nuclei_execution_uses_isolated_home_and_blocks_template_downloads(monkeypatch, tmp_path)
 ⋮----
 captured = {"calls": []}
 ⋮----
@@ -11257,6 +11352,53 @@ def test_overview_chain_becomes_complete_after_independent_evidence(tmp_path, mo
 def test_overview_counts_duplicate_candidate_groups(tmp_path, monkeypatch)
 ```
 
+## File: tests/test_pentagi_action_gateway.py
+```python
+def _campaign(*, rps=1.0)
+⋮----
+def _binding(monkeypatch, campaign)
+⋮----
+plan = build_pentagi_flow_plan(
+execution_plan = plan.__class__(
+decision = evaluate_pentagi_admission(campaign, execution_plan)
+⋮----
+def test_gateway_derives_campaign_from_server_binding(monkeypatch)
+⋮----
+campaign = _campaign()
+binding = _binding(monkeypatch, campaign)
+action = authorize_pentagi_action(
+⋮----
+def test_gateway_rejects_wrong_campaign_for_binding(monkeypatch)
+⋮----
+other = campaign.model_copy(update={"id": "other"})
+⋮----
+def test_gateway_rejects_cancelled_campaign(monkeypatch)
+⋮----
+def test_gateway_rejects_policy_change(monkeypatch)
+⋮----
+def test_gateway_rejects_binding_transport_change(monkeypatch)
+⋮----
+tampered = PentagiFlowBinding(
+⋮----
+def test_gateway_rejects_out_of_scope_target(monkeypatch)
+⋮----
+def test_gateway_rejects_rate_above_campaign_cap(monkeypatch)
+⋮----
+campaign = _campaign(rps=1.0)
+⋮----
+def test_gateway_rejects_unknown_action(monkeypatch)
+⋮----
+def test_storage_persists_and_loads_pentagi_flow_binding(monkeypatch, tmp_path)
+⋮----
+store = Storage(str(tmp_path / "xbow.sqlite3"), str(tmp_path / "artifacts"))
+⋮----
+stored = store.put_pentagi_flow_binding(
+⋮----
+def test_storage_rejects_pentagi_flow_rebinding(monkeypatch, tmp_path)
+⋮----
+other = campaign.model_copy(update={"id": "campaign-other"})
+```
+
 ## File: tests/test_pentagi_admission.py
 ```python
 def _campaign(*, rps: float = 1.0)
@@ -11631,6 +11773,10 @@ def __init__(self, campaign)
 ⋮----
 def get_campaign_record(self, campaign_id)
 ⋮----
+def put_pentagi_flow_binding(self, binding)
+⋮----
+record = {**binding, "created_at": "2026-09-17T00:00:00+00:00"}
+⋮----
 def put_artifact(self, campaign_id, kind, content, **kwargs)
 ⋮----
 record = {
@@ -11660,6 +11806,8 @@ calls = []
 def submit(plan, permit)
 ⋮----
 store = _Store(campaign)
+⋮----
+binding = store.bindings[0]
 ⋮----
 receipt = store.artifacts[0]
 ⋮----
@@ -12968,6 +13116,24 @@ evidence = [
 def test_scanner_finding_without_endpoint_links_directly_to_asset(tmp_path)
 ⋮----
 parent = by_id[by_id[finding_observation_id]["parent_ids"][0]]
+```
+
+## File: tests/test_scanner_runtime_contract.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def test_scanner_worker_uses_dedicated_pinned_nuclei_image()
+⋮----
+compose = (ROOT / "docker-compose.yml").read_text()
+scanner = compose.split("  scanner-worker:", 1)[1].split("\n  pentagi-worker:", 1)[0]
+⋮----
+def test_scanner_dockerfile_verifies_pinned_nuclei_and_templates()
+⋮----
+dockerfile = (ROOT / "backend" / "Dockerfile.scanner").read_text()
+⋮----
+def test_ci_builds_the_scanner_profile_image()
+⋮----
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 ```
 
 ## File: tests/test_scanner_sandbox.py

@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T16:51:06Z
+Generated: 2026-09-18T16:58:45Z
 
 ### Git
 - Branch: `main`
-- Head: `a9be68eac179`
-- Commit date: 2026-09-18T18:50:54+02:00
-- Commit: Merge pull request #206 from dbrckk/feat/hackerone-control-center
-- Tracked files: 391
+- Head: `dfc71dec6581`
+- Commit date: 2026-09-18T18:58:24+02:00
+- Commit: Merge pull request #207 from dbrckk/feat/nuclei-pentagi-runtime-v2
+- Tracked files: 398
 
 ### Recently changed files
-- `README.md`
-- `.env.example`
-- `frontend/hackerone.js`
-- `frontend/sw.js`
+- `docs/superpowers/specs/2026-09-16-nuclei-pentagi-controlled-runtime-design.md`
+- `docs/superpowers/plans/2026-09-16-nuclei-pentagi-controlled-runtime.md`
+- `docker-compose.yml`
+- `backend/tests/test_scanner_runtime_contract.py`
+- `backend/tests/test_pentagi_worker_service.py`
 
 ### Project signals
 - `pyproject.toml`
