@@ -59,6 +59,7 @@
         "backend/tests/test_hackerone_control_center_api.py",
         "backend/tests/test_hackerone_launch_api.py",
         "backend/tests/test_hackerone_nuclei_e2e.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
         "backend/tests/test_hackerone_remote_binding.py",
         "backend/tests/test_hackerone_remote_snapshot.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
@@ -174,7 +175,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 166,
+      "in_degree": 167,
       "out_degree": 0,
       "path": "frontend/app.js"
     },
@@ -467,6 +468,28 @@
     {
       "dependencies": [],
       "dependents": [
+        "backend/app/browser.py",
+        "backend/app/campaign_overview.py",
+        "backend/app/hackerone_api.py",
+        "backend/app/main.py",
+        "backend/app/observation_writer.py",
+        "backend/app/orchestrator.py",
+        "backend/app/postgres_storage.py",
+        "backend/app/report_approval_api.py",
+        "backend/app/scanner_ingestion.py",
+        "backend/app/scanner_worker.py",
+        "backend/app/storage_backend.py",
+        "backend/app/submission_api.py",
+        "backend/app/worker.py",
+        "backend/app/worker_service.py"
+      ],
+      "in_degree": 14,
+      "out_degree": 0,
+      "path": "backend/app/storage.py"
+    },
+    {
+      "dependencies": [],
+      "dependents": [
         "backend/app/alert_delivery.py",
         "backend/app/auth.py",
         "backend/app/browser.py",
@@ -484,27 +507,6 @@
       "in_degree": 13,
       "out_degree": 0,
       "path": "backend/app/secret_vault.py"
-    },
-    {
-      "dependencies": [],
-      "dependents": [
-        "backend/app/browser.py",
-        "backend/app/campaign_overview.py",
-        "backend/app/main.py",
-        "backend/app/observation_writer.py",
-        "backend/app/orchestrator.py",
-        "backend/app/postgres_storage.py",
-        "backend/app/report_approval_api.py",
-        "backend/app/scanner_ingestion.py",
-        "backend/app/scanner_worker.py",
-        "backend/app/storage_backend.py",
-        "backend/app/submission_api.py",
-        "backend/app/worker.py",
-        "backend/app/worker_service.py"
-      ],
-      "in_degree": 13,
-      "out_degree": 0,
-      "path": "backend/app/storage.py"
     },
     {
       "dependencies": [
@@ -911,6 +913,24 @@
     },
     {
       "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/hackerone_client.py",
+        "backend/app/hackerone_scope_import.py",
+        "backend/app/job_provenance.py",
+        "backend/app/main.py",
+        "backend/app/report_approval.py",
+        "backend/app/storage.py",
+        "backend/app/submission_state.py"
+      ],
+      "dependents": [
+        "backend/app/campaign_control.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 8,
+      "path": "backend/app/hackerone_api.py"
+    },
+    {
+      "dependencies": [
         "backend/app/secret_vault.py"
       ],
       "dependents": [
@@ -1311,21 +1331,6 @@
     },
     {
       "dependencies": [
-        "backend/app/campaign_audit.py",
-        "backend/app/hackerone_client.py",
-        "backend/app/hackerone_scope_import.py",
-        "backend/app/job_provenance.py",
-        "backend/app/main.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_control.py"
-      ],
-      "in_degree": 1,
-      "out_degree": 5,
-      "path": "backend/app/hackerone_api.py"
-    },
-    {
-      "dependencies": [
         "backend/app/pentagi_status_poller.py",
         "backend/app/pentagi_status_tracker.py",
         "backend/app/pentagi_transport.py",
@@ -1434,8 +1439,8 @@
       "path": "backend/app/agent_registry.py"
     }
   ],
-  "edge_count": 587,
+  "edge_count": 591,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 289,
+  "node_count": 290,
   "schema_version": 1
 }

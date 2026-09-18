@@ -232,6 +232,7 @@ backend/
     test_hackerone_control_center_api.py
     test_hackerone_launch_api.py
     test_hackerone_nuclei_e2e.py
+    test_hackerone_outbound_submission.py
     test_hackerone_remote_binding.py
     test_hackerone_remote_snapshot.py
     test_hackerone_report_lifecycle_e2e.py
@@ -3008,6 +3009,17 @@ class HackerOneCampaignAdmissionInput(HackerOneRulesPreviewInput)
 ⋮----
 target: HackerOneCampaignTargetInput
 ⋮----
+class HackerOneReportSubmissionInput(BaseModel)
+⋮----
+actor: str = Field(min_length=1, max_length=120)
+confirm_submission: Literal[True]
+⋮----
+@field_validator("actor")
+@classmethod
+    def normalize_actor(cls, value: str) -> str
+⋮----
+actor = value.strip()
+⋮----
 def _policy_from_input(payload: HackerOneProgramPolicyInput)
 ⋮----
 def _json_sha256(value: Any) -> str
@@ -3084,6 +3096,59 @@ admitted = admit_hackerone_campaign(payload)
 campaign_id = admitted["campaign"]["id"]
 started = start_campaign(campaign_id)
 campaign = assert_campaign_exists(campaign_id)
+⋮----
+def _hackerone_submission_enabled() -> bool
+⋮----
+raw = (os.getenv("XBOW_ENABLE_HACKERONE_SUBMISSION") or "false").strip().lower()
+⋮----
+def _verified_remote_team_handle(campaign) -> str
+⋮----
+binding = event.get("remote_binding")
+⋮----
+def _unresolved_hackerone_attempt(campaign, artifact_id: str) -> dict[str, Any] | None
+⋮----
+attempts = [
+⋮----
+request_id = latest.get("request_id")
+resolved = any(
+⋮----
+def _latest_remote_submission(campaign, artifact_id: str) -> dict[str, Any] | None
+⋮----
+matches = [
+⋮----
+store = storage()
+⋮----
+current_state = submission_status(campaign, artifact)
+⋮----
+remote = _latest_remote_submission(campaign, artifact_id)
+result = current_state.to_dict()
+⋮----
+approval = approval_status_from_storage(campaign, store, artifact_id)
+⋮----
+confirmed = [finding for finding in campaign.findings if finding.status == "confirmed"]
+⋮----
+finding = confirmed[0]
+⋮----
+team_handle = _verified_remote_team_handle(campaign)
+⋮----
+report_text = report_bytes.decode("utf-8")
+⋮----
+severity_rating = "none" if finding.severity == "info" else finding.severity
+outbound = {
+⋮----
+request_id = str(uuid4())
+⋮----
+response = HackerOneClient().post_json("hackers/reports", outbound)
+⋮----
+status = 422 if exc.status_code == 422 else 502
+⋮----
+data = response.get("data")
+remote_report_id = data.get("id") if isinstance(data, dict) else None
+⋮----
+at = utcnow()
+⋮----
+latest = assert_campaign_exists(campaign_id)
+result = submission_status(latest, artifact).to_dict()
 ````
 
 ## File: backend/app/hackerone_binding.py
@@ -3202,6 +3267,10 @@ content_type = (response.headers.get("Content-Type") or "").lower()
 raw = _read_bounded(response, _max_response_bytes())
 ⋮----
 document = json.loads(raw.decode("utf-8"))
+⋮----
+body = json.dumps(
+⋮----
+headers = self.credentials.headers()
 ⋮----
 def get_all_pages(self, path: str) -> list[dict[str, Any]]
 ⋮----
@@ -10339,6 +10408,17 @@ calls = []
 def get_json(path, query=None)
 ⋮----
 result = client.get_all_pages("hackers/programs")
+⋮----
+def test_client_post_json_uses_fixed_origin_and_bounded_json_body(monkeypatch)
+⋮----
+response = _Response(b'{"data":{"id":"4242","type":"report"}}', status=201)
+⋮----
+payload = {
+result = client.post_json("hackers/reports", payload)
+⋮----
+def test_client_post_json_rejects_non_object_payload()
+⋮----
+client = HackerOneClient(
 ````
 
 ## File: backend/tests/test_hackerone_control_center_api.py
@@ -10452,6 +10532,51 @@ artifacts_written = store.list_artifacts(campaign_id)
 evidence = [
 ⋮----
 observations = store.list_observations(campaign_id)
+````
+
+## File: backend/tests/test_hackerone_outbound_submission.py
+````python
+def _setup(tmp_path, monkeypatch, *, confirmed=1, remote=True)
+⋮----
+db = str(tmp_path / "db.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+campaign = Campaign(
+⋮----
+store = Storage(db, artifacts)
+⋮----
+artifact = store.put_artifact(
+⋮----
+current = Campaign.model_validate(raw)
+⋮----
+def _payload()
+⋮----
+def test_hackerone_external_submission_is_disabled_by_default(tmp_path, monkeypatch)
+⋮----
+def test_hackerone_external_submission_requires_verified_remote_binding(tmp_path, monkeypatch)
+⋮----
+def test_hackerone_external_submission_requires_single_confirmed_finding(tmp_path, monkeypatch)
+⋮----
+def test_hackerone_external_submission_posts_exact_approved_report_once(tmp_path, monkeypatch)
+⋮----
+calls = []
+⋮----
+def post_json(self, path, payload)
+⋮----
+result = hackerone_api.submit_hackerone_report(
+⋮----
+attributes = outbound["data"]["attributes"]
+⋮----
+persisted = store.get_campaign(campaign.id)
+event_types = [event.get("type") for event in persisted["events"]]
+⋮----
+repeated = hackerone_api.submit_hackerone_report(
+⋮----
+def test_hackerone_timeout_leaves_unresolved_attempt_and_blocks_retry(tmp_path, monkeypatch)
+⋮----
+calls = 0
+⋮----
+def fail(self, path, payload)
 ````
 
 ## File: backend/tests/test_hackerone_remote_binding.py
@@ -14783,6 +14908,8 @@ function hackerOneReportReviewer()
 ⋮----
 async function approveHackerOneReport()
 ⋮----
+async function submitHackerOneReport()
+⋮----
 async function revokeHackerOneReportApproval()
 ⋮----
 async function queueHackerOneReport()
@@ -15476,7 +15603,7 @@ The default configuration uses `DRY_RUN=true`; external testing engines are not 
 
 ## HackerOne Control Center
 
-The PWA can load HackerOne programs and complete StructuredScope data through the server-side Hacker API client. This integration is read-only: it discovers program metadata, scope, exclusions and policy text; it does not submit reports or mutate HackerOne.
+The PWA loads HackerOne programs and complete StructuredScope data through the server-side Hacker API client. Discovery is read-only by default. Optional direct report creation is separately gated and remains disabled unless `XBOW_ENABLE_HACKERONE_SUBMISSION=true` is explicitly configured.
 
 Configure HackerOne credentials only on the server:
 
@@ -15499,6 +15626,8 @@ Safe launch workflow:
 Remote-bound previews carry a deterministic SHA-256 snapshot of the program metadata, complete scope and exclusions. Launch re-fetches HackerOne before campaign creation. If the remote snapshot changed after review, xbow-perso returns `409 stale_hackerone_snapshot` and requires a fresh review. Unsupported or conflicting scope data remains fail-closed.
 
 The HackerOne API timeout defaults to 10 seconds and its bounded response size to 2 MiB; see `.env.example` for `XBOW_HACKERONE_TIMEOUT_SECONDS` and `XBOW_HACKERONE_MAX_RESPONSE_BYTES`.
+
+Direct HackerOne submission is fail-closed: it requires a current human approval of the exact integrity-verified report artifact, a verified remote program binding, exactly one confirmed finding, an explicit UI confirmation, and the server-side `XBOW_ENABLE_HACKERONE_SUBMISSION=true` gate. The approved report bytes are sent as the report body. Ambiguous transport failures are recorded and automatic retry is blocked to avoid duplicate HackerOne reports.
 
 ## Disaster recovery integrity
 

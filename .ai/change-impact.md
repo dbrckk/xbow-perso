@@ -1,18 +1,22 @@
 # Change impact
 
-Base: 742eb4e3b10c15f313179f366accc6159dcf63a7
-Head: 9136de874d60fde230eac49b9da156dac1f16c46
+Base: 5037416543992079a541ad57661375881b2e4e30
+Head: 1d33deef6b180935ff4d7f3897dcfd1098472acb
 
 ## Changed files
-- M backend/app/main.py
-- A backend/app/report_approval_api.py
+- M .env.example
+- M README.md
+- M backend/app/hackerone_api.py
+- M backend/app/hackerone_client.py
 - M backend/tests/test_frontend_policy_launcher.py
-- A backend/tests/test_report_approval_api.py
+- M backend/tests/test_hackerone_client.py
+- A backend/tests/test_hackerone_outbound_submission.py
 - M frontend/hackerone.js
 - M frontend/index.html
 - M frontend/sw.js
 
 ## Affected areas
+- (root)
 - backend
 - frontend
 

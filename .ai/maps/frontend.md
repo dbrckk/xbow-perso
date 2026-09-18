@@ -117,6 +117,8 @@ function hackerOneReportReviewer()
 ⋮----
 async function approveHackerOneReport()
 ⋮----
+async function submitHackerOneReport()
+⋮----
 async function revokeHackerOneReportApproval()
 ⋮----
 async function queueHackerOneReport()

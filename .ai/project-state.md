@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T19:41:53Z
+Generated: 2026-09-18T19:56:02Z
 
 ### Git
 - Branch: `main`
-- Head: `9136de874d60`
-- Commit date: 2026-09-18T21:41:41+02:00
-- Commit: Merge pull request #217 from dbrckk/feat/hackerone-report-approval
-- Tracked files: 418
+- Head: `1d33deef6b18`
+- Commit date: 2026-09-18T21:55:50+02:00
+- Commit: Merge pull request #218 from dbrckk/feat/hackerone-outbound-submission
+- Tracked files: 419
 
 ### Recently changed files
+- `backend/tests/test_hackerone_outbound_submission.py`
+- `backend/app/hackerone_api.py`
 - `frontend/sw.js`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/hackerone.js`
-- `frontend/index.html`
-- `backend/app/main.py`
+- `README.md`
 
 ### Project signals
 - `pyproject.toml`
