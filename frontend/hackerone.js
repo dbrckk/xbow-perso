@@ -2,6 +2,9 @@
   let approvedPreview=null;
   let remoteBinding=null;
   let hackerOnePrograms=[];
+  let runMonitorTimer=null;
+  let runMonitorCampaignId=null;
+  let runMonitorBusy=false;
 
   const el=id=>document.getElementById(id);
   const splitLines=value=>value.split('\n').map(item=>item.trim()).filter(Boolean);
@@ -19,6 +22,76 @@
     const state=el('h1ConnectionState');
     state.textContent=label;
     state.className='pill'+(type?' '+type:'');
+  }
+
+  function stopRunMonitor(){
+    if(runMonitorTimer!==null){
+      clearInterval(runMonitorTimer);
+      runMonitorTimer=null;
+    }
+    runMonitorCampaignId=null;
+    runMonitorBusy=false;
+  }
+
+  function renderRunMonitor(campaignData,control,artifacts){
+    const panel=el('h1RunPanel');
+    panel.classList.remove('hidden');
+    const state=String(campaignData?.state||control?.campaign_state||'unknown');
+    const pill=el('h1RunState');
+    pill.textContent=state;
+    pill.className='pill '+(
+      state==='completed'?'ok':
+      state==='failed'||state==='cancelled'?'err':'warn'
+    );
+
+    const jobs=control?.jobs||{};
+    const queued=Number(jobs.queued)||0;
+    const running=Number(jobs.running)||0;
+    const failed=Number(jobs.failed)||0;
+    el('h1RunJobs').textContent=queued+' file · '+running+' actif · '+failed+' échec';
+    el('h1RunFindings').textContent=String(
+      Array.isArray(campaignData?.findings)?campaignData.findings.length:0
+    );
+    el('h1RunArtifacts').textContent=String(Array.isArray(artifacts)?artifacts.length:0);
+    el('h1RunUpdated').textContent='Actualisé à '+new Date().toLocaleTimeString();
+  }
+
+  async function refreshRunMonitor(campaignId){
+    if(runMonitorBusy||!campaignId)return;
+    runMonitorBusy=true;
+    try{
+      const encoded=encodeURIComponent(campaignId);
+      const [campaignData,control,artifacts]=await Promise.all([
+        api('/campaigns/'+encodeURIComponent(campaignId)),
+        api('/campaigns/'+encodeURIComponent(campaignId)+'/control-status'),
+        api('/campaigns/'+encodeURIComponent(campaignId)+'/artifacts')
+      ]);
+      renderRunMonitor(campaignData,control,artifacts);
+      if(typeof refreshDashboard==='function'&&campaign?.id===campaignId){
+        await refreshDashboard();
+      }
+      if(['completed','cancelled','failed'].includes(String(campaignData?.state||''))){
+        stopRunMonitor();
+      }
+      return {campaign:campaignData,control,artifacts,encoded};
+    }catch(error){
+      el('h1RunPanel').classList.remove('hidden');
+      el('h1RunState').textContent='indisponible';
+      el('h1RunState').className='pill err';
+      el('h1RunUpdated').textContent='Suivi interrompu temporairement : '+error.message;
+    }finally{
+      runMonitorBusy=false;
+    }
+  }
+
+  function startRunMonitor(campaignId){
+    stopRunMonitor();
+    runMonitorCampaignId=String(campaignId||'');
+    if(!runMonitorCampaignId)return;
+    void refreshRunMonitor(runMonitorCampaignId);
+    runMonitorTimer=setInterval(()=>{
+      if(runMonitorCampaignId)void refreshRunMonitor(runMonitorCampaignId);
+    },5000);
   }
 
   function clearRemoteBinding(){
@@ -334,6 +407,7 @@
       el('h1Confirm').disabled=true;
       el('output').textContent=JSON.stringify(result,null,2);
       await activateCampaign(result.campaign);
+      startRunMonitor(result.campaign.id);
       setLauncherStatus('Campagne HackerOne admise et démarrée avec policy liée.','ok');
     }catch(error){
       setLauncherStatus(error.message,'err');
