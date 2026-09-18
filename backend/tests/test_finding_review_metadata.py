@@ -11,7 +11,10 @@ def _setup(tmp_path, monkeypatch):
     monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
     monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
     # Authentication behavior is covered separately; keep these route-semantic
-    # tests deterministic even when the CI environment enables mutation TOTP.
+    # tests deterministic while still traversing the real API auth middleware.
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.delenv("XBOW_API_TOKEN_FILE", raising=False)
+    monkeypatch.setenv("XBOW_API_TOKEN", "review-test-token-" + "a" * 32)
     monkeypatch.setenv("XBOW_TOTP_ENABLED", "false")
 
     campaign = Campaign(
@@ -45,6 +48,7 @@ def test_human_review_metadata_update_does_not_confirm_finding(tmp_path, monkeyp
     db, artifacts = _setup(tmp_path, monkeypatch)
     response = TestClient(app).put(
         "/api/campaigns/h1-review/findings/finding-1/review-metadata",
+        headers={"Authorization": "Bearer " + "review-test-token-" + "a" * 32},
         json={
             "summary": "Validated exposure summary",
             "impact": "An attacker could disclose profile metadata.",
@@ -94,6 +98,7 @@ def test_human_review_metadata_rejects_resolved_rejected_finding(tmp_path, monke
 
     response = TestClient(app).put(
         "/api/campaigns/h1-review/findings/finding-1/review-metadata",
+        headers={"Authorization": "Bearer " + "review-test-token-" + "a" * 32},
         json={
             "summary": "Summary",
             "impact": "Impact",
