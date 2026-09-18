@@ -100,6 +100,9 @@ Optional historical synchronization is provided by the separate `hackerone-repor
 
 When HackerOne returns a public `activity-bug-needs-more-info` activity on a submitted report, the sync worker records a bounded `hackerone_needs_more_info_observed` audit event once per activity ID. The Control Center exposes the public request and generates a local deterministic response draft from already-confirmed findings and stored validation context. The draft endpoint is read-only and explicitly reports `send_supported=false`; no HackerOne reply/comment mutation is implemented by this feature.
 
+
+The same report response is also reduced to an allowlisted public activity feed for `activity-comment`, `activity-bounty-awarded`, `activity-bug-duplicate`, `activity-bug-informative`, and `activity-bug-resolved`. Internal activities, actors, attachments, and unknown activity types are discarded. The worker records each accepted activity ID once as `hackerone_public_activity_observed`; the Control Center renders these together with synchronized report-state changes and NMI requests in a local timeline and compact activity summary.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
