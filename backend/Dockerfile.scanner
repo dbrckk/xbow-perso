@@ -1,0 +1,43 @@
+FROM python:3.12-slim AS scanner-runtime
+
+ARG TARGETARCH
+ARG NUCLEI_VERSION=3.11.1
+ARG NUCLEI_TEMPLATES_VERSION=10.4.8
+ARG NUCLEI_TEMPLATES_COMMIT=e5f19e6144135e107962bb943231413796fd7fe7
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl git unzip \
+    && case "$TARGETARCH" in \
+         amd64) NUCLEI_SHA256=ea63d4ae232808cd7c6bc00d0142428e231fab59dae01042246097d195835ab6 ;; \
+         arm64) NUCLEI_SHA256=8044e3d9768ba0a744b2872c1a87e813006f013da97ca9f50f7661a4203bec07 ;; \
+         *) echo "unsupported TARGETARCH: $TARGETARCH" >&2; exit 1 ;; \
+       esac \
+    && NUCLEI_ARCHIVE="nuclei_${NUCLEI_VERSION}_linux_${TARGETARCH}.zip" \
+    && curl --fail --location --proto '=https' --tlsv1.2 \
+       "https://github.com/projectdiscovery/nuclei/releases/download/v${NUCLEI_VERSION}/${NUCLEI_ARCHIVE}" \
+       -o "/tmp/${NUCLEI_ARCHIVE}" \
+    && printf '%s  %s\n' "$NUCLEI_SHA256" "/tmp/${NUCLEI_ARCHIVE}" | sha256sum -c - \
+    && unzip -q "/tmp/${NUCLEI_ARCHIVE}" nuclei -d /usr/local/bin \
+    && chmod 0755 /usr/local/bin/nuclei \
+    && nuclei -version \
+    && git init /opt/nuclei-templates \
+    && cd /opt/nuclei-templates \
+    && git remote add origin https://github.com/projectdiscovery/nuclei-templates.git \
+    && git fetch --depth 1 origin "$NUCLEI_TEMPLATES_COMMIT" \
+    && git checkout --detach FETCH_HEAD \
+    && test "$(git rev-parse HEAD)" = "$NUCLEI_TEMPLATES_COMMIT" \
+    && test -f templates-checksum.txt \
+    && printf 'nuclei-templates-v10.4.8\n' > .xbow-version \
+    && rm -rf .git /tmp/* /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt \
+    && python -m playwright install --with-deps chromium \
+    && rm -rf /var/lib/apt/lists/*
+COPY app ./app
+
+ENV PYTHONUNBUFFERED=1 \
+    NUCLEI_TEMPLATES_DIRECTORY=/opt/nuclei-templates
+
+CMD ["python", "-m", "app.worker_service"]
