@@ -7299,6 +7299,8 @@ event = {
 ingestion = ingest_scanner_run(
 ⋮----
 plan = build_nuclei_plan(campaign, run_dir)
+⋮----
+nuclei_output = Path(run_dir) / "nuclei.jsonl"
 ````
 
 ## File: backend/app/secret_vault.py
@@ -10362,6 +10364,8 @@ validation_job = queue.get_by_dedupe(
 provenance = validation_job["payload"]["_provenance"]
 ⋮----
 artifacts_written = store.list_artifacts(campaign_id)
+⋮----
+evidence = [
 ⋮----
 observations = store.list_observations(campaign_id)
 ````

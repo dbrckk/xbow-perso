@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T18:29:36Z
+Generated: 2026-09-18T18:37:28Z
 
 ### Git
 - Branch: `main`
-- Head: `6486f73a4789`
-- Commit date: 2026-09-18T20:29:24+02:00
-- Commit: Merge pull request #212 from dbrckk/feat/hackerone-finding-review
+- Head: `730015de2da3`
+- Commit date: 2026-09-18T20:37:13+02:00
+- Commit: Merge pull request #213 from dbrckk/feat/nuclei-evidence-artifact
 - Tracked files: 400
 
 ### Recently changed files
+- `backend/app/scanner_worker.py`
+- `backend/tests/test_hackerone_nuclei_e2e.py`
 - `frontend/index.html`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/sw.js`
-- `frontend/app.css`
 
 ### Project signals
 - `pyproject.toml`
