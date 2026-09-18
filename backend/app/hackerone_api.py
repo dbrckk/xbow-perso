@@ -14,6 +14,11 @@ from .hackerone_client import (
     fetch_hackerone_program_snapshot,
     load_hackerone_credentials,
 )
+from .hackerone_report_tracking import (
+    latest_remote_submission,
+    project_remote_report_status,
+    remote_submission_for_artifact,
+)
 
 router = APIRouter()
 
@@ -408,94 +413,6 @@ def _unresolved_hackerone_attempt(campaign, artifact_id: str) -> dict[str, Any] 
     return None if resolved else latest
 
 
-def _latest_remote_submission(campaign, artifact_id: str) -> dict[str, Any] | None:
-    matches = [
-        event
-        for event in campaign.events
-        if event.get("type") == "hackerone_report_submitted"
-        and event.get("artifact_id") == artifact_id
-    ]
-    return matches[-1] if matches else None
-
-
-def _remote_submission_for_artifact(campaign, artifact_id: str) -> dict[str, Any]:
-    remote = _latest_remote_submission(campaign, artifact_id)
-    if remote is None:
-        raise HTTPException(
-            status_code=409,
-            detail="Report has no recorded HackerOne remote submission",
-        )
-    remote_report_id = remote.get("remote_report_id")
-    team_handle = remote.get("team_handle")
-    if (
-        not isinstance(remote_report_id, str)
-        or not remote_report_id.isdigit()
-        or not isinstance(team_handle, str)
-        or not team_handle.strip()
-    ):
-        raise HTTPException(
-            status_code=409,
-            detail="Recorded HackerOne submission metadata is invalid",
-        )
-    return {
-        **remote,
-        "remote_report_id": remote_report_id,
-        "team_handle": team_handle.strip(),
-    }
-
-
-def _project_remote_report_status(
-    document: dict[str, Any],
-    *,
-    artifact_id: str,
-    expected_report_id: str,
-    team_handle: str,
-) -> dict[str, Any]:
-    data = document.get("data")
-    if not isinstance(data, dict):
-        raise HTTPException(
-            status_code=502,
-            detail="HackerOne remote report response is invalid",
-        )
-    if data.get("type") != "report" or data.get("id") != expected_report_id:
-        raise HTTPException(
-            status_code=502,
-            detail="HackerOne remote report identity mismatch",
-        )
-    attributes = data.get("attributes")
-    if not isinstance(attributes, dict):
-        raise HTTPException(
-            status_code=502,
-            detail="HackerOne remote report attributes are invalid",
-        )
-    state = attributes.get("state")
-    if not isinstance(state, str) or not state.strip():
-        raise HTTPException(
-            status_code=502,
-            detail="HackerOne remote report state is invalid",
-        )
-    allowed_timestamps = (
-        "created_at",
-        "triaged_at",
-        "closed_at",
-        "last_program_activity_at",
-        "last_reporter_activity_at",
-        "last_activity_at",
-    )
-    projected = {
-        "provider": "hackerone",
-        "artifact_id": artifact_id,
-        "remote_report_id": expected_report_id,
-        "team_handle": team_handle,
-        "state": state.strip(),
-    }
-    for key in allowed_timestamps:
-        value = attributes.get(key)
-        projected[key] = value if value is None or isinstance(value, str) else None
-    projected["read_only"] = True
-    return projected
-
-
 @router.get(
     "/api/campaigns/{campaign_id}/reports/{artifact_id}/hackerone-status"
 )
@@ -506,7 +423,7 @@ def get_hackerone_remote_report_status(
     from .main import assert_campaign_exists
 
     campaign = assert_campaign_exists(campaign_id)
-    remote = _remote_submission_for_artifact(campaign, artifact_id)
+    remote = remote_submission_for_artifact(campaign, artifact_id)
     remote_report_id = remote["remote_report_id"]
     try:
         document = HackerOneClient().get_json(
@@ -514,7 +431,7 @@ def get_hackerone_remote_report_status(
         )
     except HackerOneClientError as exc:
         raise _upstream_error(exc) from exc
-    return _project_remote_report_status(
+    return project_remote_report_status(
         document,
         artifact_id=artifact_id,
         expected_report_id=remote_report_id,
@@ -571,7 +488,7 @@ def submit_hackerone_report(
                 status_code=409,
                 detail="Report is already marked submitted to another platform",
             )
-        remote = _latest_remote_submission(campaign, artifact_id)
+        remote = latest_remote_submission(campaign, artifact_id)
         result = current_state.to_dict()
         result["remote_report_id"] = remote.get("remote_report_id") if remote else None
         result["team_handle"] = remote.get("team_handle") if remote else None
