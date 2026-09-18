@@ -254,6 +254,44 @@ services:
     cpus: 0.5
     networks: [control]
 
+  hackerone-report-sync-worker:
+    profiles: ["hackerone-sync"]
+    build: ./backend
+    command: ["python", "-m", "app.hackerone_report_sync_worker"]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 20s
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      XBOW_ENABLE_HACKERONE_REPORT_SYNC: ${XBOW_ENABLE_HACKERONE_REPORT_SYNC:-false}
+      XBOW_HACKERONE_REPORT_SYNC_INTERVAL_SECONDS: ${XBOW_HACKERONE_REPORT_SYNC_INTERVAL_SECONDS:-60}
+      XBOW_HACKERONE_REPORT_SYNC_MAX_CAMPAIGNS: ${XBOW_HACKERONE_REPORT_SYNC_MAX_CAMPAIGNS:-100}
+      XBOW_HACKERONE_API_USERNAME: ${XBOW_HACKERONE_API_USERNAME:-}
+      XBOW_HACKERONE_API_TOKEN: ${XBOW_HACKERONE_API_TOKEN:-}
+      XBOW_HACKERONE_TIMEOUT_SECONDS: ${XBOW_HACKERONE_TIMEOUT_SECONDS:-10}
+      XBOW_HACKERONE_MAX_RESPONSE_BYTES: ${XBOW_HACKERONE_MAX_RESPONSE_BYTES:-2097152}
+      XBOW_DB_PATH: /data/xbow.sqlite3
+      XBOW_ARTIFACT_ROOT: /data/artifacts
+      XBOW_VAULT_ENABLED: ${XBOW_VAULT_ENABLED:-false}
+      XBOW_VAULT_PATH: /data/secrets.vault.json
+      XBOW_VAULT_MASTER_KEY: ${XBOW_VAULT_MASTER_KEY:-}
+      XBOW_VAULT_MASTER_KEY_FILE: ${XBOW_VAULT_MASTER_KEY_FILE:-}
+    volumes:
+      - xbow-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 0.25
+    networks: [control]
+
   frontend:
     build: ./frontend
     restart: unless-stopped
