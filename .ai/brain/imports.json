@@ -1,0 +1,2153 @@
+{
+  "imports": {
+    "backend/app/adaptive_cycle.py": [
+      "__future__",
+      "autonomy_gate",
+      "campaign_risk",
+      "campaign_runtime",
+      "dataclasses",
+      "decision_consensus",
+      "fastapi",
+      "learning_memory",
+      "main",
+      "observation_graph",
+      "planner_budget",
+      "red_team_decision",
+      "typing"
+    ],
+    "backend/app/agent_registry.py": [
+      "__future__",
+      "dataclasses",
+      "typing"
+    ],
+    "backend/app/alert_delivery.py": [
+      "__future__",
+      "hashlib",
+      "hmac",
+      "json",
+      "os",
+      "secret_vault",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "backend/app/api_outbox.py": [
+      "__future__",
+      "collections",
+      "collections.abc",
+      "hashlib",
+      "typing"
+    ],
+    "backend/app/api_rate_limit.py": [
+      "__future__",
+      "dataclasses",
+      "fastapi",
+      "fastapi.responses",
+      "hashlib",
+      "ipaddress",
+      "os",
+      "redis",
+      "threading",
+      "time"
+    ],
+    "backend/app/attack_surface.py": [
+      "__future__",
+      "collections",
+      "fastapi",
+      "hypothesis_engine",
+      "main",
+      "observation_graph",
+      "typing",
+      "urllib.parse"
+    ],
+    "backend/app/auth.py": [
+      "__future__",
+      "fastapi",
+      "hmac",
+      "os",
+      "pathlib",
+      "secret_vault"
+    ],
+    "backend/app/autonomy_gate.py": [
+      "__future__",
+      "campaign_risk",
+      "campaign_runtime",
+      "dataclasses",
+      "decision_consensus",
+      "fastapi",
+      "main",
+      "observation_graph",
+      "planner_budget",
+      "red_team_decision",
+      "typing"
+    ],
+    "backend/app/browser.py": [
+      "__future__",
+      "api_outbox",
+      "campaign_audit",
+      "dataclasses",
+      "datetime",
+      "fastapi",
+      "hashlib",
+      "json",
+      "main",
+      "os",
+      "playwright.sync_api",
+      "pydantic",
+      "queue_backend",
+      "secret_vault",
+      "storage",
+      "storage_backend",
+      "submission_api",
+      "typing",
+      "urllib.parse",
+      "uuid"
+    ],
+    "backend/app/campaign_audit.py": [
+      "__future__",
+      "hashlib",
+      "hmac",
+      "json",
+      "secret_vault",
+      "typing"
+    ],
+    "backend/app/campaign_control.py": [
+      "__future__",
+      "campaign_runtime",
+      "circuit_breaker",
+      "decision_timeline",
+      "fastapi",
+      "hackerone_api",
+      "main",
+      "observation_graph",
+      "planner_budget",
+      "planner_limits",
+      "runtime_capabilities"
+    ],
+    "backend/app/campaign_overview.py": [
+      "__future__",
+      "attack_surface",
+      "campaign_review_state",
+      "campaign_risk",
+      "campaign_runtime",
+      "collections",
+      "decision_consensus",
+      "evidence_chain",
+      "fastapi",
+      "finding_correlation",
+      "finding_lifecycle",
+      "finding_triage",
+      "hypothesis_engine",
+      "knowledge_memory",
+      "learning_memory",
+      "main",
+      "observation_graph",
+      "planner_budget",
+      "recon_swarm",
+      "red_team_coverage",
+      "red_team_decision",
+      "report_readiness",
+      "review_queue",
+      "storage",
+      "submission_state",
+      "validation_state"
+    ],
+    "backend/app/campaign_review_state.py": [
+      "__future__",
+      "collections",
+      "fastapi",
+      "finding_lifecycle",
+      "main",
+      "observation_graph",
+      "report_readiness",
+      "typing"
+    ],
+    "backend/app/campaign_risk.py": [
+      "__future__",
+      "attack_surface",
+      "dataclasses",
+      "decision_consensus",
+      "fastapi",
+      "finding_triage",
+      "main",
+      "observation_graph",
+      "red_team_coverage",
+      "red_team_decision",
+      "typing"
+    ],
+    "backend/app/campaign_runtime.py": [
+      "__future__",
+      "dataclasses",
+      "datetime",
+      "os",
+      "typing"
+    ],
+    "backend/app/chain_detector.py": [
+      "__future__",
+      "dataclasses",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/circuit_breaker.py": [
+      "__future__",
+      "hashlib",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/coverage.py": [
+      "__future__",
+      "attack_surface",
+      "fastapi",
+      "main",
+      "observation_graph",
+      "typing",
+      "validation_state"
+    ],
+    "backend/app/decision_audit.py": [
+      "__future__",
+      "hashlib",
+      "hmac",
+      "json",
+      "observation_graph",
+      "secret_vault",
+      "typing"
+    ],
+    "backend/app/decision_consensus.py": [
+      "__future__",
+      "dataclasses",
+      "fastapi",
+      "main",
+      "observation_graph",
+      "red_team_decision",
+      "typing"
+    ],
+    "backend/app/decision_timeline.py": [
+      "__future__",
+      "decision_audit",
+      "fastapi",
+      "knowledge_memory",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/deployment_preflight.py": [
+      "__future__",
+      "os",
+      "runtime_capabilities",
+      "typing"
+    ],
+    "backend/app/differential_intelligence.py": [
+      "__future__",
+      "dataclasses",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/domain_incident_lifecycle.py": [
+      "__future__",
+      "datetime",
+      "typing"
+    ],
+    "backend/app/dr_cli.py": [
+      "__future__",
+      "argparse",
+      "dr_manifest",
+      "json",
+      "pathlib"
+    ],
+    "backend/app/dr_manifest.py": [
+      "__future__",
+      "hashlib",
+      "hmac",
+      "json",
+      "os",
+      "pathlib",
+      "secret_vault",
+      "typing"
+    ],
+    "backend/app/error_budget.py": [
+      "__future__",
+      "os",
+      "typing"
+    ],
+    "backend/app/evidence_chain.py": [
+      "__future__",
+      "dataclasses",
+      "fastapi",
+      "finding_correlation",
+      "main",
+      "observation_graph",
+      "typing",
+      "validation_state"
+    ],
+    "backend/app/evidence_quality.py": [
+      "__future__",
+      "dataclasses",
+      "evidence_chain",
+      "fastapi",
+      "finding_consensus",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/finding_cluster_consensus.py": [
+      "__future__",
+      "dataclasses",
+      "fastapi",
+      "finding_correlation",
+      "finding_readiness",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/finding_cluster_saturation.py": [
+      "__future__",
+      "dataclasses",
+      "evidence_quality",
+      "fastapi",
+      "finding_correlation",
+      "main",
+      "observation_graph",
+      "typing",
+      "validation_state"
+    ],
+    "backend/app/finding_consensus.py": [
+      "__future__",
+      "dataclasses",
+      "fastapi",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/finding_correlation.py": [
+      "__future__",
+      "dataclasses",
+      "fastapi",
+      "main",
+      "re",
+      "typing",
+      "urllib.parse"
+    ],
+    "backend/app/finding_intelligence.py": [
+      "__future__",
+      "differential_intelligence",
+      "fastapi",
+      "finding_cluster_consensus",
+      "finding_cluster_saturation",
+      "finding_correlation",
+      "finding_readiness",
+      "finding_triage",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/finding_lifecycle.py": [
+      "__future__",
+      "dataclasses",
+      "evidence_chain",
+      "fastapi",
+      "finding_correlation",
+      "main",
+      "observation_graph",
+      "typing",
+      "validation_state"
+    ],
+    "backend/app/finding_readiness.py": [
+      "__future__",
+      "dataclasses",
+      "evidence_quality",
+      "fastapi",
+      "finding_consensus",
+      "hypothesis_memory",
+      "knowledge_memory",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/finding_triage.py": [
+      "__future__",
+      "dataclasses",
+      "evidence_chain",
+      "evidence_quality",
+      "fastapi",
+      "finding_consensus",
+      "finding_correlation",
+      "knowledge_memory",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/hackerone_api.py": [
+      "__future__",
+      "campaign_audit",
+      "datetime",
+      "fastapi",
+      "hackerone_scope_import",
+      "hashlib",
+      "job_provenance",
+      "json",
+      "main",
+      "pydantic",
+      "typing"
+    ],
+    "backend/app/hackerone_binding.py": [
+      "__future__",
+      "campaign_audit",
+      "hashlib",
+      "json",
+      "typing"
+    ],
+    "backend/app/hackerone_scope_import.py": [
+      "__future__",
+      "dataclasses",
+      "datetime",
+      "ipaddress",
+      "main",
+      "math",
+      "typing",
+      "urllib.parse"
+    ],
+    "backend/app/hypothesis_engine.py": [
+      "__future__",
+      "dataclasses",
+      "evidence_chain",
+      "fastapi",
+      "main",
+      "observation_graph",
+      "typing",
+      "urllib.parse",
+      "validation_state"
+    ],
+    "backend/app/hypothesis_memory.py": [
+      "__future__",
+      "dataclasses",
+      "hashlib",
+      "json",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/incident_api.py": [
+      "__future__",
+      "domain_incident_lifecycle",
+      "incident_lifecycle",
+      "incident_store",
+      "typing"
+    ],
+    "backend/app/incident_domains.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "typing"
+    ],
+    "backend/app/incident_engine.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "typing"
+    ],
+    "backend/app/incident_lifecycle.py": [
+      "__future__",
+      "datetime",
+      "typing"
+    ],
+    "backend/app/incident_observer.py": [
+      "__future__",
+      "domain_incident_lifecycle",
+      "error_budget",
+      "incident_domains",
+      "incident_store",
+      "observer_metrics",
+      "observer_runtime",
+      "observer_slo",
+      "operational_slo",
+      "typing"
+    ],
+    "backend/app/incident_store.py": [
+      "__future__",
+      "datetime",
+      "json",
+      "sqlite3",
+      "typing"
+    ],
+    "backend/app/job_provenance.py": [
+      "__future__",
+      "fastapi",
+      "hackerone_binding",
+      "hashlib",
+      "json",
+      "typing",
+      "urllib.parse"
+    ],
+    "backend/app/jobqueue.py": [
+      "__future__",
+      "contextlib",
+      "datetime",
+      "json",
+      "os",
+      "pathlib",
+      "sqlite3",
+      "typing",
+      "uuid"
+    ],
+    "backend/app/knowledge_memory.py": [
+      "__future__",
+      "dataclasses",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/learning_memory.py": [
+      "__future__",
+      "collections",
+      "dataclasses",
+      "fastapi",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/main.py": [
+      "__future__",
+      "agent_registry",
+      "api_outbox",
+      "api_rate_limit",
+      "auth",
+      "browser",
+      "campaign_audit",
+      "campaign_control",
+      "coverage",
+      "datetime",
+      "decision_audit",
+      "decision_timeline",
+      "deployment_preflight",
+      "enum",
+      "evidence_quality",
+      "fastapi",
+      "fastapi.responses",
+      "finding_cluster_consensus",
+      "finding_cluster_saturation",
+      "finding_correlation",
+      "finding_intelligence",
+      "finding_readiness",
+      "fnmatch",
+      "hackerone_scope_import",
+      "hashlib",
+      "hypothesis_memory",
+      "incident_api",
+      "incident_store",
+      "job_provenance",
+      "knowledge_memory",
+      "metrics",
+      "observation_graph",
+      "observer_metrics",
+      "observer_runtime",
+      "operational_alerts",
+      "outbox_recovery",
+      "pentagi_adapter",
+      "pentagi_admission",
+      "pentagi_control",
+      "pentagi_dispatch",
+      "pentagi_execution_guard",
+      "planner_advisory",
+      "planner_budget",
+      "policy_integrity",
+      "pydantic",
+      "queue_backend",
+      "readiness",
+      "report_readiness",
+      "review_queue",
+      "runtime_capabilities",
+      "storage",
+      "storage_backend",
+      "totp_auth",
+      "typing",
+      "urllib.parse",
+      "uuid",
+      "validation_state",
+      "worker_audit"
+    ],
+    "backend/app/metrics.py": [
+      "__future__",
+      "api_outbox",
+      "collections",
+      "datetime",
+      "fastapi",
+      "main",
+      "typing",
+      "worker_watchdog"
+    ],
+    "backend/app/nuclei_parser.py": [
+      "__future__",
+      "json",
+      "main",
+      "os",
+      "pathlib",
+      "scanner_normalization"
+    ],
+    "backend/app/observation_graph.py": [
+      "__future__",
+      "dataclasses",
+      "planner_limits",
+      "typing",
+      "urllib.parse",
+      "validation_state"
+    ],
+    "backend/app/observation_writer.py": [
+      "__future__",
+      "differential_intelligence",
+      "hashlib",
+      "json",
+      "main",
+      "observation_graph",
+      "storage"
+    ],
+    "backend/app/observer_heartbeat.py": [
+      "__future__",
+      "dataclasses",
+      "observer_lease",
+      "threading",
+      "typing"
+    ],
+    "backend/app/observer_lease.py": [
+      "__future__",
+      "datetime",
+      "sqlite3"
+    ],
+    "backend/app/observer_metrics.py": [
+      "__future__",
+      "datetime",
+      "typing"
+    ],
+    "backend/app/observer_resilience.py": [
+      "__future__",
+      "dataclasses",
+      "datetime",
+      "typing"
+    ],
+    "backend/app/observer_runtime.py": [
+      "__future__",
+      "observer_resilience",
+      "threading"
+    ],
+    "backend/app/observer_scheduler.py": [
+      "__future__",
+      "observer_heartbeat",
+      "observer_lease",
+      "observer_resilience",
+      "observer_runtime",
+      "os",
+      "time",
+      "typing"
+    ],
+    "backend/app/observer_slo.py": [
+      "__future__",
+      "typing"
+    ],
+    "backend/app/operational_alerts.py": [
+      "__future__",
+      "alert_delivery",
+      "fastapi",
+      "main",
+      "metrics",
+      "os",
+      "typing"
+    ],
+    "backend/app/operational_slo.py": [
+      "__future__",
+      "os",
+      "typing"
+    ],
+    "backend/app/orchestrator.py": [
+      "__future__",
+      "adaptive_cycle",
+      "agent_registry",
+      "attack_surface",
+      "autonomy_gate",
+      "campaign_risk",
+      "campaign_runtime",
+      "circuit_breaker",
+      "coverage",
+      "decision_audit",
+      "decision_consensus",
+      "decision_timeline",
+      "evidence_quality",
+      "finding_correlation",
+      "hashlib",
+      "hypothesis_memory",
+      "job_provenance",
+      "jobqueue",
+      "json",
+      "knowledge_memory",
+      "learning_memory",
+      "main",
+      "math",
+      "observation_graph",
+      "os",
+      "pipeline_swarm",
+      "planner_budget",
+      "recon_swarm",
+      "red_team_decision",
+      "scanner_adaptation",
+      "storage",
+      "swarm_coordinator",
+      "urllib.parse",
+      "validation_state"
+    ],
+    "backend/app/outbox_recovery.py": [
+      "__future__",
+      "api_outbox",
+      "hashlib",
+      "queue_backend",
+      "typing"
+    ],
+    "backend/app/pentagi_adapter.py": [
+      "__future__",
+      "dataclasses",
+      "main",
+      "os",
+      "re",
+      "urllib.parse"
+    ],
+    "backend/app/pentagi_admission.py": [
+      "__future__",
+      "dataclasses",
+      "hashlib",
+      "json",
+      "main",
+      "os",
+      "pentagi_adapter"
+    ],
+    "backend/app/pentagi_auth.py": [
+      "__future__",
+      "dataclasses",
+      "secret_vault"
+    ],
+    "backend/app/pentagi_control.py": [
+      "__future__",
+      "dataclasses",
+      "main",
+      "os",
+      "pentagi_adapter",
+      "pentagi_admission"
+    ],
+    "backend/app/pentagi_dispatch.py": [
+      "__future__",
+      "main",
+      "pentagi_adapter",
+      "pentagi_execution_guard",
+      "queue_backend"
+    ],
+    "backend/app/pentagi_execution_guard.py": [
+      "__future__",
+      "dataclasses",
+      "hashlib",
+      "json",
+      "main",
+      "pentagi_adapter",
+      "pentagi_admission"
+    ],
+    "backend/app/pentagi_flow_status.py": [
+      "__future__",
+      "dataclasses",
+      "json",
+      "pentagi_auth",
+      "pentagi_transport",
+      "socket",
+      "ssl",
+      "time",
+      "typing",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "backend/app/pentagi_status_poller.py": [
+      "__future__",
+      "dataclasses",
+      "os",
+      "pentagi_status_tracker",
+      "time"
+    ],
+    "backend/app/pentagi_status_tracker.py": [
+      "__future__",
+      "dataclasses",
+      "json",
+      "pentagi_flow_status"
+    ],
+    "backend/app/pentagi_status_worker_service.py": [
+      "__future__",
+      "os",
+      "pentagi_status_poller",
+      "pentagi_status_tracker",
+      "pentagi_transport",
+      "pentagi_worker_service",
+      "queue_backend",
+      "socket",
+      "storage_backend",
+      "time"
+    ],
+    "backend/app/pentagi_transport.py": [
+      "__future__",
+      "dataclasses",
+      "json",
+      "os",
+      "pentagi_adapter",
+      "pentagi_auth",
+      "pentagi_execution_guard",
+      "socket",
+      "ssl",
+      "time",
+      "typing",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "backend/app/pentagi_worker_service.py": [
+      "__future__",
+      "contextlib",
+      "dataclasses",
+      "json",
+      "main",
+      "os",
+      "pentagi_adapter",
+      "pentagi_admission",
+      "pentagi_execution_guard",
+      "pentagi_transport",
+      "queue_backend",
+      "socket",
+      "storage_backend",
+      "threading",
+      "time"
+    ],
+    "backend/app/pipeline_swarm.py": [
+      "__future__",
+      "agent_registry",
+      "dataclasses",
+      "planner_budget",
+      "typing"
+    ],
+    "backend/app/planner_advisory.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "knowledge_memory",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/planner_budget.py": [
+      "__future__",
+      "dataclasses",
+      "jobqueue",
+      "knowledge_memory",
+      "observation_graph",
+      "os",
+      "typing"
+    ],
+    "backend/app/planner_limits.py": [
+      "__future__",
+      "dataclasses",
+      "os",
+      "typing"
+    ],
+    "backend/app/planner_lock.py": [
+      "__future__",
+      "contextlib",
+      "hashlib",
+      "os",
+      "redis",
+      "uuid"
+    ],
+    "backend/app/policy_integrity.py": [
+      "__future__",
+      "hashlib",
+      "hmac",
+      "json",
+      "secret_vault",
+      "typing"
+    ],
+    "backend/app/postgres_storage.py": [
+      "__future__",
+      "contextlib",
+      "os",
+      "pathlib",
+      "psycopg",
+      "psycopg.rows",
+      "sqlite3",
+      "storage",
+      "urllib.parse"
+    ],
+    "backend/app/queue_backend.py": [
+      "__future__",
+      "jobqueue",
+      "os",
+      "redis_jobqueue",
+      "typing"
+    ],
+    "backend/app/readiness.py": [
+      "__future__",
+      "metrics",
+      "pathlib",
+      "queue_backend",
+      "storage_backend",
+      "tempfile",
+      "typing"
+    ],
+    "backend/app/recon_swarm.py": [
+      "__future__",
+      "adaptive_cycle",
+      "autonomy_gate",
+      "dataclasses",
+      "fastapi",
+      "main",
+      "observation_graph",
+      "typing",
+      "urllib.parse"
+    ],
+    "backend/app/recon_worker.py": [
+      "__future__",
+      "dataclasses",
+      "html.parser",
+      "main",
+      "math",
+      "os",
+      "time",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "backend/app/red_team_coverage.py": [
+      "__future__",
+      "attack_surface",
+      "dataclasses",
+      "evidence_chain",
+      "fastapi",
+      "hypothesis_engine",
+      "main",
+      "observation_graph",
+      "typing",
+      "validation_state"
+    ],
+    "backend/app/red_team_decision.py": [
+      "__future__",
+      "attack_surface",
+      "dataclasses",
+      "differential_intelligence",
+      "evidence_chain",
+      "fastapi",
+      "finding_cluster_consensus",
+      "finding_readiness",
+      "finding_triage",
+      "hypothesis_engine",
+      "main",
+      "observation_graph",
+      "red_team_coverage",
+      "typing"
+    ],
+    "backend/app/redis_jobqueue.py": [
+      "__future__",
+      "hashlib",
+      "jobqueue",
+      "json",
+      "os",
+      "redis",
+      "time",
+      "typing",
+      "uuid"
+    ],
+    "backend/app/report.py": [
+      "__future__",
+      "main",
+      "typing"
+    ],
+    "backend/app/report_approval.py": [
+      "__future__",
+      "dataclasses",
+      "hashlib",
+      "json",
+      "typing"
+    ],
+    "backend/app/report_readiness.py": [
+      "__future__",
+      "dataclasses",
+      "evidence_chain",
+      "evidence_quality",
+      "fastapi",
+      "finding_consensus",
+      "finding_correlation",
+      "main",
+      "observation_graph",
+      "re",
+      "typing",
+      "validation_state"
+    ],
+    "backend/app/review_queue.py": [
+      "__future__",
+      "dataclasses",
+      "evidence_chain",
+      "fastapi",
+      "hypothesis_engine",
+      "hypothesis_memory",
+      "knowledge_memory",
+      "main",
+      "observation_graph",
+      "typing"
+    ],
+    "backend/app/rolling_telemetry.py": [
+      "__future__",
+      "collections",
+      "datetime",
+      "math",
+      "typing"
+    ],
+    "backend/app/runtime_capabilities.py": [
+      "__future__",
+      "os",
+      "typing"
+    ],
+    "backend/app/scanner_adaptation.py": [
+      "__future__",
+      "dataclasses",
+      "learning_memory",
+      "typing"
+    ],
+    "backend/app/scanner_ingestion.py": [
+      "__future__",
+      "dataclasses",
+      "jobqueue",
+      "main",
+      "observation_writer",
+      "pathlib",
+      "scanner_registry",
+      "storage"
+    ],
+    "backend/app/scanner_normalization.py": [
+      "__future__",
+      "dataclasses",
+      "hashlib",
+      "json",
+      "main",
+      "typing",
+      "urllib.parse"
+    ],
+    "backend/app/scanner_registry.py": [
+      "__future__",
+      "dataclasses",
+      "main",
+      "nuclei_parser",
+      "pathlib",
+      "strix_parser",
+      "typing"
+    ],
+    "backend/app/scanner_sandbox.py": [
+      "__future__",
+      "dataclasses",
+      "os",
+      "pathlib",
+      "typing"
+    ],
+    "backend/app/scanner_worker.py": [
+      "__future__",
+      "dataclasses",
+      "jobqueue",
+      "main",
+      "observation_graph",
+      "observation_writer",
+      "os",
+      "pathlib",
+      "scanner_ingestion",
+      "storage",
+      "worker"
+    ],
+    "backend/app/secret_vault.py": [
+      "__future__",
+      "base64",
+      "cryptography.hazmat.primitives.ciphers.aead",
+      "json",
+      "os",
+      "pathlib",
+      "typing"
+    ],
+    "backend/app/storage.py": [
+      "__future__",
+      "contextlib",
+      "datetime",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "sqlite3",
+      "typing",
+      "uuid"
+    ],
+    "backend/app/storage_backend.py": [
+      "__future__",
+      "os",
+      "postgres_storage",
+      "storage",
+      "typing"
+    ],
+    "backend/app/strix_parser.py": [
+      "__future__",
+      "json",
+      "main",
+      "os",
+      "pathlib",
+      "scanner_normalization"
+    ],
+    "backend/app/submission_api.py": [
+      "__future__",
+      "campaign_audit",
+      "campaign_overview",
+      "campaign_review_state",
+      "collections",
+      "fastapi",
+      "main",
+      "observation_graph",
+      "report_approval",
+      "report_readiness",
+      "storage",
+      "submission_state",
+      "typing"
+    ],
+    "backend/app/submission_state.py": [
+      "__future__",
+      "dataclasses",
+      "report_approval",
+      "typing"
+    ],
+    "backend/app/swarm_coordinator.py": [
+      "__future__",
+      "agent_registry",
+      "dataclasses",
+      "recon_swarm",
+      "typing"
+    ],
+    "backend/app/totp_auth.py": [
+      "__future__",
+      "auth",
+      "base64",
+      "fastapi",
+      "hashlib",
+      "hmac",
+      "os",
+      "redis",
+      "secret_vault",
+      "struct",
+      "threading",
+      "time"
+    ],
+    "backend/app/validation_state.py": [
+      "__future__",
+      "dataclasses",
+      "typing"
+    ],
+    "backend/app/validator.py": [
+      "__future__",
+      "dataclasses",
+      "hashlib",
+      "json",
+      "main",
+      "math",
+      "os",
+      "time",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "backend/app/vault_cli.py": [
+      "__future__",
+      "argparse",
+      "json",
+      "secret_vault"
+    ],
+    "backend/app/worker.py": [
+      "__future__",
+      "dataclasses",
+      "main",
+      "math",
+      "os",
+      "pathlib",
+      "scanner_registry",
+      "scanner_sandbox",
+      "secret_vault",
+      "shlex",
+      "storage",
+      "strix_parser",
+      "subprocess",
+      "urllib.parse"
+    ],
+    "backend/app/worker_audit.py": [
+      "__future__",
+      "hashlib",
+      "hmac",
+      "json",
+      "secret_vault",
+      "typing"
+    ],
+    "backend/app/worker_service.py": [
+      "__future__",
+      "browser",
+      "campaign_audit",
+      "contextlib",
+      "evidence_quality",
+      "job_provenance",
+      "jobqueue",
+      "learning_memory",
+      "main",
+      "observation_graph",
+      "observation_writer",
+      "orchestrator",
+      "os",
+      "planner_lock",
+      "queue_backend",
+      "recon_worker",
+      "report",
+      "scanner_worker",
+      "socket",
+      "storage",
+      "storage_backend",
+      "threading",
+      "time",
+      "validator",
+      "worker",
+      "worker_audit"
+    ],
+    "backend/app/worker_watchdog.py": [
+      "__future__",
+      "os",
+      "typing"
+    ],
+    "backend/tests/test_adaptive_cycle.py": [
+      "app.adaptive_cycle",
+      "app.autonomy_gate",
+      "app.learning_memory",
+      "app.main",
+      "app.observation_graph"
+    ],
+    "backend/tests/test_agent_registry.py": [
+      "app.agent_registry",
+      "pytest"
+    ],
+    "backend/tests/test_alert_delivery.py": [
+      "app.alert_delivery",
+      "json",
+      "pytest"
+    ],
+    "backend/tests/test_api_idempotency.py": [
+      "app",
+      "app.campaign_audit",
+      "app.jobqueue",
+      "app.main",
+      "app.observation_graph",
+      "app.storage",
+      "fastapi",
+      "pytest"
+    ],
+    "backend/tests/test_api_outbox.py": [
+      "app",
+      "app.api_outbox",
+      "app.jobqueue",
+      "app.main",
+      "pytest"
+    ],
+    "backend/tests/test_api_rate_limit.py": [
+      "app.api_rate_limit",
+      "asyncio",
+      "fastapi",
+      "fastapi.responses",
+      "pytest",
+      "redis"
+    ],
+    "backend/tests/test_attack_surface.py": [
+      "app.attack_surface",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_attack_surface_scope.py": [
+      "app.attack_surface",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_auth.py": [
+      "app.auth",
+      "app.main",
+      "app.secret_vault",
+      "asyncio",
+      "base64",
+      "pytest",
+      "starlette.requests"
+    ],
+    "backend/tests/test_autonomy_gate.py": [
+      "app.autonomy_gate",
+      "app.campaign_risk",
+      "app.decision_consensus",
+      "app.main"
+    ],
+    "backend/tests/test_browser.py": [
+      "app",
+      "app.api_outbox",
+      "app.browser",
+      "app.campaign_audit",
+      "app.jobqueue",
+      "app.main",
+      "app.secret_vault",
+      "app.storage",
+      "base64",
+      "fastapi",
+      "pydantic",
+      "pytest"
+    ],
+    "backend/tests/test_campaign_audit.py": [
+      "app.campaign_audit",
+      "copy"
+    ],
+    "backend/tests/test_campaign_cancel.py": [
+      "app.job_provenance",
+      "app.jobqueue",
+      "app.main",
+      "app.storage",
+      "app.worker_service",
+      "fastapi",
+      "pytest"
+    ],
+    "backend/tests/test_campaign_circuit_breaker.py": [
+      "app.campaign_control",
+      "app.campaign_runtime",
+      "app.circuit_breaker",
+      "app.jobqueue",
+      "app.main",
+      "app.observation_graph",
+      "app.orchestrator",
+      "app.storage",
+      "datetime"
+    ],
+    "backend/tests/test_campaign_overview.py": [
+      "app.campaign_overview",
+      "app.main",
+      "app.observation_graph",
+      "app.storage",
+      "datetime"
+    ],
+    "backend/tests/test_campaign_review_state.py": [
+      "app.campaign_review_state",
+      "app.main",
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_campaign_risk.py": [
+      "app.campaign_risk",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_campaign_runtime.py": [
+      "app.campaign_runtime",
+      "datetime",
+      "pytest"
+    ],
+    "backend/tests/test_chain_detector.py": [
+      "app.chain_detector",
+      "app.observation_graph"
+    ],
+    "backend/tests/test_control_views.py": [
+      "app.jobqueue",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_coverage.py": [
+      "app.coverage",
+      "app.main",
+      "app.observation_graph"
+    ],
+    "backend/tests/test_decision_audit.py": [
+      "app.decision_audit",
+      "app.observation_graph"
+    ],
+    "backend/tests/test_decision_consensus.py": [
+      "app.decision_consensus",
+      "app.red_team_decision"
+    ],
+    "backend/tests/test_decision_timeline.py": [
+      "app.decision_timeline",
+      "app.main",
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_deployment_config.py": [
+      "pathlib"
+    ],
+    "backend/tests/test_deployment_preflight.py": [
+      "app",
+      "app.deployment_preflight"
+    ],
+    "backend/tests/test_differential_evidence_integration.py": [
+      "app.finding_intelligence",
+      "app.main",
+      "app.observation_graph",
+      "app.red_team_decision",
+      "app.storage",
+      "app.validator",
+      "app.worker_service"
+    ],
+    "backend/tests/test_differential_intelligence.py": [
+      "app.differential_intelligence",
+      "app.observation_graph"
+    ],
+    "backend/tests/test_distributed_concurrency.py": [
+      "app.jobqueue",
+      "app.planner_lock",
+      "app.postgres_storage",
+      "app.redis_jobqueue",
+      "app.storage",
+      "app.totp_auth",
+      "base64",
+      "contextlib",
+      "os",
+      "psycopg",
+      "psycopg.rows",
+      "pytest",
+      "threading",
+      "uuid"
+    ],
+    "backend/tests/test_domain_incident_lifecycle.py": [
+      "app.domain_incident_lifecycle",
+      "datetime"
+    ],
+    "backend/tests/test_domain_lifecycle_integration.py": [
+      "app.incident_api",
+      "app.incident_observer",
+      "app.incident_store"
+    ],
+    "backend/tests/test_dr_cli.py": [
+      "app",
+      "sys"
+    ],
+    "backend/tests/test_dr_manifest.py": [
+      "app.dr_manifest",
+      "hashlib",
+      "hmac",
+      "json",
+      "pytest"
+    ],
+    "backend/tests/test_error_budget.py": [
+      "app.error_budget",
+      "pytest"
+    ],
+    "backend/tests/test_evidence_backed_planner.py": [
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_evidence_chain.py": [
+      "app.evidence_chain",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_evidence_quality.py": [
+      "app.evidence_quality",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_finding_cluster_consensus.py": [
+      "app.finding_cluster_consensus",
+      "app.main",
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_finding_cluster_saturation.py": [
+      "app.finding_cluster_saturation",
+      "app.main",
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_finding_consensus.py": [
+      "app.finding_consensus",
+      "app.main",
+      "app.observation_graph"
+    ],
+    "backend/tests/test_finding_correlation.py": [
+      "app.finding_correlation",
+      "app.main",
+      "app.storage"
+    ],
+    "backend/tests/test_finding_intelligence.py": [
+      "app.finding_intelligence",
+      "app.main",
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_finding_lifecycle.py": [
+      "app.finding_lifecycle",
+      "app.main",
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_finding_readiness.py": [
+      "app.finding_readiness",
+      "app.main",
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_finding_triage.py": [
+      "app.finding_triage",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_form_waf_reasoning.py": [
+      "app.hypothesis_engine",
+      "app.observation_graph",
+      "app.red_team_coverage",
+      "app.review_queue"
+    ],
+    "backend/tests/test_frontend_policy_launcher.py": [
+      "app.main",
+      "pathlib"
+    ],
+    "backend/tests/test_hackerone_binding.py": [
+      "app",
+      "app.hackerone_api",
+      "app.job_provenance",
+      "app.jobqueue",
+      "app.storage",
+      "fastapi",
+      "pytest"
+    ],
+    "backend/tests/test_hackerone_launch_api.py": [
+      "app.hackerone_api",
+      "app.storage",
+      "fastapi",
+      "fastapi.testclient"
+    ],
+    "backend/tests/test_hackerone_scope_import.py": [
+      "app.hackerone_scope_import",
+      "pytest"
+    ],
+    "backend/tests/test_hackerone_scope_preview_api.py": [
+      "app.hackerone_api",
+      "app.main",
+      "app.storage",
+      "fastapi",
+      "fastapi.testclient",
+      "pydantic",
+      "pytest"
+    ],
+    "backend/tests/test_health.py": [
+      "app.main",
+      "fastapi.responses"
+    ],
+    "backend/tests/test_hypothesis_engine.py": [
+      "app.hypothesis_engine",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_hypothesis_memory.py": [
+      "app.hypothesis_memory",
+      "app.observation_graph"
+    ],
+    "backend/tests/test_incident_api.py": [
+      "app.incident_api",
+      "app.incident_store",
+      "pytest"
+    ],
+    "backend/tests/test_incident_domains.py": [
+      "app.incident_domains"
+    ],
+    "backend/tests/test_incident_engine.py": [
+      "app.incident_engine"
+    ],
+    "backend/tests/test_incident_http_api.py": [
+      "app",
+      "fastapi.testclient"
+    ],
+    "backend/tests/test_incident_lifecycle.py": [
+      "app.incident_lifecycle",
+      "datetime"
+    ],
+    "backend/tests/test_incident_observer.py": [
+      "app.incident_observer",
+      "app.incident_store"
+    ],
+    "backend/tests/test_incident_store.py": [
+      "app.incident_store",
+      "pytest"
+    ],
+    "backend/tests/test_incident_store_fencing.py": [
+      "app.incident_store",
+      "app.observer_lease",
+      "datetime",
+      "pytest"
+    ],
+    "backend/tests/test_job_provenance.py": [
+      "app",
+      "app.job_provenance",
+      "app.main",
+      "pytest"
+    ],
+    "backend/tests/test_job_provenance_api_integration.py": [
+      "app",
+      "app.job_provenance",
+      "app.jobqueue",
+      "app.main",
+      "app.observation_graph",
+      "app.storage",
+      "fastapi",
+      "pytest"
+    ],
+    "backend/tests/test_job_provenance_integration.py": [
+      "app.job_provenance",
+      "app.jobqueue",
+      "app.main",
+      "app.observation_graph",
+      "app.orchestrator",
+      "types"
+    ],
+    "backend/tests/test_jobqueue.py": [
+      "app.jobqueue",
+      "os",
+      "pytest",
+      "stat"
+    ],
+    "backend/tests/test_knowledge_memory.py": [
+      "app.knowledge_memory",
+      "app.observation_graph",
+      "types"
+    ],
+    "backend/tests/test_learning_memory.py": [
+      "app.learning_memory",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_metrics.py": [
+      "app.main",
+      "app.metrics"
+    ],
+    "backend/tests/test_nuclei_preflight.py": [
+      "app.deployment_preflight",
+      "app.runtime_capabilities"
+    ],
+    "backend/tests/test_nuclei_queue_lifecycle.py": [
+      "app.jobqueue",
+      "app.main",
+      "app.orchestrator",
+      "app.scanner_worker",
+      "app.storage",
+      "json",
+      "pathlib",
+      "pytest"
+    ],
+    "backend/tests/test_nuclei_worker_plan.py": [
+      "app.main",
+      "app.worker",
+      "os",
+      "pytest"
+    ],
+    "backend/tests/test_observation_graph.py": [
+      "app.observation_graph",
+      "pytest",
+      "types"
+    ],
+    "backend/tests/test_observation_writer_provenance.py": [
+      "app.main",
+      "app.observation_writer",
+      "app.storage"
+    ],
+    "backend/tests/test_observer_deadline_heartbeat.py": [
+      "app.observer_heartbeat",
+      "app.observer_lease",
+      "app.observer_scheduler",
+      "pytest"
+    ],
+    "backend/tests/test_observer_fencing.py": [
+      "app.observer_lease",
+      "datetime"
+    ],
+    "backend/tests/test_observer_fencing_integration.py": [
+      "app.incident_observer",
+      "app.incident_store",
+      "app.observer_lease",
+      "app.observer_scheduler",
+      "datetime",
+      "pytest"
+    ],
+    "backend/tests/test_observer_health_http.py": [
+      "app",
+      "app.observer_runtime",
+      "fastapi.testclient"
+    ],
+    "backend/tests/test_observer_health_metrics.py": [
+      "app.observer_metrics",
+      "app.observer_resilience",
+      "datetime"
+    ],
+    "backend/tests/test_observer_resilience.py": [
+      "app.observer_resilience",
+      "datetime"
+    ],
+    "backend/tests/test_observer_runtime.py": [
+      "app.observer_runtime"
+    ],
+    "backend/tests/test_observer_scheduler.py": [
+      "app.observer_lease",
+      "app.observer_scheduler",
+      "datetime",
+      "pytest"
+    ],
+    "backend/tests/test_observer_slo.py": [
+      "app.observer_slo"
+    ],
+    "backend/tests/test_openapi_integrity.py": [
+      "app.main",
+      "warnings"
+    ],
+    "backend/tests/test_operational_alerts.py": [
+      "app.main",
+      "app.operational_alerts",
+      "pytest"
+    ],
+    "backend/tests/test_operational_slo.py": [
+      "app.operational_slo",
+      "pytest"
+    ],
+    "backend/tests/test_orchestrator.py": [
+      "app.campaign_runtime",
+      "app.circuit_breaker",
+      "app.jobqueue",
+      "app.main",
+      "app.observation_graph",
+      "app.orchestrator",
+      "app.planner_budget",
+      "app.storage",
+      "datetime"
+    ],
+    "backend/tests/test_orchestrator_validation_alignment.py": [
+      "app.main",
+      "app.observation_graph",
+      "app.orchestrator"
+    ],
+    "backend/tests/test_outbox_chaos.py": [
+      "__future__",
+      "app",
+      "app.campaign_audit",
+      "app.jobqueue",
+      "app.main",
+      "app.storage"
+    ],
+    "backend/tests/test_overview_reasoning.py": [
+      "app.campaign_overview",
+      "app.main",
+      "app.observation_graph",
+      "app.storage"
+    ],
+    "backend/tests/test_pentagi_adapter.py": [
+      "app.main",
+      "app.pentagi_adapter",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_admission.py": [
+      "app.main",
+      "app.pentagi_adapter",
+      "app.pentagi_admission",
+      "dataclasses",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_auth.py": [
+      "app.pentagi_auth",
+      "app.secret_vault",
+      "base64",
+      "json",
+      "os",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_control.py": [
+      "app.main",
+      "app.pentagi_control",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_control_api.py": [
+      "app",
+      "app.jobqueue",
+      "app.main",
+      "dataclasses",
+      "fastapi",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_dispatch.py": [
+      "app.jobqueue",
+      "app.main",
+      "app.pentagi_adapter",
+      "app.pentagi_dispatch",
+      "app.pentagi_execution_guard",
+      "dataclasses",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_execution_guard.py": [
+      "app.main",
+      "app.pentagi_adapter",
+      "app.pentagi_execution_guard",
+      "dataclasses",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_flow_status.py": [
+      "app.pentagi_auth",
+      "app.pentagi_flow_status",
+      "app.pentagi_transport",
+      "email.message",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_status_poller.py": [
+      "app.pentagi_status_poller",
+      "app.pentagi_status_tracker"
+    ],
+    "backend/tests/test_pentagi_status_tracker.py": [
+      "app.pentagi_flow_status",
+      "app.pentagi_status_tracker",
+      "json",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_status_worker_service.py": [
+      "app.jobqueue",
+      "app.pentagi_status_poller",
+      "app.pentagi_status_worker_service"
+    ],
+    "backend/tests/test_pentagi_transport.py": [
+      "app.main",
+      "app.pentagi_adapter",
+      "app.pentagi_auth",
+      "app.pentagi_execution_guard",
+      "app.pentagi_transport",
+      "dataclasses",
+      "email.message",
+      "pytest"
+    ],
+    "backend/tests/test_pentagi_worker_service.py": [
+      "app.jobqueue",
+      "app.main",
+      "app.pentagi_adapter",
+      "app.pentagi_dispatch",
+      "app.pentagi_transport",
+      "app.pentagi_worker_service",
+      "dataclasses",
+      "pytest"
+    ],
+    "backend/tests/test_pipeline_swarm.py": [
+      "app.pipeline_swarm",
+      "app.planner_budget",
+      "pytest"
+    ],
+    "backend/tests/test_plan_evidence_quality.py": [
+      "app.main",
+      "app.storage"
+    ],
+    "backend/tests/test_planner_advisory.py": [
+      "app.observation_graph",
+      "app.planner_advisory",
+      "types"
+    ],
+    "backend/tests/test_planner_budget.py": [
+      "app.jobqueue",
+      "app.observation_graph",
+      "app.planner_budget",
+      "pytest"
+    ],
+    "backend/tests/test_planner_limits.py": [
+      "app.observation_graph",
+      "app.planner_limits",
+      "pytest",
+      "types"
+    ],
+    "backend/tests/test_policy_integrity.py": [
+      "app.main",
+      "app.policy_integrity"
+    ],
+    "backend/tests/test_policy_invariants.py": [
+      "app.main"
+    ],
+    "backend/tests/test_postgres_integration.py": [
+      "app.postgres_storage",
+      "app.storage",
+      "os",
+      "pytest",
+      "uuid"
+    ],
+    "backend/tests/test_postgres_storage.py": [
+      "app.postgres_storage",
+      "pytest"
+    ],
+    "backend/tests/test_queue_age_metrics.py": [
+      "app.metrics",
+      "app.operational_alerts",
+      "datetime"
+    ],
+    "backend/tests/test_queue_backend.py": [
+      "app.jobqueue",
+      "app.queue_backend",
+      "pytest"
+    ],
+    "backend/tests/test_queue_health.py": [
+      "app.jobqueue",
+      "pathlib"
+    ],
+    "backend/tests/test_readiness.py": [
+      "app.readiness",
+      "pathlib",
+      "pytest"
+    ],
+    "backend/tests/test_recon_swarm.py": [
+      "app.main",
+      "app.observation_graph",
+      "app.recon_swarm",
+      "app.storage"
+    ],
+    "backend/tests/test_recon_worker.py": [
+      "app.main",
+      "app.recon_worker",
+      "email.message"
+    ],
+    "backend/tests/test_red_team_coverage.py": [
+      "app.main",
+      "app.observation_graph",
+      "app.red_team_coverage",
+      "app.storage"
+    ],
+    "backend/tests/test_red_team_decision.py": [
+      "app.main",
+      "app.observation_graph",
+      "app.red_team_decision",
+      "app.storage"
+    ],
+    "backend/tests/test_redis_chaos.py": [
+      "__future__",
+      "app.redis_jobqueue",
+      "os",
+      "pytest",
+      "time",
+      "uuid"
+    ],
+    "backend/tests/test_redis_integration.py": [
+      "__future__",
+      "app.redis_jobqueue",
+      "pytest",
+      "uuid"
+    ],
+    "backend/tests/test_redis_jobqueue.py": [
+      "app.redis_jobqueue",
+      "pytest"
+    ],
+    "backend/tests/test_redis_jobqueue_integration.py": [
+      "__future__",
+      "app.redis_jobqueue",
+      "os",
+      "pytest",
+      "redis",
+      "uuid"
+    ],
+    "backend/tests/test_report.py": [
+      "app.main",
+      "app.report"
+    ],
+    "backend/tests/test_report_approval.py": [
+      "app.main",
+      "app.report_approval",
+      "app.storage"
+    ],
+    "backend/tests/test_report_readiness.py": [
+      "app.main",
+      "app.observation_graph",
+      "app.report_readiness",
+      "types"
+    ],
+    "backend/tests/test_review_queue.py": [
+      "app.main",
+      "app.observation_graph",
+      "app.review_queue",
+      "app.storage"
+    ],
+    "backend/tests/test_rolling_telemetry.py": [
+      "app.rolling_telemetry",
+      "datetime"
+    ],
+    "backend/tests/test_runtime_budget_config.py": [
+      "app.campaign_runtime",
+      "app.jobqueue",
+      "app.main",
+      "app.orchestrator",
+      "app.planner_budget",
+      "app.storage",
+      "datetime",
+      "pytest"
+    ],
+    "backend/tests/test_runtime_capabilities.py": [
+      "app",
+      "app.runtime_capabilities",
+      "pytest"
+    ],
+    "backend/tests/test_scan_payload_idempotency.py": [
+      "app.main"
+    ],
+    "backend/tests/test_scanner_adaptation.py": [
+      "app.learning_memory",
+      "app.scanner_adaptation",
+      "pytest"
+    ],
+    "backend/tests/test_scanner_ingestion.py": [
+      "app.jobqueue",
+      "app.main",
+      "app.observation_graph",
+      "app.scanner_ingestion",
+      "app.storage",
+      "json"
+    ],
+    "backend/tests/test_scanner_normalization.py": [
+      "app.main",
+      "app.nuclei_parser",
+      "app.scanner_normalization",
+      "app.scanner_registry",
+      "json",
+      "os",
+      "pytest"
+    ],
+    "backend/tests/test_scanner_observation_chain.py": [
+      "app.main",
+      "app.storage",
+      "app.worker_service"
+    ],
+    "backend/tests/test_scanner_sandbox.py": [
+      "app.scanner_sandbox",
+      "pytest"
+    ],
+    "backend/tests/test_scanner_worker.py": [
+      "app.jobqueue",
+      "app.main",
+      "app.scanner_worker",
+      "app.storage"
+    ],
+    "backend/tests/test_scope.py": [
+      "app.main",
+      "pydantic",
+      "pytest"
+    ],
+    "backend/tests/test_secret_vault.py": [
+      "app.secret_vault",
+      "base64",
+      "json",
+      "os",
+      "pytest"
+    ],
+    "backend/tests/test_storage.py": [
+      "app.storage",
+      "contextlib",
+      "os",
+      "pytest",
+      "sqlite3",
+      "stat"
+    ],
+    "backend/tests/test_storage_backend.py": [
+      "app.storage",
+      "app.storage_backend",
+      "pytest"
+    ],
+    "backend/tests/test_submission_api.py": [
+      "app.campaign_audit",
+      "app.main",
+      "app.observation_graph",
+      "app.storage",
+      "app.submission_api",
+      "fastapi",
+      "pytest"
+    ],
+    "backend/tests/test_submission_state.py": [
+      "app.main",
+      "app.report_approval",
+      "app.submission_state"
+    ],
+    "backend/tests/test_swarm_coordinator.py": [
+      "app",
+      "app.observation_graph",
+      "app.recon_swarm",
+      "app.swarm_coordinator",
+      "pytest"
+    ],
+    "backend/tests/test_totp_auth.py": [
+      "app.auth",
+      "app.main",
+      "app.secret_vault",
+      "app.totp_auth",
+      "asyncio",
+      "base64",
+      "pytest",
+      "starlette.requests"
+    ],
+    "backend/tests/test_validation_state.py": [
+      "app.observation_graph",
+      "app.validation_state"
+    ],
+    "backend/tests/test_validator.py": [
+      "app.main",
+      "app.validator",
+      "json",
+      "pytest",
+      "time",
+      "urllib.parse"
+    ],
+    "backend/tests/test_watchdog_observability.py": [
+      "app",
+      "app.metrics"
+    ],
+    "backend/tests/test_worker_concurrency.py": [
+      "app.job_provenance",
+      "app.jobqueue",
+      "app.main",
+      "app.storage",
+      "app.validator",
+      "app.worker_service",
+      "pytest"
+    ],
+    "backend/tests/test_worker_job_provenance.py": [
+      "app",
+      "app.job_provenance",
+      "app.jobqueue",
+      "app.main",
+      "app.storage"
+    ],
+    "backend/tests/test_worker_observations.py": [
+      "app.main",
+      "app.observation_graph",
+      "app.storage",
+      "app.worker_service",
+      "types"
+    ],
+    "backend/tests/test_worker_outcome_memory.py": [
+      "app.campaign_audit",
+      "app.main",
+      "app.storage",
+      "app.worker_audit",
+      "app.worker_service"
+    ],
+    "backend/tests/test_worker_parser.py": [
+      "app.main",
+      "app.worker",
+      "json",
+      "pytest"
+    ],
+    "backend/tests/test_worker_roles.py": [
+      "app.worker_service"
+    ],
+    "backend/tests/test_worker_secrets.py": [
+      "app.secret_vault",
+      "app.worker",
+      "base64",
+      "pytest"
+    ],
+    "backend/tests/test_worker_state.py": [
+      "app.main",
+      "app.worker_service"
+    ],
+    "backend/tests/test_worker_watchdog.py": [
+      "app.worker_watchdog",
+      "pytest"
+    ]
+  }
+}
