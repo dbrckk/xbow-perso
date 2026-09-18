@@ -279,46 +279,47 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
     policy_snapshot = policy.to_snapshot()
     policy_snapshot_sha256 = _json_sha256(policy_snapshot)
     campaign_policy_fingerprint = policy_snapshot_fingerprint(campaign)
-    binding_fingerprint = _json_sha256(
-        {
-            "provider": "hackerone",
-            "mode": "conservative",
-            "policy_snapshot_sha256": policy_snapshot_sha256,
-            "campaign_policy_fingerprint": campaign_policy_fingerprint,
-            "remote_binding": remote_binding,
-        }
-    )
+    binding_payload = {
+        "provider": "hackerone",
+        "mode": "conservative",
+        "policy_snapshot_sha256": policy_snapshot_sha256,
+        "campaign_policy_fingerprint": campaign_policy_fingerprint,
+    }
+    if remote_binding is not None:
+        binding_payload["remote_binding"] = remote_binding
+    binding_fingerprint = _json_sha256(binding_payload)
 
     append_campaign_event(
         campaign.events,
         {"type": "campaign_created", "at": utcnow()},
     )
-    append_campaign_event(
-        campaign.events,
-        {
-            "type": "hackerone_policy_bound",
-            "at": utcnow(),
-            "provider": "hackerone",
-            "mode": "conservative",
-            "policy_snapshot": policy_snapshot,
-            "policy_snapshot_sha256": policy_snapshot_sha256,
-            "campaign_policy_fingerprint": campaign_policy_fingerprint,
-            "binding_fingerprint": binding_fingerprint,
-            "remote_binding": remote_binding,
-        },
-    )
+    binding_event = {
+        "type": "hackerone_policy_bound",
+        "at": utcnow(),
+        "provider": "hackerone",
+        "mode": "conservative",
+        "policy_snapshot": policy_snapshot,
+        "policy_snapshot_sha256": policy_snapshot_sha256,
+        "campaign_policy_fingerprint": campaign_policy_fingerprint,
+        "binding_fingerprint": binding_fingerprint,
+    }
+    if remote_binding is not None:
+        binding_event["remote_binding"] = remote_binding
+    append_campaign_event(campaign.events, binding_event)
     save_campaign(campaign, expected_version=0)
 
+    policy_binding = {
+        "mode": "conservative",
+        "policy_snapshot_sha256": policy_snapshot_sha256,
+        "binding_fingerprint": binding_fingerprint,
+    }
+    if remote_binding is not None:
+        policy_binding["remote_binding"] = remote_binding
     return {
         "provider": "hackerone",
         "campaign_created": True,
         "campaign": campaign.model_dump(mode="json"),
-        "policy_binding": {
-            "mode": "conservative",
-            "policy_snapshot_sha256": policy_snapshot_sha256,
-            "binding_fingerprint": binding_fingerprint,
-            "remote_binding": remote_binding,
-        },
+        "policy_binding": policy_binding,
     }
 
 
