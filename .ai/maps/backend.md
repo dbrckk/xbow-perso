@@ -219,6 +219,7 @@ tests/
   test_hackerone_nuclei_e2e.py
   test_hackerone_remote_binding.py
   test_hackerone_remote_snapshot.py
+  test_hackerone_report_lifecycle_e2e.py
   test_hackerone_scope_import.py
   test_hackerone_scope_preview_api.py
   test_health.py
@@ -10017,6 +10018,67 @@ original = client.get_json
 def get_json(path, query=None)
 ⋮----
 document = original(path, query)
+```
+
+## File: tests/test_hackerone_report_lifecycle_e2e.py
+```python
+TOKEN = "h1-report-e2e-token-" + "a" * 32
+⋮----
+def _resource(identifier: str)
+⋮----
+def _launch_payload()
+⋮----
+def _headers()
+⋮----
+db = str(tmp_path / "e2e.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+run_root = tmp_path / "nuclei-runs"
+⋮----
+def fake_execute(plan)
+⋮----
+run_dir = Path(plan.output_dir)
+⋮----
+finding = {
+⋮----
+client = TestClient(app)
+launch = client.post(
+⋮----
+launched = launch.json()
+campaign_id = launched["campaign"]["id"]
+scan_job = launched["start"]["job"]
+⋮----
+queue = JobQueue(db)
+store = Storage(db, artifacts)
+⋮----
+campaign = store.get_campaign(campaign_id)
+⋮----
+finding = campaign["findings"][0]
+⋮----
+validation_job = queue.get_by_dedupe(
+⋮----
+review = client.put(
+⋮----
+confirm = client.post(
+⋮----
+report_request = client.post(
+⋮----
+hackerone_job = report_request.json()
+⋮----
+report_artifacts = [
+⋮----
+hackerone_artifact = None
+hackerone_text = ""
+⋮----
+text = body.decode("utf-8")
+⋮----
+hackerone_artifact = artifact
+hackerone_text = text
+⋮----
+download = client.get(
+⋮----
+persisted = store.get_campaign(campaign_id)
+⋮----
+event_types = [event.get("type") for event in persisted["events"]]
 ```
 
 ## File: tests/test_hackerone_scope_preview_api.py

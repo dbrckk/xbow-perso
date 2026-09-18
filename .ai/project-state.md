@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T18:47:14Z
+Generated: 2026-09-18T19:29:36Z
 
 ### Git
 - Branch: `main`
-- Head: `4fd48374283d`
-- Commit date: 2026-09-18T20:47:01+02:00
-- Commit: Merge pull request #214 from dbrckk/feat/hackerone-human-review
-- Tracked files: 401
+- Head: `cd68f51719f7`
+- Commit date: 2026-09-18T21:29:02+02:00
+- Commit: Merge pull request #215 from dbrckk/test/hackerone-report-lifecycle-e2e
+- Tracked files: 402
 
 ### Recently changed files
+- `backend/tests/test_hackerone_report_lifecycle_e2e.py`
 - `backend/tests/test_finding_review_metadata.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/app.css`
-- `frontend/hackerone.js`
 
 ### Project signals
 - `pyproject.toml`
