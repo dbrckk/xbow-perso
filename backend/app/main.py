@@ -1758,6 +1758,7 @@ from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
 from .report_readiness import router as report_readiness_router  # noqa: E402
+from .report_approval_api import router as report_approval_router  # noqa: E402
 from .review_queue import router as review_queue_router  # noqa: E402
 
 app.include_router(browser_router)
@@ -1773,4 +1774,5 @@ app.include_router(finding_readiness_router)
 app.include_router(metrics_router)
 app.include_router(alerts_router)
 app.include_router(report_readiness_router)
+app.include_router(report_approval_router)
 app.include_router(review_queue_router)
