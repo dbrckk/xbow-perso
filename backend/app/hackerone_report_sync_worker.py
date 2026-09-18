@@ -12,6 +12,7 @@ from .hackerone_client import HackerOneClient, HackerOneClientError
 from .hackerone_report_tracking import (
     latest_remote_submission,
     project_needs_more_info_request,
+    project_public_report_activities,
     project_remote_report_status,
     status_fingerprint_fields,
 )
@@ -125,6 +126,23 @@ def _last_needs_more_info(
     return matches[-1] if matches else None
 
 
+def _observed_public_activity_ids(
+    document: dict[str, Any],
+    artifact_id: str,
+) -> set[str]:
+    events = document.get("events")
+    if not isinstance(events, list):
+        return set()
+    return {
+        str(event.get("activity_id"))
+        for event in events
+        if isinstance(event, dict)
+        and event.get("type") == "hackerone_public_activity_observed"
+        and event.get("artifact_id") == artifact_id
+        and isinstance(event.get("activity_id"), str)
+    }
+
+
 def _changed(previous: dict[str, Any] | None, current: dict[str, Any]) -> bool:
     if previous is None:
         return True
@@ -144,6 +162,10 @@ def _sync_submission(store, client: HackerOneClient, campaign_id: str, submissio
         team_handle=team_handle,
     )
     needs_more_info = project_needs_more_info_request(
+        document,
+        expected_report_id=remote_report_id,
+    )
+    public_activities = project_public_report_activities(
         document,
         expected_report_id=remote_report_id,
     )
@@ -196,6 +218,36 @@ def _sync_submission(store, client: HackerOneClient, campaign_id: str, submissio
                 },
             )
             changed = True
+
+    observed_activity_ids = _observed_public_activity_ids(
+        current,
+        artifact_id,
+    )
+    for activity in reversed(public_activities):
+        activity_id = str(activity["activity_id"])
+        if activity_id in observed_activity_ids:
+            continue
+        event = {
+            "type": "hackerone_public_activity_observed",
+            "artifact_id": artifact_id,
+            "remote_report_id": remote_report_id,
+            "activity_id": activity_id,
+            "activity_type": activity["activity_type"],
+            "created_at": activity.get("created_at"),
+            "updated_at": activity.get("updated_at"),
+            "observed_at": observed_at,
+        }
+        for key in (
+            "message",
+            "bounty_amount",
+            "bonus_amount",
+            "original_report_id",
+        ):
+            if key in activity:
+                event[key] = activity[key]
+        append_campaign_event(events, event)
+        observed_activity_ids.add(activity_id)
+        changed = True
 
     if not changed:
         return False
