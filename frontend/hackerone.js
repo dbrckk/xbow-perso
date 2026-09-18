@@ -462,6 +462,7 @@
       el('h1ReportApprovalStatus').className='muted compact ok-text';
       el('h1ReportApprovalStatus').textContent='Rapport soumis à HackerOne'+
         (remoteId?' · report '+remoteId:'')+'.';
+      await refreshRunMonitor(runMonitorCampaignId);
     }catch(error){
       el('h1ReportApprovalStatus').className='muted compact err-text';
       el('h1ReportApprovalStatus').textContent='Soumission HackerOne refusée : '+error.message;
@@ -511,7 +512,28 @@
     }
   }
 
-  function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval){
+  function renderHackerOneRemoteReportStatus(remoteStatus){
+    const node=el('h1ReportRemoteStatus');
+    if(!remoteStatus){
+      node.className='muted compact';
+      node.textContent='Aucun rapport HackerOne distant suivi.';
+      return;
+    }
+    if(remoteStatus.error){
+      node.className='muted compact err-text';
+      node.textContent='Statut HackerOne distant indisponible : '+remoteStatus.error;
+      return;
+    }
+    const remoteId=String(remoteStatus.remote_report_id||'');
+    const state=String(remoteStatus.state||'unknown');
+    const activity=remoteStatus.last_activity_at
+      ?' · activité '+new Date(remoteStatus.last_activity_at).toLocaleString()
+      :'';
+    node.className='muted compact ok-text';
+    node.textContent='HackerOne report '+remoteId+' · '+state+activity;
+  }
+
+  function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval,remoteReportStatus){
     const panel=el('h1RunPanel');
     panel.classList.remove('hidden');
     const state=String(campaignData?.state||control?.campaign_state||'unknown');
@@ -532,6 +554,7 @@
     );
     el('h1RunArtifacts').textContent=String(Array.isArray(artifacts)?artifacts.length:0);
     renderHackerOneFindings(campaignData,artifacts,reportReadiness,reportApproval);
+    renderHackerOneRemoteReportStatus(remoteReportStatus);
     el('h1RunUpdated').textContent='Actualisé à '+new Date().toLocaleTimeString();
   }
 
@@ -550,6 +573,7 @@
         item?.kind==='report'&&String(item?.idempotency_key||'').endsWith(':report:hackerone')
       );
       let reportApproval=null;
+      let remoteReportStatus=null;
       if(reportArtifact?.id){
         try{
           reportApproval=await api(
@@ -559,15 +583,44 @@
         }catch(error){
           reportApproval={error:error.message};
         }
+        const submitted=(Array.isArray(campaignData?.events)?campaignData.events:[]).some(event=>
+          event?.type==='hackerone_report_submitted'&&
+          String(event?.artifact_id||'')===String(reportArtifact.id)
+        );
+        if(submitted){
+          try{
+            remoteReportStatus=await api(
+              '/campaigns/'+encoded+
+              '/reports/'+encodeURIComponent(reportArtifact.id)+'/hackerone-status'
+            );
+          }catch(error){
+            remoteReportStatus={error:error.message};
+          }
+        }
       }
-      renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval);
+      renderRunMonitor(
+        campaignData,
+        control,
+        artifacts,
+        reportReadiness,
+        reportApproval,
+        remoteReportStatus
+      );
       if(typeof refreshDashboard==='function'&&campaign?.id===campaignId){
         await refreshDashboard();
       }
       if(['completed','cancelled','failed'].includes(String(campaignData?.state||''))){
         stopRunMonitor();
       }
-      return {campaign:campaignData,control,artifacts,reportReadiness,reportApproval,encoded};
+      return {
+        campaign:campaignData,
+        control,
+        artifacts,
+        reportReadiness,
+        reportApproval,
+        remoteReportStatus,
+        encoded
+      };
     }catch(error){
       el('h1RunPanel').classList.remove('hidden');
       el('h1RunState').textContent='indisponible';
