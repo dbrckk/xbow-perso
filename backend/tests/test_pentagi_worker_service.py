@@ -61,11 +61,19 @@ class _Store:
     def __init__(self, campaign):
         self.campaign = campaign
         self.artifacts = []
+        self.bindings = []
+        self.events = []
 
     def get_campaign_record(self, campaign_id):
         if campaign_id != self.campaign.id:
             return None
         return self.campaign.model_dump(mode="json"), 1
+
+    def put_pentagi_flow_binding(self, binding):
+        record = {**binding, "created_at": "2026-09-17T00:00:00+00:00"}
+        self.bindings.append(record)
+        self.events.append("binding")
+        return record
 
     def put_artifact(self, campaign_id, kind, content, **kwargs):
         record = {
@@ -76,6 +84,7 @@ class _Store:
             **kwargs,
         }
         self.artifacts.append(record)
+        self.events.append("artifact")
         return record
 
 
@@ -153,6 +162,14 @@ def test_process_one_submits_once_and_completes(tmp_path, monkeypatch):
     store = _Store(campaign)
     assert process_one(queue, store, "pentagi-worker") is True
     assert len(calls) == 1
+    assert len(store.bindings) == 1
+    binding = store.bindings[0]
+    assert binding["flow_id"] == "flow-42"
+    assert binding["campaign_id"] == campaign.id
+    assert binding["policy_fingerprint"] == calls[0][1].policy_fingerprint
+    assert binding["endpoint"] == calls[0][1].endpoint
+    assert binding["model_provider"] == calls[0][1].model_provider
+    assert store.events[:2] == ["binding", "artifact"]
     assert len(store.artifacts) == 1
     receipt = store.artifacts[0]
     assert receipt["kind"] == "pentagi_receipt"

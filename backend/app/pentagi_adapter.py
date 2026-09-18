@@ -127,11 +127,14 @@ def build_pentagi_flow_plan(
     base_url: str | None = None,
     model_provider: str | None = None,
 ) -> PentagiFlowPlan:
-    """Build a non-executing PentAGI request plan.
+    """Build a fail-closed preview plan for PentAGI's GraphQL createFlow API.
 
-    This first adapter stage intentionally cannot submit a PentAGI flow. It creates
-    a deterministic, scope-constrained GraphQL request only after the same campaign
-    safety invariants used by active scanner workers have been satisfied.
+    The current upstream GraphQL mutation accepts only provider, input and resource
+    IDs. It cannot enforce the custom-function restrictions required for XBOW to
+    mediate all target access. Therefore this adapter never marks a GraphQL plan as
+    execution-capable, even when a controlled-functions flag is present. Active
+    PentAGI dispatch requires a separate transport whose request schema can enforce
+    the reviewed function contract.
     """
 
     target = _safe_campaign_target(campaign)
@@ -158,4 +161,6 @@ def build_pentagi_flow_plan(
         payload=payload,
         target=target,
         model_provider=provider,
+        dry_run=True,
+        execution_supported=False,
     )

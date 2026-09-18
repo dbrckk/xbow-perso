@@ -204,6 +204,16 @@ def process_one(queue: QueueBackend, store, worker_id: str) -> bool:
         flow_id = create_flow["id"]
         remote_status = create_flow.get("status") or "unknown"
 
+        store.put_pentagi_flow_binding(
+            {
+                "flow_id": flow_id,
+                "campaign_id": current_campaign.id,
+                "policy_fingerprint": preflight.permit.policy_fingerprint,
+                "endpoint": preflight.permit.endpoint,
+                "model_provider": preflight.permit.model_provider,
+            }
+        )
+
         receipt = {
             "job_id": job["id"],
             "flow_id": flow_id,
