@@ -229,6 +229,7 @@ backend/
     test_hackerone_client.py
     test_hackerone_control_center_api.py
     test_hackerone_launch_api.py
+    test_hackerone_nuclei_e2e.py
     test_hackerone_remote_binding.py
     test_hackerone_remote_snapshot.py
     test_hackerone_scope_import.py
@@ -10313,6 +10314,52 @@ result = response.json()
 persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
 ⋮----
 event_types = [event.get("type") for event in persisted["events"]]
+````
+
+## File: backend/tests/test_hackerone_nuclei_e2e.py
+````python
+def _resource(identifier: str, eligible: bool = True)
+⋮----
+def _launch_payload()
+⋮----
+db = str(tmp_path / "e2e.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+run_root = tmp_path / "nuclei-runs"
+⋮----
+def fake_execute(plan)
+⋮----
+run_dir = Path(plan.output_dir)
+⋮----
+finding = {
+⋮----
+api = FastAPI()
+⋮----
+launch = TestClient(api).post(
+⋮----
+launched = launch.json()
+campaign_id = launched["campaign"]["id"]
+scan_job = launched["start"]["job"]
+⋮----
+queue = JobQueue(db)
+store = Storage(db, artifacts)
+⋮----
+finished_scan = queue.get(scan_job["id"])
+⋮----
+persisted = store.get_campaign(campaign_id)
+⋮----
+finding = persisted["findings"][0]
+⋮----
+event_types = [event.get("type") for event in persisted["events"]]
+⋮----
+counts = queue.campaign_job_counts(campaign_id)
+⋮----
+validation_job = queue.get_by_dedupe(
+⋮----
+provenance = validation_job["payload"]["_provenance"]
+⋮----
+artifacts_written = store.list_artifacts(campaign_id)
+⋮----
+observations = store.list_observations(campaign_id)
 ````
 
 ## File: backend/tests/test_hackerone_remote_binding.py

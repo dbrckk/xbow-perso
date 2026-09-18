@@ -22,21 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T17:58:13Z
+Generated: 2026-09-18T18:11:41Z
 
 ### Git
 - Branch: `main`
-- Head: `4d90a6a00045`
-- Commit date: 2026-09-18T19:57:48+02:00
-- Commit: Merge pull request #209 from dbrckk/fix/gitleaks-ai-map-false-positives-v2
-- Tracked files: 399
+- Head: `ac75c7f52a8a`
+- Commit date: 2026-09-18T20:10:12+02:00
+- Commit: Merge pull request #210 from dbrckk/test/hackerone-nuclei-e2e
+- Tracked files: 400
 
 ### Recently changed files
-- `.gitleaksignore`
-- `docs/superpowers/specs/2026-09-16-nuclei-pentagi-controlled-runtime-design.md`
-- `docs/superpowers/plans/2026-09-16-nuclei-pentagi-controlled-runtime.md`
-- `docker-compose.yml`
-- `backend/tests/test_scanner_runtime_contract.py`
+- `backend/tests/test_hackerone_nuclei_e2e.py`
+- `backend/app/scanner_ingestion.py`
 
 ### Project signals
 - `pyproject.toml`

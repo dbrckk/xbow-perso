@@ -1,17 +1,104 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "dfc71dec65811722648cad96b72e4c63c2f20c67",
-  "head": "4d90a6a00045f4ead58dc7312e60742ff73fd2fd",
+  "base": "4d90a6a00045f4ead58dc7312e60742ff73fd2fd",
+  "head": "ac75c7f52a8abab5f1d9c962c661d91448ad90d2",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".gitleaksignore",
+      "path": "backend/app/scanner_ingestion.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
       "status": "A"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "backend/app/scanner_ingestion.py",
+    "backend/tests/test_hackerone_nuclei_e2e.py"
+  ],
+  "impacted_files": [
+    "backend/app/scanner_ingestion.py",
+    "backend/app/scanner_worker.py",
+    "backend/tests/test_hackerone_nuclei_e2e.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "ScannerIngestionResult",
+      "kind": "class",
+      "file": "backend/app/scanner_ingestion.py",
+      "line": 15
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/scanner_ingestion.py",
+      "line": 22
+    },
+    {
+      "name": "ingest_scanner_run",
+      "kind": "function",
+      "file": "backend/app/scanner_ingestion.py",
+      "line": 32
+    },
+    {
+      "name": "ScannerJobResult",
+      "kind": "class",
+      "file": "backend/app/scanner_worker.py",
+      "line": 17
+    },
+    {
+      "name": "_record_scan_observation",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 24
+    },
+    {
+      "name": "_state_after_scan",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 52
+    },
+    {
+      "name": "run_strix_job",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 60
+    },
+    {
+      "name": "run_nuclei_job",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 129
+    },
+    {
+      "name": "_resource",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 13
+    },
+    {
+      "name": "_launch_payload",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 24
+    },
+    {
+      "name": "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 47
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 65
+    }
+  ],
+  "selected_tests": [
+    "backend/tests/test_hackerone_nuclei_e2e.py",
+    "backend/tests/test_scanner_ingestion.py"
+  ]
 }

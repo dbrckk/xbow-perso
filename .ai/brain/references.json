@@ -4,5 +4,1205 @@
   "scope": "symbols defined in changed source files",
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
-  "symbols": {}
+  "symbols": {
+    "ScannerIngestionResult": {
+      "definition": {
+        "file": "backend/app/scanner_ingestion.py",
+        "line": 15,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/scanner_ingestion.py",
+          "line": 15,
+          "preview": "class ScannerIngestionResult:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/scanner_ingestion.py",
+          "line": 38,
+          "preview": ") -> ScannerIngestionResult:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_ingestion.py",
+          "line": 41,
+          "preview": "return ScannerIngestionResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_ingestion.py",
+          "line": 81,
+          "preview": "return ScannerIngestionResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 11,
+          "preview": "from .scanner_ingestion import ScannerIngestionResult, ingest_scanner_run",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 20,
+          "preview": "ingestion: ScannerIngestionResult | None",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "to_dict": {
+      "definition": {
+        "file": "backend/app/scanner_ingestion.py",
+        "line": 22,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 32,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 177,
+          "preview": "\"cycle\": cycle.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/agent_registry.py",
+          "line": 17,
+          "preview": "def to_dict(self) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/agent_registry.py",
+          "line": 101,
+          "preview": "return [agent.to_dict() for agent in AGENTS]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/autonomy_gate.py",
+          "line": 26,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/autonomy_gate.py",
+          "line": 141,
+          "preview": "\"gate\": gate.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 92,
+          "preview": "**runtime.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 95,
+          "preview": "\"limits\": budget_limits.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 96,
+          "preview": "\"usage\": usage.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 108,
+          "preview": "status = submission_status(campaign, verified).to_dict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 166,
+          "preview": "\"limit\": runtime_limit.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 167,
+          "preview": "\"status\": runtime.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 171,
+          "preview": "**risk.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 254,
+          "preview": "\"decision_consensus\": consensus.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 283,
+          "preview": "\"observations\": knowledge.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 291,
+          "preview": "\"limits\": limits.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 292,
+          "preview": "\"usage\": budget.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 29,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 147,
+          "preview": "\"risk\": risk.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_runtime.py",
+          "line": 17,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_runtime.py",
+          "line": 43,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/chain_detector.py",
+          "line": 16,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/circuit_breaker.py",
+          "line": 53,
+          "preview": "store.put_observation(campaign_id, observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/circuit_breaker.py",
+          "line": 74,
+          "preview": "store.put_observation(campaign_id, observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/decision_consensus.py",
+          "line": 31,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/decision_consensus.py",
+          "line": 109,
+          "preview": "\"consensus\": consensus.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/differential_intelligence.py",
+          "line": 28,
+          "preview": "def to_dict(self) -> dict[str, object]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/evidence_chain.py",
+          "line": 29,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/evidence_chain.py",
+          "line": 142,
+          "preview": "\"chains\": [item.to_dict() for item in chains],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/evidence_quality.py",
+          "line": 29,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/evidence_quality.py",
+          "line": 140,
+          "preview": "\"findings\": [item.to_dict() for item in quality],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_cluster_consensus.py",
+          "line": 30,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_cluster_consensus.py",
+          "line": 135,
+          "preview": "\"clusters\": [item.to_dict() for item in consensus],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_cluster_saturation.py",
+          "line": 27,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_cluster_saturation.py",
+          "line": 116,
+          "preview": "\"clusters\": [item.to_dict() for item in saturation],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_consensus.py",
+          "line": 25,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_consensus.py",
+          "line": 124,
+          "preview": "\"findings\": [item.to_dict() for item in consensus],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_correlation.py",
+          "line": 52,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_correlation.py",
+          "line": 110,
+          "preview": "\"correlations\": [item.to_dict() for item in correlations],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_correlation.py",
+          "line": 150,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_correlation.py",
+          "line": 164,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_correlation.py",
+          "line": 296,
+          "preview": "\"clusters\": [item.to_dict() for item in clusters],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_correlation.py",
+          "line": 298,
+          "preview": "item.to_dict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 71,
+          "preview": "\"readiness\": readiness_item.to_dict() if readiness_item else None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 72,
+          "preview": "\"triage\": triage_item.to_dict() if triage_item else None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 73,
+          "preview": "\"differential\": differential_item.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 94,
+          "preview": "\"cluster\": cluster.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 95,
+          "preview": "\"consensus\": consensus.to_dict() if consensus else None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 96,
+          "preview": "\"saturation\": saturated.to_dict() if saturated else None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 104,
+          "preview": "item.to_dict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_lifecycle.py",
+          "line": 27,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_lifecycle.py",
+          "line": 124,
+          "preview": "\"findings\": [item.to_dict() for item in advice],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_readiness.py",
+          "line": 31,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_readiness.py",
+          "line": 146,
+          "preview": "\"findings\": [item.to_dict() for item in readiness],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_triage.py",
+          "line": 42,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_triage.py",
+          "line": 151,
+          "preview": "\"findings\": [item.to_dict() for item in triage],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 39,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 252,
+          "preview": "\"hypotheses\": [item.to_dict() for item in hypotheses],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_memory.py",
+          "line": 21,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/knowledge_memory.py",
+          "line": 52,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/knowledge_memory.py",
+          "line": 63,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/knowledge_memory.py",
+          "line": 77,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/knowledge_memory.py",
+          "line": 79,
+          "preview": "payload[\"finding_confidence\"] = [item.to_dict() for item in self.finding_confidence]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/learning_memory.py",
+          "line": 25,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/learning_memory.py",
+          "line": 99,
+          "preview": "\"techniques\": [item.to_dict() for item in memories],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 871,
+          "preview": "\"snapshot\": build_knowledge_snapshot(graph).to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 872,
+          "preview": "\"priorities\": [item.to_dict() for item in rank_findings(campaign.findings, graph)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 873,
+          "preview": "\"hypotheses\": [item.to_dict() for item in build_hypotheses(graph)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 1005,
+          "preview": "\"actions\": [item.to_dict() for item in actions],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 1006,
+          "preview": "\"planner_actions\": [item.to_dict() for item in planner_actions],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 1007,
+          "preview": "\"agents\": [agent_for_action(item.kind).to_dict() for item in actions],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 1008,
+          "preview": "\"priorities\": [item.to_dict() for item in rank_findings(campaign.findings, graph)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 1009,
+          "preview": "\"hypotheses\": [item.to_dict() for item in build_hypotheses(graph)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 1012,
+          "preview": "\"memory\": build_knowledge_snapshot(graph).to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 1013,
+          "preview": "\"evidence_quality\": [item.to_dict() for item in build_evidence_quality(graph)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 1014,
+          "preview": "\"budget\": {\"limits\": limits.to_dict(), \"usage\": usage.to_dict()},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_graph.py",
+          "line": 32,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_graph.py",
+          "line": 45,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_writer.py",
+          "line": 28,
+          "preview": "store.put_observation(campaign.id, observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_writer.py",
+          "line": 47,
+          "preview": "store.put_observation(campaign.id, observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_writer.py",
+          "line": 85,
+          "preview": "store.put_observation(campaign.id, observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_writer.py",
+          "line": 103,
+          "preview": "store.put_observation(campaign.id, evidence_observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_writer.py",
+          "line": 172,
+          "preview": "store.put_observation(campaign.id, observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_writer.py",
+          "line": 195,
+          "preview": "store.put_observation(campaign.id, observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 78,
+          "preview": ").to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 432,
+          "preview": "gate = intelligence[\"gate\"].to_dict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 433,
+          "preview": "risk = intelligence[\"risk\"].to_dict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 434,
+          "preview": "consensus = intelligence[\"consensus\"].to_dict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 435,
+          "preview": "cycle = intelligence[\"cycle\"].to_dict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 516,
+          "preview": "store.put_observation(campaign.id, observation.to_dict())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 538,
+          "preview": "[item.to_dict() for item in hypotheses],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 543,
+          "preview": "usage = type(usage)(**{**usage.to_dict(), \"exhausted\": True, \"reason\": action.reason})",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 547,
+          "preview": "\"cycle\": intelligence[\"cycle\"].to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 548,
+          "preview": "\"gate\": intelligence[\"gate\"].to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 549,
+          "preview": "\"risk\": intelligence[\"risk\"].to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 550,
+          "preview": "\"consensus\": intelligence[\"consensus\"].to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 551,
+          "preview": "\"decisions\": [item.to_dict() for item in intelligence[\"decisions\"]],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 552,
+          "preview": "\"learning_memory\": [item.to_dict() for item in intelligence[\"memory\"]],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 554,
+          "preview": "\"recon_plan\": [item.to_dict() for item in intelligence[\"recon\"]],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 555,
+          "preview": "\"swarm_coordination\": intelligence[\"swarm\"].to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 558,
+          "preview": "\"scanner_adaptation\": intelligence[\"scanner_adaptation\"].to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 560,
+          "preview": "intelligence[\"pipeline_coordination\"].to_dict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 568,
+          "preview": "\"action\": action.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 569,
+          "preview": "\"agent\": agent.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 571,
+          "preview": "\"memory\": memory.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 572,
+          "preview": "\"hypotheses\": [item.to_dict() for item in hypotheses],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 574,
+          "preview": "\"budget\": {\"limits\": budget.to_dict(), \"usage\": usage.to_dict()},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pipeline_swarm.py",
+          "line": 20,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/planner_budget.py",
+          "line": 37,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/planner_budget.py",
+          "line": 91,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/planner_budget.py",
+          "line": 196,
+          "preview": "**usage.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 38,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 57,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 163,
+          "preview": "\"capabilities\": [item.to_dict() for item in recon_capabilities()],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 188,
+          "preview": "\"tasks\": [item.to_dict() for item in tasks],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 26,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 203,
+          "preview": "\"domains\": [item.to_dict() for item in domains],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 40,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 256,
+          "preview": "\"decisions\": [item.to_dict() for item in decisions],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/report_approval.py",
+          "line": 19,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 120
+    },
+    "ingest_scanner_run": {
+      "definition": {
+        "file": "backend/app/scanner_ingestion.py",
+        "line": 32,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/scanner_ingestion.py",
+          "line": 32,
+          "preview": "def ingest_scanner_run(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 11,
+          "preview": "from .scanner_ingestion import ScannerIngestionResult, ingest_scanner_run",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 97,
+          "preview": "ingestion = ingest_scanner_run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 166,
+          "preview": "ingestion = ingest_scanner_run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_ingestion.py",
+          "line": 6,
+          "preview": "from app.scanner_ingestion import ingest_scanner_run",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_ingestion.py",
+          "line": 51,
+          "preview": "result = ingest_scanner_run(\"strix\", run, campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_ingestion.py",
+          "line": 92,
+          "preview": "first = ingest_scanner_run(\"strix\", run, campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_ingestion.py",
+          "line": 93,
+          "preview": "second = ingest_scanner_run(\"strix\", run, campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_ingestion.py",
+          "line": 110,
+          "preview": "result = ingest_scanner_run(\"strix\", tmp_path / \"missing\", campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_ingestion.py",
+          "line": 143,
+          "preview": "result = ingest_scanner_run(\"nuclei\", run, campaign, queue, store)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 10
+    },
+    "_resource": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+        "line": 13,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_launch_api.py",
+          "line": 8,
+          "preview": "def _resource(identifier: str, eligible: bool = True):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_launch_api.py",
+          "line": 21,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\")]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 13,
+          "preview": "def _resource(identifier: str, eligible: bool = True):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 26,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\")]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 10,
+          "preview": "def _resource(identifier: str):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 55,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 81,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 96,
+          "preview": "remote_document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 97,
+          "preview": "local_document = {\"data\": [_resource(\"other.example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 119,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 151,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 10,
+          "preview": "def _resource(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 51,
+          "preview": "_resource(\"Example.COM.\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 52,
+          "preview": "_resource(\"*.api.example.com\", \"Wildcard\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 53,
+          "preview": "_resource(\"192.0.2.10\", \"IpAddress\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 54,
+          "preview": "_resource(\"blocked.example.com\", \"Domain\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 74,
+          "preview": "{\"data\": [_resource(\"example.com\", \"Domain\", True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 116,
+          "preview": "{\"data\": [_resource(\"example.com\", \"Domain\", True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 168,
+          "preview": "{\"data\": [_resource(identifier, asset_type, True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 183,
+          "preview": "_resource(\"*.example.com\", \"Wildcard\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 184,
+          "preview": "_resource(\"https://example.com/private\", \"Url\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 199,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 200,
+          "preview": "_resource(\"EXAMPLE.COM\", \"domain\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 217,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 218,
+          "preview": "_resource(\"EXAMPLE.COM.\", \"domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 264,
+          "preview": "{\"data\": [_resource(identifier, asset_type, True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 282,
+          "preview": "{\"data\": [_resource(identifier, \"Url\", True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 295,
+          "preview": "_resource(f\"host-{index}.example.com\", \"Domain\", True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 306,
+          "preview": "\"data\": [_resource(\"example.com\", \"Domain\", True)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 320,
+          "preview": "\"data\": [_resource(\"example.com\", \"Domain\", True)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 333,
+          "preview": "\"data\": [_resource(\"example.com\", \"Domain\", True)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 16,
+          "preview": "def _resource(identifier: str, asset_type: str, eligible: bool):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 54,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 55,
+          "preview": "_resource(\"blocked.example.com\", \"Domain\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 77,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 78,
+          "preview": "_resource(\"https://example.com/admin\", \"Url\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 95,
+          "preview": "\"data\": [_resource(\"example.com\", \"Domain\", True)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 121,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 122,
+          "preview": "_resource(\"blocked.example.com\", \"Domain\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 173,
+          "preview": "document={\"data\": [_resource(\"example.com\", \"Domain\", True)]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 213,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 214,
+          "preview": "_resource(\"https://example.com/admin\", \"Url\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 253,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\", \"Domain\", True)]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 327,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\", \"Domain\", True)]},",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 44
+    },
+    "_launch_payload": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+        "line": 24,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 24,
+          "preview": "def _launch_payload():",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 99,
+          "preview": "json=_launch_payload(),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+        "line": 47,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 47,
+          "preview": "def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "fake_execute": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+        "line": 65,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 65,
+          "preview": "def fake_execute(plan):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 92,
+          "preview": "monkeypatch.setattr(scanner_worker, \"execute\", fake_execute)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 90,
+          "preview": "def fake_execute(plan):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 114,
+          "preview": "monkeypatch.setattr(\"app.scanner_worker.execute\", fake_execute)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    }
+  }
 }

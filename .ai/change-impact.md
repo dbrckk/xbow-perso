@@ -1,13 +1,14 @@
 # Change impact
 
-Base: 208e867f72d9314cd15e84997c75fcf2e01faa5f
-Head: 4d90a6a00045f4ead58dc7312e60742ff73fd2fd
+Base: 0c4ca70732efb1eeb85938d982aa034d24aa0a12
+Head: ac75c7f52a8abab5f1d9c962c661d91448ad90d2
 
 ## Changed files
-- A .gitleaksignore
+- M backend/app/scanner_ingestion.py
+- A backend/tests/test_hackerone_nuclei_e2e.py
 
 ## Affected areas
-- (root)
+- backend
 
 ## Related test candidates
 - No direct filename-based test match detected.
