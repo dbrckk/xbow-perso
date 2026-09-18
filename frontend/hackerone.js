@@ -512,6 +512,35 @@
     }
   }
 
+  function renderHackerOneReportTimeline(campaignData,artifactId){
+    const node=el('h1ReportTimeline');
+    const events=(Array.isArray(campaignData?.events)?campaignData.events:[])
+      .filter(event=>
+        event?.type==='hackerone_report_status_synced'&&
+        String(event?.artifact_id||'')===String(artifactId||'')
+      )
+      .slice(-8);
+    if(!events.length){
+      node.className='muted compact';
+      node.textContent='Aucun historique HackerOne synchronisé.';
+      return;
+    }
+    node.className='muted compact';
+    node.replaceChildren();
+    const list=document.createElement('ol');
+    list.className='compact';
+    for(const event of events){
+      const item=document.createElement('li');
+      const state=String(event?.state||'unknown');
+      const observed=event?.observed_at
+        ?new Date(event.observed_at).toLocaleString()
+        :'heure inconnue';
+      item.textContent=state+' · observé '+observed;
+      list.appendChild(item);
+    }
+    node.appendChild(list);
+  }
+
   function renderHackerOneRemoteReportStatus(remoteStatus){
     const node=el('h1ReportRemoteStatus');
     if(!remoteStatus){
@@ -555,6 +584,10 @@
     el('h1RunArtifacts').textContent=String(Array.isArray(artifacts)?artifacts.length:0);
     renderHackerOneFindings(campaignData,artifacts,reportReadiness,reportApproval);
     renderHackerOneRemoteReportStatus(remoteReportStatus);
+    const reportArtifact=(Array.isArray(artifacts)?artifacts:[]).find(item=>
+      item?.kind==='report'&&String(item?.idempotency_key||'').endsWith(':report:hackerone')
+    );
+    renderHackerOneReportTimeline(campaignData,reportArtifact?.id||'');
     el('h1RunUpdated').textContent='Actualisé à '+new Date().toLocaleTimeString();
   }
 
