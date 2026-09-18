@@ -164,10 +164,12 @@ def project_remote_report_status(
     for key in TRACKED_TIMESTAMP_FIELDS:
         value = attributes.get(key)
         projected[key] = value if value is None or isinstance(value, str) else None
-    projected["needs_more_info"] = project_needs_more_info_request(
+    needs_more_info = project_needs_more_info_request(
         document,
         expected_report_id=expected_report_id,
     )
+    if needs_more_info is not None:
+        projected["needs_more_info"] = needs_more_info
     projected["read_only"] = True
     return projected
 
