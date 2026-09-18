@@ -223,7 +223,6 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
     from .hackerone_scope_import import HackerOneScopeImportError, import_hackerone_structured_scope
 
     remote_binding = _verify_remote_binding(payload)
-    remote_binding = _verify_remote_binding(payload)
     try:
         preview = import_hackerone_structured_scope(payload.document)
         policy = _policy_from_input(payload.policy)
@@ -252,6 +251,7 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
     from .job_provenance import policy_snapshot_fingerprint
     from .main import Campaign, CampaignState, TargetInput, save_campaign, utcnow
 
+    remote_binding = _verify_remote_binding(payload)
     try:
         preview = import_hackerone_structured_scope(payload.document)
         policy = _policy_from_input(payload.policy)
