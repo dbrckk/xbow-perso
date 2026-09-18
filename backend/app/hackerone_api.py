@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator, model_validator
 
 from .hackerone_client import (
     HackerOneClient,
@@ -53,6 +53,17 @@ class HackerOneRulesPreviewInput(BaseModel):
 
     document: dict[str, Any]
     policy: HackerOneProgramPolicyInput
+    remote_handle: str | None = Field(default=None, min_length=1, max_length=128)
+    remote_snapshot_sha256: str | None = Field(
+        default=None,
+        pattern=r"^[0-9a-f]{64}$",
+    )
+
+    @model_validator(mode="after")
+    def remote_binding_must_be_complete(self):
+        if (self.remote_handle is None) != (self.remote_snapshot_sha256 is None):
+            raise ValueError("remote_handle and remote_snapshot_sha256 must be supplied together")
+        return self
 
 
 class HackerOneCampaignTargetInput(BaseModel):
@@ -92,6 +103,37 @@ def _json_sha256(value: Any) -> str:
         ensure_ascii=False,
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any] | None:
+    if payload.remote_handle is None:
+        return None
+    try:
+        snapshot = fetch_hackerone_program_snapshot(payload.remote_handle)
+    except HackerOneClientError as exc:
+        raise _upstream_error(exc) from exc
+
+    if snapshot.snapshot_sha256 != payload.remote_snapshot_sha256:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne remote snapshot changed; review again",
+                "reason": "stale_hackerone_snapshot",
+            },
+        )
+    if _json_sha256(snapshot.document) != _json_sha256(payload.document):
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne scope document does not match the verified remote snapshot",
+                "reason": "hackerone_snapshot_document_mismatch",
+            },
+        )
+    return {
+        "handle": snapshot.handle,
+        "snapshot_sha256": snapshot.snapshot_sha256,
+        "verified": True,
+    }
 
 
 def _conservative_admission_reason(policy: Any) -> str | None:
@@ -180,6 +222,8 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
 
     from .hackerone_scope_import import HackerOneScopeImportError, import_hackerone_structured_scope
 
+    remote_binding = _verify_remote_binding(payload)
+    remote_binding = _verify_remote_binding(payload)
     try:
         preview = import_hackerone_structured_scope(payload.document)
         policy = _policy_from_input(payload.policy)
@@ -187,7 +231,7 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
     except HackerOneScopeImportError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    return {
+    result = {
         "provider": "hackerone",
         "complete": preview.complete,
         "requires_review": True,
@@ -196,6 +240,9 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
         "policy_snapshot": policy.to_snapshot(),
         "rules": rules.model_dump(mode="json"),
     }
+    if remote_binding is not None:
+        result["remote_binding"] = remote_binding
+    return result
 
 
 @router.post("/api/imports/hackerone/campaigns")
@@ -238,6 +285,7 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
             "mode": "conservative",
             "policy_snapshot_sha256": policy_snapshot_sha256,
             "campaign_policy_fingerprint": campaign_policy_fingerprint,
+            "remote_binding": remote_binding,
         }
     )
 
@@ -256,6 +304,7 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
             "policy_snapshot_sha256": policy_snapshot_sha256,
             "campaign_policy_fingerprint": campaign_policy_fingerprint,
             "binding_fingerprint": binding_fingerprint,
+            "remote_binding": remote_binding,
         },
     )
     save_campaign(campaign, expected_version=0)
@@ -268,6 +317,7 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
             "mode": "conservative",
             "policy_snapshot_sha256": policy_snapshot_sha256,
             "binding_fingerprint": binding_fingerprint,
+            "remote_binding": remote_binding,
         },
     }
 
