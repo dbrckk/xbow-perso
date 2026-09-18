@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T20:49:07Z
+Generated: 2026-09-18T20:50:48Z
 
 ### Git
 - Branch: `main`
-- Head: `8bfe996d3fde`
-- Commit date: 2026-09-18T22:48:46+02:00
-- Commit: Merge pull request #222 from dbrckk/feat/hackerone-needs-info-drafts
+- Head: `e64f11aef6b8`
+- Commit date: 2026-09-18T22:50:36+02:00
+- Commit: chore(ai): enable same-package symbol graph enrichment
 - Tracked files: 459
 
 ### Recently changed files
+- `.repo-standards.yml`
 - `backend/app/hackerone_report_tracking.py`
 - `README.md`
 - `frontend/sw.js`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/hackerone.js`
 
 ### Project signals
 - `pyproject.toml`
