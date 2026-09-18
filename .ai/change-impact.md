@@ -1,24 +1,13 @@
 # Change impact
 
-Base: 5037416543992079a541ad57661375881b2e4e30
-Head: 1d33deef6b180935ff4d7f3897dcfd1098472acb
+Base: a4504c4bf87d47cfea4ac62635f5b6f7c3bc3822
+Head: 2c0bd3a2b26cdf24efc67ac881e9b1b0348d8eaf
 
 ## Changed files
-- M .env.example
-- M README.md
-- M backend/app/hackerone_api.py
-- M backend/app/hackerone_client.py
-- M backend/tests/test_frontend_policy_launcher.py
-- M backend/tests/test_hackerone_client.py
-- A backend/tests/test_hackerone_outbound_submission.py
-- M frontend/hackerone.js
-- M frontend/index.html
-- M frontend/sw.js
+- A .github/workflows/semantic-refresh.yml
 
 ## Affected areas
-- (root)
-- backend
-- frontend
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

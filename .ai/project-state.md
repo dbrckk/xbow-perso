@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T19:56:02Z
+Generated: 2026-09-18T19:57:16Z
 
 ### Git
 - Branch: `main`
-- Head: `1d33deef6b18`
-- Commit date: 2026-09-18T21:55:50+02:00
-- Commit: Merge pull request #218 from dbrckk/feat/hackerone-outbound-submission
-- Tracked files: 419
+- Head: `2c0bd3a2b26c`
+- Commit date: 2026-09-18T21:56:52+02:00
+- Commit: chore(ai): add precise semantic refresh
+- Tracked files: 422
 
 ### Recently changed files
+- `.github/workflows/semantic-refresh.yml`
+- `.repo-standards.yml`
 - `backend/tests/test_hackerone_outbound_submission.py`
 - `backend/app/hackerone_api.py`
 - `frontend/sw.js`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `README.md`
 
 ### Project signals
 - `pyproject.toml`
