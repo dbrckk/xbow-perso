@@ -208,6 +208,7 @@ tests/
   test_finding_intelligence.py
   test_finding_lifecycle.py
   test_finding_readiness.py
+  test_finding_review_metadata.py
   test_finding_triage.py
   test_form_waf_reasoning.py
   test_frontend_policy_launcher.py
@@ -3704,6 +3705,19 @@ status: Literal["candidate", "validation_required", "confirmed", "rejected"] = "
 discovered_by: str = "unknown"
 validated_by: str | None = None
 ⋮----
+class FindingReviewMetadataInput(BaseModel)
+⋮----
+summary: str = Field(min_length=1, max_length=8000)
+impact: str = Field(min_length=1, max_length=8000)
+reproduction_steps: list[str] = Field(min_length=1, max_length=30)
+remediation: str = Field(min_length=1, max_length=8000)
+cwe: str = Field(min_length=5, max_length=12, pattern=r"^CWE-[1-9][0-9]{0,5}$")
+cvss: float = Field(ge=0, le=10)
+reviewer: str = Field(min_length=1, max_length=120)
+⋮----
+@model_validator(mode="after")
+    def normalize_review_metadata(self)
+⋮----
 class Campaign(BaseModel)
 ⋮----
 target: TargetInput
@@ -4019,6 +4033,11 @@ platform = "generic"
 purpose = "campaign_completion"
 ⋮----
 report_job = queue().enqueue(
+⋮----
+finding = next((item for item in campaign.findings if item.id == finding_id), None)
+⋮----
+next_values = {
+changed = any(getattr(finding, key) != value for key, value in next_values.items())
 ⋮----
 @app.post("/api/campaigns/{campaign_id}/findings/{finding_id}/validate")
 def validate_finding(campaign_id: str, finding_id: str, confirmed: bool, validator: str = "independent-validator")
@@ -9572,6 +9591,33 @@ def test_contradictory_history_blocks_readiness_even_with_strong_evidence()
 def test_readiness_route_is_exposed()
 ```
 
+## File: tests/test_finding_review_metadata.py
+```python
+def _setup(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "review.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+# Authentication behavior is covered separately; keep these route-semantic
+# tests deterministic while still traversing the real API auth middleware.
+⋮----
+campaign = Campaign(
+⋮----
+def test_human_review_metadata_update_does_not_confirm_finding(tmp_path, monkeypatch)
+⋮----
+response = TestClient(app).put(
+⋮----
+finding = response.json()
+⋮----
+persisted = Storage(db, artifacts).get_campaign("h1-review")
+⋮----
+event = next(
+⋮----
+def test_human_review_metadata_rejects_resolved_rejected_finding(tmp_path, monkeypatch)
+⋮----
+store = Storage(db, artifacts)
+```
+
 ## File: tests/test_finding_triage.py
 ```python
 def _finding(finding_id: str, severity: str, *, endpoint: str | None = None, cwe: str | None = None)
@@ -9658,6 +9704,8 @@ def test_frontend_exposes_remote_hackerone_control_center_contract()
 def test_frontend_exposes_hackerone_live_run_monitor_contract()
 ⋮----
 def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract()
+⋮----
+def test_frontend_exposes_hackerone_human_review_controls()
 ```
 
 ## File: tests/test_hackerone_binding.py

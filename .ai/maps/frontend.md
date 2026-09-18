@@ -99,6 +99,16 @@ function setConnectionState(label,type='')
 ⋮----
 function stopRunMonitor()
 ⋮----
+function reviewField(labelText,control,name)
+⋮----
+function reviewValue(editor,name)
+⋮----
+async function saveFindingReviewMetadata(findingId,editor)
+⋮----
+async function resolveHackerOneFinding(findingId,confirmed,editor)
+⋮----
+function buildFindingReviewEditor(finding,readiness)
+⋮----
 function renderHackerOneFindings(campaignData,artifacts,reportReadiness)
 ⋮----
 async function queueHackerOneReport()

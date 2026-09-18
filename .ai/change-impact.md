@@ -1,14 +1,18 @@
 # Change impact
 
-Base: 880a48f0888e9c8db7c688986404381bef53a541
-Head: 730015de2da3a5b9f0b83948cedaebe61d148086
+Base: 1fe8e921fc44d97ecb5c742d177d5aa3902465b6
+Head: 4fd48374283d4efb900de42cfcdaf176b31e5377
 
 ## Changed files
-- M backend/app/scanner_worker.py
-- M backend/tests/test_hackerone_nuclei_e2e.py
+- M backend/app/main.py
+- A backend/tests/test_finding_review_metadata.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M frontend/app.css
+- M frontend/hackerone.js
 
 ## Affected areas
 - backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
