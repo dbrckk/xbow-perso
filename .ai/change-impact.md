@@ -1,32 +1,13 @@
 # Change impact
 
-Base: f040a64f4d7c28a8be43488819530ed30769ca36
-Head: dfc71dec65811722648cad96b72e4c63c2f20c67
+Base: 208e867f72d9314cd15e84997c75fcf2e01faa5f
+Head: 4d90a6a00045f4ead58dc7312e60742ff73fd2fd
 
 ## Changed files
-- M .github/workflows/ci.yml
-- A backend/Dockerfile.scanner
-- A backend/app/pentagi_action_gateway.py
-- M backend/app/pentagi_adapter.py
-- M backend/app/pentagi_worker_service.py
-- M backend/app/storage.py
-- M backend/app/storage_backend.py
-- A backend/app/storage_core.py
-- M backend/app/worker.py
-- M backend/tests/test_nuclei_worker_plan.py
-- A backend/tests/test_pentagi_action_gateway.py
-- M backend/tests/test_pentagi_adapter.py
-- M backend/tests/test_pentagi_worker_service.py
-- A backend/tests/test_scanner_runtime_contract.py
-- M docker-compose.yml
-- A docs/superpowers/plans/2026-09-16-nuclei-pentagi-controlled-runtime.md
-- A docs/superpowers/specs/2026-09-16-nuclei-pentagi-controlled-runtime-design.md
+- A .gitleaksignore
 
 ## Affected areas
-- .github
-- backend
 - (root)
-- docs
 
 ## Related test candidates
 - No direct filename-based test match detected.
