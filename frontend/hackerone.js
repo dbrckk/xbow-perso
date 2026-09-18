@@ -214,7 +214,7 @@
     return details;
   }
 
-  function renderHackerOneFindings(campaignData,artifacts,reportReadiness){
+  function renderHackerOneFindings(campaignData,artifacts,reportReadiness,reportApproval){
     const list=el('h1RunFindingList');
     list.replaceChildren();
     const findings=Array.isArray(campaignData?.findings)?campaignData.findings:[];
@@ -264,26 +264,77 @@
     );
     const button=el('h1ReportDraft');
     const download=el('h1ReportDownload');
+    const approve=el('h1ReportApprove');
+    const revoke=el('h1ReportRevoke');
     const status=el('h1ReportStatus');
+    const approvalStatus=el('h1ReportApprovalStatus');
     if(reportArtifact){
+      const artifactId=String(reportArtifact.id||'');
       button.disabled=true;
       download.disabled=false;
       download.classList.remove('hidden');
-      download.dataset.artifactId=String(reportArtifact.id||'');
+      download.dataset.artifactId=artifactId;
+      approve.dataset.artifactId=artifactId;
+      revoke.dataset.artifactId=artifactId;
       const sha=String(reportArtifact.sha256||'');
-      status.textContent='Brouillon HackerOne généré · artifact '+String(reportArtifact.id||'')+
+      status.textContent='Brouillon HackerOne généré · artifact '+artifactId+
         (sha?' · SHA-256 '+sha.slice(0,12)+'…':'');
+
+      if(reportApproval?.error){
+        approve.disabled=true;
+        approve.classList.remove('hidden');
+        revoke.disabled=true;
+        revoke.classList.add('hidden');
+        approvalStatus.className='muted compact err-text';
+        approvalStatus.textContent='Statut d’approbation indisponible : '+reportApproval.error;
+      }else if(reportApproval?.approved){
+        approve.disabled=true;
+        approve.classList.add('hidden');
+        revoke.disabled=false;
+        revoke.classList.remove('hidden');
+        approvalStatus.className='muted compact ok-text';
+        const reviewer=String(reportApproval.reviewer||'relecteur');
+        const approvedAt=reportApproval.approved_at
+          ?' · '+new Date(reportApproval.approved_at).toLocaleString()
+          :'';
+        approvalStatus.textContent='Brouillon approuvé par '+reviewer+approvedAt+'.';
+      }else{
+        approve.disabled=false;
+        approve.classList.remove('hidden');
+        revoke.disabled=true;
+        revoke.classList.add('hidden');
+        approvalStatus.className='muted compact '+(reportApproval?.stale?'err-text':'');
+        approvalStatus.textContent=reportApproval?.stale
+          ?'Approbation obsolète : le rapport ou l’état des findings a changé. Réapprobation humaine requise.'
+          :'Brouillon non approuvé · approbation humaine explicite requise avant toute future soumission.';
+      }
     }else if(ready>0){
       button.disabled=false;
       download.disabled=true;
       download.classList.add('hidden');
+      approve.disabled=true;
+      approve.classList.add('hidden');
+      revoke.disabled=true;
+      revoke.classList.add('hidden');
       delete download.dataset.artifactId;
+      delete approve.dataset.artifactId;
+      delete revoke.dataset.artifactId;
+      approvalStatus.className='muted compact';
+      approvalStatus.textContent='Aucun brouillon à approuver.';
       status.textContent=ready+' finding(s) prêt(s) à soumettre · validation humaine requise avant envoi.';
     }else{
       button.disabled=true;
       download.disabled=true;
       download.classList.add('hidden');
+      approve.disabled=true;
+      approve.classList.add('hidden');
+      revoke.disabled=true;
+      revoke.classList.add('hidden');
       delete download.dataset.artifactId;
+      delete approve.dataset.artifactId;
+      delete revoke.dataset.artifactId;
+      approvalStatus.className='muted compact';
+      approvalStatus.textContent='Aucun brouillon à approuver.';
       status.textContent='Brouillon bloqué · '+blocked+' finding(s) incomplet(s) ou non validé(s).';
     }
   }
@@ -333,6 +384,64 @@
     }
   }
 
+  function hackerOneReportReviewer(){
+    return String(el('h1ReviewedBy')?.value||'').trim();
+  }
+
+  async function approveHackerOneReport(){
+    if(!runMonitorCampaignId)return;
+    const button=el('h1ReportApprove');
+    const artifactId=String(button.dataset.artifactId||'');
+    const reviewer=hackerOneReportReviewer();
+    if(!artifactId)return;
+    if(!reviewer){
+      el('h1ReportApprovalStatus').className='muted compact err-text';
+      el('h1ReportApprovalStatus').textContent='Relecteur requis avant approbation du brouillon.';
+      return;
+    }
+    button.disabled=true;
+    el('h1ReportApprovalStatus').className='muted compact';
+    el('h1ReportApprovalStatus').textContent='Enregistrement de l’approbation humaine…';
+    try{
+      await api(
+        '/campaigns/'+encodeURIComponent(runMonitorCampaignId)+
+        '/reports/'+encodeURIComponent(artifactId)+'/approval',
+        {method:'POST',body:JSON.stringify({reviewer})}
+      );
+      await refreshRunMonitor(runMonitorCampaignId);
+    }catch(error){
+      el('h1ReportApprovalStatus').className='muted compact err-text';
+      el('h1ReportApprovalStatus').textContent='Approbation refusée : '+error.message;
+      button.disabled=false;
+    }
+  }
+
+  async function revokeHackerOneReportApproval(){
+    if(!runMonitorCampaignId)return;
+    const button=el('h1ReportRevoke');
+    const artifactId=String(button.dataset.artifactId||'');
+    const reviewer=hackerOneReportReviewer();
+    if(!artifactId)return;
+    if(!reviewer){
+      el('h1ReportApprovalStatus').className='muted compact err-text';
+      el('h1ReportApprovalStatus').textContent='Relecteur requis pour révoquer l’approbation.';
+      return;
+    }
+    button.disabled=true;
+    try{
+      await api(
+        '/campaigns/'+encodeURIComponent(runMonitorCampaignId)+
+        '/reports/'+encodeURIComponent(artifactId)+'/approval/revoke',
+        {method:'POST',body:JSON.stringify({reviewer})}
+      );
+      await refreshRunMonitor(runMonitorCampaignId);
+    }catch(error){
+      el('h1ReportApprovalStatus').className='muted compact err-text';
+      el('h1ReportApprovalStatus').textContent='Révocation refusée : '+error.message;
+      button.disabled=false;
+    }
+  }
+
   async function queueHackerOneReport(){
     if(!runMonitorCampaignId)return;
     const button=el('h1ReportDraft');
@@ -349,7 +458,7 @@
     }
   }
 
-  function renderRunMonitor(campaignData,control,artifacts,reportReadiness){
+  function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval){
     const panel=el('h1RunPanel');
     panel.classList.remove('hidden');
     const state=String(campaignData?.state||control?.campaign_state||'unknown');
@@ -369,7 +478,7 @@
       Array.isArray(campaignData?.findings)?campaignData.findings.length:0
     );
     el('h1RunArtifacts').textContent=String(Array.isArray(artifacts)?artifacts.length:0);
-    renderHackerOneFindings(campaignData,artifacts,reportReadiness);
+    renderHackerOneFindings(campaignData,artifacts,reportReadiness,reportApproval);
     el('h1RunUpdated').textContent='Actualisé à '+new Date().toLocaleTimeString();
   }
 
@@ -384,14 +493,28 @@
         api('/campaigns/'+encodeURIComponent(campaignId)+'/artifacts'),
         api('/campaigns/'+encodeURIComponent(campaignId)+'/report-readiness')
       ]);
-      renderRunMonitor(campaignData,control,artifacts,reportReadiness);
+      const reportArtifact=(Array.isArray(artifacts)?artifacts:[]).find(item=>
+        item?.kind==='report'&&String(item?.idempotency_key||'').endsWith(':report:hackerone')
+      );
+      let reportApproval=null;
+      if(reportArtifact?.id){
+        try{
+          reportApproval=await api(
+            '/campaigns/'+encoded+
+            '/reports/'+encodeURIComponent(reportArtifact.id)+'/approval'
+          );
+        }catch(error){
+          reportApproval={error:error.message};
+        }
+      }
+      renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval);
       if(typeof refreshDashboard==='function'&&campaign?.id===campaignId){
         await refreshDashboard();
       }
       if(['completed','cancelled','failed'].includes(String(campaignData?.state||''))){
         stopRunMonitor();
       }
-      return {campaign:campaignData,control,artifacts,reportReadiness,encoded};
+      return {campaign:campaignData,control,artifacts,reportReadiness,reportApproval,encoded};
     }catch(error){
       el('h1RunPanel').classList.remove('hidden');
       el('h1RunState').textContent='indisponible';
@@ -773,6 +896,8 @@
   el('h1Launch').addEventListener('click',launch);
   el('h1ReportDraft').addEventListener('click',()=>void queueHackerOneReport());
   el('h1ReportDownload').addEventListener('click',()=>void downloadHackerOneReport());
+  el('h1ReportApprove').addEventListener('click',()=>void approveHackerOneReport());
+  el('h1ReportRevoke').addEventListener('click',()=>void revokeHackerOneReportApproval());
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
 })();
