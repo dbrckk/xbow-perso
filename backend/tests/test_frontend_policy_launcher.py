@@ -110,14 +110,20 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
     for element_id in (
         "h1RunFindingList",
         "h1ReportDraft",
+        "h1ReportDownload",
         "h1ReportStatus",
     ):
         assert f'id="{element_id}"' in html
 
     assert "renderHackerOneFindings" in launcher
     assert "queueHackerOneReport" in launcher
+    assert "downloadHackerOneReport" in launcher
     assert "report-readiness" in launcher
     assert "reports?platform=hackerone" in launcher
+    assert "'/artifacts/'+encodeURIComponent(artifactId)" in launcher
+    assert "URL.createObjectURL" in launcher
+    assert "x-content-sha256" in launcher
+    assert "headers.authorization='Bearer '+token" in launcher
     assert "submission_ready" in launcher
     assert "humaine" in html.lower()
 
