@@ -163,6 +163,16 @@ def run_nuclei_job(
     if execution["status"] != "completed":
         raise RuntimeError(execution.get("stderr") or "Nuclei execution failed")
 
+    nuclei_output = Path(run_dir) / "nuclei.jsonl"
+    if nuclei_output.is_file():
+        store.put_artifact(
+            campaign.id,
+            "http_evidence",
+            nuclei_output.read_bytes(),
+            media_type="application/x-ndjson",
+            idempotency_key=f"{job['id']}:nuclei-jsonl",
+        )
+
     ingestion = ingest_scanner_run(
         "nuclei",
         run_dir,
