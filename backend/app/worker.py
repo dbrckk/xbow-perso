@@ -119,10 +119,12 @@ def build_nuclei_plan(campaign: Campaign, output_dir: str = "/data/nuclei_runs")
         target,
         "-type",
         "http",
+        "-templates",
+        "/opt/nuclei-templates",
         "-tags",
         "tech,misconfig,exposure",
         "-exclude-tags",
-        "dos,fuzz",
+        "dos,fuzz,intrusive,default-login,bruteforce",
         "-disable-unsigned-templates",
         "-no-interactsh",
         "-restrict-local-network-access",
@@ -262,7 +264,17 @@ def execute(plan: WorkerPlan) -> dict:
             for key, value in environment.items()
             if key in {"PATH", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}
         }
-        environment["HOME"] = str(isolated_home)
+        environment.update(
+            {
+                "HOME": str(isolated_home),
+                "NUCLEI_TEMPLATES_DIRECTORY": "/opt/nuclei-templates",
+                "DISABLE_NUCLEI_TEMPLATES_PUBLIC_DOWNLOAD": "true",
+                "DISABLE_NUCLEI_TEMPLATES_GITHUB_DOWNLOAD": "true",
+                "DISABLE_NUCLEI_TEMPLATES_GITLAB_DOWNLOAD": "true",
+                "DISABLE_NUCLEI_TEMPLATES_AWS_DOWNLOAD": "true",
+                "DISABLE_NUCLEI_TEMPLATES_AZURE_DOWNLOAD": "true",
+            }
+        )
         _verify_nuclei_runtime(environment)
 
     try:
@@ -390,4 +402,3 @@ def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) 
             )
         )
     return artifacts
-
