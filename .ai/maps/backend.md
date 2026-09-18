@@ -29,7 +29,7 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Only files matching these patterns are included: **/*.{py,js,mjs,cjs,ts,tsx,jsx,java,kt,kts,gd,groovy,gradle,toml,json,yaml,yml,sql,sh}, README.md, AGENTS.md, PROJECT_*.md
+- Only files matching these patterns are included: **/*.{py,js,mjs,cjs,ts,tsx,jsx,java,kt,kts,gd,groovy,gradle,toml,json,yaml,yml,sql,sh}
 - Files matching these patterns are excluded: .ai/**, **/node_modules/**, **/.gradle/**, **/build/**, **/dist/**, **/.venv/**, **/__pycache__/**, **/.pytest_cache/**, **/.git/**, **/coverage/**, **/*.lock, **/*.min.js, **/*.map, assets/**, art/**, art_sources/**, marketing/**, colab/**, kaggle/**, discovery-cache.json, health-snapshot.json, history.json
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
@@ -37,778 +37,294 @@ The content is organized as follows:
 - Files are sorted by Git change count (files with more changes are at the bottom)
 
 # Directory Structure
-````
-.circleci/
-  config.yml
-.github/
-  workflows/
-    ai-repo-map.yml
-    ci.yml
-    release-images.yml
-    release-quality-gate.yml
-    security.yml
-    supply-chain.yml
-  dependabot.yml
-.serena/
-  project.yml
-backend/
-  app/
-    adaptive_cycle.py
-    agent_registry.py
-    alert_delivery.py
-    api_outbox.py
-    api_rate_limit.py
-    attack_surface.py
-    auth.py
-    autonomy_gate.py
-    browser.py
-    campaign_audit.py
-    campaign_control.py
-    campaign_overview.py
-    campaign_review_state.py
-    campaign_risk.py
-    campaign_runtime.py
-    chain_detector.py
-    circuit_breaker.py
-    coverage.py
-    decision_audit.py
-    decision_consensus.py
-    decision_timeline.py
-    deployment_preflight.py
-    differential_intelligence.py
-    domain_incident_lifecycle.py
-    dr_cli.py
-    dr_manifest.py
-    error_budget.py
-    evidence_chain.py
-    evidence_quality.py
-    finding_cluster_consensus.py
-    finding_cluster_saturation.py
-    finding_consensus.py
-    finding_correlation.py
-    finding_intelligence.py
-    finding_lifecycle.py
-    finding_readiness.py
-    finding_triage.py
-    hackerone_api.py
-    hackerone_binding.py
-    hackerone_scope_import.py
-    hypothesis_engine.py
-    hypothesis_memory.py
-    incident_api.py
-    incident_domains.py
-    incident_engine.py
-    incident_lifecycle.py
-    incident_observer.py
-    incident_store.py
-    job_provenance.py
-    jobqueue.py
-    knowledge_memory.py
-    learning_memory.py
-    main.py
-    metrics.py
-    nuclei_parser.py
-    observation_graph.py
-    observation_writer.py
-    observer_heartbeat.py
-    observer_lease.py
-    observer_metrics.py
-    observer_resilience.py
-    observer_runtime.py
-    observer_scheduler.py
-    observer_slo.py
-    operational_alerts.py
-    operational_slo.py
-    orchestrator.py
-    outbox_recovery.py
-    pentagi_adapter.py
-    pentagi_admission.py
-    pentagi_auth.py
-    pentagi_control.py
-    pentagi_dispatch.py
-    pentagi_execution_guard.py
-    pentagi_flow_status.py
-    pentagi_status_poller.py
-    pentagi_status_tracker.py
-    pentagi_status_worker_service.py
-    pentagi_transport.py
-    pentagi_worker_service.py
-    pipeline_swarm.py
-    planner_advisory.py
-    planner_budget.py
-    planner_limits.py
-    planner_lock.py
-    policy_integrity.py
-    postgres_storage.py
-    queue_backend.py
-    readiness.py
-    recon_swarm.py
-    recon_worker.py
-    red_team_coverage.py
-    red_team_decision.py
-    redis_jobqueue.py
-    report_approval.py
-    report_readiness.py
-    report.py
-    review_queue.py
-    rolling_telemetry.py
-    runtime_capabilities.py
-    scanner_adaptation.py
-    scanner_ingestion.py
-    scanner_normalization.py
-    scanner_registry.py
-    scanner_sandbox.py
-    scanner_worker.py
-    secret_vault.py
-    storage_backend.py
-    storage.py
-    strix_parser.py
-    submission_api.py
-    submission_state.py
-    swarm_coordinator.py
-    totp_auth.py
-    validation_state.py
-    validator.py
-    vault_cli.py
-    worker_audit.py
-    worker_service.py
-    worker_watchdog.py
-    worker.py
-  tests/
-    test_adaptive_cycle.py
-    test_agent_registry.py
-    test_alert_delivery.py
-    test_api_idempotency.py
-    test_api_outbox.py
-    test_api_rate_limit.py
-    test_attack_surface_scope.py
-    test_attack_surface.py
-    test_auth.py
-    test_autonomy_gate.py
-    test_browser.py
-    test_campaign_audit.py
-    test_campaign_cancel.py
-    test_campaign_circuit_breaker.py
-    test_campaign_overview.py
-    test_campaign_review_state.py
-    test_campaign_risk.py
-    test_campaign_runtime.py
-    test_chain_detector.py
-    test_control_views.py
-    test_coverage.py
-    test_decision_audit.py
-    test_decision_consensus.py
-    test_decision_timeline.py
-    test_deployment_config.py
-    test_deployment_preflight.py
-    test_differential_evidence_integration.py
-    test_differential_intelligence.py
-    test_distributed_concurrency.py
-    test_domain_incident_lifecycle.py
-    test_domain_lifecycle_integration.py
-    test_dr_cli.py
-    test_dr_manifest.py
-    test_error_budget.py
-    test_evidence_backed_planner.py
-    test_evidence_chain.py
-    test_evidence_quality.py
-    test_finding_cluster_consensus.py
-    test_finding_cluster_saturation.py
-    test_finding_consensus.py
-    test_finding_correlation.py
-    test_finding_intelligence.py
-    test_finding_lifecycle.py
-    test_finding_readiness.py
-    test_finding_triage.py
-    test_form_waf_reasoning.py
-    test_frontend_policy_launcher.py
-    test_hackerone_binding.py
-    test_hackerone_launch_api.py
-    test_hackerone_scope_import.py
-    test_hackerone_scope_preview_api.py
-    test_health.py
-    test_hypothesis_engine.py
-    test_hypothesis_memory.py
-    test_incident_api.py
-    test_incident_domains.py
-    test_incident_engine.py
-    test_incident_http_api.py
-    test_incident_lifecycle.py
-    test_incident_observer.py
-    test_incident_store_fencing.py
-    test_incident_store.py
-    test_job_provenance_api_integration.py
-    test_job_provenance_integration.py
-    test_job_provenance.py
-    test_jobqueue.py
-    test_knowledge_memory.py
-    test_learning_memory.py
-    test_metrics.py
-    test_nuclei_preflight.py
-    test_nuclei_queue_lifecycle.py
-    test_nuclei_worker_plan.py
-    test_observation_graph.py
-    test_observation_writer_provenance.py
-    test_observer_deadline_heartbeat.py
-    test_observer_fencing_integration.py
-    test_observer_fencing.py
-    test_observer_health_http.py
-    test_observer_health_metrics.py
-    test_observer_resilience.py
-    test_observer_runtime.py
-    test_observer_scheduler.py
-    test_observer_slo.py
-    test_openapi_integrity.py
-    test_operational_alerts.py
-    test_operational_slo.py
-    test_orchestrator_validation_alignment.py
-    test_orchestrator.py
-    test_outbox_chaos.py
-    test_overview_reasoning.py
-    test_pentagi_adapter.py
-    test_pentagi_admission.py
-    test_pentagi_auth.py
-    test_pentagi_control_api.py
-    test_pentagi_control.py
-    test_pentagi_dispatch.py
-    test_pentagi_execution_guard.py
-    test_pentagi_flow_status.py
-    test_pentagi_status_poller.py
-    test_pentagi_status_tracker.py
-    test_pentagi_status_worker_service.py
-    test_pentagi_transport.py
-    test_pentagi_worker_service.py
-    test_pipeline_swarm.py
-    test_plan_evidence_quality.py
-    test_planner_advisory.py
-    test_planner_budget.py
-    test_planner_limits.py
-    test_policy_integrity.py
-    test_policy_invariants.py
-    test_postgres_integration.py
-    test_postgres_storage.py
-    test_queue_age_metrics.py
-    test_queue_backend.py
-    test_queue_health.py
-    test_readiness.py
-    test_recon_swarm.py
-    test_recon_worker.py
-    test_red_team_coverage.py
-    test_red_team_decision.py
-    test_redis_chaos.py
-    test_redis_integration.py
-    test_redis_jobqueue_integration.py
-    test_redis_jobqueue.py
-    test_report_approval.py
-    test_report_readiness.py
-    test_report.py
-    test_review_queue.py
-    test_rolling_telemetry.py
-    test_runtime_budget_config.py
-    test_runtime_capabilities.py
-    test_scan_payload_idempotency.py
-    test_scanner_adaptation.py
-    test_scanner_ingestion.py
-    test_scanner_normalization.py
-    test_scanner_observation_chain.py
-    test_scanner_sandbox.py
-    test_scanner_worker.py
-    test_scope.py
-    test_secret_vault.py
-    test_storage_backend.py
-    test_storage.py
-    test_submission_api.py
-    test_submission_state.py
-    test_swarm_coordinator.py
-    test_totp_auth.py
-    test_validation_state.py
-    test_validator.py
-    test_watchdog_observability.py
-    test_worker_concurrency.py
-    test_worker_job_provenance.py
-    test_worker_observations.py
-    test_worker_outcome_memory.py
-    test_worker_parser.py
-    test_worker_roles.py
-    test_worker_secrets.py
-    test_worker_state.py
-    test_worker_watchdog.py
-frontend/
-  app.js
-  hackerone.js
-  sw.js
-.repo-standards.yml
-AGENTS.md
-docker-compose.distributed.yml
-docker-compose.tls.yml
-docker-compose.yml
-pyproject.toml
-README.md
-````
+```
+app/
+  adaptive_cycle.py
+  agent_registry.py
+  alert_delivery.py
+  api_outbox.py
+  api_rate_limit.py
+  attack_surface.py
+  auth.py
+  autonomy_gate.py
+  browser.py
+  campaign_audit.py
+  campaign_control.py
+  campaign_overview.py
+  campaign_review_state.py
+  campaign_risk.py
+  campaign_runtime.py
+  chain_detector.py
+  circuit_breaker.py
+  coverage.py
+  decision_audit.py
+  decision_consensus.py
+  decision_timeline.py
+  deployment_preflight.py
+  differential_intelligence.py
+  domain_incident_lifecycle.py
+  dr_cli.py
+  dr_manifest.py
+  error_budget.py
+  evidence_chain.py
+  evidence_quality.py
+  finding_cluster_consensus.py
+  finding_cluster_saturation.py
+  finding_consensus.py
+  finding_correlation.py
+  finding_intelligence.py
+  finding_lifecycle.py
+  finding_readiness.py
+  finding_triage.py
+  hackerone_api.py
+  hackerone_binding.py
+  hackerone_scope_import.py
+  hypothesis_engine.py
+  hypothesis_memory.py
+  incident_api.py
+  incident_domains.py
+  incident_engine.py
+  incident_lifecycle.py
+  incident_observer.py
+  incident_store.py
+  job_provenance.py
+  jobqueue.py
+  knowledge_memory.py
+  learning_memory.py
+  main.py
+  metrics.py
+  nuclei_parser.py
+  observation_graph.py
+  observation_writer.py
+  observer_heartbeat.py
+  observer_lease.py
+  observer_metrics.py
+  observer_resilience.py
+  observer_runtime.py
+  observer_scheduler.py
+  observer_slo.py
+  operational_alerts.py
+  operational_slo.py
+  orchestrator.py
+  outbox_recovery.py
+  pentagi_adapter.py
+  pentagi_admission.py
+  pentagi_auth.py
+  pentagi_control.py
+  pentagi_dispatch.py
+  pentagi_execution_guard.py
+  pentagi_flow_status.py
+  pentagi_status_poller.py
+  pentagi_status_tracker.py
+  pentagi_status_worker_service.py
+  pentagi_transport.py
+  pentagi_worker_service.py
+  pipeline_swarm.py
+  planner_advisory.py
+  planner_budget.py
+  planner_limits.py
+  planner_lock.py
+  policy_integrity.py
+  postgres_storage.py
+  queue_backend.py
+  readiness.py
+  recon_swarm.py
+  recon_worker.py
+  red_team_coverage.py
+  red_team_decision.py
+  redis_jobqueue.py
+  report_approval.py
+  report_readiness.py
+  report.py
+  review_queue.py
+  rolling_telemetry.py
+  runtime_capabilities.py
+  scanner_adaptation.py
+  scanner_ingestion.py
+  scanner_normalization.py
+  scanner_registry.py
+  scanner_sandbox.py
+  scanner_worker.py
+  secret_vault.py
+  storage_backend.py
+  storage.py
+  strix_parser.py
+  submission_api.py
+  submission_state.py
+  swarm_coordinator.py
+  totp_auth.py
+  validation_state.py
+  validator.py
+  vault_cli.py
+  worker_audit.py
+  worker_service.py
+  worker_watchdog.py
+  worker.py
+tests/
+  test_adaptive_cycle.py
+  test_agent_registry.py
+  test_alert_delivery.py
+  test_api_idempotency.py
+  test_api_outbox.py
+  test_api_rate_limit.py
+  test_attack_surface_scope.py
+  test_attack_surface.py
+  test_auth.py
+  test_autonomy_gate.py
+  test_browser.py
+  test_campaign_audit.py
+  test_campaign_cancel.py
+  test_campaign_circuit_breaker.py
+  test_campaign_overview.py
+  test_campaign_review_state.py
+  test_campaign_risk.py
+  test_campaign_runtime.py
+  test_chain_detector.py
+  test_control_views.py
+  test_coverage.py
+  test_decision_audit.py
+  test_decision_consensus.py
+  test_decision_timeline.py
+  test_deployment_config.py
+  test_deployment_preflight.py
+  test_differential_evidence_integration.py
+  test_differential_intelligence.py
+  test_distributed_concurrency.py
+  test_domain_incident_lifecycle.py
+  test_domain_lifecycle_integration.py
+  test_dr_cli.py
+  test_dr_manifest.py
+  test_error_budget.py
+  test_evidence_backed_planner.py
+  test_evidence_chain.py
+  test_evidence_quality.py
+  test_finding_cluster_consensus.py
+  test_finding_cluster_saturation.py
+  test_finding_consensus.py
+  test_finding_correlation.py
+  test_finding_intelligence.py
+  test_finding_lifecycle.py
+  test_finding_readiness.py
+  test_finding_triage.py
+  test_form_waf_reasoning.py
+  test_frontend_policy_launcher.py
+  test_hackerone_binding.py
+  test_hackerone_launch_api.py
+  test_hackerone_scope_import.py
+  test_hackerone_scope_preview_api.py
+  test_health.py
+  test_hypothesis_engine.py
+  test_hypothesis_memory.py
+  test_incident_api.py
+  test_incident_domains.py
+  test_incident_engine.py
+  test_incident_http_api.py
+  test_incident_lifecycle.py
+  test_incident_observer.py
+  test_incident_store_fencing.py
+  test_incident_store.py
+  test_job_provenance_api_integration.py
+  test_job_provenance_integration.py
+  test_job_provenance.py
+  test_jobqueue.py
+  test_knowledge_memory.py
+  test_learning_memory.py
+  test_metrics.py
+  test_nuclei_preflight.py
+  test_nuclei_queue_lifecycle.py
+  test_nuclei_worker_plan.py
+  test_observation_graph.py
+  test_observation_writer_provenance.py
+  test_observer_deadline_heartbeat.py
+  test_observer_fencing_integration.py
+  test_observer_fencing.py
+  test_observer_health_http.py
+  test_observer_health_metrics.py
+  test_observer_resilience.py
+  test_observer_runtime.py
+  test_observer_scheduler.py
+  test_observer_slo.py
+  test_openapi_integrity.py
+  test_operational_alerts.py
+  test_operational_slo.py
+  test_orchestrator_validation_alignment.py
+  test_orchestrator.py
+  test_outbox_chaos.py
+  test_overview_reasoning.py
+  test_pentagi_adapter.py
+  test_pentagi_admission.py
+  test_pentagi_auth.py
+  test_pentagi_control_api.py
+  test_pentagi_control.py
+  test_pentagi_dispatch.py
+  test_pentagi_execution_guard.py
+  test_pentagi_flow_status.py
+  test_pentagi_status_poller.py
+  test_pentagi_status_tracker.py
+  test_pentagi_status_worker_service.py
+  test_pentagi_transport.py
+  test_pentagi_worker_service.py
+  test_pipeline_swarm.py
+  test_plan_evidence_quality.py
+  test_planner_advisory.py
+  test_planner_budget.py
+  test_planner_limits.py
+  test_policy_integrity.py
+  test_policy_invariants.py
+  test_postgres_integration.py
+  test_postgres_storage.py
+  test_queue_age_metrics.py
+  test_queue_backend.py
+  test_queue_health.py
+  test_readiness.py
+  test_recon_swarm.py
+  test_recon_worker.py
+  test_red_team_coverage.py
+  test_red_team_decision.py
+  test_redis_chaos.py
+  test_redis_integration.py
+  test_redis_jobqueue_integration.py
+  test_redis_jobqueue.py
+  test_report_approval.py
+  test_report_readiness.py
+  test_report.py
+  test_review_queue.py
+  test_rolling_telemetry.py
+  test_runtime_budget_config.py
+  test_runtime_capabilities.py
+  test_scan_payload_idempotency.py
+  test_scanner_adaptation.py
+  test_scanner_ingestion.py
+  test_scanner_normalization.py
+  test_scanner_observation_chain.py
+  test_scanner_sandbox.py
+  test_scanner_worker.py
+  test_scope.py
+  test_secret_vault.py
+  test_storage_backend.py
+  test_storage.py
+  test_submission_api.py
+  test_submission_state.py
+  test_swarm_coordinator.py
+  test_totp_auth.py
+  test_validation_state.py
+  test_validator.py
+  test_watchdog_observability.py
+  test_worker_concurrency.py
+  test_worker_job_provenance.py
+  test_worker_observations.py
+  test_worker_outcome_memory.py
+  test_worker_parser.py
+  test_worker_roles.py
+  test_worker_secrets.py
+  test_worker_state.py
+  test_worker_watchdog.py
+```
 
 # Files
 
-## File: .circleci/config.yml
-````yaml
-version: 2.1
-
-jobs:
-  test:
-    docker:
-      - image: cimg/python:3.12
-    resource_class: small
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - pip-v1-{{ checksum "backend/requirements.txt" }}-{{ checksum "backend/requirements-dev.txt" }}
-      - run:
-          name: Install dependencies
-          command: pip install -r backend/requirements-dev.txt
-      - save_cache:
-          key: pip-v1-{{ checksum "backend/requirements.txt" }}-{{ checksum "backend/requirements-dev.txt" }}
-          paths:
-            - ~/.cache/pip
-      - run:
-          name: Dependency consistency
-          command: python -m pip check
-      - run:
-          name: Compile
-          command: python -m compileall -q backend/app backend/tests
-      - run:
-          name: Lint
-          command: ruff check backend/app backend/tests
-      - run:
-          name: Test
-          command: PYTHONPATH=backend pytest -q --strict-config --strict-markers backend/tests
-      - run:
-          name: Dependency audit
-          command: pip-audit -r backend/requirements.txt
-
-  compose-config:
-    machine:
-      image: ubuntu-2204:current
-    resource_class: medium
-    steps:
-      - checkout
-      - run:
-          name: Validate Compose configuration
-          command: docker compose config --quiet
-      - run:
-          name: Build containers
-          command: docker compose build --pull
-
-workflows:
-  validate:
-    jobs:
-      - test
-      - compose-config
-````
-
-## File: .github/workflows/ai-repo-map.yml
-````yaml
-name: Repository standards
-
-on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - ".ai/**"
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-concurrency:
-  group: repo-standards-${{ github.repository }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  ai-context:
-    uses: dbrckk/repo-standards/.github/workflows/reusable-ai-repo-map.yml@v4
-
-  repo-health:
-    needs: ai-context
-    uses: dbrckk/repo-standards/.github/workflows/reusable-repo-health.yml@v4
-
-  project-state:
-    needs: repo-health
-    uses: dbrckk/repo-standards/.github/workflows/reusable-project-state.yml@v4
-
-  context-intelligence:
-    needs: project-state
-    uses: dbrckk/repo-standards/.github/workflows/reusable-context-intelligence.yml@v4
-````
-
-## File: .github/workflows/release-images.yml
-````yaml
-name: release-images
-
-on:
-  push:
-    tags:
-      - "v*"
-
-permissions:
-  contents: read
-  packages: write
-  id-token: write
-  attestations: write
-
-concurrency:
-  group: release-images-${{ github.ref }}
-  cancel-in-progress: false
-
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - component: backend
-            context: ./backend
-          - component: frontend
-            context: ./frontend
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Normalize repository owner
-        id: owner
-        shell: bash
-        run: echo "value=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
-
-      - name: Build and publish immutable release image
-        id: build
-        uses: docker/build-push-action@v6
-        with:
-          context: ${{ matrix.context }}
-          push: true
-          provenance: mode=max
-          sbom: true
-          tags: |
-            ghcr.io/${{ steps.owner.outputs.value }}/xbow-perso-${{ matrix.component }}:${{ github.ref_name }}
-            ghcr.io/${{ steps.owner.outputs.value }}/xbow-perso-${{ matrix.component }}:sha-${{ github.sha }}
-
-      - name: Attest published image
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: ghcr.io/${{ steps.owner.outputs.value }}/xbow-perso-${{ matrix.component }}
-          subject-digest: ${{ steps.build.outputs.digest }}
-          push-to-registry: true
-
-      - name: Record immutable deployment reference
-        shell: bash
-        run: |
-          mkdir -p release-manifest
-          printf '%s@%s\n' \
-            "ghcr.io/${{ steps.owner.outputs.value }}/xbow-perso-${{ matrix.component }}" \
-            "${{ steps.build.outputs.digest }}" \
-            > "release-manifest/${{ matrix.component }}.image"
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-${{ matrix.component }}-${{ github.ref_name }}
-          path: release-manifest/${{ matrix.component }}.image
-          if-no-files-found: error
-          retention-days: 90
-````
-
-## File: .github/workflows/release-quality-gate.yml
-````yaml
-name: release-quality-gate
-
-on:
-  workflow_dispatch:
-    inputs:
-      release_ref:
-        description: "Immutable release tag or commit to validate"
-        required: true
-        type: string
-      backend_image:
-        description: "Backend image pinned as ghcr.io/...@sha256:..."
-        required: true
-        type: string
-      frontend_image:
-        description: "Frontend image pinned as ghcr.io/...@sha256:..."
-        required: true
-        type: string
-
-permissions:
-  contents: read
-  packages: read
-  attestations: read
-  id-token: write
-
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    environment: production-candidate
-    steps:
-      - name: Reject mutable image references
-        shell: bash
-        env:
-          BACKEND_IMAGE: ${{ inputs.backend_image }}
-          FRONTEND_IMAGE: ${{ inputs.frontend_image }}
-        run: |
-          pattern='^ghcr\.io/.+@sha256:[0-9a-f]{64}$'
-          [[ "$BACKEND_IMAGE" =~ $pattern ]] || { echo "backend image is not digest-pinned"; exit 1; }
-          [[ "$FRONTEND_IMAGE" =~ $pattern ]] || { echo "frontend image is not digest-pinned"; exit 1; }
-
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.release_ref }}
-
-      - name: Verify backend provenance
-        env:
-          GH_TOKEN: ${{ github.token }}
-          IMAGE: ${{ inputs.backend_image }}
-        run: gh attestation verify "oci://$IMAGE" --repo "${{ github.repository }}"
-
-      - name: Verify frontend provenance
-        env:
-          GH_TOKEN: ${{ github.token }}
-          IMAGE: ${{ inputs.frontend_image }}
-        run: gh attestation verify "oci://$IMAGE" --repo "${{ github.repository }}"
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: |
-            backend/requirements.txt
-            backend/requirements-dev.txt
-
-      - name: Install backend test dependencies
-        working-directory: backend
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
-
-      - name: Dependency consistency
-        run: python -m pip check
-
-      - name: Backend tests
-        working-directory: backend
-        env:
-          DRY_RUN: "true"
-          XBOW_ENABLE_ACTIVE_SCANS: "false"
-        run: pytest -q
-
-      - name: Static checks
-        working-directory: backend
-        run: ruff check app tests
-
-      - name: Audit runtime dependencies
-        working-directory: backend
-        run: pip-audit -r requirements.txt
-
-      - name: Build production preflight evidence
-        env:
-          BACKEND_IMAGE: ${{ inputs.backend_image }}
-          FRONTEND_IMAGE: ${{ inputs.frontend_image }}
-        shell: bash
-        run: |
-          mkdir -p release-gate
-          printf '%s\n' "release_ref=${{ inputs.release_ref }}" > release-gate/manifest.txt
-          printf '%s\n' "backend=$BACKEND_IMAGE" >> release-gate/manifest.txt
-          printf '%s\n' "frontend=$FRONTEND_IMAGE" >> release-gate/manifest.txt
-          printf '%s\n' "validated_commit=${{ github.sha }}" >> release-gate/manifest.txt
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: production-candidate-${{ github.run_id }}
-          path: release-gate/manifest.txt
-          if-no-files-found: error
-          retention-days: 90
-````
-
-## File: .github/workflows/security.yml
-````yaml
-name: security
-
-on:
-  push:
-  pull_request:
-  schedule:
-    - cron: "17 4 * * 1"
-
-permissions:
-  contents: read
-
-concurrency:
-  group: security-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  dependency-audit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: |
-            backend/requirements.txt
-            backend/requirements-dev.txt
-      - run: python -m pip install --upgrade pip
-      - run: pip install -r backend/requirements-dev.txt
-      - run: python -m pip check
-      - run: pip-audit -r backend/requirements.txt
-
-  secret-scan:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-````
-
-## File: .github/workflows/supply-chain.yml
-````yaml
-name: supply-chain
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-jobs:
-  backend-sbom:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: backend/requirements.txt
-      - run: python -m pip install --upgrade pip
-      - run: pip install -r backend/requirements.txt
-      - run: pip install cyclonedx-bom==7.1.0
-      - name: Generate CycloneDX SBOM
-        run: cyclonedx-py environment --output-format JSON --output-file backend-sbom.cdx.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: backend-sbom
-          path: backend-sbom.cdx.json
-          if-no-files-found: error
-          retention-days: 14
-
-  container-build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - name: Build backend without publishing
-        uses: docker/build-push-action@v6
-        with:
-          context: ./backend
-          push: false
-          load: false
-          provenance: mode=max
-          sbom: true
-          tags: xbow-perso-backend:ci
-      - name: Build frontend without publishing
-        uses: docker/build-push-action@v6
-        with:
-          context: ./frontend
-          push: false
-          load: false
-          provenance: mode=max
-          sbom: true
-          tags: xbow-perso-frontend:ci
-````
-
-## File: .github/dependabot.yml
-````yaml
-version: 2
-updates:
-  - package-ecosystem: pip
-    directory: /backend
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    labels:
-      - dependencies
-      - security
-
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    labels:
-      - dependencies
-      - security
-
-  - package-ecosystem: docker
-    directory: /backend
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    labels:
-      - dependencies
-      - security
-
-  - package-ecosystem: docker
-    directory: /frontend
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    labels:
-      - dependencies
-      - security
-````
-
-## File: .serena/project.yml
-````yaml
-project_name: "xbow-perso"
-language_servers:
-  - python
-  - typescript
-ls_workspace_folders:
-  - "."
-ignore_all_files_in_gitignore: true
-ignored_paths:
-  - "**/node_modules/**"
-  - "**/.venv/**"
-  - "**/__pycache__/**"
-  - "**/dist/**"
-  - "**/build/**"
-  - "deploy/**"
-read_only: false
-encoding: utf-8
-symbol_info_budget: 8
-initial_prompt: |
-  Use Serena's symbol and reference tools before reading whole files. Start with symbol overviews, find_symbol and find_referencing_symbols; fetch full file bodies only when required for the task. Prefer targeted edits and preserve the existing architecture.
-````
-
-## File: backend/app/adaptive_cycle.py
-````python
+## File: app/adaptive_cycle.py
+```python
 CycleState = Literal["halt", "recon", "review", "validate", "human_review", "complete"]
 ⋮----
 router = APIRouter()
@@ -873,10 +389,10 @@ planned = AdaptivePlanner().plan(campaign, graph)
 memories = build_learning_memory(graph)
 worker_outcomes = summarize_worker_outcomes(campaign.events)
 cycle = build_adaptive_cycle(gate, planned, memories, worker_outcomes)
-````
+```
 
-## File: backend/app/agent_registry.py
-````python
+## File: app/agent_registry.py
+```python
 AgentRole = Literal["recon", "analysis", "validation", "reporting", "control"]
 ⋮----
 @dataclass(frozen=True)
@@ -901,10 +417,10 @@ def public_agent_catalog() -> list[dict]
 def agent_by_name(name: str) -> AgentProfile
 ⋮----
 matches = [agent for agent in AGENTS if agent.name == name]
-````
+```
 
-## File: backend/app/alert_delivery.py
-````python
+## File: app/alert_delivery.py
+```python
 class AlertDeliveryError(RuntimeError)
 ⋮----
 class _NoRedirect(HTTPRedirectHandler)
@@ -950,10 +466,10 @@ request = Request(url, data=body, method="POST", headers=headers)
 opener = build_opener(_NoRedirect())
 ⋮----
 status = int(response.status)
-````
+```
 
-## File: backend/app/api_outbox.py
-````python
+## File: app/api_outbox.py
+```python
 def _matches_identity(event: Mapping[str, Any], identity: Mapping[str, Any]) -> bool
 ⋮----
 identity = identity or {}
@@ -1000,10 +516,10 @@ intents: list[dict[str, Any]] = []
 descriptor: dict[str, Any] = {
 ⋮----
 platform = event.get("platform")
-````
+```
 
-## File: backend/app/api_rate_limit.py
-````python
+## File: app/api_rate_limit.py
+```python
 class RateLimitConfigError(ValueError)
 ⋮----
 @dataclass(frozen=True)
@@ -1111,10 +627,10 @@ config = load_api_rate_limit_config()
 limiter = _active_limiter(config)
 ⋮----
 response = await call_next(request)
-````
+```
 
-## File: backend/app/attack_surface.py
-````python
+## File: app/attack_surface.py
+```python
 router = APIRouter()
 ⋮----
 def canonical_host(value: str) -> str
@@ -1195,10 +711,10 @@ campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 rules = campaign.target.rules
 surface = build_attack_surface(
-````
+```
 
-## File: backend/app/auth.py
-````python
+## File: app/auth.py
+```python
 class AuthError(RuntimeError)
 ⋮----
 def __init__(self, status_code: int, detail: str)
@@ -1234,10 +750,10 @@ def require_api_token(request: Request) -> None
 ⋮----
 expected = configured_api_token()
 presented = presented_api_token(request)
-````
+```
 
-## File: backend/app/autonomy_gate.py
-````python
+## File: app/autonomy_gate.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -1284,10 +800,10 @@ runtime = runtime_status(campaign.created_at, campaign_runtime_limit_from_env())
 job_statuses = queue().campaign_job_status_counts(campaign.id)
 ⋮----
 gate = build_autonomy_gate(
-````
+```
 
-## File: backend/app/browser.py
-````python
+## File: app/browser.py
+```python
 router = APIRouter()
 ⋮----
 class BrowserPolicyError(RuntimeError)
@@ -1414,10 +930,10 @@ secret = _browser_secret(step.secret_env or "")
 data = page.screenshot(full_page=True)
 ⋮----
 artifacts = [
-````
+```
 
-## File: backend/app/campaign_audit.py
-````python
+## File: app/campaign_audit.py
+```python
 _VOLATILE_FIELDS = {"event_hash", "event_signature", "event_signature_alg"}
 ⋮----
 def _canonical_event(event: dict[str, Any]) -> bytes
@@ -1454,10 +970,10 @@ secret = None
 expected = hmac.new(secret.encode(), canonical, hashlib.sha256).hexdigest()
 ⋮----
 previous = digest
-````
+```
 
-## File: backend/app/campaign_control.py
-````python
+## File: app/campaign_control.py
+```python
 router = APIRouter()
 ⋮----
 def _recon_telemetry(events: list[dict]) -> dict
@@ -1490,10 +1006,10 @@ block_reasons = _autonomy_block_reasons(breaker, runtime, usage)
 def reset_campaign_circuit_breaker(campaign_id: str)
 ⋮----
 state = record_circuit_reset(storage(), campaign.id, at=utcnow())
-````
+```
 
-## File: backend/app/campaign_overview.py
-````python
+## File: app/campaign_overview.py
+```python
 router = APIRouter()
 ⋮----
 @router.get("/api/campaigns/{campaign_id}/overview")
@@ -1547,10 +1063,10 @@ attention_reasons = []
 ⋮----
 latest_event = campaign.events[-1] if campaign.events else None
 total_findings = len(campaign.findings)
-````
+```
 
-## File: backend/app/campaign_review_state.py
-````python
+## File: app/campaign_review_state.py
+```python
 router = APIRouter()
 ⋮----
 def build_campaign_review_state(findings: list[Any], graph: ObservationGraph) -> dict[str, Any]
@@ -1589,10 +1105,10 @@ def campaign_review_state(campaign_id: str)
 ⋮----
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
-````
+```
 
-## File: backend/app/campaign_risk.py
-````python
+## File: app/campaign_risk.py
+```python
 RiskLevel = Literal["low", "moderate", "high", "critical"]
 ⋮----
 router = APIRouter()
@@ -1659,10 +1175,10 @@ rules = campaign.target.rules
 def scope_checker(host: str) -> bool
 ⋮----
 risk = build_campaign_risk(
-````
+```
 
-## File: backend/app/campaign_runtime.py
-````python
+## File: app/campaign_runtime.py
+```python
 @dataclass(frozen=True)
 class CampaignRuntimeLimit
 ⋮----
@@ -1697,10 +1213,10 @@ current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
 elapsed = max(0, int((current - started).total_seconds()))
 remaining = max(0, limits.max_runtime_seconds - elapsed)
 exhausted = elapsed >= limits.max_runtime_seconds
-````
+```
 
-## File: backend/app/chain_detector.py
-````python
+## File: app/chain_detector.py
+```python
 @dataclass(frozen=True)
 class ObservationChain
 ⋮----
@@ -1731,10 +1247,10 @@ current = path[-1]
 next_nodes = [node_id for node_id in children.get(current, ()) if node_id not in path]
 ⋮----
 kinds = tuple(items[node_id].kind for node_id in path)
-````
+```
 
-## File: backend/app/circuit_breaker.py
-````python
+## File: app/circuit_breaker.py
+```python
 _BREAKER_MEMORY_TYPE = "campaign_circuit_breaker"
 ⋮----
 def _breaker_id(reason: str) -> str
@@ -1757,10 +1273,10 @@ current = circuit_breaker_state(graph)
 observation = Observation(
 ⋮----
 def record_circuit_reset(store: Any, campaign_id: str, *, at: str) -> dict[str, Any]
-````
+```
 
-## File: backend/app/coverage.py
-````python
+## File: app/coverage.py
+```python
 router = APIRouter()
 ⋮----
 surface = build_attack_surface(graph, scope_checker=scope_checker)
@@ -1806,10 +1322,10 @@ reason = "not all observed findings have independent validation evidence"
 ⋮----
 focus = "none"
 reason = "no evidence-coverage gap requires advisory emphasis"
-````
+```
 
-## File: backend/app/decision_audit.py
-````python
+## File: app/decision_audit.py
+```python
 _AUDIT_FIELDS = {
 ⋮----
 payload = {
@@ -1847,10 +1363,10 @@ signature = metadata.get("decision_signature")
 expected_signature = hmac.new(
 ⋮----
 previous_hash = str(metadata["decision_hash"])
-````
+```
 
-## File: backend/app/decision_consensus.py
-````python
+## File: app/decision_consensus.py
+```python
 router = APIRouter()
 ⋮----
 _BLOCKING_KINDS = {"scope_integrity", "review_contradiction"}
@@ -1899,10 +1415,10 @@ def scope_checker(host: str) -> bool
 ⋮----
 decisions = build_red_team_decisions(
 consensus = build_decision_consensus(decisions)
-````
+```
 
-## File: backend/app/decision_timeline.py
-````python
+## File: app/decision_timeline.py
+```python
 router = APIRouter()
 ⋮----
 def _flatten_explanation(value: Any, prefix: str = "") -> dict[str, Any]
@@ -2000,10 +1516,10 @@ def campaign_decision_timeline(campaign_id: str)
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 payload = build_decision_timeline(campaign, graph)
-````
+```
 
-## File: backend/app/deployment_preflight.py
-````python
+## File: app/deployment_preflight.py
+```python
 def _configured(name: str) -> bool
 ⋮----
 def _bool_env(name: str, default: bool = False) -> tuple[bool, bool]
@@ -2041,10 +1557,10 @@ status = "error"
 status = "warning"
 ⋮----
 status = "ok"
-````
+```
 
-## File: backend/app/differential_intelligence.py
-````python
+## File: app/differential_intelligence.py
+```python
 DifferentialSignalLevel = Literal["none", "weak", "strong"]
 _SIGNAL_RANK: dict[DifferentialSignalLevel, int] = {
 ⋮----
@@ -2113,10 +1629,10 @@ items = candidates.get(finding_id, [])
 selected = max(
 ⋮----
 def differential_signal_rank(signal: DifferentialSignalLevel | str) -> int
-````
+```
 
-## File: backend/app/domain_incident_lifecycle.py
-````python
+## File: app/domain_incident_lifecycle.py
+```python
 DOMAINS = ("workload", "control_plane", "observability")
 MAX_HISTORY = 1000
 ⋮----
@@ -2135,10 +1651,10 @@ fingerprint = str(incident["fingerprint"])
 def active_incidents_by_domain(history: list[dict[str, Any]]) -> dict[str, dict[str, Any] | None]
 ⋮----
 result: dict[str, dict[str, Any] | None] = {}
-````
+```
 
-## File: backend/app/dr_cli.py
-````python
+## File: app/dr_cli.py
+```python
 def _parser() -> argparse.ArgumentParser
 ⋮----
 parser = argparse.ArgumentParser(
@@ -2161,10 +1677,10 @@ result = {
 ⋮----
 verification = verify_backup_manifest(
 result = {"ok": verification["valid"], **verification}
-````
+```
 
-## File: backend/app/dr_manifest.py
-````python
+## File: app/dr_manifest.py
+```python
 _LEGACY_SIGNATURE_FIELDS = {
 _V2_SIGNATURE_FIELDS = {"manifest_signature", "manifest_signature_alg"}
 _V2_INTEGRITY_MODE = "sha256-artifacts+hmac-sha256-manifest"
@@ -2246,10 +1762,10 @@ size_value = left.get("size_bytes")
 match = bool(
 ⋮----
 valid = valid and match
-````
+```
 
-## File: backend/app/error_budget.py
-````python
+## File: app/error_budget.py
+```python
 def _target_success_rate() -> float
 ⋮----
 raw = os.getenv("XBOW_SLO_TARGET_SUCCESS_RATE", "0.99")
@@ -2278,10 +1794,10 @@ alerts: list[dict[str, Any]] = []
 # high-severity incident signal on an otherwise idle installation.
 ⋮----
 state = (
-````
+```
 
-## File: backend/app/evidence_chain.py
-````python
+## File: app/evidence_chain.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -2340,10 +1856,10 @@ campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 chains = build_evidence_chains(graph)
 complete = sum(item.complete for item in chains)
-````
+```
 
-## File: backend/app/evidence_quality.py
-````python
+## File: app/evidence_quality.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -2397,10 +1913,10 @@ def campaign_evidence_quality(campaign_id: str)
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 quality = build_evidence_quality(graph)
-````
+```
 
-## File: backend/app/finding_cluster_consensus.py
-````python
+## File: app/finding_cluster_consensus.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -2458,10 +1974,10 @@ store = storage()
 graph = load_observation_graph(store, campaign.id)
 snapshots = store.list_hypothesis_snapshots(campaign.id, limit=50)
 consensus = build_cluster_consensus(
-````
+```
 
-## File: backend/app/finding_cluster_saturation.py
-````python
+## File: app/finding_cluster_saturation.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -2504,10 +2020,10 @@ def campaign_finding_cluster_saturation(campaign_id: str, threshold: float = 0.7
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 saturation = build_cluster_saturation(
-````
+```
 
-## File: backend/app/finding_consensus.py
-````python
+## File: app/finding_consensus.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -2563,10 +2079,10 @@ def campaign_finding_consensus(campaign_id: str)
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 consensus = build_finding_consensus(graph)
-````
+```
 
-## File: backend/app/finding_correlation.py
-````python
+## File: app/finding_correlation.py
+```python
 router = APIRouter()
 ⋮----
 _SEVERITY_ORDER = {
@@ -2699,10 +2215,10 @@ confidence = round(
 ⋮----
 @router.get("/api/campaigns/{campaign_id}/finding-clusters")
 def campaign_finding_clusters(campaign_id: str, threshold: float = 0.75)
-````
+```
 
-## File: backend/app/finding_intelligence.py
-````python
+## File: app/finding_intelligence.py
+```python
 router = APIRouter()
 ⋮----
 readiness = build_finding_readiness(
@@ -2740,10 +2256,10 @@ store = storage()
 graph = load_observation_graph(store, campaign.id)
 snapshots = store.list_hypothesis_snapshots(campaign.id, limit=50)
 payload = build_finding_intelligence(
-````
+```
 
-## File: backend/app/finding_lifecycle.py
-````python
+## File: app/finding_lifecycle.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -2809,10 +2325,10 @@ def campaign_finding_lifecycle(campaign_id: str)
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 advice = build_finding_lifecycle(campaign.findings, graph)
-````
+```
 
-## File: backend/app/finding_readiness.py
-````python
+## File: app/finding_readiness.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -2874,10 +2390,10 @@ store = storage()
 graph = load_observation_graph(store, campaign.id)
 snapshots = store.list_hypothesis_snapshots(campaign.id, limit=50)
 readiness = build_finding_readiness(
-````
+```
 
-## File: backend/app/finding_triage.py
-````python
+## File: app/finding_triage.py
+```python
 router = APIRouter()
 ⋮----
 _SEVERITY_WEIGHT = {
@@ -2956,10 +2472,10 @@ def campaign_finding_triage(campaign_id: str)
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 triage = build_finding_triage(campaign.findings, graph)
-````
+```
 
-## File: backend/app/hackerone_api.py
-````python
+## File: app/hackerone_api.py
+```python
 router = APIRouter()
 ⋮----
 class HackerOneProgramPolicyInput(BaseModel)
@@ -3039,10 +2555,10 @@ admitted = admit_hackerone_campaign(payload)
 campaign_id = admitted["campaign"]["id"]
 started = start_campaign(campaign_id)
 campaign = assert_campaign_exists(campaign_id)
-````
+```
 
-## File: backend/app/hackerone_binding.py
-````python
+## File: app/hackerone_binding.py
+```python
 def canonical_json_sha256(value: Any) -> str
 ⋮----
 encoded = json.dumps(
@@ -3068,10 +2584,10 @@ declared_policy_fingerprint = str(binding.get("campaign_policy_fingerprint") or 
 ⋮----
 expected_binding_fingerprint = _binding_fingerprint(
 declared_binding_fingerprint = str(binding.get("binding_fingerprint") or "")
-````
+```
 
-## File: backend/app/hackerone_scope_import.py
-````python
+## File: app/hackerone_scope_import.py
+```python
 _MAX_SCOPE_ASSETS = 5000
 _MAX_IDENTIFIER_CHARS = 2048
 _MAX_POLICY_TEXT_CHARS = 8192
@@ -3200,10 +2716,10 @@ allowed = tuple(
 denied = tuple(
 unsupported = tuple(sorted(unsupported_labels))
 complete = not conflicts and not unsupported
-````
+```
 
-## File: backend/app/hypothesis_engine.py
-````python
+## File: app/hypothesis_engine.py
+```python
 HypothesisKind = Literal[
 NextAction = Literal["scan", "validate", "stop"]
 ⋮----
@@ -3291,10 +2807,10 @@ graph = load_observation_graph(storage(), campaign.id)
 rules = campaign.target.rules
 hypotheses = build_hypotheses(
 counts: dict[str, int] = {}
-````
+```
 
-## File: backend/app/hypothesis_memory.py
-````python
+## File: app/hypothesis_memory.py
+```python
 @dataclass(frozen=True)
 class Hypothesis
 ⋮----
@@ -3392,10 +2908,10 @@ stability = "evolving"
 score = 0.40
 ⋮----
 score = round(max(0.0, min(1.0, score)), 2)
-````
+```
 
-## File: backend/app/incident_api.py
-````python
+## File: app/incident_api.py
+```python
 class IncidentApiConflict(RuntimeError)
 ⋮----
 def read_incident_status(store: IncidentStore) -> dict[str, Any]
@@ -3406,10 +2922,10 @@ active = [item for item in active_by_domain.values() if item is not None]
 updated = acknowledge_incident(history, fingerprint)
 ⋮----
 new_version = store.write(updated, expected_version=current_version)
-````
+```
 
-## File: backend/app/incident_domains.py
-````python
+## File: app/incident_domains.py
+```python
 _SEVERITY = {"healthy": 0, "degraded": 1, "critical": 2}
 ⋮----
 def _state(value: Any) -> str
@@ -3432,10 +2948,10 @@ severity = max((item["state"] for item in signals), key=lambda s: _SEVERITY[s])
 ⋮----
 overall = severity
 fingerprint = _fingerprint(domain, signals)
-````
+```
 
-## File: backend/app/incident_engine.py
-````python
+## File: app/incident_engine.py
+```python
 _SEVERITY = {"healthy": 0, "degraded": 1, "warning": 1, "critical": 2, "error": 2}
 ⋮----
 def _state(value: Any) -> str
@@ -3455,10 +2971,10 @@ signals: list[dict[str, str]] = []
 incident = None
 ⋮----
 incident = {
-````
+```
 
-## File: backend/app/incident_lifecycle.py
-````python
+## File: app/incident_lifecycle.py
+```python
 MAX_HISTORY = 1000
 ⋮----
 def _now(value: datetime | None = None) -> str
@@ -3485,10 +3001,10 @@ resolved = datetime.fromisoformat(str(item["resolved_at"]))
 mttr = sum(durations) / len(durations) if durations else None
 gaps = [
 mtbf = sum(gaps) / len(gaps) if gaps else None
-````
+```
 
-## File: backend/app/incident_observer.py
-````python
+## File: app/incident_observer.py
+```python
 """Evaluate and persist operational incident state without execution side effects."""
 slo = build_operational_slo(metrics)
 budget = build_error_budget_status(telemetry)
@@ -3502,10 +3018,10 @@ updated = apply_domain_incidents(history, snapshot)
 new_version = store.write(
 ⋮----
 """Single scheduler-friendly observation pass."""
-````
+```
 
-## File: backend/app/incident_store.py
-````python
+## File: app/incident_store.py
+```python
 class IncidentStoreConflict(RuntimeError)
 ⋮----
 class IncidentFenceConflict(IncidentStoreConflict)
@@ -3534,10 +3050,10 @@ now = datetime.now(timezone.utc)
 expires = datetime.fromisoformat(lease["expires_at"]) if lease["expires_at"] else None
 ⋮----
 cursor = db.execute(
-````
+```
 
-## File: backend/app/job_provenance.py
-````python
+## File: app/job_provenance.py
+```python
 PROVENANCE_SCHEMA = "job-provenance-v1"
 ⋮----
 class JobProvenanceError(RuntimeError)
@@ -3576,10 +3092,10 @@ verification = verify_job_provenance(job, campaign)
 GOVERNED_JOB_KINDS = frozenset(
 ⋮----
 def provenance_required_for_job_kind(job_kind: str) -> bool
-````
+```
 
-## File: backend/app/jobqueue.py
-````python
+## File: app/jobqueue.py
+```python
 TERMINAL = {"completed", "failed", "cancelled"}
 ⋮----
 def utcnow() -> str
@@ -3744,10 +3260,10 @@ status = "completed" if success else ("queued" if row["attempts"] < row["max_att
     def _decode(row: sqlite3.Row) -> dict[str, Any]
 ⋮----
 result = dict(row)
-````
+```
 
-## File: backend/app/knowledge_memory.py
-````python
+## File: app/knowledge_memory.py
+```python
 SEVERITY_WEIGHTS = {
 ⋮----
 REVIEW_SEVERITY_BONUS = {
@@ -3846,10 +3362,10 @@ score = round(sum(components.values()), 4)
 def decision_history(graph: ObservationGraph) -> list[dict[str, Any]]
 ⋮----
 history = []
-````
+```
 
-## File: backend/app/learning_memory.py
-````python
+## File: app/learning_memory.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -3915,10 +3431,10 @@ kind = str(event.get("job_kind") or "")
 status = str(event.get("status") or "")
 ⋮----
 bucket = "requeued" if status == "queued" else status
-````
+```
 
-## File: backend/app/main.py
-````python
+## File: app/main.py
+```python
 app = FastAPI(title="xbow-perso", version="0.4.0")
 ⋮----
 @app.middleware("http")
@@ -4358,10 +3874,10 @@ from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
 from .report_readiness import router as report_readiness_router  # noqa: E402
 from .review_queue import router as review_queue_router  # noqa: E402
-````
+```
 
-## File: backend/app/metrics.py
-````python
+## File: app/metrics.py
+```python
 router = APIRouter()
 ⋮----
 def _age_seconds(value: Any, *, now: datetime | None = None) -> int | None
@@ -4401,10 +3917,10 @@ watchdog = {
 ⋮----
 @router.get("/api/metrics")
 def operational_metrics()
-````
+```
 
-## File: backend/app/nuclei_parser.py
-````python
+## File: app/nuclei_parser.py
+```python
 class NucleiParserError(RuntimeError)
 ⋮----
 def _max_nuclei_jsonl_bytes() -> int
@@ -4424,10 +3940,10 @@ line = raw_line.strip()
 item = json.loads(line)
 ⋮----
 finding = normalize_nuclei_item(item, campaign)
-````
+```
 
-## File: backend/app/observation_graph.py
-````python
+## File: app/observation_graph.py
+```python
 ObservationKind = Literal[
 ActionKind = Literal["inventory", "crawl", "scan", "validate", "report", "stop"]
 ⋮----
@@ -4524,10 +4040,10 @@ confirmed_findings = [
 report_exists = any(item.metadata.get("artifact_kind") == "report" for item in evidence)
 ⋮----
 scan_completed = any(
-````
+```
 
-## File: backend/app/observation_writer.py
-````python
+## File: app/observation_writer.py
+```python
 def observation_id(prefix: str, value: str) -> str
 ⋮----
 digest = hashlib.sha256(value.encode("utf-8")).hexdigest()[:24]
@@ -4551,10 +4067,10 @@ differential = payload.get("differential")
 artifact_metadata = {
 ⋮----
 differential_metadata = _differential_artifact_metadata(
-````
+```
 
-## File: backend/app/observer_heartbeat.py
-````python
+## File: app/observer_heartbeat.py
+```python
 @dataclass
 class LeaseHeartbeat
 ⋮----
@@ -4570,10 +4086,10 @@ def run(self, stop: Event) -> None
 stop = Event()
 heartbeat = LeaseHeartbeat(
 thread = Thread(target=heartbeat.run, args=(stop,), daemon=True)
-````
+```
 
-## File: backend/app/observer_lease.py
-````python
+## File: app/observer_lease.py
+```python
 class ObserverLease
 ⋮----
 """Small SQLite lease ensuring one active incident observer per shared DB."""
@@ -4603,10 +4119,10 @@ cursor = db.execute(
 def is_current(self, owner: str, generation: int, *, now: datetime | None = None) -> bool
 ⋮----
 def release(self, owner: str, generation: int | None = None) -> bool
-````
+```
 
-## File: backend/app/observer_metrics.py
-````python
+## File: app/observer_metrics.py
+```python
 def observer_health_metrics(snapshot: dict[str, Any], *, now: datetime | None = None) -> dict[str, Any]
 ⋮----
 current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
@@ -4616,10 +4132,10 @@ def age(value)
 parsed = datetime.fromisoformat(str(value))
 ⋮----
 parsed = parsed.replace(tzinfo=timezone.utc)
-````
+```
 
-## File: backend/app/observer_resilience.py
-````python
+## File: app/observer_resilience.py
+```python
 @dataclass
 class ObserverHealth
 ⋮----
@@ -4648,10 +4164,10 @@ def note_leadership_lost(self) -> None
 def success(self, now: datetime | None = None) -> None
 ⋮----
 def snapshot(self) -> dict[str, Any]
-````
+```
 
-## File: backend/app/observer_runtime.py
-````python
+## File: app/observer_runtime.py
+```python
 class ObserverRuntime
 ⋮----
 """Process-local owner of scheduler health with synchronized snapshots."""
@@ -4666,10 +4182,10 @@ def snapshot(self) -> dict
 _runtime = ObserverRuntime()
 ⋮----
 def observer_runtime() -> ObserverRuntime
-````
+```
 
-## File: backend/app/observer_scheduler.py
-````python
+## File: app/observer_scheduler.py
+```python
 def scheduler_config() -> dict[str, int]
 ⋮----
 interval = int(os.getenv("XBOW_INCIDENT_OBSERVER_INTERVAL_SECONDS", "30"))
@@ -4688,10 +4204,10 @@ started = time.monotonic()
 result = with_lease_heartbeat(
 ⋮----
 elapsed = time.monotonic() - started
-````
+```
 
-## File: backend/app/observer_slo.py
-````python
+## File: app/observer_slo.py
+```python
 def build_observer_slo(metrics: dict[str, Any]) -> dict[str, Any]
 ⋮----
 """Classify health of the incident-observation control plane itself."""
@@ -4707,10 +4223,10 @@ state = "healthy"
 state = "critical"
 ⋮----
 state = "degraded"
-````
+```
 
-## File: backend/app/operational_alerts.py
-````python
+## File: app/operational_alerts.py
+```python
 router = APIRouter()
 ⋮----
 def _threshold(name: str, default: int, low: int, high: int) -> int
@@ -4749,10 +4265,10 @@ metrics = build_operational_metrics(queue(), storage())
 def deliver_operational_alerts()
 ⋮----
 alerts = build_operational_alerts(metrics)
-````
+```
 
-## File: backend/app/operational_slo.py
-````python
+## File: app/operational_slo.py
+```python
 def _threshold(name: str, default: int, minimum: int, maximum: int) -> int
 ⋮----
 raw = os.getenv(name, str(default))
@@ -4780,10 +4296,10 @@ def classify(name: str, value: int, warning: int, critical: int) -> None
 watchdog = str((metrics.get("worker_watchdog") or {}).get("status") or "ok")
 ⋮----
 state = (
-````
+```
 
-## File: backend/app/orchestrator.py
-````python
+## File: app/orchestrator.py
+```python
 def _stable_id(prefix: str, *parts: str) -> str
 ⋮----
 digest = hashlib.sha256("\x1f".join(parts).encode("utf-8")).hexdigest()[:24]
@@ -4970,10 +4486,10 @@ jobs = _enqueue_action(
 action = PlannedAction(
 ⋮----
 action = planner.plan(campaign, graph)[0]
-````
+```
 
-## File: backend/app/outbox_recovery.py
-````python
+## File: app/outbox_recovery.py
+```python
 _TERMINAL = {"failed", "cancelled"}
 ⋮----
 def _digest(value: str) -> str
@@ -4997,10 +4513,10 @@ completion_type = intent.get("completion_type")
 ⋮----
 event: dict[str, Any] = {
 kind = intent.get("kind")
-````
+```
 
-## File: backend/app/pentagi_adapter.py
-````python
+## File: app/pentagi_adapter.py
+```python
 _CREATE_FLOW_MUTATION = """
 ⋮----
 _PROVIDER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
@@ -5061,10 +4577,10 @@ endpoint = _graphql_endpoint(configured_base.strip())
 provider = (
 ⋮----
 payload: dict[str, object] = {
-````
+```
 
-## File: backend/app/pentagi_admission.py
-````python
+## File: app/pentagi_admission.py
+```python
 class PentagiAdmissionError(RuntimeError)
 ⋮----
 @dataclass(frozen=True)
@@ -5110,10 +4626,10 @@ admission_cap = _bounded_admission_rps()
 campaign_rps = float(campaign.target.rules.max_requests_per_second)
 ⋮----
 decision = evaluate_pentagi_admission(campaign, plan)
-````
+```
 
-## File: backend/app/pentagi_auth.py
-````python
+## File: app/pentagi_auth.py
+```python
 class PentagiAuthError(RuntimeError)
 ⋮----
 @dataclass(frozen=True)
@@ -5132,10 +4648,10 @@ encoded = token.encode("utf-8")
 def load_pentagi_auth() -> PentagiAuth
 ⋮----
 token = resolve_secret("pentagi_api_token", "XBOW_PENTAGI_API_TOKEN")
-````
+```
 
-## File: backend/app/pentagi_control.py
-````python
+## File: app/pentagi_control.py
+```python
 class PentagiControlError(RuntimeError)
 ⋮----
 @dataclass(frozen=True)
@@ -5167,10 +4683,10 @@ def require_pentagi_control_ready(campaign: Campaign) -> PentagiControlPreview
 ⋮----
 preview = prepare_pentagi_control_preview(campaign)
 reasons = list(preview.decision.reasons) + list(preview.operational_reasons)
-````
+```
 
-## File: backend/app/pentagi_dispatch.py
-````python
+## File: app/pentagi_dispatch.py
+```python
 def _job_payload(permit: PentagiExecutionPermit, plan: PentagiFlowPlan) -> dict
 ⋮----
 """Create and verify the deterministic permit before any queue mutation."""
@@ -5186,10 +4702,10 @@ permit = issue_pentagi_execution_permit(campaign, plan)
     """
 ⋮----
 permit = permit or prepare_pentagi_execution_permit(campaign, plan)
-````
+```
 
-## File: backend/app/pentagi_execution_guard.py
-````python
+## File: app/pentagi_execution_guard.py
+```python
 class PentagiExecutionGuardError(RuntimeError)
 ⋮----
 @dataclass(frozen=True)
@@ -5220,10 +4736,10 @@ decision = evaluate_pentagi_admission(campaign, plan)
 """Fail closed if policy or request content changed after permit issuance."""
 ⋮----
 expected = issue_pentagi_execution_permit(campaign, plan)
-````
+```
 
-## File: backend/app/pentagi_flow_status.py
-````python
+## File: app/pentagi_flow_status.py
+```python
 _ALLOWED_FLOW_STATUSES = {"created", "running", "waiting", "finished", "failed"}
 ⋮----
 @dataclass(frozen=True)
@@ -5282,10 +4798,10 @@ document = json.loads(raw.decode("utf-8"))
 remote_id = document.get("id")
 remote_status = document.get("status")
 title = document.get("title")
-````
+```
 
-## File: backend/app/pentagi_status_poller.py
-````python
+## File: app/pentagi_status_poller.py
+```python
 _TERMINAL_STATUSES = {"finished", "failed"}
 ⋮----
 class PentagiStatusPollError(RuntimeError)
@@ -5324,10 +4840,10 @@ remaining_before_refresh = deadline - monotonic_fn()
 last = refresh_pentagi_flow_status(
 ⋮----
 remaining = deadline - monotonic_fn()
-````
+```
 
-## File: backend/app/pentagi_status_tracker.py
-````python
+## File: app/pentagi_status_tracker.py
+```python
 class PentagiStatusTrackingError(RuntimeError)
 ⋮----
 @dataclass(frozen=True)
@@ -5349,10 +4865,10 @@ idempotency_key = receipt.get("idempotency_key")
 remote: PentagiFlowStatus = fetch_pentagi_flow_status(
 snapshot = {
 artifact = store.put_artifact(
-````
+```
 
-## File: backend/app/pentagi_status_worker_service.py
-````python
+## File: app/pentagi_status_worker_service.py
+```python
 class PentagiStatusWorkerError(RuntimeError)
 ⋮----
 def _enabled(name: str) -> bool
@@ -5389,10 +4905,10 @@ worker_id = os.getenv(
 idle = _idle_poll_seconds()
 ⋮----
 worked = process_one(queue, store, worker_id)
-````
+```
 
-## File: backend/app/pentagi_transport.py
-````python
+## File: app/pentagi_transport.py
+```python
 class PentagiTransportError(RuntimeError)
 ⋮----
 class _NoRedirect(urllib.request.HTTPRedirectHandler)
@@ -5472,10 +4988,10 @@ create_flow = data.get("createFlow")
 ⋮----
 flow_id = create_flow.get("id")
 status_value = create_flow.get("status")
-````
+```
 
-## File: backend/app/pentagi_worker_service.py
-````python
+## File: app/pentagi_worker_service.py
+```python
 class PentagiWorkerPolicyError(RuntimeError)
 ⋮----
 @dataclass(frozen=True)
@@ -5570,10 +5086,10 @@ worker_id = os.getenv(
 poll = _poll_seconds()
 ⋮----
 worked = process_one(queue, store, worker_id)
-````
+```
 
-## File: backend/app/pipeline_swarm.py
-````python
+## File: app/pipeline_swarm.py
+```python
 @dataclass(frozen=True)
 class PipelineCoordination
 ⋮----
@@ -5601,10 +5117,10 @@ action_capacity = usage.remaining_reports
 batch_capacity = 1
 ⋮----
 allocated = max(
-````
+```
 
-## File: backend/app/planner_advisory.py
-````python
+## File: app/planner_advisory.py
+```python
 """Build a read-only focus context for the deterministic planner.
 
     This context may explain and order human review attention, but it never
@@ -5664,10 +5180,10 @@ previous = first
 delta = diff_advisory_focus_snapshots(previous, current)
 ⋮----
 previous = current
-````
+```
 
-## File: backend/app/planner_budget.py
-````python
+## File: app/planner_budget.py
+```python
 @dataclass(frozen=True)
 class PlannerBudget
 ⋮----
@@ -5733,10 +5249,10 @@ usage = budget_usage(graph, queue, campaign_id, limits)
 reason = usage.blocked_actions.get(action.kind)
 ⋮----
 def validation_batch_limit(usage: BudgetUsage, budget: PlannerBudget | None = None) -> int
-````
+```
 
-## File: backend/app/planner_limits.py
-````python
+## File: app/planner_limits.py
+```python
 class PlannerLimitConfigError(ValueError)
 ⋮----
 @dataclass(frozen=True)
@@ -5761,10 +5277,10 @@ limits = planner_limits()
 observations = graph.values()
 endpoints = graph.by_kind("endpoint")
 findings = graph.by_kind("finding")
-````
+```
 
-## File: backend/app/planner_lock.py
-````python
+## File: app/planner_lock.py
+```python
 def _planner_lock_seconds() -> int
 ⋮----
 raw = os.getenv("XBOW_PLANNER_LOCK_SECONDS", "30")
@@ -5790,10 +5306,10 @@ acquired = bool(client.set(key, token, nx=True, ex=_planner_lock_seconds()))
 script = """
 ⋮----
 # Lease expiry is bounded; never delete a successor's lock.
-````
+```
 
-## File: backend/app/policy_integrity.py
-````python
+## File: app/policy_integrity.py
+```python
 _INTEGRITY_FIELDS = {"receipt_hash", "signature", "signature_alg", "integrity_mode"}
 ⋮----
 def canonical_policy_receipt(receipt: dict[str, Any]) -> bytes
@@ -5820,10 +5336,10 @@ algorithm = receipt.get("signature_alg")
 ⋮----
 expected_signature = hmac.new(
 signature_valid = hmac.compare_digest(str(signature), expected_signature)
-````
+```
 
-## File: backend/app/postgres_storage.py
-````python
+## File: app/postgres_storage.py
+```python
 class _PostgresCompatConnection
 ⋮----
 def __init__(self, connection)
@@ -5849,10 +5365,10 @@ parsed = urlparse(self.database_url)
 connection = psycopg.connect(
 ⋮----
 def _init(self) -> None
-````
+```
 
-## File: backend/app/queue_backend.py
-````python
+## File: app/queue_backend.py
+```python
 @runtime_checkable
 class QueueBackend(Protocol)
 ⋮----
@@ -5881,10 +5397,10 @@ value = aliases.get(value, value)
 def create_queue() -> QueueBackend
 ⋮----
 backend = queue_backend_name()
-````
+```
 
-## File: backend/app/readiness.py
-````python
+## File: app/readiness.py
+```python
 # Backward-compatible test seam; runtime still resolves through create_storage().
 def Storage()
 ⋮----
@@ -5921,10 +5437,10 @@ watchdog = {"status": "error"}
 def main() -> None
 ⋮----
 result = readiness()
-````
+```
 
-## File: backend/app/recon_swarm.py
-````python
+## File: app/recon_swarm.py
+```python
 ReconTaskKind = Literal[
 ⋮----
 router = APIRouter()
@@ -6002,10 +5518,10 @@ rules = campaign.target.rules
 def scope_checker(host: str) -> bool
 ⋮----
 tasks = build_recon_plan(
-````
+```
 
-## File: backend/app/recon_worker.py
-````python
+## File: app/recon_worker.py
+```python
 class ReconPolicyError(RuntimeError)
 ⋮----
 class _NoRedirect(HTTPRedirectHandler)
@@ -6176,10 +5692,10 @@ wall_time_seconds = max(0.0, time.monotonic() - started_at)
 frontier_remaining = len(pending)
 stopped_by_request_budget = bool(
 coverage_complete = bool(
-````
+```
 
-## File: backend/app/red_team_coverage.py
-````python
+## File: app/red_team_coverage.py
+```python
 router = APIRouter()
 ⋮----
 @dataclass(frozen=True)
@@ -6251,10 +5767,10 @@ def campaign_red_team_coverage(campaign_id: str)
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 rules = campaign.target.rules
-````
+```
 
-## File: backend/app/red_team_decision.py
-````python
+## File: app/red_team_decision.py
+```python
 DecisionKind = Literal[
 ⋮----
 router = APIRouter()
@@ -6323,10 +5839,10 @@ rules = campaign.target.rules
 def scope_checker(host: str) -> bool
 ⋮----
 decisions = build_red_team_decisions(
-````
+```
 
-## File: backend/app/redis_jobqueue.py
-````python
+## File: app/redis_jobqueue.py
+```python
 _ALLOWED_KINDS = {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status"}
 _STATUSES = ("queued", "running", "completed", "failed", "cancelled")
 _DEDICATED_KINDS = {"pentagi_flow", "pentagi_status"}
@@ -6486,10 +6002,10 @@ def heartbeat(self, job_id: str, worker_id: str) -> bool
 attempts = int(row["attempts"])
 max_attempts = int(row["max_attempts"])
 status = "completed" if success else ("queued" if attempts < max_attempts else "failed")
-````
+```
 
-## File: backend/app/report_approval.py
-````python
+## File: app/report_approval.py
+```python
 @dataclass(frozen=True)
 class ReportApprovalStatus
 ⋮----
@@ -6539,10 +6055,10 @@ stale = (
 def approval_status_from_storage(campaign: Any, store: Any, artifact_id: str) -> ReportApprovalStatus
 ⋮----
 """Return approval status only for report bytes that still pass integrity checks."""
-````
+```
 
-## File: backend/app/report_readiness.py
-````python
+## File: app/report_readiness.py
+```python
 router = APIRouter()
 ⋮----
 _CWE_RE = re.compile(r"^CWE-[1-9][0-9]{0,5}$")
@@ -6611,10 +6127,10 @@ def campaign_report_readiness(campaign_id: str)
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 readiness = build_report_readiness(campaign.findings, graph)
-````
+```
 
-## File: backend/app/report.py
-````python
+## File: app/report.py
+```python
 ReportPlatform = Literal["generic", "hackerone", "bugcrowd"]
 ⋮----
 """Render a human-review draft from independently confirmed findings only."""
@@ -6630,10 +6146,10 @@ quality = quality_by_id.get(str(finding.id)) if evidence_quality is not None els
 quality_grade = str((quality or {}).get("grade") or "unknown")
 quality_score = float((quality or {}).get("score") or 0.0)
 submission_ready = quality_grade == "high" if evidence_quality is not None else None
-````
+```
 
-## File: backend/app/review_queue.py
-````python
+## File: app/review_queue.py
+```python
 ReviewKind = Literal[
 ⋮----
 router = APIRouter()
@@ -6697,10 +6213,10 @@ snapshots = storage().list_hypothesis_snapshots(campaign.id, limit=50)
 stability = {
 severities = {str(item.id): str(item.severity) for item in campaign.findings}
 tasks = build_review_queue(
-````
+```
 
-## File: backend/app/rolling_telemetry.py
-````python
+## File: app/rolling_telemetry.py
+```python
 ALLOWED_WINDOWS = (300, 3600)
 MAX_EVENTS = 10000
 ⋮----
@@ -6729,10 +6245,10 @@ statuses = Counter(str(item.get("status") or "unknown") for item in selected)
 durations = [
 completed = sum(statuses.values())
 failed = int(statuses.get("failed") or 0)
-````
+```
 
-## File: backend/app/runtime_capabilities.py
-````python
+## File: app/runtime_capabilities.py
+```python
 class CapabilityConfigError(ValueError)
 ⋮----
 def _strict_bool(name: str, default: bool = False) -> bool
@@ -6782,10 +6298,10 @@ nuclei_execution_intent = bool(
 reasons: list[str] = []
 ⋮----
 def safe_scanner_runtime_capability() -> dict[str, Any]
-````
+```
 
-## File: backend/app/scanner_adaptation.py
-````python
+## File: app/scanner_adaptation.py
+```python
 _ALLOWED_ENGINES = {"strix", "nuclei"}
 ⋮----
 @dataclass(frozen=True)
@@ -6839,10 +6355,10 @@ def rank_key(engine: str) -> tuple[float, float, int, str]
 item = memory.get(engine)
 ⋮----
 selected = tuple(
-````
+```
 
-## File: backend/app/scanner_ingestion.py
-````python
+## File: app/scanner_ingestion.py
+```python
 @dataclass(frozen=True)
 class ScannerIngestionResult
 ⋮----
@@ -6860,10 +6376,10 @@ findings = parse_scanner_artifact(engine, artifact, campaign)
 existing = {finding.id for finding in campaign.findings}
 added = 0
 queued = 0
-````
+```
 
-## File: backend/app/scanner_normalization.py
-````python
+## File: app/scanner_normalization.py
+```python
 _ALLOWED_SEVERITIES = {"info", "low", "medium", "high", "critical"}
 ⋮----
 @dataclass(frozen=True)
@@ -6939,10 +6455,10 @@ seen: set[str] = set()
 result: list[NormalizedScannerFinding] = []
 ⋮----
 finding_id = normalized_finding_id(item)
-````
+```
 
-## File: backend/app/scanner_registry.py
-````python
+## File: app/scanner_registry.py
+```python
 Parser = Callable[[str | Path, Campaign], list[Finding]]
 ⋮----
 @dataclass(frozen=True)
@@ -6971,10 +6487,10 @@ matches: dict[str, Path] = {}
 resolved = candidate.resolve(strict=True)
 ⋮----
 artifacts = discover_scanner_artifacts(engine, output_dir)
-````
+```
 
-## File: backend/app/scanner_sandbox.py
-````python
+## File: app/scanner_sandbox.py
+```python
 class ScannerSandboxConfigError(ValueError)
 ⋮----
 @dataclass(frozen=True)
@@ -7052,10 +6568,10 @@ def safe_scanner_sandbox_admission(engine: str | None = None) -> dict[str, Any]
 def require_scanner_sandbox(engine: str) -> ScannerSandboxAdmission
 ⋮----
 admission = scanner_sandbox_admission(engine)
-````
+```
 
-## File: backend/app/scanner_worker.py
-````python
+## File: app/scanner_worker.py
+```python
 @dataclass(frozen=True)
 class ScannerJobResult
 ⋮----
@@ -7077,10 +6593,10 @@ event = {
 ingestion = ingest_scanner_run(
 ⋮----
 plan = build_nuclei_plan(campaign, run_dir)
-````
+```
 
-## File: backend/app/secret_vault.py
-````python
+## File: app/secret_vault.py
+```python
 class SecretVaultError(RuntimeError)
 ⋮----
 def _decode_master_key(value: str) -> bytes
@@ -7153,10 +6669,10 @@ plaintexts: dict[str, bytes] = {}
 rotated = {"version": 1, "secrets": {}}
 ⋮----
 ciphertext = AESGCM(new_key).encrypt(
-````
+```
 
-## File: backend/app/storage_backend.py
-````python
+## File: app/storage_backend.py
+```python
 @runtime_checkable
 class StorageBackend(Protocol)
 ⋮----
@@ -7188,10 +6704,10 @@ value = aliases.get(value, value)
 def create_storage() -> StorageBackend
 ⋮----
 backend = storage_backend_name()
-````
+```
 
-## File: backend/app/storage.py
-````python
+## File: app/storage.py
+```python
 def utcnow() -> str
 ⋮----
 class ArtifactIntegrityError(RuntimeError)
@@ -7369,10 +6885,10 @@ path = (self.artifact_root / metadata["relative_path"]).resolve()
 content = path.read_bytes()
 ⋮----
 public_metadata = {key: value for key, value in metadata.items() if key != "relative_path"}
-````
+```
 
-## File: backend/app/strix_parser.py
-````python
+## File: app/strix_parser.py
+```python
 class StrixParserError(RuntimeError)
 ⋮----
 def max_strix_json_bytes() -> int
@@ -7394,10 +6910,10 @@ items = (
 normalized = []
 ⋮----
 finding = normalize_strix_item(item, campaign)
-````
+```
 
-## File: backend/app/submission_api.py
-````python
+## File: app/submission_api.py
+```python
 router = APIRouter()
 ⋮----
 def _context(campaign_id: str)
@@ -7439,10 +6955,10 @@ relevant = [
 ⋮----
 current = submission_status(campaign, artifact)
 actor = actor.strip()
-````
+```
 
-## File: backend/app/submission_state.py
-````python
+## File: app/submission_state.py
+```python
 SubmissionState = Literal["draft", "review_required", "approved", "submitted"]
 ⋮----
 @dataclass(frozen=True)
@@ -7487,10 +7003,10 @@ latest = current_cycle_submissions[-1]
 def assert_submission_allowed(campaign: Any, artifact: dict[str, Any]) -> SubmissionStatus
 ⋮----
 status = submission_status(campaign, artifact)
-````
+```
 
-## File: backend/app/swarm_coordinator.py
-````python
+## File: app/swarm_coordinator.py
+```python
 @dataclass(frozen=True)
 class SwarmBudget
 ⋮----
@@ -7532,10 +7048,10 @@ expected_action = f"recon:{task.kind}"
 remaining = limits.max_total_requests - used
 ⋮----
 allocated = min(task.max_requests, remaining)
-````
+```
 
-## File: backend/app/totp_auth.py
-````python
+## File: app/totp_auth.py
+```python
 def _strict_bool(name: str, default: bool = False) -> bool
 ⋮----
 raw = os.getenv(name)
@@ -7599,10 +7115,10 @@ key = f"xbow:totp-used:{fingerprint}"
 def require_totp_for_mutation(request: Request) -> None
 ⋮----
 code = request.headers.get("x-totp-code", "").strip()
-````
+```
 
-## File: backend/app/validation_state.py
-````python
+## File: app/validation_state.py
+```python
 @dataclass(frozen=True)
 class ValidationState
 ⋮----
@@ -7656,10 +7172,10 @@ def attempted_finding_ids(graph: Any) -> set[str]
 def has_observed_independent_validation(graph: Any, finding_id: str) -> bool
 ⋮----
 def has_evidence_backed_independent_validation(graph: Any, finding_id: str) -> bool
-````
+```
 
-## File: backend/app/validator.py
-````python
+## File: app/validator.py
+```python
 class ValidationPolicyError(RuntimeError)
 ⋮----
 class _NoRedirect(HTTPRedirectHandler)
@@ -7799,10 +7315,10 @@ marker_observation = _request_get(
 marker_bytes = marker.encode("utf-8")
 ⋮----
 preview = _preview_body(baseline.body, baseline.content_type)
-````
+```
 
-## File: backend/app/vault_cli.py
-````python
+## File: app/vault_cli.py
+```python
 def main() -> int
 ⋮----
 parser = argparse.ArgumentParser(
@@ -7810,10 +7326,10 @@ parser = argparse.ArgumentParser(
 args = parser.parse_args()
 ⋮----
 result = rekey_vault()
-````
+```
 
-## File: backend/app/worker_audit.py
-````python
+## File: app/worker_audit.py
+```python
 _AUDIT_FIELDS = {
 ⋮----
 def _canonical_worker_event(event: dict[str, Any]) -> bytes
@@ -7849,10 +7365,10 @@ signature = item.get("worker_signature")
 expected_signature = hmac.new(
 ⋮----
 previous_hash = str(item["worker_hash"])
-````
+```
 
-## File: backend/app/worker_service.py
-````python
+## File: app/worker_service.py
+```python
 class CampaignCancelledError(ValueError)
 ⋮----
 class StaleValidationJobError(ValidationPolicyError)
@@ -7996,10 +7512,10 @@ worker_id = os.getenv("XBOW_WORKER_ID", f"{socket.gethostname()}:{os.getpid()}")
 poll = _worker_poll_seconds()
 ⋮----
 worked = process_one(queue, store, worker_id)
-````
+```
 
-## File: backend/app/worker_watchdog.py
-````python
+## File: app/worker_watchdog.py
+```python
 def _positive_int(name: str, default: int, *, minimum: int, maximum: int) -> int
 ⋮----
 raw = os.getenv(name, str(default))
@@ -8019,10 +7535,10 @@ lease_age = metrics.get("oldest_running_lease_age_seconds")
 failed = int((metrics.get("jobs_by_status") or {}).get("failed") or 0)
 ⋮----
 status = (
-````
+```
 
-## File: backend/app/worker.py
-````python
+## File: app/worker.py
+```python
 @dataclass
 class WorkerPlan
 ⋮----
@@ -8146,10 +7662,10 @@ artifacts: list[dict] = []
 content = result.get(key)
 ⋮----
 vuln_path = locate_vulnerabilities_json(str(result.get("output_dir") or ""))
-````
+```
 
-## File: backend/tests/test_adaptive_cycle.py
-````python
+## File: tests/test_adaptive_cycle.py
+```python
 def _gate(*, blocked: bool = False, human: bool = False, focus: str = "review_surface") -> AutonomyGate
 ⋮----
 def test_cycle_halts_when_gate_is_blocked()
@@ -8171,10 +7687,10 @@ def test_cycle_halts_for_human_review_after_repeated_requeues_without_success()
 worker_outcomes = {
 ⋮----
 def test_cycle_does_not_suppress_recovered_worker_kind()
-````
+```
 
-## File: backend/tests/test_agent_registry.py
-````python
+## File: tests/test_agent_registry.py
+```python
 def test_agent_registry_routes_every_planner_action()
 ⋮----
 expected = {
@@ -8190,10 +7706,10 @@ def test_specialized_recon_agents_are_registered_centrally()
 profile = agent_by_name(name)
 ⋮----
 def test_agent_by_name_fails_closed_for_unknown_agent()
-````
+```
 
-## File: backend/tests/test_alert_delivery.py
-````python
+## File: tests/test_alert_delivery.py
+```python
 class Response
 ⋮----
 status = 204
@@ -8231,10 +7747,10 @@ signature = request.headers["X-xbow-signature-sha256"]
 def test_webhook_vault_mode_refuses_legacy_signing_secret(monkeypatch)
 ⋮----
 def test_webhook_timeout_configuration_fails_closed(monkeypatch)
-````
+```
 
-## File: backend/tests/test_api_idempotency.py
-````python
+## File: tests/test_api_idempotency.py
+```python
 def _setup(tmp_path, monkeypatch, *, findings=None)
 ⋮----
 db = str(tmp_path / "db.sqlite3")
@@ -8312,10 +7828,10 @@ result = queue_report(campaign.id, "generic")
 original_save = main.save_campaign
 ⋮----
 def fail_save(value, expected_version=None)
-````
+```
 
-## File: backend/tests/test_api_outbox.py
-````python
+## File: tests/test_api_outbox.py
+```python
 def _campaign(events)
 ⋮----
 def test_outbox_snapshot_reports_only_unresolved_intents_and_redacts_ids()
@@ -8382,10 +7898,10 @@ def load(_campaign_id)
 def save(value, expected_version=None)
 ⋮----
 result = main.reconcile_campaign_outbox_local(base.id)
-````
+```
 
-## File: backend/tests/test_api_rate_limit.py
-````python
+## File: tests/test_api_rate_limit.py
+```python
 def _request(path="/api/test", headers=())
 ⋮----
 async def _ok(_request)
@@ -8450,10 +7966,10 @@ def test_client_key_ignores_forwarded_ip_from_untrusted_peer(monkeypatch)
 def test_client_key_fails_closed_on_invalid_forwarded_chain(monkeypatch)
 ⋮----
 def test_client_key_rejects_invalid_trusted_proxy_cidr(monkeypatch)
-````
+```
 
-## File: backend/tests/test_attack_surface_scope.py
-````python
+## File: tests/test_attack_surface_scope.py
+```python
 def test_surface_classifies_scope_and_topology_without_network_calls()
 ⋮----
 graph = ObservationGraph()
@@ -8470,10 +7986,10 @@ campaign = Campaign(
 store = Storage(db, artifacts)
 ⋮----
 result = campaign_attack_surface(campaign.id)
-````
+```
 
-## File: backend/tests/test_attack_surface.py
-````python
+## File: tests/test_attack_surface.py
+```python
 def test_canonical_host_normalizes_case_and_trailing_dot()
 ⋮----
 def test_canonical_endpoint_redacts_query_values_and_default_port()
@@ -8507,10 +8023,10 @@ store = Storage(db, artifacts)
 result = campaign_attack_surface(campaign.id)
 ⋮----
 def test_attack_surface_enrichment_score_rewards_cross_source_context()
-````
+```
 
-## File: backend/tests/test_auth.py
-````python
+## File: tests/test_auth.py
+```python
 def request(headers: dict[str, str] | None = None) -> Request
 ⋮----
 raw = [(k.lower().encode(), v.encode()) for k, v in (headers or {}).items()]
@@ -8589,10 +8105,10 @@ token = "vault-token-" + "v" * 32
 def test_vault_enabled_refuses_legacy_api_token_fallback(monkeypatch, tmp_path)
 ⋮----
 def test_vault_enabled_missing_api_token_fails_closed(monkeypatch, tmp_path)
-````
+```
 
-## File: backend/tests/test_autonomy_gate.py
-````python
+## File: tests/test_autonomy_gate.py
+```python
 def _risk(*, blocked: bool = False, level: str = "low") -> CampaignRisk
 ⋮----
 def _consensus(*, blocked: bool = False, next_focus: str = "review_surface") -> DecisionConsensus
@@ -8606,10 +8122,10 @@ def test_gate_fails_closed_on_policy_runtime_budget_and_health()
 def test_report_focus_always_requires_human_review()
 ⋮----
 def test_autonomy_gate_route_is_exposed()
-````
+```
 
-## File: backend/tests/test_browser.py
-````python
+## File: tests/test_browser.py
+```python
 def _campaign() -> Campaign
 ⋮----
 def test_browser_navigation_fails_closed_outside_scope()
@@ -8706,10 +8222,10 @@ def test_browser_pending_intent_is_visible_in_outbox(tmp_path, monkeypatch)
 pending = Campaign.model_validate(document)
 ⋮----
 snapshot = outbox_snapshot(store.get_campaign(campaign.id)["events"])
-````
+```
 
-## File: backend/tests/test_campaign_audit.py
-````python
+## File: tests/test_campaign_audit.py
+```python
 def test_campaign_event_chain_detects_tampering(monkeypatch)
 ⋮----
 events = []
@@ -8727,10 +8243,10 @@ def test_campaign_event_chain_reports_legacy_prefix(monkeypatch)
 events = [{"type": "legacy", "at": "old"}]
 ⋮----
 result = verify_campaign_event_chain(events)
-````
+```
 
-## File: backend/tests/test_campaign_cancel.py
-````python
+## File: tests/test_campaign_cancel.py
+```python
 def _setup(tmp_path, monkeypatch)
 ⋮----
 db = str(tmp_path / "db.sqlite3")
@@ -8772,10 +8288,10 @@ final = jobs.get(job["id"])
 def test_cancelled_campaign_rejects_new_mutations(tmp_path, monkeypatch)
 ⋮----
 candidate = Finding(
-````
+```
 
-## File: backend/tests/test_campaign_circuit_breaker.py
-````python
+## File: tests/test_campaign_circuit_breaker.py
+```python
 def _campaign()
 ⋮----
 def test_circuit_breaker_persists_and_resets(tmp_path)
@@ -8816,10 +8332,10 @@ claimed = queue.claim("fixture-worker")
 result = campaign_control_status(campaign.id)
 ⋮----
 def test_control_status_exposes_scanner_stability_and_recon_telemetry(tmp_path, monkeypatch)
-````
+```
 
-## File: backend/tests/test_campaign_overview.py
-````python
+## File: tests/test_campaign_overview.py
+```python
 def _setup(tmp_path, monkeypatch)
 ⋮----
 db = str(tmp_path / "db.sqlite3")
@@ -8852,10 +8368,10 @@ def test_overview_does_not_flag_runtime_exhaustion_for_terminal_campaign(tmp_pat
 def test_overview_flags_campaign_finding_missing_from_graph(tmp_path, monkeypatch)
 ⋮----
 def test_overview_reports_human_review_readiness_after_complete_validation(tmp_path, monkeypatch)
-````
+```
 
-## File: backend/tests/test_campaign_review_state.py
-````python
+## File: tests/test_campaign_review_state.py
+```python
 def _finding(finding_id: str, status: str = "validation_required")
 ⋮----
 def test_review_state_prioritizes_independent_validation()
@@ -8869,10 +8385,10 @@ def test_review_state_surfaces_human_report_review_when_ready()
 state = build_campaign_review_state([_finding("f1", "confirmed")], graph)
 ⋮----
 def test_review_state_route_is_exposed()
-````
+```
 
-## File: backend/tests/test_campaign_risk.py
-````python
+## File: tests/test_campaign_risk.py
+```python
 def test_campaign_risk_escalates_on_scope_integrity_and_low_coverage()
 ⋮----
 graph = ObservationGraph()
@@ -8894,10 +8410,10 @@ campaign = Campaign(
 store = Storage(db, artifacts)
 ⋮----
 result = campaign_risk(campaign.id)
-````
+```
 
-## File: backend/tests/test_campaign_runtime.py
-````python
+## File: tests/test_campaign_runtime.py
+```python
 def test_runtime_status_reports_remaining_budget()
 ⋮----
 now = datetime(2026, 9, 10, 10, 0, tzinfo=timezone.utc)
@@ -8918,10 +8434,10 @@ status = runtime_status(created, now=now)
 def test_runtime_rejects_naive_timestamp()
 ⋮----
 def test_runtime_limit_rejects_unsafe_tiny_values()
-````
+```
 
-## File: backend/tests/test_chain_detector.py
-````python
+## File: tests/test_chain_detector.py
+```python
 def test_complete_validation_chain_is_prioritized()
 ⋮----
 graph = ObservationGraph()
@@ -8938,10 +8454,10 @@ def test_max_depth_truncates_long_provenance_path()
 chains = detect_chains(graph, max_depth=2)
 ⋮----
 def test_invalid_bounds_fail_closed()
-````
+```
 
-## File: backend/tests/test_control_views.py
-````python
+## File: tests/test_control_views.py
+```python
 def _campaign() -> Campaign
 ⋮----
 def _configure(tmp_path, monkeypatch)
@@ -8974,10 +8490,10 @@ jobs = JobQueue()
 ⋮----
 before_observations = len(store.list_observations(campaign.id))
 before_jobs = jobs.campaign_job_counts(campaign.id)
-````
+```
 
-## File: backend/tests/test_coverage.py
-````python
+## File: tests/test_coverage.py
+```python
 def test_coverage_is_read_only_and_does_not_claim_unknown_completeness()
 ⋮----
 graph = ObservationGraph()
@@ -8993,10 +8509,10 @@ def test_coverage_guidance_is_advisory_only()
 guidance = build_coverage_guidance(
 ⋮----
 def test_coverage_guidance_prioritizes_validation_after_scan()
-````
+```
 
-## File: backend/tests/test_decision_audit.py
-````python
+## File: tests/test_decision_audit.py
+```python
 def _decision(seq, previous_hash, *, observation_id=None, action="scan")
 ⋮----
 observation_id = observation_id or f"d{seq}"
@@ -9020,10 +8536,10 @@ def test_decision_audit_chain_detects_sequence_gap()
 def test_decision_audit_chain_preserves_legacy_unsealed_entries()
 ⋮----
 def test_signed_decision_fails_closed_without_key(monkeypatch)
-````
+```
 
-## File: backend/tests/test_decision_consensus.py
-````python
+## File: tests/test_decision_consensus.py
+```python
 def test_scope_integrity_blocks_downstream_work()
 ⋮----
 decisions = [
@@ -9039,10 +8555,10 @@ def test_empty_decisions_are_stable_idle_consensus()
 result = build_decision_consensus([])
 ⋮----
 def test_contradictory_history_is_a_blocking_consensus_signal()
-````
+```
 
-## File: backend/tests/test_decision_timeline.py
-````python
+## File: tests/test_decision_timeline.py
+```python
 def _campaign()
 ⋮----
 def _graph()
@@ -9086,10 +8602,10 @@ stability = result["planner_stability"]
 def test_planner_stability_detects_oscillation(monkeypatch)
 ⋮----
 def test_planner_stability_flags_action_after_stop(monkeypatch)
-````
+```
 
-## File: backend/tests/test_deployment_config.py
-````python
+## File: tests/test_deployment_config.py
+```python
 def _compose() -> str
 ⋮----
 def _env_example() -> str
@@ -9110,10 +8626,10 @@ def test_compose_keeps_state_private_and_shared_only_where_needed()
 frontend = compose.split("  frontend:", 1)[1]
 ⋮----
 def test_compose_enforces_resource_and_shutdown_bounds()
-````
+```
 
-## File: backend/tests/test_deployment_preflight.py
-````python
+## File: tests/test_deployment_preflight.py
+```python
 _ENV_NAMES = (
 ⋮----
 def _clear(monkeypatch)
@@ -9155,10 +8671,10 @@ def test_preflight_reports_strict_job_provenance_by_default(monkeypatch)
 def test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled(monkeypatch)
 ⋮----
 def test_preflight_rejects_invalid_legacy_provenance_boolean(monkeypatch)
-````
+```
 
-## File: backend/tests/test_differential_evidence_integration.py
-````python
+## File: tests/test_differential_evidence_integration.py
+```python
 def _finding(fid: str) -> Finding
 ⋮----
 def _campaign(*findings: Finding) -> Campaign
@@ -9188,10 +8704,10 @@ graph = ObservationGraph()
 ⋮----
 decisions = build_red_team_decisions(findings, graph)
 strengthen = next(item for item in decisions if item.kind == "strengthen_evidence")
-````
+```
 
-## File: backend/tests/test_differential_intelligence.py
-````python
+## File: tests/test_differential_intelligence.py
+```python
 def test_differential_signal_classification_is_conservative()
 ⋮----
 def test_graph_signal_aggregation_prefers_strong_and_preserves_provenance()
@@ -9202,10 +8718,10 @@ signals = build_differential_signals(graph)
 signal = signals["f1"]
 ⋮----
 def test_graph_signal_aggregation_defaults_to_none_for_findings_without_differential_metadata()
-````
+```
 
-## File: backend/tests/test_distributed_concurrency.py
-````python
+## File: tests/test_distributed_concurrency.py
+```python
 def _postgres_url()
 ⋮----
 def _redis_url()
@@ -9343,10 +8859,10 @@ result = ("ok", version, index)
 result = ("conflict", None, index)
 ⋮----
 winners = [
-````
+```
 
-## File: backend/tests/test_domain_incident_lifecycle.py
-````python
+## File: tests/test_domain_incident_lifecycle.py
+```python
 T0 = datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
 ⋮----
 def incident(domain, fingerprint, severity="degraded")
@@ -9365,10 +8881,10 @@ def test_recovery_of_one_domain_does_not_resolve_another()
 def test_changed_fingerprint_rotates_only_its_domain()
 ⋮----
 def test_repeated_domain_fingerprint_is_deduplicated()
-````
+```
 
-## File: backend/tests/test_domain_lifecycle_integration.py
-````python
+## File: tests/test_domain_lifecycle_integration.py
+```python
 def telemetry()
 ⋮----
 def metrics(watchdog="ok", failed=0)
@@ -9380,10 +8896,10 @@ store = IncidentStore(str(tmp_path / "incidents.sqlite3"))
 status = read_incident_status(store)
 ⋮----
 def test_domain_recovery_does_not_close_other_active_incident(tmp_path, monkeypatch)
-````
+```
 
-## File: backend/tests/test_dr_cli.py
-````python
+## File: tests/test_dr_cli.py
+```python
 def test_manifest_cli_refuses_output_collision(monkeypatch, tmp_path, capsys)
 ⋮----
 postgres = tmp_path / "postgres.dump"
@@ -9391,10 +8907,10 @@ redis = tmp_path / "dump.rdb"
 vault = tmp_path / "secrets.vault.json"
 ⋮----
 output = capsys.readouterr().out
-````
+```
 
-## File: backend/tests/test_dr_manifest.py
-````python
+## File: tests/test_dr_manifest.py
+```python
 def _files(tmp_path)
 ⋮----
 postgres = tmp_path / "postgres.dump"
@@ -9450,10 +8966,10 @@ def test_legacy_signed_v1_manifest_remains_backward_compatible(tmp_path, monkeyp
 def test_legacy_v1_rejects_partial_signature_stripping(tmp_path, monkeypatch)
 ⋮----
 def test_signed_manifest_fails_closed_when_key_becomes_unavailable(tmp_path, monkeypatch)
-````
+```
 
-## File: backend/tests/test_error_budget.py
-````python
+## File: tests/test_error_budget.py
+```python
 def telemetry(short_rate, long_rate, short_events=100, long_events=1000)
 ⋮----
 def test_error_budget_is_healthy_with_low_failure_rates(monkeypatch)
@@ -9473,10 +8989,10 @@ def test_low_sample_volume_does_not_page(monkeypatch)
 result = build_error_budget_status(
 ⋮----
 def test_invalid_success_target_fails_closed(monkeypatch)
-````
+```
 
-## File: backend/tests/test_evidence_backed_planner.py
-````python
+## File: tests/test_evidence_backed_planner.py
+```python
 def _campaign(status="validation_required")
 ⋮----
 def _observed_graph(*, with_evidence: bool) -> ObservationGraph
@@ -9494,10 +9010,10 @@ action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=True)
 def test_planner_allows_report_phase_only_after_evidence_backed_resolution()
 ⋮----
 action = AdaptivePlanner().plan(
-````
+```
 
-## File: backend/tests/test_evidence_chain.py
-````python
+## File: tests/test_evidence_chain.py
+```python
 def test_incomplete_chain_reports_missing_support()
 ⋮----
 graph = ObservationGraph()
@@ -9525,10 +9041,10 @@ campaign = Campaign(
 store = Storage(db, artifacts)
 ⋮----
 result = campaign_evidence_chains(campaign.id)
-````
+```
 
-## File: backend/tests/test_evidence_quality.py
-````python
+## File: tests/test_evidence_quality.py
+```python
 def _base_graph() -> ObservationGraph
 ⋮----
 graph = ObservationGraph()
@@ -9558,10 +9074,10 @@ store = Storage(db, artifacts)
 result = campaign_evidence_quality(campaign.id)
 ⋮----
 def test_artifact_reference_without_sha256_is_not_high_grade()
-````
+```
 
-## File: backend/tests/test_finding_cluster_consensus.py
-````python
+## File: tests/test_finding_cluster_consensus.py
+```python
 def _finding(fid: str, endpoint: str)
 ⋮----
 def _graph_for(ids)
@@ -9587,10 +9103,10 @@ cluster = build_cluster_consensus(
 def test_cluster_consensus_blocks_on_any_contradictory_member()
 ⋮----
 def test_cluster_consensus_route_is_exposed()
-````
+```
 
-## File: backend/tests/test_finding_cluster_saturation.py
-````python
+## File: tests/test_finding_cluster_saturation.py
+```python
 def _finding(fid: str, endpoint: str)
 ⋮----
 def _base_graph()
@@ -9607,10 +9123,10 @@ item = build_cluster_saturation(findings, graph)[0]
 def test_cluster_saturation_explains_missing_quality_requirements()
 ⋮----
 def test_cluster_saturation_route_is_exposed()
-````
+```
 
-## File: backend/tests/test_finding_consensus.py
-````python
+## File: tests/test_finding_consensus.py
+```python
 def _graph() -> ObservationGraph
 ⋮----
 graph = ObservationGraph()
@@ -9632,10 +9148,10 @@ def test_two_evidence_backed_validators_form_quorum()
 def test_self_validation_does_not_count_as_independent_consensus()
 ⋮----
 def test_finding_consensus_route_is_exposed()
-````
+```
 
-## File: backend/tests/test_finding_correlation.py
-````python
+## File: tests/test_finding_correlation.py
+```python
 def _finding(finding_id: str, endpoint: str, *, severity: str = "medium")
 ⋮----
 def test_correlates_canonical_duplicate_findings_without_query_values()
@@ -9690,10 +9206,10 @@ def test_cluster_route_is_exposed(tmp_path, monkeypatch)
 db = str(tmp_path / "clusters.sqlite3")
 ⋮----
 result = campaign_finding_clusters(campaign.id)
-````
+```
 
-## File: backend/tests/test_finding_intelligence.py
-````python
+## File: tests/test_finding_intelligence.py
+```python
 def _finding(fid: str, endpoint: str, severity: str = "high")
 ⋮----
 def _graph()
@@ -9720,10 +9236,10 @@ def test_finding_intelligence_does_not_expose_query_values()
 serialized = str(result)
 ⋮----
 def test_finding_intelligence_route_is_exposed()
-````
+```
 
-## File: backend/tests/test_finding_lifecycle.py
-````python
+## File: tests/test_finding_lifecycle.py
+```python
 def _finding(finding_id: str, status: str)
 ⋮----
 def test_candidate_recommends_validation_without_execution_authority()
@@ -9745,10 +9261,10 @@ def test_rejected_finding_is_terminal()
 item = build_finding_lifecycle([_finding("f1", "rejected")], ObservationGraph())[0]
 ⋮----
 def test_finding_lifecycle_route_is_exposed()
-````
+```
 
-## File: backend/tests/test_finding_readiness.py
-````python
+## File: tests/test_finding_readiness.py
+```python
 def _finding(finding_id="f1", severity="high")
 ⋮----
 def _strong_graph()
@@ -9768,10 +9284,10 @@ item = build_finding_readiness(
 def test_contradictory_history_blocks_readiness_even_with_strong_evidence()
 ⋮----
 def test_readiness_route_is_exposed()
-````
+```
 
-## File: backend/tests/test_finding_triage.py
-````python
+## File: tests/test_finding_triage.py
+```python
 def _finding(finding_id: str, severity: str, *, endpoint: str | None = None, cwe: str | None = None)
 ⋮----
 def test_triage_prioritizes_critical_unvalidated_finding()
@@ -9810,10 +9326,10 @@ triage = build_finding_triage([finding], graph)[0]
 def test_triage_allows_report_review_with_high_quality_artifact_backed_evidence()
 ⋮----
 finding = _finding("quality-high", "high")
-````
+```
 
-## File: backend/tests/test_form_waf_reasoning.py
-````python
+## File: tests/test_form_waf_reasoning.py
+```python
 def _graph() -> ObservationGraph
 ⋮----
 graph = ObservationGraph()
@@ -9834,10 +9350,10 @@ graph = _graph()
 before = build_red_team_coverage(graph)
 ⋮----
 after = build_red_team_coverage(graph)
-````
+```
 
-## File: backend/tests/test_frontend_policy_launcher.py
-````python
+## File: tests/test_frontend_policy_launcher.py
+```python
 ROOT = Path(__file__).resolve().parents[2]
 ⋮----
 def test_hackerone_single_mutation_launch_route_exists()
@@ -9850,10 +9366,10 @@ html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
 launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
 ⋮----
 required_ids = (
-````
+```
 
-## File: backend/tests/test_hackerone_binding.py
-````python
+## File: tests/test_hackerone_binding.py
+```python
 def _admission_payload()
 ⋮----
 def _admitted_campaign(tmp_path, monkeypatch)
@@ -9904,10 +9420,10 @@ campaign = main.Campaign(
 start_result = main.start_campaign(campaign.id)
 ⋮----
 provenance = start_result["job"]["payload"]["_provenance"]
-````
+```
 
-## File: backend/tests/test_hackerone_launch_api.py
-````python
+## File: tests/test_hackerone_launch_api.py
+```python
 def _resource(identifier: str, eligible: bool = True)
 ⋮----
 def _payload()
@@ -9926,10 +9442,10 @@ result = response.json()
 persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
 ⋮----
 event_types = [event.get("type") for event in persisted["events"]]
-````
+```
 
-## File: backend/tests/test_hackerone_scope_preview_api.py
-````python
+## File: tests/test_hackerone_scope_preview_api.py
+```python
 def _resource(identifier: str, asset_type: str, eligible: bool)
 ⋮----
 def _policy_values(**overrides)
@@ -9994,10 +9510,10 @@ bound = [event for event in persisted["events"] if event.get("type") == "hackero
 db = str(tmp_path / "blocked.sqlite3")
 ⋮----
 admission_policy = {
-````
+```
 
-## File: backend/tests/test_health.py
-````python
+## File: tests/test_health.py
+```python
 class HealthyQueue
 ⋮----
 def health(self)
@@ -10023,10 +9539,10 @@ result = main.health()
 def test_health_returns_503_when_database_unhealthy(monkeypatch)
 ⋮----
 def test_health_returns_503_when_database_probe_raises(monkeypatch)
-````
+```
 
-## File: backend/tests/test_hypothesis_engine.py
-````python
+## File: tests/test_hypothesis_engine.py
+```python
 def test_hypotheses_are_bounded_and_deterministic()
 ⋮----
 graph = ObservationGraph()
@@ -10060,10 +9576,10 @@ store = Storage(db, artifacts)
 result = campaign_hypotheses(campaign.id)
 ⋮----
 def test_limit_fails_closed_outside_bounds()
-````
+```
 
-## File: backend/tests/test_hypothesis_memory.py
-````python
+## File: tests/test_hypothesis_memory.py
+```python
 def _graph()
 ⋮----
 graph = ObservationGraph()
@@ -10122,10 +9638,10 @@ item = summarize_hypothesis_stability(snapshots)[0]
 def test_stability_marks_three_identical_snapshots_as_stable()
 ⋮----
 def test_stability_detects_confidence_reversal_as_contradictory()
-````
+```
 
-## File: backend/tests/test_incident_api.py
-````python
+## File: tests/test_incident_api.py
+```python
 def seeded_store(tmp_path)
 ⋮----
 store = IncidentStore(str(tmp_path / "incidents.sqlite3"))
@@ -10145,10 +9661,10 @@ def test_stale_acknowledgement_is_conflict(tmp_path)
 def test_unknown_or_non_open_incident_is_noop(tmp_path)
 ⋮----
 result = acknowledge_incident_versioned(store, "missing", expected_version=version)
-````
+```
 
-## File: backend/tests/test_incident_domains.py
-````python
+## File: tests/test_incident_domains.py
+```python
 def test_domains_are_independent()
 ⋮----
 result = build_domain_incidents(
@@ -10158,10 +9674,10 @@ def test_healthy_domain_has_no_incident()
 def test_same_signals_in_different_domains_have_distinct_fingerprints()
 ⋮----
 def test_output_is_redacted()
-````
+```
 
-## File: backend/tests/test_incident_engine.py
-````python
+## File: tests/test_incident_engine.py
+```python
 def test_healthy_sources_produce_no_incident()
 ⋮----
 result = build_incident_snapshot(
@@ -10176,10 +9692,10 @@ a = build_incident_snapshot(
 b = build_incident_snapshot(
 ⋮----
 def test_incident_engine_never_enables_recovery_or_retry()
-````
+```
 
-## File: backend/tests/test_incident_http_api.py
-````python
+## File: tests/test_incident_http_api.py
+```python
 TOKEN = "t" * 32
 ⋮----
 def client(monkeypatch, tmp_path)
@@ -10211,10 +9727,10 @@ response = c.post(
 def test_acknowledge_rejects_stale_version(monkeypatch, tmp_path)
 ⋮----
 store = main.incident_store()
-````
+```
 
-## File: backend/tests/test_incident_lifecycle.py
-````python
+## File: tests/test_incident_lifecycle.py
+```python
 T0 = datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
 ⋮----
 def snap(fingerprint="abc", severity="degraded")
@@ -10243,10 +9759,10 @@ history = apply_incident_snapshot(history, {"incident": None}, now=T0 + timedelt
 history = apply_incident_snapshot(history, snap("two"), now=T0 + timedelta(seconds=120))
 history = apply_incident_snapshot(history, {"incident": None}, now=T0 + timedelta(seconds=180))
 stats = incident_reliability_stats(history)
-````
+```
 
-## File: backend/tests/test_incident_observer.py
-````python
+## File: tests/test_incident_observer.py
+```python
 def healthy_metrics()
 ⋮----
 def healthy_telemetry()
@@ -10265,10 +9781,10 @@ result = observe_incidents(store, metrics, healthy_telemetry())
 def test_repeated_identical_incident_is_deduplicated(tmp_path)
 ⋮----
 def test_healthy_observation_resolves_active_incident(tmp_path)
-````
+```
 
-## File: backend/tests/test_incident_store_fencing.py
-````python
+## File: tests/test_incident_store_fencing.py
+```python
 def test_current_leader_can_commit(tmp_path)
 ⋮----
 path = str(tmp_path / "shared.sqlite3")
@@ -10285,10 +9801,10 @@ old_generation = lease.acquire("old", ttl_seconds=10, now=now)
 new_generation = lease.acquire("new", ttl_seconds=10, now=now + timedelta(seconds=11))
 ⋮----
 def test_incomplete_fence_fails_closed(tmp_path)
-````
+```
 
-## File: backend/tests/test_incident_store.py
-````python
+## File: tests/test_incident_store.py
+```python
 def test_incident_store_round_trip(tmp_path)
 ⋮----
 store = IncidentStore(str(tmp_path / "incidents.sqlite3"))
@@ -10302,10 +9818,10 @@ def test_incident_store_instances_share_state(tmp_path)
 path = str(tmp_path / "incidents.sqlite3")
 first = IncidentStore(path)
 second = IncidentStore(path)
-````
+```
 
-## File: backend/tests/test_job_provenance_api_integration.py
-````python
+## File: tests/test_job_provenance_api_integration.py
+```python
 def _campaign(*, findings=None)
 ⋮----
 def _runtime(tmp_path, monkeypatch, *, campaign=None)
@@ -10342,10 +9858,10 @@ def test_resolution_accepts_evidence_backed_independent_validation(tmp_path, mon
 ⋮----
 result = main.validate_finding(campaign.id, "f1", confirmed=True, validator="validator")
 report_job = jobs.get_by_dedupe(campaign.id, "report", "report:generic:completed")
-````
+```
 
-## File: backend/tests/test_job_provenance_integration.py
-````python
+## File: tests/test_job_provenance_integration.py
+```python
 def _campaign(*, findings=None)
 ⋮----
 def _assert_bound(job, campaign, expected_kind)
@@ -10382,10 +9898,10 @@ campaign = _campaign(findings=[finding])
 ⋮----
 validation_jobs = _enqueue_action(
 report_jobs = _enqueue_action(
-````
+```
 
-## File: backend/tests/test_job_provenance.py
-````python
+## File: tests/test_job_provenance.py
+```python
 def _campaign(*, allowed_targets=None, rps=2.0)
 ⋮----
 def test_policy_fingerprint_is_deterministic_and_order_stable()
@@ -10437,10 +9953,10 @@ result = main.get_job_provenance_status("job-1")
 rendered = str(result)
 ⋮----
 def test_capabilities_advertise_policy_bound_job_provenance()
-````
+```
 
-## File: backend/tests/test_jobqueue.py
-````python
+## File: tests/test_jobqueue.py
+```python
 def test_queue_claim_and_complete(tmp_path)
 ⋮----
 q = JobQueue(str(tmp_path / "q.sqlite3"))
@@ -10577,10 +10093,10 @@ newer = q.enqueue("campaign-1", "independent_validation", {"finding_id": "f1"})
 claimed = q.claim_allowed(
 ⋮----
 def test_claim_allowed_rejects_empty_and_unknown_kind_sets(tmp_path)
-````
+```
 
-## File: backend/tests/test_knowledge_memory.py
-````python
+## File: tests/test_knowledge_memory.py
+```python
 def _finding_graph()
 ⋮----
 graph = ObservationGraph()
@@ -10648,10 +10164,10 @@ def test_classic_and_explainable_rankings_share_severity_order()
 ⋮----
 classic = rank_findings(findings, graph)
 explainable = rank_findings_explainable(
-````
+```
 
-## File: backend/tests/test_learning_memory.py
-````python
+## File: tests/test_learning_memory.py
+```python
 def test_learning_memory_aggregates_only_explicit_outcomes()
 ⋮----
 graph = ObservationGraph()
@@ -10684,10 +10200,10 @@ event = worker_outcome_event(
 summary = summarize_worker_outcomes([{**event, "at": "t1"}])
 ⋮----
 def test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits()
-````
+```
 
-## File: backend/tests/test_metrics.py
-````python
+## File: tests/test_metrics.py
+```python
 class Queue
 ⋮----
 def stats(self)
@@ -10703,10 +10219,10 @@ result = build_operational_metrics(Queue(), Storage())
 rendered = str(result)
 ⋮----
 def test_metrics_route_is_exposed_under_authenticated_api()
-````
+```
 
-## File: backend/tests/test_nuclei_preflight.py
-````python
+## File: tests/test_nuclei_preflight.py
+```python
 _SCANNER_ENV = (
 ⋮----
 def _clear(monkeypatch)
@@ -10724,10 +10240,10 @@ result = build_deployment_preflight({"ok": True})
 def test_preflight_accepts_complete_active_nuclei_configuration_without_leaking_version(monkeypatch)
 ⋮----
 def test_preflight_rejects_invalid_nuclei_boolean_fail_closed(monkeypatch)
-````
+```
 
-## File: backend/tests/test_nuclei_queue_lifecycle.py
-````python
+## File: tests/test_nuclei_queue_lifecycle.py
+```python
 def _campaign()
 ⋮----
 def test_scan_engines_default_preserves_strix(monkeypatch)
@@ -10759,10 +10275,10 @@ run_dir = Path(plan.output_dir)
 item = {
 ⋮----
 counts = queue.campaign_job_counts(campaign.id)
-````
+```
 
-## File: backend/tests/test_nuclei_worker_plan.py
-````python
+## File: tests/test_nuclei_worker_plan.py
+```python
 def _campaign(*, rps: float = 2.0)
 ⋮----
 def _configure_run_root(monkeypatch, tmp_path)
@@ -10818,10 +10334,10 @@ def test_nuclei_active_execution_rejects_version_mismatch(monkeypatch, tmp_path)
 stdout = "Nuclei Engine Version: v3.98.0"
 ⋮----
 plan = build_nuclei_plan(_campaign(), str(root / "job-mismatch"))
-````
+```
 
-## File: backend/tests/test_observation_graph.py
-````python
+## File: tests/test_observation_graph.py
+```python
 def campaign(*, automated_scanning=True, findings=())
 ⋮----
 def finding(finding_id="f1", status="validation_required")
@@ -10877,10 +10393,10 @@ def test_planner_requires_validation_source_independence()
 def test_planner_stops_when_automation_is_disabled()
 ⋮----
 action = AdaptivePlanner().plan(campaign(automated_scanning=False), graph)[0]
-````
+```
 
-## File: backend/tests/test_observation_writer_provenance.py
-````python
+## File: tests/test_observation_writer_provenance.py
+```python
 def test_record_artifact_seals_storage_provenance_against_metadata_override(tmp_path)
 ⋮----
 db = str(tmp_path / "db.sqlite3")
@@ -10891,10 +10407,10 @@ artifact = store.put_artifact(
 observation_id = record_artifact(
 ⋮----
 observation = next(
-````
+```
 
-## File: backend/tests/test_observer_deadline_heartbeat.py
-````python
+## File: tests/test_observer_deadline_heartbeat.py
+```python
 def test_deadline_must_be_below_lease_ttl(monkeypatch)
 ⋮----
 def test_scheduler_reports_deadline_exceeded(monkeypatch, tmp_path)
@@ -10912,10 +10428,10 @@ lease = ObserverLease(path)
 generation = lease.acquire("node-a", ttl_seconds=10)
 ⋮----
 result = with_lease_heartbeat(
-````
+```
 
-## File: backend/tests/test_observer_fencing_integration.py
-````python
+## File: tests/test_observer_fencing_integration.py
+```python
 def critical_metrics()
 ⋮----
 def telemetry()
@@ -10943,10 +10459,10 @@ def test_current_leader_end_to_end_commit_succeeds(tmp_path)
 generation = lease.acquire("node-b", ttl_seconds=90)
 ⋮----
 result = observe_incidents(
-````
+```
 
-## File: backend/tests/test_observer_fencing.py
-````python
+## File: tests/test_observer_fencing.py
+```python
 NOW = datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
 ⋮----
 def test_generation_increases_after_failover(tmp_path)
@@ -10962,10 +10478,10 @@ def test_current_generation_can_heartbeat(tmp_path)
 generation = lease.acquire("one", ttl_seconds=10, now=NOW)
 ⋮----
 def test_stale_generation_cannot_release_new_leader(tmp_path)
-````
+```
 
-## File: backend/tests/test_observer_health_http.py
-````python
+## File: tests/test_observer_health_http.py
+```python
 TOKEN = "t" * 32
 ⋮----
 def test_observer_health_route_uses_shared_runtime(monkeypatch)
@@ -10976,10 +10492,10 @@ before = runtime.snapshot()["deadline_exceeded_count"]
 response = TestClient(main.app).get(
 ⋮----
 payload = response.json()
-````
+```
 
-## File: backend/tests/test_observer_health_metrics.py
-````python
+## File: tests/test_observer_health_metrics.py
+```python
 NOW = datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
 ⋮----
 def test_observer_health_metrics_exposes_redacted_ages_and_counters()
@@ -10992,10 +10508,10 @@ def test_health_object_tracks_new_counters()
 health = ObserverHealth()
 ⋮----
 result = health.snapshot()
-````
+```
 
-## File: backend/tests/test_observer_resilience.py
-````python
+## File: tests/test_observer_resilience.py
+```python
 NOW = datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
 ⋮----
 def test_success_resets_failure_streak()
@@ -11011,10 +10527,10 @@ def test_generation_changes_are_counted()
 def test_snapshot_is_redacted()
 ⋮----
 result = ObserverHealth().snapshot()
-````
+```
 
-## File: backend/tests/test_observer_runtime.py
-````python
+## File: tests/test_observer_runtime.py
+```python
 def test_runtime_returns_same_process_singleton()
 ⋮----
 def test_runtime_snapshot_is_detached()
@@ -11022,10 +10538,10 @@ def test_runtime_snapshot_is_detached()
 runtime = ObserverRuntime()
 ⋮----
 first = runtime.snapshot()
-````
+```
 
-## File: backend/tests/test_observer_scheduler.py
-````python
+## File: tests/test_observer_scheduler.py
+```python
 NOW = datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
 ⋮----
 def test_only_one_owner_holds_active_lease(tmp_path)
@@ -11044,10 +10560,10 @@ def test_scheduler_releases_lease_after_pass(tmp_path)
 result = run_scheduled_observation(lease, "me", lambda owner, generation: {"ok": True})
 ⋮----
 def test_invalid_scheduler_config_fails_closed(monkeypatch)
-````
+```
 
-## File: backend/tests/test_observer_slo.py
-````python
+## File: tests/test_observer_slo.py
+```python
 def test_observer_slo_healthy_by_default()
 ⋮----
 def test_failure_streak_degrades_then_becomes_critical()
@@ -11059,10 +10575,10 @@ result = build_observer_slo({"last_success_age_seconds": 301})
 def test_circuit_open_is_critical()
 ⋮----
 def test_deadline_or_leadership_loss_degrades()
-````
+```
 
-## File: backend/tests/test_openapi_integrity.py
-````python
+## File: tests/test_openapi_integrity.py
+```python
 def test_openapi_operation_ids_are_unique()
 ⋮----
 schema = app.openapi()
@@ -11096,10 +10612,10 @@ exposed = []
 def test_capability_manifest_is_authenticated_and_conservative()
 ⋮----
 capabilities = system_capabilities()
-````
+```
 
-## File: backend/tests/test_operational_alerts.py
-````python
+## File: tests/test_operational_alerts.py
+```python
 def test_operational_alerts_are_aggregate_only(monkeypatch)
 ⋮----
 result = build_operational_alerts(
@@ -11109,10 +10625,10 @@ def test_operational_alerts_ok_below_thresholds(monkeypatch)
 def test_operational_alert_thresholds_fail_closed(monkeypatch)
 ⋮----
 def test_alerts_route_is_exposed_under_authenticated_api()
-````
+```
 
-## File: backend/tests/test_operational_slo.py
-````python
+## File: tests/test_operational_slo.py
+```python
 def base_metrics()
 ⋮----
 def test_slo_healthy_by_default(monkeypatch)
@@ -11130,10 +10646,10 @@ def test_slo_critical_on_queue_age(monkeypatch)
 def test_slo_critical_when_watchdog_errors(monkeypatch)
 ⋮----
 def test_slo_rejects_inverted_thresholds(monkeypatch)
-````
+```
 
-## File: backend/tests/test_orchestrator_validation_alignment.py
-````python
+## File: tests/test_orchestrator_validation_alignment.py
+```python
 def _campaign()
 ⋮----
 def _graph(validation_value: str, validation_source: str) -> ObservationGraph
@@ -11151,10 +10667,10 @@ pending = _pending_findings(_campaign(), _graph("observed", "scanner"))
 def test_independent_observed_validation_removes_pending_finding()
 ⋮----
 pending = _pending_findings(_campaign(), _graph("observed", "independent-validator"))
-````
+```
 
-## File: backend/tests/test_orchestrator.py
-````python
+## File: tests/test_orchestrator.py
+```python
 def make_campaign(*, automated_scanning=True, findings=None)
 ⋮----
 def test_advance_bootstraps_asset_and_queues_bounded_recon(tmp_path)
@@ -11273,10 +10789,10 @@ breaker = circuit_breaker_state(graph)
 def test_action_after_stop_opens_circuit_breaker_before_new_work(tmp_path)
 ⋮----
 def test_single_planner_reversal_does_not_trip_breaker(tmp_path)
-````
+```
 
-## File: backend/tests/test_outbox_chaos.py
-````python
+## File: tests/test_outbox_chaos.py
+```python
 def _campaign() -> Campaign
 ⋮----
 def _configure(tmp_path, monkeypatch)
@@ -11343,10 +10859,10 @@ failed = first.finish(
 ⋮----
 restarted = JobQueue(db)
 recovered = restarted.get_by_dedupe(
-````
+```
 
-## File: backend/tests/test_overview_reasoning.py
-````python
+## File: tests/test_overview_reasoning.py
+```python
 def _campaign()
 ⋮----
 def test_overview_surfaces_hypothesis_and_evidence_chain_state(tmp_path, monkeypatch)
@@ -11362,10 +10878,10 @@ result = campaign_overview(campaign.id)
 def test_overview_chain_becomes_complete_after_independent_evidence(tmp_path, monkeypatch)
 ⋮----
 def test_overview_counts_duplicate_candidate_groups(tmp_path, monkeypatch)
-````
+```
 
-## File: backend/tests/test_pentagi_admission.py
-````python
+## File: tests/test_pentagi_admission.py
+```python
 def _campaign(*, rps: float = 1.0)
 ⋮----
 def _plan(campaign)
@@ -11408,10 +10924,10 @@ first = evaluate_pentagi_admission(campaign, plan)
 second = evaluate_pentagi_admission(campaign, plan)
 ⋮----
 changed = evaluate_pentagi_admission(campaign, plan)
-````
+```
 
-## File: backend/tests/test_pentagi_auth.py
-````python
+## File: tests/test_pentagi_auth.py
+```python
 def _vault_key() -> str
 ⋮----
 def test_pentagi_auth_reads_legacy_env_when_vault_disabled(monkeypatch)
@@ -11427,10 +10943,10 @@ def test_pentagi_auth_missing_token_fails_closed(monkeypatch)
 def test_pentagi_auth_rejects_unsafe_token_values(monkeypatch, token)
 ⋮----
 def test_pentagi_auth_rejects_oversized_token(monkeypatch)
-````
+```
 
-## File: backend/tests/test_pentagi_control_api.py
-````python
+## File: tests/test_pentagi_control_api.py
+```python
 def _campaign()
 ⋮----
 def _configure(monkeypatch)
@@ -11486,10 +11002,10 @@ def test_pentagi_status_summary_filters_local_artifacts(tmp_path, monkeypatch)
 result = main.pentagi_campaign_status(campaign.id)
 ⋮----
 def test_pentagi_dispatch_rejects_closed_lifecycle(tmp_path, monkeypatch)
-````
+```
 
-## File: backend/tests/test_pentagi_control.py
-````python
+## File: tests/test_pentagi_control.py
+```python
 def _campaign()
 ⋮----
 def _configure(monkeypatch)
@@ -11501,10 +11017,10 @@ preview = prepare_pentagi_control_preview(_campaign())
 def test_control_ready_remains_blocked_without_enforcing_transport(monkeypatch)
 ⋮----
 def test_control_ready_keeps_global_dry_run_fail_closed(monkeypatch)
-````
+```
 
-## File: backend/tests/test_pentagi_dispatch.py
-````python
+## File: tests/test_pentagi_dispatch.py
+```python
 def _campaign()
 ⋮----
 def _future_plan(campaign)
@@ -11554,10 +11070,10 @@ def test_pentagi_dispatch_disables_automatic_remote_retry(tmp_path, monkeypatch)
 claimed = queue.claim_kind("pentagi-worker", "pentagi_flow")
 ⋮----
 failed = queue.finish(
-````
+```
 
-## File: backend/tests/test_pentagi_execution_guard.py
-````python
+## File: tests/test_pentagi_execution_guard.py
+```python
 def _campaign()
 ⋮----
 def _future_plan(campaign)
@@ -11588,10 +11104,10 @@ changed_variables = dict(changed_payload["variables"])
 changed_plan = replace(plan, payload=changed_payload)
 ⋮----
 def test_runtime_gate_change_invalidates_existing_permit(monkeypatch)
-````
+```
 
-## File: backend/tests/test_pentagi_flow_status.py
-````python
+## File: tests/test_pentagi_flow_status.py
+```python
 class _Socket
 ⋮----
 def settimeout(self, value)
@@ -11636,10 +11152,10 @@ def test_fetch_flow_status_fails_closed_on_invalid_response(monkeypatch, payload
 opener = _Opener(_Response(payload))
 ⋮----
 def test_fetch_flow_status_rejects_unsafe_base_endpoint(monkeypatch)
-````
+```
 
-## File: backend/tests/test_pentagi_status_poller.py
-````python
+## File: tests/test_pentagi_status_poller.py
+```python
 class _Clock
 ⋮----
 def __init__(self)
@@ -11673,10 +11189,10 @@ def test_poller_caps_refresh_by_remaining_budget(monkeypatch)
 observed = []
 ⋮----
 def refresh(*args, **kwargs)
-````
+```
 
-## File: backend/tests/test_pentagi_status_tracker.py
-````python
+## File: tests/test_pentagi_status_tracker.py
+```python
 class _Store
 ⋮----
 def __init__(self, receipt_kind="pentagi_receipt")
@@ -11700,10 +11216,10 @@ decoded = json.loads(write["content"].decode())
 def test_refresh_rejects_non_receipt_artifact(monkeypatch)
 ⋮----
 store = _Store(receipt_kind="report")
-````
+```
 
-## File: backend/tests/test_pentagi_status_worker_service.py
-````python
+## File: tests/test_pentagi_status_worker_service.py
+```python
 def _enable(monkeypatch)
 ⋮----
 def test_status_worker_is_disabled_by_default(monkeypatch)
@@ -11720,10 +11236,10 @@ def test_status_worker_completes_terminal_tracking_job(tmp_path, monkeypatch)
 def test_status_worker_requeues_bounded_timeout_job(tmp_path, monkeypatch)
 ⋮----
 requeued = queue.get(job["id"])
-````
+```
 
-## File: backend/tests/test_pentagi_worker_service.py
-````python
+## File: tests/test_pentagi_worker_service.py
+```python
 def _campaign()
 ⋮----
 def _future_plan(campaign)
@@ -11796,10 +11312,10 @@ original_heartbeat = queue.heartbeat
 def heartbeat(job_id, worker_id)
 ⋮----
 def test_process_one_contains_admission_policy_error(tmp_path, monkeypatch)
-````
+```
 
-## File: backend/tests/test_pipeline_swarm.py
-````python
+## File: tests/test_pipeline_swarm.py
+```python
 def _usage(**overrides)
 ⋮----
 values = {
@@ -11824,10 +11340,10 @@ limits = PlannerBudget(
 usage = _usage(
 ⋮----
 def test_pipeline_swarm_rejects_unknown_action_and_negative_request()
-````
+```
 
-## File: backend/tests/test_plan_evidence_quality.py
-````python
+## File: tests/test_plan_evidence_quality.py
+```python
 def test_campaign_plan_uses_configured_budget_and_exposes_evidence_quality(tmp_path, monkeypatch)
 ⋮----
 db = str(tmp_path / "db.sqlite3")
@@ -11837,10 +11353,10 @@ campaign = Campaign(
 store = Storage(db, artifacts)
 ⋮----
 result = campaign_plan(campaign.id)
-````
+```
 
-## File: backend/tests/test_planner_advisory.py
-````python
+## File: tests/test_planner_advisory.py
+```python
 def _campaign(findings)
 ⋮----
 def test_advisory_context_selects_highest_ranked_finding()
@@ -11900,10 +11416,10 @@ events = build_advisory_decision_journal(snapshots)
 def test_advisory_journal_emits_focus_stabilized_after_three_equal_snapshots()
 ⋮----
 def test_advisory_journal_limit_is_bounded()
-````
+```
 
-## File: backend/tests/test_planner_budget.py
-````python
+## File: tests/test_planner_budget.py
+```python
 def test_budget_usage_reads_durable_campaign_jobs(tmp_path)
 ⋮----
 queue = JobQueue(str(tmp_path / "db.sqlite3"))
@@ -11971,10 +11487,10 @@ def test_scan_batch_limit_respects_scan_and_inflight_capacity(tmp_path)
 limits = PlannerBudget(max_scans=3, max_inflight_jobs=3)
 ⋮----
 def test_scan_batch_limit_rejects_negative_request(tmp_path)
-````
+```
 
-## File: backend/tests/test_planner_limits.py
-````python
+## File: tests/test_planner_limits.py
+```python
 def _campaign()
 ⋮----
 def test_planner_limits_use_safe_defaults(monkeypatch)
@@ -11994,10 +11510,10 @@ def test_planner_stops_when_finding_bound_is_exceeded(monkeypatch)
 def test_planner_fails_closed_on_invalid_limit_configuration(monkeypatch)
 ⋮----
 action = AdaptivePlanner().plan(_campaign(), ObservationGraph())[0]
-````
+```
 
-## File: backend/tests/test_policy_integrity.py
-````python
+## File: tests/test_policy_integrity.py
+```python
 def _campaign()
 ⋮----
 def test_policy_receipt_has_stable_hash_without_hmac(monkeypatch)
@@ -12016,10 +11532,10 @@ forged = seal_policy_receipt(forged)
 verified = verify_policy_receipt(forged)
 ⋮----
 def test_hmac_receipt_fails_closed_without_verification_key(monkeypatch)
-````
+```
 
-## File: backend/tests/test_policy_invariants.py
-````python
+## File: tests/test_policy_invariants.py
+```python
 def _campaign(**rule_overrides)
 ⋮----
 rules = ProgramRules(
@@ -12042,10 +11558,10 @@ def test_worker_payload_never_enables_prohibited_actions()
 campaign = _campaign(
 receipt = policy_receipt(campaign, "example.test", "automated_scan")
 payload = sanitized_scan_payload(campaign, receipt)
-````
+```
 
-## File: backend/tests/test_postgres_integration.py
-````python
+## File: tests/test_postgres_integration.py
+```python
 POSTGRES_URL = os.getenv("XBOW_TEST_POSTGRES_URL")
 pytestmark = pytest.mark.skipif(not POSTGRES_URL, reason="XBOW_TEST_POSTGRES_URL is not configured")
 ⋮----
@@ -12060,10 +11576,10 @@ document = {
 def test_postgres_campaign_version_conflict_fails_closed(tmp_path)
 ⋮----
 updated = {**document, "state": "running", "updated_at": "y"}
-````
+```
 
-## File: backend/tests/test_postgres_storage.py
-````python
+## File: tests/test_postgres_storage.py
+```python
 def test_postgres_sql_compat_translates_placeholders()
 ⋮----
 def test_postgres_sql_compat_translates_begin_immediate()
@@ -12073,10 +11589,10 @@ def test_postgres_storage_requires_database_url(monkeypatch)
 def test_postgres_storage_rejects_non_postgres_url(monkeypatch)
 ⋮----
 def test_postgres_storage_rejects_url_without_host(monkeypatch)
-````
+```
 
-## File: backend/tests/test_queue_age_metrics.py
-````python
+## File: tests/test_queue_age_metrics.py
+```python
 class Queue
 ⋮----
 def __init__(self, oldest, running=None)
@@ -12142,10 +11658,10 @@ def test_alerts_detect_stale_running_lease(monkeypatch)
 stale = [
 ⋮----
 def test_running_lease_alert_threshold_fails_closed(monkeypatch)
-````
+```
 
-## File: backend/tests/test_queue_backend.py
-````python
+## File: tests/test_queue_backend.py
+```python
 def test_queue_backend_defaults_to_sqlite(monkeypatch, tmp_path)
 ⋮----
 backend = create_queue()
@@ -12159,10 +11675,10 @@ def test_queue_backend_builds_redis_adapter(monkeypatch)
 def test_queue_backend_redis_requires_explicit_url(monkeypatch)
 ⋮----
 def test_queue_backend_rejects_unknown_backend(monkeypatch)
-````
+```
 
-## File: backend/tests/test_queue_health.py
-````python
+## File: tests/test_queue_health.py
+```python
 def test_queue_health_reports_integrity_without_payloads(tmp_path)
 ⋮----
 q = JobQueue(str(tmp_path / "q.sqlite3"))
@@ -12173,10 +11689,10 @@ def test_queue_health_fails_closed_on_corrupt_database(tmp_path)
 ⋮----
 path = tmp_path / "q.sqlite3"
 q = JobQueue(str(path))
-````
+```
 
-## File: backend/tests/test_readiness.py
-````python
+## File: tests/test_readiness.py
+```python
 class HealthyQueue
 ⋮----
 def health(self)
@@ -12214,10 +11730,10 @@ result = readiness._artifact_store_ready(target)
 def test_main_returns_normally_when_ready(monkeypatch)
 ⋮----
 def test_main_exits_nonzero_when_not_ready(monkeypatch)
-````
+```
 
-## File: backend/tests/test_recon_swarm.py
-````python
+## File: tests/test_recon_swarm.py
+```python
 def test_capabilities_are_bounded_read_only_and_get_head_only()
 ⋮----
 capabilities = recon_capabilities()
@@ -12245,10 +11761,10 @@ result = campaign_recon_plan(campaign.id)
 def test_recon_plan_refuses_unobserved_host_when_asset_inventory_exists()
 ⋮----
 def test_recon_plan_accepts_matching_bare_asset_host()
-````
+```
 
-## File: backend/tests/test_recon_worker.py
-````python
+## File: tests/test_recon_worker.py
+```python
 class _Response
 ⋮----
 def __init__(self, body: bytes, headers: dict[str, str], status: int = 200)
@@ -12332,10 +11848,10 @@ def test_recon_worker_marks_request_budget_saturation_as_incomplete(monkeypatch)
 opener = _RoutingOpener({"https://example.test/": root})
 ⋮----
 def test_recon_worker_reports_incomplete_frontier_when_budget_prevents_followup(monkeypatch)
-````
+```
 
-## File: backend/tests/test_red_team_coverage.py
-````python
+## File: tests/test_red_team_coverage.py
+```python
 def test_red_team_coverage_reports_gaps_without_executing_actions()
 ⋮----
 graph = ObservationGraph()
@@ -12359,10 +11875,10 @@ campaign = Campaign(
 store = Storage(db, artifacts)
 ⋮----
 result = campaign_red_team_coverage(campaign.id)
-````
+```
 
-## File: backend/tests/test_red_team_decision.py
-````python
+## File: tests/test_red_team_decision.py
+```python
 def test_decision_engine_prioritizes_scope_integrity()
 ⋮----
 graph = ObservationGraph()
@@ -12418,10 +11934,10 @@ def test_blocked_cluster_escalates_all_cluster_members_for_human_review()
 graph = _mixed_cluster_graph()
 ⋮----
 review = decisions[0]
-````
+```
 
-## File: backend/tests/test_redis_chaos.py
-````python
+## File: tests/test_redis_chaos.py
+```python
 @pytest.fixture
 def redis_queue(monkeypatch)
 ⋮----
@@ -12470,10 +11986,10 @@ third = RedisJobQueue(first.url)
 ⋮----
 same_second = second.enqueue(
 same_third = third.enqueue(
-````
+```
 
-## File: backend/tests/test_redis_integration.py
-````python
+## File: tests/test_redis_integration.py
+```python
 @pytest.fixture
 def redis_queue(monkeypatch)
 ⋮----
@@ -12513,10 +12029,10 @@ requeued = redis_queue.finish(job["id"], "worker-a", False, "transient")
 second = redis_queue.claim("worker-b")
 ⋮----
 failed = redis_queue.finish(job["id"], "worker-b", False, "persistent")
-````
+```
 
-## File: backend/tests/test_redis_jobqueue_integration.py
-````python
+## File: tests/test_redis_jobqueue_integration.py
+```python
 @pytest.fixture
 def redis_queue(monkeypatch)
 ⋮----
@@ -12575,10 +12091,10 @@ second = redis_queue.claim("worker-after-reclaim")
 current = redis_queue.get(job["id"])
 ⋮----
 completed = redis_queue.finish(
-````
+```
 
-## File: backend/tests/test_redis_jobqueue.py
-````python
+## File: tests/test_redis_jobqueue.py
+```python
 class DummyRedis
 ⋮----
 def ping(self)
@@ -12628,10 +12144,10 @@ claimed_kinds = []
 def fake_claim_kind(worker_id, kind)
 ⋮----
 claimed = queue.claim_allowed(
-````
+```
 
-## File: backend/tests/test_report_approval.py
-````python
+## File: tests/test_report_approval.py
+```python
 def _campaign() -> Campaign
 ⋮----
 campaign = Campaign(
@@ -12673,10 +12189,10 @@ status = approval_status_from_storage(campaign, store, artifact["id"])
 def test_tampered_report_bytes_cannot_be_approved_or_reported_as_approved(tmp_path)
 ⋮----
 metadata = store.get_artifact(campaign.id, artifact["id"])
-````
+```
 
-## File: backend/tests/test_report_readiness.py
-````python
+## File: tests/test_report_readiness.py
+```python
 def _finding(finding_id: str, status: str = "validation_required")
 ⋮----
 def test_report_readiness_blocks_unvalidated_finding()
@@ -12710,10 +12226,10 @@ def test_report_readiness_rejects_invalid_cwe_shape_for_submission()
 def test_review_queue_and_report_readiness_routes_are_registered()
 ⋮----
 paths = app.openapi()["paths"]
-````
+```
 
-## File: backend/tests/test_report.py
-````python
+## File: tests/test_report.py
+```python
 def _campaign() -> Campaign
 ⋮----
 target = TargetInput(
@@ -12736,10 +12252,10 @@ finding_id = str(campaign.findings[0].id)
 report = render_markdown(
 ⋮----
 def test_report_holds_confirmed_finding_when_evidence_quality_is_not_high()
-````
+```
 
-## File: backend/tests/test_review_queue.py
-````python
+## File: tests/test_review_queue.py
+```python
 def test_review_queue_prioritizes_validation_gap_over_surface_review()
 ⋮----
 graph = ObservationGraph()
@@ -12795,10 +12311,10 @@ critical = build_review_queue(graph, severities={"f1": "critical"})[0]
 def test_review_queue_unknown_severity_fails_closed_to_zero_bonus()
 ⋮----
 task = build_review_queue(graph, severities={"f1": "unexpected"})[0]
-````
+```
 
-## File: backend/tests/test_rolling_telemetry.py
-````python
+## File: tests/test_rolling_telemetry.py
+```python
 NOW = datetime(2026, 9, 15, 12, 0, tzinfo=timezone.utc)
 ⋮----
 def event(seconds_ago, status="completed", duration_ms=100)
@@ -12822,10 +12338,10 @@ result = build_rolling_telemetry([future, malformed, event(1)], now=NOW)
 def test_output_is_redacted()
 ⋮----
 result = build_rolling_telemetry([event(1)], now=NOW)
-````
+```
 
-## File: backend/tests/test_runtime_budget_config.py
-````python
+## File: tests/test_runtime_budget_config.py
+```python
 PLANNER_ENV_NAMES = (
 ⋮----
 def _clear_planner_env(monkeypatch)
@@ -12857,10 +12373,10 @@ queue = JobQueue(db)
 campaign = Campaign(
 ⋮----
 result = advance_campaign(campaign, queue, store)
-````
+```
 
-## File: backend/tests/test_runtime_capabilities.py
-````python
+## File: tests/test_runtime_capabilities.py
+```python
 _PENTAGI_FLAGS = (
 ⋮----
 def _clear(monkeypatch)
@@ -12902,10 +12418,10 @@ def test_capabilities_api_exposes_scanner_worker_admission(monkeypatch)
 scanner = result["execution"]["scanner_worker_detail"]
 ⋮----
 def test_scanner_runtime_capability_rejects_unsupported_engine(monkeypatch)
-````
+```
 
-## File: backend/tests/test_scan_payload_idempotency.py
-````python
+## File: tests/test_scan_payload_idempotency.py
+```python
 def _campaign() -> Campaign
 ⋮----
 def test_scan_payload_ignores_receipt_timestamp()
@@ -12922,10 +12438,10 @@ def test_scan_payload_preserves_policy_decision_fields()
 receipt = policy_receipt(campaign, "example.test", "automated_scan")
 ⋮----
 payload = sanitized_scan_payload(campaign, receipt)
-````
+```
 
-## File: backend/tests/test_scanner_adaptation.py
-````python
+## File: tests/test_scanner_adaptation.py
+```python
 def _memory(engine, *, successes=0, failures=0, confidence=0.0, success_rate=0.0)
 ⋮----
 def test_adaptation_never_expands_configured_engines()
@@ -12939,10 +12455,10 @@ def test_adaptation_never_suppresses_last_configured_engine()
 def test_adaptation_ranks_successful_memory_first()
 ⋮----
 def test_adaptation_rejects_unknown_or_duplicate_configuration()
-````
+```
 
-## File: backend/tests/test_scanner_ingestion.py
-````python
+## File: tests/test_scanner_ingestion.py
+```python
 def _campaign()
 ⋮----
 def test_generic_scanner_ingestion_persists_chain_and_queues_validation(tmp_path)
@@ -12974,10 +12490,10 @@ def test_generic_scanner_ingestion_supports_nuclei_adapter(tmp_path)
 artifact = run / "nuclei-results.jsonl"
 ⋮----
 result = ingest_scanner_run("nuclei", run, campaign, queue, store)
-````
+```
 
-## File: backend/tests/test_scanner_normalization.py
-````python
+## File: tests/test_scanner_normalization.py
+```python
 def _campaign()
 ⋮----
 def test_strix_and_nuclei_normalize_to_same_canonical_shape()
@@ -13047,10 +12563,10 @@ artifacts = discover_scanner_artifacts("nuclei", run)
 def test_scanner_registry_missing_run_directory_is_empty(tmp_path)
 ⋮----
 missing = tmp_path / "missing"
-````
+```
 
-## File: backend/tests/test_scanner_observation_chain.py
-````python
+## File: tests/test_scanner_observation_chain.py
+```python
 def _campaign()
 ⋮----
 def test_scanner_finding_persists_canonical_asset_endpoint_finding_evidence_chain(tmp_path)
@@ -13075,10 +12591,10 @@ evidence = [
 def test_scanner_finding_without_endpoint_links_directly_to_asset(tmp_path)
 ⋮----
 parent = by_id[by_id[finding_observation_id]["parent_ids"][0]]
-````
+```
 
-## File: backend/tests/test_scanner_sandbox.py
-````python
+## File: tests/test_scanner_sandbox.py
+```python
 _NAMES = (
 ⋮----
 def _clear(monkeypatch)
@@ -13100,10 +12616,10 @@ def test_invalid_sandbox_boolean_fails_closed(monkeypatch)
 safe = safe_scanner_sandbox_admission("nuclei")
 ⋮----
 def test_scanner_worker_kill_switch_blocks_execution_admission(monkeypatch)
-````
+```
 
-## File: backend/tests/test_scanner_worker.py
-````python
+## File: tests/test_scanner_worker.py
+```python
 def _campaign()
 ⋮----
 def test_scanner_worker_dry_run_stays_ready_and_records_event(tmp_path, monkeypatch)
@@ -13116,10 +12632,10 @@ campaign = _campaign()
 result = run_strix_job(
 ⋮----
 observations = store.list_observations(campaign.id)
-````
+```
 
-## File: backend/tests/test_scope.py
-````python
+## File: tests/test_scope.py
+```python
 def test_exact_host_allowed()
 ⋮----
 def test_wildcard_subdomain_allowed()
@@ -13133,10 +12649,10 @@ def test_target_input_rejects_url_userinfo()
 rules = ProgramRules(
 ⋮----
 def test_target_input_rejects_query_and_fragment(url)
-````
+```
 
-## File: backend/tests/test_secret_vault.py
-````python
+## File: tests/test_secret_vault.py
+```python
 def _master_key()
 ⋮----
 def _configure(monkeypatch, tmp_path)
@@ -13190,10 +12706,10 @@ def test_vault_rekey_rejects_same_key(monkeypatch, tmp_path)
 def test_vault_rekey_supports_private_new_key_file(monkeypatch, tmp_path)
 ⋮----
 key_file = tmp_path / "new-master.key"
-````
+```
 
-## File: backend/tests/test_storage_backend.py
-````python
+## File: tests/test_storage_backend.py
+```python
 def test_storage_backend_defaults_to_sqlite(monkeypatch, tmp_path)
 ⋮----
 backend = create_storage()
@@ -13205,10 +12721,10 @@ def test_storage_backend_normalizes_postgres_alias(monkeypatch)
 def test_storage_backend_requires_postgres_url(monkeypatch)
 ⋮----
 def test_storage_backend_rejects_unknown_backend(monkeypatch)
-````
+```
 
-## File: backend/tests/test_storage.py
-````python
+## File: tests/test_storage.py
+```python
 def test_campaign_roundtrip_and_artifact_hash(tmp_path)
 ⋮----
 db = tmp_path / "xbow.sqlite3"
@@ -13354,10 +12870,10 @@ def test_advisory_focus_history_is_campaign_scoped(tmp_path)
 def test_storage_health_reports_sqlite_ready(tmp_path)
 ⋮----
 result = store.health()
-````
+```
 
-## File: backend/tests/test_submission_api.py
-````python
+## File: tests/test_submission_api.py
+```python
 def _setup(tmp_path, monkeypatch, *, report_ready=True)
 ⋮----
 db = str(tmp_path / "db.sqlite3")
@@ -13414,10 +12930,10 @@ def test_submission_mutations_preserve_campaign_audit_chain(tmp_path, monkeypatc
 ⋮----
 persisted = Storage().get_campaign(campaign.id)
 verification = verify_campaign_event_chain(persisted["events"])
-````
+```
 
-## File: backend/tests/test_submission_state.py
-````python
+## File: tests/test_submission_state.py
+```python
 def _campaign() -> Campaign
 ⋮----
 campaign = Campaign(
@@ -13454,10 +12970,10 @@ def test_unapproved_submission_attempt_is_rejected()
 def test_submission_event_requires_complete_metadata()
 ⋮----
 invalid = (
-````
+```
 
-## File: backend/tests/test_swarm_coordinator.py
-````python
+## File: tests/test_swarm_coordinator.py
+```python
 def _tasks()
 ⋮----
 graph = ObservationGraph()
@@ -13488,10 +13004,10 @@ original = swarm_coordinator.agent_by_name
 def fake_agent_by_name(name)
 ⋮----
 profile = original(name)
-````
+```
 
-## File: backend/tests/test_totp_auth.py
-````python
+## File: tests/test_totp_auth.py
+```python
 RFC_SECRET = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
 ⋮----
 def _request(method="POST", headers=None)
@@ -13542,10 +13058,10 @@ later = _totp(configured_totp_secret(), 5)
 def test_totp_replay_backend_invalid_fails_closed(monkeypatch)
 ⋮----
 code = _totp(configured_totp_secret(), 1)
-````
+```
 
-## File: backend/tests/test_validation_state.py
-````python
+## File: tests/test_validation_state.py
+```python
 def _graph(validation_value="observed", validation_source="validator")
 ⋮----
 graph = ObservationGraph()
@@ -13582,10 +13098,10 @@ def test_evidence_child_of_independent_observed_validation_is_evidence_backed()
 def test_evidence_attached_directly_to_finding_does_not_count()
 ⋮----
 def test_evidence_on_self_validation_does_not_count_as_independent()
-````
+```
 
-## File: backend/tests/test_validator.py
-````python
+## File: tests/test_validator.py
+```python
 def campaign() -> Campaign
 ⋮----
 def finding(**kwargs) -> Finding
@@ -13655,10 +13171,10 @@ def test_differential_validation_does_not_invent_query_parameters(monkeypatch)
 result = safe_http_probe(campaign(), finding(endpoint="/account"))
 ⋮----
 def test_invalid_differential_validation_gate_fails_closed_before_network(monkeypatch)
-````
+```
 
-## File: backend/tests/test_watchdog_observability.py
-````python
+## File: tests/test_watchdog_observability.py
+```python
 class Queue
 ⋮----
 def health(self)
@@ -13687,10 +13203,10 @@ def stale_stats()
 result = queue.stats()
 ⋮----
 result = readiness_module.readiness()
-````
+```
 
-## File: backend/tests/test_worker_concurrency.py
-````python
+## File: tests/test_worker_concurrency.py
+```python
 def make_campaign() -> Campaign
 ⋮----
 def test_worker_save_rejects_stale_campaign_snapshot(tmp_path)
@@ -13719,10 +13235,10 @@ final = queue.get(job["id"])
 def test_completed_campaign_validation_job_is_cancelled_without_retry(tmp_path)
 ⋮----
 def test_completed_campaign_browser_job_is_cancelled_without_retry(tmp_path)
-````
+```
 
-## File: backend/tests/test_worker_job_provenance.py
-````python
+## File: tests/test_worker_job_provenance.py
+```python
 def _runtime(tmp_path)
 ⋮----
 db = str(tmp_path / "db.sqlite3")
@@ -13744,10 +13260,10 @@ final = queue.get(job["id"])
 def test_worker_rejects_unprovenanced_governed_job_by_default(tmp_path, monkeypatch)
 ⋮----
 def test_worker_legacy_flag_allows_unprovenanced_governed_job(tmp_path, monkeypatch)
-````
+```
 
-## File: backend/tests/test_worker_observations.py
-````python
+## File: tests/test_worker_observations.py
+```python
 def test_worker_observation_lineage_roundtrips(tmp_path)
 ⋮----
 store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
@@ -13764,10 +13280,10 @@ graph = load_observation_graph(store, "c1")
 ⋮----
 endpoint_id = graph.by_kind("endpoint")[0].id
 asset_id = graph.by_kind("asset")[0].id
-````
+```
 
-## File: backend/tests/test_worker_outcome_memory.py
-````python
+## File: tests/test_worker_outcome_memory.py
+```python
 def _campaign()
 ⋮----
 def test_record_worker_outcome_is_idempotent_and_payload_free(tmp_path)
@@ -13791,10 +13307,10 @@ def test_worker_outcome_extends_existing_campaign_audit_chain(tmp_path)
 def test_worker_event_helper_seals_and_deduplicates_campaign_event()
 ⋮----
 event = {
-````
+```
 
-## File: backend/tests/test_worker_parser.py
-````python
+## File: tests/test_worker_parser.py
+```python
 def campaign()
 ⋮----
 def test_parser_normalizes_and_filters_scope(tmp_path)
@@ -13851,10 +13367,10 @@ def test_strix_output_dir_accepts_child_of_run_root(tmp_path, monkeypatch)
 plan = build_strix_plan(campaign(), str(root / "job-1"))
 ⋮----
 def test_non_integer_worker_limits_fail_closed(monkeypatch, tmp_path, name, value, message)
-````
+```
 
-## File: backend/tests/test_worker_roles.py
-````python
+## File: tests/test_worker_roles.py
+```python
 class FakeQueue
 ⋮----
 def __init__(self)
@@ -13870,10 +13386,10 @@ queue = FakeQueue()
 def test_general_worker_excludes_scanner_jobs_for_active_execution(monkeypatch)
 ⋮----
 def test_scanner_worker_claims_only_scanner_jobs(monkeypatch)
-````
+```
 
-## File: backend/tests/test_worker_secrets.py
-````python
+## File: tests/test_worker_secrets.py
+```python
 def _clear(monkeypatch)
 ⋮----
 def _configure_vault(monkeypatch, tmp_path)
@@ -13889,10 +13405,10 @@ def test_worker_env_keeps_unused_vault_secrets_optional(monkeypatch, tmp_path)
 def test_worker_env_refuses_legacy_secret_fallback_when_vault_enabled(monkeypatch, tmp_path)
 ⋮----
 def test_worker_env_does_not_inherit_unrelated_secrets(monkeypatch)
-````
+```
 
-## File: backend/tests/test_worker_state.py
-````python
+## File: tests/test_worker_state.py
+```python
 def _campaign(findings)
 ⋮----
 def _finding(status)
@@ -13906,10 +13422,10 @@ def test_post_scan_state_completes_only_when_all_findings_are_resolved()
 campaign = _campaign([_finding("confirmed"), _finding("rejected")])
 ⋮----
 def test_post_scan_state_completes_when_scan_has_no_findings()
-````
+```
 
-## File: backend/tests/test_worker_watchdog.py
-````python
+## File: tests/test_worker_watchdog.py
+```python
 _ENV = (
 ⋮----
 def _clear(monkeypatch)
@@ -13925,764 +13441,4 @@ def test_watchdog_detects_stale_running_lease(monkeypatch)
 def test_watchdog_enforces_failed_job_budget(monkeypatch)
 ⋮----
 def test_watchdog_invalid_threshold_fails_closed(monkeypatch)
-````
-
-## File: frontend/app.js
-````javascript
-const $=id
-const lines=id
-const clamp=(v,min,max)
-const fmtSeconds=value=>{
-  const seconds=Math.max(0,Number(value)||0);
-⋮----
-async function api(path,opts=
-⋮----
-function setStatus(message,type='muted')
-⋮----
-function budgetRow(label,used,limit)
-⋮----
-function renderControl(data)
-⋮----
-function readinessClass(value)
-⋮----
-function visibleFindings(data)
-⋮----
-function renderClusters(data)
-⋮----
-function renderReviewAndSubmission(reviewQueue, reportReadiness)
-⋮----
-function renderDecisionTimeline(data)
-⋮----
-function renderFindingIntelligence(data)
-⋮----
-async function refreshDashboard()
-⋮----
-async function activateCampaign(value)
-⋮----
-$('load').onclick=async()=>
-⋮----
-$('refresh').onclick=async()=>
-⋮----
-$('create').onclick=async()=>
-⋮----
-$('start').onclick=async()=>
-⋮----
-$('resetBreaker').onclick=async()=>
-````
-
-## File: frontend/hackerone.js
-````javascript
-const el=id
-const splitLines=value
-⋮----
-function setLauncherStatus(message,type='muted')
-⋮----
-function parseScopeDocument()
-⋮----
-function reviewedAtIso()
-⋮----
-function buildPolicy()
-⋮----
-function buildPayload()
-⋮----
-function conservativeBlockers(policy)
-⋮----
-function payloadFingerprint(payload)
-⋮----
-function invalidatePreview()
-⋮----
-function renderScopeList(targetId,values,emptyLabel)
-⋮----
-function renderPreview(preview,payload,blockers)
-⋮----
-async function preview()
-⋮----
-async function launch()
-⋮----
-async function importScopeFile()
-````
-
-## File: frontend/sw.js
-````javascript
-
-````
-
-## File: .repo-standards.yml
-````yaml
-source: dbrckk/repo-standards
-ref: v4
-version: 4
-adopted: true
-ai_context:
-  index: .ai/index.md
-  project_state: .ai/project-state.md
-  change_impact: .ai/change-impact.md
-  architecture: .ai/architecture.json
-  commands: .ai/commands.json
-  repo_health: .ai/repo-health.md
-  repo_map: .ai/repo-map.md
-  segmented_maps: .ai/maps/
-workflow:
-  file: .github/workflows/ai-repo-map.yml
-  reusable_ai_map: .github/workflows/reusable-ai-repo-map.yml
-  reusable_health: .github/workflows/reusable-repo-health.yml
-  reusable_project_state: .github/workflows/reusable-project-state.yml
-  reusable_context_intelligence: .github/workflows/reusable-context-intelligence.yml
-````
-
-## File: AGENTS.md
-````markdown
-# Repository agent instructions
-
-This repository adopts the shared standards from `dbrckk/repo-standards`.
-
-Before substantial work:
-1. Read the central `AGENTS.md` and relevant files under `standards/` in `dbrckk/repo-standards`.
-2. Read `.ai/project-state.md`.
-3. Read `.ai/repo-health.md`.
-4. Read `.ai/repo-map.md`.
-5. Fetch only the task-relevant source files or symbols.
-
-Repository-specific rules:
-- Preserve the existing architecture and public interfaces unless the task requires a change.
-- Prefer the smallest coherent change.
-- Run the relevant tests, lint, build, or validation commands before declaring completion.
-- Update `.ai/project-state.md` when status, blockers, or next priority materially changes.
-````
-
-## File: docker-compose.distributed.yml
-````yaml
-services:
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${XBOW_POSTGRES_DB:-xbow}
-      POSTGRES_USER: ${XBOW_POSTGRES_USER:-xbow}
-      POSTGRES_PASSWORD: ${XBOW_POSTGRES_PASSWORD:?set XBOW_POSTGRES_PASSWORD}
-    volumes:
-      - xbow-postgres:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${XBOW_POSTGRES_USER:-xbow} -d ${XBOW_POSTGRES_DB:-xbow}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    security_opt:
-      - no-new-privileges:true
-    networks: [control]
-
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    environment:
-      REDIS_PASSWORD: ${XBOW_REDIS_PASSWORD:?set XBOW_REDIS_PASSWORD}
-    command:
-      - sh
-      - -c
-      - exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"
-    volumes:
-      - xbow-redis:/data
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-    security_opt:
-      - no-new-privileges:true
-    networks: [control]
-
-  backend:
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      XBOW_STORAGE_BACKEND: postgresql
-      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
-      XBOW_QUEUE_BACKEND: redis
-      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
-      XBOW_API_RATE_LIMIT_BACKEND: redis
-      XBOW_API_RATE_LIMIT_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
-      XBOW_TOTP_REPLAY_BACKEND: redis
-      XBOW_TOTP_REPLAY_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
-
-  worker:
-    depends_on:
-      backend:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      XBOW_STORAGE_BACKEND: postgresql
-      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
-      XBOW_QUEUE_BACKEND: redis
-      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
-
-
-  scanner-worker:
-    depends_on:
-      backend:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      XBOW_STORAGE_BACKEND: postgresql
-      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
-      XBOW_QUEUE_BACKEND: redis
-      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
-
-
-
-  pentagi-worker:
-    depends_on:
-      backend:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      XBOW_STORAGE_BACKEND: postgresql
-      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
-      XBOW_QUEUE_BACKEND: redis
-      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
-
-  pentagi-status-worker:
-    depends_on:
-      backend:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      XBOW_STORAGE_BACKEND: postgresql
-      XBOW_DATABASE_URL: ${XBOW_DATABASE_URL:?set XBOW_DATABASE_URL}
-      XBOW_QUEUE_BACKEND: redis
-      XBOW_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
-
-volumes:
-  xbow-postgres:
-  xbow-redis:
-````
-
-## File: docker-compose.tls.yml
-````yaml
-services:
-  tls-proxy:
-    image: caddy:2.11.4-alpine
-    restart: unless-stopped
-    environment:
-      XBOW_PUBLIC_HOST: ${XBOW_PUBLIC_HOST:?set XBOW_PUBLIC_HOST}
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - xbow-caddy-data:/data
-      - xbow-caddy-config:/config
-    read_only: true
-    tmpfs:
-      - /tmp:size=32m,noexec,nosuid,nodev
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE
-    pids_limit: 128
-    mem_limit: 256m
-    cpus: 0.5
-    depends_on:
-      frontend:
-        condition: service_started
-    networks:
-      control:
-        ipv4_address: 172.30.0.11
-
-  frontend:
-    ports: !override []
-    networks:
-      control:
-        ipv4_address: 172.30.0.10
-
-  backend:
-    environment:
-      XBOW_TRUSTED_PROXY_CIDRS: 172.30.0.10/32,172.30.0.11/32
-
-volumes:
-  xbow-caddy-data:
-  xbow-caddy-config:
-
-networks:
-  control:
-    ipam:
-      config:
-        - subnet: 172.30.0.0/24
-````
-
-## File: docker-compose.yml
-````yaml
-services:
-  backend:
-    build: ./backend
-    restart: unless-stopped
-    init: true
-    stop_grace_period: 20s
-    environment:
-      DRY_RUN: ${DRY_RUN:-true}
-      XBOW_API_TOKEN: ${XBOW_API_TOKEN:-}
-      XBOW_DB_PATH: /data/xbow.sqlite3
-      XBOW_ARTIFACT_ROOT: /data/artifacts
-      XBOW_MAX_JOB_PAYLOAD_BYTES: ${XBOW_MAX_JOB_PAYLOAD_BYTES:-65536}
-      XBOW_MAX_OBSERVATION_BYTES: ${XBOW_MAX_OBSERVATION_BYTES:-65536}
-      XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES: ${XBOW_MAX_CAMPAIGN_DOCUMENT_BYTES:-2097152}
-      XBOW_ALERT_QUEUE_AGE_SECONDS: ${XBOW_ALERT_QUEUE_AGE_SECONDS:-300}
-      XBOW_ALERT_PENDING_OUTBOX: ${XBOW_ALERT_PENDING_OUTBOX:-20}
-      XBOW_ALERT_OUTBOX_AGE_SECONDS: ${XBOW_ALERT_OUTBOX_AGE_SECONDS:-300}
-      XBOW_ALERT_WEBHOOK_URL: ${XBOW_ALERT_WEBHOOK_URL:-}
-      XBOW_ALERT_WEBHOOK_TIMEOUT_SECONDS: ${XBOW_ALERT_WEBHOOK_TIMEOUT_SECONDS:-5}
-      XBOW_ALERT_WEBHOOK_HMAC_KEY: ${XBOW_ALERT_WEBHOOK_HMAC_KEY:-}
-      XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
-      XBOW_SCAN_ENGINES: ${XBOW_SCAN_ENGINES:-nuclei}
-      XBOW_ENABLE_SCANNER_WORKER: ${XBOW_ENABLE_SCANNER_WORKER:-false}
-      XBOW_ENABLE_NUCLEI: ${XBOW_ENABLE_NUCLEI:-false}
-      XBOW_SCANNER_SANDBOX_PROFILE: ${XBOW_SCANNER_SANDBOX_PROFILE:-restricted-v1}
-      XBOW_SCANNER_ALLOWED_ENGINES: ${XBOW_SCANNER_ALLOWED_ENGINES:-nuclei}
-      XBOW_NUCLEI_ALLOWED_VERSION: ${XBOW_NUCLEI_ALLOWED_VERSION:-}
-      XBOW_ENABLE_PENTAGI: ${XBOW_ENABLE_PENTAGI:-false}
-      XBOW_ENABLE_PENTAGI_WORKER: ${XBOW_ENABLE_PENTAGI_WORKER:-false}
-      XBOW_ENABLE_PENTAGI_TRANSPORT: ${XBOW_ENABLE_PENTAGI_TRANSPORT:-false}
-      XBOW_ENABLE_PENTAGI_STATUS_WORKER: ${XBOW_ENABLE_PENTAGI_STATUS_WORKER:-false}
-      XBOW_PENTAGI_BASE_URL: ${XBOW_PENTAGI_BASE_URL:-}
-      XBOW_PENTAGI_MODEL_PROVIDER: ${XBOW_PENTAGI_MODEL_PROVIDER:-}
-      XBOW_PENTAGI_MAX_ADMISSION_RPS: ${XBOW_PENTAGI_MAX_ADMISSION_RPS:-2.0}
-    volumes:
-      - xbow-data:/data
-    read_only: true
-    tmpfs:
-      - /tmp:size=64m,noexec,nosuid,nodev
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    pids_limit: 256
-    mem_limit: 512m
-    cpus: 1.0
-    healthcheck:
-      test: ["CMD", "python", "-m", "app.readiness"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    networks: [control]
-
-  worker:
-    build: ./backend
-    command: ["python", "-m", "app.worker_service"]
-    restart: unless-stopped
-    init: true
-    stop_grace_period: 30s
-    depends_on:
-      backend:
-        condition: service_healthy
-    environment:
-      DRY_RUN: ${DRY_RUN:-true}
-      XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
-      XBOW_ENABLE_HTTP_VALIDATION: ${XBOW_ENABLE_HTTP_VALIDATION:-false}
-      XBOW_ENABLE_DIFFERENTIAL_VALIDATION: ${XBOW_ENABLE_DIFFERENTIAL_VALIDATION:-false}
-      XBOW_ENABLE_BROWSER_AUTOMATION: ${XBOW_ENABLE_BROWSER_AUTOMATION:-false}
-      XBOW_VALIDATION_PREVIEW_CHARS: ${XBOW_VALIDATION_PREVIEW_CHARS:-4096}
-      WORKER_TIMEOUT_SECONDS: ${WORKER_TIMEOUT_SECONDS:-7200}
-      XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
-      XBOW_MAX_STRIX_JSON_BYTES: ${XBOW_MAX_STRIX_JSON_BYTES:-5242880}
-      XBOW_MAX_AUTONOMOUS_RPS: ${XBOW_MAX_AUTONOMOUS_RPS:-2.0}
-      XBOW_MAX_JOB_PAYLOAD_BYTES: ${XBOW_MAX_JOB_PAYLOAD_BYTES:-65536}
-      XBOW_DB_PATH: /data/xbow.sqlite3
-      XBOW_ARTIFACT_ROOT: /data/artifacts
-      XBOW_STRIX_RUN_ROOT: /data/strix_runs
-      XBOW_WORKER_POLL_SECONDS: ${XBOW_WORKER_POLL_SECONDS:-1}
-      XBOW_WORKER_ROLE: general
-      XBOW_SCAN_ENGINES: ${XBOW_SCAN_ENGINES:-nuclei}
-      XBOW_PLANNER_MAX_OBSERVATIONS: ${XBOW_PLANNER_MAX_OBSERVATIONS:-5000}
-      XBOW_PLANNER_MAX_ENDPOINTS: ${XBOW_PLANNER_MAX_ENDPOINTS:-1500}
-      XBOW_PLANNER_MAX_FINDINGS: ${XBOW_PLANNER_MAX_FINDINGS:-250}
-      XBOW_PLANNER_MAX_ACTIONS: ${XBOW_PLANNER_MAX_ACTIONS:-50}
-      XBOW_PLANNER_MAX_SCANS: ${XBOW_PLANNER_MAX_SCANS:-3}
-      XBOW_PLANNER_MAX_VALIDATIONS: ${XBOW_PLANNER_MAX_VALIDATIONS:-25}
-      XBOW_PLANNER_MAX_VALIDATION_BATCH: ${XBOW_PLANNER_MAX_VALIDATION_BATCH:-10}
-      XBOW_PLANNER_MAX_REPORTS: ${XBOW_PLANNER_MAX_REPORTS:-5}
-      XBOW_PLANNER_MAX_INFLIGHT_JOBS: ${XBOW_PLANNER_MAX_INFLIGHT_JOBS:-12}
-      XBOW_PLANNER_MAX_FAILED_JOBS: ${XBOW_PLANNER_MAX_FAILED_JOBS:-5}
-      XBOW_CAMPAIGN_MAX_RUNTIME_SECONDS: ${XBOW_CAMPAIGN_MAX_RUNTIME_SECONDS:-21600}
-      STRIX_LLM: ${STRIX_LLM:-}
-      LLM_API_KEY: ${LLM_API_KEY:-}
-      LLM_API_BASE: ${LLM_API_BASE:-}
-    volumes:
-      - xbow-data:/data
-    read_only: true
-    tmpfs:
-      - /tmp:size=128m,noexec,nosuid,nodev
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    pids_limit: 256
-    mem_limit: 2g
-    cpus: 2.0
-    ulimits:
-      nofile:
-        soft: 1024
-        hard: 2048
-    healthcheck:
-      test: ["CMD", "python", "-m", "app.readiness"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    networks: [control]
-
-
-  scanner-worker:
-    profiles: ["scanner"]
-    build: ./backend
-    command: ["python", "-m", "app.worker_service"]
-    restart: unless-stopped
-    init: true
-    stop_grace_period: 30s
-    depends_on:
-      backend:
-        condition: service_healthy
-    environment:
-      XBOW_WORKER_ROLE: scanner
-      XBOW_SCAN_ENGINES: ${XBOW_SCAN_ENGINES:-nuclei}
-      XBOW_ENABLE_SCANNER_WORKER: "true"
-      DRY_RUN: ${DRY_RUN:-true}
-      XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
-      XBOW_ENABLE_NUCLEI: ${XBOW_ENABLE_NUCLEI:-false}
-      XBOW_SCANNER_SANDBOX_PROFILE: restricted-v1
-      XBOW_SANDBOX_READ_ONLY_ROOTFS: "true"
-      XBOW_SANDBOX_NO_NEW_PRIVILEGES: "true"
-      XBOW_SANDBOX_CAP_DROP_ALL: "true"
-      XBOW_SCANNER_ALLOWED_ENGINES: ${XBOW_SCANNER_ALLOWED_ENGINES:-nuclei}
-      XBOW_NUCLEI_ALLOWED_VERSION: ${XBOW_NUCLEI_ALLOWED_VERSION:-}
-      XBOW_MAX_AUTONOMOUS_RPS: ${XBOW_MAX_AUTONOMOUS_RPS:-2.0}
-      WORKER_TIMEOUT_SECONDS: ${WORKER_TIMEOUT_SECONDS:-7200}
-      XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
-      XBOW_DB_PATH: /data/xbow.sqlite3
-      XBOW_ARTIFACT_ROOT: /data/artifacts
-      XBOW_STRIX_RUN_ROOT: /data/strix_runs
-      XBOW_NUCLEI_RUN_ROOT: /data/nuclei_runs
-      STRIX_LLM: ${STRIX_LLM:-}
-      LLM_API_KEY: ${LLM_API_KEY:-}
-      LLM_API_BASE: ${LLM_API_BASE:-}
-    volumes:
-      - xbow-data:/data
-    read_only: true
-    tmpfs:
-      - /tmp:size=128m,noexec,nosuid,nodev
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    pids_limit: 128
-    mem_limit: 2g
-    cpus: 2.0
-    ulimits:
-      nofile:
-        soft: 1024
-        hard: 2048
-    networks: [control]
-
-
-
-  pentagi-worker:
-    profiles: ["pentagi"]
-    build: ./backend
-    command: ["python", "-m", "app.pentagi_worker_service"]
-    restart: unless-stopped
-    init: true
-    stop_grace_period: 30s
-    depends_on:
-      backend:
-        condition: service_healthy
-    environment:
-      DRY_RUN: ${DRY_RUN:-true}
-      XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
-      XBOW_ENABLE_PENTAGI: ${XBOW_ENABLE_PENTAGI:-false}
-      XBOW_ENABLE_PENTAGI_WORKER: ${XBOW_ENABLE_PENTAGI_WORKER:-false}
-      XBOW_ENABLE_PENTAGI_TRANSPORT: ${XBOW_ENABLE_PENTAGI_TRANSPORT:-false}
-      XBOW_PENTAGI_API_TOKEN: ${XBOW_PENTAGI_API_TOKEN:-}
-      XBOW_PENTAGI_TIMEOUT_SECONDS: ${XBOW_PENTAGI_TIMEOUT_SECONDS:-10}
-      XBOW_PENTAGI_MAX_RESPONSE_BYTES: ${XBOW_PENTAGI_MAX_RESPONSE_BYTES:-1048576}
-      XBOW_PENTAGI_MAX_ADMISSION_RPS: ${XBOW_PENTAGI_MAX_ADMISSION_RPS:-2.0}
-      XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
-      XBOW_DB_PATH: /data/xbow.sqlite3
-      XBOW_ARTIFACT_ROOT: /data/artifacts
-      XBOW_VAULT_ENABLED: ${XBOW_VAULT_ENABLED:-false}
-      XBOW_VAULT_PATH: /data/secrets.vault.json
-      XBOW_VAULT_MASTER_KEY: ${XBOW_VAULT_MASTER_KEY:-}
-      XBOW_VAULT_MASTER_KEY_FILE: ${XBOW_VAULT_MASTER_KEY_FILE:-}
-    volumes:
-      - xbow-data:/data
-    read_only: true
-    tmpfs:
-      - /tmp:size=32m,noexec,nosuid,nodev
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    pids_limit: 128
-    mem_limit: 512m
-    cpus: 0.5
-    networks: [control]
-
-  pentagi-status-worker:
-    profiles: ["pentagi-status"]
-    build: ./backend
-    command: ["python", "-m", "app.pentagi_status_worker_service"]
-    restart: unless-stopped
-    init: true
-    stop_grace_period: 30s
-    depends_on:
-      backend:
-        condition: service_healthy
-    environment:
-      XBOW_ENABLE_PENTAGI: ${XBOW_ENABLE_PENTAGI:-false}
-      XBOW_ENABLE_PENTAGI_STATUS_WORKER: ${XBOW_ENABLE_PENTAGI_STATUS_WORKER:-false}
-      XBOW_PENTAGI_API_TOKEN: ${XBOW_PENTAGI_API_TOKEN:-}
-      XBOW_PENTAGI_TIMEOUT_SECONDS: ${XBOW_PENTAGI_TIMEOUT_SECONDS:-10}
-      XBOW_PENTAGI_MAX_RESPONSE_BYTES: ${XBOW_PENTAGI_MAX_RESPONSE_BYTES:-1048576}
-      XBOW_PENTAGI_STATUS_POLL_SECONDS: ${XBOW_PENTAGI_STATUS_POLL_SECONDS:-10}
-      XBOW_PENTAGI_STATUS_MAX_SECONDS: ${XBOW_PENTAGI_STATUS_MAX_SECONDS:-3600}
-      XBOW_PENTAGI_STATUS_WORKER_IDLE_SECONDS: ${XBOW_PENTAGI_STATUS_WORKER_IDLE_SECONDS:-1}
-      XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
-      XBOW_DB_PATH: /data/xbow.sqlite3
-      XBOW_ARTIFACT_ROOT: /data/artifacts
-      XBOW_VAULT_ENABLED: ${XBOW_VAULT_ENABLED:-false}
-      XBOW_VAULT_PATH: /data/secrets.vault.json
-      XBOW_VAULT_MASTER_KEY: ${XBOW_VAULT_MASTER_KEY:-}
-      XBOW_VAULT_MASTER_KEY_FILE: ${XBOW_VAULT_MASTER_KEY_FILE:-}
-    volumes:
-      - xbow-data:/data
-    read_only: true
-    tmpfs:
-      - /tmp:size=32m,noexec,nosuid,nodev
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    pids_limit: 128
-    mem_limit: 384m
-    cpus: 0.5
-    networks: [control]
-
-  frontend:
-    build: ./frontend
-    restart: unless-stopped
-    init: true
-    stop_grace_period: 15s
-    depends_on:
-      backend:
-        condition: service_healthy
-    ports:
-      - "${XBOW_PORT:-8080}:80"
-    read_only: true
-    tmpfs:
-      - /var/cache/nginx:size=32m
-      - /var/run:size=8m
-      - /tmp:size=16m
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    pids_limit: 128
-    mem_limit: 256m
-    cpus: 0.5
-    networks: [control]
-
-volumes:
-  xbow-data:
-
-networks:
-  control:
-    driver: bridge
-````
-
-## File: pyproject.toml
-````toml
-[tool.ruff]
-target-version = "py312"
-line-length = 120
-
-[tool.ruff.lint]
-select = ["E", "F"]
-ignore = ["E501"]
-
-[tool.ruff.lint.per-file-ignores]
-"backend/app/main.py" = ["F401"]
-````
-
-## File: README.md
-````markdown
-# xbow-perso
-
-Self-hosted, mobile-first orchestration platform for **authorized** bug bounty and security testing.
-
-## Goal
-
-Enter a target, scope, credentials and program rules from a smartphone. xbow-perso converts them into enforceable policy, launches isolated security workers, correlates evidence, requests independent validation, deduplicates findings and produces a professional submission-ready report.
-
-## Core principles
-
-- **Scope first:** no task is executed before policy authorization.
-- **Fail closed:** unknown hosts/actions are blocked.
-- **Non-destructive by default:** DoS, destructive actions, social engineering and credential attacks are disabled.
-- **Independent validation:** discovery and validation are separate stages.
-- **Evidence over claims:** findings require reproducible evidence before `confirmed` status.
-- **Mobile-first:** responsive PWA/API, with the heavy work executed server-side.
-- **Replaceable engines:** Strix, PentAGI and future engines are adapters, not the core.
-
-## Architecture
-
-```text
-Smartphone / PWA
-      |
-      v
-FastAPI Control Plane
-      |
-      +-- Scope & Rules Engine (fail closed)
-      +-- Campaign Orchestrator
-      +-- Findings / Evidence Store
-      +-- Report Generator
-      |
-      v
-Isolated Worker Adapter Layer
-      |
-      +-- Strix (first integration)
-      +-- PentAGI (guarded preview + dedicated lifecycle workers)
-      +-- additional scanners/tools (planned)
 ```
-
-## Current MVP
-
-The first milestone provides:
-
-1. target/campaign creation;
-2. allow/deny scope validation;
-3. explicit test policy;
-4. campaign state machine;
-5. Strix command adapter with dry-run by default;
-6. independent validation queue;
-7. normalized findings;
-8. Markdown bug-bounty report generation;
-9. responsive smartphone UI;
-10. Docker Compose deployment.
-
-## Run
-
-```bash
-cp .env.example .env
-docker compose up --build
-```
-
-Open `http://SERVER_IP:8080` from your phone.
-
-The default configuration uses `DRY_RUN=true`; external testing engines are not launched until you explicitly configure them.
-
-## Disaster recovery integrity
-
-Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
-
-After producing trusted copies of the PostgreSQL dump, Redis snapshot, and encrypted vault, create an integrity manifest:
-
-```bash
-PYTHONPATH=backend python -m app.dr_cli manifest \
-  --postgres-dump /backups/postgres.dump \
-  --redis-snapshot /backups/dump.rdb \
-  --vault-copy /backups/secrets.vault.json \
-  --output /backups/xbow-manifest.json
-```
-
-Before any restore operation, verify the copies non-destructively:
-
-```bash
-PYTHONPATH=backend python -m app.dr_cli verify \
-  --manifest /backups/xbow-manifest.json \
-  --postgres-dump /backups/postgres.dump \
-  --redis-snapshot /backups/dump.rdb \
-  --vault-copy /backups/secrets.vault.json
-```
-
-The manifest stores only filenames, sizes, and SHA-256 hashes; it never embeds backup contents or decrypted secrets. When `XBOW_AUDIT_HMAC_KEY` (or the `audit_hmac_key` vault entry) is available, the manifest is also authenticated with HMAC-SHA256 so manifest rewriting is detectable.
-
-## Safety model
-
-A campaign must include written authorization metadata, allowed targets and prohibited actions. Requests outside the declared scope are rejected by the API before reaching a worker. This is an engineering control, not a substitute for the rules of the bug bounty program.
-
-## Roadmap
-
-- persistent PostgreSQL storage
-- queued workers (Redis/Celery or equivalent)
-- real Strix job lifecycle + result parser
-- PentAGI remote lifecycle/status UX
-- Playwright browser worker
-- recon graph / target memory
-- program importers
-- evidence artifacts and screenshots
-- CVSS/CWE normalization
-- HackerOne/Bugcrowd-style report templates
-- authentication + TOTP/WebAuthn
-- encrypted secrets vault
-- audit logs and per-action policy receipts
-- deployment hardening and reverse proxy/TLS
-
-
-## PentAGI workers
-
-PentAGI has two dedicated worker services so its lifecycle never blocks generic scanning workers:
-
-- `pentagi-worker`: reserved for a future execution-capable, fully admitted remote-flow path.
-- `pentagi-status-worker`: tracks already-created flows through bounded read-only polling.
-
-The current release intentionally keeps **new PentAGI flow dispatch in `preview_only` mode**. The HTTPS transport, permit validation, dedicated queue and worker gates exist, but xbow-perso cannot yet prove that downstream PentAGI activity enforces the campaign's exact scope and request-rate ceiling after `createFlow`. For that reason, turning on `XBOW_ENABLE_PENTAGI`, `XBOW_ENABLE_PENTAGI_WORKER`, `XBOW_ENABLE_PENTAGI_TRANSPORT`, active scans, and `DRY_RUN=false` is still **not sufficient** to make dispatch admissible.
-
-`GET /api/capabilities` reports the effective PentAGI state and the exact non-secret block reasons. The control plane remains fail-closed until an enforceable downstream execution contract is implemented and reviewed.
-
-The dedicated containers remain behind Compose profiles. The status profile may be enabled separately when tracking previously created/known flows is required:
-
-```bash
-docker compose --profile pentagi --profile pentagi-status up -d --build
-```
-
-
-## Dedicated scanner sandbox
-
-Active external scanner execution is isolated from the general worker. The general worker handles recon, browser, validation and report jobs; Strix/Nuclei jobs require the dedicated scanner worker profile.
-
-Start it explicitly:
-
-```bash
-docker compose --profile scanner up -d --build
-```
-
-Active execution remains fail-closed unless all scanner admission gates are satisfied, including:
-
-- `DRY_RUN=false`;
-- `XBOW_ENABLE_ACTIVE_SCANS=true`;
-- `XBOW_ENABLE_SCANNER_WORKER=true`;
-- `XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1`;
-- engine present in `XBOW_SCANNER_ALLOWED_ENGINES`;
-- worker runtime attests read-only root filesystem, no-new-privileges and all Linux capabilities dropped;
-- engine-specific runtime checks such as the pinned Nuclei version.
-
-The default allowlist contains only Nuclei. Strix must be explicitly added after its runtime contract has been reviewed. `GET /api/capabilities` reports the non-secret scanner admission state.
-````
