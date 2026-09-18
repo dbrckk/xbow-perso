@@ -1,13 +1,31 @@
 # Change impact
 
-Base: 3a0b8822fae8c65d2065312c7a69031ef2af0b26
-Head: ada7143c14f7be2716f3c828daa7bbe2d5334d81
+Base: ac41df2b97e8da523141e28ecf8bb34186898ca6
+Head: a9be68eac17912af108a8cdce64a7181f29cc5da
 
 ## Changed files
-- M AGENTS.md
+- M .env.example
+- M README.md
+- M backend/app/hackerone_api.py
+- M backend/app/hackerone_binding.py
+- A backend/app/hackerone_client.py
+- M backend/tests/test_frontend_policy_launcher.py
+- A backend/tests/test_hackerone_client.py
+- A backend/tests/test_hackerone_control_center_api.py
+- A backend/tests/test_hackerone_remote_binding.py
+- A backend/tests/test_hackerone_remote_snapshot.py
+- A docs/superpowers/plans/2026-09-17-hackerone-control-center.md
+- A docs/superpowers/specs/2026-09-17-hackerone-control-center-design.md
+- M frontend/app.css
+- M frontend/hackerone.js
+- M frontend/index.html
+- M frontend/sw.js
 
 ## Affected areas
 - (root)
+- backend
+- docs
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

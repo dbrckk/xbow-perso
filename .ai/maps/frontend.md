@@ -95,6 +95,18 @@ const splitLines=value
 ⋮----
 function setLauncherStatus(message,type='muted')
 ⋮----
+function setConnectionState(label,type='')
+⋮----
+function clearRemoteBinding()
+⋮----
+function renderProgramOptions()
+⋮----
+function renderRemoteScope(snapshot)
+⋮----
+async function loadRemoteProgram()
+⋮----
+async function initRemoteControlCenter()
+⋮----
 function parseScopeDocument()
 ⋮----
 function reviewedAtIso()

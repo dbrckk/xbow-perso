@@ -78,6 +78,7 @@ app/
   finding_triage.py
   hackerone_api.py
   hackerone_binding.py
+  hackerone_client.py
   hackerone_scope_import.py
   hypothesis_engine.py
   hypothesis_memory.py
@@ -209,7 +210,11 @@ tests/
   test_form_waf_reasoning.py
   test_frontend_policy_launcher.py
   test_hackerone_binding.py
+  test_hackerone_client.py
+  test_hackerone_control_center_api.py
   test_hackerone_launch_api.py
+  test_hackerone_remote_binding.py
+  test_hackerone_remote_snapshot.py
   test_hackerone_scope_import.py
   test_hackerone_scope_preview_api.py
   test_health.py
@@ -2506,6 +2511,11 @@ class HackerOneRulesPreviewInput(BaseModel)
 ⋮----
 document: dict[str, Any]
 policy: HackerOneProgramPolicyInput
+remote_handle: str | None = Field(default=None, min_length=1, max_length=128)
+remote_snapshot_sha256: str | None = Field(
+⋮----
+@model_validator(mode="after")
+    def remote_binding_must_be_complete(self)
 ⋮----
 class HackerOneCampaignTargetInput(BaseModel)
 ⋮----
@@ -2522,16 +2532,47 @@ def _json_sha256(value: Any) -> str
 ⋮----
 encoded = json.dumps(
 ⋮----
+def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any] | None
+⋮----
+snapshot = fetch_hackerone_program_snapshot(payload.remote_handle)
+⋮----
 def _conservative_admission_reason(policy: Any) -> str | None
+⋮----
+def _upstream_error(exc: HackerOneClientError) -> HTTPException
+⋮----
+def _program_list_item(resource: Any) -> dict[str, Any]
+⋮----
+attributes = resource.get("attributes")
+⋮----
+handle = attributes.get("handle")
+name = attributes.get("name")
+⋮----
+@router.get("/api/imports/hackerone/connection")
+def hackerone_connection()
+⋮----
+@router.get("/api/imports/hackerone/programs")
+def list_hackerone_programs()
+⋮----
+resources = HackerOneClient().get_all_pages("hackers/programs")
+programs = [_program_list_item(resource) for resource in resources]
+⋮----
+@router.get("/api/imports/hackerone/programs/{handle}/snapshot")
+def get_hackerone_program_snapshot(handle: str)
+⋮----
+snapshot = fetch_hackerone_program_snapshot(handle)
 ⋮----
 @router.post("/api/imports/hackerone/rules-preview")
 def preview_hackerone_rules(payload: HackerOneRulesPreviewInput)
 ⋮----
 """Preview exact executable rules without persisting or starting a campaign."""
 ⋮----
+remote_binding = _verify_remote_binding(payload)
+⋮----
 preview = import_hackerone_structured_scope(payload.document)
 policy = _policy_from_input(payload.policy)
 rules = preview.to_program_rules(policy=policy)
+⋮----
+result = {
 ⋮----
 @router.post("/api/imports/hackerone/campaigns")
 def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput)
@@ -2544,7 +2585,13 @@ campaign = Campaign(target=target, state=CampaignState.ready)
 policy_snapshot = policy.to_snapshot()
 policy_snapshot_sha256 = _json_sha256(policy_snapshot)
 campaign_policy_fingerprint = policy_snapshot_fingerprint(campaign)
-binding_fingerprint = _json_sha256(
+binding_payload = {
+⋮----
+binding_fingerprint = _json_sha256(binding_payload)
+⋮----
+binding_event = {
+⋮----
+policy_binding = {
 ⋮----
 @router.post("/api/imports/hackerone/campaigns/launch")
 def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput)
@@ -2562,6 +2609,14 @@ campaign = assert_campaign_exists(campaign_id)
 def canonical_json_sha256(value: Any) -> str
 ⋮----
 encoded = json.dumps(
+⋮----
+payload: dict[str, Any] = {
+⋮----
+def _validated_remote_binding(value: Any, reasons: list[str]) -> dict[str, Any] | None
+⋮----
+handle = value.get("handle")
+snapshot_sha256 = value.get("snapshot_sha256")
+verified = value.get("verified")
 ⋮----
 binding_events = [
 ⋮----
@@ -2582,8 +2637,141 @@ restrictions = snapshot.get("additional_restrictions")
 ⋮----
 declared_policy_fingerprint = str(binding.get("campaign_policy_fingerprint") or "")
 ⋮----
+remote_binding = _validated_remote_binding(binding.get("remote_binding"), reasons)
 expected_binding_fingerprint = _binding_fingerprint(
 declared_binding_fingerprint = str(binding.get("binding_fingerprint") or "")
+```
+
+## File: app/hackerone_client.py
+```python
+_API_ROOT = "https://api.hackerone.com/v1/"
+_PAGE_SIZE = 100
+_MAX_PAGES = 100
+⋮----
+class HackerOneClientError(RuntimeError)
+⋮----
+def __init__(self, message: str, *, status_code: int | None = None)
+⋮----
+class _NoRedirect(urllib.request.HTTPRedirectHandler)
+⋮----
+def redirect_request(self, req, fp, code, msg, headers, newurl)
+⋮----
+@dataclass(frozen=True)
+class HackerOneCredentials
+⋮----
+username: str
+token: str = field(repr=False)
+⋮----
+def __post_init__(self) -> None
+⋮----
+def headers(self) -> dict[str, str]
+⋮----
+raw = f"{self.username}:{self.token}".encode("utf-8")
+encoded = base64.b64encode(raw).decode("ascii")
+⋮----
+def _validate_credential(value: str | None, label: str, minimum: int, maximum: int) -> str
+⋮----
+encoded = value.encode("utf-8")
+⋮----
+def load_hackerone_credentials() -> HackerOneCredentials
+⋮----
+username = resolve_secret("hackerone_api_username", "XBOW_HACKERONE_API_USERNAME")
+token = resolve_secret("hackerone_api_token", "XBOW_HACKERONE_API_TOKEN")
+⋮----
+def _timeout_seconds() -> float
+⋮----
+raw = (os.getenv("XBOW_HACKERONE_TIMEOUT_SECONDS") or "10").strip()
+⋮----
+value = float(raw)
+⋮----
+def _max_response_bytes() -> int
+⋮----
+raw = (os.getenv("XBOW_HACKERONE_MAX_RESPONSE_BYTES") or str(2 * 1024 * 1024)).strip()
+⋮----
+value = int(raw)
+⋮----
+def _validate_path(path: str) -> str
+⋮----
+value = path.strip()
+⋮----
+parts = value.split("/")
+⋮----
+def _read_bounded(response, limit: int) -> bytes
+⋮----
+payload = response.read(limit + 1)
+⋮----
+class HackerOneClient
+⋮----
+def __init__(self, credentials: HackerOneCredentials | None = None)
+⋮----
+safe_path = _validate_path(path)
+url = urllib.parse.urljoin(_API_ROOT, safe_path)
+⋮----
+url = f"{url}?{urllib.parse.urlencode(query)}"
+⋮----
+request = urllib.request.Request(
+opener = urllib.request.build_opener(
+timeout = _timeout_seconds()
+⋮----
+response = opener.open(request, timeout=timeout)
+status = int(getattr(response, "status", response.getcode()))
+content_type = (response.headers.get("Content-Type") or "").lower()
+⋮----
+raw = _read_bounded(response, _max_response_bytes())
+⋮----
+document = json.loads(raw.decode("utf-8"))
+⋮----
+def get_all_pages(self, path: str) -> list[dict[str, Any]]
+⋮----
+items: list[dict[str, Any]] = []
+⋮----
+document = self.get_json(
+data = document.get("data")
+⋮----
+_HANDLE_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_-")
+_PROGRAM_FIELDS = (
+⋮----
+@dataclass(frozen=True)
+class HackerOneProgramSnapshot
+⋮----
+handle: str
+program: dict[str, Any]
+document: dict[str, Any]
+scope_exclusions: tuple[dict[str, Any], ...]
+preview: dict[str, Any]
+snapshot_sha256: str
+⋮----
+def _validate_handle(handle: str) -> str
+⋮----
+def _canonical_resource(resource: dict[str, Any]) -> str
+⋮----
+def _sorted_resources(resources: list[dict[str, Any]]) -> list[dict[str, Any]]
+⋮----
+def _program_projection(document: dict[str, Any], expected_handle: str) -> dict[str, Any]
+⋮----
+attributes = data.get("attributes")
+⋮----
+remote_handle = attributes.get("handle")
+⋮----
+projected = {field: attributes.get(field) for field in _PROGRAM_FIELDS}
+⋮----
+def _preview_dict(document: dict[str, Any]) -> dict[str, Any]
+⋮----
+preview = import_hackerone_structured_scope(document)
+⋮----
+safe_handle = _validate_handle(handle)
+api = client or HackerOneClient()
+base = f"hackers/programs/{safe_handle}"
+⋮----
+program_document = api.get_json(base)
+program = _program_projection(program_document, safe_handle)
+scopes = _sorted_resources(api.get_all_pages(f"{base}/structured_scopes"))
+exclusions = _sorted_resources(api.get_all_pages(f"{base}/scope_exclusions"))
+document = {"data": scopes, "links": {}}
+preview = _preview_dict(document)
+⋮----
+canonical = {
+digest = hashlib.sha256(
 ```
 
 ## File: app/hackerone_scope_import.py
@@ -9366,6 +9554,8 @@ html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
 launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
 ⋮----
 required_ids = (
+⋮----
+def test_frontend_exposes_remote_hackerone_control_center_contract()
 ```
 
 ## File: tests/test_hackerone_binding.py
@@ -9422,6 +9612,119 @@ start_result = main.start_campaign(campaign.id)
 provenance = start_result["job"]["payload"]["_provenance"]
 ```
 
+## File: tests/test_hackerone_client.py
+```python
+def _vault_key() -> str
+⋮----
+class _Response
+⋮----
+def __init__(self, payload: bytes, *, status: int = 200, content_type: str = "application/json")
+⋮----
+def getcode(self)
+⋮----
+def read(self, amount: int = -1)
+⋮----
+amount = len(self._payload) - self._offset
+chunk = self._payload[self._offset:self._offset + amount]
+⋮----
+class _Opener
+⋮----
+def __init__(self, response)
+⋮----
+def open(self, request, timeout)
+⋮----
+def test_credentials_read_env_and_emit_basic_auth_without_repr_leak(monkeypatch)
+⋮----
+credentials = load_hackerone_credentials()
+⋮----
+expected = base64.b64encode(b"researcher:secret-token-value-123456").decode("ascii")
+⋮----
+def test_credentials_read_vault_and_refuse_env_fallback(monkeypatch, tmp_path)
+⋮----
+vault_path = tmp_path / "vault.json"
+⋮----
+def test_missing_credentials_fail_closed(monkeypatch)
+⋮----
+@pytest.mark.parametrize("path", ["https://evil.example/test", "//evil.example/test", "/v1/hackers/programs", "../programs"])
+def test_client_rejects_paths_that_can_escape_fixed_origin(path)
+⋮----
+client = HackerOneClient(HackerOneCredentials(username="researcher", token="token-value-1234567890"))
+⋮----
+def test_client_get_json_uses_fixed_hackerone_origin_and_basic_auth(monkeypatch)
+⋮----
+response = _Response(b'{"data":[]}')
+opener = _Opener(response)
+⋮----
+credentials = HackerOneCredentials(username="researcher", token="token-value-1234567890")
+client = HackerOneClient(credentials)
+⋮----
+result = client.get_json("hackers/programs", {"page[number]": 2, "page[size]": 100})
+⋮----
+request = opener.requests[0]
+⋮----
+def test_client_rejects_redirects()
+⋮----
+handler = _NoRedirect()
+⋮----
+def test_client_rejects_non_json_and_oversized_response(monkeypatch)
+⋮----
+opener = _Opener(_Response(b"ok", content_type="text/plain"))
+⋮----
+opener = _Opener(_Response(b"{" + b"x" * 2048 + b"}"))
+⋮----
+def test_get_all_pages_collects_until_short_page(monkeypatch)
+⋮----
+pages = {
+calls = []
+⋮----
+def get_json(path, query=None)
+⋮----
+result = client.get_all_pages("hackers/programs")
+```
+
+## File: tests/test_hackerone_control_center_api.py
+```python
+def _client()
+⋮----
+api = FastAPI()
+⋮----
+def test_control_center_routes_exist()
+⋮----
+schema = api.openapi()
+⋮----
+def test_connection_reports_configured_without_exposing_credentials(monkeypatch)
+⋮----
+response = _client().get("/api/imports/hackerone/connection")
+⋮----
+encoded = response.text
+⋮----
+def test_connection_reports_unconfigured_safely(monkeypatch)
+⋮----
+def fail()
+⋮----
+def test_programs_returns_normalized_safe_metadata(monkeypatch)
+⋮----
+class FakeClient
+⋮----
+def get_all_pages(self, path)
+⋮----
+response = _client().get("/api/imports/hackerone/programs")
+⋮----
+def test_snapshot_route_returns_remote_binding_data(monkeypatch)
+⋮----
+snapshot = SimpleNamespace(
+⋮----
+response = _client().get("/api/imports/hackerone/programs/acme/snapshot")
+⋮----
+body = response.json()
+⋮----
+def test_upstream_auth_error_is_mapped_without_leaking_detail(monkeypatch)
+⋮----
+class FailingClient
+⋮----
+def test_upstream_rate_limit_is_service_unavailable(monkeypatch)
+```
+
 ## File: tests/test_hackerone_launch_api.py
 ```python
 def _resource(identifier: str, eligible: bool = True)
@@ -9442,6 +9745,80 @@ result = response.json()
 persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
 ⋮----
 event_types = [event.get("type") for event in persisted["events"]]
+```
+
+## File: tests/test_hackerone_remote_binding.py
+```python
+def _resource(identifier: str)
+⋮----
+def _policy()
+⋮----
+def _api()
+⋮----
+api = FastAPI()
+⋮----
+def _snapshot(document, sha="a" * 64)
+⋮----
+def test_bound_rules_preview_returns_verified_remote_binding(monkeypatch)
+⋮----
+document = {"data": [_resource("example.com")], "links": {}}
+⋮----
+response = _api().post(
+⋮----
+def test_remote_binding_must_be_complete()
+⋮----
+def test_bound_preview_rejects_document_not_from_remote_snapshot(monkeypatch)
+⋮----
+remote_document = {"data": [_resource("example.com")], "links": {}}
+local_document = {"data": [_resource("other.example.com")], "links": {}}
+⋮----
+def test_bound_launch_refetches_and_rejects_snapshot_drift(tmp_path, monkeypatch)
+⋮----
+def test_legacy_manual_preview_still_works_without_remote_binding()
+```
+
+## File: tests/test_hackerone_remote_snapshot.py
+```python
+class _FakeClient
+⋮----
+def __init__(self, *, policy="Policy v1", extra_scope=None, exclusion_detail="Do not test status.example.com")
+⋮----
+def get_json(self, path, query=None)
+⋮----
+def get_all_pages(self, path)
+⋮----
+def test_snapshot_collects_complete_scope_and_builds_import_preview()
+⋮----
+client = _FakeClient(
+⋮----
+snapshot = fetch_hackerone_program_snapshot("acme", client=client)
+⋮----
+imported = import_hackerone_structured_scope(snapshot.document)
+⋮----
+def test_snapshot_hash_changes_when_program_scope_or_exclusions_change()
+⋮----
+baseline = fetch_hackerone_program_snapshot("acme", client=_FakeClient())
+policy_changed = fetch_hackerone_program_snapshot("acme", client=_FakeClient(policy="Policy v2"))
+scope_changed = fetch_hackerone_program_snapshot(
+exclusions_changed = fetch_hackerone_program_snapshot(
+⋮----
+def test_snapshot_hash_is_stable_when_resource_order_changes()
+⋮----
+scope_a = {
+scope_b = {
+first = fetch_hackerone_program_snapshot("acme", client=_FakeClient(extra_scope=[scope_a, scope_b]))
+second = fetch_hackerone_program_snapshot("acme", client=_FakeClient(extra_scope=[scope_b, scope_a]))
+⋮----
+def test_snapshot_rejects_unsafe_program_handles(handle)
+⋮----
+def test_snapshot_rejects_program_handle_mismatch()
+⋮----
+client = _FakeClient()
+original = client.get_json
+⋮----
+def get_json(path, query=None)
+⋮----
+document = original(path, query)
 ```
 
 ## File: tests/test_hackerone_scope_preview_api.py

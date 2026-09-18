@@ -22,19 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T14:50:32Z
+Generated: 2026-09-18T16:51:06Z
 
 ### Git
 - Branch: `main`
-- Head: `ada7143c14f7`
-- Commit date: 2026-09-18T16:49:59+02:00
-- Commit: chore(ai): adopt v10 reference routing
-- Tracked files: 382
+- Head: `a9be68eac179`
+- Commit date: 2026-09-18T18:50:54+02:00
+- Commit: Merge pull request #206 from dbrckk/feat/hackerone-control-center
+- Tracked files: 391
 
 ### Recently changed files
-- `AGENTS.md`
-- `.repo-standards.yml`
-- `.github/workflows/ai-repo-map.yml`
+- `README.md`
+- `.env.example`
+- `frontend/hackerone.js`
+- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`
