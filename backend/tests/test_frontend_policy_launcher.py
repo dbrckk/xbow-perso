@@ -116,6 +116,10 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
         "h1ReportRevoke",
         "h1ReportApprovalStatus",
         "h1ReportRemoteStatus",
+        "h1NeedsInfoPanel",
+        "h1NeedsInfoRequest",
+        "h1NeedsInfoCopy",
+        "h1NeedsInfoDraft",
         "h1ReportTimeline",
         "h1ReportStatus",
     ):
@@ -127,6 +131,8 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
     assert "approveHackerOneReport" in launcher
     assert "submitHackerOneReport" in launcher
     assert "renderHackerOneRemoteReportStatus" in launcher
+    assert "renderHackerOneNeedsInfo" in launcher
+    assert "copyHackerOneNeedsInfoDraft" in launcher
     assert "renderHackerOneReportTimeline" in launcher
     assert "hackerone_report_status_synced" in launcher
     assert "revokeHackerOneReportApproval" in launcher
@@ -137,6 +143,7 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract():
     assert "'/approval/revoke'" in launcher
     assert "'/submit-to-hackerone'" in launcher
     assert "'/hackerone-status'" in launcher
+    assert "'/hackerone-needs-info-draft'" in launcher
     assert "confirm_submission:true" in launcher
     assert "window.confirm" in launcher
     assert "URL.createObjectURL" in launcher
@@ -162,3 +169,14 @@ def test_frontend_exposes_hackerone_human_review_controls():
     assert "CWE" in launcher
     assert "CVSS" in launcher
     assert "ne confirme jamais automatiquement" in launcher
+
+
+def test_frontend_needs_info_flow_has_no_remote_send_action():
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    assert "navigator.clipboard.writeText" in launcher
+    assert "hackerone-needs-info-draft" in launcher
+    assert "needs_more_info" in launcher
+    assert "send_supported" not in launcher
+    assert "post-needs-info" not in launcher
+    assert "reply-to-hackerone" not in launcher

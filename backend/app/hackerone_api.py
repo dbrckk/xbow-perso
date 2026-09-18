@@ -14,6 +14,7 @@ from .hackerone_client import (
     fetch_hackerone_program_snapshot,
     load_hackerone_credentials,
 )
+from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_report_tracking import (
     latest_remote_submission,
     project_remote_report_status,
@@ -437,6 +438,50 @@ def get_hackerone_remote_report_status(
         expected_report_id=remote_report_id,
         team_handle=remote["team_handle"],
     )
+
+
+@router.get(
+    "/api/campaigns/{campaign_id}/reports/{artifact_id}/hackerone-needs-info-draft"
+)
+def get_hackerone_needs_more_info_draft(
+    campaign_id: str,
+    artifact_id: str,
+):
+    from .main import assert_campaign_exists
+
+    campaign = assert_campaign_exists(campaign_id)
+    remote = remote_submission_for_artifact(campaign, artifact_id)
+    remote_report_id = remote["remote_report_id"]
+    try:
+        document = HackerOneClient().get_json(
+            f"hackers/reports/{remote_report_id}"
+        )
+    except HackerOneClientError as exc:
+        raise _upstream_error(exc) from exc
+
+    status = project_remote_report_status(
+        document,
+        artifact_id=artifact_id,
+        expected_report_id=remote_report_id,
+        team_handle=remote["team_handle"],
+    )
+    request = status.get("needs_more_info")
+    if status.get("state") != "needs-more-info" or not isinstance(request, dict):
+        raise HTTPException(
+            status_code=409,
+            detail="No active public HackerOne needs-more-info request is available",
+        )
+
+    return {
+        "provider": "hackerone",
+        "artifact_id": artifact_id,
+        "remote_report_id": remote_report_id,
+        "activity_id": request["activity_id"],
+        "request": request,
+        "draft_markdown": render_needs_more_info_draft(campaign, request),
+        "requires_human_review": True,
+        "send_supported": False,
+    }
 
 
 @router.post(

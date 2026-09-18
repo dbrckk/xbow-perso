@@ -1,4 +1,4 @@
-const CACHE='xbow-perso-v21';
+const CACHE='xbow-perso-v22';
 const PRECACHE=['/','/app.css','/app.js','/hackerone.js','/manifest.webmanifest'];
 
 self.addEventListener('install',event=>{

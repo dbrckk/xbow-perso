@@ -11,6 +11,7 @@ from .campaign_audit import append_campaign_event
 from .hackerone_client import HackerOneClient, HackerOneClientError
 from .hackerone_report_tracking import (
     latest_remote_submission,
+    project_needs_more_info_request,
     project_remote_report_status,
     status_fingerprint_fields,
 )
@@ -107,6 +108,23 @@ def _last_synced(document: dict[str, Any], artifact_id: str) -> dict[str, Any] |
     return matches[-1] if matches else None
 
 
+def _last_needs_more_info(
+    document: dict[str, Any],
+    artifact_id: str,
+) -> dict[str, Any] | None:
+    events = document.get("events")
+    if not isinstance(events, list):
+        return None
+    matches = [
+        event
+        for event in events
+        if isinstance(event, dict)
+        and event.get("type") == "hackerone_needs_more_info_observed"
+        and event.get("artifact_id") == artifact_id
+    ]
+    return matches[-1] if matches else None
+
+
 def _changed(previous: dict[str, Any] | None, current: dict[str, Any]) -> bool:
     if previous is None:
         return True
@@ -125,6 +143,10 @@ def _sync_submission(store, client: HackerOneClient, campaign_id: str, submissio
         expected_report_id=remote_report_id,
         team_handle=team_handle,
     )
+    needs_more_info = project_needs_more_info_request(
+        document,
+        expected_report_id=remote_report_id,
+    )
 
     record = store.get_campaign_record(campaign_id)
     if not record:
@@ -136,18 +158,49 @@ def _sync_submission(store, client: HackerOneClient, campaign_id: str, submissio
         or latest_submission.get("remote_report_id") != remote_report_id
     ):
         return False
+    events = current.setdefault("events", [])
+    observed_at = utcnow()
+    changed = False
+
     previous = _last_synced(current, artifact_id)
-    if not _changed(previous, status):
+    if _changed(previous, status):
+        append_campaign_event(
+            events,
+            {
+                "type": "hackerone_report_status_synced",
+                **status_fingerprint_fields(status),
+                "artifact_id": artifact_id,
+                "observed_at": observed_at,
+            },
+        )
+        changed = True
+
+    if needs_more_info is not None:
+        previous_nmi = _last_needs_more_info(current, artifact_id)
+        if (
+            previous_nmi is None
+            or previous_nmi.get("activity_id")
+            != needs_more_info.get("activity_id")
+        ):
+            append_campaign_event(
+                events,
+                {
+                    "type": "hackerone_needs_more_info_observed",
+                    "artifact_id": artifact_id,
+                    "remote_report_id": remote_report_id,
+                    "activity_id": needs_more_info["activity_id"],
+                    "message": needs_more_info["message"],
+                    "created_at": needs_more_info.get("created_at"),
+                    "updated_at": needs_more_info.get("updated_at"),
+                    "observed_at": observed_at,
+                },
+            )
+            changed = True
+
+    if not changed:
         return False
 
-    event = {
-        "type": "hackerone_report_status_synced",
-        **status_fingerprint_fields(status),
-        "artifact_id": artifact_id,
-        "observed_at": utcnow(),
-    }
-    append_campaign_event(current.setdefault("events", []), event)
-    current["updated_at"] = event["observed_at"]
+    current["updated_at"] = observed_at
     try:
         store.save_campaign(current, expected_version=version)
     except CampaignConflictError:

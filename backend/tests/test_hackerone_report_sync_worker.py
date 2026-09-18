@@ -190,3 +190,74 @@ def test_sync_is_bounded_to_recent_campaign_limit(tmp_path, monkeypatch):
     assert stats["campaigns_checked"] == 1
     assert stats["reports_checked"] == 1
     assert len(client.calls) == 1
+
+
+def _needs_more_info_report():
+    document = _report(
+        "needs-more-info",
+        last_activity_at="2026-09-18T20:30:00Z",
+    )
+    document["data"]["relationships"] = {
+        "activities": {
+            "data": [
+                {
+                    "id": "9001",
+                    "type": "activity-bug-needs-more-info",
+                    "attributes": {
+                        "report_id": "4242",
+                        "message": "Please provide exact headers.",
+                        "internal": False,
+                        "created_at": "2026-09-18T20:30:00Z",
+                        "updated_at": "2026-09-18T20:31:00Z",
+                    },
+                }
+            ]
+        }
+    }
+    return document
+
+
+def test_sync_records_public_needs_more_info_once(tmp_path, monkeypatch):
+    store = _setup(tmp_path, monkeypatch)
+    response = _needs_more_info_report()
+
+    first = sync_once(store, _Client([response]))
+    second = sync_once(store, _Client([response]))
+
+    assert first["changes_recorded"] == 1
+    assert second["changes_recorded"] == 0
+    persisted = store.get_campaign("h1-sync")
+    events = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "hackerone_needs_more_info_observed"
+    ]
+    assert len(events) == 1
+    assert events[0]["activity_id"] == "9001"
+    assert events[0]["message"] == "Please provide exact headers."
+    assert "relationships" not in events[0]
+
+
+def test_sync_records_new_needs_more_info_activity_even_when_state_is_unchanged(
+    tmp_path,
+    monkeypatch,
+):
+    store = _setup(tmp_path, monkeypatch)
+    first = _needs_more_info_report()
+    second = _needs_more_info_report()
+    second["data"]["relationships"]["activities"]["data"][0]["id"] = "9002"
+    second["data"]["relationships"]["activities"]["data"][0]["attributes"][
+        "message"
+    ] = "Please add the raw response body."
+
+    sync_once(store, _Client([first]))
+    stats = sync_once(store, _Client([second]))
+
+    assert stats["changes_recorded"] == 1
+    persisted = store.get_campaign("h1-sync")
+    events = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "hackerone_needs_more_info_observed"
+    ]
+    assert [event["activity_id"] for event in events] == ["9001", "9002"]
