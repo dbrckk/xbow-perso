@@ -49,3 +49,30 @@ def test_frontend_requires_authorization_and_scope_review_before_launch():
     assert '<button id="h1Launch" disabled>' in html
     assert "approvedPreview" in launcher
     assert "invalidatePreview" in launcher
+
+
+
+def test_frontend_exposes_remote_hackerone_control_center_contract():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    required_ids = (
+        "h1ConnectionState",
+        "h1ProgramSearch",
+        "h1ProgramSelect",
+        "h1LoadProgram",
+        "h1ProgramMeta",
+        "h1RemoteFingerprint",
+        "h1ScopeTable",
+        "h1ScopeExclusions",
+    )
+    for element_id in required_ids:
+        assert f'id="{element_id}"' in html
+
+    assert "api('/imports/hackerone/connection'" in launcher
+    assert "api('/imports/hackerone/programs'" in launcher
+    assert "/snapshot" in launcher
+    assert "remote_handle" in launcher
+    assert "remote_snapshot_sha256" in launcher
+    assert "clearRemoteBinding" in launcher
+    assert "renderRemoteScope" in launcher

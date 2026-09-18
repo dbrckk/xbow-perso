@@ -63,6 +63,32 @@ Open `http://SERVER_IP:8080` from your phone.
 
 The default configuration uses `DRY_RUN=true`; external testing engines are not launched until you explicitly configure them.
 
+## HackerOne Control Center
+
+The PWA can load HackerOne programs and complete StructuredScope data through the server-side Hacker API client. This integration is read-only: it discovers program metadata, scope, exclusions and policy text; it does not submit reports or mutate HackerOne.
+
+Configure HackerOne credentials only on the server:
+
+```bash
+XBOW_HACKERONE_API_USERNAME=YOUR_HACKERONE_API_IDENTIFIER
+XBOW_HACKERONE_API_TOKEN=YOUR_HACKERONE_API_TOKEN
+```
+
+When `XBOW_VAULT_ENABLED=true`, store the same values as vault entries `hackerone_api_username` and `hackerone_api_token` and leave the legacy environment variables unset. Vault mode refuses environment fallback if either vault entry is unavailable.
+
+Safe launch workflow:
+
+1. authenticate to the xbow-perso control plane with `XBOW_API_TOKEN` (and TOTP when enabled);
+2. select and load a HackerOne program in the Control Center, or keep using the manual StructuredScope importer;
+3. review the loaded policy and scope; the UI never infers permission to automate scanning from free-form policy text;
+4. explicitly confirm Safe Harbor/authorization, automated scanning permission, the exact program request-rate ceiling and any account/restriction requirements;
+5. preview the executable rules;
+6. confirm the preview and launch only if the conservative admission gates remain green.
+
+Remote-bound previews carry a deterministic SHA-256 snapshot of the program metadata, complete scope and exclusions. Launch re-fetches HackerOne before campaign creation. If the remote snapshot changed after review, xbow-perso returns `409 stale_hackerone_snapshot` and requires a fresh review. Unsupported or conflicting scope data remains fail-closed.
+
+The HackerOne API timeout defaults to 10 seconds and its bounded response size to 2 MiB; see `.env.example` for `XBOW_HACKERONE_TIMEOUT_SECONDS` and `XBOW_HACKERONE_MAX_RESPONSE_BYTES`.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
