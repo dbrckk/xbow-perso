@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from .job_provenance import attach_job_provenance
 from .jobqueue import JobQueue
 from .main import Campaign
 from .observation_writer import record_finding_chain
@@ -62,11 +63,16 @@ def ingest_scanner_run(
         queue.enqueue(
             campaign.id,
             "independent_validation",
-            {
-                "campaign_id": campaign.id,
-                "finding_id": finding.id,
-                "asset": finding.asset,
-            },
+            attach_job_provenance(
+                {
+                    "campaign_id": campaign.id,
+                    "finding_id": finding.id,
+                    "asset": finding.asset,
+                },
+                campaign,
+                job_kind="independent_validation",
+                action="validate",
+            ),
             max_attempts=2,
             dedupe_key=f"validation:{finding.id}",
         )
