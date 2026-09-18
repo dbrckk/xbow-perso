@@ -94,6 +94,9 @@ Direct HackerOne submission is fail-closed: it requires a current human approval
 
 After a successful direct submission, the Control Center can read the remote report with HackerOne's `GET /v1/hackers/reports/{id}` endpoint. The local API exposes only bounded operational fields (remote report ID, program handle, state, and activity/triage/closure timestamps); report content, relationships, attachments, and user data are intentionally omitted. This status lookup is read-only and does not mutate the campaign audit log.
 
+
+Optional historical synchronization is provided by the separate `hackerone-report-sync-worker` Compose service. It is disabled by default. Enable it with `XBOW_ENABLE_HACKERONE_REPORT_SYNC=true` and start the `hackerone-sync` profile. Each cycle examines only the configured number of recent campaigns, fetches only reports that already have an audited remote HackerOne report ID, and appends a sealed `hackerone_report_status_synced` event only when tracked state/timestamps changed. The default interval is 60 seconds and the default campaign bound is 100.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.

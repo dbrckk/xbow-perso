@@ -276,9 +276,19 @@ class Storage:
         record = self.get_campaign_record(campaign_id)
         return record[0] if record else None
 
-    def list_campaigns(self) -> list[dict[str, Any]]:
+    def list_campaigns(self, *, limit: int | None = None) -> list[dict[str, Any]]:
+        if limit is not None and not 1 <= limit <= 5000:
+            raise ValueError("campaign list limit must be between 1 and 5000")
         with self.connect() as db:
-            rows = db.execute("SELECT document FROM campaigns ORDER BY created_at DESC").fetchall()
+            if limit is None:
+                rows = db.execute(
+                    "SELECT document FROM campaigns ORDER BY created_at DESC"
+                ).fetchall()
+            else:
+                rows = db.execute(
+                    "SELECT document FROM campaigns ORDER BY created_at DESC LIMIT ?",
+                    (limit,),
+                ).fetchall()
         return [json.loads(row["document"]) for row in rows]
 
     def put_observation(self, campaign_id: str, observation: dict[str, Any]) -> dict[str, Any]:

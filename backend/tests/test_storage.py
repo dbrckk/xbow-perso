@@ -543,3 +543,22 @@ def test_storage_health_reports_sqlite_ready(tmp_path):
     result = store.health()
 
     assert result == {"ok": True, "storage": "sqlite"}
+
+
+def test_list_campaigns_can_be_bounded_in_storage(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    for index in range(3):
+        store.save_campaign(
+            {
+                "id": f"c{index}",
+                "state": "ready",
+                "created_at": f"2026-09-18T20:0{index}:00+00:00",
+                "updated_at": f"2026-09-18T20:0{index}:00+00:00",
+            }
+        )
+
+    recent = store.list_campaigns(limit=2)
+
+    assert [item["id"] for item in recent] == ["c2", "c1"]
+    with pytest.raises(ValueError, match="campaign list limit"):
+        store.list_campaigns(limit=0)
