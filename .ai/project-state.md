@@ -22,18 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T18:11:41Z
+Generated: 2026-09-18T18:18:30Z
 
 ### Git
 - Branch: `main`
-- Head: `ac75c7f52a8a`
-- Commit date: 2026-09-18T20:10:12+02:00
-- Commit: Merge pull request #210 from dbrckk/test/hackerone-nuclei-e2e
+- Head: `6b1ab6ece387`
+- Commit date: 2026-09-18T20:18:17+02:00
+- Commit: Merge pull request #211 from dbrckk/feat/hackerone-live-run-monitor
 - Tracked files: 400
 
 ### Recently changed files
-- `backend/tests/test_hackerone_nuclei_e2e.py`
-- `backend/app/scanner_ingestion.py`
+- `frontend/sw.js`
+- `frontend/app.css`
+- `frontend/hackerone.js`
+- `frontend/index.html`
+- `backend/tests/test_frontend_policy_launcher.py`
 
 ### Project signals
 - `pyproject.toml`

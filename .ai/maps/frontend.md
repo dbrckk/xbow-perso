@@ -97,6 +97,14 @@ function setLauncherStatus(message,type='muted')
 ⋮----
 function setConnectionState(label,type='')
 ⋮----
+function stopRunMonitor()
+⋮----
+function renderRunMonitor(campaignData,control,artifacts)
+⋮----
+async function refreshRunMonitor(campaignId)
+⋮----
+function startRunMonitor(campaignId)
+⋮----
 function clearRemoteBinding()
 ⋮----
 function renderProgramOptions()

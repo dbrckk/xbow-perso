@@ -10125,6 +10125,8 @@ launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
 required_ids = (
 ⋮----
 def test_frontend_exposes_remote_hackerone_control_center_contract()
+⋮----
+def test_frontend_exposes_hackerone_live_run_monitor_contract()
 ````
 
 ## File: backend/tests/test_hackerone_binding.py
@@ -14557,6 +14559,14 @@ const splitLines=value
 function setLauncherStatus(message,type='muted')
 ⋮----
 function setConnectionState(label,type='')
+⋮----
+function stopRunMonitor()
+⋮----
+function renderRunMonitor(campaignData,control,artifacts)
+⋮----
+async function refreshRunMonitor(campaignId)
+⋮----
+function startRunMonitor(campaignId)
 ⋮----
 function clearRemoteBinding()
 ⋮----

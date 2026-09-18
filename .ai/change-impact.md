@@ -1,14 +1,18 @@
 # Change impact
 
-Base: 0c4ca70732efb1eeb85938d982aa034d24aa0a12
-Head: ac75c7f52a8abab5f1d9c962c661d91448ad90d2
+Base: 305a062cb7adb4724fbe8ed6789693457e1596f8
+Head: 6b1ab6ece387f471224235d999151885434d17da
 
 ## Changed files
-- M backend/app/scanner_ingestion.py
-- A backend/tests/test_hackerone_nuclei_e2e.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M frontend/app.css
+- M frontend/hackerone.js
+- M frontend/index.html
+- M frontend/sw.js
 
 ## Affected areas
 - backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

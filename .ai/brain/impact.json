@@ -1,104 +1,218 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "4d90a6a00045f4ead58dc7312e60742ff73fd2fd",
-  "head": "ac75c7f52a8abab5f1d9c962c661d91448ad90d2",
+  "base": "ac75c7f52a8abab5f1d9c962c661d91448ad90d2",
+  "head": "6b1ab6ece387f471224235d999151885434d17da",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/scanner_ingestion.py",
+      "path": "backend/tests/test_frontend_policy_launcher.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
-      "status": "A"
+      "path": "frontend/app.css",
+      "status": "M"
+    },
+    {
+      "path": "frontend/hackerone.js",
+      "status": "M"
+    },
+    {
+      "path": "frontend/index.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend/sw.js",
+      "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/scanner_ingestion.py",
-    "backend/tests/test_hackerone_nuclei_e2e.py"
+    "backend/tests/test_frontend_policy_launcher.py",
+    "frontend/hackerone.js",
+    "frontend/sw.js"
   ],
   "impacted_files": [
-    "backend/app/scanner_ingestion.py",
-    "backend/app/scanner_worker.py",
-    "backend/tests/test_hackerone_nuclei_e2e.py"
+    "backend/tests/test_frontend_policy_launcher.py",
+    "frontend/hackerone.js",
+    "frontend/sw.js"
   ],
   "impacted_symbols": [
     {
-      "name": "ScannerIngestionResult",
-      "kind": "class",
-      "file": "backend/app/scanner_ingestion.py",
-      "line": 15
-    },
-    {
-      "name": "to_dict",
+      "name": "test_hackerone_single_mutation_launch_route_exists",
       "kind": "function",
-      "file": "backend/app/scanner_ingestion.py",
-      "line": 22
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 9
     },
     {
-      "name": "ingest_scanner_run",
+      "name": "test_frontend_requires_authorization_and_scope_review_before_launch",
       "kind": "function",
-      "file": "backend/app/scanner_ingestion.py",
-      "line": 32
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 16
     },
     {
-      "name": "ScannerJobResult",
-      "kind": "class",
-      "file": "backend/app/scanner_worker.py",
-      "line": 17
-    },
-    {
-      "name": "_record_scan_observation",
+      "name": "test_frontend_exposes_remote_hackerone_control_center_contract",
       "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 24
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 55
     },
     {
-      "name": "_state_after_scan",
+      "name": "test_frontend_exposes_hackerone_live_run_monitor_contract",
       "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 52
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 82
     },
     {
-      "name": "run_strix_job",
+      "name": "setLauncherStatus",
       "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 60
+      "file": "frontend/hackerone.js",
+      "line": 16
     },
     {
-      "name": "run_nuclei_job",
+      "name": "setConnectionState",
       "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 129
+      "file": "frontend/hackerone.js",
+      "line": 20
     },
     {
-      "name": "_resource",
+      "name": "stopRunMonitor",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
-      "line": 13
+      "file": "frontend/hackerone.js",
+      "line": 26
     },
     {
-      "name": "_launch_payload",
+      "name": "renderRunMonitor",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
-      "line": 24
+      "file": "frontend/hackerone.js",
+      "line": 35
     },
     {
-      "name": "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue",
+      "name": "refreshRunMonitor",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
-      "line": 47
+      "file": "frontend/hackerone.js",
+      "line": 58
     },
     {
-      "name": "fake_execute",
+      "name": "startRunMonitor",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
-      "line": 65
+      "file": "frontend/hackerone.js",
+      "line": 86
+    },
+    {
+      "name": "clearRemoteBinding",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 96
+    },
+    {
+      "name": "renderProgramOptions",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 105
+    },
+    {
+      "name": "renderRemoteScope",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 126
+    },
+    {
+      "name": "loadRemoteProgram",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 165
+    },
+    {
+      "name": "initRemoteControlCenter",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 201
+    },
+    {
+      "name": "parseScopeDocument",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 226
+    },
+    {
+      "name": "reviewedAtIso",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 237
+    },
+    {
+      "name": "buildPolicy",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 245
+    },
+    {
+      "name": "buildPayload",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 271
+    },
+    {
+      "name": "conservativeBlockers",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 289
+    },
+    {
+      "name": "payloadFingerprint",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 299
+    },
+    {
+      "name": "invalidatePreview",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 303
+    },
+    {
+      "name": "renderScopeList",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 315
+    },
+    {
+      "name": "renderPreview",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 329
+    },
+    {
+      "name": "preview",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 360
+    },
+    {
+      "name": "launch",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 386
+    },
+    {
+      "name": "importScopeFile",
+      "kind": "function",
+      "file": "frontend/hackerone.js",
+      "line": 419
     }
   ],
   "selected_tests": [
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_hackerone_binding.py",
+    "backend/tests/test_hackerone_client.py",
+    "backend/tests/test_hackerone_control_center_api.py",
+    "backend/tests/test_hackerone_launch_api.py",
     "backend/tests/test_hackerone_nuclei_e2e.py",
-    "backend/tests/test_scanner_ingestion.py"
+    "backend/tests/test_hackerone_remote_binding.py",
+    "backend/tests/test_hackerone_remote_snapshot.py",
+    "backend/tests/test_hackerone_scope_import.py",
+    "backend/tests/test_hackerone_scope_preview_api.py",
+    "backend/tests/test_pipeline_swarm.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_swarm_coordinator.py"
   ]
 }
