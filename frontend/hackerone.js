@@ -562,7 +562,45 @@
     node.textContent='HackerOne report '+remoteId+' · '+state+activity;
   }
 
-  function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval,remoteReportStatus){
+  function renderHackerOneNeedsInfo(remoteStatus,needsInfoDraft){
+    const panel=el('h1NeedsInfoPanel');
+    const request=remoteStatus?.needs_more_info;
+    if(!request){
+      panel.classList.add('hidden');
+      el('h1NeedsInfoRequest').textContent='';
+      el('h1NeedsInfoDraft').textContent='';
+      el('h1NeedsInfoCopy').disabled=true;
+      delete el('h1NeedsInfoCopy').dataset.draft;
+      return;
+    }
+    panel.classList.remove('hidden');
+    el('h1NeedsInfoRequest').textContent='Demande HackerOne : '+String(request.message||'');
+    if(needsInfoDraft?.error){
+      el('h1NeedsInfoDraft').textContent='Brouillon indisponible : '+needsInfoDraft.error;
+      el('h1NeedsInfoCopy').disabled=true;
+      delete el('h1NeedsInfoCopy').dataset.draft;
+      return;
+    }
+    const draft=String(needsInfoDraft?.draft_markdown||'');
+    el('h1NeedsInfoDraft').textContent=draft;
+    el('h1NeedsInfoCopy').dataset.draft=draft;
+    el('h1NeedsInfoCopy').disabled=!draft;
+  }
+
+  async function copyHackerOneNeedsInfoDraft(){
+    const button=el('h1NeedsInfoCopy');
+    const draft=String(button.dataset.draft||'');
+    if(!draft)return;
+    try{
+      await navigator.clipboard.writeText(draft);
+      button.textContent='Brouillon copié';
+      setTimeout(()=>{button.textContent='Copier le brouillon de réponse';},1500);
+    }catch(error){
+      el('h1NeedsInfoDraft').textContent='Copie impossible : '+error.message+'\n\n'+draft;
+    }
+  }
+
+  function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval,remoteReportStatus,needsInfoDraft){
     const panel=el('h1RunPanel');
     panel.classList.remove('hidden');
     const state=String(campaignData?.state||control?.campaign_state||'unknown');
@@ -584,6 +622,7 @@
     el('h1RunArtifacts').textContent=String(Array.isArray(artifacts)?artifacts.length:0);
     renderHackerOneFindings(campaignData,artifacts,reportReadiness,reportApproval);
     renderHackerOneRemoteReportStatus(remoteReportStatus);
+    renderHackerOneNeedsInfo(remoteReportStatus,needsInfoDraft);
     const reportArtifact=(Array.isArray(artifacts)?artifacts:[]).find(item=>
       item?.kind==='report'&&String(item?.idempotency_key||'').endsWith(':report:hackerone')
     );
@@ -607,6 +646,7 @@
       );
       let reportApproval=null;
       let remoteReportStatus=null;
+      let needsInfoDraft=null;
       if(reportArtifact?.id){
         try{
           reportApproval=await api(
@@ -626,6 +666,17 @@
               '/campaigns/'+encoded+
               '/reports/'+encodeURIComponent(reportArtifact.id)+'/hackerone-status'
             );
+            if(remoteReportStatus?.needs_more_info){
+              try{
+                needsInfoDraft=await api(
+                  '/campaigns/'+encoded+
+                  '/reports/'+encodeURIComponent(reportArtifact.id)+
+                  '/hackerone-needs-info-draft'
+                );
+              }catch(error){
+                needsInfoDraft={error:error.message};
+              }
+            }
           }catch(error){
             remoteReportStatus={error:error.message};
           }
@@ -637,7 +688,8 @@
         artifacts,
         reportReadiness,
         reportApproval,
-        remoteReportStatus
+        remoteReportStatus,
+        needsInfoDraft
       );
       if(typeof refreshDashboard==='function'&&campaign?.id===campaignId){
         await refreshDashboard();
@@ -652,6 +704,7 @@
         reportReadiness,
         reportApproval,
         remoteReportStatus,
+        needsInfoDraft,
         encoded
       };
     }catch(error){
@@ -1038,6 +1091,7 @@
   el('h1ReportApprove').addEventListener('click',()=>void approveHackerOneReport());
   el('h1ReportSubmit').addEventListener('click',()=>void submitHackerOneReport());
   el('h1ReportRevoke').addEventListener('click',()=>void revokeHackerOneReportApproval());
+  el('h1NeedsInfoCopy').addEventListener('click',()=>void copyHackerOneNeedsInfoDraft());
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
 })();
