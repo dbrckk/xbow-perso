@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import os
 import socket
@@ -8,9 +9,10 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import Any, Mapping
 
+from .hackerone_scope_import import HackerOneScopeImportError, import_hackerone_structured_scope
 from .secret_vault import SecretVaultError, resolve_secret
 
 
@@ -191,3 +193,119 @@ class HackerOneClient:
             if len(data) < _PAGE_SIZE:
                 return items
         raise HackerOneClientError("HackerOne pagination exceeded safety limit")
+
+
+_HANDLE_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_-")
+_PROGRAM_FIELDS = (
+    "handle",
+    "name",
+    "policy",
+    "submission_state",
+    "state",
+    "offers_bounties",
+    "open_scope",
+    "fast_payments",
+    "gold_standard_safe_harbor",
+)
+
+
+@dataclass(frozen=True)
+class HackerOneProgramSnapshot:
+    handle: str
+    program: dict[str, Any]
+    document: dict[str, Any]
+    scope_exclusions: tuple[dict[str, Any], ...]
+    preview: dict[str, Any]
+    snapshot_sha256: str
+
+
+def _validate_handle(handle: str) -> str:
+    if not isinstance(handle, str) or not 1 <= len(handle) <= 128:
+        raise HackerOneClientError("HackerOne program handle is invalid")
+    if handle != handle.strip() or handle != handle.lower():
+        raise HackerOneClientError("HackerOne program handle is invalid")
+    if handle[0] == "-" or any(ch not in _HANDLE_CHARS for ch in handle):
+        raise HackerOneClientError("HackerOne program handle is invalid")
+    return handle
+
+
+def _canonical_resource(resource: dict[str, Any]) -> str:
+    return json.dumps(resource, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def _sorted_resources(resources: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(resources, key=_canonical_resource)
+
+
+def _program_projection(document: dict[str, Any], expected_handle: str) -> dict[str, Any]:
+    data = document.get("data")
+    if not isinstance(data, dict):
+        raise HackerOneClientError("HackerOne program response has no resource object")
+    attributes = data.get("attributes")
+    if not isinstance(attributes, dict):
+        raise HackerOneClientError("HackerOne program response has no attributes object")
+    remote_handle = attributes.get("handle")
+    if remote_handle != expected_handle:
+        raise HackerOneClientError("HackerOne program handle mismatch")
+    projected = {field: attributes.get(field) for field in _PROGRAM_FIELDS}
+    if not isinstance(projected["name"], str) or not projected["name"].strip():
+        raise HackerOneClientError("HackerOne program name is invalid")
+    if not isinstance(projected["policy"], str):
+        raise HackerOneClientError("HackerOne program policy is invalid")
+    return projected
+
+
+def _preview_dict(document: dict[str, Any]) -> dict[str, Any]:
+    try:
+        preview = import_hackerone_structured_scope(document)
+    except HackerOneScopeImportError as exc:
+        raise HackerOneClientError("HackerOne structured scope is invalid") from exc
+    return {
+        "complete": preview.complete,
+        "allowed_targets": list(preview.allowed_targets),
+        "denied_targets": list(preview.denied_targets),
+        "conflicts": list(preview.conflicts),
+        "unsupported": list(preview.unsupported),
+        "assets": [asdict(asset) for asset in preview.assets],
+    }
+
+
+def fetch_hackerone_program_snapshot(
+    handle: str,
+    *,
+    client: HackerOneClient | None = None,
+) -> HackerOneProgramSnapshot:
+    safe_handle = _validate_handle(handle)
+    api = client or HackerOneClient()
+    base = f"hackers/programs/{safe_handle}"
+
+    program_document = api.get_json(base)
+    program = _program_projection(program_document, safe_handle)
+    scopes = _sorted_resources(api.get_all_pages(f"{base}/structured_scopes"))
+    exclusions = _sorted_resources(api.get_all_pages(f"{base}/scope_exclusions"))
+    document = {"data": scopes, "links": {}}
+    preview = _preview_dict(document)
+
+    canonical = {
+        "handle": safe_handle,
+        "program": program,
+        "structured_scopes": scopes,
+        "scope_exclusions": exclusions,
+    }
+    digest = hashlib.sha256(
+        json.dumps(
+            canonical,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+    ).hexdigest()
+
+    return HackerOneProgramSnapshot(
+        handle=safe_handle,
+        program=program,
+        document=document,
+        scope_exclusions=tuple(exclusions),
+        preview=preview,
+        snapshot_sha256=digest,
+    )
