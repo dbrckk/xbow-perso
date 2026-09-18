@@ -2,13 +2,13 @@
 
 Summary: 0 success / 0 failure / 5 active
 
-- supply-chain: in_progress / pending (471f85e4)
-- ci: queued / pending (471f85e4)
-- security: in_progress / pending (471f85e4)
-- ci: completed / cancelled (ca34408e)
-- supply-chain: queued / pending (ca34408e)
-- security: completed / cancelled (ca34408e)
-- supply-chain: in_progress / pending (4780cd8f)
-- security: completed / cancelled (4780cd8f)
+- ci: queued / pending (fab03ab2)
+- security: in_progress / pending (fab03ab2)
+- supply-chain: in_progress / pending (fab03ab2)
+- ci: completed / cancelled (8450370a)
+- supply-chain: in_progress / pending (8450370a)
+- security: completed / cancelled (8450370a)
+- security: completed / cancelled (d72ac948)
+- supply-chain: in_progress / pending (d72ac948)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.
