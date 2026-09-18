@@ -123,6 +123,8 @@ async function revokeHackerOneReportApproval()
 ⋮----
 async function queueHackerOneReport()
 ⋮----
+function renderHackerOneReportTimeline(campaignData,artifactId)
+⋮----
 function renderHackerOneRemoteReportStatus(remoteStatus)
 ⋮----
 function renderRunMonitor(campaignData,control,artifacts,reportReadiness,reportApproval,remoteReportStatus)

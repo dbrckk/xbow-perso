@@ -79,6 +79,8 @@ app/
   hackerone_api.py
   hackerone_binding.py
   hackerone_client.py
+  hackerone_report_sync_worker.py
+  hackerone_report_tracking.py
   hackerone_scope_import.py
   hypothesis_engine.py
   hypothesis_memory.py
@@ -222,6 +224,7 @@ tests/
   test_hackerone_remote_binding.py
   test_hackerone_remote_snapshot.py
   test_hackerone_report_lifecycle_e2e.py
+  test_hackerone_report_sync_worker.py
   test_hackerone_report_tracking.py
   test_hackerone_scope_import.py
   test_hackerone_scope_preview_api.py
@@ -2640,29 +2643,7 @@ attempts = [
 request_id = latest.get("request_id")
 resolved = any(
 ⋮----
-def _latest_remote_submission(campaign, artifact_id: str) -> dict[str, Any] | None
-⋮----
-matches = [
-⋮----
-def _remote_submission_for_artifact(campaign, artifact_id: str) -> dict[str, Any]
-⋮----
-remote = _latest_remote_submission(campaign, artifact_id)
-⋮----
-remote_report_id = remote.get("remote_report_id")
-team_handle = remote.get("team_handle")
-⋮----
-data = document.get("data")
-⋮----
-attributes = data.get("attributes")
-⋮----
-state = attributes.get("state")
-⋮----
-allowed_timestamps = (
-projected = {
-⋮----
-value = attributes.get(key)
-⋮----
-remote = _remote_submission_for_artifact(campaign, artifact_id)
+remote = remote_submission_for_artifact(campaign, artifact_id)
 remote_report_id = remote["remote_report_id"]
 ⋮----
 document = HackerOneClient().get_json(
@@ -2671,6 +2652,7 @@ store = storage()
 ⋮----
 current_state = submission_status(campaign, artifact)
 ⋮----
+remote = latest_remote_submission(campaign, artifact_id)
 result = current_state.to_dict()
 ⋮----
 approval = approval_status_from_storage(campaign, store, artifact_id)
@@ -2873,6 +2855,114 @@ preview = _preview_dict(document)
 ⋮----
 canonical = {
 digest = hashlib.sha256(
+```
+
+## File: app/hackerone_report_sync_worker.py
+```python
+class HackerOneReportSyncError(RuntimeError)
+⋮----
+def _strict_bool_env(name: str, default: bool = False) -> bool
+⋮----
+raw = os.getenv(name)
+⋮----
+value = raw.strip().lower()
+⋮----
+def _require_enabled() -> None
+⋮----
+def _max_campaigns() -> int
+⋮----
+raw = (os.getenv("XBOW_HACKERONE_REPORT_SYNC_MAX_CAMPAIGNS") or "100").strip()
+⋮----
+value = int(raw)
+⋮----
+def _interval_seconds() -> float
+⋮----
+raw = (os.getenv("XBOW_HACKERONE_REPORT_SYNC_INTERVAL_SECONDS") or "60").strip()
+⋮----
+value = float(raw)
+⋮----
+def _submissions(document: dict[str, Any]) -> list[dict[str, Any]]
+⋮----
+latest: dict[str, dict[str, Any]] = {}
+events = document.get("events")
+⋮----
+artifact_id = event.get("artifact_id")
+remote_report_id = event.get("remote_report_id")
+team_handle = event.get("team_handle")
+⋮----
+def _last_synced(document: dict[str, Any], artifact_id: str) -> dict[str, Any] | None
+⋮----
+matches = [
+⋮----
+def _changed(previous: dict[str, Any] | None, current: dict[str, Any]) -> bool
+⋮----
+def _sync_submission(store, client: HackerOneClient, campaign_id: str, submission: dict[str, Any]) -> bool
+⋮----
+artifact_id = str(submission["artifact_id"])
+remote_report_id = str(submission["remote_report_id"])
+team_handle = str(submission["team_handle"]).strip()
+⋮----
+document = client.get_json(f"hackers/reports/{remote_report_id}")
+status = project_remote_report_status(
+⋮----
+record = store.get_campaign_record(campaign_id)
+⋮----
+latest_submission = latest_remote_submission(current, artifact_id)
+⋮----
+previous = _last_synced(current, artifact_id)
+⋮----
+event = {
+⋮----
+def sync_once(store=None, client: HackerOneClient | None = None) -> dict[str, int]
+⋮----
+store = store or create_storage()
+client = client or HackerOneClient()
+⋮----
+campaigns = store.list_campaigns(limit=_max_campaigns())
+stats = {
+⋮----
+campaign_id = document.get("id")
+⋮----
+submissions = _submissions(document)
+⋮----
+def main() -> None
+⋮----
+worker_id = os.getenv(
+interval = _interval_seconds()
+⋮----
+stats = sync_once()
+```
+
+## File: app/hackerone_report_tracking.py
+```python
+TRACKED_TIMESTAMP_FIELDS = (
+⋮----
+def _campaign_events(campaign: Any) -> list[dict[str, Any]]
+⋮----
+events = campaign.get("events")
+⋮----
+events = getattr(campaign, "events", None)
+⋮----
+def latest_remote_submission(campaign: Any, artifact_id: str) -> dict[str, Any] | None
+⋮----
+matches = [
+⋮----
+remote = latest_remote_submission(campaign, artifact_id)
+⋮----
+remote_report_id = remote.get("remote_report_id")
+team_handle = remote.get("team_handle")
+⋮----
+data = document.get("data")
+⋮----
+attributes = data.get("attributes")
+⋮----
+state = attributes.get("state")
+⋮----
+projected = {
+⋮----
+value = attributes.get(key)
+⋮----
+def status_fingerprint_fields(status: dict[str, Any]) -> dict[str, Any]
 ```
 
 ## File: app/hackerone_scope_import.py
@@ -7064,7 +7154,7 @@ def health(self) -> dict: ...
 def save_campaign(self, document: dict, *, expected_version: int | None = None) -> int: ...
 def get_campaign_record(self, campaign_id: str): ...
 def get_campaign(self, campaign_id: str): ...
-def list_campaigns(self) -> list[dict]: ...
+def list_campaigns(self, *, limit: int | None = None) -> list[dict]: ...
 def put_observation(self, campaign_id: str, observation: dict) -> dict: ...
 def list_observations(self, campaign_id: str) -> list[dict]: ...
 def put_hypothesis_snapshot(self, campaign_id: str, graph_fingerprint: str, hypotheses: list[dict]) -> dict: ...
@@ -7179,9 +7269,9 @@ def get_campaign(self, campaign_id: str) -> dict[str, Any] | None
 ⋮----
 record = self.get_campaign_record(campaign_id)
 ⋮----
-def list_campaigns(self) -> list[dict[str, Any]]
+def list_campaigns(self, *, limit: int | None = None) -> list[dict[str, Any]]
 ⋮----
-rows = db.execute("SELECT document FROM campaigns ORDER BY created_at DESC").fetchall()
+rows = db.execute(
 ⋮----
 def put_observation(self, campaign_id: str, observation: dict[str, Any]) -> dict[str, Any]
 ⋮----
@@ -7199,7 +7289,6 @@ record = {
 encoded_observation = json.dumps(
 ⋮----
 placeholders = ",".join("?" for _ in parent_ids)
-rows = db.execute(
 ⋮----
 existing = db.execute(
 ⋮----
@@ -9053,8 +9142,9 @@ def test_differential_validation_gate_is_disabled_in_example_environment()
 ⋮----
 def test_compose_keeps_state_private_and_shared_only_where_needed()
 ⋮----
-# Control plane, generic worker, dedicated scanner worker, PentAGI creator
-# and PentAGI status tracker require private shared state. Frontend is stateless.
+# Control plane, generic worker, dedicated scanner worker, PentAGI creator,
+# PentAGI status tracker and HackerOne report sync worker require private
+# shared state. Frontend is stateless.
 ⋮----
 frontend = compose.split("  frontend:", 1)[1]
 ⋮----
@@ -10262,6 +10352,55 @@ download = client.get(
 persisted = store.get_campaign(campaign_id)
 ⋮----
 event_types = [event.get("type") for event in persisted["events"]]
+```
+
+## File: tests/test_hackerone_report_sync_worker.py
+```python
+class _Client
+⋮----
+def __init__(self, responses)
+⋮----
+def get_json(self, path, query=None)
+⋮----
+def _setup(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "db.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+campaign = Campaign(
+⋮----
+store = Storage(db, artifacts)
+⋮----
+def _report(state, *, last_activity_at)
+⋮----
+def test_sync_worker_is_disabled_by_default(monkeypatch)
+⋮----
+def test_sync_records_first_remote_status_snapshot(tmp_path, monkeypatch)
+⋮----
+store = _setup(tmp_path, monkeypatch)
+client = _Client(
+⋮----
+stats = sync_once(store, client)
+⋮----
+persisted = store.get_campaign("h1-sync")
+events = [
+⋮----
+def test_sync_does_not_duplicate_unchanged_snapshot(tmp_path, monkeypatch)
+⋮----
+response = _report("triaged", last_activity_at="2026-09-18T19:30:00Z")
+⋮----
+first = sync_once(store, _Client([response]))
+second = sync_once(store, _Client([response]))
+⋮----
+def test_sync_records_state_transition_history(tmp_path, monkeypatch)
+⋮----
+stats = sync_once(
+⋮----
+def test_sync_is_bounded_to_recent_campaign_limit(tmp_path, monkeypatch)
+⋮----
+older = Campaign(
+⋮----
+client = _Client([_report("new", last_activity_at="2026-09-18T18:30:00Z")])
 ```
 
 ## File: tests/test_hackerone_report_tracking.py
@@ -13836,6 +13975,10 @@ def test_advisory_focus_history_is_campaign_scoped(tmp_path)
 def test_storage_health_reports_sqlite_ready(tmp_path)
 ⋮----
 result = store.health()
+⋮----
+def test_list_campaigns_can_be_bounded_in_storage(tmp_path)
+⋮----
+recent = store.list_campaigns(limit=2)
 ```
 
 ## File: tests/test_submission_api.py

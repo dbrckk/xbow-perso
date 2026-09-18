@@ -1,13 +1,30 @@
 # Change impact
 
-Base: d59cbfe78a7dd8ec8d9ec3ccf393c534a27170ff
-Head: 7253221b1f6dabfd0759bb1d84241242067b2a7e
+Base: 1519a9b32b352469edc572cae7490f146909f3f5
+Head: 14fecdb2744fb710b46af28186b691b00dbf2d0f
 
 ## Changed files
-- M .repo-standards.yml
+- M .env.example
+- M README.md
+- M backend/app/hackerone_api.py
+- A backend/app/hackerone_report_sync_worker.py
+- A backend/app/hackerone_report_tracking.py
+- M backend/app/storage_backend.py
+- M backend/app/storage_core.py
+- M backend/tests/test_deployment_config.py
+- M backend/tests/test_frontend_policy_launcher.py
+- A backend/tests/test_hackerone_report_sync_worker.py
+- M backend/tests/test_storage.py
+- M docker-compose.distributed.yml
+- M docker-compose.yml
+- M frontend/hackerone.js
+- M frontend/index.html
+- M frontend/sw.js
 
 ## Affected areas
 - (root)
+- backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

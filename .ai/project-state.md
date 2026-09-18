@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T20:11:19Z
+Generated: 2026-09-18T20:23:50Z
 
 ### Git
 - Branch: `main`
-- Head: `7253221b1f6d`
-- Commit date: 2026-09-18T22:10:57+02:00
-- Commit: chore(ai): enable Kotlin Java graph resolver
-- Tracked files: 425
+- Head: `14fecdb2744f`
+- Commit date: 2026-09-18T22:23:40+02:00
+- Commit: Merge pull request #221 from dbrckk/feat/hackerone-report-sync-worker-v3
+- Tracked files: 457
 
 ### Recently changed files
-- `.repo-standards.yml`
 - `frontend/sw.js`
 - `frontend/index.html`
 - `frontend/hackerone.js`
+- `docker-compose.yml`
+- `docker-compose.distributed.yml`
 
 ### Project signals
 - `pyproject.toml`
