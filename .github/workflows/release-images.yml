@@ -72,7 +72,7 @@ jobs:
             "${{ steps.build.outputs.digest }}" \
             > "release-manifest/${{ matrix.component }}.image"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.component }}-${{ github.ref_name }}
           path: release-manifest/${{ matrix.component }}.image
