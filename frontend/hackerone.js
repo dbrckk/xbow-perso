@@ -79,7 +79,47 @@
         'report #'+String(item.remote_report_id||'—'),
         hackerOneAttentionLabel(item)
       ];
-      if(item.bounty?.amount)parts.push('bounty     if(runMonitorTimer!==null){
+      if(item.bounty?.amount)parts.push('bounty '+String(item.bounty.amount));
+      if(item.needs_more_info?.message){
+        parts.push('NMI: '+String(item.needs_more_info.message));
+      }
+      meta.textContent=parts.join(' · ');
+      info.append(title,meta);
+
+      const open=document.createElement('button');
+      open.type='button';
+      open.className='secondary';
+      open.textContent='Ouvrir';
+      open.addEventListener('click',()=>void focusHackerOneAttentionCampaign(item.campaign_id));
+
+      row.append(info,open);
+      list.appendChild(row);
+    }
+  }
+
+  async function refreshHackerOneAttention(){
+    const button=el('h1AttentionRefresh');
+    if(button)button.disabled=true;
+    try{
+      const payload=await api('/hackerone/attention?limit=200');
+      renderHackerOneAttention(payload);
+      el('h1AttentionUpdated').textContent='Actualisé à '+new Date().toLocaleTimeString()+
+        ' · données locales auditées';
+    }catch(error){
+      el('h1AttentionUpdated').textContent='Centre d’attention indisponible : '+error.message;
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
+  function startHackerOneAttentionMonitor(){
+    if(attentionTimer!==null)clearInterval(attentionTimer);
+    void refreshHackerOneAttention();
+    attentionTimer=setInterval(()=>void refreshHackerOneAttention(),15000);
+  }
+
+  function stopRunMonitor(){
+    if(runMonitorTimer!==null){
       clearInterval(runMonitorTimer);
       runMonitorTimer=null;
     }
