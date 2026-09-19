@@ -103,6 +103,9 @@ When HackerOne returns a public `activity-bug-needs-more-info` activity on a sub
 
 The same report response is also reduced to an allowlisted public activity feed for `activity-comment`, `activity-bounty-awarded`, `activity-bug-duplicate`, `activity-bug-informative`, and `activity-bug-resolved`. Internal activities, actors, attachments, and unknown activity types are discarded. The worker records each accepted activity ID once as `hackerone_public_activity_observed`; the Control Center renders these together with synchronized report-state changes and NMI requests in a local timeline and compact activity summary.
 
+
+The HackerOne attention center is a local-only index over recent stored campaigns. It does not query HackerOne when opened. Reports are grouped by current synchronized state into action-required (`needs-more-info` or `retesting`), active (`new`, `pending-program-review`, `triaged`), awaiting-sync, resolved, duplicate, informative, and other closed states. Bounty observations remain badges/metadata rather than replacing the report's current state. The UI refreshes the local index every 15 seconds and can open the corresponding local campaign monitor.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
