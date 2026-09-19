@@ -274,3 +274,30 @@ def test_frontend_filters_and_sorts_hackerone_attention_center():
     assert "program" in launcher
     assert "state" in launcher
     assert "Aucun report ne correspond aux filtres." in launcher
+
+
+def test_frontend_persists_hackerone_attention_filters_and_saved_views():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    assert 'id="h1AttentionViewState"' in html
+    for view in ("action", "today", "bounty", "nmi", "unread"):
+        assert f'data-h1-attention-view="{view}"' in html
+
+    assert 'value="today"' in html
+    assert "ATTENTION_FILTER_STORAGE_KEY" in launcher
+    assert "xbow:hackerone:attention-filters:v1" in launcher
+    assert "currentHackerOneAttentionFilters" in launcher
+    assert "loadHackerOneAttentionFilters" in launcher
+    assert "saveHackerOneAttentionFilters" in launcher
+    assert "applyHackerOneAttentionFilters" in launcher
+    assert "restoreHackerOneAttentionFilters" in launcher
+    assert "ATTENTION_SAVED_VIEWS" in launcher
+    assert "applyHackerOneAttentionSavedView" in launcher
+    assert "renderHackerOneAttentionViewState" in launcher
+    assert "Vue personnalisée" in html
+    assert "À traiter" in html
+    assert "Nouveaux aujourd’hui" in html
+    assert "Avec bounty" in html
+    assert ">NMI<" in html
+    assert ">Non lus<" in html
