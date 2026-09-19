@@ -61,6 +61,8 @@ docker compose up --build
 
 Open `http://SERVER_IP:8080` from your phone.
 
+**Android-only operation:** see [`MOBILE_ONLY.md`](MOBILE_ONLY.md) for the smartphone-only VPS workflow and GitHub Actions deployment path.
+
 ### Interface graphique
 
 The graphical interface is the responsive PWA served by the frontend container on port **8080**:
