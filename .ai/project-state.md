@@ -22,21 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T07:33:54Z
+Generated: 2026-09-19T07:39:29Z
 
 ### Git
 - Branch: `main`
-- Head: `0bb83c6b2f25`
-- Commit date: 2026-09-19T09:31:38+02:00
-- Commit: chore(ai): adopt repo standards v19
-- Tracked files: 466
+- Head: `9375bb69e3cf`
+- Commit date: 2026-09-19T09:37:36+02:00
+- Commit: chore(ai): adopt stable repo standards v20
+- Tracked files: 468
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `README.md`
 - `frontend/sw.js`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/hackerone.js`
 
 ### Project signals
 - `pyproject.toml`
