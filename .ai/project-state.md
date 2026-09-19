@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T07:02:35Z
+Generated: 2026-09-19T07:06:17Z
 
 ### Git
 - Branch: `main`
-- Head: `9083decc1735`
-- Commit date: 2026-09-19T09:02:24+02:00
-- Commit: Merge pull request #225 from dbrckk/feat/hackerone-unread-attention
+- Head: `ef80387db7c2`
+- Commit date: 2026-09-19T09:04:33+02:00
+- Commit: chore(ai): adopt repo standards v18
 - Tracked files: 465
 
 ### Recently changed files
+- `.repo-standards.yml`
 - `README.md`
 - `frontend/sw.js`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/hackerone.js`
-- `frontend/index.html`
 
 ### Project signals
 - `pyproject.toml`
