@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T07:19:36Z
+Generated: 2026-09-19T07:33:54Z
 
 ### Git
 - Branch: `main`
-- Head: `e5d92ea2ab9e`
-- Commit date: 2026-09-19T09:19:25+02:00
-- Commit: Merge pull request #228 from dbrckk/feat/hackerone-attention-saved-views
+- Head: `0bb83c6b2f25`
+- Commit date: 2026-09-19T09:31:38+02:00
+- Commit: chore(ai): adopt repo standards v19
 - Tracked files: 466
 
 ### Recently changed files
+- `.repo-standards.yml`
 - `README.md`
 - `frontend/sw.js`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/hackerone.js`
-- `frontend/index.html`
 
 ### Project signals
 - `pyproject.toml`
