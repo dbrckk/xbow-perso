@@ -106,6 +106,9 @@ The same report response is also reduced to an allowlisted public activity feed 
 
 The HackerOne attention center is a local-only index over recent stored campaigns. It does not query HackerOne when opened. Reports are grouped by current synchronized state into action-required (`needs-more-info` or `retesting`), active (`new`, `pending-program-review`, `triaged`), awaiting-sync, resolved, duplicate, informative, and other closed states. Bounty observations remain badges/metadata rather than replacing the report's current state. The UI refreshes the local index every 15 seconds and can open the corresponding local campaign monitor.
 
+
+Each attention item also exposes a stable SHA-256 notification cursor derived only from bounded local event identity/timestamp fields. The browser stores only the report key and last-seen cursor under `xbow:hackerone:attention-seen:v1`; it does not persist report bodies, comments, NMI text, bounty details, credentials, or HackerOne user data. The first load establishes a baseline, later cursor changes become unread, and the operator can mark one item or all items as seen. Opening a report also marks its current cursor as seen. If browser storage is unavailable, the UI falls back to in-memory seen state for the current page session.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
