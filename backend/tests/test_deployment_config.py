@@ -53,7 +53,7 @@ def test_compose_keeps_state_private_and_shared_only_where_needed():
     assert "  hackerone-report-sync-worker:" in compose
     frontend = compose.split("  frontend:", 1)[1]
     assert "- xbow-data:/data" not in frontend
-    assert '"${XBOW_PORT:-8080}:80"' in compose
+    assert '"${XBOW_PORT:-8080}:8080"' in compose
 
 
 def test_compose_enforces_resource_and_shutdown_bounds():
