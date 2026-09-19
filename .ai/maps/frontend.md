@@ -97,6 +97,16 @@ function setLauncherStatus(message,type='muted')
 ⋮----
 function setConnectionState(label,type='')
 ⋮----
+function hackerOneAttentionLabel(item)
+⋮----
+async function focusHackerOneAttentionCampaign(campaignId)
+⋮----
+function renderHackerOneAttention(payload)
+⋮----
+async function refreshHackerOneAttention()
+⋮----
+function startHackerOneAttentionMonitor()
+⋮----
 function stopRunMonitor()
 ⋮----
 function reviewField(labelText,control,name)

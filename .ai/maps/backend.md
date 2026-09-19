@@ -77,6 +77,7 @@ app/
   finding_readiness.py
   finding_triage.py
   hackerone_api.py
+  hackerone_attention.py
   hackerone_binding.py
   hackerone_client.py
   hackerone_needs_info.py
@@ -217,6 +218,7 @@ tests/
   test_form_waf_reasoning.py
   test_frontend_policy_launcher.py
   test_hackerone_activity_summary.py
+  test_hackerone_attention.py
   test_hackerone_binding.py
   test_hackerone_client.py
   test_hackerone_control_center_api.py
@@ -2575,6 +2577,8 @@ attributes = resource.get("attributes")
 handle = attributes.get("handle")
 name = attributes.get("name")
 ⋮----
+campaigns = storage().list_campaigns(limit=limit)
+⋮----
 @router.get("/api/imports/hackerone/connection")
 def hackerone_connection()
 ⋮----
@@ -2687,6 +2691,57 @@ at = utcnow()
 ⋮----
 latest = assert_campaign_exists(campaign_id)
 result = submission_status(latest, artifact).to_dict()
+```
+
+## File: app/hackerone_attention.py
+```python
+TERMINAL_BUCKETS = {
+ACTIVE_STATES = {"new", "pending-program-review", "triaged"}
+ACTION_REQUIRED_STATES = {"needs-more-info", "retesting"}
+⋮----
+def _events(campaign: dict[str, Any]) -> list[dict[str, Any]]
+⋮----
+events = campaign.get("events")
+⋮----
+matches = [
+⋮----
+submissions: dict[str, dict[str, Any]] = {}
+⋮----
+artifact_id = event.get("artifact_id")
+remote_report_id = event.get("remote_report_id")
+team_handle = event.get("team_handle")
+⋮----
+def _bucket_for_state(state: str | None) -> str
+⋮----
+def _campaign_name(campaign: dict[str, Any]) -> str
+⋮----
+target = campaign.get("target")
+⋮----
+name = target.get("name")
+⋮----
+campaign_id = campaign.get("id")
+⋮----
+items: list[dict[str, Any]] = []
+⋮----
+events = _events(campaign)
+⋮----
+status = _latest_by(
+state = (
+bucket = _bucket_for_state(state)
+needs_more_info = _latest_needs_more_info(events, artifact_id)
+bounty = _latest_bounty(events, artifact_id)
+latest_activity = _latest_public_activity(events, artifact_id)
+⋮----
+observed_candidates = [
+last_observed_at = next(
+⋮----
+item = {
+⋮----
+bucket_order = {
+⋮----
+counts: dict[str, int] = {}
+⋮----
+bucket = str(item["bucket"])
 ```
 
 ## File: app/hackerone_binding.py
@@ -9985,6 +10040,8 @@ def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract()
 def test_frontend_exposes_hackerone_human_review_controls()
 ⋮----
 def test_frontend_needs_info_flow_has_no_remote_send_action()
+⋮----
+def test_frontend_exposes_hackerone_attention_center_contract()
 ```
 
 ## File: tests/test_hackerone_activity_summary.py
@@ -10002,6 +10059,46 @@ def test_public_activity_projection_ignores_internal_and_unknown_types()
 def test_public_activity_projection_caps_count_and_message_length()
 ⋮----
 records = [
+```
+
+## File: tests/test_hackerone_attention.py
+```python
+def _campaign(campaign_id, state, *, activity=None, nmi=None, bounty=None)
+⋮----
+artifact_id = f"report-{campaign_id}"
+events = [
+⋮----
+def test_attention_center_classifies_current_report_states()
+⋮----
+result = build_hackerone_attention_center(
+⋮----
+by_campaign = {item["campaign_id"]: item for item in result["items"]}
+⋮----
+def test_attention_center_tracks_bounty_without_changing_state_bucket()
+⋮----
+item = result["items"][0]
+⋮----
+def test_attention_center_marks_unsynced_submission_without_remote_call()
+⋮----
+result = build_hackerone_attention_center([_campaign("c1", None)])
+⋮----
+def test_attention_center_ignores_campaigns_without_recorded_submission()
+⋮----
+def test_attention_center_keeps_latest_submission_per_artifact()
+⋮----
+campaign = _campaign("c1", "triaged")
+⋮----
+result = build_hackerone_attention_center([campaign])
+⋮----
+def test_attention_endpoint_reads_only_local_bounded_campaigns(monkeypatch)
+⋮----
+calls = []
+⋮----
+class Store
+⋮----
+def list_campaigns(self, *, limit=None)
+⋮----
+result = hackerone_api.hackerone_attention_center(limit=25)
 ```
 
 ## File: tests/test_hackerone_binding.py

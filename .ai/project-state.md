@@ -22,19 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T06:39:43Z
+Generated: 2026-09-19T06:49:37Z
 
 ### Git
 - Branch: `main`
-- Head: `7bc6a88c1f00`
-- Commit date: 2026-09-19T08:37:42+02:00
-- Commit: chore(ai): adopt repo standards v17
-- Tracked files: 461
+- Head: `55f5fb176bf0`
+- Commit date: 2026-09-19T08:49:26+02:00
+- Commit: Merge pull request #224 from dbrckk/feat/hackerone-attention-center
+- Tracked files: 465
 
 ### Recently changed files
-- `.repo-standards.yml`
+- `frontend/hackerone.js`
+- `README.md`
 - `frontend/sw.js`
-- `frontend/index.html`
+- `backend/tests/test_frontend_policy_launcher.py`
 
 ### Project signals
 - `pyproject.toml`
