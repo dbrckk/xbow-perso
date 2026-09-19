@@ -36,6 +36,12 @@ fi
 
 cp -n "$INSTALL_DIR/.env.example" "$INSTALL_DIR/.env"
 
+# The bootstrap itself runs as root, but subsequent Git maintenance is performed
+# by the interactive operator account. Hand the checkout back to that account
+# to avoid Git safe.directory/dubious-ownership failures on later updates.
+chown -R "$RUN_USER:$RUN_USER" "$INSTALL_DIR"
+chmod 600 "$INSTALL_DIR/.env"
+
 API_TOKEN="$(openssl rand -hex 32)"
 python3 - "$INSTALL_DIR/.env" "$API_TOKEN" <<'PY'
 from pathlib import Path
