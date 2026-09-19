@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T07:06:17Z
+Generated: 2026-09-19T07:13:37Z
 
 ### Git
 - Branch: `main`
-- Head: `ef80387db7c2`
-- Commit date: 2026-09-19T09:04:33+02:00
-- Commit: chore(ai): adopt repo standards v18
-- Tracked files: 465
+- Head: `898d2fa6b4c9`
+- Commit date: 2026-09-19T09:13:23+02:00
+- Commit: Merge pull request #227 from dbrckk/feat/hackerone-attention-filters-v3
+- Tracked files: 466
 
 ### Recently changed files
-- `.repo-standards.yml`
-- `README.md`
 - `frontend/sw.js`
-- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
 - `frontend/hackerone.js`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `README.md`
 
 ### Project signals
 - `pyproject.toml`

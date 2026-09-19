@@ -10055,6 +10055,8 @@ def test_frontend_needs_info_flow_has_no_remote_send_action()
 def test_frontend_exposes_hackerone_attention_center_contract()
 ⋮----
 def test_frontend_tracks_hackerone_attention_seen_state_locally()
+⋮----
+def test_frontend_filters_and_sorts_hackerone_attention_center()
 ```
 
 ## File: tests/test_hackerone_activity_summary.py

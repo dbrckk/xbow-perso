@@ -117,6 +117,20 @@ function markAllHackerOneAttentionSeen()
 ⋮----
 async function focusHackerOneAttentionCampaign(item)
 ⋮----
+function attentionText(value)
+⋮----
+function updateAttentionSelectOptions(id,values,allLabel)
+⋮----
+function syncHackerOneAttentionFilterOptions(items)
+⋮----
+function hackerOneAttentionMatchesRecent(item,filterValue)
+⋮----
+function filterAndSortHackerOneAttention(items,seen)
+⋮----
+const compareDate=(left,right)=>
+⋮----
+function resetHackerOneAttentionFilters()
+⋮----
 function renderHackerOneAttention(payload)
 ⋮----
 async function refreshHackerOneAttention()
