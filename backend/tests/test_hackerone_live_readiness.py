@@ -122,3 +122,34 @@ def test_invalid_optional_boolean_fails_closed(monkeypatch):
         and not item["ok"]
         for item in result["checks"]
     )
+
+
+def test_live_readiness_exposes_redacted_first_run_operator_guide(monkeypatch):
+    _clear(monkeypatch)
+    _credentials_ok(monkeypatch)
+    monkeypatch.setenv("XBOW_API_TOKEN", "x" * 64)
+
+    result = readiness.build_hackerone_live_readiness({"ok": True})
+
+    assert result["contains_secrets"] is False
+    assert result["read_only"] is True
+    assert [step["id"] for step in result["operator_steps"]] == [
+        "configure_access",
+        "configure_hackerone",
+        "select_program",
+        "review_program",
+        "activate_scanner",
+        "launch_confirmed_preview",
+    ]
+    assert result["operator_steps"][0]["done"] is True
+    assert result["operator_steps"][1]["done"] is True
+    assert result["activation_template"] == [
+        "XBOW_ENABLE_ACTIVE_SCANS=true",
+        "DRY_RUN=false",
+        "XBOW_ENABLE_NUCLEI=true",
+        "XBOW_NUCLEI_ALLOWED_VERSION=3.11.1",
+        "XBOW_SCANNER_ALLOWED_ENGINES=nuclei",
+        "XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1",
+    ]
+    assert result["scanner_start_command"] == "docker compose --profile scanner up -d --build"
+    assert "token" not in "\n".join(result["activation_template"]).lower()

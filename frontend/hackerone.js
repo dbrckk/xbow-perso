@@ -1664,6 +1664,40 @@
       }
     }
 
+    const operatorSteps=el('h1LiveOperatorSteps');
+    operatorSteps.replaceChildren();
+    const steps=Array.isArray(payload?.operator_steps)?payload.operator_steps:[];
+    if(!steps.length){
+      operatorSteps.textContent='Aucune étape opérateur disponible.';
+    }else{
+      for(const step of steps){
+        const row=document.createElement('div');
+        row.className='scope-asset-row';
+        const info=document.createElement('div');
+        const title=document.createElement('strong');
+        title.textContent=(step?.done===true?'✓ ':'• ')+String(step?.title||step?.id||'Étape');
+        const detail=document.createElement('div');
+        detail.className='muted compact';
+        detail.textContent=String(step?.instruction||'');
+        info.append(title,detail);
+        const badge=document.createElement('span');
+        badge.className='pill '+(step?.done===true?'ok':'warn');
+        badge.textContent=step?.done===true?'FAIT':String(step?.when||'À FAIRE').toUpperCase();
+        row.append(info,badge);
+        operatorSteps.appendChild(row);
+      }
+    }
+
+    const activation=Array.isArray(payload?.activation_template)
+      ?payload.activation_template.filter(Boolean).join('\n'):'';
+    const activationTemplate=el('h1LiveActivationTemplate');
+    activationTemplate.textContent=activation;
+    el('h1LiveCopyActivation').disabled=!activation;
+    el('h1LiveCopyActivation').dataset.activation=activation;
+    const scannerCommand=String(payload?.scanner_start_command||'');
+    el('h1LiveScannerCommand').textContent=scannerCommand
+      ?'Commande scanner : '+scannerCommand:'';
+
     const reasons=Array.isArray(payload?.scanner_block_reasons)
       ?payload.scanner_block_reasons.filter(Boolean):[];
     el('h1LiveReadinessNext').textContent=
@@ -1685,10 +1719,29 @@
       el('h1InterfaceUrl').textContent='Interface : '+String(window.location.origin||'—');
       el('h1LiveReadinessSummary').textContent='Pré-vol indisponible : '+error.message;
       el('h1LiveReadinessChecks').textContent='—';
+      el('h1LiveOperatorSteps').textContent='—';
+      el('h1LiveActivationTemplate').textContent='';
+      el('h1LiveCopyActivation').disabled=true;
+      el('h1LiveCopyActivation').dataset.activation='';
+      el('h1LiveScannerCommand').textContent='';
       el('h1LiveReadinessNext').textContent='';
       return null;
     }finally{
       if(button)button.disabled=false;
+    }
+  }
+
+  async function copyHackerOneLiveActivation(){
+    const button=el('h1LiveCopyActivation');
+    const value=String(button?.dataset?.activation||'');
+    if(!value)return;
+    try{
+      await navigator.clipboard.writeText(value);
+      button.textContent='Configuration copiée';
+      setTimeout(()=>{button.textContent='Copier la configuration';},1200);
+    }catch(_error){
+      button.textContent='Copie impossible';
+      setTimeout(()=>{button.textContent='Copier la configuration';},1200);
     }
   }
 
@@ -1941,6 +1994,7 @@
     el('h1LoadProgram').disabled=!el('h1ProgramSelect').value;
   });
   el('h1LiveReadinessRefresh').addEventListener('click',()=>void refreshHackerOneLiveReadiness());
+  el('h1LiveCopyActivation').addEventListener('click',()=>void copyHackerOneLiveActivation());
   el('h1LoadProgram').addEventListener('click',loadRemoteProgram);
   el('h1ScopeFile').addEventListener('change',importScopeFile);
   el('h1Preview').addEventListener('click',preview);

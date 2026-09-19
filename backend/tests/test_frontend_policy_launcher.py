@@ -384,3 +384,25 @@ def test_frontend_exposes_hackerone_live_readiness_preflight():
     assert "PRÊT SCAN RÉEL" in launcher
     assert "PRÊT POUR REVUE" in launcher
     assert "BLOQUÉ" in launcher
+
+
+def test_frontend_exposes_first_live_run_operator_guide():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    for element_id in (
+        "h1LiveOperatorSteps",
+        "h1LiveActivationDetails",
+        "h1LiveActivationTemplate",
+        "h1LiveCopyActivation",
+        "h1LiveScannerCommand",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert "copyHackerOneLiveActivation" in launcher
+    assert "navigator.clipboard.writeText" in launcher
+    assert "operator_steps" in launcher
+    assert "activation_template" in launcher
+    assert "scanner_start_command" in launcher
+    assert "Configuration de passage en réel" in html
+    assert "À appliquer uniquement après revue du programme" in html
