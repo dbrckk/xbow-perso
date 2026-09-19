@@ -10558,6 +10558,8 @@ def test_frontend_filters_and_sorts_hackerone_attention_center()
 def test_frontend_persists_hackerone_attention_filters_and_saved_views()
 ⋮----
 def test_frontend_bulk_hackerone_attention_actions_and_sanitized_export()
+⋮----
+def test_frontend_supports_named_custom_hackerone_attention_views()
 ````
 
 ## File: backend/tests/test_hackerone_activity_summary.py
@@ -15424,6 +15426,26 @@ function renderHackerOneAttentionViewState()
 ⋮----
 function applyHackerOneAttentionSavedView(name)
 ⋮----
+function normalizeAttentionCustomViewName(value)
+⋮----
+function sanitizeAttentionCustomViewFilters(value)
+⋮----
+function loadHackerOneAttentionCustomViews()
+⋮----
+function saveHackerOneAttentionCustomViews(state)
+⋮----
+function loadHackerOneAttentionCustomViewsFromValue(state)
+⋮----
+function renderHackerOneAttentionCustomViews()
+⋮----
+function selectedHackerOneAttentionCustomView()
+⋮----
+function saveCurrentHackerOneAttentionCustomView()
+⋮----
+function applySelectedHackerOneAttentionCustomView()
+⋮----
+function deleteSelectedHackerOneAttentionCustomView()
+⋮----
 function hackerOneAttentionMatchesRecent(item,filterValue)
 ⋮----
 function filterAndSortHackerOneAttention(items,seen)
@@ -16301,6 +16323,9 @@ The browser also persists the last attention-filter configuration under `xbow:ha
 
 
 Bulk actions operate only on the currently filtered/sorted local view. The operator can mark every visible unread item as seen, open the next visible `action-required` report in sequence (wrapping at the end), and export the visible view to JSON or CSV. Export rows intentionally contain only operational summary fields: campaign id/name, program handle, remote report id, current state/bucket, action-required flag, bounty amount/bonus, last observation timestamp, unread flag, and notification kind. NMI/comment text, report bodies, credentials, user data, and internal notification cursors are excluded.
+
+
+Named custom attention views are stored locally under `xbow:hackerone:attention-custom-views:v1`. The operator can save the current filter/search/sort configuration under a name, re-apply it later, replace an existing view with the same name, or delete it. Custom view names are normalized and capped at 60 characters; at most 20 custom views are retained. Stored custom views contain only validated filter preference fields and never contain report bodies, NMI/comment text, credentials, user data, or notification cursors. Built-in presets remain immutable and separate from user-defined views.
 
 ## Disaster recovery integrity
 

@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T07:45:45Z
+Generated: 2026-09-19T08:58:52Z
 
 ### Git
 - Branch: `main`
-- Head: `391145c38436`
-- Commit date: 2026-09-19T09:45:34+02:00
-- Commit: Merge pull request #231 from dbrckk/feat/hackerone-attention-bulk-actions-v4
+- Head: `e5e1df235475`
+- Commit date: 2026-09-19T10:58:42+02:00
+- Commit: Merge pull request #232 from dbrckk/feat/hackerone-custom-attention-views
 - Tracked files: 469
 
 ### Recently changed files
-- `frontend/sw.js`
-- `frontend/index.html`
-- `frontend/hackerone.js`
-- `backend/tests/test_frontend_policy_launcher.py`
 - `README.md`
+- `frontend/sw.js`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/hackerone.js`
+- `frontend/index.html`
 
 ### Project signals
 - `pyproject.toml`

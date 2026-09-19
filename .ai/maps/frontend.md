@@ -141,6 +141,26 @@ function renderHackerOneAttentionViewState()
 ⋮----
 function applyHackerOneAttentionSavedView(name)
 ⋮----
+function normalizeAttentionCustomViewName(value)
+⋮----
+function sanitizeAttentionCustomViewFilters(value)
+⋮----
+function loadHackerOneAttentionCustomViews()
+⋮----
+function saveHackerOneAttentionCustomViews(state)
+⋮----
+function loadHackerOneAttentionCustomViewsFromValue(state)
+⋮----
+function renderHackerOneAttentionCustomViews()
+⋮----
+function selectedHackerOneAttentionCustomView()
+⋮----
+function saveCurrentHackerOneAttentionCustomView()
+⋮----
+function applySelectedHackerOneAttentionCustomView()
+⋮----
+function deleteSelectedHackerOneAttentionCustomView()
+⋮----
 function hackerOneAttentionMatchesRecent(item,filterValue)
 ⋮----
 function filterAndSortHackerOneAttention(items,seen)
