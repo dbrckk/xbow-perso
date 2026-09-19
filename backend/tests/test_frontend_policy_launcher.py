@@ -214,3 +214,29 @@ def test_frontend_exposes_hackerone_attention_center_contract():
     assert "'/hackerone/attention?limit=200'" in launcher
     assert "setInterval(()=>void refreshHackerOneAttention(),15000)" in launcher
     assert "activateCampaign(campaign)" in launcher
+
+
+def test_frontend_tracks_hackerone_attention_seen_state_locally():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    for element_id in (
+        "h1AttentionUnread",
+        "h1AttentionMarkAll",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert "ATTENTION_SEEN_STORAGE_KEY" in launcher
+    assert "xbow:hackerone:attention-seen:v1" in launcher
+    assert "loadAttentionSeen" in launcher
+    assert "saveAttentionSeen" in launcher
+    assert "ensureAttentionBaseline" in launcher
+    assert "isAttentionUnread" in launcher
+    assert "markHackerOneAttentionSeen" in launcher
+    assert "markAllHackerOneAttentionSeen" in launcher
+    assert "notification_cursor" in launcher
+    assert "notification_kind" in launcher
+    assert "localStorage.getItem" in launcher
+    assert "localStorage.setItem" in launcher
+    assert "Marquer vu" in launcher
+    assert "Tout marquer vu" in html
