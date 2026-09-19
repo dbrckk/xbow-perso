@@ -6,6 +6,8 @@
   let runMonitorCampaignId=null;
   let runMonitorBusy=false;
   let attentionTimer=null;
+  let latestAttentionPayload=null;
+  let attentionSeenMemory={version:1,initialized:false,seen:{}};
 
   const el=id=>document.getElementById(id);
   const splitLines=value=>value.split('\n').map(item=>item.trim()).filter(Boolean);
@@ -25,6 +27,8 @@
     state.className='pill'+(type?' '+type:'');
   }
 
+  const ATTENTION_SEEN_STORAGE_KEY='xbow:hackerone:attention-seen:v1';
+
   function hackerOneAttentionLabel(item){
     const bucket=String(item?.bucket||'other');
     if(bucket==='action-required')return 'Action requise';
@@ -37,9 +41,103 @@
     return String(item?.state||'Autre');
   }
 
-  async function focusHackerOneAttentionCampaign(campaignId){
-    const id=String(campaignId||'');
+  function hackerOneNotificationLabel(item){
+    const kind=String(item?.notification_kind||'');
+    if(kind==='needs-more-info')return 'Nouvelle demande d’informations';
+    if(kind==='activity-comment')return 'Nouveau commentaire';
+    if(kind==='activity-bounty-awarded')return 'Nouvelle bounty';
+    if(kind==='activity-bug-duplicate')return 'Nouveau classement duplicate';
+    if(kind==='activity-bug-informative')return 'Nouveau classement informative';
+    if(kind==='activity-bug-resolved')return 'Report résolu';
+    if(kind==='status')return 'État mis à jour';
+    if(kind==='submitted')return 'Report soumis';
+    return 'Nouvelle activité';
+  }
+
+  function attentionSeenKey(item){
+    return [
+      String(item?.campaign_id||''),
+      String(item?.artifact_id||''),
+      String(item?.remote_report_id||'')
+    ].join(':');
+  }
+
+  function loadAttentionSeen(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(ATTENTION_SEEN_STORAGE_KEY)||'null');
+      if(parsed&&parsed.version===1&&parsed.seen&&typeof parsed.seen==='object'){
+        return {
+          version:1,
+          initialized:Boolean(parsed.initialized),
+          seen:{...parsed.seen}
+        };
+      }
+    }catch(_error){}
+    return {
+      version:1,
+      initialized:Boolean(attentionSeenMemory.initialized),
+      seen:{...attentionSeenMemory.seen}
+    };
+  }
+
+  function saveAttentionSeen(state){
+    const entries=Object.entries(state?.seen||{}).slice(-1000);
+    const normalized={
+      version:1,
+      initialized:Boolean(state?.initialized),
+      seen:Object.fromEntries(entries)
+    };
+    attentionSeenMemory=normalized;
+    try{
+      localStorage.setItem(ATTENTION_SEEN_STORAGE_KEY,JSON.stringify(normalized));
+    }catch(_error){}
+    return normalized;
+  }
+
+  function ensureAttentionBaseline(items){
+    let state=loadAttentionSeen();
+    if(state.initialized)return state;
+    for(const item of items){
+      const cursor=String(item?.notification_cursor||'');
+      if(cursor)state.seen[attentionSeenKey(item)]=cursor;
+    }
+    state.initialized=true;
+    return saveAttentionSeen(state);
+  }
+
+  function isAttentionUnread(item,state){
+    const cursor=String(item?.notification_cursor||'');
+    if(!cursor)return false;
+    return String(state?.seen?.[attentionSeenKey(item)]||'')!==cursor;
+  }
+
+  function markHackerOneAttentionSeen(item){
+    if(!item)return;
+    const cursor=String(item?.notification_cursor||'');
+    if(!cursor)return;
+    const state=loadAttentionSeen();
+    state.initialized=true;
+    state.seen[attentionSeenKey(item)]=cursor;
+    saveAttentionSeen(state);
+    if(latestAttentionPayload)renderHackerOneAttention(latestAttentionPayload);
+  }
+
+  function markAllHackerOneAttentionSeen(){
+    const items=Array.isArray(latestAttentionPayload?.items)?latestAttentionPayload.items:[];
+    const state=loadAttentionSeen();
+    state.initialized=true;
+    for(const item of items){
+      const cursor=String(item?.notification_cursor||'');
+      if(cursor)state.seen[attentionSeenKey(item)]=cursor;
+    }
+    saveAttentionSeen(state);
+    if(latestAttentionPayload)renderHackerOneAttention(latestAttentionPayload);
+  }
+
+  async function focusHackerOneAttentionCampaign(item){
+    const id=String(item?.campaign_id||'');
     if(!id)return;
+    markHackerOneAttentionSeen(item);
     try{
       const campaign=await api('/campaigns/'+encodeURIComponent(id));
       await activateCampaign(campaign);
@@ -50,6 +148,7 @@
   }
 
   function renderHackerOneAttention(payload){
+    latestAttentionPayload=payload;
     const summary=payload?.summary||{};
     el('h1AttentionAction').textContent=String(Number(summary.action_required)||0);
     el('h1AttentionActive').textContent=String(Number(summary.active)||0);
@@ -61,6 +160,13 @@
     const list=el('h1AttentionList');
     list.replaceChildren();
     const items=Array.isArray(payload?.items)?payload.items:[];
+    const seen=ensureAttentionBaseline(items);
+    const unreadCount=items.filter(item=>isAttentionUnread(item,seen)).length;
+    const unread=el('h1AttentionUnread');
+    unread.textContent=unreadCount+' non lu'+(unreadCount>1?'s':'');
+    unread.className='pill '+(unreadCount?'warn':'ok');
+    el('h1AttentionMarkAll').disabled=unreadCount===0;
+
     if(!items.length){
       list.textContent='Aucun report HackerOne local.';
       return;
@@ -68,6 +174,7 @@
     for(const item of items){
       const row=document.createElement('div');
       row.className='scope-asset-row';
+      const itemUnread=isAttentionUnread(item,seen);
 
       const info=document.createElement('div');
       const title=document.createElement('strong');
@@ -86,13 +193,32 @@
       meta.textContent=parts.join(' · ');
       info.append(title,meta);
 
+      if(itemUnread){
+        const notice=document.createElement('div');
+        notice.className='compact warn-text';
+        notice.textContent=hackerOneNotificationLabel(item);
+        info.appendChild(notice);
+      }
+
+      const actions=document.createElement('div');
+      actions.className='button-row';
+      if(itemUnread){
+        const seenButton=document.createElement('button');
+        seenButton.type='button';
+        seenButton.className='secondary';
+        seenButton.textContent='Marquer vu';
+        seenButton.addEventListener('click',()=>markHackerOneAttentionSeen(item));
+        actions.appendChild(seenButton);
+      }
+
       const open=document.createElement('button');
       open.type='button';
       open.className='secondary';
       open.textContent='Ouvrir';
-      open.addEventListener('click',()=>void focusHackerOneAttentionCampaign(item.campaign_id));
+      open.addEventListener('click',()=>void focusHackerOneAttentionCampaign(item));
+      actions.appendChild(open);
 
-      row.append(info,open);
+      row.append(info,actions);
       list.appendChild(row);
     }
   }
@@ -1239,6 +1365,7 @@
   el('h1ReportRevoke').addEventListener('click',()=>void revokeHackerOneReportApproval());
   el('h1NeedsInfoCopy').addEventListener('click',()=>void copyHackerOneNeedsInfoDraft());
   el('h1AttentionRefresh').addEventListener('click',()=>void refreshHackerOneAttention());
+  el('h1AttentionMarkAll').addEventListener('click',()=>markAllHackerOneAttentionSeen());
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
   startHackerOneAttentionMonitor();
