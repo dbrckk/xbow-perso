@@ -10556,6 +10556,8 @@ def test_frontend_tracks_hackerone_attention_seen_state_locally()
 def test_frontend_filters_and_sorts_hackerone_attention_center()
 ⋮----
 def test_frontend_persists_hackerone_attention_filters_and_saved_views()
+⋮----
+def test_frontend_bulk_hackerone_attention_actions_and_sanitized_export()
 ````
 
 ## File: backend/tests/test_hackerone_activity_summary.py
@@ -15428,6 +15430,22 @@ function filterAndSortHackerOneAttention(items,seen)
 ⋮----
 const compareDate=(left,right)=>
 ⋮----
+function visibleHackerOneAttentionItems()
+⋮----
+function markVisibleHackerOneAttentionSeen()
+⋮----
+function attentionExportRows()
+⋮----
+function downloadAttentionExport(filename,mimeType,content)
+⋮----
+function exportHackerOneAttentionJson()
+⋮----
+function csvCell(value)
+⋮----
+function exportHackerOneAttentionCsv()
+⋮----
+async function openNextHackerOneActionRequired()
+⋮----
 function resetHackerOneAttentionFilters()
 ⋮----
 function renderHackerOneAttention(payload)
@@ -16280,6 +16298,9 @@ The attention table can be filtered entirely in the browser without extra API ca
 
 
 The browser also persists the last attention-filter configuration under `xbow:hackerone:attention-filters:v1` and restores it after dynamic program/state options are rebuilt. This preference state contains only search/filter/sort values. Built-in saved-view shortcuts apply transparent filter combinations for **À traiter**, **Nouveaux aujourd’hui**, **Avec bounty**, **NMI**, and **Non lus**; selecting or editing any field immediately returns to a custom view when it no longer matches a preset. The `today` view uses the browser's local calendar date rather than a rolling 24-hour window.
+
+
+Bulk actions operate only on the currently filtered/sorted local view. The operator can mark every visible unread item as seen, open the next visible `action-required` report in sequence (wrapping at the end), and export the visible view to JSON or CSV. Export rows intentionally contain only operational summary fields: campaign id/name, program handle, remote report id, current state/bucket, action-required flag, bounty amount/bonus, last observation timestamp, unread flag, and notification kind. NMI/comment text, report bodies, credentials, user data, and internal notification cursors are excluded.
 
 ## Disaster recovery integrity
 

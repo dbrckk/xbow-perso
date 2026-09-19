@@ -147,6 +147,22 @@ function filterAndSortHackerOneAttention(items,seen)
 ⋮----
 const compareDate=(left,right)=>
 ⋮----
+function visibleHackerOneAttentionItems()
+⋮----
+function markVisibleHackerOneAttentionSeen()
+⋮----
+function attentionExportRows()
+⋮----
+function downloadAttentionExport(filename,mimeType,content)
+⋮----
+function exportHackerOneAttentionJson()
+⋮----
+function csvCell(value)
+⋮----
+function exportHackerOneAttentionCsv()
+⋮----
+async function openNextHackerOneActionRequired()
+⋮----
 function resetHackerOneAttentionFilters()
 ⋮----
 function renderHackerOneAttention(payload)

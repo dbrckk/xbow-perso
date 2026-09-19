@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T07:39:29Z
+Generated: 2026-09-19T07:45:45Z
 
 ### Git
 - Branch: `main`
-- Head: `9375bb69e3cf`
-- Commit date: 2026-09-19T09:37:36+02:00
-- Commit: chore(ai): adopt stable repo standards v20
-- Tracked files: 468
+- Head: `391145c38436`
+- Commit date: 2026-09-19T09:45:34+02:00
+- Commit: Merge pull request #231 from dbrckk/feat/hackerone-attention-bulk-actions-v4
+- Tracked files: 469
 
 ### Recently changed files
-- `.repo-standards.yml`
-- `README.md`
 - `frontend/sw.js`
+- `frontend/index.html`
+- `frontend/hackerone.js`
 - `backend/tests/test_frontend_policy_launcher.py`
+- `README.md`
 
 ### Project signals
 - `pyproject.toml`
