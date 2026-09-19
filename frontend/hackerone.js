@@ -147,6 +147,129 @@
     }
   }
 
+  function attentionText(value){
+    return String(value??'').normalize('NFKD').toLowerCase();
+  }
+
+  function updateAttentionSelectOptions(id,values,allLabel){
+    const select=el(id);
+    const current=String(select.value||'all');
+    const unique=[...new Set(values.filter(Boolean).map(value=>String(value)))].sort((a,b)=>
+      a.localeCompare(b,undefined,{sensitivity:'base'})
+    );
+    select.replaceChildren();
+    const all=document.createElement('option');
+    all.value='all';
+    all.textContent=allLabel;
+    select.appendChild(all);
+    for(const value of unique){
+      const option=document.createElement('option');
+      option.value=value;
+      option.textContent=value;
+      select.appendChild(option);
+    }
+    select.value=unique.includes(current)?current:'all';
+  }
+
+  function syncHackerOneAttentionFilterOptions(items){
+    updateAttentionSelectOptions(
+      'h1AttentionProgramFilter',
+      items.map(item=>item?.team_handle),
+      'Tous les programmes'
+    );
+    updateAttentionSelectOptions(
+      'h1AttentionStateFilter',
+      items.map(item=>item?.state||'awaiting-sync'),
+      'Tous les états'
+    );
+  }
+
+  function hackerOneAttentionMatchesRecent(item,filterValue){
+    if(filterValue==='all')return true;
+    const timestamp=Date.parse(String(item?.last_observed_at||''));
+    if(!Number.isFinite(timestamp))return false;
+    const windows={
+      '24h':24*60*60*1000,
+      '7d':7*24*60*60*1000,
+      '30d':30*24*60*60*1000
+    };
+    const windowMs=windows[filterValue];
+    return Number.isFinite(windowMs)&&timestamp>=Date.now()-windowMs;
+  }
+
+  function filterAndSortHackerOneAttention(items,seen){
+    const query=attentionText(el('h1AttentionSearch').value.trim());
+    const readFilter=el('h1AttentionReadFilter').value;
+    const bucketFilter=el('h1AttentionBucketFilter').value;
+    const programFilter=el('h1AttentionProgramFilter').value;
+    const stateFilter=el('h1AttentionStateFilter').value;
+    const bountyFilter=el('h1AttentionBountyFilter').value;
+    const recentFilter=el('h1AttentionRecentFilter').value;
+    const sort=el('h1AttentionSort').value;
+
+    const source=items.map((item,index)=>({item,index}));
+    const filtered=source.filter(({item})=>{
+      const unread=isAttentionUnread(item,seen);
+      if(readFilter==='unread'&&!unread)return false;
+      if(readFilter==='read'&&unread)return false;
+      if(bucketFilter!=='all'&&String(item?.bucket||'')!==bucketFilter)return false;
+      if(programFilter!=='all'&&String(item?.team_handle||'')!==programFilter)return false;
+      const state=String(item?.state||'awaiting-sync');
+      if(stateFilter!=='all'&&state!==stateFilter)return false;
+      const hasBounty=Boolean(item?.bounty);
+      if(bountyFilter==='with'&&!hasBounty)return false;
+      if(bountyFilter==='without'&&hasBounty)return false;
+      if(!hackerOneAttentionMatchesRecent(item,recentFilter))return false;
+      if(query){
+        const haystack=attentionText([
+          item?.campaign_name,
+          item?.campaign_id,
+          item?.team_handle,
+          item?.remote_report_id,
+          item?.state,
+          item?.bucket,
+          item?.needs_more_info?.message,
+          item?.latest_public_activity?.message,
+          item?.latest_public_activity?.activity_type
+        ].filter(Boolean).join(' '));
+        if(!haystack.includes(query))return false;
+      }
+      return true;
+    });
+
+    const compareDate=(left,right)=>{
+      const a=Date.parse(String(left.item?.last_observed_at||''))||0;
+      const b=Date.parse(String(right.item?.last_observed_at||''))||0;
+      return a-b;
+    };
+    if(sort==='newest')filtered.sort((a,b)=>compareDate(b,a));
+    else if(sort==='oldest')filtered.sort(compareDate);
+    else if(sort==='program'){
+      filtered.sort((a,b)=>String(a.item?.team_handle||'').localeCompare(
+        String(b.item?.team_handle||''),undefined,{sensitivity:'base'}
+      ));
+    }else if(sort==='state'){
+      filtered.sort((a,b)=>String(a.item?.state||'').localeCompare(
+        String(b.item?.state||''),undefined,{sensitivity:'base'}
+      ));
+    }else{
+      filtered.sort((a,b)=>a.index-b.index);
+    }
+    return filtered.map(entry=>entry.item);
+  }
+
+  function resetHackerOneAttentionFilters(){
+    el('h1AttentionSearch').value='';
+    el('h1AttentionReadFilter').value='all';
+    el('h1AttentionBucketFilter').value='all';
+    el('h1AttentionProgramFilter').value='all';
+    el('h1AttentionStateFilter').value='all';
+    el('h1AttentionBountyFilter').value='all';
+    el('h1AttentionRecentFilter').value='all';
+    el('h1AttentionSort').value='priority';
+    if(latestAttentionPayload)renderHackerOneAttention(latestAttentionPayload);
+  }
+
   function renderHackerOneAttention(payload){
     latestAttentionPayload=payload;
     const summary=payload?.summary||{};
@@ -160,6 +283,7 @@
     const list=el('h1AttentionList');
     list.replaceChildren();
     const items=Array.isArray(payload?.items)?payload.items:[];
+    syncHackerOneAttentionFilterOptions(items);
     const seen=ensureAttentionBaseline(items);
     const unreadCount=items.filter(item=>isAttentionUnread(item,seen)).length;
     const unread=el('h1AttentionUnread');
@@ -167,11 +291,18 @@
     unread.className='pill '+(unreadCount?'warn':'ok');
     el('h1AttentionMarkAll').disabled=unreadCount===0;
 
-    if(!items.length){
-      list.textContent='Aucun report HackerOne local.';
+    const visible=filterAndSortHackerOneAttention(items,seen);
+    el('h1AttentionResults').textContent=
+      visible.length+' / '+items.length+' report'+(items.length>1?'s':'')+' affiché'+
+      (visible.length>1?'s':'');
+
+    if(!visible.length){
+      list.textContent=items.length
+        ?'Aucun report ne correspond aux filtres.'
+        :'Aucun report HackerOne local.';
       return;
     }
-    for(const item of items){
+    for(const item of visible){
       const row=document.createElement('div');
       row.className='scope-asset-row';
       const itemUnread=isAttentionUnread(item,seen);
@@ -189,6 +320,10 @@
       if(item.bounty?.amount)parts.push('bounty '+String(item.bounty.amount));
       if(item.needs_more_info?.message){
         parts.push('NMI: '+String(item.needs_more_info.message));
+      }
+      if(item.last_observed_at){
+        const date=new Date(item.last_observed_at);
+        if(!Number.isNaN(date.getTime()))parts.push(date.toLocaleString());
       }
       meta.textContent=parts.join(' · ');
       info.append(title,meta);
@@ -1366,6 +1501,19 @@
   el('h1NeedsInfoCopy').addEventListener('click',()=>void copyHackerOneNeedsInfoDraft());
   el('h1AttentionRefresh').addEventListener('click',()=>void refreshHackerOneAttention());
   el('h1AttentionMarkAll').addEventListener('click',()=>markAllHackerOneAttentionSeen());
+  el('h1AttentionResetFilters').addEventListener('click',()=>resetHackerOneAttentionFilters());
+  el('h1AttentionSearch').addEventListener('input',()=>latestAttentionPayload&&renderHackerOneAttention(latestAttentionPayload));
+  for(const id of [
+    'h1AttentionReadFilter',
+    'h1AttentionBucketFilter',
+    'h1AttentionProgramFilter',
+    'h1AttentionStateFilter',
+    'h1AttentionBountyFilter',
+    'h1AttentionRecentFilter',
+    'h1AttentionSort'
+  ]){
+    el(id).addEventListener('change',()=>latestAttentionPayload&&renderHackerOneAttention(latestAttentionPayload));
+  }
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
   startHackerOneAttentionMonitor();
