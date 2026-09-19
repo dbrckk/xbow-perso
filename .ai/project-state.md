@@ -22,21 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T21:00:58Z
+Generated: 2026-09-19T06:39:43Z
 
 ### Git
 - Branch: `main`
-- Head: `f3999daa84db`
-- Commit date: 2026-09-18T22:59:18+02:00
-- Commit: chore(ai): adopt repo standards v15
+- Head: `7bc6a88c1f00`
+- Commit date: 2026-09-19T08:37:42+02:00
+- Commit: chore(ai): adopt repo standards v17
 - Tracked files: 461
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `frontend/sw.js`
 - `frontend/index.html`
-- `frontend/hackerone.js`
-- `backend/tests/test_hackerone_report_sync_worker.py`
 
 ### Project signals
 - `pyproject.toml`
