@@ -212,11 +212,13 @@ def build_hackerone_attention_center(
     }
     items.sort(
         key=lambda item: (
-            bucket_order.get(str(item.get("bucket")), 99),
             str(item.get("last_observed_at") or ""),
             str(item.get("campaign_id") or ""),
         ),
-        reverse=False,
+        reverse=True,
+    )
+    items.sort(
+        key=lambda item: bucket_order.get(str(item.get("bucket")), 99),
     )
 
     counts: dict[str, int] = {}
