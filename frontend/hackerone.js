@@ -10,6 +10,7 @@
   let attentionSeenMemory={version:1,initialized:false,seen:{}};
   let attentionFilterMemory=null;
   let attentionFiltersRestored=false;
+  let attentionCustomViewsMemory={version:1,views:[]};
 
   const el=id=>document.getElementById(id);
   const splitLines=value=>value.split('\n').map(item=>item.trim()).filter(Boolean);
@@ -31,6 +32,9 @@
 
   const ATTENTION_SEEN_STORAGE_KEY='xbow:hackerone:attention-seen:v1';
   const ATTENTION_FILTER_STORAGE_KEY='xbow:hackerone:attention-filters:v1';
+  const ATTENTION_CUSTOM_VIEWS_STORAGE_KEY='xbow:hackerone:attention-custom-views:v1';
+  const ATTENTION_CUSTOM_VIEW_LIMIT=20;
+  const ATTENTION_CUSTOM_VIEW_NAME_LIMIT=60;
 
   function hackerOneAttentionLabel(item){
     const bucket=String(item?.bucket||'other');
@@ -277,9 +281,15 @@
 
   function renderHackerOneAttentionViewState(){
     const current=currentHackerOneAttentionFilters();
-    const match=Object.values(ATTENTION_SAVED_VIEWS)
+    const builtIn=Object.values(ATTENTION_SAVED_VIEWS)
       .find(view=>sameAttentionFilters(current,view.filters));
-    el('h1AttentionViewState').textContent=match?match.label:'Vue personnalisée';
+    if(builtIn){
+      el('h1AttentionViewState').textContent=builtIn.label;
+      return;
+    }
+    const custom=loadHackerOneAttentionCustomViews().views
+      .find(view=>sameAttentionFilters(current,view.filters));
+    el('h1AttentionViewState').textContent=custom?custom.name:'Vue personnalisée';
   }
 
   function applyHackerOneAttentionSavedView(name){
@@ -288,6 +298,154 @@
     applyHackerOneAttentionFilters(view.filters);
     renderHackerOneAttentionViewState();
     if(latestAttentionPayload)renderHackerOneAttention(latestAttentionPayload);
+  }
+
+  function normalizeAttentionCustomViewName(value){
+    return String(value||'').replace(/\s+/g,' ').trim().slice(0,ATTENTION_CUSTOM_VIEW_NAME_LIMIT);
+  }
+
+  function sanitizeAttentionCustomViewFilters(value){
+    if(!value||value.version!==1)return null;
+    const allowed={
+      read:['all','unread','read'],
+      bucket:['all','action-required','active','awaiting-sync','resolved','duplicate','informative','closed-other','other'],
+      bounty:['all','with','without'],
+      recent:['all','today','24h','7d','30d'],
+      sort:['priority','newest','oldest','program','state']
+    };
+    const filter={
+      version:1,
+      search:String(value.search||'').slice(0,500),
+      read:String(value.read||'all'),
+      bucket:String(value.bucket||'all'),
+      program:String(value.program||'all').slice(0,160),
+      state:String(value.state||'all').slice(0,80),
+      bounty:String(value.bounty||'all'),
+      recent:String(value.recent||'all'),
+      sort:String(value.sort||'priority')
+    };
+    for(const key of ['read','bucket','bounty','recent','sort']){
+      if(!allowed[key].includes(filter[key]))return null;
+    }
+    return filter;
+  }
+
+  function loadHackerOneAttentionCustomViews(){
+    let parsed=null;
+    try{
+      parsed=JSON.parse(localStorage.getItem(ATTENTION_CUSTOM_VIEWS_STORAGE_KEY)||'null');
+    }catch(_error){}
+    const source=parsed&&parsed.version===1?parsed:attentionCustomViewsMemory;
+    const views=[];
+    for(const raw of Array.isArray(source?.views)?source.views:[]){
+      const name=normalizeAttentionCustomViewName(raw?.name);
+      const filters=sanitizeAttentionCustomViewFilters(raw?.filters);
+      if(!name||!filters)continue;
+      views.push({name,filters});
+      if(views.length>=ATTENTION_CUSTOM_VIEW_LIMIT)break;
+    }
+    return {version:1,views};
+  }
+
+  function saveHackerOneAttentionCustomViews(state){
+    const normalized=loadHackerOneAttentionCustomViewsFromValue(state);
+    attentionCustomViewsMemory=normalized;
+    try{
+      localStorage.setItem(ATTENTION_CUSTOM_VIEWS_STORAGE_KEY,JSON.stringify(normalized));
+    }catch(_error){}
+    return normalized;
+  }
+
+  function loadHackerOneAttentionCustomViewsFromValue(state){
+    const views=[];
+    for(const raw of Array.isArray(state?.views)?state.views:[]){
+      const name=normalizeAttentionCustomViewName(raw?.name);
+      const filters=sanitizeAttentionCustomViewFilters(raw?.filters);
+      if(!name||!filters)continue;
+      views.push({name,filters});
+      if(views.length>=ATTENTION_CUSTOM_VIEW_LIMIT)break;
+    }
+    return {version:1,views};
+  }
+
+  function renderHackerOneAttentionCustomViews(){
+    const select=el('h1AttentionCustomView');
+    const current=String(select.value||'');
+    const state=loadHackerOneAttentionCustomViews();
+    select.replaceChildren();
+    const placeholder=document.createElement('option');
+    placeholder.value='';
+    placeholder.textContent='Vues personnalisées enregistrées';
+    select.appendChild(placeholder);
+    state.views.forEach((view,index)=>{
+      const option=document.createElement('option');
+      option.value=String(index);
+      option.textContent=view.name;
+      select.appendChild(option);
+    });
+    if(current&&Number(current)<state.views.length)select.value=current;
+    el('h1AttentionDeleteCustomView').disabled=!select.value;
+  }
+
+  function selectedHackerOneAttentionCustomView(){
+    const state=loadHackerOneAttentionCustomViews();
+    const index=Number(el('h1AttentionCustomView').value);
+    return Number.isInteger(index)&&index>=0&&index<state.views.length
+      ?{...state.views[index],index}
+      :null;
+  }
+
+  function saveCurrentHackerOneAttentionCustomView(){
+    const name=normalizeAttentionCustomViewName(el('h1AttentionCustomViewName').value);
+    if(!name){
+      el('h1AttentionUpdated').textContent='Nom de vue requis.';
+      return;
+    }
+    const filters=sanitizeAttentionCustomViewFilters(currentHackerOneAttentionFilters());
+    if(!filters)return;
+    const state=loadHackerOneAttentionCustomViews();
+    const existing=state.views.findIndex(view=>
+      view.name.localeCompare(name,undefined,{sensitivity:'accent'})===0
+    );
+    if(existing>=0){
+      state.views[existing]={name,filters};
+    }else{
+      if(state.views.length>=ATTENTION_CUSTOM_VIEW_LIMIT){
+        el('h1AttentionUpdated').textContent='Maximum de 20 vues personnalisées atteint.';
+        return;
+      }
+      state.views.push({name,filters});
+    }
+    saveHackerOneAttentionCustomViews(state);
+    renderHackerOneAttentionCustomViews();
+    const updated=loadHackerOneAttentionCustomViews();
+    const index=updated.views.findIndex(view=>view.name===name);
+    if(index>=0)el('h1AttentionCustomView').value=String(index);
+    el('h1AttentionCustomViewName').value='';
+    el('h1AttentionDeleteCustomView').disabled=false;
+    renderHackerOneAttentionViewState();
+    el('h1AttentionUpdated').textContent='Vue personnalisée enregistrée : '+name;
+  }
+
+  function applySelectedHackerOneAttentionCustomView(){
+    const selected=selectedHackerOneAttentionCustomView();
+    el('h1AttentionDeleteCustomView').disabled=!selected;
+    if(!selected)return;
+    applyHackerOneAttentionFilters(selected.filters);
+    renderHackerOneAttentionViewState();
+    if(latestAttentionPayload)renderHackerOneAttention(latestAttentionPayload);
+  }
+
+  function deleteSelectedHackerOneAttentionCustomView(){
+    const selected=selectedHackerOneAttentionCustomView();
+    if(!selected)return;
+    const state=loadHackerOneAttentionCustomViews();
+    state.views.splice(selected.index,1);
+    saveHackerOneAttentionCustomViews(state);
+    el('h1AttentionCustomView').value='';
+    renderHackerOneAttentionCustomViews();
+    renderHackerOneAttentionViewState();
+    el('h1AttentionUpdated').textContent='Vue personnalisée supprimée : '+selected.name;
   }
 
   function hackerOneAttentionMatchesRecent(item,filterValue){
@@ -501,6 +659,7 @@
     list.replaceChildren();
     const items=Array.isArray(payload?.items)?payload.items:[];
     syncHackerOneAttentionFilterOptions(items);
+    renderHackerOneAttentionCustomViews();
     restoreHackerOneAttentionFilters();
     renderHackerOneAttentionViewState();
     const seen=ensureAttentionBaseline(items);
@@ -1731,6 +1890,9 @@
   el('h1AttentionExportJson').addEventListener('click',()=>exportHackerOneAttentionJson());
   el('h1AttentionExportCsv').addEventListener('click',()=>exportHackerOneAttentionCsv());
   el('h1AttentionResetFilters').addEventListener('click',()=>resetHackerOneAttentionFilters());
+  el('h1AttentionSaveCustomView').addEventListener('click',()=>saveCurrentHackerOneAttentionCustomView());
+  el('h1AttentionDeleteCustomView').addEventListener('click',()=>deleteSelectedHackerOneAttentionCustomView());
+  el('h1AttentionCustomView').addEventListener('change',()=>applySelectedHackerOneAttentionCustomView());
   for(const button of document.querySelectorAll('[data-h1-attention-view]')){
     button.addEventListener('click',()=>applyHackerOneAttentionSavedView(button.dataset.h1AttentionView));
   }
