@@ -109,6 +109,9 @@ The HackerOne attention center is a local-only index over recent stored campaign
 
 Each attention item also exposes a stable SHA-256 notification cursor derived only from bounded local event identity/timestamp fields. The browser stores only the report key and last-seen cursor under `xbow:hackerone:attention-seen:v1`; it does not persist report bodies, comments, NMI text, bounty details, credentials, or HackerOne user data. The first load establishes a baseline, later cursor changes become unread, and the operator can mark one item or all items as seen. Opening a report also marks its current cursor as seen. If browser storage is unavailable, the UI falls back to in-memory seen state for the current page session.
 
+
+The attention table can be filtered entirely in the browser without extra API calls: free-text search, seen/unseen state, priority bucket, program handle, exact synchronized report state, bounty presence, and recency windows (24 hours, 7 days, 30 days). It can be sorted by backend priority, newest/oldest observation, program, or state. Global counters remain unfiltered while a separate result count shows how many reports match the current view. On narrow screens the existing responsive filter grid collapses to a single column.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
