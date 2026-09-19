@@ -8,4 +8,4 @@ EXPOSE 8080
 # Bypass the inherited docker-entrypoint scripts: the container is intentionally
 # read-only and capability-free, so startup must not attempt chown/config rewrites.
 ENTRYPOINT []
-CMD ["nginx", "-g", "daemon off; pid /tmp/nginx.pid;"]
+CMD ["nginx", "-g", "daemon off;"]
