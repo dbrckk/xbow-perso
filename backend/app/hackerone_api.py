@@ -5,9 +5,10 @@ import json
 from datetime import datetime
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator, model_validator
 
+from .hackerone_attention import build_hackerone_attention_center
 from .hackerone_client import (
     HackerOneClient,
     HackerOneClientError,
@@ -198,6 +199,16 @@ def _program_list_item(resource: Any) -> dict[str, Any]:
         "offers_bounties": attributes.get("offers_bounties"),
         "gold_standard_safe_harbor": attributes.get("gold_standard_safe_harbor"),
     }
+
+
+@router.get("/api/hackerone/attention")
+def hackerone_attention_center(
+    limit: int = Query(default=200, ge=1, le=500),
+):
+    from .main import storage
+
+    campaigns = storage().list_campaigns(limit=limit)
+    return build_hackerone_attention_center(campaigns)
 
 
 @router.get("/api/imports/hackerone/connection")
