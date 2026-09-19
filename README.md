@@ -75,6 +75,8 @@ The default configuration uses `DRY_RUN=true`; external testing engines are not 
 
 ### Preparing a real HackerOne run
 
+For the step-by-step operator checklist, see `FIRST_REAL_HACKERONE_RUN.md`. The same manual steps are also rendered inside the **Pré-vol bug bounty réel** panel in the PWA.
+
 Keep the safe defaults until you have selected a specific program and manually reviewed its current policy. The read-only endpoint `GET /api/hackerone/live-readiness` and the matching UI panel expose the non-secret gates.
 
 For the current pinned scanner image, a live Nuclei run requires all of the following server-side conditions:
