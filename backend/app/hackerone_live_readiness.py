@@ -177,6 +177,69 @@ def build_hackerone_live_readiness(
         and deployment.get("status") != "error"
     )
 
+    operator_steps = [
+        {
+            "id": "configure_access",
+            "title": "Configurer l'accès local xbow",
+            "when": "setup",
+            "done": _configured("XBOW_API_TOKEN"),
+            "instruction": (
+                "Configurer XBOW_API_TOKEN côté serveur, démarrer xbow-perso, "
+                "puis ouvrir l'interface graphique sur le port 8080 ou son origine HTTPS."
+            ),
+        },
+        {
+            "id": "configure_hackerone",
+            "title": "Connecter HackerOne",
+            "when": "setup",
+            "done": credentials_configured,
+            "instruction": (
+                "Créer/récupérer l'identifiant API et le token HackerOne, puis les "
+                "configurer uniquement côté serveur (vault recommandé)."
+            ),
+        },
+        {
+            "id": "select_program",
+            "title": "Choisir un programme réel",
+            "when": "program",
+            "done": False,
+            "instruction": (
+                "Dans l'interface, rechercher puis charger le programme HackerOne exact "
+                "sur lequel tu veux travailler."
+            ),
+        },
+        {
+            "id": "review_program",
+            "title": "Relire la policy et le scope",
+            "when": "program",
+            "done": False,
+            "instruction": (
+                "Vérifier manuellement Safe Harbor, autorisation d'automatisation, "
+                "assets in-scope/out-of-scope, exclusions, comptes de test et limite de requêtes."
+            ),
+        },
+        {
+            "id": "activate_scanner",
+            "title": "Ouvrir les verrous de scan réel",
+            "when": "activation",
+            "done": required_ok,
+            "instruction": (
+                "Seulement après la revue du programme : activer les scans, désactiver "
+                "DRY_RUN, activer Nuclei et le worker scanner dédié, puis revérifier le pré-vol."
+            ),
+        },
+        {
+            "id": "launch_confirmed_preview",
+            "title": "Lancer uniquement une preview confirmée",
+            "when": "activation",
+            "done": False,
+            "instruction": (
+                "Prévisualiser les règles exécutables, vérifier une dernière fois le scope, "
+                "cocher la confirmation humaine, puis lancer la campagne."
+            ),
+        },
+    ]
+
     return {
         "status": "ready" if required_ok else "blocked",
         "program_review_ready": program_review_ready,
@@ -188,6 +251,16 @@ def build_hackerone_live_readiness(
         "report_sync_enabled": report_sync_enabled if report_sync_valid else False,
         "read_only": True,
         "contains_secrets": False,
+        "operator_steps": operator_steps,
+        "activation_template": [
+            "XBOW_ENABLE_ACTIVE_SCANS=true",
+            "DRY_RUN=false",
+            "XBOW_ENABLE_NUCLEI=true",
+            "XBOW_NUCLEI_ALLOWED_VERSION=3.11.1",
+            "XBOW_SCANNER_ALLOWED_ENGINES=nuclei",
+            "XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1",
+        ],
+        "scanner_start_command": "docker compose --profile scanner up -d --build",
         "next_operator_step": (
             "Sélectionner un programme HackerOne, relire sa policy et confirmer "
             "Safe Harbor, automation, scope et limite de requêtes."
