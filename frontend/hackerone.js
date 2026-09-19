@@ -1623,7 +1623,77 @@
     }
   }
 
+  function renderHackerOneLiveReadiness(payload){
+    const state=el('h1LiveReadinessState');
+    const checks=el('h1LiveReadinessChecks');
+    checks.replaceChildren();
+
+    const liveReady=payload?.live_scan_ready===true;
+    const reviewReady=payload?.program_review_ready===true;
+    state.textContent=liveReady?'PRÊT SCAN RÉEL':reviewReady?'PRÊT POUR REVUE':'BLOQUÉ';
+    state.className='pill '+(liveReady?'ok':reviewReady?'warn':'err');
+
+    el('h1InterfaceUrl').textContent='Interface : '+String(window.location.origin||'—');
+    el('h1LiveReadinessSummary').textContent=liveReady
+      ?'Tous les verrous obligatoires du scanner réel sont ouverts. La policy du programme reste à vérifier avant chaque campagne.'
+      :reviewReady
+        ?'Connexion et dépendances prêtes. Les verrous de scan réel restent volontairement fermés.'
+        :'La connexion HackerOne ou une dépendance obligatoire doit être corrigée.';
+
+    const records=Array.isArray(payload?.checks)?payload.checks:[];
+    if(!records.length){
+      checks.textContent='Aucun diagnostic disponible.';
+    }else{
+      for(const check of records){
+        const row=document.createElement('div');
+        row.className='scope-asset-row';
+        const info=document.createElement('div');
+        const title=document.createElement('strong');
+        title.textContent=(check?.ok===true?'✓ ':'✗ ')+String(check?.label||check?.id||'Check');
+        const detail=document.createElement('div');
+        detail.className='muted compact';
+        detail.textContent=check?.ok===true
+          ?(check?.required===true?'obligatoire · OK':'optionnel · OK')
+          :String(check?.action||'Configuration requise.');
+        info.append(title,detail);
+        const badge=document.createElement('span');
+        badge.className='pill '+(check?.ok===true?'ok':check?.required===true?'err':'warn');
+        badge.textContent=check?.ok===true?'OK':check?.required===true?'REQUIS':'OPTIONNEL';
+        row.append(info,badge);
+        checks.appendChild(row);
+      }
+    }
+
+    const reasons=Array.isArray(payload?.scanner_block_reasons)
+      ?payload.scanner_block_reasons.filter(Boolean):[];
+    el('h1LiveReadinessNext').textContent=
+      String(payload?.next_operator_step||'')+
+      (reasons.length?' · Scanner bloque : '+reasons.join(', '):'');
+  }
+
+  async function refreshHackerOneLiveReadiness(){
+    const button=el('h1LiveReadinessRefresh');
+    if(button)button.disabled=true;
+    try{
+      const payload=await api('/hackerone/live-readiness');
+      renderHackerOneLiveReadiness(payload);
+      return payload;
+    }catch(error){
+      const state=el('h1LiveReadinessState');
+      state.textContent='INDISPONIBLE';
+      state.className='pill err';
+      el('h1InterfaceUrl').textContent='Interface : '+String(window.location.origin||'—');
+      el('h1LiveReadinessSummary').textContent='Pré-vol indisponible : '+error.message;
+      el('h1LiveReadinessChecks').textContent='—';
+      el('h1LiveReadinessNext').textContent='';
+      return null;
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
   async function initRemoteControlCenter(){
+    void refreshHackerOneLiveReadiness();
     try{
       const connection=await api('/imports/hackerone/connection');
       if(!connection?.configured){
@@ -1870,6 +1940,7 @@
   el('h1ProgramSelect').addEventListener('change',()=>{
     el('h1LoadProgram').disabled=!el('h1ProgramSelect').value;
   });
+  el('h1LiveReadinessRefresh').addEventListener('click',()=>void refreshHackerOneLiveReadiness());
   el('h1LoadProgram').addEventListener('click',loadRemoteProgram);
   el('h1ScopeFile').addEventListener('change',importScopeFile);
   el('h1Preview').addEventListener('click',preview);
