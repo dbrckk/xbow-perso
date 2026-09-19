@@ -371,6 +371,106 @@
     return filtered.map(entry=>entry.item);
   }
 
+  function visibleHackerOneAttentionItems(){
+    const items=Array.isArray(latestAttentionPayload?.items)?latestAttentionPayload.items:[];
+    const seen=ensureAttentionBaseline(items);
+    return filterAndSortHackerOneAttention(items,seen);
+  }
+
+  function markVisibleHackerOneAttentionSeen(){
+    const visible=visibleHackerOneAttentionItems();
+    if(!visible.length)return;
+    const state=loadAttentionSeen();
+    state.initialized=true;
+    for(const item of visible){
+      const cursor=String(item?.notification_cursor||'');
+      if(cursor)state.seen[attentionSeenKey(item)]=cursor;
+    }
+    saveAttentionSeen(state);
+    if(latestAttentionPayload)renderHackerOneAttention(latestAttentionPayload);
+  }
+
+  function attentionExportRows(){
+    const seen=loadAttentionSeen();
+    return visibleHackerOneAttentionItems().map(item=>({
+      campaign_id:String(item?.campaign_id||''),
+      campaign_name:String(item?.campaign_name||''),
+      program:String(item?.team_handle||''),
+      remote_report_id:String(item?.remote_report_id||''),
+      state:item?.state===null?null:String(item?.state||''),
+      bucket:String(item?.bucket||''),
+      action_required:Boolean(item?.action_required),
+      bounty_amount:item?.bounty?.amount==null?null:String(item.bounty.amount),
+      bounty_bonus_amount:item?.bounty?.bonus_amount==null?null:String(item.bounty.bonus_amount),
+      last_observed_at:item?.last_observed_at||null,
+      unread:isAttentionUnread(item,seen),
+      notification_kind:String(item?.notification_kind||'')
+    }));
+  }
+
+  function downloadAttentionExport(filename,mimeType,content){
+    const blob=new Blob([content],{type:mimeType});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');
+    link.href=url;
+    link.download=filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportHackerOneAttentionJson(){
+    const rows=attentionExportRows();
+    if(!rows.length)return;
+    const payload={
+      exported_at:new Date().toISOString(),
+      filters:currentHackerOneAttentionFilters(),
+      count:rows.length,
+      rows
+    };
+    downloadAttentionExport(
+      'hackerone-attention-'+new Date().toISOString().slice(0,10)+'.json',
+      'application/json;charset=utf-8',
+      JSON.stringify(payload,null,2)
+    );
+  }
+
+  function csvCell(value){
+    const text=value==null?'':String(value);
+    return '"'+text.replaceAll('"','""')+'"';
+  }
+
+  function exportHackerOneAttentionCsv(){
+    const rows=attentionExportRows();
+    if(!rows.length)return;
+    const columns=[
+      'campaign_id','campaign_name','program','remote_report_id','state','bucket',
+      'action_required','bounty_amount','bounty_bonus_amount','last_observed_at',
+      'unread','notification_kind'
+    ];
+    const csv=[
+      columns.join(','),
+      ...rows.map(row=>columns.map(column=>csvCell(row[column])).join(','))
+    ].join('\n');
+    downloadAttentionExport(
+      'hackerone-attention-'+new Date().toISOString().slice(0,10)+'.csv',
+      'text/csv;charset=utf-8',
+      '\uFEFF'+csv
+    );
+  }
+
+  async function openNextHackerOneActionRequired(){
+    const visible=visibleHackerOneAttentionItems()
+      .filter(item=>String(item?.bucket||'')==='action-required');
+    if(!visible.length)return;
+    const currentIndex=visible.findIndex(
+      item=>String(item?.campaign_id||'')===String(runMonitorCampaignId||'')
+    );
+    const next=visible[(currentIndex+1)%visible.length];
+    await focusHackerOneAttentionCampaign(next);
+  }
+
   function resetHackerOneAttentionFilters(){
     applyHackerOneAttentionFilters({
       version:1,
@@ -411,6 +511,12 @@
     el('h1AttentionMarkAll').disabled=unreadCount===0;
 
     const visible=filterAndSortHackerOneAttention(items,seen);
+    const visibleUnread=visible.filter(item=>isAttentionUnread(item,seen)).length;
+    el('h1AttentionMarkVisible').disabled=visibleUnread===0;
+    el('h1AttentionOpenNextAction').disabled=
+      !visible.some(item=>String(item?.bucket||'')==='action-required');
+    el('h1AttentionExportJson').disabled=visible.length===0;
+    el('h1AttentionExportCsv').disabled=visible.length===0;
     el('h1AttentionResults').textContent=
       visible.length+' / '+items.length+' report'+(items.length>1?'s':'')+' affiché'+
       (visible.length>1?'s':'');
@@ -1620,6 +1726,10 @@
   el('h1NeedsInfoCopy').addEventListener('click',()=>void copyHackerOneNeedsInfoDraft());
   el('h1AttentionRefresh').addEventListener('click',()=>void refreshHackerOneAttention());
   el('h1AttentionMarkAll').addEventListener('click',()=>markAllHackerOneAttentionSeen());
+  el('h1AttentionMarkVisible').addEventListener('click',()=>markVisibleHackerOneAttentionSeen());
+  el('h1AttentionOpenNextAction').addEventListener('click',()=>void openNextHackerOneActionRequired());
+  el('h1AttentionExportJson').addEventListener('click',()=>exportHackerOneAttentionJson());
+  el('h1AttentionExportCsv').addEventListener('click',()=>exportHackerOneAttentionCsv());
   el('h1AttentionResetFilters').addEventListener('click',()=>resetHackerOneAttentionFilters());
   for(const button of document.querySelectorAll('[data-h1-attention-view]')){
     button.addEventListener('click',()=>applyHackerOneAttentionSavedView(button.dataset.h1AttentionView));
