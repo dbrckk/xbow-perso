@@ -187,3 +187,30 @@ def test_frontend_needs_info_flow_has_no_remote_send_action():
     assert "send_supported" not in launcher
     assert "post-needs-info" not in launcher
     assert "reply-to-hackerone" not in launcher
+
+
+def test_frontend_exposes_hackerone_attention_center_contract():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    for element_id in (
+        "h1AttentionPanel",
+        "h1AttentionRefresh",
+        "h1AttentionAction",
+        "h1AttentionActive",
+        "h1AttentionBounty",
+        "h1AttentionResolved",
+        "h1AttentionDuplicate",
+        "h1AttentionInformative",
+        "h1AttentionList",
+        "h1AttentionUpdated",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert "refreshHackerOneAttention" in launcher
+    assert "renderHackerOneAttention" in launcher
+    assert "focusHackerOneAttentionCampaign" in launcher
+    assert "startHackerOneAttentionMonitor" in launcher
+    assert "'/hackerone/attention?limit=200'" in launcher
+    assert "setInterval(()=>void refreshHackerOneAttention(),15000)" in launcher
+    assert "activateCampaign(campaign)" in launcher

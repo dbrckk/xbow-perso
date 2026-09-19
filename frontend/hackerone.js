@@ -5,6 +5,7 @@
   let runMonitorTimer=null;
   let runMonitorCampaignId=null;
   let runMonitorBusy=false;
+  let attentionTimer=null;
 
   const el=id=>document.getElementById(id);
   const splitLines=value=>value.split('\n').map(item=>item.trim()).filter(Boolean);
@@ -22,6 +23,99 @@
     const state=el('h1ConnectionState');
     state.textContent=label;
     state.className='pill'+(type?' '+type:'');
+  }
+
+  function hackerOneAttentionLabel(item){
+    const bucket=String(item?.bucket||'other');
+    if(bucket==='action-required')return 'Action requise';
+    if(bucket==='active')return 'Actif';
+    if(bucket==='awaiting-sync')return 'En attente de synchro';
+    if(bucket==='resolved')return 'Resolved';
+    if(bucket==='duplicate')return 'Duplicate';
+    if(bucket==='informative')return 'Informative';
+    if(bucket==='closed-other')return 'Fermé';
+    return String(item?.state||'Autre');
+  }
+
+  async function focusHackerOneAttentionCampaign(campaignId){
+    const id=String(campaignId||'');
+    if(!id)return;
+    try{
+      const campaign=await api('/campaigns/'+encodeURIComponent(id));
+      await activateCampaign(campaign);
+      startRunMonitor(id);
+    }catch(error){
+      el('h1AttentionUpdated').textContent='Ouverture impossible : '+error.message;
+    }
+  }
+
+  function renderHackerOneAttention(payload){
+    const summary=payload?.summary||{};
+    el('h1AttentionAction').textContent=String(Number(summary.action_required)||0);
+    el('h1AttentionActive').textContent=String(Number(summary.active)||0);
+    el('h1AttentionBounty').textContent=String(Number(summary.with_bounty)||0);
+    el('h1AttentionResolved').textContent=String(Number(summary.resolved)||0);
+    el('h1AttentionDuplicate').textContent=String(Number(summary.duplicate)||0);
+    el('h1AttentionInformative').textContent=String(Number(summary.informative)||0);
+
+    const list=el('h1AttentionList');
+    list.replaceChildren();
+    const items=Array.isArray(payload?.items)?payload.items:[];
+    if(!items.length){
+      list.textContent='Aucun report HackerOne local.';
+      return;
+    }
+    for(const item of items){
+      const row=document.createElement('div');
+      row.className='scope-asset-row';
+
+      const info=document.createElement('div');
+      const title=document.createElement('strong');
+      title.textContent=String(item.campaign_name||item.campaign_id||'Campagne');
+      const meta=document.createElement('div');
+      meta.className='muted compact';
+      const parts=[
+        String(item.team_handle||'programme'),
+        'report #'+String(item.remote_report_id||'—'),
+        hackerOneAttentionLabel(item)
+      ];
+      if(item.bounty?.amount)parts.push('bounty '+String(item.bounty.amount));
+      if(item.needs_more_info?.message){
+        parts.push('NMI: '+String(item.needs_more_info.message));
+      }
+      meta.textContent=parts.join(' · ');
+      info.append(title,meta);
+
+      const open=document.createElement('button');
+      open.type='button';
+      open.className='secondary';
+      open.textContent='Ouvrir';
+      open.addEventListener('click',()=>void focusHackerOneAttentionCampaign(item.campaign_id));
+
+      row.append(info,open);
+      list.appendChild(row);
+    }
+  }
+
+  async function refreshHackerOneAttention(){
+    const button=el('h1AttentionRefresh');
+    if(button)button.disabled=true;
+    try{
+      const payload=await api('/hackerone/attention?limit=200');
+      renderHackerOneAttention(payload);
+      el('h1AttentionUpdated').textContent='Actualisé à '+new Date().toLocaleTimeString()+
+        ' · données locales auditées';
+    }catch(error){
+      el('h1AttentionUpdated').textContent='Centre d’attention indisponible : '+error.message;
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
+  function startHackerOneAttentionMonitor(){
+    if(attentionTimer!==null)clearInterval(attentionTimer);
+    void refreshHackerOneAttention();
+    attentionTimer=setInterval(()=>void refreshHackerOneAttention(),15000);
   }
 
   function stopRunMonitor(){
@@ -1144,6 +1238,8 @@
   el('h1ReportSubmit').addEventListener('click',()=>void submitHackerOneReport());
   el('h1ReportRevoke').addEventListener('click',()=>void revokeHackerOneReportApproval());
   el('h1NeedsInfoCopy').addEventListener('click',()=>void copyHackerOneNeedsInfoDraft());
+  el('h1AttentionRefresh').addEventListener('click',()=>void refreshHackerOneAttention());
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
+  startHackerOneAttentionMonitor();
 })();
