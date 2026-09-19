@@ -360,3 +360,27 @@ def test_frontend_supports_named_custom_hackerone_attention_views():
     assert "deleteSelectedHackerOneAttentionCustomView" in launcher
     assert "Maximum de 20 vues personnalisées atteint." in launcher
     assert "Nom de vue requis." in launcher
+
+
+def test_frontend_exposes_hackerone_live_readiness_preflight():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    for element_id in (
+        "h1LiveReadinessPanel",
+        "h1LiveReadinessState",
+        "h1LiveReadinessRefresh",
+        "h1InterfaceUrl",
+        "h1LiveReadinessSummary",
+        "h1LiveReadinessChecks",
+        "h1LiveReadinessNext",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert "renderHackerOneLiveReadiness" in launcher
+    assert "refreshHackerOneLiveReadiness" in launcher
+    assert "'/hackerone/live-readiness'" in launcher
+    assert "window.location.origin" in launcher
+    assert "PRÊT SCAN RÉEL" in launcher
+    assert "PRÊT POUR REVUE" in launcher
+    assert "BLOQUÉ" in launcher

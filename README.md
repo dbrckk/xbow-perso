@@ -61,7 +61,42 @@ docker compose up --build
 
 Open `http://SERVER_IP:8080` from your phone.
 
+### Interface graphique
+
+The graphical interface is the responsive PWA served by the frontend container on port **8080**:
+
+- same machine: `http://localhost:8080`
+- phone on the same LAN: `http://<LAN_IP_OF_SERVER>:8080`
+- remote VPS/server: expose it behind an HTTPS reverse proxy and open the configured HTTPS origin.
+
+The HackerOne launcher, connection state, live-readiness preflight, scope/policy review, run monitor, findings review, reports, remote status and attention center all live in this single interface. The **Pré-vol bug bounty réel** panel also displays the exact browser origin currently in use.
+
 The default configuration uses `DRY_RUN=true`; external testing engines are not launched until you explicitly configure them.
+
+### Preparing a real HackerOne run
+
+Keep the safe defaults until you have selected a specific program and manually reviewed its current policy. The read-only endpoint `GET /api/hackerone/live-readiness` and the matching UI panel expose the non-secret gates.
+
+For the current pinned scanner image, a live Nuclei run requires all of the following server-side conditions:
+
+```bash
+XBOW_ENABLE_ACTIVE_SCANS=true
+DRY_RUN=false
+XBOW_ENABLE_NUCLEI=true
+XBOW_NUCLEI_ALLOWED_VERSION=3.11.1
+XBOW_SCANNER_ALLOWED_ENGINES=nuclei
+XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
+```
+
+The dedicated scanner worker must also be running:
+
+```bash
+docker compose --profile scanner up -d --build
+```
+
+Do **not** enable those switches merely because the platform is technically ready. In the HackerOne launcher, first load the exact program, review its current scope/policy, explicitly confirm Safe Harbor/authorization, confirm that automated scanning is permitted, enter the exact request-rate ceiling, review account constraints/exclusions, preview the executable rules, and only then launch.
+
+Direct HackerOne submission remains independently gated by `XBOW_ENABLE_HACKERONE_SUBMISSION=true` and is **not required** for a first real scan. The historical report-sync worker is also optional and can be enabled later.
 
 ## HackerOne Control Center
 

@@ -15,6 +15,7 @@ from .hackerone_client import (
     fetch_hackerone_program_snapshot,
     load_hackerone_credentials,
 )
+from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_report_tracking import (
     latest_remote_submission,
@@ -209,6 +210,13 @@ def hackerone_attention_center(
 
     campaigns = storage().list_campaigns(limit=limit)
     return build_hackerone_attention_center(campaigns)
+
+
+@router.get("/api/hackerone/live-readiness")
+def hackerone_live_readiness():
+    from .main import dependency_readiness
+
+    return build_hackerone_live_readiness(dependency_readiness())
 
 
 @router.get("/api/imports/hackerone/connection")
