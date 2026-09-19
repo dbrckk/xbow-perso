@@ -240,3 +240,37 @@ def test_frontend_tracks_hackerone_attention_seen_state_locally():
     assert "localStorage.setItem" in launcher
     assert "Marquer vu" in launcher
     assert "Tout marquer vu" in html
+
+
+def test_frontend_filters_and_sorts_hackerone_attention_center():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    for element_id in (
+        "h1AttentionSearch",
+        "h1AttentionReadFilter",
+        "h1AttentionBucketFilter",
+        "h1AttentionProgramFilter",
+        "h1AttentionStateFilter",
+        "h1AttentionBountyFilter",
+        "h1AttentionRecentFilter",
+        "h1AttentionSort",
+        "h1AttentionResetFilters",
+        "h1AttentionResults",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert "filterAndSortHackerOneAttention" in launcher
+    assert "syncHackerOneAttentionFilterOptions" in launcher
+    assert "hackerOneAttentionMatchesRecent" in launcher
+    assert "resetHackerOneAttentionFilters" in launcher
+    assert "Date.now()" in launcher
+    assert "24h" in launcher
+    assert "7d" in launcher
+    assert "30d" in launcher
+    assert "priority" in launcher
+    assert "newest" in launcher
+    assert "oldest" in launcher
+    assert "program" in launcher
+    assert "state" in launcher
+    assert "Aucun report ne correspond aux filtres." in launcher
