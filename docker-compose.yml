@@ -304,7 +304,7 @@ services:
       - "${XBOW_PORT:-8080}:80"
     read_only: true
     tmpfs:
-      - /var/cache/nginx:size=32m
+      - /var/cache/nginx:size=32m,uid=101,gid=101,mode=0755
       - /var/run:size=8m
       - /tmp:size=16m
     security_opt:
