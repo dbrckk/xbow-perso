@@ -95,7 +95,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          export XBOW_API_TOKEN=ci-0123456789abcdef0123456789abcdef0123456789abcdef
+          export XBOW_API_TOKEN="$(python -c 'import secrets; print(secrets.token_hex(32))')"
           docker compose up -d backend frontend
           ok=0
           for _ in $(seq 1 30); do
