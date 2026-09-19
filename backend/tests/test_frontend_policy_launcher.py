@@ -330,3 +330,33 @@ def test_frontend_bulk_hackerone_attention_actions_and_sanitized_export():
     assert "needs_more_info?.message" not in launcher.split("function attentionExportRows()", 1)[1].split("function downloadAttentionExport", 1)[0]
     assert "latest_public_activity?.message" not in launcher.split("function attentionExportRows()", 1)[1].split("function downloadAttentionExport", 1)[0]
     assert "notification_cursor" not in launcher.split("function attentionExportRows()", 1)[1].split("function downloadAttentionExport", 1)[0]
+
+
+def test_frontend_supports_named_custom_hackerone_attention_views():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    for element_id in (
+        "h1AttentionCustomView",
+        "h1AttentionCustomViewName",
+        "h1AttentionSaveCustomView",
+        "h1AttentionDeleteCustomView",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert 'maxlength="60"' in html
+    assert "ATTENTION_CUSTOM_VIEWS_STORAGE_KEY" in launcher
+    assert "xbow:hackerone:attention-custom-views:v1" in launcher
+    assert "ATTENTION_CUSTOM_VIEW_LIMIT=20" in launcher
+    assert "ATTENTION_CUSTOM_VIEW_NAME_LIMIT=60" in launcher
+    assert "normalizeAttentionCustomViewName" in launcher
+    assert "sanitizeAttentionCustomViewFilters" in launcher
+    assert "loadHackerOneAttentionCustomViews" in launcher
+    assert "saveHackerOneAttentionCustomViews" in launcher
+    assert "renderHackerOneAttentionCustomViews" in launcher
+    assert "selectedHackerOneAttentionCustomView" in launcher
+    assert "saveCurrentHackerOneAttentionCustomView" in launcher
+    assert "applySelectedHackerOneAttentionCustomView" in launcher
+    assert "deleteSelectedHackerOneAttentionCustomView" in launcher
+    assert "Maximum de 20 vues personnalisées atteint." in launcher
+    assert "Nom de vue requis." in launcher
