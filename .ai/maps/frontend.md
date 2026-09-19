@@ -123,6 +123,24 @@ function updateAttentionSelectOptions(id,values,allLabel)
 ⋮----
 function syncHackerOneAttentionFilterOptions(items)
 ⋮----
+function currentHackerOneAttentionFilters()
+⋮----
+function loadHackerOneAttentionFilters()
+⋮----
+function saveHackerOneAttentionFilters()
+⋮----
+function setSelectValueIfAvailable(id,value,fallback='all')
+⋮----
+function applyHackerOneAttentionFilters(state,
+⋮----
+function restoreHackerOneAttentionFilters()
+⋮----
+function sameAttentionFilters(left,right)
+⋮----
+function renderHackerOneAttentionViewState()
+⋮----
+function applyHackerOneAttentionSavedView(name)
+⋮----
 function hackerOneAttentionMatchesRecent(item,filterValue)
 ⋮----
 function filterAndSortHackerOneAttention(items,seen)

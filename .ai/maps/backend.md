@@ -10057,6 +10057,8 @@ def test_frontend_exposes_hackerone_attention_center_contract()
 def test_frontend_tracks_hackerone_attention_seen_state_locally()
 ⋮----
 def test_frontend_filters_and_sorts_hackerone_attention_center()
+⋮----
+def test_frontend_persists_hackerone_attention_filters_and_saved_views()
 ```
 
 ## File: tests/test_hackerone_activity_summary.py

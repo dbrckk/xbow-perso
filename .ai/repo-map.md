@@ -10554,6 +10554,8 @@ def test_frontend_exposes_hackerone_attention_center_contract()
 def test_frontend_tracks_hackerone_attention_seen_state_locally()
 ⋮----
 def test_frontend_filters_and_sorts_hackerone_attention_center()
+⋮----
+def test_frontend_persists_hackerone_attention_filters_and_saved_views()
 ````
 
 ## File: backend/tests/test_hackerone_activity_summary.py
@@ -15402,6 +15404,24 @@ function updateAttentionSelectOptions(id,values,allLabel)
 ⋮----
 function syncHackerOneAttentionFilterOptions(items)
 ⋮----
+function currentHackerOneAttentionFilters()
+⋮----
+function loadHackerOneAttentionFilters()
+⋮----
+function saveHackerOneAttentionFilters()
+⋮----
+function setSelectValueIfAvailable(id,value,fallback='all')
+⋮----
+function applyHackerOneAttentionFilters(state,
+⋮----
+function restoreHackerOneAttentionFilters()
+⋮----
+function sameAttentionFilters(left,right)
+⋮----
+function renderHackerOneAttentionViewState()
+⋮----
+function applyHackerOneAttentionSavedView(name)
+⋮----
 function hackerOneAttentionMatchesRecent(item,filterValue)
 ⋮----
 function filterAndSortHackerOneAttention(items,seen)
@@ -16251,6 +16271,9 @@ Each attention item also exposes a stable SHA-256 notification cursor derived on
 
 
 The attention table can be filtered entirely in the browser without extra API calls: free-text search, seen/unseen state, priority bucket, program handle, exact synchronized report state, bounty presence, and recency windows (24 hours, 7 days, 30 days). It can be sorted by backend priority, newest/oldest observation, program, or state. Global counters remain unfiltered while a separate result count shows how many reports match the current view. On narrow screens the existing responsive filter grid collapses to a single column.
+
+
+The browser also persists the last attention-filter configuration under `xbow:hackerone:attention-filters:v1` and restores it after dynamic program/state options are rebuilt. This preference state contains only search/filter/sort values. Built-in saved-view shortcuts apply transparent filter combinations for **À traiter**, **Nouveaux aujourd’hui**, **Avec bounty**, **NMI**, and **Non lus**; selecting or editing any field immediately returns to a custom view when it no longer matches a preset. The `today` view uses the browser's local calendar date rather than a rolling 24-hour window.
 
 ## Disaster recovery integrity
 
