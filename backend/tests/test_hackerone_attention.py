@@ -1,3 +1,6 @@
+import app.hackerone_api as hackerone_api
+import app.main as main_app
+
 from app.hackerone_attention import build_hackerone_attention_center
 
 
@@ -151,3 +154,20 @@ def test_attention_center_keeps_latest_submission_per_artifact():
 
     assert result["items"][0]["remote_report_id"] == "1001"
     assert result["items"][0]["team_handle"] == "security"
+
+
+def test_attention_endpoint_reads_only_local_bounded_campaigns(monkeypatch):
+    calls = []
+
+    class Store:
+        def list_campaigns(self, *, limit=None):
+            calls.append(limit)
+            return [_campaign("c1", "needs-more-info", nmi=True)]
+
+    monkeypatch.setattr(main_app, "storage", lambda: Store())
+
+    result = hackerone_api.hackerone_attention_center(limit=25)
+
+    assert calls == [25]
+    assert result["summary"]["action_required"] == 1
+    assert result["source"] == "local_audit_events"
