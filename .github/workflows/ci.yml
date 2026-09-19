@@ -91,4 +91,26 @@ jobs:
             caddy:2.11.4-alpine \
             caddy validate --config /etc/caddy/Caddyfile
       - run: docker compose build --pull
+      - name: Smoke-test hardened frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          export XBOW_API_TOKEN="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+          docker compose up -d backend frontend
+          ok=0
+          for _ in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/ >/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ok" -ne 1 ]; then
+            docker compose ps
+            docker compose logs --no-color backend frontend
+            exit 1
+          fi
+          docker compose ps
+          curl -fsSI http://127.0.0.1:8080/
+          docker compose down -v
       - run: docker compose --profile scanner build --pull scanner-worker
