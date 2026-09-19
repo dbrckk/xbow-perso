@@ -171,3 +171,48 @@ def test_attention_endpoint_reads_only_local_bounded_campaigns(monkeypatch):
     assert calls == [25]
     assert result["summary"]["action_required"] == 1
     assert result["source"] == "local_audit_events"
+
+
+def test_attention_cursor_changes_when_latest_public_activity_changes():
+    first = _campaign("c1", "triaged", activity="activity-comment")
+    second = _campaign("c1", "triaged", activity="activity-comment")
+    second["events"][-1]["activity_id"] = "activity-2"
+    second["events"][-1]["observed_at"] = "2026-09-18T21:20:00+00:00"
+
+    first_item = build_hackerone_attention_center([first])["items"][0]
+    second_item = build_hackerone_attention_center([second])["items"][0]
+
+    assert first_item["notification_kind"] == "activity-comment"
+    assert second_item["notification_kind"] == "activity-comment"
+    assert first_item["notification_cursor"] != second_item["notification_cursor"]
+    assert second_item["last_observed_at"] == "2026-09-18T21:20:00+00:00"
+
+
+def test_attention_cursor_prefers_most_recent_relevant_event():
+    campaign = _campaign("c1", "needs-more-info", nmi=True)
+    campaign["events"].append(
+        {
+            "type": "hackerone_public_activity_observed",
+            "artifact_id": "report-c1",
+            "remote_report_id": "1001",
+            "activity_id": "comment-latest",
+            "activity_type": "activity-comment",
+            "message": "Latest public comment.",
+            "observed_at": "2026-09-18T22:00:00+00:00",
+        }
+    )
+
+    item = build_hackerone_attention_center([campaign])["items"][0]
+
+    assert item["notification_kind"] == "activity-comment"
+    assert item["last_observed_at"] == "2026-09-18T22:00:00+00:00"
+    assert len(item["notification_cursor"]) == 64
+
+
+def test_attention_cursor_is_stable_for_unchanged_local_events():
+    campaign = _campaign("c1", "triaged", bounty=True)
+
+    first = build_hackerone_attention_center([campaign])["items"][0]
+    second = build_hackerone_attention_center([campaign])["items"][0]
+
+    assert first["notification_cursor"] == second["notification_cursor"]
