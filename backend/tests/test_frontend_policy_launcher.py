@@ -301,3 +301,32 @@ def test_frontend_persists_hackerone_attention_filters_and_saved_views():
     assert "Avec bounty" in html
     assert ">NMI<" in html
     assert ">Non lus<" in html
+
+
+def test_frontend_bulk_hackerone_attention_actions_and_sanitized_export():
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+
+    for element_id in (
+        "h1AttentionMarkVisible",
+        "h1AttentionOpenNextAction",
+        "h1AttentionExportJson",
+        "h1AttentionExportCsv",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert "visibleHackerOneAttentionItems" in launcher
+    assert "markVisibleHackerOneAttentionSeen" in launcher
+    assert "openNextHackerOneActionRequired" in launcher
+    assert "attentionExportRows" in launcher
+    assert "exportHackerOneAttentionJson" in launcher
+    assert "exportHackerOneAttentionCsv" in launcher
+    assert "downloadAttentionExport" in launcher
+    assert "URL.createObjectURL" in launcher
+    assert "text/csv;charset=utf-8" in launcher
+    assert "application/json;charset=utf-8" in launcher
+    assert "notification_kind" in launcher
+    assert "bounty_amount" in launcher
+    assert "needs_more_info?.message" not in launcher.split("function attentionExportRows()", 1)[1].split("function downloadAttentionExport", 1)[0]
+    assert "latest_public_activity?.message" not in launcher.split("function attentionExportRows()", 1)[1].split("function downloadAttentionExport", 1)[0]
+    assert "notification_cursor" not in launcher.split("function attentionExportRows()", 1)[1].split("function downloadAttentionExport", 1)[0]
