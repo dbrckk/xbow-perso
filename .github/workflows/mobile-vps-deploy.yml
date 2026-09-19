@@ -1,0 +1,88 @@
+name: mobile-vps-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git ref to deploy
+        required: true
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-vps-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: mobile-vps
+    steps:
+      - name: Checkout requested ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Validate deployment secrets
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.XBOW_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.XBOW_DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.XBOW_DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.XBOW_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_HOST"
+          test -n "$DEPLOY_USER"
+          test -n "$DEPLOY_SSH_KEY"
+          test -n "$DEPLOY_KNOWN_HOSTS"
+
+      - name: Configure SSH
+        shell: bash
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.XBOW_DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.XBOW_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy safe base stack
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.XBOW_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.XBOW_DEPLOY_USER }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" '
+            set -euo pipefail
+            cd /opt/xbow-perso
+            git fetch --prune origin
+            git checkout main
+            git reset --hard origin/main
+            test -f .env
+            docker compose config >/dev/null
+            docker compose up -d --build
+            docker compose ps
+          '
+
+      - name: Verify safe gates remain closed
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.XBOW_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.XBOW_DEPLOY_USER }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" '
+            set -euo pipefail
+            cd /opt/xbow-perso
+            grep -Eq "^DRY_RUN=true$" .env
+            grep -Eq "^XBOW_ENABLE_ACTIVE_SCANS=false$" .env
+            grep -Eq "^XBOW_ENABLE_HACKERONE_SUBMISSION=false$" .env
+          '
