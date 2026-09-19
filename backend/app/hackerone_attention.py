@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Any
 
 
@@ -104,6 +106,64 @@ def _latest_needs_more_info(
     )
 
 
+def _event_timestamp(event: dict[str, Any] | None) -> str:
+    if not isinstance(event, dict):
+        return ""
+    for key in ("observed_at", "created_at", "updated_at", "at"):
+        value = event.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return ""
+
+
+def _notification_event(
+    *,
+    status: dict[str, Any] | None,
+    needs_more_info: dict[str, Any] | None,
+    latest_activity: dict[str, Any] | None,
+    submission: dict[str, Any],
+) -> tuple[str, dict[str, Any]]:
+    candidates: list[tuple[str, str, dict[str, Any]]] = []
+    if isinstance(status, dict):
+        candidates.append((_event_timestamp(status), "status", status))
+    if isinstance(needs_more_info, dict):
+        candidates.append((_event_timestamp(needs_more_info), "needs-more-info", needs_more_info))
+    if isinstance(latest_activity, dict):
+        kind = str(latest_activity.get("activity_type") or "public-activity")
+        candidates.append((_event_timestamp(latest_activity), kind, latest_activity))
+    candidates.append((_event_timestamp(submission), "submitted", submission))
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    _, kind, event = candidates[0]
+    return kind, event
+
+
+def _notification_cursor(
+    *,
+    campaign_id: str,
+    artifact_id: str,
+    kind: str,
+    event: dict[str, Any],
+) -> str:
+    bounded = {
+        "campaign_id": campaign_id,
+        "artifact_id": artifact_id,
+        "kind": kind,
+        "activity_id": event.get("activity_id"),
+        "state": event.get("state"),
+        "observed_at": event.get("observed_at"),
+        "created_at": event.get("created_at"),
+        "updated_at": event.get("updated_at"),
+        "at": event.get("at"),
+    }
+    encoded = json.dumps(
+        bounded,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _campaign_name(campaign: dict[str, Any]) -> str:
     target = campaign.get("target")
     if isinstance(target, dict):
@@ -142,19 +202,18 @@ def build_hackerone_attention_center(
             bounty = _latest_bounty(events, artifact_id)
             latest_activity = _latest_public_activity(events, artifact_id)
 
-            observed_candidates = [
-                status.get("observed_at") if isinstance(status, dict) else None,
-                needs_more_info.get("observed_at") if isinstance(needs_more_info, dict) else None,
-                latest_activity.get("observed_at") if isinstance(latest_activity, dict) else None,
-                submission.get("at"),
-            ]
-            last_observed_at = next(
-                (
-                    value
-                    for value in observed_candidates
-                    if isinstance(value, str) and value
-                ),
-                None,
+            notification_kind, notification_event = _notification_event(
+                status=status,
+                needs_more_info=needs_more_info,
+                latest_activity=latest_activity,
+                submission=submission,
+            )
+            last_observed_at = _event_timestamp(notification_event) or None
+            notification_cursor = _notification_cursor(
+                campaign_id=campaign_id,
+                artifact_id=artifact_id,
+                kind=notification_kind,
+                event=notification_event,
             )
 
             item = {
@@ -167,6 +226,8 @@ def build_hackerone_attention_center(
                 "bucket": bucket,
                 "action_required": state in ACTION_REQUIRED_STATES,
                 "last_observed_at": last_observed_at,
+                "notification_cursor": notification_cursor,
+                "notification_kind": notification_kind,
                 "needs_more_info": (
                     {
                         "activity_id": needs_more_info.get("activity_id"),
