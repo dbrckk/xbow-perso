@@ -4,3 +4,6 @@ COPY index.html /usr/share/nginx/html/index.html
 COPY manifest.webmanifest /usr/share/nginx/html/manifest.webmanifest
 COPY sw.js /usr/share/nginx/html/sw.js
 EXPOSE 8080
+
+ENTRYPOINT []
+CMD ["nginx", "-g", "daemon off;"]
