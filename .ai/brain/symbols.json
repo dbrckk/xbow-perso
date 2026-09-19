@@ -1741,63 +1741,84 @@
       "language": "python",
       "kind": "function",
       "name": "_events",
-      "line": 17
+      "line": 19
     },
     {
       "file": "backend/app/hackerone_attention.py",
       "language": "python",
       "kind": "function",
       "name": "_latest_by",
-      "line": 22
+      "line": 24
     },
     {
       "file": "backend/app/hackerone_attention.py",
       "language": "python",
       "kind": "function",
       "name": "_latest_submission_by_artifact",
-      "line": 37
+      "line": 39
     },
     {
       "file": "backend/app/hackerone_attention.py",
       "language": "python",
       "kind": "function",
       "name": "_bucket_for_state",
-      "line": 59
+      "line": 61
     },
     {
       "file": "backend/app/hackerone_attention.py",
       "language": "python",
       "kind": "function",
       "name": "_latest_public_activity",
-      "line": 71
+      "line": 73
     },
     {
       "file": "backend/app/hackerone_attention.py",
       "language": "python",
       "kind": "function",
       "name": "_latest_bounty",
-      "line": 82
+      "line": 84
     },
     {
       "file": "backend/app/hackerone_attention.py",
       "language": "python",
       "kind": "function",
       "name": "_latest_needs_more_info",
-      "line": 96
+      "line": 98
+    },
+    {
+      "file": "backend/app/hackerone_attention.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_event_timestamp",
+      "line": 109
+    },
+    {
+      "file": "backend/app/hackerone_attention.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_notification_event",
+      "line": 119
+    },
+    {
+      "file": "backend/app/hackerone_attention.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_notification_cursor",
+      "line": 140
     },
     {
       "file": "backend/app/hackerone_attention.py",
       "language": "python",
       "kind": "function",
       "name": "_campaign_name",
-      "line": 107
+      "line": 167
     },
     {
       "file": "backend/app/hackerone_attention.py",
       "language": "python",
       "kind": "function",
       "name": "build_hackerone_attention_center",
-      "line": 117
+      "line": 177
     },
     {
       "file": "backend/app/hackerone_binding.py",
@@ -10172,6 +10193,13 @@
       "line": 192
     },
     {
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_frontend_tracks_hackerone_attention_seen_state_locally",
+      "line": 219
+    },
+    {
       "file": "backend/tests/test_hackerone_activity_summary.py",
       "language": "python",
       "kind": "function",
@@ -10268,6 +10296,27 @@
       "kind": "function",
       "name": "list_campaigns",
       "line": 163
+    },
+    {
+      "file": "backend/tests/test_hackerone_attention.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_attention_cursor_changes_when_latest_public_activity_changes",
+      "line": 176
+    },
+    {
+      "file": "backend/tests/test_hackerone_attention.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_attention_cursor_prefers_most_recent_relevant_event",
+      "line": 191
+    },
+    {
+      "file": "backend/tests/test_hackerone_attention.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_attention_cursor_is_stable_for_unchanged_local_events",
+      "line": 212
     },
     {
       "file": "backend/tests/test_hackerone_binding.py",
@@ -18352,315 +18401,371 @@
       "language": "javascript",
       "kind": "function",
       "name": "setLauncherStatus",
-      "line": 17
+      "line": 19
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "setConnectionState",
-      "line": 21
+      "line": 23
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "hackerOneAttentionLabel",
-      "line": 27
+      "line": 31
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "hackerOneNotificationLabel",
+      "line": 43
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "attentionSeenKey",
+      "line": 56
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "loadAttentionSeen",
+      "line": 64
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "saveAttentionSeen",
+      "line": 82
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "ensureAttentionBaseline",
+      "line": 96
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "isAttentionUnread",
+      "line": 107
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "markHackerOneAttentionSeen",
+      "line": 113
+    },
+    {
+      "file": "frontend/hackerone.js",
+      "language": "javascript",
+      "kind": "function",
+      "name": "markAllHackerOneAttentionSeen",
+      "line": 124
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "focusHackerOneAttentionCampaign",
-      "line": 39
+      "line": 136
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderHackerOneAttention",
-      "line": 51
+      "line": 149
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "refreshHackerOneAttention",
-      "line": 99
+      "line": 225
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "startHackerOneAttentionMonitor",
-      "line": 114
+      "line": 240
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "stopRunMonitor",
-      "line": 120
+      "line": 246
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "reviewField",
-      "line": 129
+      "line": 255
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "reviewValue",
-      "line": 139
+      "line": 265
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "saveFindingReviewMetadata",
-      "line": 144
+      "line": 270
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "resolveHackerOneFinding",
-      "line": 187
+      "line": 313
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "buildFindingReviewEditor",
-      "line": 215
+      "line": 341
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderHackerOneFindings",
-      "line": 310
+      "line": 436
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "downloadHackerOneReport",
-      "line": 449
+      "line": 575
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "hackerOneReportReviewer",
-      "line": 494
+      "line": 620
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "approveHackerOneReport",
-      "line": 498
+      "line": 624
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "submitHackerOneReport",
-      "line": 526
+      "line": 652
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "revokeHackerOneReportApproval",
-      "line": 566
+      "line": 692
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "queueHackerOneReport",
-      "line": 592
+      "line": 718
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "hackerOneActivityLabel",
-      "line": 608
+      "line": 734
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderHackerOneReportTimeline",
-      "line": 618
+      "line": 744
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderHackerOneRemoteReportStatus",
-      "line": 689
+      "line": 815
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderHackerOneNeedsInfo",
-      "line": 710
+      "line": 836
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "copyHackerOneNeedsInfoDraft",
-      "line": 735
+      "line": 861
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderRunMonitor",
-      "line": 748
+      "line": 874
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "refreshRunMonitor",
-      "line": 778
+      "line": 904
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "startRunMonitor",
-      "line": 865
+      "line": 991
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "clearRemoteBinding",
-      "line": 875
+      "line": 1001
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderProgramOptions",
-      "line": 884
+      "line": 1010
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderRemoteScope",
-      "line": 905
+      "line": 1031
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "loadRemoteProgram",
-      "line": 944
+      "line": 1070
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "initRemoteControlCenter",
-      "line": 980
+      "line": 1106
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "parseScopeDocument",
-      "line": 1005
+      "line": 1131
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "reviewedAtIso",
-      "line": 1016
+      "line": 1142
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "buildPolicy",
-      "line": 1024
+      "line": 1150
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "buildPayload",
-      "line": 1050
+      "line": 1176
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "conservativeBlockers",
-      "line": 1068
+      "line": 1194
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "payloadFingerprint",
-      "line": 1078
+      "line": 1204
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "invalidatePreview",
-      "line": 1082
+      "line": 1208
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderScopeList",
-      "line": 1094
+      "line": 1220
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "renderPreview",
-      "line": 1108
+      "line": 1234
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "preview",
-      "line": 1139
+      "line": 1265
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "launch",
-      "line": 1165
+      "line": 1291
     },
     {
       "file": "frontend/hackerone.js",
       "language": "javascript",
       "kind": "function",
       "name": "importScopeFile",
-      "line": 1198
+      "line": 1324
     }
   ]
 }

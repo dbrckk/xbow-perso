@@ -99,7 +99,23 @@ function setConnectionState(label,type='')
 ⋮----
 function hackerOneAttentionLabel(item)
 ⋮----
-async function focusHackerOneAttentionCampaign(campaignId)
+function hackerOneNotificationLabel(item)
+⋮----
+function attentionSeenKey(item)
+⋮----
+function loadAttentionSeen()
+⋮----
+function saveAttentionSeen(state)
+⋮----
+function ensureAttentionBaseline(items)
+⋮----
+function isAttentionUnread(item,state)
+⋮----
+function markHackerOneAttentionSeen(item)
+⋮----
+function markAllHackerOneAttentionSeen()
+⋮----
+async function focusHackerOneAttentionCampaign(item)
 ⋮----
 function renderHackerOneAttention(payload)
 ⋮----

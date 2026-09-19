@@ -2713,6 +2713,17 @@ team_handle = event.get("team_handle")
 ⋮----
 def _bucket_for_state(state: str | None) -> str
 ⋮----
+def _event_timestamp(event: dict[str, Any] | None) -> str
+⋮----
+value = event.get(key)
+⋮----
+candidates: list[tuple[str, str, dict[str, Any]]] = []
+⋮----
+kind = str(latest_activity.get("activity_type") or "public-activity")
+⋮----
+bounded = {
+encoded = json.dumps(
+⋮----
 def _campaign_name(campaign: dict[str, Any]) -> str
 ⋮----
 target = campaign.get("target")
@@ -2732,8 +2743,8 @@ needs_more_info = _latest_needs_more_info(events, artifact_id)
 bounty = _latest_bounty(events, artifact_id)
 latest_activity = _latest_public_activity(events, artifact_id)
 ⋮----
-observed_candidates = [
-last_observed_at = next(
+last_observed_at = _event_timestamp(notification_event) or None
+notification_cursor = _notification_cursor(
 ⋮----
 item = {
 ⋮----
@@ -10042,6 +10053,8 @@ def test_frontend_exposes_hackerone_human_review_controls()
 def test_frontend_needs_info_flow_has_no_remote_send_action()
 ⋮----
 def test_frontend_exposes_hackerone_attention_center_contract()
+⋮----
+def test_frontend_tracks_hackerone_attention_seen_state_locally()
 ```
 
 ## File: tests/test_hackerone_activity_summary.py
@@ -10099,6 +10112,27 @@ class Store
 def list_campaigns(self, *, limit=None)
 ⋮----
 result = hackerone_api.hackerone_attention_center(limit=25)
+⋮----
+def test_attention_cursor_changes_when_latest_public_activity_changes()
+⋮----
+first = _campaign("c1", "triaged", activity="activity-comment")
+second = _campaign("c1", "triaged", activity="activity-comment")
+⋮----
+first_item = build_hackerone_attention_center([first])["items"][0]
+second_item = build_hackerone_attention_center([second])["items"][0]
+⋮----
+def test_attention_cursor_prefers_most_recent_relevant_event()
+⋮----
+campaign = _campaign("c1", "needs-more-info", nmi=True)
+⋮----
+item = build_hackerone_attention_center([campaign])["items"][0]
+⋮----
+def test_attention_cursor_is_stable_for_unchanged_local_events()
+⋮----
+campaign = _campaign("c1", "triaged", bounty=True)
+⋮----
+first = build_hackerone_attention_center([campaign])["items"][0]
+second = build_hackerone_attention_center([campaign])["items"][0]
 ```
 
 ## File: tests/test_hackerone_binding.py

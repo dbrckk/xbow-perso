@@ -3210,6 +3210,17 @@ team_handle = event.get("team_handle")
 ⋮----
 def _bucket_for_state(state: str | None) -> str
 ⋮----
+def _event_timestamp(event: dict[str, Any] | None) -> str
+⋮----
+value = event.get(key)
+⋮----
+candidates: list[tuple[str, str, dict[str, Any]]] = []
+⋮----
+kind = str(latest_activity.get("activity_type") or "public-activity")
+⋮----
+bounded = {
+encoded = json.dumps(
+⋮----
 def _campaign_name(campaign: dict[str, Any]) -> str
 ⋮----
 target = campaign.get("target")
@@ -3229,8 +3240,8 @@ needs_more_info = _latest_needs_more_info(events, artifact_id)
 bounty = _latest_bounty(events, artifact_id)
 latest_activity = _latest_public_activity(events, artifact_id)
 ⋮----
-observed_candidates = [
-last_observed_at = next(
+last_observed_at = _event_timestamp(notification_event) or None
+notification_cursor = _notification_cursor(
 ⋮----
 item = {
 ⋮----
@@ -10539,6 +10550,8 @@ def test_frontend_exposes_hackerone_human_review_controls()
 def test_frontend_needs_info_flow_has_no_remote_send_action()
 ⋮----
 def test_frontend_exposes_hackerone_attention_center_contract()
+⋮----
+def test_frontend_tracks_hackerone_attention_seen_state_locally()
 ````
 
 ## File: backend/tests/test_hackerone_activity_summary.py
@@ -10596,6 +10609,27 @@ class Store
 def list_campaigns(self, *, limit=None)
 ⋮----
 result = hackerone_api.hackerone_attention_center(limit=25)
+⋮----
+def test_attention_cursor_changes_when_latest_public_activity_changes()
+⋮----
+first = _campaign("c1", "triaged", activity="activity-comment")
+second = _campaign("c1", "triaged", activity="activity-comment")
+⋮----
+first_item = build_hackerone_attention_center([first])["items"][0]
+second_item = build_hackerone_attention_center([second])["items"][0]
+⋮----
+def test_attention_cursor_prefers_most_recent_relevant_event()
+⋮----
+campaign = _campaign("c1", "needs-more-info", nmi=True)
+⋮----
+item = build_hackerone_attention_center([campaign])["items"][0]
+⋮----
+def test_attention_cursor_is_stable_for_unchanged_local_events()
+⋮----
+campaign = _campaign("c1", "triaged", bounty=True)
+⋮----
+first = build_hackerone_attention_center([campaign])["items"][0]
+second = build_hackerone_attention_center([campaign])["items"][0]
 ````
 
 ## File: backend/tests/test_hackerone_binding.py
@@ -15342,7 +15376,23 @@ function setConnectionState(label,type='')
 ⋮----
 function hackerOneAttentionLabel(item)
 ⋮----
-async function focusHackerOneAttentionCampaign(campaignId)
+function hackerOneNotificationLabel(item)
+⋮----
+function attentionSeenKey(item)
+⋮----
+function loadAttentionSeen()
+⋮----
+function saveAttentionSeen(state)
+⋮----
+function ensureAttentionBaseline(items)
+⋮----
+function isAttentionUnread(item,state)
+⋮----
+function markHackerOneAttentionSeen(item)
+⋮----
+function markAllHackerOneAttentionSeen()
+⋮----
+async function focusHackerOneAttentionCampaign(item)
 ⋮----
 function renderHackerOneAttention(payload)
 ⋮----
@@ -16177,6 +16227,9 @@ The same report response is also reduced to an allowlisted public activity feed 
 
 
 The HackerOne attention center is a local-only index over recent stored campaigns. It does not query HackerOne when opened. Reports are grouped by current synchronized state into action-required (`needs-more-info` or `retesting`), active (`new`, `pending-program-review`, `triaged`), awaiting-sync, resolved, duplicate, informative, and other closed states. Bounty observations remain badges/metadata rather than replacing the report's current state. The UI refreshes the local index every 15 seconds and can open the corresponding local campaign monitor.
+
+
+Each attention item also exposes a stable SHA-256 notification cursor derived only from bounded local event identity/timestamp fields. The browser stores only the report key and last-seen cursor under `xbow:hackerone:attention-seen:v1`; it does not persist report bodies, comments, NMI text, bounty details, credentials, or HackerOne user data. The first load establishes a baseline, later cursor changes become unread, and the operator can mark one item or all items as seen. Opening a report also marks its current cursor as seen. If browser storage is unavailable, the UI falls back to in-memory seen state for the current page session.
 
 ## Disaster recovery integrity
 
