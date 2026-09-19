@@ -61,7 +61,7 @@ docker compose up --build
 
 Open `http://SERVER_IP:8080` from your phone.
 
-**Android-only operation:** see [`MOBILE_ONLY.md`](MOBILE_ONLY.md) for the smartphone-only VPS workflow and GitHub Actions deployment path.
+**Android-only operation:** see [`MOBILE_ONLY.md`](MOBILE_ONLY.md) for the smartphone-only VPS workflow and GitHub Actions deployment path. For the recommended AWS EC2 path, see [`AWS_MOBILE_ONLY.md`](AWS_MOBILE_ONLY.md).
 
 ### Interface graphique
 
