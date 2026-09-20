@@ -174,6 +174,18 @@ class Storage:
                 updated_at TEXT NOT NULL,
                 version INTEGER NOT NULL DEFAULT 1
             )""")
+            db.execute("""CREATE TABLE IF NOT EXISTS hackerone_review_profiles (
+                id TEXT PRIMARY KEY,
+                handle TEXT NOT NULL,
+                snapshot_sha256 TEXT NOT NULL,
+                document TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                version INTEGER NOT NULL DEFAULT 1
+            )""")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS hackerone_review_profiles_handle "
+                "ON hackerone_review_profiles(handle, updated_at DESC)"
+            )
             catalog_columns = {
                 row["name"]
                 for row in db.execute("PRAGMA table_info(hackerone_catalog_state)").fetchall()
@@ -325,6 +337,124 @@ class Storage:
                     "SELECT document FROM campaigns ORDER BY created_at DESC LIMIT ?",
                     (limit,),
                 ).fetchall()
+        return [json.loads(row["document"]) for row in rows]
+
+    def save_hackerone_review_profile(
+        self,
+        document: dict[str, Any],
+        *,
+        expected_version: int | None = None,
+    ) -> int:
+        required = {
+            "id",
+            "handle",
+            "snapshot_sha256",
+            "preferred_primary_url",
+            "policy",
+            "saved_at",
+            "updated_at",
+        }
+        if not required.issubset(document):
+            raise ValueError("HackerOne review profile missing required fields")
+        document = dict(document)
+        profile_id = _bounded_identifier(
+            str(document["id"]), "hackerone_review_profile_id"
+        )
+        handle = _bounded_identifier(
+            str(document["handle"]), "hackerone_program_handle", max_length=128
+        )
+        snapshot_sha256 = str(document["snapshot_sha256"]).strip().lower()
+        if (
+            len(snapshot_sha256) != 64
+            or any(ch not in "0123456789abcdef" for ch in snapshot_sha256)
+        ):
+            raise ValueError("HackerOne review profile fingerprint is invalid")
+        policy = document.get("policy")
+        if not isinstance(policy, dict):
+            raise ValueError("HackerOne review profile policy is invalid")
+        encoded = json.dumps(
+            document,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
+        if len(encoded.encode("utf-8")) > _max_campaign_document_bytes():
+            raise ValueError("HackerOne review profile exceeds size limit")
+
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            current = db.execute(
+                "SELECT version FROM hackerone_review_profiles WHERE id=?",
+                (profile_id,),
+            ).fetchone()
+            if current is None:
+                if expected_version not in (None, 0):
+                    db.execute("ROLLBACK")
+                    raise CampaignConflictError("HackerOne review profile version conflict")
+                db.execute(
+                    """INSERT INTO hackerone_review_profiles(
+                           id,handle,snapshot_sha256,document,updated_at,version
+                       ) VALUES(?,?,?,?,?,1)""",
+                    (
+                        profile_id,
+                        handle,
+                        snapshot_sha256,
+                        encoded,
+                        str(document["updated_at"]),
+                    ),
+                )
+                db.execute("COMMIT")
+                return 1
+
+            current_version = int(current["version"])
+            if expected_version is not None and expected_version != current_version:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("HackerOne review profile version conflict")
+            next_version = current_version + 1
+            cursor = db.execute(
+                """UPDATE hackerone_review_profiles
+                   SET document=?, updated_at=?, version=?
+                   WHERE id=? AND version=?""",
+                (
+                    encoded,
+                    str(document["updated_at"]),
+                    next_version,
+                    profile_id,
+                    current_version,
+                ),
+            )
+            if getattr(cursor, "rowcount", 0) != 1:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("HackerOne review profile version conflict")
+            db.execute("COMMIT")
+            return next_version
+
+    def get_hackerone_review_profile(
+        self,
+        profile_id: str,
+    ) -> dict[str, Any] | None:
+        profile_id = _bounded_identifier(
+            profile_id, "hackerone_review_profile_id"
+        )
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT document FROM hackerone_review_profiles WHERE id=?",
+                (profile_id,),
+            ).fetchone()
+        return json.loads(row["document"]) if row else None
+
+    def list_hackerone_review_profiles(
+        self,
+        *,
+        limit: int = 500,
+    ) -> list[dict[str, Any]]:
+        if not 1 <= limit <= 1000:
+            raise ValueError("HackerOne review profile limit must be between 1 and 1000")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT document FROM hackerone_review_profiles
+                   ORDER BY updated_at DESC LIMIT ?""",
+                (limit,),
+            ).fetchall()
         return [json.loads(row["document"]) for row in rows]
 
     def save_hackerone_catalog_state(
