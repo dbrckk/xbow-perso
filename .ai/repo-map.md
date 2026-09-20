@@ -17525,7 +17525,7 @@ docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker
   python -c 'import os; assert os.getenv("XBOW_STORAGE_BACKEND") == "postgresql"; assert os.getenv("XBOW_QUEUE_BACKEND") == "redis"; print("distributed-backends=ok")'
 
 echo "=== VAULT MIGRATION PLAN ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm --no-deps \
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps \
   -e XBOW_VAULT_ENABLED=false \
   -e XBOW_VAULT_PATH=/data/secrets.vault.json \
   -e XBOW_VAULT_MASTER_KEY_FILE=/data/vault-master.key \
@@ -17533,7 +17533,7 @@ docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm 
   backend python -m app.vault_migration plan --source-env-file /run/xbow-legacy.env
 
 echo "=== VAULT MIGRATION APPLY ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm --no-deps \
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps \
   -e XBOW_VAULT_ENABLED=false \
   -e XBOW_VAULT_PATH=/data/secrets.vault.json \
   -e XBOW_VAULT_MASTER_KEY_FILE=/data/vault-master.key \
@@ -17541,7 +17541,7 @@ docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm 
   backend python -m app.vault_migration apply --source-env-file /run/xbow-legacy.env
 
 echo "=== VERIFY REQUIRED VAULT AUTH SECRET ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm --no-deps \
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps \
   -e XBOW_VAULT_ENABLED=true \
   -e XBOW_VAULT_PATH=/data/secrets.vault.json \
   -e XBOW_VAULT_MASTER_KEY_FILE=/data/vault-master.key \
@@ -17557,7 +17557,7 @@ fi
 
 if [ "$h1_present" = "true" ]; then
   echo "=== VERIFY HACKERONE VAULT CREDENTIALS ==="
-  docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm --no-deps \
+  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps \
     -e XBOW_VAULT_ENABLED=true \
     -e XBOW_VAULT_PATH=/data/secrets.vault.json \
     -e XBOW_VAULT_MASTER_KEY_FILE=/data/vault-master.key \
