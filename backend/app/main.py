@@ -387,6 +387,7 @@ def system_capabilities():
             "adaptive_planning": "advisory",
             "observation_graph": True,
             "knowledge_memory": True,
+            "target_memory": "read_only",
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
             "evidence_quality_scoring": "read_only",
