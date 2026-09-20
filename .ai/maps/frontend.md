@@ -237,6 +237,16 @@ async function refreshRunMonitor(campaignId)
 ⋮----
 function startRunMonitor(campaignId)
 ⋮----
+function loadQuickPrefs()
+⋮----
+function applyQuickPrefs()
+⋮----
+function saveQuickPrefs()
+⋮----
+function rememberLastProgram(handle)
+⋮----
+function lastProgramHandle()
+⋮----
 function quickProfiles()
 ⋮----
 function quickProfileKey(binding=remoteBinding)

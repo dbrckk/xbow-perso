@@ -16723,6 +16723,16 @@ async function refreshRunMonitor(campaignId)
 ⋮----
 function startRunMonitor(campaignId)
 ⋮----
+function loadQuickPrefs()
+⋮----
+function applyQuickPrefs()
+⋮----
+function saveQuickPrefs()
+⋮----
+function rememberLastProgram(handle)
+⋮----
+function lastProgramHandle()
+⋮----
 function quickProfiles()
 ⋮----
 function quickProfileKey(binding=remoteBinding)
@@ -18663,6 +18673,8 @@ The confidence factor is bounded between 0.5 and 1.0. It never creates additiona
 The HackerOne launcher includes an express-start profile for repeated bounty work. After a program policy/scope has been reviewed and accepted once, the non-secret review settings can be remembered locally **only for that exact HackerOne snapshot fingerprint**. If HackerOne changes the policy, scope or exclusions, the fingerprint changes and the launcher requires a fresh review instead of silently reusing the old authorization assumptions.
 
 The express flow can restore the reviewer, verified rate limit, policy reference/date, automation/Safe Harbor confirmations, account constraints, notes and preferred primary URL. Compatible exact-domain/URL targets are also offered as browser suggestions. Secret credentials remain server-side in the encrypted vault.
+
+For repeat work, the browser can also remember the last selected HackerOne program, reload it automatically after API authentication, and automatically rerun the read-only rules preview when the exact saved fingerprint is unchanged. Advanced first-review controls collapse automatically for a reused profile. Human confirmation and the final launch remain explicit actions.
 
 ## Vault migration
 

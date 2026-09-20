@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T14:22:56Z
+Generated: 2026-09-20T14:35:30Z
 
 ### Git
 - Branch: `main`
-- Head: `7162304d150f`
-- Commit date: 2026-09-20T16:22:44+02:00
-- Commit: feat: add fingerprint-bound HackerOne express start
+- Head: `391971b68d20`
+- Commit date: 2026-09-20T16:35:20+02:00
+- Commit: feat: add one-touch HackerOne resume flow
 - Tracked files: 506
 
 ### Recently changed files
@@ -40,8 +40,6 @@ Generated: 2026-09-20T14:22:56Z
 - `backend/app/hackerone_scope_import.py`
 - `backend/tests/test_hackerone_client.py`
 - `scripts/mobile-vault-cutover.sh`
-- `scripts/mobile-production-cutover.sh`
-- `scripts/mobile-production-preflight.sh`
 
 ### Project signals
 - `pyproject.toml`
