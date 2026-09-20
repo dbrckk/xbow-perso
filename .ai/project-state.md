@@ -22,23 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T13:37:07Z
+Generated: 2026-09-20T13:50:30Z
 
 ### Git
 - Branch: `main`
-- Head: `44c3c4fa75e0`
-- Commit date: 2026-09-20T15:36:49+02:00
-- Commit: fix: stage private vault source inside xbow-data
+- Head: `5aabea4222d6`
+- Commit date: 2026-09-20T15:50:18+02:00
+- Commit: fix: break HackerOne client import cycle
 - Tracked files: 506
 
 ### Recently changed files
+- `backend/app/hackerone_scope_import.py`
+- `backend/tests/test_hackerone_client.py`
 - `scripts/mobile-vault-cutover.sh`
 - `scripts/mobile-production-cutover.sh`
 - `scripts/mobile-production-preflight.sh`
-- `backend/app/production_migration.py`
-- `backend/app/vault_migration.py`
-- `backend/tests/test_production_migration.py`
-- `backend/tests/test_vault_migration.py`
 
 ### Project signals
 - `pyproject.toml`

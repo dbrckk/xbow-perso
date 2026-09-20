@@ -1,13 +1,14 @@
 # Change impact
 
-Base: 3741be91ee546878e44e1d28deb2aa40e9cc30db
-Head: 44c3c4fa75e04d9c8e453402e1b85271310b522d
+Base: d43a1caeb627926e0c65030168d9a41774307f0f
+Head: 5aabea4222d6185c9f60b8940b7786b05260309b
 
 ## Changed files
-- M scripts/mobile-vault-cutover.sh
+- M backend/app/hackerone_scope_import.py
+- M backend/tests/test_hackerone_client.py
 
 ## Affected areas
-- scripts
+- backend
 
 ## Related test candidates
 - No direct filename-based test match detected.

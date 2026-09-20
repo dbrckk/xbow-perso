@@ -11084,6 +11084,10 @@ result = client.post_json("hackers/reports", payload)
 def test_client_post_json_rejects_non_object_payload()
 ⋮----
 client = HackerOneClient(
+⋮----
+def test_hackerone_client_imports_cleanly_in_isolated_process()
+⋮----
+result = subprocess.run(
 ```
 
 ## File: tests/test_hackerone_control_center_api.py
