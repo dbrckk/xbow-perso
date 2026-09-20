@@ -11,6 +11,7 @@ from .campaign_audit import append_campaign_event
 from .evidence_quality import build_evidence_quality
 from .hackerone_batch import reconcile_hackerone_batches
 from .hackerone_catalog import maybe_refresh_hackerone_catalog
+from .hackerone_intelligence import maybe_refresh_hackerone_intelligence
 from .job_provenance import (
     JobProvenanceError,
     provenance_required_for_job_kind,
@@ -580,6 +581,11 @@ def main() -> None:
                 maybe_refresh_hackerone_catalog(store)
             except Exception:
                 # Read-only catalog monitoring must never take down execution workers.
+                pass
+            try:
+                maybe_refresh_hackerone_intelligence(store)
+            except Exception:
+                # Public Hacktivity learning is advisory and must never stop workers.
                 pass
             try:
                 reconcile_hackerone_batches(queue, store, limit=20)
