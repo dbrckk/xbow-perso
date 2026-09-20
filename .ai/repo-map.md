@@ -96,6 +96,7 @@ backend/
     hackerone_attention.py
     hackerone_batch.py
     hackerone_binding.py
+    hackerone_catalog.py
     hackerone_client.py
     hackerone_live_readiness.py
     hackerone_needs_info.py
@@ -247,6 +248,7 @@ backend/
     test_hackerone_batch_api.py
     test_hackerone_batch.py
     test_hackerone_binding.py
+    test_hackerone_catalog.py
     test_hackerone_client.py
     test_hackerone_control_center_api.py
     test_hackerone_launch_api.py
@@ -3223,11 +3225,17 @@ def hackerone_live_readiness()
 @router.get("/api/imports/hackerone/connection")
 def hackerone_connection()
 ⋮----
-@router.get("/api/imports/hackerone/programs")
-def list_hackerone_programs()
+store = storage()
+state = store.get_hackerone_catalog_state()
 ⋮----
-resources = HackerOneClient().get_all_pages("hackers/programs")
-programs = [_program_list_item(resource) for resource in resources]
+state = refresh_hackerone_catalog(store, client=HackerOneClient())
+⋮----
+@router.get("/api/imports/hackerone/catalog")
+def hackerone_program_catalog()
+⋮----
+state = storage().get_hackerone_catalog_state()
+⋮----
+state = refresh_hackerone_catalog(storage(), client=HackerOneClient())
 ⋮----
 @router.get("/api/imports/hackerone/programs/{handle}/snapshot")
 def get_hackerone_program_snapshot(handle: str)
@@ -3284,7 +3292,6 @@ campaign_id = str(admitted["campaign"]["id"])
 ⋮----
 now = utcnow()
 batch = {
-store = storage()
 ⋮----
 record = storage().get_hackerone_batch_record(batch_id)
 ⋮----
@@ -3523,6 +3530,74 @@ declared_policy_fingerprint = str(binding.get("campaign_policy_fingerprint") or 
 remote_binding = _validated_remote_binding(binding.get("remote_binding"), reasons)
 expected_binding_fingerprint = _binding_fingerprint(
 declared_binding_fingerprint = str(binding.get("binding_fingerprint") or "")
+````
+
+## File: backend/app/hackerone_catalog.py
+````python
+CATALOG_ID = "current"
+_next_attempt_monotonic = 0.0
+⋮----
+def _utcnow() -> str
+⋮----
+def normalize_program_resource(resource: Any) -> dict[str, Any]
+⋮----
+attributes = resource.get("attributes")
+⋮----
+handle = attributes.get("handle")
+name = attributes.get("name")
+⋮----
+api = client or HackerOneClient()
+resources = api.get_all_pages("hackers/programs")
+programs = [normalize_program_resource(resource) for resource in resources]
+⋮----
+def _fingerprint(programs: list[dict[str, Any]]) -> str
+⋮----
+encoded = json.dumps(
+⋮----
+old = {str(item["handle"]): item for item in previous}
+new = {str(item["handle"]): item for item in current}
+added = sorted(set(new) - set(old))
+removed = sorted(set(old) - set(new))
+changed = sorted(
+⋮----
+programs = fetch_hackerone_program_catalog(client=client)
+fingerprint = _fingerprint(programs)
+checked_at = _utcnow()
+⋮----
+record = store.get_hackerone_catalog_state_record(CATALOG_ID)
+⋮----
+state = {
+⋮----
+same = str(previous.get("fingerprint") or "") == fingerprint
+⋮----
+changes = previous.get("changes")
+⋮----
+changes = {"added": [], "removed": [], "changed": []}
+⋮----
+changes = _diff_programs(
+⋮----
+latest = store.get_hackerone_catalog_state(CATALOG_ID)
+⋮----
+def _strict_bool_env(name: str, default: bool) -> bool
+⋮----
+raw = os.getenv(name)
+⋮----
+value = raw.strip().lower()
+⋮----
+def catalog_poll_seconds() -> int
+⋮----
+raw = (os.getenv("XBOW_HACKERONE_CATALOG_POLL_SECONDS") or "900").strip()
+⋮----
+value = int(raw)
+⋮----
+def maybe_refresh_hackerone_catalog(store) -> dict[str, Any]
+⋮----
+now = time.monotonic()
+⋮----
+interval = catalog_poll_seconds()
+_next_attempt_monotonic = now + interval
+⋮----
+state = refresh_hackerone_catalog(store)
 ````
 
 ## File: backend/app/hackerone_client.py
@@ -8339,6 +8414,9 @@ def save_campaign(self, document: dict, *, expected_version: int | None = None) 
 def get_campaign_record(self, campaign_id: str): ...
 def get_campaign(self, campaign_id: str): ...
 def list_campaigns(self, *, limit: int | None = None) -> list[dict]: ...
+def save_hackerone_catalog_state(self, document: dict, *, expected_version: int | None = None) -> int: ...
+def get_hackerone_catalog_state_record(self, catalog_id: str = "current"): ...
+def get_hackerone_catalog_state(self, catalog_id: str = "current"): ...
 def put_observation(self, campaign_id: str, observation: dict) -> dict: ...
 def list_observations(self, campaign_id: str) -> list[dict]: ...
 def put_hypothesis_snapshot(self, campaign_id: str, graph_fingerprint: str, hypotheses: list[dict]) -> dict: ...
@@ -8418,6 +8496,8 @@ campaign_columns = {row["name"] for row in db.execute("PRAGMA table_info(campaig
 ⋮----
 batch_columns = {
 ⋮----
+catalog_columns = {
+⋮----
 columns = {row["name"] for row in db.execute("PRAGMA table_info(artifacts)").fetchall()}
 ⋮----
 def health(self) -> dict[str, Any]
@@ -8459,17 +8539,25 @@ def list_campaigns(self, *, limit: int | None = None) -> list[dict[str, Any]]
 ⋮----
 rows = db.execute(
 ⋮----
-required = {"id", "state", "mode", "members", "created_at", "updated_at"}
+required = {"id", "programs", "fingerprint", "checked_at", "updated_at"}
 ⋮----
-members = document.get("members")
+programs = document.get("programs")
 ⋮----
 encoded = json.dumps(
 ⋮----
 current = db.execute(
 ⋮----
-batch_id = _bounded_identifier(batch_id, "hackerone_batch_id")
+catalog_id = _bounded_identifier(catalog_id, "hackerone_catalog_id")
 ⋮----
 row = db.execute(
+⋮----
+record = self.get_hackerone_catalog_state_record(catalog_id)
+⋮----
+required = {"id", "state", "mode", "members", "created_at", "updated_at"}
+⋮----
+members = document.get("members")
+⋮----
+batch_id = _bounded_identifier(batch_id, "hackerone_batch_id")
 ⋮----
 def get_hackerone_batch(self, batch_id: str) -> dict[str, Any] | None
 ⋮----
@@ -9670,6 +9758,10 @@ queue = create_queue()
 store = create_storage()
 worker_id = os.getenv("XBOW_WORKER_ID", f"{socket.gethostname()}:{os.getpid()}")
 poll = _worker_poll_seconds()
+worker_role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
+coordinator = worker_role in {"", "general"}
+⋮----
+# Read-only catalog monitoring must never take down execution workers.
 ⋮----
 # Batch scheduling must fail closed without taking down the worker.
 ⋮----
@@ -11791,6 +11883,29 @@ start_result = main.start_campaign(campaign.id)
 provenance = start_result["job"]["payload"]["_provenance"]
 ````
 
+## File: backend/tests/test_hackerone_catalog.py
+````python
+class FakeClient
+⋮----
+def __init__(self, programs)
+⋮----
+def get_all_pages(self, path)
+⋮----
+def test_catalog_initial_refresh_is_redacted_and_persisted(tmp_path)
+⋮----
+store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+result = catalog.refresh_hackerone_catalog(
+⋮----
+def test_catalog_detects_added_removed_and_changed_programs(tmp_path)
+⋮----
+def test_unchanged_catalog_preserves_last_change_summary(tmp_path)
+⋮----
+changed = catalog.refresh_hackerone_catalog(
+stable = catalog.refresh_hackerone_catalog(
+⋮----
+def test_catalog_poll_interval_validation(monkeypatch)
+````
+
 ## File: backend/tests/test_hackerone_client.py
 ````python
 def _vault_key() -> str
@@ -11896,13 +12011,15 @@ def test_connection_reports_unconfigured_safely(monkeypatch)
 ⋮----
 def fail()
 ⋮----
-def test_programs_returns_normalized_safe_metadata(monkeypatch)
+def test_programs_returns_normalized_safe_metadata(tmp_path, monkeypatch)
 ⋮----
 class FakeClient
 ⋮----
 def get_all_pages(self, path)
 ⋮----
-response = _client().get("/api/imports/hackerone/programs")
+response = _client().get("/api/imports/hackerone/programs?refresh=true")
+⋮----
+body = response.json()
 ⋮----
 def test_snapshot_route_returns_remote_binding_data(monkeypatch)
 ⋮----
@@ -11910,13 +12027,11 @@ snapshot = SimpleNamespace(
 ⋮----
 response = _client().get("/api/imports/hackerone/programs/acme/snapshot")
 ⋮----
-body = response.json()
-⋮----
-def test_upstream_auth_error_is_mapped_without_leaking_detail(monkeypatch)
+def test_upstream_auth_error_is_mapped_without_leaking_detail(tmp_path, monkeypatch)
 ⋮----
 class FailingClient
 ⋮----
-def test_upstream_rate_limit_is_service_unavailable(monkeypatch)
+def test_upstream_rate_limit_is_service_unavailable(tmp_path, monkeypatch)
 ````
 
 ## File: backend/tests/test_hackerone_launch_api.py
@@ -18646,6 +18761,8 @@ services:
       XBOW_STRIX_RUN_ROOT: /data/strix_runs
       XBOW_WORKER_POLL_SECONDS: ${XBOW_WORKER_POLL_SECONDS:-1}
       XBOW_WORKER_ROLE: general
+      XBOW_ENABLE_HACKERONE_CATALOG_MONITOR: ${XBOW_ENABLE_HACKERONE_CATALOG_MONITOR:-true}
+      XBOW_HACKERONE_CATALOG_POLL_SECONDS: ${XBOW_HACKERONE_CATALOG_POLL_SECONDS:-900}
       XBOW_SCAN_ENGINES: ${XBOW_SCAN_ENGINES:-nuclei}
       XBOW_PLANNER_MAX_OBSERVATIONS: ${XBOW_PLANNER_MAX_OBSERVATIONS:-5000}
       XBOW_PLANNER_MAX_ENDPOINTS: ${XBOW_PLANNER_MAX_ENDPOINTS:-1500}
@@ -19174,6 +19291,23 @@ sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh
 ```
 
 Direct HackerOne report submission remains disabled by this profile.
+
+## HackerOne background catalog monitor
+
+The general worker refreshes the read-only HackerOne researcher-program catalog every 15 minutes by default, even when no dashboard is open. The latest normalized catalog is persisted in SQLite/PostgreSQL and excludes policy text, credentials, tokens and scope details.
+
+The monitor records a catalog fingerprint plus added, removed and metadata-changed program handles. The dashboard consumes the cached catalog on open, highlights newly detected or changed programs, and exposes a manual refresh that performs a fresh upstream read.
+
+This monitor does not authorize testing, fetch executable scope automatically, or start campaigns. Exact program scope/policy snapshots are still fetched and revalidated at launch.
+
+Configuration:
+
+```bash
+XBOW_ENABLE_HACKERONE_CATALOG_MONITOR=true
+XBOW_HACKERONE_CATALOG_POLL_SECONDS=900
+```
+
+The minimum poll interval is 300 seconds.
 
 ## HackerOne multi-bounty batches
 

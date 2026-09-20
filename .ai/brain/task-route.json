@@ -4,17 +4,70 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 3,
     "tier": "bounded",
-    "top_score": 21
+    "top_score": 26
   },
   "cache": {
-    "fingerprint": "12859e00e58ef29ff104b06b5442fe7fdb25581f6885685f0e4853b4f0900ff1",
+    "fingerprint": "25ed25623b65acad2779af87fad608598a79ecf4fd01e512b12fc7e364ca9c5f",
     "hit": false
   },
-  "candidate_count": 38,
+  "candidate_count": 72,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/worker_service.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 26,
+      "symbols": [
+        "CampaignCancelledError",
+        "StaleBrowserJobError",
+        "StaleValidationJobError",
+        "_active_scanner_execution_requested",
+        "_append_event_once",
+        "_campaign",
+        "_claim_for_role",
+        "_lease_heartbeat",
+        "_legacy_unprovenanced_jobs_allowed",
+        "_process_scanner_job",
+        "_record_worker_outcome",
+        "_save",
+        "_verify_policy_bound_job",
+        "_worker_bool",
+        "_worker_poll_seconds",
+        "main",
+        "process_browser_flow",
+        "process_nuclei_scan",
+        "process_one",
+        "process_recon_task"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "_launch_payload",
+        "_resource",
+        "fake_execute",
+        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue"
+      ]
+    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -101,52 +154,6 @@
         "test_scan_engines_default_preserves_strix",
         "test_scan_engines_support_explicit_nuclei_and_fail_closed",
         "test_sqlite_queue_accepts_nuclei_scan"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_adaptation.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "_memory",
-        "test_adaptation_never_expands_configured_engines",
-        "test_adaptation_never_suppresses_last_configured_engine",
-        "test_adaptation_ranks_successful_memory_first",
-        "test_adaptation_rejects_unknown_or_duplicate_configuration",
-        "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_normalization.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "test_normalized_ids_are_engine_scoped_and_stable",
-        "test_normalizers_fail_closed_outside_scope",
-        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
-        "test_nuclei_jsonl_parser_rejects_invalid_line",
-        "test_nuclei_jsonl_parser_rejects_oversized_file",
-        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
-        "test_scanner_registry_dispatches_nuclei_parser",
-        "test_scanner_registry_dispatches_strix_parser",
-        "test_scanner_registry_exposes_supported_engines",
-        "test_scanner_registry_missing_run_directory_is_empty",
-        "test_scanner_registry_rejects_symlinked_artifacts",
-        "test_scanner_registry_rejects_unknown_engine",
-        "test_scanner_registry_selects_latest_artifact",
-        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
       ]
     }
   ],

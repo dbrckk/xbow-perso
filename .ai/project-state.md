@@ -22,36 +22,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T15:12:31Z
+Generated: 2026-09-20T16:02:04Z
 
 ### Git
 - Branch: `main`
-- Head: `5bd86efb9bac`
-- Commit date: 2026-09-20T17:12:20+02:00
-- Commit: feat: add persistent HackerOne Nuclei production profile
-- Tracked files: 511
+- Head: `86d8b3df4334`
+- Commit date: 2026-09-20T18:01:51+02:00
+- Commit: feat: monitor HackerOne bounty catalog in background
+- Tracked files: 513
 
 ### Recently changed files
-- `.github/workflows/ci.yml`
+- `.env.example`
 - `README.md`
+- `backend/app/hackerone_api.py`
+- `backend/app/hackerone_catalog.py`
+- `backend/app/postgres_storage.py`
+- `backend/app/storage_backend.py`
+- `backend/app/storage_core.py`
+- `backend/app/worker_service.py`
+- `backend/tests/test_hackerone_catalog.py`
+- `backend/tests/test_hackerone_control_center_api.py`
+- `docker-compose.yml`
+- `frontend/app.css`
+- `frontend/hackerone.js`
+- `frontend/index.html`
+- `frontend/sw.js`
+- `.github/workflows/ci.yml`
 - `backend/app/hackerone_live_readiness.py`
 - `backend/tests/test_hackerone_live_readiness.py`
 - `scripts/mobile-disable-hackerone-nuclei.sh`
 - `scripts/mobile-enable-hackerone-nuclei.sh`
-- `scripts/mobile-production-status.sh`
-- `scripts/mobile-production-update.sh`
-- `backend/app/hackerone_api.py`
-- `backend/app/hackerone_batch.py`
-- `backend/app/main.py`
-- `backend/app/postgres_storage.py`
-- `backend/app/storage_core.py`
-- `backend/app/worker_service.py`
-- `backend/tests/test_hackerone_batch.py`
-- `backend/tests/test_hackerone_batch_api.py`
-- `backend/tests/test_storage.py`
-- `frontend/app.css`
-- `frontend/hackerone.js`
-- `frontend/index.html`
 
 ### Project signals
 - `pyproject.toml`
