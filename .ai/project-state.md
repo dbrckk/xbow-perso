@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T12:01:46Z
+Generated: 2026-09-20T13:37:07Z
 
 ### Git
 - Branch: `main`
-- Head: `da906fc4b4dd`
-- Commit date: 2026-09-20T14:01:36+02:00
-- Commit: fix: preserve TLS control network during vault cutover
+- Head: `44c3c4fa75e0`
+- Commit date: 2026-09-20T15:36:49+02:00
+- Commit: fix: stage private vault source inside xbow-data
 - Tracked files: 506
 
 ### Recently changed files
@@ -39,10 +39,6 @@ Generated: 2026-09-20T12:01:46Z
 - `backend/app/vault_migration.py`
 - `backend/tests/test_production_migration.py`
 - `backend/tests/test_vault_migration.py`
-- `.github/workflows/ci.yml`
-- `AWS_MOBILE_ONLY.md`
-- `VAULT_MIGRATION.md`
-- `scripts/mobile-vault-rollback.sh`
 
 ### Project signals
 - `pyproject.toml`
