@@ -5,6 +5,8 @@ import os
 
 import pytest
 
+import app.vault_migration as vault_migration_module
+
 from app.secret_vault import get_secret, set_secret
 from app.vault_migration import (
     VaultMigrationError,
@@ -259,3 +261,27 @@ def test_source_env_file_requires_private_permissions(monkeypatch, tmp_path):
 
     with pytest.raises(VaultMigrationError, match="source environment file is unavailable"):
         plan_vault_migration(str(source))
+
+
+def test_vault_migration_cli_plan_returns_nonzero_when_blocked(monkeypatch, capsys):
+    monkeypatch.setattr(
+        vault_migration_module,
+        "plan_vault_migration",
+        lambda _source=None: {"ok": False, "blockers": ["blocked"]},
+    )
+    monkeypatch.setattr("sys.argv", ["vault_migration", "plan"])
+
+    assert vault_migration_module.main() == 2
+    assert '"ok": false' in capsys.readouterr().out
+
+
+def test_vault_migration_cli_plan_returns_zero_when_ready(monkeypatch, capsys):
+    monkeypatch.setattr(
+        vault_migration_module,
+        "plan_vault_migration",
+        lambda _source=None: {"ok": True, "blockers": []},
+    )
+    monkeypatch.setattr("sys.argv", ["vault_migration", "plan"])
+
+    assert vault_migration_module.main() == 0
+    assert '"ok": true' in capsys.readouterr().out
