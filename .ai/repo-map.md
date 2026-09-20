@@ -16251,6 +16251,10 @@ result = apply_vault_migration(str(source))
 def test_source_env_file_conflict_with_process_env_fails_closed(monkeypatch, tmp_path)
 ⋮----
 def test_source_env_file_requires_private_permissions(monkeypatch, tmp_path)
+⋮----
+def test_vault_migration_cli_plan_returns_nonzero_when_blocked(monkeypatch, capsys)
+⋮----
+def test_vault_migration_cli_plan_returns_zero_when_ready(monkeypatch, capsys)
 ````
 
 ## File: backend/tests/test_watchdog_observability.py

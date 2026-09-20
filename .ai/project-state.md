@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:54:31Z
+Generated: 2026-09-20T10:56:00Z
 
 ### Git
 - Branch: `main`
-- Head: `a5a21e7e690f`
-- Commit date: 2026-09-20T12:54:16+02:00
-- Commit: feat: add verified one-command mobile vault cutover
+- Head: `36a4ce63371b`
+- Commit date: 2026-09-20T12:55:48+02:00
+- Commit: fix: make blocked migration plans fail the shell command
 - Tracked files: 506
 
 ### Recently changed files
+- `backend/app/production_migration.py`
+- `backend/app/vault_migration.py`
+- `backend/tests/test_production_migration.py`
+- `backend/tests/test_vault_migration.py`
 - `.github/workflows/ci.yml`
 - `AWS_MOBILE_ONLY.md`
 - `VAULT_MIGRATION.md`
@@ -42,9 +46,6 @@ Generated: 2026-09-20T10:54:31Z
 - `scripts/mobile-production-update.sh`
 - `scripts/mobile-production-status.sh`
 - `README.md`
-- `backend/app/vault_migration.py`
-- `backend/tests/test_vault_migration.py`
-- `scripts/mobile-production-rollback.sh`
 
 ### Project signals
 - `pyproject.toml`
