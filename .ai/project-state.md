@@ -22,16 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T09:56:07Z
+Generated: 2026-09-20T10:27:32Z
 
 ### Git
 - Branch: `main`
-- Head: `20e75ae29c85`
-- Commit date: 2026-09-20T11:55:56+02:00
-- Commit: feat: add redacted legacy secret migration into encrypted vault
-- Tracked files: 495
+- Head: `88fd52805ea5`
+- Commit date: 2026-09-20T12:27:20+02:00
+- Commit: feat: add one-command mobile production migration preflight
+- Tracked files: 497
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `AWS_MOBILE_ONLY.md`
+- `scripts/mobile-production-preflight.sh`
 - `.env.example`
 - `README.md`
 - `VAULT_MIGRATION.md`
@@ -48,10 +51,6 @@ Generated: 2026-09-20T09:56:07Z
 - `backend/app/recon_priority.py`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_priority.py`
-- `backend/app/surface_confidence.py`
-- `backend/tests/test_surface_confidence.py`
-- `frontend/app.css`
-- `frontend/app.js`
 
 ### Project signals
 - `pyproject.toml`
