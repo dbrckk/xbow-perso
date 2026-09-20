@@ -7,7 +7,7 @@ from typing import Any, Literal
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, ValidationError, field_validator, model_validator
 
 from .hackerone_attention import build_hackerone_attention_center
 from .hackerone_client import (
@@ -580,7 +580,7 @@ def _reviewed_campaign_input(
 
     try:
         policy = HackerOneProgramPolicyInput.model_validate(policy_raw)
-    except Exception as exc:
+    except ValidationError as exc:
         raise HTTPException(
             status_code=409,
             detail={
@@ -595,16 +595,26 @@ def _reviewed_campaign_input(
         program_name = f"H1 {snapshot.handle}"
     program_name = program_name[:120]
 
-    return HackerOneCampaignAdmissionInput(
-        document=snapshot.document,
-        policy=policy,
-        target=HackerOneCampaignTargetInput(
-            name=program_name,
-            primary_url=primary_url,
-        ),
-        remote_handle=snapshot.handle,
-        remote_snapshot_sha256=snapshot.snapshot_sha256,
-    )
+    try:
+        return HackerOneCampaignAdmissionInput(
+            document=snapshot.document,
+            policy=policy,
+            target=HackerOneCampaignTargetInput(
+                name=program_name,
+                primary_url=primary_url,
+            ),
+            remote_handle=snapshot.handle,
+            remote_snapshot_sha256=snapshot.snapshot_sha256,
+        )
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile target is invalid",
+                "reason": "review_profile_invalid",
+                "handles": [snapshot.handle],
+            },
+        ) from exc
 
 
 @router.post("/api/imports/hackerone/batches/launch-reviewed")
