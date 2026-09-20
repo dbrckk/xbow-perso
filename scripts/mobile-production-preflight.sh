@@ -89,8 +89,8 @@ docker compose -f docker-compose.yml -f docker-compose.distributed.yml ps postgr
 echo "=== MIGRATION PLAN ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm --no-deps   -e XBOW_MIGRATION_SQLITE_PATH=/data/xbow.sqlite3   -e XBOW_ARTIFACT_ROOT=/data/artifacts   -e XBOW_DATABASE_URL="$XBOW_DATABASE_URL"   -e XBOW_REDIS_URL="$XBOW_REDIS_URL"   backend python -m app.production_migration plan
 
-echo "=== VAULT MIGRATION PLAN ==="
-docker compose -f docker-compose.yml run --rm --no-deps   -e XBOW_VAULT_ENABLED=false   -e XBOW_VAULT_MASTER_KEY_FILE=/data/vault-master.key   backend python -m app.vault_migration plan || true
+echo "=== VAULT MIGRATION ==="
+echo "Deferred: vault migration has a separate verified cutover step."
 
 echo
 echo "PRE-FLIGHT COMPLETE"
