@@ -472,7 +472,7 @@ function renderFindingIntelligence(data){
   }
 }
 
-function renderTargetMemory(data,diff){
+function renderTargetMemory(data,diff,temporal){
   const card=$('targetMemoryCard');
   card.classList.remove('hidden');
   const summary=data?.summary||{};
@@ -517,6 +517,30 @@ function renderTargetMemory(data,diff){
     focusWrap.classList.add('hidden');
   }
 
+  const temporalSummary=temporal?.summary||{};
+  const temporalClasses=temporalSummary.classifications||{};
+  $('temporalCampaigns').textContent=String(temporal?.campaigns_considered||0)+' campagne'+((Number(temporal?.campaigns_considered)||0)===1?'':'s');
+  $('temporalStable').textContent=String(Number(temporalClasses.stable)||0);
+  $('temporalIntermittent').textContent=String(Number(temporalClasses.intermittent)||0);
+  $('temporalReturning').textContent=String(Number(temporalClasses.returning)||0);
+  $('temporalNew').textContent=String(Number(temporalClasses.new)||0);
+  $('temporalVolatileCount').textContent=String(Number(temporalSummary.volatile_count)||0);
+  const temporalWrap=$('temporalVolatileWrap');
+  const temporalList=$('temporalVolatileList');
+  const volatile=Array.isArray(temporal?.volatile)?temporal.volatile:[];
+  temporalList.replaceChildren();
+  if(volatile.length){
+    temporalWrap.classList.remove('hidden');
+    for(const item of volatile.slice(0,20)){
+      const code=document.createElement('code');
+      const ratio=Math.round((Number(item.presence_ratio)||0)*100);
+      code.textContent=(item.classification||'variable')+' · '+(item.kind||'surface')+' · '+(item.value||'')+' · présence '+ratio+'%';
+      temporalList.appendChild(code);
+    }
+  }else{
+    temporalWrap.classList.add('hidden');
+  }
+
   const kinds=$('targetMemoryKinds');
   kinds.replaceChildren();
   for(const [key,label] of [
@@ -556,22 +580,23 @@ function renderTargetMemory(data,diff){
 
 async function refreshDashboard(){
   if(!campaign)return;
-  const [control,intelligence,timeline,reviewQueue,reportReadiness,targetMemory,surfaceDiff]=await Promise.all([
+  const [control,intelligence,timeline,reviewQueue,reportReadiness,targetMemory,surfaceDiff,surfaceTemporal]=await Promise.all([
     api('/campaigns/'+campaign.id+'/control-status'),
     api('/campaigns/'+campaign.id+'/finding-intelligence'),
     api('/campaigns/'+campaign.id+'/decision-timeline'),
     api('/campaigns/'+campaign.id+'/review-queue'),
     api('/campaigns/'+campaign.id+'/report-readiness'),
     api('/campaigns/'+campaign.id+'/target-memory'),
-    api('/campaigns/'+campaign.id+'/surface-diff')
+    api('/campaigns/'+campaign.id+'/surface-diff'),
+    api('/campaigns/'+campaign.id+'/surface-temporal')
   ]);
   renderControl(control);
-  renderTargetMemory(targetMemory,surfaceDiff);
+  renderTargetMemory(targetMemory,surfaceDiff,surfaceTemporal);
   renderFindingIntelligence(intelligence);
   renderClusters(intelligence);
   renderDecisionTimeline(timeline);
   renderReviewAndSubmission(reviewQueue,reportReadiness);
-  $('output').textContent=JSON.stringify({control,target_memory:targetMemory,surface_diff:surfaceDiff,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
+  $('output').textContent=JSON.stringify({control,target_memory:targetMemory,surface_diff:surfaceDiff,surface_temporal:surfaceTemporal,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
 }
 
 async function activateCampaign(value){
