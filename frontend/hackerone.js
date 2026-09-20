@@ -1815,7 +1815,7 @@
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
           serverProgramHasSavedProfile(program.handle)
-            ?'profil serveur'
+            ?'profil serveur — revérifié au lancement'
             :(localProgramHasSavedProfile(program.handle)
               ?'profil local — à resauvegarder'
               :'1re revue requise')
