@@ -197,6 +197,14 @@ Diff-prioritized recon also uses bounded historical frequency from Target Memory
 
 Historical scoring is intentionally weak relative to the current surface diff: the diff component is capped at +15 priority points, historical novelty at +5, and the combined ordering boost at +20. This still changes **ordering only**. It cannot create tasks, increase request budgets, rewrite targets, change allowed methods, or expand scope.
 
+## Temporal surface profile
+
+The campaign dashboard and API now expose a bounded temporal profile through `GET /api/campaigns/{campaign_id}/surface-temporal`.
+
+For campaigns sharing the same target + authorization identity, xbow classifies observed surface as `stable`, `new`, `returning`, `intermittent`, `disappeared`, or `historical`. It also tracks presence ratio and appearance/disappearance transitions so recurring deployment noise can be distinguished from genuinely new surface.
+
+Only campaigns at or before the selected campaign timestamp are considered, preventing later observations from leaking into historical views. The profile is read-only and has no execution influence: it cannot expand scope, create recon tasks, alter request budgets, or authorize scanning.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
