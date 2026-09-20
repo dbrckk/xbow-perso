@@ -22,28 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:34:17Z
+Generated: 2026-09-20T10:39:25Z
 
 ### Git
 - Branch: `main`
-- Head: `c97b6ebcf199`
-- Commit date: 2026-09-20T12:34:05+02:00
-- Commit: fix: wire encrypted vault configuration into runtime services
-- Tracked files: 499
+- Head: `4dd6369f0faf`
+- Commit date: 2026-09-20T12:39:14+02:00
+- Commit: feat: add one-command mobile storage cutover and rollback
+- Tracked files: 502
 
 ### Recently changed files
-- `docker-compose.yml`
-- `scripts/mobile-production-preflight.sh`
 - `.github/workflows/ci.yml`
 - `AWS_MOBILE_ONLY.md`
+- `scripts/mobile-production-cutover.sh`
+- `scripts/mobile-production-rollback.sh`
+- `docker-compose.yml`
+- `scripts/mobile-production-preflight.sh`
 - `.env.example`
 - `README.md`
 - `VAULT_MIGRATION.md`
 - `backend/app/vault_migration.py`
 - `backend/tests/test_vault_migration.py`
-- `PRODUCTION_MIGRATION.md`
-- `backend/app/production_migration.py`
-- `backend/tests/test_production_migration.py`
 
 ### Project signals
 - `pyproject.toml`

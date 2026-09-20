@@ -1,13 +1,18 @@
 # Change impact
 
-Base: 7b2cb0ee72e255f58b3edae1b8285efd5187c942
-Head: c97b6ebcf19965390569ae0abccde99dfba6c131
+Base: 18d7f2bf5c7e8d21be5dae301460c5153d80cf04
+Head: 4dd6369f0faf9d7293a07b907669c6c55e0006de
 
 ## Changed files
-- M docker-compose.yml
+- M .github/workflows/ci.yml
+- M AWS_MOBILE_ONLY.md
+- A scripts/mobile-production-cutover.sh
+- A scripts/mobile-production-rollback.sh
 
 ## Affected areas
+- .github
 - (root)
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.
