@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+INSTALL_DIR="${XBOW_INSTALL_DIR:-/opt/xbow-perso}"
+SECRETS_FILE="${XBOW_PRODUCTION_SECRETS_FILE:-/root/xbow-production-secrets.env}"
+LIVE_PROFILE_FILE="${XBOW_LIVE_SCANNER_PROFILE_FILE:-/root/xbow-live-scanner.env}"
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Run with sudo: sudo bash $0" >&2
+  exit 1
+fi
+if [ ! -d "$INSTALL_DIR/.git" ] || [ ! -f "$INSTALL_DIR/.env" ]; then
+  echo "xbow-perso installation not found at $INSTALL_DIR" >&2
+  exit 1
+fi
+if [ ! -f "$SECRETS_FILE" ]; then
+  echo "Production secrets file not found: $SECRETS_FILE" >&2
+  exit 1
+fi
+
+cd "$INSTALL_DIR"
+chmod 600 "$SECRETS_FILE"
+
+read_env_value() {
+  local key="$1"
+  grep -E "^[[:space:]]*${key}=" .env | tail -n1 | cut -d= -f2- || true
+}
+
+require_baseline_gate() {
+  local key="$1"
+  local expected="$2"
+  local actual
+  actual="$(read_env_value "$key" | tr '[:upper:]' '[:lower:]')"
+  if [ "$actual" != "$expected" ]; then
+    echo "SAFE-BASELINE BLOCK: $key in .env must remain $expected" >&2
+    exit 1
+  fi
+}
+
+require_baseline_gate "DRY_RUN" "true"
+require_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
+require_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
+require_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
+
+# shellcheck disable=SC1090
+. "$SECRETS_FILE"
+: "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
+: "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
+
+export XBOW_POSTGRES_PASSWORD
+export XBOW_REDIS_PASSWORD
+export XBOW_POSTGRES_DB="${XBOW_POSTGRES_DB:-xbow}"
+export XBOW_POSTGRES_USER="${XBOW_POSTGRES_USER:-xbow}"
+export XBOW_DATABASE_URL="postgresql://${XBOW_POSTGRES_USER}:${XBOW_POSTGRES_PASSWORD}@postgres:5432/${XBOW_POSTGRES_DB}"
+export XBOW_REDIS_URL="redis://:${XBOW_REDIS_PASSWORD}@redis:6379/0"
+
+COMPOSE=(
+  docker compose
+  -f docker-compose.yml
+  -f docker-compose.distributed.yml
+  -f docker-compose.tls.yml
+)
+
+echo "=== BACKEND READINESS ==="
+"${COMPOSE[@]}" exec -T backend python -m app.readiness
+
+echo "=== QUEUE MUST BE IDLE BEFORE ARMING ==="
+"${COMPOSE[@]}" exec -T backend python -c \
+  'from app.main import queue; s=queue().stats(); active=int(s["by_status"].get("queued",0))+int(s["by_status"].get("running",0)); assert active==0, s; print(s)'
+
+TMP_PROFILE="$(mktemp)"
+cleanup_tmp() {
+  rm -f "$TMP_PROFILE"
+}
+trap cleanup_tmp EXIT
+
+cat >"$TMP_PROFILE" <<'EOF'
+DRY_RUN=false
+XBOW_ENABLE_ACTIVE_SCANS=true
+XBOW_ENABLE_SCANNER_WORKER=true
+XBOW_ENABLE_NUCLEI=true
+XBOW_SCAN_ENGINES=nuclei
+XBOW_SCANNER_ALLOWED_ENGINES=nuclei
+XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
+XBOW_NUCLEI_ALLOWED_VERSION=3.11.1
+XBOW_MAX_AUTONOMOUS_RPS=2.0
+XBOW_ENABLE_HACKERONE_SUBMISSION=false
+EOF
+chmod 600 "$TMP_PROFILE"
+
+rollback() {
+  status=$?
+  trap - ERR
+  echo "Activation failed; restoring safe production mode." >&2
+  rm -f "$LIVE_PROFILE_FILE"
+  bash "$INSTALL_DIR/scripts/mobile-production-update.sh" || true
+  exit "$status"
+}
+trap rollback ERR
+
+install -m 600 "$TMP_PROFILE" "$LIVE_PROFILE_FILE"
+
+echo "=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ==="
+bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
+
+trap - ERR
+echo
+echo "PERSISTENT HACKERONE NUCLEI PROFILE ARMED"
+echo "The root-only profile survives normal production updates."
+echo "Every campaign still requires verified HackerOne scope/policy/fingerprint admission."
+echo "HackerOne report submission remains disabled."

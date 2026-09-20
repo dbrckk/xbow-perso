@@ -235,6 +235,28 @@ The express flow can restore the reviewer, verified rate limit, policy reference
 
 For repeat work, the browser can also remember the last selected HackerOne program, reload it automatically after API authentication, and automatically rerun the read-only rules preview when the exact saved fingerprint is unchanged. Advanced first-review controls collapse automatically for a reused profile. Human confirmation and the final launch remain explicit actions.
 
+## Persistent HackerOne Nuclei profile
+
+Active Nuclei execution can be armed once with the root-only production overlay:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh
+```
+
+The repository `.env` intentionally remains on the fail-safe baseline (`DRY_RUN=true`, active scans disabled, Nuclei disabled). The activation script writes a mode-0600 root-only overlay at `/root/xbow-live-scanner.env`, rebuilds the production backend/worker/scanner-worker with the reviewed Nuclei 3.11.1 sandbox profile, verifies backend readiness, scanner capability, Linux sandbox attestation, and the installed Nuclei version.
+
+Normal `mobile-production-update.sh` runs preserve that root-only live profile automatically. This removes repeated global scanner setup between bounty campaigns without weakening campaign admission: every HackerOne campaign must still pass its exact remote fingerprint, scope, policy, Safe Harbor, automation permission, target and rate checks before a scanner job can execute.
+
+The activation refuses to arm while queued/running jobs exist, so dry-run jobs cannot unexpectedly become live jobs. On activation failure it removes the live overlay and restores safe production mode.
+
+Disarm at any time with:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh
+```
+
+Direct HackerOne report submission remains disabled by this profile.
+
 ## HackerOne multi-bounty batches
 
 The HackerOne control center can load the researcher program catalog read-only, let the operator select up to 20 previously reviewed programs, and launch them as a durable server-side batch.
