@@ -80,8 +80,12 @@ def _diff_programs(
     }
 
 
-def refresh_hackerone_catalog(store) -> dict[str, Any]:
-    programs = fetch_hackerone_program_catalog()
+def refresh_hackerone_catalog(
+    store,
+    *,
+    client: HackerOneClient | None = None,
+) -> dict[str, Any]:
+    programs = fetch_hackerone_program_catalog(client=client)
     fingerprint = _fingerprint(programs)
     checked_at = _utcnow()
 
