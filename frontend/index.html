@@ -193,6 +193,13 @@
             <option value="parallel">En parallèle</option>
           </select>
         </div>
+        <div>
+          <label>Tri du catalogue</label>
+          <select id="h1BatchSort">
+            <option value="name">Nom</option>
+            <option value="historical_value">Signal historique de valeur</option>
+          </select>
+        </div>
       </div>
       <div class="button-row">
         <label class="check-row compact"><input id="h1BatchBountyOnly" type="checkbox" checked /> <span>Programmes avec bounty uniquement</span></label>
@@ -206,6 +213,42 @@
       </div>
       <p id="h1BatchSummary" class="muted compact">Aucun lot actif.</p>
       <div id="h1BatchProgress" class="scope-list muted">—</div>
+    </div>
+
+    <div id="h1IntelPanel" class="h1-control-center h1-intel-panel">
+      <div class="finding-head">
+        <div>
+          <span class="section-kicker">Learning engine</span>
+          <h3>Hacktivity publique : apprendre des bugs résolus</h3>
+          <p class="muted compact">Analyse uniquement les rapports HackerOne publiquement divulgués. Les montants affichés sont historiques et ne constituent pas la bounty actuelle d’un programme.</p>
+        </div>
+        <span id="h1IntelState" class="pill">en attente</span>
+      </div>
+      <div class="stats h1-intel-stats">
+        <div class="stat"><h3>Rapports appris</h3><strong id="h1IntelReports">0</strong></div>
+        <div class="stat"><h3>Catégorie dominante</h3><strong id="h1IntelTopCategory">—</strong></div>
+        <div class="stat"><h3>Max USD divulgué</h3><strong id="h1IntelMaxAward">—</strong></div>
+      </div>
+      <div class="h1-intel-grid">
+        <div>
+          <div class="finding-head">
+            <strong>Patterns à forte valeur observés</strong>
+            <span id="h1IntelCategoryCount" class="pill">0</span>
+          </div>
+          <div id="h1IntelCategories" class="scope-list muted">Aucune intelligence chargée.</div>
+        </div>
+        <div>
+          <div class="finding-head">
+            <strong>Gaps de capacités du repo</strong>
+            <span id="h1IntelGapCount" class="pill">0</span>
+          </div>
+          <div id="h1IntelGaps" class="scope-list muted">—</div>
+        </div>
+      </div>
+      <div class="button-row">
+        <button id="h1IntelRefresh" type="button" class="secondary">Actualiser l’apprentissage</button>
+      </div>
+      <p id="h1IntelUpdated" class="muted compact">Aucune analyse Hacktivity chargée.</p>
     </div>
 
     <div id="h1QuickStart" class="h1-quick-start">
