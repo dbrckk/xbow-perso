@@ -235,6 +235,19 @@ The express flow can restore the reviewer, verified rate limit, policy reference
 
 For repeat work, the browser can also remember the last selected HackerOne program, reload it automatically after API authentication, and automatically rerun the read-only rules preview when the exact saved fingerprint is unchanged. Advanced first-review controls collapse automatically for a reused profile. Human confirmation and the final launch remain explicit actions.
 
+## HackerOne multi-bounty batches
+
+The HackerOne control center can load the researcher program catalog read-only, let the operator select up to 20 previously reviewed programs, and launch them as a durable server-side batch.
+
+Two modes are available:
+
+- **sequential** — one campaign is started at a time; when its queued/running worker jobs drain, the server starts the next reviewed campaign;
+- **parallel** — all selected campaigns are admitted and made runnable immediately, while actual concurrency remains bounded by the configured worker pool.
+
+Batch state is persisted in the same durable storage backend as campaigns. The general worker reconciles active batches independently of the browser, so closing the dashboard does not stop the run. Batch cancellation remains an authenticated mutation.
+
+Every selected program is revalidated against its exact HackerOne remote snapshot before admission. Programs without a matching locally reviewed fingerprint are rejected from the batch and require a first review. Batch scheduling never enables scanners, changes request-rate limits, expands scope, or enables HackerOne report submission.
+
 ## Vault migration
 
 Legacy server-side credentials can be moved into the encrypted vault with the redacted migration workflow documented in [VAULT_MIGRATION.md](VAULT_MIGRATION.md). The CLI also supports a private source env file for containerized/mobile cutovers, so legacy values do not need to be copied into the shell. The migration never prints secret values, verifies every encrypted write before legacy cleanup, and keeps vault enablement as a separate fail-closed cutover step.

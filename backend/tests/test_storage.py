@@ -562,3 +562,42 @@ def test_list_campaigns_can_be_bounded_in_storage(tmp_path):
     assert [item["id"] for item in recent] == ["c2", "c1"]
     with pytest.raises(ValueError, match="campaign list limit"):
         store.list_campaigns(limit=0)
+
+
+def test_hackerone_batch_roundtrip_and_versioning(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    batch = {
+        "id": "batch-1",
+        "provider": "hackerone",
+        "mode": "sequential",
+        "state": "queued",
+        "members": [
+            {
+                "index": 0,
+                "campaign_id": "campaign-1",
+                "handle": "program-one",
+                "status": "ready",
+            }
+        ],
+        "created_at": "2026-09-20T12:00:00+00:00",
+        "updated_at": "2026-09-20T12:00:00+00:00",
+    }
+
+    assert store.save_hackerone_batch(batch, expected_version=0) == 1
+    record = store.get_hackerone_batch_record("batch-1")
+    assert record is not None
+    document, version = record
+    assert version == 1
+    assert document["members"][0]["handle"] == "program-one"
+
+    stale = dict(document)
+    document["state"] = "running"
+    document["updated_at"] = "2026-09-20T12:01:00+00:00"
+    assert store.save_hackerone_batch(document, expected_version=version) == 2
+
+    stale["state"] = "completed"
+    stale["updated_at"] = "2026-09-20T12:02:00+00:00"
+    with pytest.raises(CampaignConflictError, match="batch version conflict"):
+        store.save_hackerone_batch(stale, expected_version=version)
+
+    assert [item["id"] for item in store.list_hackerone_batches(limit=10)] == ["batch-1"]

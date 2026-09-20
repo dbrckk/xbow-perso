@@ -148,6 +148,26 @@ class Storage:
             if "version" not in campaign_columns:
                 db.execute("ALTER TABLE campaigns ADD COLUMN version INTEGER NOT NULL DEFAULT 1")
             db.execute("CREATE INDEX IF NOT EXISTS campaigns_updated ON campaigns(updated_at DESC)")
+            db.execute("""CREATE TABLE IF NOT EXISTS hackerone_batches (
+                id TEXT PRIMARY KEY,
+                document TEXT NOT NULL,
+                state TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                version INTEGER NOT NULL DEFAULT 1
+            )""")
+            batch_columns = {
+                row["name"]
+                for row in db.execute("PRAGMA table_info(hackerone_batches)").fetchall()
+            }
+            if "version" not in batch_columns:
+                db.execute(
+                    "ALTER TABLE hackerone_batches ADD COLUMN version INTEGER NOT NULL DEFAULT 1"
+                )
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS hackerone_batches_updated "
+                "ON hackerone_batches(updated_at DESC)"
+            )
             db.execute("""CREATE TABLE IF NOT EXISTS artifacts (
                 id TEXT PRIMARY KEY,
                 campaign_id TEXT NOT NULL,
@@ -291,6 +311,116 @@ class Storage:
                     "SELECT document FROM campaigns ORDER BY created_at DESC LIMIT ?",
                     (limit,),
                 ).fetchall()
+        return [json.loads(row["document"]) for row in rows]
+
+    def save_hackerone_batch(
+        self,
+        document: dict[str, Any],
+        *,
+        expected_version: int | None = None,
+    ) -> int:
+        required = {"id", "state", "mode", "members", "created_at", "updated_at"}
+        if not required.issubset(document):
+            raise ValueError("HackerOne batch document missing required fields")
+        document = dict(document)
+        document["id"] = _bounded_identifier(
+            str(document["id"]), "hackerone_batch_id"
+        )
+        if str(document["mode"]) not in {"sequential", "parallel"}:
+            raise ValueError("unsupported HackerOne batch mode")
+        members = document.get("members")
+        if not isinstance(members, list) or not 1 <= len(members) <= 20:
+            raise ValueError("HackerOne batch must contain 1..20 members")
+        encoded = json.dumps(
+            document,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
+        if len(encoded.encode("utf-8")) > _max_campaign_document_bytes():
+            raise ValueError("HackerOne batch document exceeds size limit")
+
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            current = db.execute(
+                "SELECT version FROM hackerone_batches WHERE id=?",
+                (document["id"],),
+            ).fetchone()
+            if current is None:
+                if expected_version not in (None, 0):
+                    db.execute("ROLLBACK")
+                    raise CampaignConflictError("HackerOne batch version conflict")
+                db.execute(
+                    """INSERT INTO hackerone_batches(
+                           id,document,state,created_at,updated_at,version
+                       ) VALUES(?,?,?,?,?,1)""",
+                    (
+                        document["id"],
+                        encoded,
+                        str(document["state"]),
+                        str(document["created_at"]),
+                        str(document["updated_at"]),
+                    ),
+                )
+                db.execute("COMMIT")
+                return 1
+
+            current_version = int(current["version"])
+            if expected_version is not None and expected_version != current_version:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("HackerOne batch version conflict")
+            next_version = current_version + 1
+            cursor = db.execute(
+                """UPDATE hackerone_batches
+                   SET document=?, state=?, updated_at=?, version=?
+                   WHERE id=? AND version=?""",
+                (
+                    encoded,
+                    str(document["state"]),
+                    str(document["updated_at"]),
+                    next_version,
+                    document["id"],
+                    current_version,
+                ),
+            )
+            if getattr(cursor, "rowcount", 0) != 1:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("HackerOne batch version conflict")
+            db.execute("COMMIT")
+            return next_version
+
+    def get_hackerone_batch_record(
+        self,
+        batch_id: str,
+    ) -> tuple[dict[str, Any], int] | None:
+        batch_id = _bounded_identifier(batch_id, "hackerone_batch_id")
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT document,version FROM hackerone_batches WHERE id=?",
+                (batch_id,),
+            ).fetchone()
+        return (
+            (json.loads(row["document"]), int(row["version"]))
+            if row
+            else None
+        )
+
+    def get_hackerone_batch(self, batch_id: str) -> dict[str, Any] | None:
+        record = self.get_hackerone_batch_record(batch_id)
+        return record[0] if record else None
+
+    def list_hackerone_batches(
+        self,
+        *,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        if not 1 <= limit <= 500:
+            raise ValueError("HackerOne batch list limit must be between 1 and 500")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT document FROM hackerone_batches
+                   ORDER BY created_at DESC LIMIT ?""",
+                (limit,),
+            ).fetchall()
         return [json.loads(row["document"]) for row in rows]
 
     def put_observation(self, campaign_id: str, observation: dict[str, Any]) -> dict[str, Any]:

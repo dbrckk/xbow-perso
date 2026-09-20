@@ -11,6 +11,9 @@
   let attentionFilterMemory=null;
   let attentionFiltersRestored=false;
   let attentionCustomViewsMemory={version:1,views:[]};
+  let batchSelectedHandles=new Set();
+  let activeBatchId=null;
+  let batchTimer=null;
 
   const el=id=>document.getElementById(id);
   const splitLines=value=>value.split('\n').map(item=>item.trim()).filter(Boolean);
@@ -40,6 +43,7 @@
   const QUICK_PROFILE_LIMIT=30;
   const QUICK_LAST_PROGRAM_STORAGE_KEY='xbow:hackerone:last-program:v1';
   const QUICK_PREFS_STORAGE_KEY='xbow:hackerone:quick-prefs:v1';
+  const H1_ACTIVE_BATCH_STORAGE_KEY='xbow:hackerone:active-batch:v1';
 
 
 
@@ -1628,7 +1632,11 @@
     if(profile){
       el('h1Auth').value=String(profile.authorization_reference||'');
       el('h1PolicyVersion').value=String(profile.policy_version||'');
-      el('h1ReviewedAt').value=localDateTimeValue();
+      const storedReviewAt=String(profile.reviewed_at||profile.saved_at||'');
+      const storedReviewDate=storedReviewAt?new Date(storedReviewAt):new Date();
+      el('h1ReviewedAt').value=localDateTimeValue(
+        Number.isNaN(storedReviewDate.getTime())?new Date():storedReviewDate
+      );
       el('h1ReviewedBy').value=String(profile.reviewed_by||reviewer||'');
       el('h1Rps').value=String(profile.max_requests_per_second||'');
       el('h1SafeHarbor').checked=Boolean(profile.safe_harbor_confirmed);
@@ -1670,6 +1678,7 @@
     profiles[key]={
       authorization_reference:String(policy.authorization_reference||''),
       policy_version:String(policy.policy_version||''),
+      reviewed_at:String(policy.reviewed_at||new Date().toISOString()),
       reviewed_by:String(policy.reviewed_by||''),
       max_requests_per_second:Number(policy.max_requests_per_second)||0,
       safe_harbor_confirmed:Boolean(policy.safe_harbor_confirmed),
@@ -1686,6 +1695,291 @@
       try{localStorage.setItem(QUICK_REVIEWER_STORAGE_KEY,String(policy.reviewed_by));}catch(_error){}
     }
     setQuickState('profil mémorisé','ok');
+  }
+
+  function batchProgramHasSavedProfile(handle){
+    const prefix=String(handle||'')+'@';
+    return Object.keys(quickProfiles()).some(key=>key.startsWith(prefix));
+  }
+
+  function batchCatalogPrograms(){
+    const query=String(el('h1BatchSearch')?.value||'').trim().toLowerCase();
+    const bountyOnly=Boolean(el('h1BatchBountyOnly')?.checked);
+    return hackerOnePrograms.filter(program=>{
+      if(bountyOnly&&program?.offers_bounties!==true)return false;
+      const haystack=(String(program?.name||'')+' '+String(program?.handle||'')).toLowerCase();
+      return !query||haystack.includes(query);
+    });
+  }
+
+  function renderBatchCatalog(){
+    const catalog=el('h1BatchCatalog');
+    if(!catalog)return;
+    catalog.replaceChildren();
+    const programs=batchCatalogPrograms();
+    if(!programs.length){
+      catalog.textContent='Aucun programme ne correspond au filtre.';
+    }else{
+      for(const program of programs){
+        const row=document.createElement('label');
+        row.className='h1-batch-program';
+        const checkbox=document.createElement('input');
+        checkbox.type='checkbox';
+        checkbox.checked=batchSelectedHandles.has(String(program.handle||''));
+        checkbox.addEventListener('change',()=>{
+          const handle=String(program.handle||'');
+          if(checkbox.checked)batchSelectedHandles.add(handle);
+          else batchSelectedHandles.delete(handle);
+          renderBatchSelectionState();
+        });
+        const info=document.createElement('div');
+        const title=document.createElement('strong');
+        title.textContent=String(program.name||program.handle||'Programme');
+        const meta=document.createElement('div');
+        meta.className='muted compact';
+        const parts=[
+          String(program.handle||''),
+          program.offers_bounties===true?'bounty':'sans bounty',
+          program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
+          batchProgramHasSavedProfile(program.handle)?'profil local':'1re revue requise'
+        ];
+        meta.textContent=parts.join(' · ');
+        info.append(title,meta);
+        row.append(checkbox,info);
+        catalog.appendChild(row);
+      }
+    }
+    renderBatchSelectionState();
+  }
+
+  function renderBatchSelectionState(){
+    const count=batchSelectedHandles.size;
+    const state=el('h1BatchState');
+    if(state){
+      state.textContent=count+' sélectionné'+(count>1?'s':'');
+      state.className='pill '+(count?'ok':'');
+    }
+    if(el('h1BatchLaunch'))el('h1BatchLaunch').disabled=count===0;
+  }
+
+  async function refreshBatchCatalog(){
+    const button=el('h1BatchRefresh');
+    if(button)button.disabled=true;
+    try{
+      const result=await api('/imports/hackerone/programs');
+      hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
+      renderProgramOptions();
+      renderBatchCatalog();
+      el('h1BatchSummary').textContent=
+        hackerOnePrograms.length+' programme(s) chargé(s) depuis HackerOne.';
+    }catch(error){
+      el('h1BatchSummary').textContent='Catalogue indisponible : '+error.message;
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
+  function selectReadyBatchProfiles(){
+    batchSelectedHandles=new Set(
+      batchCatalogPrograms()
+        .filter(program=>batchProgramHasSavedProfile(program.handle))
+        .slice(0,20)
+        .map(program=>String(program.handle||''))
+    );
+    renderBatchCatalog();
+  }
+
+  async function batchPayloadForHandle(handle){
+    const snapshot=await api(
+      '/imports/hackerone/programs/'+encodeURIComponent(handle)+'/snapshot'
+    );
+    const key=String(snapshot.handle||handle)+'@'+String(snapshot.snapshot_sha256||'');
+    const profile=quickProfiles()[key];
+    if(!profile){
+      const error=new Error(String(handle)+': première revue requise ou fingerprint modifié');
+      error.code='review_required';
+      throw error;
+    }
+    const primaryUrl=String(profile.primary_url||'').trim();
+    if(!primaryUrl)throw new Error(String(handle)+': cible principale mémorisée absente');
+    const policy={
+      authorization_reference:String(profile.authorization_reference||''),
+      policy_version:String(profile.policy_version||''),
+      reviewed_at:String(profile.reviewed_at||profile.saved_at||''),
+      reviewed_by:String(profile.reviewed_by||''),
+      safe_harbor_confirmed:Boolean(profile.safe_harbor_confirmed),
+      automated_scanning:Boolean(profile.automated_scanning),
+      max_requests_per_second:Number(profile.max_requests_per_second),
+      test_account_required:Boolean(profile.test_account_required),
+      test_account_constraints:String(profile.test_account_constraints||''),
+      additional_restrictions:Array.isArray(profile.additional_restrictions)
+        ?profile.additional_restrictions:[],
+      program_notes:String(profile.program_notes||'')
+    };
+    if(!policy.reviewed_at){
+      throw new Error(String(handle)+': date de revue mémorisée absente');
+    }
+    const reviewedAt=new Date(policy.reviewed_at);
+    if(Number.isNaN(reviewedAt.getTime())){
+      throw new Error(String(handle)+': date de revue mémorisée invalide');
+    }
+    const blockers=conservativeBlockers(policy);
+    if(blockers.length){
+      throw new Error(String(handle)+': '+blockers.join(' · '));
+    }
+    return {
+      document:snapshot.document,
+      policy,
+      target:{
+        name:String(snapshot?.program?.name||snapshot.handle||handle).slice(0,120),
+        primary_url:primaryUrl
+      },
+      remote_handle:String(snapshot.handle||handle),
+      remote_snapshot_sha256:String(snapshot.snapshot_sha256||'')
+    };
+  }
+
+  function renderBatchProgress(batch){
+    const members=Array.isArray(batch?.members)?batch.members:[];
+    const progress=el('h1BatchProgress');
+    if(!progress)return;
+    progress.replaceChildren();
+    if(!members.length){
+      progress.textContent='—';
+      return;
+    }
+    for(const member of members){
+      const row=document.createElement('div');
+      row.className='scope-asset-row';
+      const info=document.createElement('div');
+      const title=document.createElement('strong');
+      title.textContent=String(member.handle||member.campaign_id||'Programme');
+      const detail=document.createElement('div');
+      detail.className='muted compact';
+      detail.textContent='campagne '+String(member.campaign_id||'—')+
+        (member.reason?' · '+String(member.reason):'');
+      info.append(title,detail);
+      const badge=document.createElement('span');
+      const status=String(member.status||'ready');
+      badge.className='pill '+(
+        ['done','running'].includes(status)?'ok':
+        ['blocked','cancelled'].includes(status)?'err':'warn'
+      );
+      badge.textContent=status;
+      row.append(info,badge);
+      progress.appendChild(row);
+    }
+  }
+
+  function renderBatchStatus(batch){
+    if(!batch)return;
+    activeBatchId=String(batch.id||activeBatchId||'');
+    const summary=batch.summary||{};
+    const total=Array.isArray(batch.members)?batch.members.length:0;
+    el('h1BatchSummary').textContent=
+      'Lot '+String(batch.mode||'—')+' · état '+String(batch.state||'—')+
+      ' · '+String(summary.done||0)+' terminé(s) · '+
+      String(summary.review||0)+' à revoir · '+
+      String(summary.blocked||0)+' bloqué(s) · total '+total+'.';
+    renderBatchProgress(batch);
+    const cancel=el('h1BatchCancel');
+    const terminal=['completed','cancelled'].includes(String(batch.state||''));
+    if(cancel){
+      cancel.classList.toggle('hidden',terminal||!activeBatchId);
+      cancel.disabled=terminal||!activeBatchId;
+    }
+    if(terminal&&batchTimer!==null){
+      clearInterval(batchTimer);
+      batchTimer=null;
+    }
+  }
+
+  async function refreshActiveBatch(){
+    if(!activeBatchId)return;
+    try{
+      const batch=await api(
+        '/imports/hackerone/batches/'+encodeURIComponent(activeBatchId)
+      );
+      renderBatchStatus(batch);
+    }catch(error){
+      el('h1BatchSummary').textContent='Suivi du lot indisponible : '+error.message;
+    }
+  }
+
+  function startBatchMonitor(batchId){
+    activeBatchId=String(batchId||'');
+    if(!activeBatchId)return;
+    try{localStorage.setItem(H1_ACTIVE_BATCH_STORAGE_KEY,activeBatchId);}catch(_error){}
+    if(batchTimer!==null)clearInterval(batchTimer);
+    void refreshActiveBatch();
+    batchTimer=setInterval(()=>void refreshActiveBatch(),10000);
+  }
+
+  async function restoreActiveBatch(){
+    if(activeBatchId)return;
+    try{activeBatchId=String(localStorage.getItem(H1_ACTIVE_BATCH_STORAGE_KEY)||'');}
+    catch(_error){activeBatchId='';}
+    if(activeBatchId)startBatchMonitor(activeBatchId);
+  }
+
+  async function launchSelectedBatch(){
+    const button=el('h1BatchLaunch');
+    const handles=[...batchSelectedHandles].slice(0,20);
+    if(!handles.length)return;
+    button.disabled=true;
+    try{
+      const campaigns=[];
+      const missing=[];
+      el('h1BatchSummary').textContent='Vérification des fingerprints sélectionnés…';
+      for(const handle of handles){
+        try{
+          campaigns.push(await batchPayloadForHandle(handle));
+        }catch(error){
+          missing.push(error.message);
+        }
+      }
+      if(missing.length){
+        throw new Error(
+          'Lot non lancé. Revue requise pour : '+missing.join(' | ')
+        );
+      }
+      const batch=await api('/imports/hackerone/batches/launch',{
+        method:'POST',
+        body:JSON.stringify({
+          mode:String(el('h1BatchMode').value||'sequential'),
+          campaigns
+        })
+      });
+      renderBatchStatus(batch);
+      startBatchMonitor(batch.id);
+      setLauncherStatus(
+        'Lot HackerOne enregistré côté serveur. Il continue même si le dashboard est fermé.',
+        'ok'
+      );
+    }catch(error){
+      el('h1BatchSummary').textContent=error.message;
+      setLauncherStatus(error.message,'err');
+    }finally{
+      button.disabled=batchSelectedHandles.size===0;
+    }
+  }
+
+  async function cancelActiveBatch(){
+    if(!activeBatchId)return;
+    const button=el('h1BatchCancel');
+    if(button)button.disabled=true;
+    try{
+      const batch=await api(
+        '/imports/hackerone/batches/'+encodeURIComponent(activeBatchId)+'/cancel',
+        {method:'POST',body:'{}'}
+      );
+      renderBatchStatus(batch);
+      setLauncherStatus('Lot HackerOne annulé.','ok');
+    }catch(error){
+      el('h1BatchSummary').textContent='Annulation impossible : '+error.message;
+    }finally{
+      if(button&&!button.classList.contains('hidden'))button.disabled=false;
+    }
   }
 
   function clearRemoteBinding(){
@@ -1945,6 +2239,8 @@
       hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
       const prefs=applyQuickPrefs();
       renderProgramOptions();
+      renderBatchCatalog();
+      void restoreActiveBatch();
       const lastHandle=lastProgramHandle();
       if(
         prefs.auto_resume
@@ -2238,6 +2534,12 @@
       if(latestAttentionPayload)renderHackerOneAttention(latestAttentionPayload);
     });
   }
+  el('h1BatchSearch').addEventListener('input',renderBatchCatalog);
+  el('h1BatchBountyOnly').addEventListener('change',renderBatchCatalog);
+  el('h1BatchRefresh').addEventListener('click',()=>void refreshBatchCatalog());
+  el('h1BatchSelectReady').addEventListener('click',selectReadyBatchProfiles);
+  el('h1BatchLaunch').addEventListener('click',()=>void launchSelectedBatch());
+  el('h1BatchCancel').addEventListener('click',()=>void cancelActiveBatch());
   el('h1QuickAutoResume').addEventListener('change',saveQuickPrefs);
   el('h1QuickAutoPreview').addEventListener('change',saveQuickPrefs);
   applyQuickPrefs();
