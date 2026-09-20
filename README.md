@@ -221,6 +221,12 @@ Confidence combines three bounded signals: source diversity, repetition across c
 
 This is descriptive only: confidence never changes scope, authorization, task creation, request budgets, or execution admission.
 
+## Confidence-aware recon ordering
+
+The recon prioritizer can now use surface confidence as a **damping signal**. High-confidence observations preserve the full bounded diff/history/temporal ordering boost, while low-confidence observations reduce that boost instead of amplifying uncertain data.
+
+The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.

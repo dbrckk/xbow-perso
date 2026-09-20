@@ -356,3 +356,94 @@ def test_temporal_scoring_never_breaks_total_boost_cap():
 
     assert result.adjustments[0].boost == 20
     assert result.tasks[0].priority == 80
+
+
+def test_low_confidence_dampens_recon_boost_without_changing_authority():
+    original = [task("map_endpoints", 70)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 4,
+            "counts_by_kind": {
+                "endpoint": {"added": 3, "removed": 0},
+                "asset": {"added": 1, "removed": 0},
+            },
+        },
+    }
+    confidence = {
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/new",
+                "confidence": 0.2,
+            },
+            {
+                "kind": "asset",
+                "value": "app.example.com",
+                "confidence": 0.3,
+            },
+        ]
+    }
+
+    result = prioritize_recon_tasks(original, diff, None, None, confidence)
+
+    adjustment = result.adjustments[0]
+    assert 0.5 <= adjustment.confidence_factor < 1.0
+    assert adjustment.boost < adjustment.diff_boost
+    assert result.tasks[0].target == original[0].target
+    assert result.tasks[0].max_requests == original[0].max_requests
+    assert result.tasks[0].allowed_methods == original[0].allowed_methods
+
+
+def test_high_confidence_preserves_full_bounded_boost():
+    original = [task("map_endpoints", 70)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 4,
+            "counts_by_kind": {
+                "endpoint": {"added": 3, "removed": 0},
+                "asset": {"added": 1, "removed": 0},
+            },
+        },
+    }
+    confidence = {
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/new",
+                "confidence": 1.0,
+            },
+            {
+                "kind": "asset",
+                "value": "app.example.com",
+                "confidence": 1.0,
+            },
+        ]
+    }
+
+    result = prioritize_recon_tasks(original, diff, None, None, confidence)
+
+    adjustment = result.adjustments[0]
+    assert adjustment.confidence_factor == 1.0
+    assert adjustment.boost == adjustment.diff_boost
+
+
+def test_missing_confidence_is_neutral_and_never_increases_cap():
+    original = [task("browser_observe", 60)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 100,
+            "counts_by_kind": {
+                "endpoint": {"added": 100, "removed": 0},
+                "form": {"added": 100, "removed": 0},
+                "technology": {"added": 100, "removed": 0},
+            },
+        },
+    }
+
+    result = prioritize_recon_tasks(original, diff, None, None, None)
+
+    assert result.adjustments[0].confidence_factor == 1.0
+    assert result.adjustments[0].boost <= 20
