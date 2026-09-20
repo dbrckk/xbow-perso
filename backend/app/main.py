@@ -369,6 +369,7 @@ def system_capabilities():
             "hackerone_batch_queue": "durable_server_side",
             "hackerone_review_profiles": "server_side_fingerprint_bound",
             "hackerone_reviewed_batch_launch": "handles_only_fail_closed",
+            "hackerone_disclosed_learning": "public_hacktivity_advisory",
         },
         "execution": {
             "strix_scanning": "gated",
