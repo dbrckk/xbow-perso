@@ -2,6 +2,7 @@
   let approvedPreview=null;
   let remoteBinding=null;
   let hackerOnePrograms=[];
+  let hackerOneCatalogMeta={};
   let runMonitorTimer=null;
   let runMonitorCampaignId=null;
   let runMonitorBusy=false;
@@ -1733,8 +1734,24 @@
           renderBatchSelectionState();
         });
         const info=document.createElement('div');
+        const titleRow=document.createElement('div');
+        titleRow.className='h1-batch-title-row';
         const title=document.createElement('strong');
         title.textContent=String(program.name||program.handle||'Programme');
+        titleRow.appendChild(title);
+        const changes=hackerOneCatalogMeta?.changes||{};
+        const handle=String(program.handle||'');
+        if(Array.isArray(changes.added)&&changes.added.includes(handle)){
+          const badge=document.createElement('span');
+          badge.className='pill ok h1-catalog-change';
+          badge.textContent='nouveau';
+          titleRow.appendChild(badge);
+        }else if(Array.isArray(changes.changed)&&changes.changed.includes(handle)){
+          const badge=document.createElement('span');
+          badge.className='pill warn h1-catalog-change';
+          badge.textContent='modifié';
+          titleRow.appendChild(badge);
+        }
         const meta=document.createElement('div');
         meta.className='muted compact';
         const parts=[
@@ -1744,7 +1761,7 @@
           batchProgramHasSavedProfile(program.handle)?'profil local':'1re revue requise'
         ];
         meta.textContent=parts.join(' · ');
-        info.append(title,meta);
+        info.append(titleRow,meta);
         row.append(checkbox,info);
         catalog.appendChild(row);
       }
@@ -1766,12 +1783,20 @@
     const button=el('h1BatchRefresh');
     if(button)button.disabled=true;
     try{
-      const result=await api('/imports/hackerone/programs');
+      const result=await api('/imports/hackerone/programs?refresh=true');
       hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
+      hackerOneCatalogMeta=result?.catalog||{};
       renderProgramOptions();
       renderBatchCatalog();
+      const changes=hackerOneCatalogMeta?.changes||{};
+      const changedCount=
+        (Array.isArray(changes.added)?changes.added.length:0)+
+        (Array.isArray(changes.changed)?changes.changed.length:0)+
+        (Array.isArray(changes.removed)?changes.removed.length:0);
       el('h1BatchSummary').textContent=
-        hackerOnePrograms.length+' programme(s) chargé(s) depuis HackerOne.';
+        hackerOnePrograms.length+' programme(s) · catalogue vérifié'+
+        (hackerOneCatalogMeta.checked_at?' '+new Date(hackerOneCatalogMeta.checked_at).toLocaleString():'')+
+        (changedCount?' · '+changedCount+' changement(s) détecté(s)':' · aucun changement récent');
     }catch(error){
       el('h1BatchSummary').textContent='Catalogue indisponible : '+error.message;
     }finally{
@@ -2237,6 +2262,7 @@
       el('h1ProgramSelect').disabled=false;
       const result=await api('/imports/hackerone/programs');
       hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
+      hackerOneCatalogMeta=result?.catalog||{};
       const prefs=applyQuickPrefs();
       renderProgramOptions();
       renderBatchCatalog();

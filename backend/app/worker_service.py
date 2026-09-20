@@ -10,6 +10,7 @@ from .browser import BrowserPolicyError, execute_browser_flow, persist_browser_r
 from .campaign_audit import append_campaign_event
 from .evidence_quality import build_evidence_quality
 from .hackerone_batch import reconcile_hackerone_batches
+from .hackerone_catalog import maybe_refresh_hackerone_catalog
 from .job_provenance import (
     JobProvenanceError,
     provenance_required_for_job_kind,
@@ -571,12 +572,20 @@ def main() -> None:
     store = create_storage()
     worker_id = os.getenv("XBOW_WORKER_ID", f"{socket.gethostname()}:{os.getpid()}")
     poll = _worker_poll_seconds()
+    worker_role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
+    coordinator = worker_role in {"", "general"}
     while True:
-        try:
-            reconcile_hackerone_batches(queue, store, limit=20)
-        except Exception:
-            # Batch scheduling must fail closed without taking down the worker.
-            pass
+        if coordinator:
+            try:
+                maybe_refresh_hackerone_catalog(store)
+            except Exception:
+                # Read-only catalog monitoring must never take down execution workers.
+                pass
+            try:
+                reconcile_hackerone_batches(queue, store, limit=20)
+            except Exception:
+                # Batch scheduling must fail closed without taking down the worker.
+                pass
         worked = process_one(queue, store, worker_id)
         if not worked:
             time.sleep(poll)

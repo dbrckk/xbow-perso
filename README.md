@@ -257,6 +257,23 @@ sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh
 
 Direct HackerOne report submission remains disabled by this profile.
 
+## HackerOne background catalog monitor
+
+The general worker refreshes the read-only HackerOne researcher-program catalog every 15 minutes by default, even when no dashboard is open. The latest normalized catalog is persisted in SQLite/PostgreSQL and excludes policy text, credentials, tokens and scope details.
+
+The monitor records a catalog fingerprint plus added, removed and metadata-changed program handles. The dashboard consumes the cached catalog on open, highlights newly detected or changed programs, and exposes a manual refresh that performs a fresh upstream read.
+
+This monitor does not authorize testing, fetch executable scope automatically, or start campaigns. Exact program scope/policy snapshots are still fetched and revalidated at launch.
+
+Configuration:
+
+```bash
+XBOW_ENABLE_HACKERONE_CATALOG_MONITOR=true
+XBOW_HACKERONE_CATALOG_POLL_SECONDS=900
+```
+
+The minimum poll interval is 300 seconds.
+
 ## HackerOne multi-bounty batches
 
 The HackerOne control center can load the researcher program catalog read-only, let the operator select up to 20 previously reviewed programs, and launch them as a durable server-side batch.

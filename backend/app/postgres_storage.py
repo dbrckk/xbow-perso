@@ -107,6 +107,18 @@ class PostgresStorage(Storage):
                 "ON hackerone_batches(updated_at DESC)"
             )
             db.execute(
+                """CREATE TABLE IF NOT EXISTS hackerone_catalog_state (
+                    id TEXT PRIMARY KEY,
+                    document TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    version INTEGER NOT NULL DEFAULT 1
+                )"""
+            )
+            db.execute(
+                "ALTER TABLE hackerone_catalog_state "
+                "ADD COLUMN IF NOT EXISTS version INTEGER NOT NULL DEFAULT 1"
+            )
+            db.execute(
                 """CREATE TABLE IF NOT EXISTS artifacts (
                     id TEXT PRIMARY KEY,
                     campaign_id TEXT NOT NULL REFERENCES campaigns(id),

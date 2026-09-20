@@ -20,6 +20,7 @@ def test_control_center_routes_exist():
     schema = api.openapi()
     assert "/api/imports/hackerone/connection" in schema["paths"]
     assert "/api/imports/hackerone/programs" in schema["paths"]
+    assert "/api/imports/hackerone/catalog" in schema["paths"]
     assert "/api/imports/hackerone/programs/{handle}/snapshot" in schema["paths"]
 
 
@@ -52,7 +53,7 @@ def test_connection_reports_unconfigured_safely(monkeypatch):
     assert response.json() == {"provider": "hackerone", "configured": False}
 
 
-def test_programs_returns_normalized_safe_metadata(monkeypatch):
+def test_programs_returns_normalized_safe_metadata(tmp_path, monkeypatch):
     class FakeClient:
         def get_all_pages(self, path):
             assert path == "hackers/programs"
@@ -73,22 +74,30 @@ def test_programs_returns_normalized_safe_metadata(monkeypatch):
             ]
 
     monkeypatch.setattr(hackerone_api, "HackerOneClient", FakeClient, raising=False)
+    monkeypatch.setenv("XBOW_DB_PATH", str(tmp_path / "catalog.sqlite3"))
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", str(tmp_path / "artifacts"))
 
-    response = _client().get("/api/imports/hackerone/programs")
+    response = _client().get("/api/imports/hackerone/programs?refresh=true")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "provider": "hackerone",
-        "programs": [
-            {
-                "handle": "acme",
-                "name": "Acme Security",
-                "submission_state": "open",
-                "state": "public_mode",
-                "offers_bounties": True,
-                "gold_standard_safe_harbor": True,
-            }
-        ],
+    body = response.json()
+    assert body["provider"] == "hackerone"
+    assert body["programs"] == [
+        {
+            "handle": "acme",
+            "name": "Acme Security",
+            "submission_state": "open",
+            "state": "public_mode",
+            "offers_bounties": True,
+            "gold_standard_safe_harbor": True,
+        }
+    ]
+    assert body["catalog"]["background_monitor"] is True
+    assert body["catalog"]["change_sequence"] == 0
+    assert body["catalog"]["changes"] == {
+        "added": [],
+        "removed": [],
+        "changed": [],
     }
     assert "must not be returned" not in response.text
 
@@ -120,28 +129,32 @@ def test_snapshot_route_returns_remote_binding_data(monkeypatch):
     assert body["scope_exclusions"][0]["id"] == "ex-1"
 
 
-def test_upstream_auth_error_is_mapped_without_leaking_detail(monkeypatch):
+def test_upstream_auth_error_is_mapped_without_leaking_detail(tmp_path, monkeypatch):
     class FailingClient:
         def get_all_pages(self, path):
             raise HackerOneClientError("HackerOne returned HTTP 401 secret detail", status_code=401)
 
     monkeypatch.setattr(hackerone_api, "HackerOneClient", FailingClient, raising=False)
+    monkeypatch.setenv("XBOW_DB_PATH", str(tmp_path / "auth.sqlite3"))
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", str(tmp_path / "auth-artifacts"))
 
-    response = _client().get("/api/imports/hackerone/programs")
+    response = _client().get("/api/imports/hackerone/programs?refresh=true")
 
     assert response.status_code == 502
     assert response.json()["detail"] == "HackerOne upstream authentication failed"
     assert "secret detail" not in response.text
 
 
-def test_upstream_rate_limit_is_service_unavailable(monkeypatch):
+def test_upstream_rate_limit_is_service_unavailable(tmp_path, monkeypatch):
     class FailingClient:
         def get_all_pages(self, path):
             raise HackerOneClientError("HackerOne returned HTTP 429", status_code=429)
 
     monkeypatch.setattr(hackerone_api, "HackerOneClient", FailingClient, raising=False)
+    monkeypatch.setenv("XBOW_DB_PATH", str(tmp_path / "rate.sqlite3"))
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", str(tmp_path / "rate-artifacts"))
 
-    response = _client().get("/api/imports/hackerone/programs")
+    response = _client().get("/api/imports/hackerone/programs?refresh=true")
 
     assert response.status_code == 503
     assert response.json()["detail"] == "HackerOne upstream temporarily unavailable"
