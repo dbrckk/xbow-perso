@@ -273,6 +273,16 @@ def _amount(value: Any) -> float:
     return min(number, 100_000_000.0)
 
 
+def _bounded_int(value: Any, *, minimum: int = 0, maximum: int = 10_000_000) -> int:
+    if isinstance(value, bool):
+        return minimum
+    try:
+        number = int(value or 0)
+    except (TypeError, ValueError, OverflowError):
+        return minimum
+    return max(minimum, min(number, maximum))
+
+
 def _relationship_attributes(resource: dict[str, Any], name: str) -> dict[str, Any]:
     relationships = resource.get("relationships")
     if not isinstance(relationships, dict):
@@ -316,9 +326,7 @@ def normalize_hacktivity_item(resource: Any) -> dict[str, Any] | None:
         "submitted_at": _bounded_text(attributes.get("submitted_at"), 64),
         "cwe": _bounded_text(attributes.get("cwe"), 160),
         "severity": severity,
-        "votes": max(0, min(int(attributes.get("votes") or 0), 10_000_000))
-        if not isinstance(attributes.get("votes"), bool)
-        else 0,
+        "votes": _bounded_int(attributes.get("votes")),
         "award_amount": _amount(attributes.get("total_awarded_amount")),
         "currency": currency,
         "program_handle": _bounded_text(program.get("handle"), 128),
