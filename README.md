@@ -227,6 +227,10 @@ The recon prioritizer can now use surface confidence as a **damping signal**. Hi
 
 The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
 
+## Vault migration
+
+Legacy server-side credentials can be moved into the encrypted vault with the redacted migration workflow documented in [VAULT_MIGRATION.md](VAULT_MIGRATION.md). The migration never prints secret values, verifies every encrypted write before legacy cleanup, and keeps vault enablement as a separate fail-closed cutover step.
+
 ## Production migration
 
 Existing single-node SQLite installations can be migrated to PostgreSQL + Redis with the controlled migration CLI documented in [PRODUCTION_MIGRATION.md](PRODUCTION_MIGRATION.md).
