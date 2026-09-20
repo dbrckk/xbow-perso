@@ -4920,9 +4920,11 @@ memories = build_learning_memory(graph)
 worker_outcomes = summarize_worker_outcomes(campaign.events)
 cycle = build_adaptive_cycle(gate, planned_actions, memories, worker_outcomes)
 recon_plan = build_recon_plan(
-target_memory = build_target_memory(store, campaign.model_dump(mode="json"))
+campaign_doc = campaign.model_dump(mode="json")
+target_memory = build_target_memory(store, campaign_doc)
 surface_diff = build_surface_diff_intelligence(target_memory)
-recon_priority = prioritize_recon_tasks(recon_plan, surface_diff, target_memory)
+surface_temporal = build_temporal_surface_profile(store, campaign_doc)
+recon_priority = prioritize_recon_tasks(
 swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
@@ -6074,8 +6076,10 @@ effective_priority: int
 boost: int
 diff_boost: int
 history_boost: int
+temporal_boost: int
 signals: tuple[str, ...]
 historical_signals: tuple[str, ...]
+temporal_signals: tuple[str, ...]
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -6117,6 +6121,24 @@ campaign_count = 1
 # signal. Reappearing nodes still contribute, but progressively less.
 novelty = 1.0 / float(campaign_count)
 ⋮----
+_TEMPORAL_CLASS_WEIGHT = {
+⋮----
+def _temporal_kind_scores(surface_temporal: dict[str, Any] | None) -> dict[str, float]
+⋮----
+classification = str(raw.get("classification") or "unknown")
+weight = _TEMPORAL_CLASS_WEIGHT.get(classification, 0.0)
+⋮----
+ratio = float(raw.get("presence_ratio") or 0.0)
+⋮----
+ratio = 0.0
+ratio = max(0.0, min(1.0, ratio))
+⋮----
+adjusted = weight
+⋮----
+# Returning/intermittent surface is expected churn; reduce its
+# contribution further as its historical presence rises.
+adjusted = weight * max(0.1, 1.0 - ratio)
+⋮----
 """Reorder an already-authorized recon plan using historical change signals.
 
     This function may only alter priority/reason. It never creates a task,
@@ -6124,6 +6146,7 @@ novelty = 1.0 / float(campaign_count)
     """
 counts = _signal_counts(surface_diff)
 historical_scores = _historical_kind_scores(target_memory)
+temporal_scores = _temporal_kind_scores(surface_temporal)
 baseline_available = bool(surface_diff.get("baseline_available"))
 changed_surface_count = max(
 ⋮----
@@ -6135,11 +6158,14 @@ signal_strength = sum(counts.get(kind, 0) for kind in signals)
 diff_boost = min(15, signal_strength * 2) if baseline_available else 0
 history_strength = sum(historical_scores.get(kind, 0.0) for kind in signals)
 history_boost = min(5, int(round(history_strength))) if baseline_available else 0
-boost = min(20, diff_boost + history_boost)
+temporal_strength = sum(temporal_scores.get(kind, 0.0) for kind in signals)
+temporal_boost = min(5, int(round(temporal_strength))) if baseline_available else 0
+boost = min(20, diff_boost + history_boost + temporal_boost)
 effective = min(100, int(task.priority) + boost)
 reason = task.reason
 active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
 historical_active = tuple(
+temporal_active = tuple(
 ⋮----
 details = []
 ⋮----
@@ -6230,9 +6256,11 @@ def scope_checker(host: str) -> bool
 tasks = build_recon_plan(
 ⋮----
 store = storage()
-memory = build_target_memory(store, campaign.model_dump(mode="json"))
+campaign_doc = campaign.model_dump(mode="json")
+memory = build_target_memory(store, campaign_doc)
 surface_diff = build_surface_diff_intelligence(memory)
-priority = prioritize_recon_tasks(tasks, surface_diff, memory)
+surface_temporal = build_temporal_surface_profile(store, campaign_doc)
+priority = prioritize_recon_tasks(tasks, surface_diff, memory, surface_temporal)
 ```
 
 ## File: app/recon_worker.py
@@ -13517,6 +13545,24 @@ recurring_result = prioritize_recon_tasks(original, diff, recurring)
 def test_total_priority_boost_is_bounded_to_twenty_points()
 ⋮----
 original = [task("browser_observe", 60)]
+⋮----
+def test_temporal_novelty_favors_never_seen_surface_over_returning_churn()
+⋮----
+new_temporal = {
+returning_temporal = {
+⋮----
+new_result = prioritize_recon_tasks(original, diff, memory, new_temporal)
+returning_result = prioritize_recon_tasks(original, diff, memory, returning_temporal)
+⋮----
+def test_intermittent_surface_has_low_temporal_weight()
+⋮----
+temporal = {
+⋮----
+result = prioritize_recon_tasks(original, diff, None, temporal)
+⋮----
+def test_temporal_scoring_never_breaks_total_boost_cap()
+⋮----
+result = prioritize_recon_tasks(original, diff, memory, temporal)
 ```
 
 ## File: tests/test_recon_swarm.py

@@ -1,22 +1,19 @@
 # Change impact
 
-Base: 726b1a9e39d31cd29ea032dd198a89a1f96db2f2
-Head: 15bdc43f00ac0544dd303f51a1b1c23680ee085b
+Base: 67e555849732cd3fa17c68ec4d83b268a3c1cfbe
+Head: ff081fc8792388a70ca013a2fd39a1b2a39a6edc
 
 ## Changed files
 - M README.md
 - M backend/app/main.py
-- A backend/app/surface_temporal.py
-- A backend/tests/test_surface_temporal.py
-- M frontend/app.css
-- M frontend/app.js
-- M frontend/index.html
-- M frontend/sw.js
+- M backend/app/orchestrator.py
+- M backend/app/recon_priority.py
+- M backend/app/recon_swarm.py
+- M backend/tests/test_recon_priority.py
 
 ## Affected areas
 - (root)
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

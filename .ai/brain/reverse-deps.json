@@ -1501,6 +1501,7 @@
         "backend/app/scanner_adaptation.py",
         "backend/app/storage.py",
         "backend/app/surface_diff.py",
+        "backend/app/surface_temporal.py",
         "backend/app/swarm_coordinator.py",
         "backend/app/target_memory.py",
         "backend/app/validation_state.py"
@@ -1515,7 +1516,7 @@
         "backend/tests/test_runtime_budget_config.py"
       ],
       "in_degree": 7,
-      "out_degree": 31
+      "out_degree": 32
     },
     "backend/app/outbox_recovery.py": {
       "dependencies": [
@@ -1879,6 +1880,7 @@
         "backend/app/observation_graph.py",
         "backend/app/recon_priority.py",
         "backend/app/surface_diff.py",
+        "backend/app/surface_temporal.py",
         "backend/app/target_memory.py"
       ],
       "dependents": [
@@ -1891,7 +1893,7 @@
         "backend/tests/test_swarm_coordinator.py"
       ],
       "in_degree": 7,
-      "out_degree": 7
+      "out_degree": 8
     },
     "backend/app/recon_worker.py": {
       "dependencies": [
@@ -2362,9 +2364,11 @@
       ],
       "dependents": [
         "backend/app/main.py",
+        "backend/app/orchestrator.py",
+        "backend/app/recon_swarm.py",
         "backend/tests/test_surface_temporal.py"
       ],
-      "in_degree": 2,
+      "in_degree": 4,
       "out_degree": 1
     },
     "backend/app/swarm_coordinator.py": {

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "b5653874336d989c4d61f3d72b485eb16659571d",
-  "head": "15bdc43f00ac0544dd303f51a1b1c23680ee085b",
+  "base": "15bdc43f00ac0544dd303f51a1b1c23680ee085b",
+  "head": "ff081fc8792388a70ca013a2fd39a1b2a39a6edc",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -14,36 +14,28 @@
       "status": "M"
     },
     {
-      "path": "backend/app/surface_temporal.py",
-      "status": "A"
-    },
-    {
-      "path": "backend/tests/test_surface_temporal.py",
-      "status": "A"
-    },
-    {
-      "path": "frontend/app.css",
+      "path": "backend/app/orchestrator.py",
       "status": "M"
     },
     {
-      "path": "frontend/app.js",
+      "path": "backend/app/recon_priority.py",
       "status": "M"
     },
     {
-      "path": "frontend/index.html",
+      "path": "backend/app/recon_swarm.py",
       "status": "M"
     },
     {
-      "path": "frontend/sw.js",
+      "path": "backend/tests/test_recon_priority.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "backend/app/main.py",
-    "backend/app/surface_temporal.py",
-    "backend/tests/test_surface_temporal.py",
-    "frontend/app.js",
-    "frontend/sw.js"
+    "backend/app/orchestrator.py",
+    "backend/app/recon_priority.py",
+    "backend/app/recon_swarm.py",
+    "backend/tests/test_recon_priority.py"
   ],
   "impacted_files": [
     "backend/app/adaptive_cycle.py",
@@ -84,6 +76,7 @@
     "backend/app/pentagi_dispatch.py",
     "backend/app/pentagi_execution_guard.py",
     "backend/app/pentagi_worker_service.py",
+    "backend/app/recon_priority.py",
     "backend/app/recon_swarm.py",
     "backend/app/recon_worker.py",
     "backend/app/red_team_coverage.py",
@@ -98,44 +91,27 @@
     "backend/app/scanner_worker.py",
     "backend/app/strix_parser.py",
     "backend/app/submission_api.py",
-    "backend/app/surface_temporal.py",
+    "backend/app/swarm_coordinator.py",
     "backend/app/validator.py",
     "backend/app/worker.py",
     "backend/app/worker_service.py",
     "backend/tests/test_adaptive_cycle.py",
-    "backend/tests/test_agent_registry.py",
-    "backend/tests/test_alert_delivery.py",
     "backend/tests/test_api_idempotency.py",
     "backend/tests/test_api_outbox.py",
-    "backend/tests/test_api_rate_limit.py",
     "backend/tests/test_attack_surface.py",
     "backend/tests/test_attack_surface_scope.py",
     "backend/tests/test_auth.py",
     "backend/tests/test_autonomy_gate.py",
     "backend/tests/test_browser.py",
-    "backend/tests/test_campaign_audit.py",
     "backend/tests/test_campaign_cancel.py",
     "backend/tests/test_campaign_circuit_breaker.py",
     "backend/tests/test_campaign_overview.py",
     "backend/tests/test_campaign_review_state.py",
     "backend/tests/test_campaign_risk.py",
-    "backend/tests/test_campaign_runtime.py",
-    "backend/tests/test_chain_detector.py",
     "backend/tests/test_control_views.py",
     "backend/tests/test_coverage.py",
-    "backend/tests/test_decision_audit.py",
-    "backend/tests/test_decision_consensus.py",
     "backend/tests/test_decision_timeline.py",
-    "backend/tests/test_deployment_preflight.py",
     "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_differential_intelligence.py",
-    "backend/tests/test_distributed_concurrency.py",
-    "backend/tests/test_domain_incident_lifecycle.py",
-    "backend/tests/test_domain_lifecycle_integration.py",
-    "backend/tests/test_dr_cli.py",
-    "backend/tests/test_dr_manifest.py",
-    "backend/tests/test_error_budget.py",
-    "backend/tests/test_evidence_backed_planner.py",
     "backend/tests/test_evidence_chain.py",
     "backend/tests/test_evidence_quality.py",
     "backend/tests/test_finding_cluster_consensus.py",
@@ -147,60 +123,26 @@
     "backend/tests/test_finding_readiness.py",
     "backend/tests/test_finding_review_metadata.py",
     "backend/tests/test_finding_triage.py",
-    "backend/tests/test_form_waf_reasoning.py",
     "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_hackerone_activity_summary.py",
     "backend/tests/test_hackerone_attention.py",
-    "backend/tests/test_hackerone_binding.py",
-    "backend/tests/test_hackerone_client.py",
-    "backend/tests/test_hackerone_control_center_api.py",
-    "backend/tests/test_hackerone_launch_api.py",
-    "backend/tests/test_hackerone_live_readiness.py",
     "backend/tests/test_hackerone_needs_info.py",
-    "backend/tests/test_hackerone_nuclei_e2e.py",
     "backend/tests/test_hackerone_outbound_submission.py",
-    "backend/tests/test_hackerone_remote_binding.py",
-    "backend/tests/test_hackerone_remote_snapshot.py",
     "backend/tests/test_hackerone_report_lifecycle_e2e.py",
     "backend/tests/test_hackerone_report_sync_worker.py",
     "backend/tests/test_hackerone_report_tracking.py",
-    "backend/tests/test_hackerone_scope_import.py",
     "backend/tests/test_hackerone_scope_preview_api.py",
     "backend/tests/test_health.py",
     "backend/tests/test_hypothesis_engine.py",
-    "backend/tests/test_hypothesis_memory.py",
-    "backend/tests/test_incident_api.py",
-    "backend/tests/test_incident_domains.py",
-    "backend/tests/test_incident_engine.py",
-    "backend/tests/test_incident_http_api.py",
-    "backend/tests/test_incident_lifecycle.py",
-    "backend/tests/test_incident_observer.py",
-    "backend/tests/test_incident_store.py",
-    "backend/tests/test_incident_store_fencing.py",
     "backend/tests/test_job_provenance.py",
     "backend/tests/test_job_provenance_api_integration.py",
     "backend/tests/test_job_provenance_integration.py",
-    "backend/tests/test_jobqueue.py",
-    "backend/tests/test_knowledge_memory.py",
     "backend/tests/test_learning_memory.py",
     "backend/tests/test_metrics.py",
-    "backend/tests/test_nuclei_preflight.py",
     "backend/tests/test_nuclei_queue_lifecycle.py",
     "backend/tests/test_nuclei_worker_plan.py",
-    "backend/tests/test_observation_graph.py",
     "backend/tests/test_observation_writer_provenance.py",
-    "backend/tests/test_observer_deadline_heartbeat.py",
-    "backend/tests/test_observer_fencing.py",
-    "backend/tests/test_observer_fencing_integration.py",
-    "backend/tests/test_observer_health_http.py",
-    "backend/tests/test_observer_health_metrics.py",
-    "backend/tests/test_observer_resilience.py",
-    "backend/tests/test_observer_runtime.py",
-    "backend/tests/test_observer_scheduler.py",
-    "backend/tests/test_observer_slo.py",
     "backend/tests/test_openapi_integrity.py",
     "backend/tests/test_operational_alerts.py",
-    "backend/tests/test_operational_slo.py",
     "backend/tests/test_orchestrator.py",
     "backend/tests/test_orchestrator_validation_alignment.py",
     "backend/tests/test_outbox_chaos.py",
@@ -208,79 +150,43 @@
     "backend/tests/test_pentagi_action_gateway.py",
     "backend/tests/test_pentagi_adapter.py",
     "backend/tests/test_pentagi_admission.py",
-    "backend/tests/test_pentagi_auth.py",
     "backend/tests/test_pentagi_control.py",
     "backend/tests/test_pentagi_control_api.py",
     "backend/tests/test_pentagi_dispatch.py",
     "backend/tests/test_pentagi_execution_guard.py",
-    "backend/tests/test_pentagi_flow_status.py",
-    "backend/tests/test_pentagi_status_poller.py",
-    "backend/tests/test_pentagi_status_tracker.py",
-    "backend/tests/test_pentagi_status_worker_service.py",
     "backend/tests/test_pentagi_transport.py",
     "backend/tests/test_pentagi_worker_service.py",
-    "backend/tests/test_pipeline_swarm.py",
     "backend/tests/test_plan_evidence_quality.py",
-    "backend/tests/test_planner_advisory.py",
-    "backend/tests/test_planner_budget.py",
-    "backend/tests/test_planner_limits.py",
     "backend/tests/test_policy_integrity.py",
     "backend/tests/test_policy_invariants.py",
-    "backend/tests/test_postgres_integration.py",
-    "backend/tests/test_postgres_storage.py",
-    "backend/tests/test_queue_age_metrics.py",
-    "backend/tests/test_queue_backend.py",
-    "backend/tests/test_queue_health.py",
-    "backend/tests/test_readiness.py",
     "backend/tests/test_recon_priority.py",
     "backend/tests/test_recon_swarm.py",
     "backend/tests/test_recon_worker.py",
     "backend/tests/test_red_team_coverage.py",
     "backend/tests/test_red_team_decision.py",
-    "backend/tests/test_redis_chaos.py",
-    "backend/tests/test_redis_integration.py",
-    "backend/tests/test_redis_jobqueue.py",
-    "backend/tests/test_redis_jobqueue_integration.py",
     "backend/tests/test_report.py",
     "backend/tests/test_report_approval.py",
     "backend/tests/test_report_approval_api.py",
     "backend/tests/test_report_readiness.py",
     "backend/tests/test_review_queue.py",
-    "backend/tests/test_rolling_telemetry.py",
     "backend/tests/test_runtime_budget_config.py",
-    "backend/tests/test_runtime_capabilities.py",
     "backend/tests/test_scan_payload_idempotency.py",
-    "backend/tests/test_scanner_adaptation.py",
     "backend/tests/test_scanner_ingestion.py",
     "backend/tests/test_scanner_normalization.py",
     "backend/tests/test_scanner_observation_chain.py",
-    "backend/tests/test_scanner_sandbox.py",
     "backend/tests/test_scanner_worker.py",
     "backend/tests/test_scope.py",
-    "backend/tests/test_secret_vault.py",
-    "backend/tests/test_storage.py",
-    "backend/tests/test_storage_backend.py",
     "backend/tests/test_submission_api.py",
     "backend/tests/test_submission_state.py",
-    "backend/tests/test_surface_diff.py",
-    "backend/tests/test_surface_temporal.py",
     "backend/tests/test_swarm_coordinator.py",
-    "backend/tests/test_target_memory.py",
     "backend/tests/test_totp_auth.py",
-    "backend/tests/test_validation_state.py",
     "backend/tests/test_validator.py",
-    "backend/tests/test_watchdog_observability.py",
     "backend/tests/test_worker_concurrency.py",
     "backend/tests/test_worker_job_provenance.py",
     "backend/tests/test_worker_observations.py",
     "backend/tests/test_worker_outcome_memory.py",
     "backend/tests/test_worker_parser.py",
-    "backend/tests/test_worker_roles.py",
-    "backend/tests/test_worker_secrets.py",
-    "backend/tests/test_worker_state.py",
-    "backend/tests/test_worker_watchdog.py",
-    "frontend/app.js",
-    "frontend/sw.js"
+    "backend/tests/test_worker_state.py"
   ],
   "impacted_symbols": [
     {
@@ -1547,331 +1453,331 @@
       "name": "get_observer_health",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 425
+      "line": 426
     },
     {
       "name": "get_incidents",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 430
+      "line": 431
     },
     {
       "name": "acknowledge_incident",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 435
+      "line": 436
     },
     {
       "name": "list_agents",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 450
+      "line": 451
     },
     {
       "name": "preview_hackerone_scope",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 456
+      "line": 457
     },
     {
       "name": "create_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 492
+      "line": 493
     },
     {
       "name": "list_campaigns",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 500
+      "line": 501
     },
     {
       "name": "get_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 505
+      "line": 506
     },
     {
       "name": "get_campaign_target_memory",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 510
+      "line": 511
     },
     {
       "name": "get_campaign_surface_diff",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 522
+      "line": 523
     },
     {
       "name": "get_campaign_surface_temporal",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 536
+      "line": 537
     },
     {
       "name": "campaign_outbox_status",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 548
+      "line": 549
     },
     {
       "name": "campaign_outbox_recovery",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 562
+      "line": 563
     },
     {
       "name": "_apply_local_outbox_repairs",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 583
+      "line": 584
     },
     {
       "name": "reconcile_campaign_outbox_local",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 622
+      "line": 623
     },
     {
       "name": "preview_pentagi_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 680
+      "line": 681
     },
     {
       "name": "_pentagi_dispatch_fingerprint",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 711
+      "line": 712
     },
     {
       "name": "_record_pentagi_dispatch_intent",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 715
+      "line": 716
     },
     {
       "name": "_reconcile_pentagi_queued_event",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 741
+      "line": 742
     },
     {
       "name": "dispatch_pentagi_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 788
+      "line": 789
     },
     {
       "name": "pentagi_campaign_status",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 862
+      "line": 863
     },
     {
       "name": "list_campaign_observations",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 892
+      "line": 893
     },
     {
       "name": "campaign_decision_audit",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 898
+      "line": 899
     },
     {
       "name": "campaign_event_audit",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 910
+      "line": 911
     },
     {
       "name": "campaign_worker_audit",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 920
+      "line": 921
     },
     {
       "name": "campaign_knowledge",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 932
+      "line": 933
     },
     {
       "name": "campaign_finding_ranking",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 947
+      "line": 948
     },
     {
       "name": "campaign_advisory_history",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 974
+      "line": 975
     },
     {
       "name": "campaign_advisory_delta",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 983
+      "line": 984
     },
     {
       "name": "campaign_advisory_journal",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 994
+      "line": 995
     },
     {
       "name": "campaign_hypothesis_history",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1006
+      "line": 1007
     },
     {
       "name": "campaign_hypothesis_delta",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1015
+      "line": 1016
     },
     {
       "name": "campaign_hypothesis_stability",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1026
+      "line": 1027
     },
     {
       "name": "campaign_plan",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1038
+      "line": 1039
     },
     {
       "name": "check_policy",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1088
+      "line": 1089
     },
     {
       "name": "verify_campaign_policy_receipt",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1098
+      "line": 1099
     },
     {
       "name": "_pending_campaign_start_request",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1103
+      "line": 1104
     },
     {
       "name": "_record_campaign_start_intent",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1111
+      "line": 1112
     },
     {
       "name": "_reconcile_campaign_started",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1137
+      "line": 1138
     },
     {
       "name": "start_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1189
+      "line": 1190
     },
     {
       "name": "cancel_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1238
+      "line": 1239
     },
     {
       "name": "get_job",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1271
+      "line": 1272
     },
     {
       "name": "get_job_provenance_status",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1279
+      "line": 1280
     },
     {
       "name": "_validation_request_id",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1296
+      "line": 1297
     },
     {
       "name": "_reconcile_validation_queued",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1300
+      "line": 1301
     },
     {
       "name": "add_finding",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1349
+      "line": 1350
     },
     {
       "name": "_record_report_request",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1434
+      "line": 1435
     },
     {
       "name": "_reconcile_report_job",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1461
+      "line": 1462
     },
     {
       "name": "_ensure_completion_report",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1507
+      "line": 1508
     },
     {
       "name": "update_finding_review_metadata",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1575
+      "line": 1576
     },
     {
       "name": "validate_finding",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1626
+      "line": 1627
     },
     {
       "name": "queue_report",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1692
+      "line": 1693
     },
     {
       "name": "add_text_artifact",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1735
+      "line": 1736
     },
     {
       "name": "list_artifacts",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1766
+      "line": 1767
     },
     {
       "name": "download_artifact",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1772
+      "line": 1773
     },
     {
       "name": "_age_seconds",
@@ -1979,103 +1885,103 @@
       "name": "_stable_id",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 42
+      "line": 43
     },
     {
       "name": "_graph_fingerprint",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 47
+      "line": 48
     },
     {
       "name": "_load_graph",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 64
+      "line": 65
     },
     {
       "name": "_seed_primary_target",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 68
+      "line": 69
     },
     {
       "name": "_minimum_enrichment_score",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 85
+      "line": 86
     },
     {
       "name": "_surface_enrichment",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 96
+      "line": 97
     },
     {
       "name": "_intelligence_context",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 120
+      "line": 121
     },
     {
       "name": "scope_checker",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 131
+      "line": 132
     },
     {
       "name": "_validation_saturated_cluster_ids",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 200
+      "line": 209
     },
     {
       "name": "_pending_findings",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 240
+      "line": 249
     },
     {
       "name": "_enqueue_recon_tasks",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 286
+      "line": 295
     },
     {
       "name": "_scan_engines",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 348
+      "line": 357
     },
     {
       "name": "_enqueue_action",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 359
+      "line": 368
     },
     {
       "name": "_decision_explanation",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 437
+      "line": 446
     },
     {
       "name": "_record_decision",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 484
+      "line": 493
     },
     {
       "name": "_result",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 527
+      "line": 536
     },
     {
       "name": "advance_campaign",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 589
+      "line": 599
     },
     {
       "name": "PentagiActionGatewayError",
@@ -2086,39 +1992,24 @@
   ],
   "selected_tests": [
     "backend/tests/test_adaptive_cycle.py",
-    "backend/tests/test_agent_registry.py",
-    "backend/tests/test_alert_delivery.py",
     "backend/tests/test_api_idempotency.py",
     "backend/tests/test_api_outbox.py",
-    "backend/tests/test_api_rate_limit.py",
     "backend/tests/test_attack_surface.py",
     "backend/tests/test_attack_surface_scope.py",
     "backend/tests/test_auth.py",
     "backend/tests/test_autonomy_gate.py",
     "backend/tests/test_browser.py",
-    "backend/tests/test_campaign_audit.py",
     "backend/tests/test_campaign_cancel.py",
     "backend/tests/test_campaign_circuit_breaker.py",
     "backend/tests/test_campaign_overview.py",
     "backend/tests/test_campaign_review_state.py",
     "backend/tests/test_campaign_risk.py",
-    "backend/tests/test_campaign_runtime.py",
-    "backend/tests/test_chain_detector.py",
     "backend/tests/test_control_views.py",
     "backend/tests/test_coverage.py",
-    "backend/tests/test_decision_audit.py",
-    "backend/tests/test_decision_consensus.py",
     "backend/tests/test_decision_timeline.py",
-    "backend/tests/test_deployment_preflight.py",
     "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_differential_intelligence.py",
-    "backend/tests/test_distributed_concurrency.py",
     "backend/tests/test_domain_incident_lifecycle.py",
     "backend/tests/test_domain_lifecycle_integration.py",
-    "backend/tests/test_dr_cli.py",
-    "backend/tests/test_dr_manifest.py",
-    "backend/tests/test_error_budget.py",
-    "backend/tests/test_evidence_backed_planner.py",
     "backend/tests/test_evidence_chain.py",
     "backend/tests/test_evidence_quality.py",
     "backend/tests/test_finding_cluster_consensus.py",
@@ -2130,60 +2021,70 @@
     "backend/tests/test_finding_readiness.py",
     "backend/tests/test_finding_review_metadata.py",
     "backend/tests/test_finding_triage.py",
-    "backend/tests/test_form_waf_reasoning.py",
     "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_hackerone_activity_summary.py",
     "backend/tests/test_hackerone_attention.py",
-    "backend/tests/test_hackerone_binding.py",
-    "backend/tests/test_hackerone_client.py",
-    "backend/tests/test_hackerone_control_center_api.py",
-    "backend/tests/test_hackerone_launch_api.py",
-    "backend/tests/test_hackerone_live_readiness.py",
     "backend/tests/test_hackerone_needs_info.py",
-    "backend/tests/test_hackerone_nuclei_e2e.py",
     "backend/tests/test_hackerone_outbound_submission.py",
-    "backend/tests/test_hackerone_remote_binding.py",
-    "backend/tests/test_hackerone_remote_snapshot.py",
     "backend/tests/test_hackerone_report_lifecycle_e2e.py",
     "backend/tests/test_hackerone_report_sync_worker.py",
     "backend/tests/test_hackerone_report_tracking.py",
-    "backend/tests/test_hackerone_scope_import.py",
     "backend/tests/test_hackerone_scope_preview_api.py",
     "backend/tests/test_health.py",
     "backend/tests/test_hypothesis_engine.py",
-    "backend/tests/test_hypothesis_memory.py",
-    "backend/tests/test_incident_api.py",
     "backend/tests/test_incident_domains.py",
-    "backend/tests/test_incident_engine.py",
-    "backend/tests/test_incident_http_api.py",
-    "backend/tests/test_incident_lifecycle.py",
-    "backend/tests/test_incident_observer.py",
-    "backend/tests/test_incident_store.py",
-    "backend/tests/test_incident_store_fencing.py",
     "backend/tests/test_job_provenance.py",
     "backend/tests/test_job_provenance_api_integration.py",
     "backend/tests/test_job_provenance_integration.py",
-    "backend/tests/test_jobqueue.py",
-    "backend/tests/test_knowledge_memory.py",
     "backend/tests/test_learning_memory.py",
     "backend/tests/test_metrics.py",
-    "backend/tests/test_nuclei_preflight.py",
     "backend/tests/test_nuclei_queue_lifecycle.py",
     "backend/tests/test_nuclei_worker_plan.py",
-    "backend/tests/test_observation_graph.py",
     "backend/tests/test_observation_writer_provenance.py",
-    "backend/tests/test_observer_deadline_heartbeat.py",
-    "backend/tests/test_observer_fencing.py",
-    "backend/tests/test_observer_fencing_integration.py",
-    "backend/tests/test_observer_health_http.py",
-    "backend/tests/test_observer_health_metrics.py",
-    "backend/tests/test_observer_resilience.py",
-    "backend/tests/test_observer_runtime.py",
-    "backend/tests/test_observer_scheduler.py",
-    "backend/tests/test_observer_slo.py",
     "backend/tests/test_openapi_integrity.py",
     "backend/tests/test_operational_alerts.py",
-    "backend/tests/test_operational_slo.py",
-    "backend/tests/test_orchestrator.py"
+    "backend/tests/test_orchestrator.py",
+    "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_outbox_chaos.py",
+    "backend/tests/test_overview_reasoning.py",
+    "backend/tests/test_pentagi_action_gateway.py",
+    "backend/tests/test_pentagi_adapter.py",
+    "backend/tests/test_pentagi_admission.py",
+    "backend/tests/test_pentagi_control.py",
+    "backend/tests/test_pentagi_control_api.py",
+    "backend/tests/test_pentagi_dispatch.py",
+    "backend/tests/test_pentagi_execution_guard.py",
+    "backend/tests/test_pentagi_transport.py",
+    "backend/tests/test_pentagi_worker_service.py",
+    "backend/tests/test_plan_evidence_quality.py",
+    "backend/tests/test_policy_integrity.py",
+    "backend/tests/test_policy_invariants.py",
+    "backend/tests/test_recon_priority.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_recon_worker.py",
+    "backend/tests/test_red_team_coverage.py",
+    "backend/tests/test_red_team_decision.py",
+    "backend/tests/test_report.py",
+    "backend/tests/test_report_approval.py",
+    "backend/tests/test_report_approval_api.py",
+    "backend/tests/test_report_readiness.py",
+    "backend/tests/test_review_queue.py",
+    "backend/tests/test_runtime_budget_config.py",
+    "backend/tests/test_scan_payload_idempotency.py",
+    "backend/tests/test_scanner_ingestion.py",
+    "backend/tests/test_scanner_normalization.py",
+    "backend/tests/test_scanner_observation_chain.py",
+    "backend/tests/test_scanner_worker.py",
+    "backend/tests/test_scope.py",
+    "backend/tests/test_submission_api.py",
+    "backend/tests/test_submission_state.py",
+    "backend/tests/test_swarm_coordinator.py",
+    "backend/tests/test_totp_auth.py",
+    "backend/tests/test_validator.py",
+    "backend/tests/test_worker_concurrency.py",
+    "backend/tests/test_worker_job_provenance.py",
+    "backend/tests/test_worker_observations.py",
+    "backend/tests/test_worker_outcome_memory.py",
+    "backend/tests/test_worker_parser.py",
+    "backend/tests/test_worker_state.py"
   ]
 }
