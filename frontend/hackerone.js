@@ -38,6 +38,9 @@
   const QUICK_PROFILE_STORAGE_KEY='xbow:hackerone:quick-profiles:v1';
   const QUICK_REVIEWER_STORAGE_KEY='xbow:hackerone:quick-reviewer:v1';
   const QUICK_PROFILE_LIMIT=30;
+  const QUICK_LAST_PROGRAM_STORAGE_KEY='xbow:hackerone:last-program:v1';
+  const QUICK_PREFS_STORAGE_KEY='xbow:hackerone:quick-prefs:v1';
+
 
 
   function hackerOneAttentionLabel(item){
@@ -1522,6 +1525,47 @@
     },5000);
   }
 
+  function loadQuickPrefs(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(QUICK_PREFS_STORAGE_KEY)||'null');
+      if(parsed&&parsed.version===1){
+        return {
+          version:1,
+          auto_resume:parsed.auto_resume!==false,
+          auto_preview:parsed.auto_preview!==false
+        };
+      }
+    }catch(_error){}
+    return {version:1,auto_resume:true,auto_preview:true};
+  }
+
+  function applyQuickPrefs(){
+    const prefs=loadQuickPrefs();
+    if(el('h1QuickAutoResume'))el('h1QuickAutoResume').checked=prefs.auto_resume;
+    if(el('h1QuickAutoPreview'))el('h1QuickAutoPreview').checked=prefs.auto_preview;
+    return prefs;
+  }
+
+  function saveQuickPrefs(){
+    const prefs={
+      version:1,
+      auto_resume:Boolean(el('h1QuickAutoResume')?.checked),
+      auto_preview:Boolean(el('h1QuickAutoPreview')?.checked)
+    };
+    try{localStorage.setItem(QUICK_PREFS_STORAGE_KEY,JSON.stringify(prefs));}catch(_error){}
+    return prefs;
+  }
+
+  function rememberLastProgram(handle){
+    if(!handle)return;
+    try{localStorage.setItem(QUICK_LAST_PROGRAM_STORAGE_KEY,String(handle));}catch(_error){}
+  }
+
+  function lastProgramHandle(){
+    try{return String(localStorage.getItem(QUICK_LAST_PROGRAM_STORAGE_KEY)||'');}
+    catch(_error){return '';}
+  }
+
   function quickProfiles(){
     try{
       const parsed=JSON.parse(localStorage.getItem(QUICK_PROFILE_STORAGE_KEY)||'{}');
@@ -1596,7 +1640,8 @@
       el('h1Notes').value=String(profile.program_notes||'');
       if(profile.primary_url)el('h1Url').value=String(profile.primary_url);
       setQuickState('profil réutilisé','ok');
-      el('h1QuickSummary').textContent='Profil validé retrouvé pour ce fingerprint exact. Vérifie la cible puis lance la prévisualisation.';
+      el('h1QuickSummary').textContent='Profil validé retrouvé pour ce fingerprint exact. La prévisualisation peut être relancée automatiquement; seule la confirmation finale reste manuelle.';
+      if(el('h1AdvancedSettings'))el('h1AdvancedSettings').open=false;
       return true;
     }
 
@@ -1612,6 +1657,7 @@
     el('h1Automation').checked=false;
     setQuickState('1re revue requise','warn');
     el('h1QuickSummary').textContent='Première revue pour ce fingerprint : choisis la cible, indique le débit réellement autorisé et confirme Safe Harbor + automatisation après lecture des règles.';
+    if(el('h1AdvancedSettings'))el('h1AdvancedSettings').open=true;
     return false;
   }
 
@@ -1645,6 +1691,7 @@
   function clearRemoteBinding(){
     remoteBinding=null;
     setQuickState('programme requis');
+    if(el('h1AdvancedSettings'))el('h1AdvancedSettings').open=true;
     el('h1RemoteFingerprint').textContent='Fingerprint distant : —';
     el('h1ProgramMeta').textContent='Snapshot distant détaché. Le formulaire reste utilisable en mode manuel.';
     el('h1ScopeTable').textContent='—';
@@ -1738,9 +1785,18 @@
       el('h1ProgramMeta').textContent=meta.join(' · ')+(program.policy?' · Policy distante chargée; autorisation de scan à confirmer manuellement.':'');
       el('h1RemoteFingerprint').textContent='Fingerprint distant : '+remoteBinding.snapshot_sha256;
       renderRemoteScope(snapshot);
-      restoreQuickProfile(snapshot);
+      const reused=restoreQuickProfile(snapshot);
+      rememberLastProgram(remoteBinding.handle);
       invalidatePreview();
       setLauncherStatus('Programme HackerOne chargé. Le mode express a prérempli tout ce qui peut l’être sans deviner les règles.','ok');
+      if(reused&&el('h1QuickAutoPreview')?.checked){
+        await preview();
+        if(approvedPreview){
+          setQuickState('prêt à confirmer','ok');
+          el('h1QuickSummary').textContent='Programme inchangé et prévisualisation admise. Confirme la prévisualisation puis lance le bug bounty.';
+          el('h1PreviewCard')?.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+      }
     }catch(error){
       clearRemoteBinding();
       setLauncherStatus(error.message,'err');
@@ -1887,7 +1943,20 @@
       el('h1ProgramSelect').disabled=false;
       const result=await api('/imports/hackerone/programs');
       hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
+      const prefs=applyQuickPrefs();
       renderProgramOptions();
+      const lastHandle=lastProgramHandle();
+      if(
+        prefs.auto_resume
+        && lastHandle
+        && !remoteBinding
+        && hackerOnePrograms.some(program=>String(program?.handle||'')===lastHandle)
+      ){
+        el('h1ProgramSelect').value=lastHandle;
+        el('h1LoadProgram').disabled=false;
+        setQuickState('reprise automatique','ok');
+        await loadRemoteProgram();
+      }
     }catch(error){
       setConnectionState('indisponible','err');
       el('h1ProgramSearch').disabled=true;
@@ -2052,6 +2121,7 @@
     }catch(error){
       invalidatePreview();
       el('h1PreviewCard').classList.remove('hidden');
+      if(el('h1AdvancedSettings'))el('h1AdvancedSettings').open=true;
       setLauncherStatus(error.message,'err');
     }finally{
       el('h1Preview').disabled=false;
@@ -2168,6 +2238,9 @@
       if(latestAttentionPayload)renderHackerOneAttention(latestAttentionPayload);
     });
   }
+  el('h1QuickAutoResume').addEventListener('change',saveQuickPrefs);
+  el('h1QuickAutoPreview').addEventListener('change',saveQuickPrefs);
+  applyQuickPrefs();
   el('token').addEventListener('change',initRemoteControlCenter);
   initRemoteControlCenter();
   startHackerOneAttentionMonitor();
