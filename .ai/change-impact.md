@@ -1,15 +1,13 @@
 # Change impact
 
-Base: f7eb014aa4e726426313d31a4965de817ff22427
-Head: 4189cdf60799038cdb4b1e2b36c96f9eacd7470e
+Base: ece23ea3b45c65e6ef2c05ad4205f90244b82eea
+Head: 622c7f433e0d5aa6045e40bd592a1a8bf7c39bac
 
 ## Changed files
-- M .env.example
 - M README.md
 - M backend/app/main.py
-- M backend/app/storage_core.py
-- A backend/app/target_memory.py
-- A backend/tests/test_target_memory.py
+- A backend/app/surface_diff.py
+- A backend/tests/test_surface_diff.py
 - M frontend/app.css
 - M frontend/app.js
 - M frontend/index.html

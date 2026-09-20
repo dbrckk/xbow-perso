@@ -176,6 +176,7 @@ backend/
     strix_parser.py
     submission_api.py
     submission_state.py
+    surface_diff.py
     swarm_coordinator.py
     target_memory.py
     totp_auth.py
@@ -348,6 +349,7 @@ backend/
     test_storage.py
     test_submission_api.py
     test_submission_state.py
+    test_surface_diff.py
     test_swarm_coordinator.py
     test_target_memory.py
     test_totp_auth.py
@@ -4789,6 +4791,11 @@ def get_campaign_target_memory(campaign_id: str)
 ⋮----
 campaign = assert_campaign_exists(campaign_id)
 ⋮----
+@app.get("/api/campaigns/{campaign_id}/surface-diff")
+def get_campaign_surface_diff(campaign_id: str)
+⋮----
+memory = build_target_memory(store, campaign.model_dump(mode="json"))
+⋮----
 @app.get("/api/campaigns/{campaign_id}/outbox")
 def campaign_outbox_status(campaign_id: str, limit: int = 100)
 ⋮----
@@ -8284,6 +8291,56 @@ latest = current_cycle_submissions[-1]
 def assert_submission_allowed(campaign: Any, artifact: dict[str, Any]) -> SubmissionStatus
 ⋮----
 status = submission_status(campaign, artifact)
+````
+
+## File: backend/app/surface_diff.py
+````python
+_KIND_WEIGHT = {
+⋮----
+@dataclass(frozen=True)
+class SurfaceChange
+⋮----
+direction: str
+kind: str
+value: str
+weight: int
+reason: str
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def _change_reason(direction: str, kind: str) -> str
+⋮----
+labels = {
+⋮----
+def _priority(score: int, change_count: int) -> str
+⋮----
+def build_surface_diff_intelligence(memory: dict[str, Any]) -> dict[str, Any]
+⋮----
+"""Convert target-memory deltas into bounded, read-only review intelligence.
+
+    This output is deliberately advisory. It must not be consumed as scanner
+    authorization, scope expansion or an execution admission signal.
+    """
+delta = dict(memory.get("delta") or {})
+previous_campaign_id = memory.get("previous_campaign_id")
+added = list(delta.get("added") or [])
+removed = list(delta.get("removed") or [])
+⋮----
+changes: list[SurfaceChange] = []
+counts_by_kind = {kind: {"added": 0, "removed": 0} for kind in _KIND_WEIGHT}
+⋮----
+kind = str(raw.get("kind") or "")
+value = str(raw.get("value") or "")
+⋮----
+weight = _KIND_WEIGHT[kind]
+# Missing observations are weaker signals than newly observed surface.
+effective_weight = weight if direction == "added" else max(2, weight // 2)
+⋮----
+raw_score = sum(item.weight for item in changes[:20])
+score = min(100, raw_score)
+priority = _priority(score, len(changes))
+⋮----
+focus = [
 ````
 
 ## File: backend/app/swarm_coordinator.py
@@ -15144,6 +15201,24 @@ def test_submission_event_requires_complete_metadata()
 invalid = (
 ````
 
+## File: backend/tests/test_surface_diff.py
+````python
+def test_surface_diff_prioritizes_new_authorized_surface()
+⋮----
+memory = {
+⋮----
+result = build_surface_diff_intelligence(memory)
+⋮----
+def test_surface_diff_is_stable_without_baseline()
+⋮----
+result = build_surface_diff_intelligence(
+⋮----
+def test_removed_surface_has_lower_weight_than_added_surface()
+⋮----
+added = next(item for item in result["changes"] if item["direction"] == "added")
+removed = next(item for item in result["changes"] if item["direction"] == "removed")
+````
+
 ## File: backend/tests/test_swarm_coordinator.py
 ````python
 def _tasks()
@@ -15680,7 +15755,7 @@ function renderDecisionTimeline(data)
 ⋮----
 function renderFindingIntelligence(data)
 ⋮----
-function renderTargetMemory(data)
+function renderTargetMemory(data,diff)
 ⋮----
 const renderDeltaList=(id,items,empty)=>
 ⋮----
@@ -16800,6 +16875,14 @@ Bound the memory explicitly with:
 XBOW_TARGET_MEMORY_MAX_CAMPAIGNS=50
 XBOW_TARGET_MEMORY_MAX_NODES=5000
 ```
+
+## Recon surface diff intelligence
+
+The target-memory layer also exposes `GET /api/campaigns/{campaign_id}/surface-diff`, a bounded read-only comparison against the previous campaign for the same target + authorization identity.
+
+It classifies added and removed assets, endpoints, forms, technologies and WAF observations, produces a deterministic change score, and highlights newly observed assets/endpoints/forms for operator review. This is advisory only: the diff never expands scope, never authorizes scanning and never influences execution admission.
+
+The dashboard renders the change score and focus set inside **Mémoire de cible** after loading a campaign.
 
 ## Disaster recovery integrity
 

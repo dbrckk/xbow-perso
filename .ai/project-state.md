@@ -22,32 +22,33 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:07:05Z
+Generated: 2026-09-20T08:12:27Z
 
 ### Git
 - Branch: `main`
-- Head: `4189cdf60799`
-- Commit date: 2026-09-20T10:06:53+02:00
-- Commit: feat: add bounded cross-campaign target memory
-- Tracked files: 479
+- Head: `622c7f433e0d`
+- Commit date: 2026-09-20T10:12:17+02:00
+- Commit: feat: add recon surface diff intelligence
+- Tracked files: 481
 
 ### Recently changed files
-- `.env.example`
 - `README.md`
 - `backend/app/main.py`
-- `backend/app/storage_core.py`
-- `backend/app/target_memory.py`
-- `backend/tests/test_target_memory.py`
+- `backend/app/surface_diff.py`
+- `backend/tests/test_surface_diff.py`
 - `frontend/app.css`
 - `frontend/app.js`
 - `frontend/index.html`
 - `frontend/sw.js`
+- `.env.example`
+- `backend/app/storage_core.py`
+- `backend/app/target_memory.py`
+- `backend/tests/test_target_memory.py`
 - `scripts/bootstrap-mobile-ubuntu.sh`
 - `.github/workflows/ci.yml`
 - `frontend/Dockerfile`
 - `frontend/manifest.webmanifest`
 - `deploy/Caddyfile`
-- `frontend/nginx.conf`
 
 ### Project signals
 - `pyproject.toml`
