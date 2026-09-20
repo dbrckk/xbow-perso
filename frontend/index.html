@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#101114" />
+  <meta name="theme-color" content="#070910" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>xbow-perso</title>
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="stylesheet" href="/app.css" />
@@ -11,28 +13,80 @@
   <script src="/hackerone.js" defer></script>
 </head>
 <body>
-<main>
-  <h1>xbow-perso</h1>
-  <p class="muted">Plateforme autonome pour tests de sécurité explicitement autorisés.</p>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#overview" aria-label="xbow-perso — accueil">
+      <span class="brand-mark" aria-hidden="true">X</span>
+      <span class="brand-copy"><strong>xbow-perso</strong><small>Security control plane</small></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Navigation principale">
+      <a href="#overview">Vue d’ensemble</a>
+      <a href="#hackerone">HackerOne</a>
+      <a href="#controlCard">Contrôle</a>
+      <a href="#details">Logs</a>
+    </nav>
+    <div class="secure-chip"><span></span> HTTPS sécurisé</div>
+  </div>
+</header>
 
-  <section class="card">
-    <h2>Accès</h2>
-    <label>Jeton API</label>
-    <input id="token" type="password" autocomplete="off" placeholder="XBOW_API_TOKEN" />
-    <label>Code TOTP pour la prochaine mutation</label>
-    <input id="totp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" />
-    <p class="muted">Le jeton reste dans la session de cet onglet. Le code TOTP n'est jamais mémorisé et est effacé après une mutation.</p>
+<main class="app-shell">
+  <section id="overview" class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> Console d’opérations autorisées</div>
+      <h1>Bug bounty.<br /><span>Contrôle total.</span></h1>
+      <p class="hero-lead">Orchestre les campagnes, le scope HackerOne, les findings et la revue humaine depuis une interface unique, pensée mobile-first.</p>
+      <div class="hero-actions">
+        <a class="action-link primary" href="#hackerone">Ouvrir HackerOne</a>
+        <a class="action-link" href="#access">Configurer l’accès</a>
+      </div>
+    </div>
+    <div class="hero-panel" aria-label="Garde-fous actifs">
+      <div class="hero-panel-head"><span>Garde-fous</span><span class="status-dot"></span></div>
+      <div class="hero-signal"><span>Scope-first</span><strong>Actif</strong></div>
+      <div class="hero-signal"><span>Revue humaine</span><strong>Requise</strong></div>
+      <div class="hero-signal"><span>Destructif / DoS</span><strong>Bloqué</strong></div>
+      <div class="hero-panel-foot">Les actions restent soumises aux règles du programme sélectionné.</div>
+    </div>
   </section>
 
-  <section class="card">
-    <h2>Campagne existante</h2>
-    <label>ID campagne</label>
-    <input id="campaignId" placeholder="UUID de campagne" />
-    <div class="button-row">
-      <button id="load" class="secondary">Charger</button>
-      <button id="refresh" class="secondary" disabled>Rafraîchir le contrôle</button>
-      <button id="start" disabled>Démarrer la campagne chargée</button>
-    </div>
+  <section class="overview-grid" aria-label="Accès rapide">
+    <section id="access" class="card access-card">
+      <div class="card-heading">
+        <div>
+          <span class="section-kicker">Session</span>
+          <h2>Accès sécurisé</h2>
+        </div>
+        <span class="card-icon" aria-hidden="true">01</span>
+      </div>
+      <div class="field-grid">
+        <div>
+          <label for="token">Jeton API</label>
+          <input id="token" type="password" autocomplete="off" placeholder="XBOW_API_TOKEN" />
+        </div>
+        <div>
+          <label for="totp">Code TOTP</label>
+          <input id="totp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" />
+        </div>
+      </div>
+      <p class="muted compact">Le jeton reste dans cet onglet. Le code TOTP est effacé après chaque mutation.</p>
+    </section>
+
+    <section id="campaigns" class="card campaign-card">
+      <div class="card-heading">
+        <div>
+          <span class="section-kicker">Workspace</span>
+          <h2>Campagne existante</h2>
+        </div>
+        <span class="card-icon" aria-hidden="true">02</span>
+      </div>
+      <label for="campaignId">ID campagne</label>
+      <input id="campaignId" placeholder="UUID de campagne" />
+      <div class="button-row">
+        <button id="load" class="secondary">Charger</button>
+        <button id="refresh" class="secondary" disabled>Rafraîchir</button>
+        <button id="start" disabled>Démarrer</button>
+      </div>
+    </section>
   </section>
 
   <div class="hidden" aria-hidden="true">
@@ -46,7 +100,7 @@
     <button id="create" disabled>Créer</button>
   </div>
 
-  <section class="card launcher-card">
+  <section id="hackerone" class="card launcher-card">
     <div class="finding-head">
       <div>
         <h2>Lanceur HackerOne</h2>
@@ -423,10 +477,16 @@
     <div id="timelineList" class="timeline muted">Aucun événement.</div>
   </section>
 
-  <section class="card">
-    <h2>Détails</h2>
+  <section id="details" class="card details-card">
+    <div class="card-heading"><div><span class="section-kicker">Diagnostic</span><h2>Détails</h2></div><span class="card-icon" aria-hidden="true">LOG</span></div>
     <pre id="output">Prêt.</pre>
   </section>
 </main>
+<nav class="mobile-dock" aria-label="Navigation mobile">
+  <a href="#overview"><span>⌂</span>Accueil</a>
+  <a href="#hackerone"><span>◈</span>HackerOne</a>
+  <a href="#controlCard"><span>◎</span>Contrôle</a>
+  <a href="#details"><span>≡</span>Logs</a>
+</nav>
 </body>
 </html>
