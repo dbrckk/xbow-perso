@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:30:36Z
+Generated: 2026-09-20T10:34:17Z
 
 ### Git
 - Branch: `main`
-- Head: `09ba2cdae051`
-- Commit date: 2026-09-20T12:30:23+02:00
-- Commit: fix: keep mobile production preflight storage-only
+- Head: `c97b6ebcf199`
+- Commit date: 2026-09-20T12:34:05+02:00
+- Commit: fix: wire encrypted vault configuration into runtime services
 - Tracked files: 499
 
 ### Recently changed files
+- `docker-compose.yml`
 - `scripts/mobile-production-preflight.sh`
 - `.github/workflows/ci.yml`
 - `AWS_MOBILE_ONLY.md`
@@ -43,9 +44,6 @@ Generated: 2026-09-20T10:30:36Z
 - `PRODUCTION_MIGRATION.md`
 - `backend/app/production_migration.py`
 - `backend/tests/test_production_migration.py`
-- `backend/app/deployment_preflight.py`
-- `backend/tests/test_deployment_preflight.py`
-- `docker-compose.distributed.yml`
 
 ### Project signals
 - `pyproject.toml`
