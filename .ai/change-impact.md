@@ -1,16 +1,13 @@
 # Change impact
 
-Base: 3ca145885826780d9dfce1dff9667cc4021c5421
-Head: ee85e4d2e34488646374268cffa85eb588789c4f
+Base: a42086bad746bd3d3d45a65a68d83156878faf1b
+Head: fad8e2d636cc03c1713d8d472e2cc6cce1b7082f
 
 ## Changed files
 - M README.md
 - M backend/app/hackerone_api.py
 - M backend/app/main.py
-- M backend/app/postgres_storage.py
-- M backend/app/storage_backend.py
-- M backend/app/storage_core.py
-- A backend/tests/test_hackerone_review_profiles.py
+- A backend/tests/test_hackerone_reviewed_batch_api.py
 - M frontend/hackerone.js
 - M frontend/index.html
 - M frontend/sw.js

@@ -269,6 +269,10 @@ function restoreQuickProfile(snapshot)
 ⋮----
 function rememberQuickProfile(payload)
 ⋮----
+function serverProgramHasSavedProfile(handle)
+⋮----
+function localProgramHasSavedProfile(handle)
+⋮----
 function batchProgramHasSavedProfile(handle)
 ⋮----
 function batchCatalogPrograms()

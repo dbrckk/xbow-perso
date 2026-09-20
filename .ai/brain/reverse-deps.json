@@ -646,9 +646,10 @@
         "backend/tests/test_hackerone_remote_binding.py",
         "backend/tests/test_hackerone_report_tracking.py",
         "backend/tests/test_hackerone_review_profiles.py",
+        "backend/tests/test_hackerone_reviewed_batch_api.py",
         "backend/tests/test_hackerone_scope_preview_api.py"
       ],
-      "in_degree": 13,
+      "in_degree": 14,
       "out_degree": 16
     },
     "backend/app/hackerone_attention.py": {
@@ -719,9 +720,10 @@
         "backend/tests/test_hackerone_needs_info.py",
         "backend/tests/test_hackerone_outbound_submission.py",
         "backend/tests/test_hackerone_remote_snapshot.py",
-        "backend/tests/test_hackerone_report_tracking.py"
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_hackerone_reviewed_batch_api.py"
       ],
-      "in_degree": 12,
+      "in_degree": 13,
       "out_degree": 3
     },
     "backend/app/hackerone_live_readiness.py": {
@@ -945,6 +947,7 @@
         "backend/tests/test_hackerone_binding.py",
         "backend/tests/test_hackerone_nuclei_e2e.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+        "backend/tests/test_hackerone_reviewed_batch_api.py",
         "backend/tests/test_job_provenance_api_integration.py",
         "backend/tests/test_job_provenance_integration.py",
         "backend/tests/test_jobqueue.py",
@@ -965,7 +968,7 @@
         "backend/tests/test_worker_concurrency.py",
         "backend/tests/test_worker_job_provenance.py"
       ],
-      "in_degree": 37,
+      "in_degree": 38,
       "out_degree": 1
     },
     "backend/app/knowledge_memory.py": {
@@ -2285,6 +2288,7 @@
         "backend/tests/test_hackerone_report_sync_worker.py",
         "backend/tests/test_hackerone_report_tracking.py",
         "backend/tests/test_hackerone_review_profiles.py",
+        "backend/tests/test_hackerone_reviewed_batch_api.py",
         "backend/tests/test_hackerone_scope_preview_api.py",
         "backend/tests/test_hypothesis_engine.py",
         "backend/tests/test_job_provenance_api_integration.py",
@@ -2317,7 +2321,7 @@
         "backend/tests/test_worker_observations.py",
         "backend/tests/test_worker_outcome_memory.py"
       ],
-      "in_degree": 76,
+      "in_degree": 77,
       "out_degree": 2
     },
     "backend/app/storage_backend.py": {
@@ -2671,6 +2675,7 @@
         "backend/tests/test_hackerone_remote_binding.py",
         "backend/tests/test_hackerone_report_sync_worker.py",
         "backend/tests/test_hackerone_review_profiles.py",
+        "backend/tests/test_hackerone_reviewed_batch_api.py",
         "backend/tests/test_hackerone_scope_preview_api.py",
         "backend/tests/test_incident_http_api.py",
         "backend/tests/test_observer_health_http.py",
@@ -2683,7 +2688,7 @@
         "frontend/app.js",
         "frontend/hackerone.js"
       ],
-      "in_degree": 35,
+      "in_degree": 36,
       "out_degree": 2
     },
     "backend/tests/test_api_idempotency.py": {
@@ -3398,6 +3403,19 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 4
+    },
+    "backend/tests/test_hackerone_reviewed_batch_api.py": {
+      "dependencies": [
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_client.py",
+        "backend/app/jobqueue.py",
+        "backend/app/storage.py",
+        "backend/tests/test_alert_delivery.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 6
     },
     "backend/tests/test_hackerone_scope_import.py": {
       "dependencies": [
@@ -4720,6 +4738,7 @@
         "backend/tests/test_hackerone_report_sync_worker.py",
         "backend/tests/test_hackerone_report_tracking.py",
         "backend/tests/test_hackerone_review_profiles.py",
+        "backend/tests/test_hackerone_reviewed_batch_api.py",
         "backend/tests/test_hackerone_scope_import.py",
         "backend/tests/test_hackerone_scope_preview_api.py",
         "backend/tests/test_health.py",
@@ -4839,7 +4858,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 184,
+      "in_degree": 185,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

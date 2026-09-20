@@ -22,26 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T16:10:35Z
+Generated: 2026-09-20T16:32:36Z
 
 ### Git
 - Branch: `main`
-- Head: `ee85e4d2e344`
-- Commit date: 2026-09-20T18:10:12+02:00
-- Commit: feat: persist reviewed HackerOne profiles server-side
-- Tracked files: 514
+- Head: `fad8e2d636cc`
+- Commit date: 2026-09-20T18:32:26+02:00
+- Commit: feat: launch multi-bounty batches from server-reviewed profiles
+- Tracked files: 515
 
 ### Recently changed files
 - `README.md`
 - `backend/app/hackerone_api.py`
 - `backend/app/main.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
+- `frontend/hackerone.js`
+- `frontend/index.html`
+- `frontend/sw.js`
 - `backend/app/postgres_storage.py`
 - `backend/app/storage_backend.py`
 - `backend/app/storage_core.py`
 - `backend/tests/test_hackerone_review_profiles.py`
-- `frontend/hackerone.js`
-- `frontend/index.html`
-- `frontend/sw.js`
 - `.env.example`
 - `backend/app/hackerone_catalog.py`
 - `backend/app/worker_service.py`
@@ -51,7 +52,6 @@ Generated: 2026-09-20T16:10:35Z
 - `frontend/app.css`
 - `.github/workflows/ci.yml`
 - `backend/app/hackerone_live_readiness.py`
-- `backend/tests/test_hackerone_live_readiness.py`
 
 ### Project signals
 - `pyproject.toml`

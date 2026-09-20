@@ -262,6 +262,7 @@ backend/
     test_hackerone_report_sync_worker.py
     test_hackerone_report_tracking.py
     test_hackerone_review_profiles.py
+    test_hackerone_reviewed_batch_api.py
     test_hackerone_scope_import.py
     test_hackerone_scope_preview_api.py
     test_health.py
@@ -3188,6 +3189,18 @@ campaigns: list[HackerOneCampaignAdmissionInput] = Field(
 ⋮----
 handles: list[str] = []
 ⋮----
+class HackerOneReviewedBatchLaunchInput(BaseModel)
+⋮----
+handles: list[str] = Field(min_length=1, max_length=20)
+⋮----
+@field_validator("handles")
+@classmethod
+    def reviewed_handles_must_be_unique(cls, value: list[str]) -> list[str]
+⋮----
+normalized: list[str] = []
+⋮----
+candidate = handle.strip()
+⋮----
 class HackerOneReportSubmissionInput(BaseModel)
 ⋮----
 actor: str = Field(min_length=1, max_length=120)
@@ -3295,6 +3308,27 @@ def _batch_summary(members: list[dict[str, Any]]) -> dict[str, int]
 statuses = ("ready", "running", "done", "review", "blocked", "cancelled")
 ⋮----
 def _rollback_admitted_batch_campaigns(campaign_ids: list[str]) -> None
+⋮----
+profile_id = f"{snapshot.handle}@{snapshot.snapshot_sha256}"
+profile = store.get_hackerone_review_profile(profile_id)
+⋮----
+policy_raw = profile.get("policy")
+primary_url = str(profile.get("preferred_primary_url") or "").strip()
+⋮----
+policy = HackerOneProgramPolicyInput.model_validate(policy_raw)
+⋮----
+program_name = str(snapshot.program.get("name") or "").strip()
+⋮----
+program_name = f"H1 {snapshot.handle}"
+program_name = program_name[:120]
+⋮----
+@router.post("/api/imports/hackerone/batches/launch-reviewed")
+def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
+⋮----
+prepared: list[HackerOneCampaignAdmissionInput] = []
+missing: list[str] = []
+⋮----
+detail = exc.detail if isinstance(exc.detail, dict) else {}
 ⋮----
 @router.post("/api/imports/hackerone/batches/launch")
 def launch_hackerone_batch(payload: HackerOneBatchLaunchInput)
@@ -12513,6 +12547,42 @@ def test_review_profile_requires_target_inside_reviewed_scope(tmp_path, monkeypa
 def test_non_admissible_preview_is_not_remembered(tmp_path, monkeypatch)
 ````
 
+## File: backend/tests/test_hackerone_reviewed_batch_api.py
+````python
+def _resource(identifier: str)
+⋮----
+def _snapshot(handle: str, domain: str, fingerprint: str)
+⋮----
+document = {"data": [_resource(domain)], "links": {}}
+⋮----
+def _profile(handle: str, domain: str, fingerprint: str)
+⋮----
+def _app()
+⋮----
+api = FastAPI()
+⋮----
+def test_reviewed_batch_launch_needs_only_handles(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "batch.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+snapshots = {
+⋮----
+store = Storage(db, artifacts)
+⋮----
+response = _app().post(
+⋮----
+batch = response.json()
+⋮----
+jobs = JobQueue(db)
+⋮----
+db = str(tmp_path / "stale.sqlite3")
+⋮----
+db = str(tmp_path / "missing.sqlite3")
+⋮----
+def test_reviewed_batch_rejects_duplicate_handles()
+````
+
 ## File: backend/tests/test_hackerone_scope_preview_api.py
 ````python
 def _resource(identifier: str, asset_type: str, eligible: bool)
@@ -17129,6 +17199,10 @@ function restoreQuickProfile(snapshot)
 ⋮----
 function rememberQuickProfile(payload)
 ⋮----
+function serverProgramHasSavedProfile(handle)
+⋮----
+function localProgramHasSavedProfile(handle)
+⋮----
 function batchProgramHasSavedProfile(handle)
 ⋮----
 function batchCatalogPrograms()
@@ -19397,6 +19471,27 @@ XBOW_HACKERONE_CATALOG_POLL_SECONDS=900
 ```
 
 The minimum poll interval is 300 seconds.
+
+## Server-reviewed multi-bounty launch
+
+The multi-bounty launcher can submit only the selected HackerOne handles to the backend. The backend then performs the sensitive preparation itself:
+
+1. fetch the current remote snapshot for every selected handle;
+2. require an exact server-side reviewed profile for that snapshot SHA-256;
+3. rebuild the policy and preferred target from the persisted non-secret profile;
+4. preflight every selected program before creating any campaign;
+5. run the existing conservative admission and remote-binding checks again while creating the durable batch.
+
+This means the browser no longer needs to reconstruct or send full reviewed policy/scope payloads for repeat batch launches. If one selected program has changed fingerprint or lacks an exact server profile, the whole batch is rejected before campaign creation and that handle is returned for review.
+
+The endpoint is:
+
+```text
+POST /api/imports/hackerone/batches/launch-reviewed
+{"mode":"sequential","handles":["program-one","program-two"]}
+```
+
+Parallel mode is also supported. As before, the server-side batch persists and continues after the dashboard closes.
 
 ## HackerOne multi-bounty batches
 
