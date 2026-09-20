@@ -387,6 +387,7 @@ def system_capabilities():
             "adaptive_planning": "advisory",
             "observation_graph": True,
             "knowledge_memory": True,
+            "target_memory": "read_only",
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
             "evidence_quality_scoring": "read_only",
@@ -499,6 +500,18 @@ def list_campaigns():
 @app.get("/api/campaigns/{campaign_id}", response_model=Campaign)
 def get_campaign(campaign_id: str):
     return assert_campaign_exists(campaign_id)
+
+
+@app.get("/api/campaigns/{campaign_id}/target-memory")
+def get_campaign_target_memory(campaign_id: str):
+    from .target_memory import build_target_memory
+
+    campaign = assert_campaign_exists(campaign_id)
+    store = storage()
+    try:
+        return build_target_memory(store, campaign.model_dump(mode="json"))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.get("/api/campaigns/{campaign_id}/outbox")

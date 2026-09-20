@@ -160,6 +160,21 @@ Bulk actions operate only on the currently filtered/sorted local view. The opera
 
 Named custom attention views are stored locally under `xbow:hackerone:attention-custom-views:v1`. The operator can save the current filter/search/sort configuration under a name, re-apply it later, replace an existing view with the same name, or delete it. Custom view names are normalized and capped at 60 characters; at most 20 custom views are retained. Stored custom views contain only validated filter preference fields and never contain report bodies, NMI/comment text, credentials, user data, or notification cursors. Built-in presets remain immutable and separate from user-defined views.
 
+## Target memory and recon graph
+
+xbow-perso now exposes a bounded, read-only cross-campaign memory for the same authorized target through `GET /api/campaigns/{campaign_id}/target-memory`.
+
+The memory aggregates only passive surface observations (`asset`, `endpoint`, `form`, `technology`, `waf`), tracks first/last observation, campaign frequency and source, and computes a deterministic delta against the previous campaign. It is isolated by the primary target host **and** authorization reference so unrelated programs that happen to share infrastructure do not silently share memory.
+
+This layer is advisory only: historical observations never authorize a scan, never bypass scope review and never modify campaign admission. The dashboard renders the current surface and the added/removed delta after a campaign is loaded.
+
+Bound the memory explicitly with:
+
+```bash
+XBOW_TARGET_MEMORY_MAX_CAMPAIGNS=50
+XBOW_TARGET_MEMORY_MAX_NODES=5000
+```
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
