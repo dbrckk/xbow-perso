@@ -79,6 +79,8 @@ jobs:
       - run: bash -n scripts/mobile-production-rollback.sh
       - run: bash -n scripts/mobile-production-update.sh
       - run: bash -n scripts/mobile-production-status.sh
+      - run: bash -n scripts/mobile-vault-cutover.sh
+      - run: bash -n scripts/mobile-vault-rollback.sh
       - run: docker compose config --quiet
       - run: |
           XBOW_POSTGRES_PASSWORD=ci-postgres \
