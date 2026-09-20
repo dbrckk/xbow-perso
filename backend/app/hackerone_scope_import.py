@@ -4,10 +4,11 @@ import ipaddress
 import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
-from .main import ProgramRules
+if TYPE_CHECKING:
+    from .main import ProgramRules
 
 
 _MAX_SCOPE_ASSETS = 5000
@@ -206,7 +207,9 @@ class HackerOneScopePreview:
         self,
         *,
         policy: HackerOneProgramPolicy,
-    ) -> ProgramRules:
+    ) -> "ProgramRules":
+        from .main import ProgramRules
+
         if not isinstance(policy, HackerOneProgramPolicy):
             raise HackerOneScopeImportError(
                 "explicit HackerOne program policy is required before rule conversion"
