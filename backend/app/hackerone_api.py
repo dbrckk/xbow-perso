@@ -7,7 +7,7 @@ from typing import Any, Literal
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, ValidationError, field_validator, model_validator
 
 from .hackerone_attention import build_hackerone_attention_center
 from .hackerone_client import (
@@ -115,6 +115,33 @@ class HackerOneBatchLaunchInput(BaseModel):
         if len(set(handles)) != len(handles):
             raise ValueError("batch campaigns must use unique HackerOne programs")
         return self
+
+
+class HackerOneReviewedBatchLaunchInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    mode: Literal["sequential", "parallel"] = "sequential"
+    handles: list[str] = Field(min_length=1, max_length=20)
+
+    @field_validator("handles")
+    @classmethod
+    def reviewed_handles_must_be_unique(cls, value: list[str]) -> list[str]:
+        normalized: list[str] = []
+        for handle in value:
+            if not isinstance(handle, str):
+                raise ValueError("HackerOne program handle is invalid")
+            candidate = handle.strip()
+            if (
+                not candidate
+                or candidate != handle
+                or candidate != candidate.lower()
+                or len(candidate) > 128
+            ):
+                raise ValueError("HackerOne program handle is invalid")
+            normalized.append(candidate)
+        if len(set(normalized)) != len(normalized):
+            raise ValueError("reviewed batch handles must be unique")
+        return normalized
 
 
 class HackerOneReportSubmissionInput(BaseModel):
@@ -503,6 +530,131 @@ def _rollback_admitted_batch_campaigns(campaign_ids: list[str]) -> None:
             cancel_campaign(campaign_id)
         except Exception:
             continue
+
+
+def _reviewed_campaign_input(
+    handle: str,
+    store,
+) -> HackerOneCampaignAdmissionInput:
+    try:
+        snapshot = fetch_hackerone_program_snapshot(handle)
+    except HackerOneClientError as exc:
+        raise _upstream_error(exc) from exc
+
+    profile_id = f"{snapshot.handle}@{snapshot.snapshot_sha256}"
+    profile = store.get_hackerone_review_profile(profile_id)
+    if profile is None:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile required",
+                "reason": "review_profile_required",
+                "handles": [snapshot.handle],
+            },
+        )
+
+    if (
+        str(profile.get("handle") or "") != snapshot.handle
+        or str(profile.get("snapshot_sha256") or "") != snapshot.snapshot_sha256
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile binding mismatch",
+                "reason": "review_profile_binding_mismatch",
+                "handles": [snapshot.handle],
+            },
+        )
+
+    policy_raw = profile.get("policy")
+    primary_url = str(profile.get("preferred_primary_url") or "").strip()
+    if not isinstance(policy_raw, dict) or not primary_url:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile is incomplete",
+                "reason": "review_profile_incomplete",
+                "handles": [snapshot.handle],
+            },
+        )
+
+    try:
+        policy = HackerOneProgramPolicyInput.model_validate(policy_raw)
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile policy is invalid",
+                "reason": "review_profile_invalid",
+                "handles": [snapshot.handle],
+            },
+        ) from exc
+
+    program_name = str(snapshot.program.get("name") or "").strip()
+    if len(program_name) < 2:
+        program_name = f"H1 {snapshot.handle}"
+    program_name = program_name[:120]
+
+    try:
+        return HackerOneCampaignAdmissionInput(
+            document=snapshot.document,
+            policy=policy,
+            target=HackerOneCampaignTargetInput(
+                name=program_name,
+                primary_url=primary_url,
+            ),
+            remote_handle=snapshot.handle,
+            remote_snapshot_sha256=snapshot.snapshot_sha256,
+        )
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile target is invalid",
+                "reason": "review_profile_invalid",
+                "handles": [snapshot.handle],
+            },
+        ) from exc
+
+
+@router.post("/api/imports/hackerone/batches/launch-reviewed")
+def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
+    from .main import storage
+
+    store = storage()
+    prepared: list[HackerOneCampaignAdmissionInput] = []
+    missing: list[str] = []
+
+    for handle in payload.handles:
+        try:
+            prepared.append(_reviewed_campaign_input(handle, store))
+        except HTTPException as exc:
+            detail = exc.detail if isinstance(exc.detail, dict) else {}
+            if exc.status_code == 409 and detail.get("reason") == "review_profile_required":
+                missing.extend(
+                    str(item)
+                    for item in detail.get("handles", [])
+                    if str(item)
+                )
+                continue
+            raise
+
+    if missing:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile required",
+                "reason": "review_profile_required",
+                "handles": sorted(set(missing)),
+            },
+        )
+
+    return launch_hackerone_batch(
+        HackerOneBatchLaunchInput(
+            mode=payload.mode,
+            campaigns=prepared,
+        )
+    )
 
 
 @router.post("/api/imports/hackerone/batches/launch")

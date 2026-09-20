@@ -293,6 +293,27 @@ XBOW_HACKERONE_CATALOG_POLL_SECONDS=900
 
 The minimum poll interval is 300 seconds.
 
+## Server-reviewed multi-bounty launch
+
+The multi-bounty launcher can submit only the selected HackerOne handles to the backend. The backend then performs the sensitive preparation itself:
+
+1. fetch the current remote snapshot for every selected handle;
+2. require an exact server-side reviewed profile for that snapshot SHA-256;
+3. rebuild the policy and preferred target from the persisted non-secret profile;
+4. preflight every selected program before creating any campaign;
+5. run the existing conservative admission and remote-binding checks again while creating the durable batch.
+
+This means the browser no longer needs to reconstruct or send full reviewed policy/scope payloads for repeat batch launches. If one selected program has changed fingerprint or lacks an exact server profile, the whole batch is rejected before campaign creation and that handle is returned for review.
+
+The endpoint is:
+
+```text
+POST /api/imports/hackerone/batches/launch-reviewed
+{"mode":"sequential","handles":["program-one","program-two"]}
+```
+
+Parallel mode is also supported. As before, the server-side batch persists and continues after the dashboard closes.
+
 ## HackerOne multi-bounty batches
 
 The HackerOne control center can load the researcher program catalog read-only, let the operator select up to 20 previously reviewed programs, and launch them as a durable server-side batch.
