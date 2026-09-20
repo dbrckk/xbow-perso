@@ -252,22 +252,39 @@ class HackerOneClient:
             )
         return document
 
-    def get_all_pages(self, path: str) -> list[dict[str, Any]]:
+    def get_all_pages(
+        self,
+        path: str,
+        query: Mapping[str, Any] | None = None,
+        *,
+        max_pages: int = _MAX_PAGES,
+        page_size: int = _PAGE_SIZE,
+    ) -> list[dict[str, Any]]:
+        if not 1 <= max_pages <= _MAX_PAGES:
+            raise HackerOneClientError("HackerOne pagination max_pages is invalid")
+        if not 1 <= page_size <= _PAGE_SIZE:
+            raise HackerOneClientError("HackerOne pagination page_size is invalid")
+        base_query = dict(query or {})
+        base_query.pop("page[number]", None)
+        base_query.pop("page[size]", None)
+
         items: list[dict[str, Any]] = []
-        for page_number in range(1, _MAX_PAGES + 1):
-            document = self.get_json(
-                path,
-                {"page[number]": page_number, "page[size]": _PAGE_SIZE},
-            )
+        for page_number in range(1, max_pages + 1):
+            page_query = {
+                **base_query,
+                "page[number]": page_number,
+                "page[size]": page_size,
+            }
+            document = self.get_json(path, page_query)
             data = document.get("data")
             if not isinstance(data, list):
                 raise HackerOneClientError("HackerOne paginated response has no data list")
             if any(not isinstance(item, dict) for item in data):
                 raise HackerOneClientError("HackerOne paginated response contains invalid items")
             items.extend(data)
-            if len(data) < _PAGE_SIZE:
+            if len(data) < page_size:
                 return items
-        raise HackerOneClientError("HackerOne pagination exceeded safety limit")
+        return items
 
 
 _HANDLE_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_-")
