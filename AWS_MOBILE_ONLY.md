@@ -247,3 +247,34 @@ sudo bash /opt/xbow-perso/scripts/mobile-production-status.sh
 ```
 
 The status command also prints only the four non-secret execution gates so you can verify they remain closed.
+
+
+## Vault cutover from a phone
+
+After the PostgreSQL/Redis storage cutover has completed and the distributed backend is healthy, migrate legacy application credentials into the encrypted vault with:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-vault-cutover.sh
+```
+
+The script:
+
+1. requires the successful storage-migration marker;
+2. verifies the four safe execution gates remain closed;
+3. runs a redacted vault migration plan directly from the private server `.env`;
+4. encrypts and verifies the legacy API/HackerOne/provider/TOTP/audit/browser secrets;
+5. verifies the vault-backed API token before changing `.env`;
+6. creates `.env.pre-vault.bak` with private permissions;
+7. removes migrated legacy secret assignments and enables the file-backed vault;
+8. restarts only the safe distributed services;
+9. verifies vault-backed authentication, backend readiness and HTTPS.
+
+The master key is generated inside the private `xbow-data` volume at `/data/vault-master.key`; its value is never printed.
+
+If the vault-enabled restart fails, the script restores the pre-vault environment automatically. A manual rollback is also available:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-vault-rollback.sh
+```
+
+The rollback restores the legacy-secret `.env` while preserving the encrypted vault files for diagnosis or retry. Neither command enables scanner, PentAGI, Nuclei, or HackerOne submission profiles.
