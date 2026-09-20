@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:27:32Z
+Generated: 2026-09-20T10:30:36Z
 
 ### Git
 - Branch: `main`
-- Head: `88fd52805ea5`
-- Commit date: 2026-09-20T12:27:20+02:00
-- Commit: feat: add one-command mobile production migration preflight
-- Tracked files: 497
+- Head: `09ba2cdae051`
+- Commit date: 2026-09-20T12:30:23+02:00
+- Commit: fix: keep mobile production preflight storage-only
+- Tracked files: 499
 
 ### Recently changed files
+- `scripts/mobile-production-preflight.sh`
 - `.github/workflows/ci.yml`
 - `AWS_MOBILE_ONLY.md`
-- `scripts/mobile-production-preflight.sh`
 - `.env.example`
 - `README.md`
 - `VAULT_MIGRATION.md`
@@ -46,11 +46,6 @@ Generated: 2026-09-20T10:27:32Z
 - `backend/app/deployment_preflight.py`
 - `backend/tests/test_deployment_preflight.py`
 - `docker-compose.distributed.yml`
-- `backend/app/main.py`
-- `backend/app/orchestrator.py`
-- `backend/app/recon_priority.py`
-- `backend/app/recon_swarm.py`
-- `backend/tests/test_recon_priority.py`
 
 ### Project signals
 - `pyproject.toml`

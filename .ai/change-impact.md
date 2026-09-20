@@ -1,16 +1,12 @@
 # Change impact
 
-Base: e60e647cb3af345c7913d8d368902aab9c2df4e3
-Head: 88fd52805ea5ca0366d348d5bd0a63262b39b98d
+Base: 0fdc88a5c5b8bd82ffdba5d37d88d15e81c1e7cc
+Head: 09ba2cdae051f9ebdd22ea3a9c1f0b13576871ae
 
 ## Changed files
-- M .github/workflows/ci.yml
-- M AWS_MOBILE_ONLY.md
-- A scripts/mobile-production-preflight.sh
+- M scripts/mobile-production-preflight.sh
 
 ## Affected areas
-- .github
-- (root)
 - scripts
 
 ## Related test candidates
