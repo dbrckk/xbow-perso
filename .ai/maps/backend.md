@@ -4933,6 +4933,7 @@ campaign_doc = campaign.model_dump(mode="json")
 target_memory = build_target_memory(store, campaign_doc)
 surface_diff = build_surface_diff_intelligence(target_memory)
 surface_temporal = build_temporal_surface_profile(store, campaign_doc)
+surface_confidence = build_surface_confidence(target_memory, surface_temporal)
 recon_priority = prioritize_recon_tasks(
 swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
@@ -6086,6 +6087,7 @@ boost: int
 diff_boost: int
 history_boost: int
 temporal_boost: int
+confidence_factor: float
 signals: tuple[str, ...]
 historical_signals: tuple[str, ...]
 temporal_signals: tuple[str, ...]
@@ -6148,6 +6150,15 @@ adjusted = weight
 # contribution further as its historical presence rises.
 adjusted = weight * max(0.1, 1.0 - ratio)
 ⋮----
+def _confidence_kind_scores(surface_confidence: dict[str, Any] | None) -> dict[str, float]
+⋮----
+totals: dict[str, float] = {}
+⋮----
+score = float(raw.get("confidence") or 0.0)
+⋮----
+score = 0.0
+score = max(0.0, min(1.0, score))
+⋮----
 """Reorder an already-authorized recon plan using historical change signals.
 
     This function may only alter priority/reason. It never creates a task,
@@ -6156,6 +6167,7 @@ adjusted = weight * max(0.1, 1.0 - ratio)
 counts = _signal_counts(surface_diff)
 historical_scores = _historical_kind_scores(target_memory)
 temporal_scores = _temporal_kind_scores(surface_temporal)
+confidence_scores = _confidence_kind_scores(surface_confidence)
 baseline_available = bool(surface_diff.get("baseline_available"))
 changed_surface_count = max(
 ⋮----
@@ -6169,7 +6181,10 @@ history_strength = sum(historical_scores.get(kind, 0.0) for kind in signals)
 history_boost = min(5, int(round(history_strength))) if baseline_available else 0
 temporal_strength = sum(temporal_scores.get(kind, 0.0) for kind in signals)
 temporal_boost = min(5, int(round(temporal_strength))) if baseline_available else 0
-boost = min(20, diff_boost + history_boost + temporal_boost)
+confidence_values = [
+confidence_factor = (
+raw_boost = min(20, diff_boost + history_boost + temporal_boost)
+boost = min(20, int(round(raw_boost * confidence_factor)))
 effective = min(100, int(task.priority) + boost)
 reason = task.reason
 active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
@@ -6269,7 +6284,8 @@ campaign_doc = campaign.model_dump(mode="json")
 memory = build_target_memory(store, campaign_doc)
 surface_diff = build_surface_diff_intelligence(memory)
 surface_temporal = build_temporal_surface_profile(store, campaign_doc)
-priority = prioritize_recon_tasks(tasks, surface_diff, memory, surface_temporal)
+surface_confidence = build_surface_confidence(memory, surface_temporal)
+priority = prioritize_recon_tasks(
 ```
 
 ## File: app/recon_worker.py
@@ -13631,6 +13647,18 @@ result = prioritize_recon_tasks(original, diff, None, temporal)
 def test_temporal_scoring_never_breaks_total_boost_cap()
 ⋮----
 result = prioritize_recon_tasks(original, diff, memory, temporal)
+⋮----
+def test_low_confidence_dampens_recon_boost_without_changing_authority()
+⋮----
+confidence = {
+⋮----
+result = prioritize_recon_tasks(original, diff, None, None, confidence)
+⋮----
+def test_high_confidence_preserves_full_bounded_boost()
+⋮----
+def test_missing_confidence_is_neutral_and_never_increases_cap()
+⋮----
+result = prioritize_recon_tasks(original, diff, None, None, None)
 ```
 
 ## File: tests/test_recon_swarm.py

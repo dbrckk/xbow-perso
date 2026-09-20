@@ -22,28 +22,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:54:02Z
+Generated: 2026-09-20T09:34:11Z
 
 ### Git
 - Branch: `main`
-- Head: `ab46ff233a11`
-- Commit date: 2026-09-20T10:53:26+02:00
-- Commit: feat: add surface observation confidence scoring
+- Head: `08c78135bd63`
+- Commit date: 2026-09-20T11:34:02+02:00
+- Commit: feat: dampen recon ordering with surface confidence
 - Tracked files: 487
 
 ### Recently changed files
 - `README.md`
 - `backend/app/main.py`
+- `backend/app/orchestrator.py`
+- `backend/app/recon_priority.py`
+- `backend/app/recon_swarm.py`
+- `backend/tests/test_recon_priority.py`
 - `backend/app/surface_confidence.py`
 - `backend/tests/test_surface_confidence.py`
 - `frontend/app.css`
 - `frontend/app.js`
 - `frontend/index.html`
 - `frontend/sw.js`
-- `backend/app/orchestrator.py`
-- `backend/app/recon_priority.py`
-- `backend/app/recon_swarm.py`
-- `backend/tests/test_recon_priority.py`
 - `backend/app/surface_temporal.py`
 - `backend/tests/test_surface_temporal.py`
 
