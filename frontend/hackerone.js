@@ -1841,7 +1841,15 @@
         ];
         if(Number(signal?.usd_awarded_max||0)>0){
           parts.push(
-            'historique public: max         meta.textContent=parts.join(' · ');
+            'historique public: max $'+
+            Math.round(Number(signal.usd_awarded_max)).toLocaleString()
+          );
+        }else if(Number(signal?.disclosed_report_count||0)>0){
+          parts.push(
+            String(signal.disclosed_report_count)+' report(s) public(s) appris'
+          );
+        }
+        meta.textContent=parts.join(' · ');
         info.append(titleRow,meta);
         row.append(checkbox,info);
         catalog.appendChild(row);
