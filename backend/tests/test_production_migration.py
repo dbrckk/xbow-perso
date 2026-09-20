@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+import app.production_migration as production_migration_module
+
 from app.jobqueue import JobQueue
 from app.production_migration import (
     ProductionMigrationError,
@@ -227,3 +229,27 @@ def test_artifact_verification_accepts_matching_content(tmp_path):
         result = _verify_artifacts(db, artifact_root.resolve())
 
     assert result == {"ok": True, "checked": 1}
+
+
+def test_production_migration_cli_plan_returns_nonzero_when_blocked(monkeypatch, capsys):
+    monkeypatch.setattr(
+        production_migration_module,
+        "plan_migration",
+        lambda: {"ok": False, "blockers": ["blocked"]},
+    )
+    monkeypatch.setattr("sys.argv", ["production_migration", "plan"])
+
+    assert production_migration_module.main() == 2
+    assert '"ok": false' in capsys.readouterr().out
+
+
+def test_production_migration_cli_plan_returns_zero_when_ready(monkeypatch, capsys):
+    monkeypatch.setattr(
+        production_migration_module,
+        "plan_migration",
+        lambda: {"ok": True, "blockers": []},
+    )
+    monkeypatch.setattr("sys.argv", ["production_migration", "plan"])
+
+    assert production_migration_module.main() == 0
+    assert '"ok": true' in capsys.readouterr().out
