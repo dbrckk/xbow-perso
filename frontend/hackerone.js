@@ -35,6 +35,10 @@
   const ATTENTION_CUSTOM_VIEWS_STORAGE_KEY='xbow:hackerone:attention-custom-views:v1';
   const ATTENTION_CUSTOM_VIEW_LIMIT=20;
   const ATTENTION_CUSTOM_VIEW_NAME_LIMIT=60;
+  const QUICK_PROFILE_STORAGE_KEY='xbow:hackerone:quick-profiles:v1';
+  const QUICK_REVIEWER_STORAGE_KEY='xbow:hackerone:quick-reviewer:v1';
+  const QUICK_PROFILE_LIMIT=30;
+
 
   function hackerOneAttentionLabel(item){
     const bucket=String(item?.bucket||'other');
@@ -1518,8 +1522,129 @@
     },5000);
   }
 
+  function quickProfiles(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(QUICK_PROFILE_STORAGE_KEY)||'{}');
+      return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{};
+    }catch(_error){return {};}
+  }
+
+  function quickProfileKey(binding=remoteBinding){
+    if(!binding?.handle||!binding?.snapshot_sha256)return '';
+    return String(binding.handle)+'@'+String(binding.snapshot_sha256);
+  }
+
+  function saveQuickProfiles(profiles){
+    const entries=Object.entries(profiles||{}).slice(-QUICK_PROFILE_LIMIT);
+    try{localStorage.setItem(QUICK_PROFILE_STORAGE_KEY,JSON.stringify(Object.fromEntries(entries)));}catch(_error){}
+  }
+
+  function localDateTimeValue(date=new Date()){
+    const offset=date.getTimezoneOffset()*60000;
+    return new Date(date.getTime()-offset).toISOString().slice(0,16);
+  }
+
+  function quickTargetSuggestions(snapshot){
+    const list=el('h1TargetSuggestions');
+    if(!list)return;
+    list.replaceChildren();
+    const assets=Array.isArray(snapshot?.preview?.assets)?snapshot.preview.assets:[];
+    const values=[];
+    for(const asset of assets){
+      if(!asset?.eligible_for_submission||!asset?.compatible)continue;
+      const type=String(asset.asset_type||'').toLowerCase();
+      const identifier=String(asset.identifier||'').trim();
+      let value='';
+      if(type==='domain'&&identifier&&!identifier.includes('*'))value='https://'+identifier.replace(/\.$/,'');
+      else if(type==='url'&&/^https?:\/\//i.test(identifier))value=identifier;
+      if(value&&!values.includes(value))values.push(value);
+    }
+    for(const value of values.slice(0,100)){
+      const option=document.createElement('option');
+      option.value=value;
+      list.appendChild(option);
+    }
+    return values;
+  }
+
+  function setQuickState(label,type=''){
+    const state=el('h1QuickState');
+    if(!state)return;
+    state.textContent=label;
+    state.className='pill'+(type?' '+type:'');
+  }
+
+  function restoreQuickProfile(snapshot){
+    const key=quickProfileKey();
+    const profiles=quickProfiles();
+    const profile=key?profiles[key]:null;
+    const reviewer=localStorage.getItem(QUICK_REVIEWER_STORAGE_KEY)||'';
+    const targets=quickTargetSuggestions(snapshot)||[];
+
+    if(profile){
+      el('h1Auth').value=String(profile.authorization_reference||'');
+      el('h1PolicyVersion').value=String(profile.policy_version||'');
+      el('h1ReviewedAt').value=localDateTimeValue();
+      el('h1ReviewedBy').value=String(profile.reviewed_by||reviewer||'');
+      el('h1Rps').value=String(profile.max_requests_per_second||'');
+      el('h1SafeHarbor').checked=Boolean(profile.safe_harbor_confirmed);
+      el('h1Automation').checked=Boolean(profile.automated_scanning);
+      el('h1TestAccountRequired').checked=Boolean(profile.test_account_required);
+      el('h1TestAccountConstraints').value=String(profile.test_account_constraints||'');
+      el('h1AdditionalRestrictions').value=Array.isArray(profile.additional_restrictions)
+        ?profile.additional_restrictions.join('\n'):'';
+      el('h1Notes').value=String(profile.program_notes||'');
+      if(profile.primary_url)el('h1Url').value=String(profile.primary_url);
+      setQuickState('profil réutilisé','ok');
+      el('h1QuickSummary').textContent='Profil validé retrouvé pour ce fingerprint exact. Vérifie la cible puis lance la prévisualisation.';
+      return true;
+    }
+
+    if(!el('h1Auth').value.trim()&&remoteBinding?.handle){
+      el('h1Auth').value='https://hackerone.com/'+encodeURIComponent(remoteBinding.handle)+'?type=team';
+    }
+    if(!el('h1PolicyVersion').value.trim())el('h1PolicyVersion').value=new Date().toISOString().slice(0,10);
+    if(!el('h1ReviewedAt').value.trim())el('h1ReviewedAt').value=localDateTimeValue();
+    if(!el('h1ReviewedBy').value.trim()&&reviewer)el('h1ReviewedBy').value=reviewer;
+    if(!el('h1Url').value.trim()&&targets.length===1)el('h1Url').value=targets[0];
+
+    el('h1SafeHarbor').checked=false;
+    el('h1Automation').checked=false;
+    setQuickState('1re revue requise','warn');
+    el('h1QuickSummary').textContent='Première revue pour ce fingerprint : choisis la cible, indique le débit réellement autorisé et confirme Safe Harbor + automatisation après lecture des règles.';
+    return false;
+  }
+
+  function rememberQuickProfile(payload){
+    if(!el('h1QuickRemember')?.checked||!remoteBinding)return;
+    const key=quickProfileKey();
+    if(!key)return;
+    const policy=payload?.policy||{};
+    const profiles=quickProfiles();
+    profiles[key]={
+      authorization_reference:String(policy.authorization_reference||''),
+      policy_version:String(policy.policy_version||''),
+      reviewed_by:String(policy.reviewed_by||''),
+      max_requests_per_second:Number(policy.max_requests_per_second)||0,
+      safe_harbor_confirmed:Boolean(policy.safe_harbor_confirmed),
+      automated_scanning:Boolean(policy.automated_scanning),
+      test_account_required:Boolean(policy.test_account_required),
+      test_account_constraints:String(policy.test_account_constraints||''),
+      additional_restrictions:Array.isArray(policy.additional_restrictions)?policy.additional_restrictions:[],
+      program_notes:String(policy.program_notes||''),
+      primary_url:String(payload?.target?.primary_url||''),
+      saved_at:new Date().toISOString()
+    };
+    saveQuickProfiles(profiles);
+    if(policy.reviewed_by){
+      try{localStorage.setItem(QUICK_REVIEWER_STORAGE_KEY,String(policy.reviewed_by));}catch(_error){}
+    }
+    setQuickState('profil mémorisé','ok');
+  }
+
   function clearRemoteBinding(){
     remoteBinding=null;
+    setQuickState('programme requis');
     el('h1RemoteFingerprint').textContent='Fingerprint distant : —';
     el('h1ProgramMeta').textContent='Snapshot distant détaché. Le formulaire reste utilisable en mode manuel.';
     el('h1ScopeTable').textContent='—';
@@ -1613,8 +1738,9 @@
       el('h1ProgramMeta').textContent=meta.join(' · ')+(program.policy?' · Policy distante chargée; autorisation de scan à confirmer manuellement.':'');
       el('h1RemoteFingerprint').textContent='Fingerprint distant : '+remoteBinding.snapshot_sha256;
       renderRemoteScope(snapshot);
+      restoreQuickProfile(snapshot);
       invalidatePreview();
-      setLauncherStatus('Programme HackerOne chargé. Vérifie la policy, le débit autorisé et la cible principale avant prévisualisation.','ok');
+      setLauncherStatus('Programme HackerOne chargé. Le mode express a prérempli tout ce qui peut l’être sans deviner les règles.','ok');
     }catch(error){
       clearRemoteBinding();
       setLauncherStatus(error.message,'err');
@@ -1897,6 +2023,7 @@
     el('h1Confirm').disabled=!accepted;
     if(accepted){
       approvedPreview=payloadFingerprint(payload);
+      rememberQuickProfile(payload);
       setLauncherStatus('Scope et policy vérifiés. Confirme la prévisualisation puis saisis un nouveau TOTP pour lancer.','ok');
     }else{
       approvedPreview=null;
