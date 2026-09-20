@@ -175,6 +175,14 @@ XBOW_TARGET_MEMORY_MAX_CAMPAIGNS=50
 XBOW_TARGET_MEMORY_MAX_NODES=5000
 ```
 
+## Recon surface diff intelligence
+
+The target-memory layer also exposes `GET /api/campaigns/{campaign_id}/surface-diff`, a bounded read-only comparison against the previous campaign for the same target + authorization identity.
+
+It classifies added and removed assets, endpoints, forms, technologies and WAF observations, produces a deterministic change score, and highlights newly observed assets/endpoints/forms for operator review. This is advisory only: the diff never expands scope, never authorizes scanning and never influences execution admission.
+
+The dashboard renders the change score and focus set inside **Mémoire de cible** after loading a campaign.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.

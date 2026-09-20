@@ -388,6 +388,7 @@ def system_capabilities():
             "observation_graph": True,
             "knowledge_memory": True,
             "target_memory": "read_only",
+            "surface_diff_intelligence": "read_only",
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
             "evidence_quality_scoring": "read_only",
@@ -510,6 +511,20 @@ def get_campaign_target_memory(campaign_id: str):
     store = storage()
     try:
         return build_target_memory(store, campaign.model_dump(mode="json"))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/campaigns/{campaign_id}/surface-diff")
+def get_campaign_surface_diff(campaign_id: str):
+    from .surface_diff import build_surface_diff_intelligence
+    from .target_memory import build_target_memory
+
+    campaign = assert_campaign_exists(campaign_id)
+    store = storage()
+    try:
+        memory = build_target_memory(store, campaign.model_dump(mode="json"))
+        return build_surface_diff_intelligence(memory)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
