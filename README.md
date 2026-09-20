@@ -229,7 +229,7 @@ The confidence factor is bounded between 0.5 and 1.0. It never creates additiona
 
 ## Vault migration
 
-Legacy server-side credentials can be moved into the encrypted vault with the redacted migration workflow documented in [VAULT_MIGRATION.md](VAULT_MIGRATION.md). The migration never prints secret values, verifies every encrypted write before legacy cleanup, and keeps vault enablement as a separate fail-closed cutover step.
+Legacy server-side credentials can be moved into the encrypted vault with the redacted migration workflow documented in [VAULT_MIGRATION.md](VAULT_MIGRATION.md). The CLI also supports a private source env file for containerized/mobile cutovers, so legacy values do not need to be copied into the shell. The migration never prints secret values, verifies every encrypted write before legacy cleanup, and keeps vault enablement as a separate fail-closed cutover step.
 
 ## Production migration
 
