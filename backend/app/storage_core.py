@@ -168,6 +168,20 @@ class Storage:
                 "CREATE INDEX IF NOT EXISTS hackerone_batches_updated "
                 "ON hackerone_batches(updated_at DESC)"
             )
+            db.execute("""CREATE TABLE IF NOT EXISTS hackerone_catalog_state (
+                id TEXT PRIMARY KEY,
+                document TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                version INTEGER NOT NULL DEFAULT 1
+            )""")
+            catalog_columns = {
+                row["name"]
+                for row in db.execute("PRAGMA table_info(hackerone_catalog_state)").fetchall()
+            }
+            if "version" not in catalog_columns:
+                db.execute(
+                    "ALTER TABLE hackerone_catalog_state ADD COLUMN version INTEGER NOT NULL DEFAULT 1"
+                )
             db.execute("""CREATE TABLE IF NOT EXISTS artifacts (
                 id TEXT PRIMARY KEY,
                 campaign_id TEXT NOT NULL,
@@ -312,6 +326,99 @@ class Storage:
                     (limit,),
                 ).fetchall()
         return [json.loads(row["document"]) for row in rows]
+
+    def save_hackerone_catalog_state(
+        self,
+        document: dict[str, Any],
+        *,
+        expected_version: int | None = None,
+    ) -> int:
+        required = {"id", "programs", "fingerprint", "checked_at", "updated_at"}
+        if not required.issubset(document):
+            raise ValueError("HackerOne catalog document missing required fields")
+        document = dict(document)
+        document["id"] = _bounded_identifier(
+            str(document["id"]), "hackerone_catalog_id"
+        )
+        programs = document.get("programs")
+        if not isinstance(programs, list) or len(programs) > 5000:
+            raise ValueError("HackerOne catalog programs are invalid")
+        encoded = json.dumps(
+            document,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
+        if len(encoded.encode("utf-8")) > _max_campaign_document_bytes():
+            raise ValueError("HackerOne catalog document exceeds size limit")
+
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            current = db.execute(
+                "SELECT version FROM hackerone_catalog_state WHERE id=?",
+                (document["id"],),
+            ).fetchone()
+            if current is None:
+                if expected_version not in (None, 0):
+                    db.execute("ROLLBACK")
+                    raise CampaignConflictError("HackerOne catalog version conflict")
+                db.execute(
+                    """INSERT INTO hackerone_catalog_state(
+                           id,document,updated_at,version
+                       ) VALUES(?,?,?,1)""",
+                    (
+                        document["id"],
+                        encoded,
+                        str(document["updated_at"]),
+                    ),
+                )
+                db.execute("COMMIT")
+                return 1
+
+            current_version = int(current["version"])
+            if expected_version is not None and expected_version != current_version:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("HackerOne catalog version conflict")
+            next_version = current_version + 1
+            cursor = db.execute(
+                """UPDATE hackerone_catalog_state
+                   SET document=?, updated_at=?, version=?
+                   WHERE id=? AND version=?""",
+                (
+                    encoded,
+                    str(document["updated_at"]),
+                    next_version,
+                    document["id"],
+                    current_version,
+                ),
+            )
+            if getattr(cursor, "rowcount", 0) != 1:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("HackerOne catalog version conflict")
+            db.execute("COMMIT")
+            return next_version
+
+    def get_hackerone_catalog_state_record(
+        self,
+        catalog_id: str = "current",
+    ) -> tuple[dict[str, Any], int] | None:
+        catalog_id = _bounded_identifier(catalog_id, "hackerone_catalog_id")
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT document,version FROM hackerone_catalog_state WHERE id=?",
+                (catalog_id,),
+            ).fetchone()
+        return (
+            (json.loads(row["document"]), int(row["version"]))
+            if row
+            else None
+        )
+
+    def get_hackerone_catalog_state(
+        self,
+        catalog_id: str = "current",
+    ) -> dict[str, Any] | None:
+        record = self.get_hackerone_catalog_state_record(catalog_id)
+        return record[0] if record else None
 
     def save_hackerone_batch(
         self,
