@@ -178,3 +178,84 @@ def test_rewrite_env_removes_browser_secret_assignments(monkeypatch, tmp_path):
     rendered = env_file.read_text(encoding="utf-8")
     assert "XBOW_BROWSER_SECRET_TEST_PASSWORD=" not in rendered
     assert "DRY_RUN=true" in rendered
+
+
+
+def test_plan_allows_fresh_missing_master_key(monkeypatch, tmp_path):
+    _clear_sources(monkeypatch)
+    key_file = tmp_path / "fresh-master.key"
+    monkeypatch.setenv("XBOW_VAULT_MASTER_KEY_FILE", str(key_file))
+    monkeypatch.delenv("XBOW_VAULT_MASTER_KEY", raising=False)
+    monkeypatch.setenv("XBOW_VAULT_PATH", str(tmp_path / "fresh-vault.json"))
+    monkeypatch.setenv("XBOW_API_TOKEN", "a" * 40)
+
+    result = plan_vault_migration()
+
+    assert result["ok"] is True
+    assert result["master_key_file_ready"] is False
+    assert result["master_key_will_be_created_on_apply"] is True
+    assert not key_file.exists()
+
+
+def test_plan_blocks_existing_vault_without_master_key(monkeypatch, tmp_path):
+    _clear_sources(monkeypatch)
+    key_file = tmp_path / "missing-master.key"
+    vault_file = tmp_path / "existing-vault.json"
+    vault_file.write_text('{"version":1,"secrets":{}}', encoding="utf-8")
+    os.chmod(vault_file, 0o600)
+    monkeypatch.setenv("XBOW_VAULT_MASTER_KEY_FILE", str(key_file))
+    monkeypatch.delenv("XBOW_VAULT_MASTER_KEY", raising=False)
+    monkeypatch.setenv("XBOW_VAULT_PATH", str(vault_file))
+    monkeypatch.setenv("XBOW_API_TOKEN", "a" * 40)
+
+    result = plan_vault_migration()
+
+    assert result["ok"] is False
+    assert "vault_master_key_missing_for_existing_vault" in result["blockers"]
+    assert result["entries"][0]["status"] == "unverified"
+
+
+def test_source_env_file_supplies_legacy_values(monkeypatch, tmp_path):
+    _clear_sources(monkeypatch)
+    _configure(monkeypatch, tmp_path)
+    source = tmp_path / "legacy.env"
+    source.write_text(
+        "XBOW_API_TOKEN=" + "z" * 40 + "\n"
+        "XBOW_HACKERONE_API_USERNAME=user-from-file\n"
+        "XBOW_HACKERONE_API_TOKEN=value-from-file\n"
+        "XBOW_BROWSER_SECRET_TEST_LOGIN=browser-value\n",
+        encoding="utf-8",
+    )
+    os.chmod(source, 0o600)
+
+    result = apply_vault_migration(str(source))
+
+    assert result["ok"] is True
+    assert get_secret("api_token") == "z" * 40
+    assert get_secret("hackerone_api_username") == "user-from-file"
+    assert get_secret("hackerone_api_token") == "value-from-file"
+    assert get_secret("browser.test_login") == "browser-value"
+    assert "value-from-file" not in str(result)
+
+
+def test_source_env_file_conflict_with_process_env_fails_closed(monkeypatch, tmp_path):
+    _clear_sources(monkeypatch)
+    _configure(monkeypatch, tmp_path)
+    source = tmp_path / "legacy.env"
+    source.write_text("XBOW_HACKERONE_API_TOKEN=file-value\n", encoding="utf-8")
+    os.chmod(source, 0o600)
+    monkeypatch.setenv("XBOW_HACKERONE_API_TOKEN", "different-process-value")
+
+    with pytest.raises(VaultMigrationError, match="conflicting process/file source"):
+        plan_vault_migration(str(source))
+
+
+def test_source_env_file_requires_private_permissions(monkeypatch, tmp_path):
+    _clear_sources(monkeypatch)
+    _configure(monkeypatch, tmp_path)
+    source = tmp_path / "legacy.env"
+    source.write_text("XBOW_API_TOKEN=" + "a" * 40 + "\n", encoding="utf-8")
+    os.chmod(source, 0o644)
+
+    with pytest.raises(VaultMigrationError, match="source environment file is unavailable"):
+        plan_vault_migration(str(source))
