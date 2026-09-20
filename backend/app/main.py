@@ -393,6 +393,7 @@ def system_capabilities():
             "historical_recon_scoring": "ordering_only",
             "temporal_surface_profile": "read_only",
             "temporal_novelty_scoring": "ordering_only",
+            "surface_confidence_scoring": "read_only",
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
             "evidence_quality_scoring": "read_only",
@@ -541,6 +542,23 @@ def get_campaign_surface_temporal(campaign_id: str):
     store = storage()
     try:
         return build_temporal_surface_profile(store, campaign.model_dump(mode="json"))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/campaigns/{campaign_id}/surface-confidence")
+def get_campaign_surface_confidence(campaign_id: str):
+    from .surface_confidence import build_surface_confidence
+    from .surface_temporal import build_temporal_surface_profile
+    from .target_memory import build_target_memory
+
+    campaign = assert_campaign_exists(campaign_id)
+    store = storage()
+    try:
+        campaign_doc = campaign.model_dump(mode="json")
+        memory = build_target_memory(store, campaign_doc)
+        temporal = build_temporal_surface_profile(store, campaign_doc)
+        return build_surface_confidence(memory, temporal)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
