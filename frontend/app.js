@@ -472,21 +472,77 @@ function renderFindingIntelligence(data){
   }
 }
 
+function renderTargetMemory(data){
+  const card=$('targetMemoryCard');
+  card.classList.remove('hidden');
+  const summary=data?.summary||{};
+  const delta=data?.delta||{};
+  const byKind=summary.by_kind||{};
+  const campaigns=Number(data?.campaigns_considered)||0;
+  $('targetMemoryCampaigns').textContent=campaigns+' campagne'+(campaigns===1?'':'s');
+  $('targetMemoryIdentity').textContent=
+    (data?.target?.host||'cible inconnue')+
+    (data?.previous_campaign_id?' · comparaison '+data.previous_campaign_id:' · première référence');
+  $('targetMemoryNodes').textContent=String(summary.nodes||0);
+  $('targetMemoryCurrent').textContent=String(summary.current_nodes||0);
+  $('targetMemoryAdded').textContent=String(delta.added_count||0);
+  $('targetMemoryRemoved').textContent=String(delta.removed_count||0);
+  $('targetMemoryPersistent').textContent=String(delta.persistent_count||0)+' persistant';
+
+  const kinds=$('targetMemoryKinds');
+  kinds.replaceChildren();
+  for(const [key,label] of [
+    ['asset','Assets'],
+    ['endpoint','Endpoints'],
+    ['form','Forms'],
+    ['technology','Technologies'],
+    ['waf','WAF']
+  ]){
+    const box=document.createElement('div');
+    box.className='memory-kind';
+    const name=document.createElement('span');
+    name.textContent=label;
+    const value=document.createElement('strong');
+    value.textContent=String(Number(byKind[key])||0);
+    box.append(name,value);
+    kinds.appendChild(box);
+  }
+
+  const renderDeltaList=(id,items,empty)=>{
+    const root=$(id);
+    root.replaceChildren();
+    const values=Array.isArray(items)?items:[];
+    if(!values.length){
+      root.textContent=empty;
+      return;
+    }
+    for(const item of values.slice(0,20)){
+      const code=document.createElement('code');
+      code.textContent=(item.kind||'surface')+' · '+(item.value||'');
+      root.appendChild(code);
+    }
+  };
+  renderDeltaList('targetMemoryAddedList',delta.added,'Aucun nouvel élément.');
+  renderDeltaList('targetMemoryRemovedList',delta.removed,'Aucun élément disparu.');
+}
+
 async function refreshDashboard(){
   if(!campaign)return;
-  const [control,intelligence,timeline,reviewQueue,reportReadiness]=await Promise.all([
+  const [control,intelligence,timeline,reviewQueue,reportReadiness,targetMemory]=await Promise.all([
     api('/campaigns/'+campaign.id+'/control-status'),
     api('/campaigns/'+campaign.id+'/finding-intelligence'),
     api('/campaigns/'+campaign.id+'/decision-timeline'),
     api('/campaigns/'+campaign.id+'/review-queue'),
-    api('/campaigns/'+campaign.id+'/report-readiness')
+    api('/campaigns/'+campaign.id+'/report-readiness'),
+    api('/campaigns/'+campaign.id+'/target-memory')
   ]);
   renderControl(control);
+  renderTargetMemory(targetMemory);
   renderFindingIntelligence(intelligence);
   renderClusters(intelligence);
   renderDecisionTimeline(timeline);
   renderReviewAndSubmission(reviewQueue,reportReadiness);
-  $('output').textContent=JSON.stringify({control,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
+  $('output').textContent=JSON.stringify({control,target_memory:targetMemory,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
 }
 
 async function activateCampaign(value){
