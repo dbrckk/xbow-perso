@@ -183,10 +183,22 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
         scope_checker=scope_checker,
         limit=limit,
     )
+
+    from .recon_priority import prioritize_recon_tasks
+    from .surface_diff import build_surface_diff_intelligence
+    from .target_memory import build_target_memory
+
+    store = storage()
+    memory = build_target_memory(store, campaign.model_dump(mode="json"))
+    surface_diff = build_surface_diff_intelligence(memory)
+    priority = prioritize_recon_tasks(tasks, surface_diff)
+
     return {
         "campaign_id": campaign.id,
-        "tasks": [item.to_dict() for item in tasks],
-        "summary": {"total": len(tasks)},
+        "tasks": [item.to_dict() for item in priority.tasks],
+        "summary": {"total": len(priority.tasks)},
+        "diff_priority": priority.to_dict(),
+        "surface_diff": surface_diff,
         "read_only": True,
         "bounded": True,
         "scope_aware": True,
