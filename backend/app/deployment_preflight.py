@@ -66,6 +66,16 @@ def build_deployment_preflight(
             }
         )
 
+    storage_backend = (os.getenv("XBOW_STORAGE_BACKEND") or "sqlite").strip().lower()
+    queue_backend = (os.getenv("XBOW_QUEUE_BACKEND") or "sqlite").strip().lower()
+    rate_limit_enabled, rate_limit_valid = _bool_env("XBOW_API_RATE_LIMIT_ENABLED")
+    rate_limit_backend = (
+        os.getenv("XBOW_API_RATE_LIMIT_BACKEND") or "memory"
+    ).strip().lower()
+    vault_enabled, vault_valid = _bool_env("XBOW_VAULT_ENABLED")
+    vault_key_file_configured = _configured("XBOW_VAULT_MASTER_KEY_FILE")
+    vault_inline_key_configured = _configured("XBOW_VAULT_MASTER_KEY")
+
     if production:
         for env_name, code in (
             ("XBOW_BACKEND_IMAGE", "backend_image_digest_missing"),
@@ -79,6 +89,71 @@ def build_deployment_preflight(
                         "component": "supply_chain",
                     }
                 )
+
+        if storage_backend not in {"postgres", "postgresql"}:
+            issues.append(
+                {
+                    "code": "production_postgresql_required",
+                    "severity": "error",
+                    "component": "storage",
+                }
+            )
+        if queue_backend != "redis":
+            issues.append(
+                {
+                    "code": "production_redis_queue_required",
+                    "severity": "error",
+                    "component": "queue",
+                }
+            )
+        if not rate_limit_valid:
+            issues.append(
+                {
+                    "code": "invalid_api_rate_limit_flag",
+                    "severity": "error",
+                    "component": "api_rate_limit",
+                }
+            )
+        elif not rate_limit_enabled or rate_limit_backend != "redis":
+            issues.append(
+                {
+                    "code": "production_redis_rate_limit_required",
+                    "severity": "error",
+                    "component": "api_rate_limit",
+                }
+            )
+        if not vault_valid:
+            issues.append(
+                {
+                    "code": "invalid_vault_enabled_flag",
+                    "severity": "error",
+                    "component": "vault",
+                }
+            )
+        elif not vault_enabled:
+            issues.append(
+                {
+                    "code": "production_vault_required",
+                    "severity": "error",
+                    "component": "vault",
+                }
+            )
+        elif not vault_key_file_configured:
+            issues.append(
+                {
+                    "code": "production_vault_key_file_required",
+                    "severity": "error",
+                    "component": "vault",
+                }
+            )
+        if vault_inline_key_configured:
+            issues.append(
+                {
+                    "code": "production_inline_vault_key_forbidden",
+                    "severity": "error",
+                    "component": "vault",
+                }
+            )
 
     if dependencies is not None and not bool(dependencies.get("ok")):
         issues.append(
@@ -223,6 +298,15 @@ def build_deployment_preflight(
             "production_mode": production,
             "backend_image_digest_configured": _image_digest_configured("XBOW_BACKEND_IMAGE"),
             "frontend_image_digest_configured": _image_digest_configured("XBOW_FRONTEND_IMAGE"),
+            "storage_backend": storage_backend,
+            "queue_backend": queue_backend,
+            "api_rate_limit_enabled": rate_limit_enabled,
+            "api_rate_limit_configuration_valid": rate_limit_valid,
+            "api_rate_limit_backend": rate_limit_backend,
+            "vault_enabled": vault_enabled,
+            "vault_configuration_valid": vault_valid,
+            "vault_master_key_file_configured": vault_key_file_configured,
+            "vault_inline_key_configured": vault_inline_key_configured,
         },
         "dependencies_ready": (
             bool(dependencies.get("ok"))
