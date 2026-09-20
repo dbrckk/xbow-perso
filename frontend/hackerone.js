@@ -1805,7 +1805,7 @@
           String(program.handle||''),
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
-          batchProgramHasSavedProfile(program.handle)?'profil local':'1re revue requise'
+          batchProgramHasSavedProfile(program.handle)?'profil mémorisé':'1re revue requise'
         ];
         meta.textContent=parts.join(' · ');
         info.append(titleRow,meta);
@@ -1830,7 +1830,10 @@
     const button=el('h1BatchRefresh');
     if(button)button.disabled=true;
     try{
-      const result=await api('/imports/hackerone/programs?refresh=true');
+      const [result]=await Promise.all([
+        api('/imports/hackerone/programs?refresh=true'),
+        loadServerReviewProfiles()
+      ]);
       hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
       hackerOneCatalogMeta=result?.catalog||{};
       renderProgramOptions();
@@ -2465,7 +2468,10 @@
     if(accepted){
       approvedPreview=payloadFingerprint(payload);
       rememberQuickProfile(payload);
-      setLauncherStatus('Scope et policy vérifiés. Confirme la prévisualisation puis saisis un nouveau TOTP pour lancer.','ok');
+      if(preview?.review_profile_persisted){
+        void loadServerReviewProfiles().then(()=>renderBatchCatalog());
+      }
+      setLauncherStatus('Scope et policy vérifiés. Profil mémorisé pour ce fingerprint; confirme puis lance.','ok');
     }else{
       approvedPreview=null;
       el('h1Launch').disabled=true;
