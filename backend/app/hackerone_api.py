@@ -16,6 +16,7 @@ from .hackerone_client import (
     fetch_hackerone_program_snapshot,
     load_hackerone_credentials,
 )
+from .hackerone_catalog import refresh_hackerone_catalog
 from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_report_tracking import (
@@ -253,14 +254,50 @@ def hackerone_connection():
 
 
 @router.get("/api/imports/hackerone/programs")
-def list_hackerone_programs():
-    try:
-        resources = HackerOneClient().get_all_pages("hackers/programs")
-        programs = [_program_list_item(resource) for resource in resources]
-    except HackerOneClientError as exc:
-        raise _upstream_error(exc) from exc
-    programs.sort(key=lambda item: (str(item["name"]).lower(), str(item["handle"])))
-    return {"provider": "hackerone", "programs": programs}
+def list_hackerone_programs(
+    refresh: bool = Query(default=False),
+):
+    from .main import storage
+
+    store = storage()
+    state = store.get_hackerone_catalog_state()
+    if refresh or state is None:
+        try:
+            state = refresh_hackerone_catalog(store)
+        except HackerOneClientError as exc:
+            raise _upstream_error(exc) from exc
+
+    return {
+        "provider": "hackerone",
+        "programs": list(state.get("programs") or []),
+        "catalog": {
+            "fingerprint": state.get("fingerprint"),
+            "checked_at": state.get("checked_at"),
+            "changed_at": state.get("changed_at"),
+            "change_sequence": int(state.get("change_sequence") or 0),
+            "changes": state.get("changes")
+            or {"added": [], "removed": [], "changed": []},
+            "background_monitor": bool(state.get("background_monitor", True)),
+        },
+    }
+
+
+@router.get("/api/imports/hackerone/catalog")
+def hackerone_program_catalog():
+    from .main import storage
+
+    state = storage().get_hackerone_catalog_state()
+    if state is None:
+        try:
+            state = refresh_hackerone_catalog(storage())
+        except HackerOneClientError as exc:
+            raise _upstream_error(exc) from exc
+    return {
+        "provider": "hackerone",
+        "read_only": True,
+        "contains_secrets": False,
+        **state,
+    }
 
 
 @router.get("/api/imports/hackerone/programs/{handle}/snapshot")
