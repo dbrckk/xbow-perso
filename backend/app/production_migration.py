@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 import os
-import shutil
 import sqlite3
 import time
 from datetime import datetime
@@ -419,7 +418,6 @@ def apply_migration() -> dict[str, Any]:
         raise
 
     target_counts = _postgres_counts(url)
-    expected_counts = dict(plan["source"]["counts"])
     for table, count in copied.items():
         if target_counts.get(table) != count:
             _clear_targets(url, queue)
