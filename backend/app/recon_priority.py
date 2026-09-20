@@ -21,11 +21,15 @@ class ReconPriorityAdjustment:
     original_priority: int
     effective_priority: int
     boost: int
+    diff_boost: int
+    history_boost: int
     signals: tuple[str, ...]
+    historical_signals: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["signals"] = list(self.signals)
+        payload["historical_signals"] = list(self.historical_signals)
         return payload
 
 
@@ -64,9 +68,36 @@ def _signal_counts(surface_diff: dict[str, Any]) -> dict[str, int]:
     return counts
 
 
+
+
+def _historical_kind_scores(target_memory: dict[str, Any] | None) -> dict[str, float]:
+    if not target_memory:
+        return {}
+    delta = dict(target_memory.get("delta") or {})
+    added = {
+        (str(item.get("kind") or ""), str(item.get("value") or ""))
+        for item in list(delta.get("added") or [])[:200]
+    }
+    scores: dict[str, float] = {}
+    for raw in list(target_memory.get("nodes") or [])[:20000]:
+        kind = str(raw.get("kind") or "")
+        value = str(raw.get("value") or "")
+        if (kind, value) not in added:
+            continue
+        try:
+            campaign_count = max(1, int(raw.get("campaign_count") or 1))
+        except (TypeError, ValueError):
+            campaign_count = 1
+        # Newly observed nodes (count=1) are the strongest historical novelty
+        # signal. Reappearing nodes still contribute, but progressively less.
+        novelty = 1.0 / float(campaign_count)
+        scores[kind] = min(5.0, scores.get(kind, 0.0) + novelty)
+    return scores
+
 def prioritize_recon_tasks(
     tasks: list[ReconTask],
     surface_diff: dict[str, Any],
+    target_memory: dict[str, Any] | None = None,
 ) -> ReconPriorityResult:
     """Reorder an already-authorized recon plan using historical change signals.
 
@@ -74,6 +105,7 @@ def prioritize_recon_tasks(
     changes a target, changes methods, changes request budgets, or broadens scope.
     """
     counts = _signal_counts(surface_diff)
+    historical_scores = _historical_kind_scores(target_memory)
     baseline_available = bool(surface_diff.get("baseline_available"))
     changed_surface_count = max(
         0,
@@ -86,17 +118,29 @@ def prioritize_recon_tasks(
     for task in tasks:
         signals = _TASK_SIGNALS.get(task.kind, ())
         signal_strength = sum(counts.get(kind, 0) for kind in signals)
-        boost = min(15, signal_strength * 2) if baseline_available else 0
+        diff_boost = min(15, signal_strength * 2) if baseline_available else 0
+        history_strength = sum(historical_scores.get(kind, 0.0) for kind in signals)
+        history_boost = min(5, int(round(history_strength))) if baseline_available else 0
+        boost = min(20, diff_boost + history_boost)
         effective = min(100, int(task.priority) + boost)
         reason = task.reason
+        active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
+        historical_active = tuple(
+            kind for kind in signals if historical_scores.get(kind, 0.0) > 0
+        )
         if boost:
-            active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
+            details = []
+            if diff_boost:
+                details.append(f"diff +{diff_boost}")
+            if history_boost:
+                details.append(f"history +{history_boost}")
             reason = (
-                f"{task.reason}; diff-priority +{boost} "
-                f"({', '.join(active)})"
+                f"{task.reason}; recon-priority +{boost} "
+                f"({'; '.join(details)}"
+                + (f"; signals={', '.join(active)}" if active else "")
+                + (f"; novelty={', '.join(historical_active)}" if historical_active else "")
+                + ")"
             )
-        else:
-            active = ()
 
         updated = replace(task, priority=effective, reason=reason)
         # Fail closed if any field beyond the intended ordering metadata changed.
@@ -118,7 +162,10 @@ def prioritize_recon_tasks(
                 original_priority=int(task.priority),
                 effective_priority=effective,
                 boost=boost,
+                diff_boost=diff_boost,
+                history_boost=history_boost,
                 signals=active,
+                historical_signals=historical_active,
             )
         )
 
