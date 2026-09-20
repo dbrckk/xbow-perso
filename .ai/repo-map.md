@@ -44,6 +44,7 @@ The content is organized as follows:
   workflows/
     ai-repo-map.yml
     ci.yml
+    mobile-vps-deploy.yml
     release-images.yml
     release-quality-gate.yml
     security.yml
@@ -95,6 +96,7 @@ backend/
     hackerone_attention.py
     hackerone_binding.py
     hackerone_client.py
+    hackerone_live_readiness.py
     hackerone_needs_info.py
     hackerone_report_sync_worker.py
     hackerone_report_tracking.py
@@ -238,6 +240,7 @@ backend/
     test_hackerone_client.py
     test_hackerone_control_center_api.py
     test_hackerone_launch_api.py
+    test_hackerone_live_readiness.py
     test_hackerone_needs_info.py
     test_hackerone_nuclei_e2e.py
     test_hackerone_outbound_submission.py
@@ -362,6 +365,8 @@ frontend/
   app.js
   hackerone.js
   sw.js
+scripts/
+  bootstrap-mobile-ubuntu.sh
 .repo-standards.yml
 AGENTS.md
 docker-compose.distributed.yml
@@ -452,6 +457,98 @@ concurrency:
 jobs:
   repository-standards:
     uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@main
+````
+
+## File: .github/workflows/mobile-vps-deploy.yml
+````yaml
+name: mobile-vps-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git ref to deploy
+        required: true
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-vps-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: mobile-vps
+    steps:
+      - name: Checkout requested ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Validate deployment secrets
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.XBOW_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.XBOW_DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.XBOW_DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.XBOW_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_HOST"
+          test -n "$DEPLOY_USER"
+          test -n "$DEPLOY_SSH_KEY"
+          test -n "$DEPLOY_KNOWN_HOSTS"
+
+      - name: Configure SSH
+        shell: bash
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.XBOW_DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.XBOW_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy safe base stack
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.XBOW_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.XBOW_DEPLOY_USER }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" '
+            set -euo pipefail
+            cd /opt/xbow-perso
+            git fetch --prune origin
+            git checkout main
+            git reset --hard origin/main
+            test -f .env
+            docker compose config >/dev/null
+            docker compose up -d --build
+            docker compose ps
+          '
+
+      - name: Verify safe gates remain closed
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.XBOW_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.XBOW_DEPLOY_USER }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes "$DEPLOY_USER@$DEPLOY_HOST" '
+            set -euo pipefail
+            cd /opt/xbow-perso
+            grep -Eq "^DRY_RUN=true$" .env
+            grep -Eq "^XBOW_ENABLE_ACTIVE_SCANS=false$" .env
+            grep -Eq "^XBOW_ENABLE_HACKERONE_SUBMISSION=false$" .env
+          '
 ````
 
 ## File: .github/workflows/release-images.yml
@@ -3076,6 +3173,9 @@ name = attributes.get("name")
 ⋮----
 campaigns = storage().list_campaigns(limit=limit)
 ⋮----
+@router.get("/api/hackerone/live-readiness")
+def hackerone_live_readiness()
+⋮----
 @router.get("/api/imports/hackerone/connection")
 def hackerone_connection()
 ⋮----
@@ -3424,6 +3524,38 @@ preview = _preview_dict(document)
 ⋮----
 canonical = {
 digest = hashlib.sha256(
+````
+
+## File: backend/app/hackerone_live_readiness.py
+````python
+def _strict_bool(name: str, default: bool = False) -> tuple[bool, bool]
+⋮----
+raw = os.getenv(name)
+⋮----
+value = raw.strip().lower()
+⋮----
+def _configured(name: str) -> bool
+⋮----
+"""Return redacted readiness for an operator-reviewed real HackerOne run."""
+⋮----
+deployment = build_deployment_preflight(dependencies)
+scanner = safe_scanner_runtime_capability()
+⋮----
+credentials_configured = True
+⋮----
+credentials_configured = False
+⋮----
+checks = [
+⋮----
+required = [item for item in checks if item["required"]]
+required_ok = all(bool(item["ok"]) for item in required)
+configuration_valid = submission_valid and report_sync_valid
+⋮----
+required_ok = False
+⋮----
+program_review_ready = (
+⋮----
+operator_steps = [
 ````
 
 ## File: backend/app/hackerone_needs_info.py
@@ -10560,6 +10692,10 @@ def test_frontend_persists_hackerone_attention_filters_and_saved_views()
 def test_frontend_bulk_hackerone_attention_actions_and_sanitized_export()
 ⋮----
 def test_frontend_supports_named_custom_hackerone_attention_views()
+⋮----
+def test_frontend_exposes_hackerone_live_readiness_preflight()
+⋮----
+def test_frontend_exposes_first_live_run_operator_guide()
 ````
 
 ## File: backend/tests/test_hackerone_activity_summary.py
@@ -10838,6 +10974,35 @@ result = response.json()
 persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
 ⋮----
 event_types = [event.get("type") for event in persisted["events"]]
+````
+
+## File: backend/tests/test_hackerone_live_readiness.py
+````python
+_ENV_NAMES = (
+⋮----
+def _clear(monkeypatch)
+⋮----
+def _credentials_ok(monkeypatch)
+⋮----
+def test_live_readiness_is_blocked_by_safe_defaults(monkeypatch)
+⋮----
+result = readiness.build_hackerone_live_readiness({"ok": True})
+⋮----
+failed = {
+⋮----
+def test_live_readiness_requires_hackerone_credentials(monkeypatch)
+⋮----
+def unavailable()
+⋮----
+by_id = {item["id"]: item for item in result["checks"]}
+⋮----
+def test_live_readiness_passes_only_with_explicit_scanner_gates(monkeypatch)
+⋮----
+def test_submission_and_sync_are_optional(monkeypatch)
+⋮----
+def test_invalid_optional_boolean_fails_closed(monkeypatch)
+⋮----
+def test_live_readiness_exposes_redacted_first_run_operator_guide(monkeypatch)
 ````
 
 ## File: backend/tests/test_hackerone_needs_info.py
@@ -15526,6 +15691,12 @@ function renderRemoteScope(snapshot)
 ⋮----
 async function loadRemoteProgram()
 ⋮----
+function renderHackerOneLiveReadiness(payload)
+⋮----
+async function refreshHackerOneLiveReadiness()
+⋮----
+async function copyHackerOneLiveActivation()
+⋮----
 async function initRemoteControlCenter()
 ⋮----
 function parseScopeDocument()
@@ -15556,6 +15727,96 @@ async function importScopeFile()
 ## File: frontend/sw.js
 ````javascript
 
+````
+
+## File: scripts/bootstrap-mobile-ubuntu.sh
+````bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_URL="${XBOW_REPO_URL:-https://github.com/dbrckk/xbow-perso.git}"
+INSTALL_DIR="${XBOW_INSTALL_DIR:-/opt/xbow-perso}"
+RUN_USER="${SUDO_USER:-$USER}"
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Run with sudo: sudo bash $0" >&2
+  exit 1
+fi
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl git openssl
+
+if ! command -v docker >/dev/null 2>&1; then
+  install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  chmod a+r /etc/apt/keyrings/docker.asc
+  . /etc/os-release
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu ${UBUNTU_CODENAME:-$VERSION_CODENAME} stable"     > /etc/apt/sources.list.d/docker.list
+  apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+fi
+
+systemctl enable --now docker
+
+if [ ! -d "$INSTALL_DIR/.git" ]; then
+  rm -rf "$INSTALL_DIR"
+  git clone "$REPO_URL" "$INSTALL_DIR"
+else
+  git -C "$INSTALL_DIR" fetch --prune origin
+  git -C "$INSTALL_DIR" checkout main
+  git -C "$INSTALL_DIR" reset --hard origin/main
+fi
+
+cp -n "$INSTALL_DIR/.env.example" "$INSTALL_DIR/.env"
+
+# The bootstrap itself runs as root, but subsequent Git maintenance is performed
+# by the interactive operator account. Hand the checkout back to that account
+# to avoid Git safe.directory/dubious-ownership failures on later updates.
+chown -R "$RUN_USER:$RUN_USER" "$INSTALL_DIR"
+chmod 600 "$INSTALL_DIR/.env"
+
+API_TOKEN="$(openssl rand -hex 32)"
+python3 - "$INSTALL_DIR/.env" "$API_TOKEN" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+token = sys.argv[2]
+lines = p.read_text().splitlines()
+updates = {
+    "XBOW_API_TOKEN": token,
+    "DRY_RUN": "true",
+    "XBOW_ENABLE_ACTIVE_SCANS": "false",
+    "XBOW_ENABLE_NUCLEI": "false",
+    "XBOW_ENABLE_HACKERONE_SUBMISSION": "false",
+}
+seen = set()
+out = []
+for line in lines:
+    if "=" in line and not line.lstrip().startswith("#"):
+        key = line.split("=", 1)[0]
+        if key in updates:
+            out.append(f"{key}={updates[key]}")
+            seen.add(key)
+            continue
+    out.append(line)
+for key, value in updates.items():
+    if key not in seen:
+        out.append(f"{key}={value}")
+p.write_text("\n".join(out) + "\n")
+PY
+
+install -m 600 /dev/null /root/xbow-bootstrap-secrets.txt
+printf 'XBOW_API_TOKEN=%s\n' "$API_TOKEN" > /root/xbow-bootstrap-secrets.txt
+
+cd "$INSTALL_DIR"
+docker compose config >/dev/null
+docker compose up -d --build
+
+echo
+echo "xbow-perso base stack installed with SAFE gates closed."
+echo "API token stored in /root/xbow-bootstrap-secrets.txt (mode 600)."
+echo "Do not enable active scans until the exact HackerOne program policy/scope is reviewed."
+echo "Next: configure HTTPS/private access, HackerOne credentials, then use the PWA preflight."
 ````
 
 ## File: .repo-standards.yml
@@ -16165,12 +16426,10 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "${XBOW_PORT:-8080}:80"
+      - "${XBOW_PORT:-8080}:8080"
     read_only: true
     tmpfs:
-      - /var/cache/nginx:size=32m
-      - /var/run:size=8m
-      - /tmp:size=16m
+      - /tmp:size=32m,mode=1777
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -16267,7 +16526,46 @@ docker compose up --build
 
 Open `http://SERVER_IP:8080` from your phone.
 
+**Android-only operation:** see [`MOBILE_ONLY.md`](MOBILE_ONLY.md) for the smartphone-only VPS workflow and GitHub Actions deployment path. For the recommended AWS EC2 path, see [`AWS_MOBILE_ONLY.md`](AWS_MOBILE_ONLY.md).
+
+### Interface graphique
+
+The graphical interface is the responsive PWA served by the frontend container on port **8080**:
+
+- same machine: `http://localhost:8080`
+- phone on the same LAN: `http://<LAN_IP_OF_SERVER>:8080`
+- remote VPS/server: expose it behind an HTTPS reverse proxy and open the configured HTTPS origin.
+
+The HackerOne launcher, connection state, live-readiness preflight, scope/policy review, run monitor, findings review, reports, remote status and attention center all live in this single interface. The **Pré-vol bug bounty réel** panel also displays the exact browser origin currently in use.
+
 The default configuration uses `DRY_RUN=true`; external testing engines are not launched until you explicitly configure them.
+
+### Preparing a real HackerOne run
+
+For the step-by-step operator checklist, see `FIRST_REAL_HACKERONE_RUN.md`. The same manual steps are also rendered inside the **Pré-vol bug bounty réel** panel in the PWA.
+
+Keep the safe defaults until you have selected a specific program and manually reviewed its current policy. The read-only endpoint `GET /api/hackerone/live-readiness` and the matching UI panel expose the non-secret gates.
+
+For the current pinned scanner image, a live Nuclei run requires all of the following server-side conditions:
+
+```bash
+XBOW_ENABLE_ACTIVE_SCANS=true
+DRY_RUN=false
+XBOW_ENABLE_NUCLEI=true
+XBOW_NUCLEI_ALLOWED_VERSION=3.11.1
+XBOW_SCANNER_ALLOWED_ENGINES=nuclei
+XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
+```
+
+The dedicated scanner worker must also be running:
+
+```bash
+docker compose --profile scanner up -d --build
+```
+
+Do **not** enable those switches merely because the platform is technically ready. In the HackerOne launcher, first load the exact program, review its current scope/policy, explicitly confirm Safe Harbor/authorization, confirm that automated scanning is permitted, enter the exact request-rate ceiling, review account constraints/exclusions, preview the executable rules, and only then launch.
+
+Direct HackerOne submission remains independently gated by `XBOW_ENABLE_HACKERONE_SUBMISSION=true` and is **not required** for a first real scan. The historical report-sync worker is also optional and can be enabled later.
 
 ## HackerOne Control Center
 

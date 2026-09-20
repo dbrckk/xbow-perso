@@ -241,6 +241,12 @@ function renderRemoteScope(snapshot)
 ⋮----
 async function loadRemoteProgram()
 ⋮----
+function renderHackerOneLiveReadiness(payload)
+⋮----
+async function refreshHackerOneLiveReadiness()
+⋮----
+async function copyHackerOneLiveActivation()
+⋮----
 async function initRemoteControlCenter()
 ⋮----
 function parseScopeDocument()

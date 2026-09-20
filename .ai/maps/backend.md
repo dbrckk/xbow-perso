@@ -80,6 +80,7 @@ app/
   hackerone_attention.py
   hackerone_binding.py
   hackerone_client.py
+  hackerone_live_readiness.py
   hackerone_needs_info.py
   hackerone_report_sync_worker.py
   hackerone_report_tracking.py
@@ -223,6 +224,7 @@ tests/
   test_hackerone_client.py
   test_hackerone_control_center_api.py
   test_hackerone_launch_api.py
+  test_hackerone_live_readiness.py
   test_hackerone_needs_info.py
   test_hackerone_nuclei_e2e.py
   test_hackerone_outbound_submission.py
@@ -2579,6 +2581,9 @@ name = attributes.get("name")
 ⋮----
 campaigns = storage().list_campaigns(limit=limit)
 ⋮----
+@router.get("/api/hackerone/live-readiness")
+def hackerone_live_readiness()
+⋮----
 @router.get("/api/imports/hackerone/connection")
 def hackerone_connection()
 ⋮----
@@ -2927,6 +2932,38 @@ preview = _preview_dict(document)
 ⋮----
 canonical = {
 digest = hashlib.sha256(
+```
+
+## File: app/hackerone_live_readiness.py
+```python
+def _strict_bool(name: str, default: bool = False) -> tuple[bool, bool]
+⋮----
+raw = os.getenv(name)
+⋮----
+value = raw.strip().lower()
+⋮----
+def _configured(name: str) -> bool
+⋮----
+"""Return redacted readiness for an operator-reviewed real HackerOne run."""
+⋮----
+deployment = build_deployment_preflight(dependencies)
+scanner = safe_scanner_runtime_capability()
+⋮----
+credentials_configured = True
+⋮----
+credentials_configured = False
+⋮----
+checks = [
+⋮----
+required = [item for item in checks if item["required"]]
+required_ok = all(bool(item["ok"]) for item in required)
+configuration_valid = submission_valid and report_sync_valid
+⋮----
+required_ok = False
+⋮----
+program_review_ready = (
+⋮----
+operator_steps = [
 ```
 
 ## File: app/hackerone_needs_info.py
@@ -10063,6 +10100,10 @@ def test_frontend_persists_hackerone_attention_filters_and_saved_views()
 def test_frontend_bulk_hackerone_attention_actions_and_sanitized_export()
 ⋮----
 def test_frontend_supports_named_custom_hackerone_attention_views()
+⋮----
+def test_frontend_exposes_hackerone_live_readiness_preflight()
+⋮----
+def test_frontend_exposes_first_live_run_operator_guide()
 ```
 
 ## File: tests/test_hackerone_activity_summary.py
@@ -10341,6 +10382,35 @@ result = response.json()
 persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
 ⋮----
 event_types = [event.get("type") for event in persisted["events"]]
+```
+
+## File: tests/test_hackerone_live_readiness.py
+```python
+_ENV_NAMES = (
+⋮----
+def _clear(monkeypatch)
+⋮----
+def _credentials_ok(monkeypatch)
+⋮----
+def test_live_readiness_is_blocked_by_safe_defaults(monkeypatch)
+⋮----
+result = readiness.build_hackerone_live_readiness({"ok": True})
+⋮----
+failed = {
+⋮----
+def test_live_readiness_requires_hackerone_credentials(monkeypatch)
+⋮----
+def unavailable()
+⋮----
+by_id = {item["id"]: item for item in result["checks"]}
+⋮----
+def test_live_readiness_passes_only_with_explicit_scanner_gates(monkeypatch)
+⋮----
+def test_submission_and_sync_are_optional(monkeypatch)
+⋮----
+def test_invalid_optional_boolean_fails_closed(monkeypatch)
+⋮----
+def test_live_readiness_exposes_redacted_first_run_operator_guide(monkeypatch)
 ```
 
 ## File: tests/test_hackerone_needs_info.py

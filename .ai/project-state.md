@@ -22,21 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T08:58:52Z
+Generated: 2026-09-20T07:31:04Z
 
 ### Git
 - Branch: `main`
-- Head: `e5e1df235475`
-- Commit date: 2026-09-19T10:58:42+02:00
-- Commit: Merge pull request #232 from dbrckk/feat/hackerone-custom-attention-views
-- Tracked files: 469
+- Head: `bdda990d98c6`
+- Commit date: 2026-09-20T09:30:32+02:00
+- Commit: fix: avoid dubious ownership after mobile bootstrap
+- Tracked files: 476
 
 ### Recently changed files
-- `README.md`
-- `frontend/sw.js`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/hackerone.js`
+- `scripts/bootstrap-mobile-ubuntu.sh`
+- `.github/workflows/ci.yml`
+- `frontend/Dockerfile`
+- `frontend/app.css`
 - `frontend/index.html`
+- `frontend/manifest.webmanifest`
+- `frontend/sw.js`
+- `deploy/Caddyfile`
+- `frontend/nginx.conf`
+- `backend/tests/test_deployment_config.py`
+- `docker-compose.yml`
 
 ### Project signals
 - `pyproject.toml`
