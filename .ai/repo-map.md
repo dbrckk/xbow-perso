@@ -178,6 +178,7 @@ backend/
     submission_api.py
     submission_state.py
     surface_diff.py
+    surface_temporal.py
     swarm_coordinator.py
     target_memory.py
     totp_auth.py
@@ -352,6 +353,7 @@ backend/
     test_submission_api.py
     test_submission_state.py
     test_surface_diff.py
+    test_surface_temporal.py
     test_swarm_coordinator.py
     test_target_memory.py
     test_totp_auth.py
@@ -4798,6 +4800,9 @@ def get_campaign_surface_diff(campaign_id: str)
 ⋮----
 memory = build_target_memory(store, campaign.model_dump(mode="json"))
 ⋮----
+@app.get("/api/campaigns/{campaign_id}/surface-temporal")
+def get_campaign_surface_temporal(campaign_id: str)
+⋮----
 @app.get("/api/campaigns/{campaign_id}/outbox")
 def campaign_outbox_status(campaign_id: str, limit: int = 100)
 ⋮----
@@ -8439,6 +8444,80 @@ score = min(100, raw_score)
 priority = _priority(score, len(changes))
 ⋮----
 focus = [
+````
+
+## File: backend/app/surface_temporal.py
+````python
+@dataclass(frozen=True)
+class TemporalSurfaceNode
+⋮----
+kind: str
+value: str
+classification: str
+appearances: int
+campaigns_observed: int
+transitions: int
+presence_ratio: float
+present_now: bool
+present_previous: bool
+first_seen_campaign_id: str | None
+last_seen_campaign_id: str | None
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def _classification(presence: list[bool]) -> str
+⋮----
+current = presence[-1]
+previous = presence[-2] if len(presence) >= 2 else False
+appearances = sum(1 for value in presence if value)
+prior_appearances = sum(1 for value in presence[:-1] if value)
+transitions = sum(
+ratio = appearances / len(presence)
+⋮----
+def build_temporal_surface_profile(store: Any, campaign: dict[str, Any]) -> dict[str, Any]
+⋮----
+"""Build bounded temporal surface stability from same-authority campaigns.
+
+    The profile is descriptive only. It does not modify scope, authorization,
+    request budgets, task creation or execution admission.
+    """
+campaign_id = str(campaign.get("id") or "")
+⋮----
+identity = target_identity(campaign)
+cutoff = str(campaign.get("created_at") or "")
+max_campaigns = target_memory_max_campaigns()
+max_nodes = target_memory_max_nodes()
+⋮----
+matching: list[dict[str, Any]] = []
+⋮----
+created = str(candidate.get("created_at") or "")
+⋮----
+matching = matching[-max_campaigns:]
+⋮----
+campaign_ids = [str(item.get("id") or "") for item in matching]
+⋮----
+surfaces: list[set[tuple[str, str]]] = []
+universe: set[tuple[str, str]] = set()
+⋮----
+records = store.list_observations(str(item.get("id") or ""))
+surface = _campaign_surface(records, max_nodes=max_nodes)
+keys = set(surface)
+⋮----
+remaining = max_nodes - len(universe)
+⋮----
+nodes: list[TemporalSurfaceNode] = []
+⋮----
+presence = [(kind, value) in surface for surface in surfaces]
+appearances = sum(1 for seen in presence if seen)
+⋮----
+seen_indexes = [index for index, seen in enumerate(presence) if seen]
+first_id = campaign_ids[seen_indexes[0]] if seen_indexes else None
+last_id = campaign_ids[seen_indexes[-1]] if seen_indexes else None
+⋮----
+counts: dict[str, int] = {}
+⋮----
+volatile = sorted(
+newly_seen = [item for item in nodes if item.classification == "new"]
 ````
 
 ## File: backend/app/swarm_coordinator.py
@@ -15364,6 +15443,44 @@ added = next(item for item in result["changes"] if item["direction"] == "added")
 removed = next(item for item in result["changes"] if item["direction"] == "removed")
 ````
 
+## File: backend/tests/test_surface_temporal.py
+````python
+class FakeStore
+⋮----
+def __init__(self, campaigns, observations)
+⋮----
+def list_campaigns(self, *, limit=None)
+⋮----
+items = list(self._campaigns)
+⋮----
+def list_observations(self, campaign_id)
+⋮----
+def campaign(campaign_id: str, created_at: str)
+⋮----
+def obs(obs_id: str, kind: str, value: str)
+⋮----
+def test_temporal_profile_detects_returning_and_intermittent_surface(monkeypatch)
+⋮----
+c1 = campaign("c1", "2026-09-01T00:00:00+00:00")
+c2 = campaign("c2", "2026-09-02T00:00:00+00:00")
+c3 = campaign("c3", "2026-09-03T00:00:00+00:00")
+c4 = campaign("c4", "2026-09-04T00:00:00+00:00")
+store = FakeStore(
+⋮----
+profile = build_temporal_surface_profile(store, c4)
+⋮----
+by_value = {item["value"]: item for item in profile["nodes"]}
+returning = by_value["https://app.example.com/feature"]
+newly_seen = by_value["https://app.example.com/new"]
+stable = by_value["app.example.com"]
+⋮----
+def test_temporal_profile_detects_disappearance(monkeypatch)
+⋮----
+profile = build_temporal_surface_profile(store, c2)
+⋮----
+def test_temporal_profile_ignores_future_campaigns(monkeypatch)
+````
+
 ## File: backend/tests/test_swarm_coordinator.py
 ````python
 def _tasks()
@@ -15900,7 +16017,7 @@ function renderDecisionTimeline(data)
 ⋮----
 function renderFindingIntelligence(data)
 ⋮----
-function renderTargetMemory(data,diff)
+function renderTargetMemory(data,diff,temporal)
 ⋮----
 const renderDeltaList=(id,items,empty)=>
 ⋮----
@@ -17042,6 +17159,14 @@ The advisory recon-plan endpoint exposes the audit metadata as `diff_priority`; 
 Diff-prioritized recon also uses bounded historical frequency from Target Memory. Newly observed surface receives a small novelty bonus, while an item that has appeared in many prior campaigns contributes progressively less historical weight.
 
 Historical scoring is intentionally weak relative to the current surface diff: the diff component is capped at +15 priority points, historical novelty at +5, and the combined ordering boost at +20. This still changes **ordering only**. It cannot create tasks, increase request budgets, rewrite targets, change allowed methods, or expand scope.
+
+## Temporal surface profile
+
+The campaign dashboard and API now expose a bounded temporal profile through `GET /api/campaigns/{campaign_id}/surface-temporal`.
+
+For campaigns sharing the same target + authorization identity, xbow classifies observed surface as `stable`, `new`, `returning`, `intermittent`, `disappeared`, or `historical`. It also tracks presence ratio and appearance/disappearance transitions so recurring deployment noise can be distinguished from genuinely new surface.
+
+Only campaigns at or before the selected campaign timestamp are considered, preventing later observations from leaking into historical views. The profile is read-only and has no execution influence: it cannot expand scope, create recon tasks, alter request budgets, or authorize scanning.
 
 ## Disaster recovery integrity
 

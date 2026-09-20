@@ -73,7 +73,7 @@ function renderDecisionTimeline(data)
 ⋮----
 function renderFindingIntelligence(data)
 ⋮----
-function renderTargetMemory(data,diff)
+function renderTargetMemory(data,diff,temporal)
 ⋮----
 const renderDeltaList=(id,items,empty)=>
 ⋮----

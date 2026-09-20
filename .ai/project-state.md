@@ -22,33 +22,34 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:33:25Z
+Generated: 2026-09-20T08:38:49Z
 
 ### Git
 - Branch: `main`
-- Head: `b5653874336d`
-- Commit date: 2026-09-20T10:33:14+02:00
-- Commit: feat: add bounded historical recon scoring
-- Tracked files: 483
+- Head: `15bdc43f00ac`
+- Commit date: 2026-09-20T10:38:30+02:00
+- Commit: feat: add temporal surface stability profile
+- Tracked files: 485
 
 ### Recently changed files
 - `README.md`
 - `backend/app/main.py`
+- `backend/app/surface_temporal.py`
+- `backend/tests/test_surface_temporal.py`
+- `frontend/app.css`
+- `frontend/app.js`
+- `frontend/index.html`
+- `frontend/sw.js`
 - `backend/app/orchestrator.py`
 - `backend/app/recon_priority.py`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_priority.py`
 - `backend/app/surface_diff.py`
 - `backend/tests/test_surface_diff.py`
-- `frontend/app.css`
-- `frontend/app.js`
-- `frontend/index.html`
-- `frontend/sw.js`
 - `.env.example`
 - `backend/app/storage_core.py`
 - `backend/app/target_memory.py`
 - `backend/tests/test_target_memory.py`
-- `scripts/bootstrap-mobile-ubuntu.sh`
 
 ### Project signals
 - `pyproject.toml`
