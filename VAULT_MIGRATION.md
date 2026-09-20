@@ -99,3 +99,10 @@ PYTHONPATH=backend python -m app.vault_migration apply --source-env-file /run/le
 The source file must be a regular non-symlink file with private permissions (no group/other bits). Relevant values from the process environment and source file must match exactly if both are present; mismatches fail closed.
 
 A fresh deployment may point `XBOW_VAULT_MASTER_KEY_FILE` to a file that does not exist yet. `plan` now reports that the key will be created by `apply` without mutating the filesystem. If a vault file already exists but its master-key file is missing, planning fails closed.
+
+
+## Mobile verified cutover
+
+On an installation already migrated to PostgreSQL + Redis, the smartphone workflow can perform a verified vault cutover with `scripts/mobile-vault-cutover.sh`. The script reads legacy values from the private server env file, verifies encrypted writes before cleanup, backs up the env file, and automatically restores it if the vault-enabled runtime fails health/readiness checks.
+
+Use `scripts/mobile-vault-rollback.sh` to explicitly return to the pre-vault env configuration without deleting the encrypted vault.
