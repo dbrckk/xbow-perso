@@ -73,6 +73,10 @@ function renderDecisionTimeline(data)
 ⋮----
 function renderFindingIntelligence(data)
 ⋮----
+function renderTargetMemory(data)
+⋮----
+const renderDeltaList=(id,items,empty)=>
+⋮----
 async function refreshDashboard()
 ⋮----
 async function activateCampaign(value)

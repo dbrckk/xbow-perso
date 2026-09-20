@@ -1,13 +1,24 @@
 # Change impact
 
-Base: ecf6f28d485a478de27db5b99a3b6be96061498b
-Head: bdda990d98c6c5008f3969271e97765e196adc6c
+Base: f7eb014aa4e726426313d31a4965de817ff22427
+Head: 4189cdf60799038cdb4b1e2b36c96f9eacd7470e
 
 ## Changed files
-- M scripts/bootstrap-mobile-ubuntu.sh
+- M .env.example
+- M README.md
+- M backend/app/main.py
+- M backend/app/storage_core.py
+- A backend/app/target_memory.py
+- A backend/tests/test_target_memory.py
+- M frontend/app.css
+- M frontend/app.js
+- M frontend/index.html
+- M frontend/sw.js
 
 ## Affected areas
-- scripts
+- (root)
+- backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

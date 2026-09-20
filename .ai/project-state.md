@@ -22,27 +22,32 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T07:31:04Z
+Generated: 2026-09-20T08:07:05Z
 
 ### Git
 - Branch: `main`
-- Head: `bdda990d98c6`
-- Commit date: 2026-09-20T09:30:32+02:00
-- Commit: fix: avoid dubious ownership after mobile bootstrap
-- Tracked files: 476
+- Head: `4189cdf60799`
+- Commit date: 2026-09-20T10:06:53+02:00
+- Commit: feat: add bounded cross-campaign target memory
+- Tracked files: 479
 
 ### Recently changed files
+- `.env.example`
+- `README.md`
+- `backend/app/main.py`
+- `backend/app/storage_core.py`
+- `backend/app/target_memory.py`
+- `backend/tests/test_target_memory.py`
+- `frontend/app.css`
+- `frontend/app.js`
+- `frontend/index.html`
+- `frontend/sw.js`
 - `scripts/bootstrap-mobile-ubuntu.sh`
 - `.github/workflows/ci.yml`
 - `frontend/Dockerfile`
-- `frontend/app.css`
-- `frontend/index.html`
 - `frontend/manifest.webmanifest`
-- `frontend/sw.js`
 - `deploy/Caddyfile`
 - `frontend/nginx.conf`
-- `backend/tests/test_deployment_config.py`
-- `docker-compose.yml`
 
 ### Project signals
 - `pyproject.toml`

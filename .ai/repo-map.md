@@ -177,6 +177,7 @@ backend/
     submission_api.py
     submission_state.py
     swarm_coordinator.py
+    target_memory.py
     totp_auth.py
     validation_state.py
     validator.py
@@ -348,6 +349,7 @@ backend/
     test_submission_api.py
     test_submission_state.py
     test_swarm_coordinator.py
+    test_target_memory.py
     test_totp_auth.py
     test_validation_state.py
     test_validator.py
@@ -4782,10 +4784,13 @@ def list_campaigns()
 @app.get("/api/campaigns/{campaign_id}", response_model=Campaign)
 def get_campaign(campaign_id: str)
 ⋮----
-@app.get("/api/campaigns/{campaign_id}/outbox")
-def campaign_outbox_status(campaign_id: str, limit: int = 100)
+@app.get("/api/campaigns/{campaign_id}/target-memory")
+def get_campaign_target_memory(campaign_id: str)
 ⋮----
 campaign = assert_campaign_exists(campaign_id)
+⋮----
+@app.get("/api/campaigns/{campaign_id}/outbox")
+def campaign_outbox_status(campaign_id: str, limit: int = 100)
 ⋮----
 snapshot = outbox_snapshot(campaign.events, max_items=limit)
 ⋮----
@@ -8324,6 +8329,121 @@ expected_action = f"recon:{task.kind}"
 remaining = limits.max_total_requests - used
 ⋮----
 allocated = min(task.max_requests, remaining)
+````
+
+## File: backend/app/target_memory.py
+````python
+SURFACE_KINDS = ("asset", "endpoint", "form", "technology", "waf")
+⋮----
+@dataclass(frozen=True)
+class SurfaceNode
+⋮----
+kind: str
+value: str
+first_seen_at: str
+last_seen_at: str
+campaign_count: int
+sources: tuple[str, ...]
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _bounded_int_env(name: str, default: int, minimum: int, maximum: int) -> int
+⋮----
+raw = os.getenv(name, str(default))
+⋮----
+value = int(raw)
+⋮----
+def target_memory_max_campaigns() -> int
+⋮----
+def target_memory_max_nodes() -> int
+⋮----
+def _target_parts(campaign: dict[str, Any]) -> tuple[str, str]
+⋮----
+target = dict(campaign.get("target") or {})
+rules = dict(target.get("rules") or {})
+parsed = urlsplit(str(target.get("primary_url") or ""))
+host = (parsed.hostname or "").lower().rstrip(".")
+authorization = str(rules.get("authorization_reference") or "").strip()
+⋮----
+def target_identity(campaign: dict[str, Any]) -> str
+⋮----
+"""Stable identity for read-only cross-campaign memory.
+
+    Authorization reference is included so two independent programs sharing the
+    same host never silently share learned surface state.
+    """
+⋮----
+material = f"{host}\x1f{authorization}".encode("utf-8")
+⋮----
+def _canonical_value(kind: str, value: str) -> str
+⋮----
+value = str(value).strip()
+⋮----
+parsed = urlsplit(value)
+⋮----
+port = f":{parsed.port}" if parsed.port else ""
+netloc = host + port
+path = parsed.path or "/"
+⋮----
+def _campaign_surface(records: list[dict[str, Any]], *, max_nodes: int) -> dict[tuple[str, str], dict[str, Any]]
+⋮----
+surface: dict[tuple[str, str], dict[str, Any]] = {}
+⋮----
+kind = str(record.get("kind") or "")
+⋮----
+value = _canonical_value(kind, str(record.get("value") or ""))
+⋮----
+key = (kind, value)
+⋮----
+source = str(record.get("source") or "unknown").strip() or "unknown"
+created_at = str(record.get("created_at") or "")
+item = surface.setdefault(
+⋮----
+def build_target_memory(store: Any, campaign: dict[str, Any]) -> dict[str, Any]
+⋮----
+"""Build bounded read-only target memory from durable campaign observations."""
+campaign_id = str(campaign.get("id") or "")
+⋮----
+identity = target_identity(campaign)
+⋮----
+max_campaigns = target_memory_max_campaigns()
+max_nodes = target_memory_max_nodes()
+⋮----
+matching: list[dict[str, Any]] = []
+⋮----
+campaign_surfaces: list[tuple[dict[str, Any], dict[tuple[str, str], dict[str, Any]]]] = []
+aggregate: dict[tuple[str, str], dict[str, Any]] = {}
+⋮----
+item_id = str(item.get("id") or "")
+records = store.list_observations(item_id)
+surface = _campaign_surface(records, max_nodes=max_nodes)
+⋮----
+agg = aggregate.setdefault(
+⋮----
+seen_first = node["first_seen_at"] or str(item.get("created_at") or "")
+seen_last = node["last_seen_at"] or str(item.get("updated_at") or "")
+⋮----
+nodes = [
+⋮----
+current_surface: dict[tuple[str, str], dict[str, Any]] = {}
+previous_surface: dict[tuple[str, str], dict[str, Any]] = {}
+previous_campaign: dict[str, Any] | None = None
+⋮----
+current_surface = surface
+⋮----
+current_surface = _campaign_surface(store.list_observations(campaign_id), max_nodes=max_nodes)
+⋮----
+earlier = [
+⋮----
+current_keys = set(current_surface)
+previous_keys = set(previous_surface)
+added = sorted(current_keys - previous_keys)
+removed = sorted(previous_keys - current_keys)
+persistent = sorted(current_keys & previous_keys)
+⋮----
+by_kind: dict[str, int] = {kind: 0 for kind in SURFACE_KINDS}
 ````
 
 ## File: backend/app/totp_auth.py
@@ -15058,6 +15178,43 @@ def fake_agent_by_name(name)
 profile = original(name)
 ````
 
+## File: backend/tests/test_target_memory.py
+````python
+class FakeStore
+⋮----
+def __init__(self, campaigns, observations)
+⋮----
+def list_campaigns(self, *, limit=None)
+⋮----
+items = list(self._campaigns)
+⋮----
+def list_observations(self, campaign_id)
+⋮----
+def observation(obs_id, kind, value, created_at, source="recon")
+⋮----
+def test_target_memory_aggregates_surface_and_builds_delta(monkeypatch)
+⋮----
+old = campaign(
+current = campaign(
+unrelated = campaign(
+store = FakeStore(
+⋮----
+memory = build_target_memory(store, current)
+⋮----
+def test_target_identity_is_bound_to_authorization_reference()
+⋮----
+one = campaign(
+two = campaign(
+⋮----
+def test_storage_accepts_form_and_waf_observations(tmp_path: Path)
+⋮----
+store = Storage(
+doc = campaign(
+⋮----
+form = store.put_observation(
+waf = store.put_observation(
+````
+
 ## File: backend/tests/test_totp_auth.py
 ````python
 RFC_SECRET = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
@@ -15522,6 +15679,10 @@ function renderReviewAndSubmission(reviewQueue, reportReadiness)
 function renderDecisionTimeline(data)
 ⋮----
 function renderFindingIntelligence(data)
+⋮----
+function renderTargetMemory(data)
+⋮----
+const renderDeltaList=(id,items,empty)=>
 ⋮----
 async function refreshDashboard()
 ⋮----
@@ -16624,6 +16785,21 @@ Bulk actions operate only on the currently filtered/sorted local view. The opera
 
 
 Named custom attention views are stored locally under `xbow:hackerone:attention-custom-views:v1`. The operator can save the current filter/search/sort configuration under a name, re-apply it later, replace an existing view with the same name, or delete it. Custom view names are normalized and capped at 60 characters; at most 20 custom views are retained. Stored custom views contain only validated filter preference fields and never contain report bodies, NMI/comment text, credentials, user data, or notification cursors. Built-in presets remain immutable and separate from user-defined views.
+
+## Target memory and recon graph
+
+xbow-perso now exposes a bounded, read-only cross-campaign memory for the same authorized target through `GET /api/campaigns/{campaign_id}/target-memory`.
+
+The memory aggregates only passive surface observations (`asset`, `endpoint`, `form`, `technology`, `waf`), tracks first/last observation, campaign frequency and source, and computes a deterministic delta against the previous campaign. It is isolated by the primary target host **and** authorization reference so unrelated programs that happen to share infrastructure do not silently share memory.
+
+This layer is advisory only: historical observations never authorize a scan, never bypass scope review and never modify campaign admission. The dashboard renders the current surface and the added/removed delta after a campaign is loaded.
+
+Bound the memory explicitly with:
+
+```bash
+XBOW_TARGET_MEMORY_MAX_CAMPAIGNS=50
+XBOW_TARGET_MEMORY_MAX_NODES=5000
+```
 
 ## Disaster recovery integrity
 
