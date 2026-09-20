@@ -366,6 +366,7 @@ def system_capabilities():
             "crash_safe_outbox": True,
             "outbox_observability": True,
             "policy_bound_job_provenance": True,
+            "hackerone_batch_queue": "durable_server_side",
         },
         "execution": {
             "strix_scanning": "gated",
