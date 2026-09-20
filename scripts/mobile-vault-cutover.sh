@@ -94,21 +94,30 @@ docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml exec -T backend \
   python -c 'import os; assert os.getenv("XBOW_STORAGE_BACKEND") == "postgresql"; assert os.getenv("XBOW_QUEUE_BACKEND") == "redis"; print("distributed-backends=ok")'
 
+LEGACY_SOURCE_PATH="/data/.vault-migration-source.env"
+cleanup_legacy_source() {
+  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps -T \
+    backend sh -c 'rm -f /data/.vault-migration-source.env' >/dev/null 2>&1 || true
+}
+trap cleanup_legacy_source EXIT
+
+echo "=== STAGE PRIVATE LEGACY ENV ==="
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps -T \
+  backend sh -c 'umask 077; cat > /data/.vault-migration-source.env' < "$ENV_FILE"
+
 echo "=== VAULT MIGRATION PLAN ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps \
   -e XBOW_VAULT_ENABLED=false \
   -e XBOW_VAULT_PATH=/data/secrets.vault.json \
   -e XBOW_VAULT_MASTER_KEY_FILE=/data/vault-master.key \
-  -v "$ENV_FILE:/run/xbow-legacy.env:ro" \
-  backend python -m app.vault_migration plan --source-env-file /run/xbow-legacy.env
+  backend python -m app.vault_migration plan --source-env-file "$LEGACY_SOURCE_PATH"
 
 echo "=== VAULT MIGRATION APPLY ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps \
   -e XBOW_VAULT_ENABLED=false \
   -e XBOW_VAULT_PATH=/data/secrets.vault.json \
   -e XBOW_VAULT_MASTER_KEY_FILE=/data/vault-master.key \
-  -v "$ENV_FILE:/run/xbow-legacy.env:ro" \
-  backend python -m app.vault_migration apply --source-env-file /run/xbow-legacy.env
+  backend python -m app.vault_migration apply --source-env-file "$LEGACY_SOURCE_PATH"
 
 echo "=== VERIFY REQUIRED VAULT AUTH SECRET ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps \
