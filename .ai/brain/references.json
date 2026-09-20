@@ -5,81 +5,141 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "_configured": {
+    "ProductionMigrationError": {
       "definition": {
-        "file": "backend/app/deployment_preflight.py",
-        "line": 12,
-        "kind": "function",
+        "file": "backend/app/production_migration.py",
+        "line": 91,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 12,
-          "preview": "def _configured(name: str) -> bool:",
+          "file": "backend/app/production_migration.py",
+          "line": 91,
+          "preview": "class ProductionMigrationError(RuntimeError):",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 76,
-          "preview": "vault_key_file_configured = _configured(\"XBOW_VAULT_MASTER_KEY_FILE\")",
+          "file": "backend/app/production_migration.py",
+          "line": 101,
+          "preview": "raise ProductionMigrationError(f\"{name} must be a boolean\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 77,
-          "preview": "vault_inline_key_configured = _configured(\"XBOW_VAULT_MASTER_KEY\")",
+          "file": "backend/app/production_migration.py",
+          "line": 107,
+          "preview": "raise ProductionMigrationError(\"source SQLite database is unavailable\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 193,
-          "preview": "if not _configured(\"XBOW_PENTAGI_BASE_URL\"):",
+          "file": "backend/app/production_migration.py",
+          "line": 114,
+          "preview": "raise ProductionMigrationError(\"artifact root is unavailable\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 201,
-          "preview": "if not _configured(\"XBOW_PENTAGI_MODEL_PROVIDER\"):",
+          "file": "backend/app/production_migration.py",
+          "line": 121,
+          "preview": "raise ProductionMigrationError(\"XBOW_DATABASE_URL must be configured for PostgreSQL\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 322,
-          "preview": "\"base_url_configured\": _configured(\"XBOW_PENTAGI_BASE_URL\"),",
+          "file": "backend/app/production_migration.py",
+          "line": 128,
+          "preview": "raise ProductionMigrationError(\"XBOW_REDIS_URL must be configured for Redis\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 323,
-          "preview": "\"model_provider_configured\": _configured(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_live_readiness.py",
-          "line": 23,
-          "preview": "def _configured(name: str) -> bool:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_live_readiness.py",
-          "line": 131,
-          "preview": "\"ok\": _configured(\"XBOW_API_TOKEN\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_live_readiness.py",
+          "file": "backend/app/production_migration.py",
           "line": 185,
-          "preview": "\"done\": _configured(\"XBOW_API_TOKEN\"),",
+          "preview": "raise ProductionMigrationError(\"artifact path escapes configured root\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 187,
+          "preview": "raise ProductionMigrationError(\"artifact content is missing\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 190,
+          "preview": "raise ProductionMigrationError(\"artifact size mismatch\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 192,
+          "preview": "raise ProductionMigrationError(\"artifact SHA-256 mismatch\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 203,
+          "preview": "raise ProductionMigrationError(\"Redis target is unavailable\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 274,
+          "preview": "raise ProductionMigrationError(\"backup destination already exists\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 366,
+          "preview": "raise ProductionMigrationError(\"running jobs cannot be migrated\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 388,
+          "preview": "raise ProductionMigrationError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 394,
+          "preview": "raise ProductionMigrationError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 424,
+          "preview": "raise ProductionMigrationError(f\"target verification failed for {table}\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 427,
+          "preview": "raise ProductionMigrationError(\"target Redis job-count verification failed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 452,
+          "preview": "except (ProductionMigrationError, OSError, sqlite3.Error, psycopg.Error, redis.RedisError) as exc:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 10,
+          "preview": "ProductionMigrationError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 204,
+          "preview": "with pytest.raises(ProductionMigrationError, match=\"artifact size mismatch|SHA-256 mismatch\"):",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 10
+      "occurrence_count": 20
     },
     "_bool_env": {
       "definition": {
-        "file": "backend/app/deployment_preflight.py",
-        "line": 16,
+        "file": "backend/app/production_migration.py",
+        "line": 95,
         "kind": "function",
         "language": "python"
       },
@@ -100,7 +160,7 @@
           "file": "backend/app/deployment_preflight.py",
           "line": 16,
           "preview": "def _bool_env(name: str, default: bool = False) -> tuple[bool, bool]:",
-          "definition_candidate": true
+          "definition_candidate": false
         },
         {
           "file": "backend/app/deployment_preflight.py",
@@ -118,6 +178,18 @@
           "file": "backend/app/deployment_preflight.py",
           "line": 75,
           "preview": "vault_enabled, vault_valid = _bool_env(\"XBOW_VAULT_ENABLED\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 95,
+          "preview": "def _bool_env(name: str) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 387,
+          "preview": "if not _bool_env(\"XBOW_MIGRATION_QUIESCED\"):",
           "definition_candidate": false
         },
         {
@@ -139,918 +211,3548 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 9
+      "occurrence_count": 11
     },
-    "_production_mode": {
+    "_source_path": {
       "definition": {
-        "file": "backend/app/deployment_preflight.py",
-        "line": 28,
+        "file": "backend/app/production_migration.py",
+        "line": 104,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 28,
-          "preview": "def _production_mode() -> bool:",
+          "file": "backend/app/production_migration.py",
+          "line": 104,
+          "preview": "def _source_path() -> Path:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 47,
-          "preview": "production = _production_mode()",
+          "file": "backend/app/production_migration.py",
+          "line": 226,
+          "preview": "source = _source_path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 398,
+          "preview": "source = _source_path()",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 3
     },
-    "_image_digest_configured": {
+    "_artifact_root": {
       "definition": {
-        "file": "backend/app/deployment_preflight.py",
-        "line": 32,
+        "file": "backend/app/production_migration.py",
+        "line": 111,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 32,
-          "preview": "def _image_digest_configured(name: str) -> bool:",
+          "file": "backend/app/production_migration.py",
+          "line": 111,
+          "preview": "def _artifact_root() -> Path:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 84,
-          "preview": "if not _image_digest_configured(env_name):",
+          "file": "backend/app/production_migration.py",
+          "line": 198,
+          "preview": "postgres = PostgresStorage(database_url=_database_url(), artifact_root=str(_artifact_root()))",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 299,
-          "preview": "\"backend_image_digest_configured\": _image_digest_configured(\"XBOW_BACKEND_IMAGE\"),",
+          "file": "backend/app/production_migration.py",
+          "line": 227,
+          "preview": "root = _artifact_root()",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 300,
-          "preview": "\"frontend_image_digest_configured\": _image_digest_configured(\"XBOW_FRONTEND_IMAGE\"),",
+          "file": "backend/app/production_migration.py",
+          "line": 399,
+          "preview": "root = _artifact_root()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 72,
+          "preview": "db_path, _artifact_root = _configure_source(monkeypatch, tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 114,
+          "preview": "db_path, _artifact_root = _configure_source(monkeypatch, tmp_path)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_database_url": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 118,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 118,
+          "preview": "def _database_url() -> str:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 198,
+          "preview": "postgres = PostgresStorage(database_url=_database_url(), artifact_root=str(_artifact_root()))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 228,
+          "preview": "database_url = _database_url()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 400,
+          "preview": "url = _database_url()",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 4
     },
-    "build_deployment_preflight": {
+    "_redis_url": {
       "definition": {
-        "file": "backend/app/deployment_preflight.py",
+        "file": "backend/app/production_migration.py",
+        "line": 125,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 125,
+          "preview": "def _redis_url() -> str:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 201,
+          "preview": "queue = RedisJobQueue(url=_redis_url())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 229,
+          "preview": "_redis_url()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 22,
+          "preview": "def _redis_url():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 99,
+          "preview": "@pytest.mark.skipif(not _redis_url(), reason=\"Redis integration URL unavailable\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 103,
+          "preview": "queue = RedisJobQueue(_redis_url())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 143,
+          "preview": "@pytest.mark.skipif(not _redis_url(), reason=\"Redis integration URL unavailable\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 147,
+          "preview": "queue = RedisJobQueue(_redis_url())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 200,
+          "preview": "@pytest.mark.skipif(not _redis_url(), reason=\"Redis integration URL unavailable\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 205,
+          "preview": "queue = RedisJobQueue(_redis_url())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 212,
+          "preview": "@pytest.mark.skipif(not _redis_url(), reason=\"Redis integration URL unavailable\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 218,
+          "preview": "monkeypatch.setenv(\"XBOW_TOTP_REPLAY_REDIS_URL\", _redis_url())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 314,
+          "preview": "@pytest.mark.skipif(not _redis_url(), reason=\"Redis integration URL unavailable\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 318,
+          "preview": "queue = RedisJobQueue(_redis_url())",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 14
+    },
+    "_connect_source": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 132,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 132,
+          "preview": "def _connect_source(path: Path) -> sqlite3.Connection:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 231,
+          "preview": "with _connect_source(source) as db:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 412,
+          "preview": "with _connect_source(source) as source_db:",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_table_exists": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 139,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 139,
+          "preview": "def _table_exists(db: sqlite3.Connection, table: str) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 152,
+          "preview": "if _table_exists(db, table)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 157,
+          "preview": "if _table_exists(db, \"jobs\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 165,
+          "preview": "if not _table_exists(db, \"jobs\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 176,
+          "preview": "if not _table_exists(db, \"artifacts\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 294,
+          "preview": "if not _table_exists(source_db, table):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 321,
+          "preview": "if not _table_exists(source_db, \"jobs\"):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "_source_counts": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 147,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 147,
+          "preview": "def _source_counts(db: sqlite3.Connection) -> dict[str, int]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 232,
+          "preview": "counts = _source_counts(db)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_queue_status": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 163,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 163,
+          "preview": "def _queue_status(db: sqlite3.Connection) -> dict[str, int]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 233,
+          "preview": "queue_status = _queue_status(db)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_verify_artifacts": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 174,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 174,
+          "preview": "def _verify_artifacts(db: sqlite3.Connection, root: Path) -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 234,
+          "preview": "artifacts = _verify_artifacts(db, root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 415,
+          "preview": "_verify_artifacts(source_db, root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 11,
+          "preview": "_verify_artifacts,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 205,
+          "preview": "_verify_artifacts(db, artifact_root.resolve())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 227,
+          "preview": "result = _verify_artifacts(db, artifact_root.resolve())",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_initialize_targets": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 197,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 197,
+          "preview": "def _initialize_targets() -> tuple[PostgresStorage, RedisJobQueue]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 236,
+          "preview": "postgres, queue = _initialize_targets()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 409,
+          "preview": "postgres, queue = _initialize_targets()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 82,
+          "preview": "\"app.production_migration._initialize_targets\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 126,
+          "preview": "\"app.production_migration._initialize_targets\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 155,
+          "preview": "\"app.production_migration._initialize_targets\",",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_postgres_counts": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 207,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 207,
+          "preview": "def _postgres_counts(url: str) -> dict[str, int]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 237,
+          "preview": "target_counts = _postgres_counts(database_url)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 420,
+          "preview": "target_counts = _postgres_counts(url)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 86,
+          "preview": "\"app.production_migration._postgres_counts\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 130,
+          "preview": "\"app.production_migration._postgres_counts\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 159,
+          "preview": "\"app.production_migration._postgres_counts\",",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_target_redis_count": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 221,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 221,
+          "preview": "def _target_redis_count(queue: RedisJobQueue) -> int:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 238,
+          "preview": "redis_jobs = _target_redis_count(queue)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 425,
+          "preview": "if _target_redis_count(queue) != jobs:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 97,
+          "preview": "\"app.production_migration._target_redis_count\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 141,
+          "preview": "\"app.production_migration._target_redis_count\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 170,
+          "preview": "\"app.production_migration._target_redis_count\",",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "plan_migration": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 225,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 225,
+          "preview": "def plan_migration() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 392,
+          "preview": "plan = plan_migration()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 451,
+          "preview": "result = plan_migration() if args.command == \"plan\" else apply_migration()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 12,
+          "preview": "plan_migration,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 101,
+          "preview": "result = plan_migration()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 145,
+          "preview": "result = plan_migration()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 174,
+          "preview": "result = plan_migration()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "_backup_sqlite": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 272,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 272,
+          "preview": "def _backup_sqlite(source: Path, destination: Path) -> None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 408,
+          "preview": "_backup_sqlite(source, backup)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_copy_postgres": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 289,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 289,
+          "preview": "def _copy_postgres(source_db: sqlite3.Connection, url: str) -> dict[str, int]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 413,
+          "preview": "copied = _copy_postgres(source_db, url)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_timestamp_score": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 311,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 311,
+          "preview": "def _timestamp_score(value: str | None) -> float:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 360,
+          "preview": "score = _timestamp_score(str(row[\"created_at\"]))",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_copy_redis_jobs": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 320,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 320,
+          "preview": "def _copy_redis_jobs(source_db: sqlite3.Connection, queue: RedisJobQueue) -> int:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 414,
+          "preview": "jobs = _copy_redis_jobs(source_db, queue)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_clear_targets": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 371,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 371,
+          "preview": "def _clear_targets(url: str, queue: RedisJobQueue) -> None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 417,
+          "preview": "_clear_targets(url, queue)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 423,
+          "preview": "_clear_targets(url, queue)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 426,
+          "preview": "_clear_targets(url, queue)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "apply_migration": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 386,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 386,
+          "preview": "def apply_migration() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 451,
+          "preview": "result = plan_migration() if args.command == \"plan\" else apply_migration()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "main": {
+      "definition": {
+        "file": "backend/app/production_migration.py",
+        "line": 443,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 142,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, queue, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/attack_surface.py",
+          "line": 206,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/autonomy_gate.py",
+          "line": 101,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, queue, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/browser.py",
+          "line": 104,
+          "preview": "from .main import Campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/browser.py",
+          "line": 190,
+          "preview": "from .main import is_host_allowed",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 69,
+          "preview": "from .main import assert_campaign_exists, queue, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 112,
+          "preview": "from .main import CampaignState, assert_campaign_exists, storage, utcnow",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 46,
+          "preview": "from .main import assert_campaign_record, is_host_allowed, queue, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_review_state.py",
+          "line": 83,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 131,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/coverage.py",
+          "line": 72,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/decision_consensus.py",
+          "line": 91,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/decision_timeline.py",
+          "line": 319,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 37,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 82,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/evidence_chain.py",
+          "line": 134,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/evidence_quality.py",
+          "line": 133,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_cluster_consensus.py",
+          "line": 120,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_cluster_saturation.py",
+          "line": 104,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_consensus.py",
+          "line": 117,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_correlation.py",
+          "line": 102,
+          "preview": "from .main import assert_campaign_exists",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_correlation.py",
+          "line": 286,
+          "preview": "from .main import assert_campaign_exists",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 149,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_lifecycle.py",
+          "line": 117,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_readiness.py",
+          "line": 132,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_triage.py",
+          "line": 144,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 209,
+          "preview": "from .main import storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 217,
+          "preview": "from .main import dependency_readiness",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 292,
+          "preview": "from .main import Campaign, CampaignState, TargetInput, save_campaign, utcnow",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 370,
+          "preview": "from .main import assert_campaign_exists, start_campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 443,
+          "preview": "from .main import assert_campaign_exists",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 469,
+          "preview": "from .main import assert_campaign_exists",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 517,
+          "preview": "from .main import (",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 293,
+          "preview": "def main() -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 312,
+          "preview": "main()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_scope_import.py",
+          "line": 10,
+          "preview": "from .main import ProgramRules",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 237,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/learning_memory.py",
+          "line": 92,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/metrics.py",
+          "line": 97,
+          "preview": "from .main import queue, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/nuclei_parser.py",
+          "line": 7,
+          "preview": "from .main import Campaign, Finding",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observation_writer.py",
+          "line": 6,
+          "preview": "from .main import Campaign, Finding",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/operational_alerts.py",
+          "line": 128,
+          "preview": "from .main import queue, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/operational_alerts.py",
+          "line": 136,
+          "preview": "from .main import queue, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 27,
+          "preview": "from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload, utcnow",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_action_gateway.py",
+          "line": 6,
+          "preview": "from .main import Campaign, CampaignState, is_host_allowed",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_adapter.py",
+          "line": 8,
+          "preview": "from .main import Campaign, is_host_allowed",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_admission.py",
+          "line": 8,
+          "preview": "from .main import Campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_control.py",
+          "line": 6,
+          "preview": "from .main import Campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_dispatch.py",
+          "line": 3,
+          "preview": "from .main import Campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_execution_guard.py",
+          "line": 7,
+          "preview": "from .main import Campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_status_worker_service.py",
+          "line": 109,
+          "preview": "def main() -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_status_worker_service.py",
+          "line": 125,
+          "preview": "main()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_worker_service.py",
+          "line": 11,
+          "preview": "from .main import Campaign, CampaignState",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_worker_service.py",
+          "line": 278,
+          "preview": "def main() -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/pentagi_worker_service.py",
+          "line": 294,
+          "preview": "main()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 443,
+          "preview": "def main() -> int:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 460,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/readiness.py",
+          "line": 76,
+          "preview": "def main() -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/readiness.py",
+          "line": 83,
+          "preview": "main()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 171,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_worker.py",
+          "line": 172,
+          "preview": "from .main import is_host_allowed",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 227,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 236,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/report.py",
+          "line": 5,
+          "preview": "from .main import Campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/report_approval_api.py",
+          "line": 31,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/report_approval_api.py",
+          "line": 61,
+          "preview": "from .main import (",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/report_approval_api.py",
+          "line": 127,
+          "preview": "from .main import (",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/report_readiness.py",
+          "line": 154,
+          "preview": "from .main import assert_campaign_exists, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/review_queue.py",
+          "line": 174,
+          "preview": "from .main import assert_campaign_exists, is_host_allowed, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_ingestion.py",
+          "line": 8,
+          "preview": "from .main import Campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_normalization.py",
+          "line": 9,
+          "preview": "from .main import Campaign, Finding, is_host_allowed",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_registry.py",
+          "line": 7,
+          "preview": "from .main import Campaign, Finding",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 8,
+          "preview": "from .main import Campaign, CampaignState, utcnow",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_parser.py",
+          "line": 7,
+          "preview": "from .main import Campaign, Finding",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/submission_api.py",
+          "line": 27,
+          "preview": "from .main import assert_campaign_record, storage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/submission_api.py",
+          "line": 46,
+          "preview": "from .main import save_campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/submission_api.py",
+          "line": 106,
+          "preview": "from .main import utcnow",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/submission_api.py",
+          "line": 137,
+          "preview": "from .main import utcnow",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/submission_api.py",
+          "line": 168,
+          "preview": "from .main import utcnow",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/validator.py",
+          "line": 203,
+          "preview": "from .main import is_host_allowed",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/vault_cli.py",
+          "line": 9,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/vault_cli.py",
+          "line": 31,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker.py",
+          "line": 11,
+          "preview": "from .main import Campaign, Finding, is_host_allowed",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 20,
+          "preview": "from .main import Campaign, CampaignState, utcnow",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 568,
+          "preview": "def main() -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 580,
+          "preview": "main()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_adaptive_cycle.py",
+          "line": 4,
+          "preview": "from app.main import app",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 4,
+          "preview": "from app import main",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 7,
+          "preview": "from app.main import (",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 230,
+          "preview": "main,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 234,
+          "preview": "monkeypatch.setattr(main, \"queue\", lambda: jobs)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 236,
+          "preview": "main,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 271,
+          "preview": "receipt = main.policy_receipt(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 281,
+          "preview": "\"at\": main.utcnow(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 285,
+          "preview": "campaign.updated_at = main.utcnow()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 292,
+          "preview": "payload = main.sanitized_scan_payload(campaign, receipt)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 342,
+          "preview": "main,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 348,
+          "preview": "main._reconcile_campaign_started(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 389,
+          "preview": "main,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 393,
+          "preview": "monkeypatch.setattr(main, \"queue\", lambda: jobs)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 395,
+          "preview": "main,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 445,
+          "preview": "\"at\": main.utcnow(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 454,
+          "preview": "\"at\": main.utcnow(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 457,
+          "preview": "campaign.updated_at = main.utcnow()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 510,
+          "preview": "main,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 514,
+          "preview": "monkeypatch.setattr(main, \"queue\", lambda: jobs)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 516,
+          "preview": "main,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 555,
+          "preview": "\"at\": main.utcnow(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 558,
+          "preview": "campaign.updated_at = main.utcnow()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 568,
+          "preview": "main.attach_job_provenance(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 609,
+          "preview": "original_save = main.save_campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 617,
+          "preview": "monkeypatch.setattr(main, \"save_campaign\", fail_save)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 618,
+          "preview": "monkeypatch.setattr(main, \"queue\", lambda: jobs)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 626,
+          "preview": "monkeypatch.setattr(main, \"save_campaign\", original_save)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 3,
+          "preview": "from app import main",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 6,
+          "preview": "from app.main import Campaign, CampaignState, ProgramRules, TargetInput",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 140,
+          "preview": "monkeypatch.setattr(main, \"assert_campaign_exists\", lambda campaign_id: campaign)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 142,
+          "preview": "result = main.campaign_outbox_status(campaign.id, limit=10)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 152,
+          "preview": "monkeypatch.setattr(main, \"assert_campaign_exists\", lambda campaign_id: campaign)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 154,
+          "preview": "with pytest.raises(main.HTTPException) as exc:",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 120
+    },
+    "_FakePostgres": {
+      "definition": {
+        "file": "backend/tests/test_production_migration.py",
+        "line": 17,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 17,
+          "preview": "class _FakePostgres:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 83,
+          "preview": "lambda: (_FakePostgres(), _FakeQueue()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 127,
+          "preview": "lambda: (_FakePostgres(), _FakeQueue()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 156,
+          "preview": "lambda: (_FakePostgres(), _FakeQueue()),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "health": {
+      "definition": {
+        "file": "backend/tests/test_production_migration.py",
+        "line": 18,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/jobqueue.py",
+          "line": 107,
+          "preview": "def health(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/jobqueue.py",
+          "line": 108,
+          "preview": "\"\"\"Return minimal storage health without exposing job payloads.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 328,
+          "preview": "@app.get(\"/health\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 329,
+          "preview": "def health():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 331,
+          "preview": "database_ok = bool(queue().health().get(\"ok\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 427,
+          "preview": "@app.get(\"/api/observer/health\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_runtime.py",
+          "line": 9,
+          "preview": "\"\"\"Process-local owner of scheduler health with synchronized snapshots.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_runtime.py",
+          "line": 16,
+          "preview": "def health(self) -> ObserverHealth:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 34,
+          "preview": "health: ObserverHealth | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 38,
+          "preview": "health = health or observer_runtime().health",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 39,
+          "preview": "if health.circuit_open():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 40,
+          "preview": "return {\"ran\": False, \"reason\": \"circuit_open\", \"health\": health.snapshot()}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 43,
+          "preview": "return {\"ran\": False, \"reason\": \"not_leader\", \"health\": health.snapshot()}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 44,
+          "preview": "health.note_generation(generation)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 47,
+          "preview": "health.note_leadership_lost()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 48,
+          "preview": "return {\"ran\": False, \"reason\": \"leadership_lost\", \"generation\": generation, \"health\": health.snapshot()}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 59,
+          "preview": "health.failure()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 62,
+          "preview": "health.note_cycle_duration(elapsed)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 64,
+          "preview": "health.note_deadline_exceeded()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 65,
+          "preview": "health.failure()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 71,
+          "preview": "\"health\": health.snapshot(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 74,
+          "preview": "health.note_leadership_lost()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 75,
+          "preview": "return {\"ran\": False, \"reason\": \"leadership_lost_after_observation\", \"generation\": generation, \"health\": health.snapshot()}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 76,
+          "preview": "health.success()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_scheduler.py",
+          "line": 81,
+          "preview": "\"health\": health.snapshot(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/observer_slo.py",
+          "line": 7,
+          "preview": "\"\"\"Classify health of the incident-observation control plane itself.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/operational_slo.py",
+          "line": 19,
+          "preview": "\"\"\"Classify aggregate service health without inspecting work content.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 202,
+          "preview": "if not queue.health().get(\"ok\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 257,
+          "preview": "\"postgres_ready\": bool(postgres.health().get(\"ok\")),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 259,
+          "preview": "\"redis_ready\": bool(queue.health().get(\"ok\")),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 436,
+          "preview": "\"postgres_ready\": bool(postgres.health().get(\"ok\")),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 437,
+          "preview": "\"redis_ready\": bool(queue.health().get(\"ok\")),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/queue_backend.py",
+          "line": 11,
+          "preview": "def health(self) -> dict: ...",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/readiness.py",
+          "line": 36,
+          "preview": "queue = JobQueue().health()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/readiness.py",
+          "line": 42,
+          "preview": "metadata = store.health()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/redis_jobqueue.py",
+          "line": 83,
+          "preview": "def health(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/storage_backend.py",
+          "line": 13,
+          "preview": "def health(self) -> dict: ...",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/storage_core.py",
+          "line": 210,
+          "preview": "def health(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_watchdog.py",
+          "line": 19,
+          "preview": "\"\"\"Evaluate aggregate worker health without exposing jobs, targets, or payloads.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_auth.py",
+          "line": 174,
+          "preview": "authenticate_control_api(_request_for_path(\"/health\"), call_next)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_health.py",
+          "line": 7,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_health.py",
+          "line": 12,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_health.py",
+          "line": 17,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_health.py",
+          "line": 53,
+          "preview": "result = main.health()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_health.py",
+          "line": 59,
+          "preview": "result = main.health()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_health.py",
+          "line": 66,
+          "preview": "result = main.health()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_http.py",
+          "line": 14,
+          "preview": "runtime.health.note_deadline_exceeded()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_http.py",
+          "line": 17,
+          "preview": "\"/api/observer/health\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_metrics.py",
+          "line": 11,
+          "preview": "health = ObserverHealth(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_metrics.py",
+          "line": 20,
+          "preview": "result = observer_health_metrics(health.snapshot(), now=NOW)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_metrics.py",
+          "line": 30,
+          "preview": "health = ObserverHealth()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_metrics.py",
+          "line": 31,
+          "preview": "health.note_cycle_duration(2.5)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_metrics.py",
+          "line": 32,
+          "preview": "health.note_deadline_exceeded()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_metrics.py",
+          "line": 33,
+          "preview": "health.note_leadership_lost()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_health_metrics.py",
+          "line": 34,
+          "preview": "result = health.snapshot()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 10,
+          "preview": "health = ObserverHealth(consecutive_failures=2)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 11,
+          "preview": "health.success(NOW)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 12,
+          "preview": "assert health.consecutive_failures == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 13,
+          "preview": "assert health.last_success_at == NOW.isoformat()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 17,
+          "preview": "health = ObserverHealth()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 18,
+          "preview": "health.failure(threshold=3, cooldown_seconds=60, now=NOW)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 19,
+          "preview": "health.failure(threshold=3, cooldown_seconds=60, now=NOW)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 20,
+          "preview": "assert health.circuit_open(NOW) is False",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 21,
+          "preview": "health.failure(threshold=3, cooldown_seconds=60, now=NOW)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 22,
+          "preview": "assert health.circuit_open(NOW + timedelta(seconds=30)) is True",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 23,
+          "preview": "assert health.circuit_open(NOW + timedelta(seconds=61)) is False",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 27,
+          "preview": "health = ObserverHealth()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 28,
+          "preview": "health.note_generation(1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 29,
+          "preview": "health.note_generation(1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 30,
+          "preview": "health.note_generation(2)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_resilience.py",
+          "line": 31,
+          "preview": "assert health.leadership_changes == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_observer_runtime.py",
+          "line": 10,
+          "preview": "runtime.health.note_deadline_exceeded()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 18,
+          "preview": "def health(self):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 23,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_queue_health.py",
+          "line": 10,
+          "preview": "health = q.health()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_queue_health.py",
+          "line": 12,
+          "preview": "assert health == {",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_queue_health.py",
+          "line": 18,
+          "preview": "assert \"secret\" not in str(health)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_queue_health.py",
+          "line": 19,
+          "preview": "assert \"must-not-leak\" not in str(health)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_queue_health.py",
+          "line": 27,
+          "preview": "health = q.health()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_queue_health.py",
+          "line": 29,
+          "preview": "assert health[\"ok\"] is False",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_queue_health.py",
+          "line": 30,
+          "preview": "assert health[\"storage\"] == \"sqlite\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_queue_health.py",
+          "line": 31,
+          "preview": "assert health[\"error\"] == \"DatabaseError\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_readiness.py",
+          "line": 9,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_readiness.py",
+          "line": 14,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_readiness.py",
+          "line": 28,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_chaos.py",
+          "line": 21,
+          "preview": "if not queue.health().get(\"ok\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_jobqueue.py",
+          "line": 34,
+          "preview": "assert queue.health() == {\"ok\": True, \"storage\": \"redis\"}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_jobqueue.py",
+          "line": 35,
+          "preview": "assert \"secret.example\" not in str(queue.health())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_storage.py",
+          "line": 543,
+          "preview": "result = store.health()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 6,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 22,
+          "preview": "def health(self):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 91
+    },
+    "_FakeQueue": {
+      "definition": {
+        "file": "backend/tests/test_production_migration.py",
+        "line": 22,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 22,
+          "preview": "class _FakeQueue:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 83,
+          "preview": "lambda: (_FakePostgres(), _FakeQueue()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 127,
+          "preview": "lambda: (_FakePostgres(), _FakeQueue()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 156,
+          "preview": "lambda: (_FakePostgres(), _FakeQueue()),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "stats": {
+      "definition": {
+        "file": "backend/tests/test_production_migration.py",
+        "line": 26,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 269,
+          "preview": "stats = {",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 282,
+          "preview": "stats[\"campaigns_checked\"] += 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 284,
+          "preview": "stats[\"reports_checked\"] += 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 287,
+          "preview": "stats[\"changes_recorded\"] += 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 289,
+          "preview": "stats[\"errors\"] += 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 290,
+          "preview": "return stats",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 301,
+          "preview": "stats = sync_once()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 304,
+          "preview": "f\"campaigns={stats['campaigns_checked']} \"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 305,
+          "preview": "f\"reports={stats['reports_checked']} \"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_report_sync_worker.py",
+          "line": 306,
+          "preview": "f\"changes={stats['changes_recorded']} errors={stats['errors']}\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/jobqueue.py",
+          "line": 204,
+          "preview": "def stats(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/metrics.py",
+          "line": 32,
+          "preview": "queue_stats = queue_backend.stats()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/production_migration.py",
+          "line": 222,
+          "preview": "return int(queue.stats().get(\"total\") or 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/queue_backend.py",
+          "line": 15,
+          "preview": "def stats(self) -> dict: ...",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/redis_jobqueue.py",
+          "line": 200,
+          "preview": "def stats(self) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 97,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 118,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 138,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 207,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 250,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 306,
+          "preview": "assert jobs.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 409,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_idempotency.py",
+          "line": 530,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 180,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 272,
+          "preview": "assert jobs.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 315,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 413,
+          "preview": "assert jobs.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 307,
+          "preview": "assert jobs.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 345,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 388,
+          "preview": "assert jobs.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 136,
+          "preview": "assert queue.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 363,
+          "preview": "stats = queue.stats()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 364,
+          "preview": "assert stats[\"by_status\"][\"queued\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_distributed_concurrency.py",
+          "line": 365,
+          "preview": "assert stats[\"by_status\"][\"running\"] == workers",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_binding.py",
+          "line": 78,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_binding.py",
+          "line": 138,
+          "preview": "assert jobs.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_binding.py",
+          "line": 192,
+          "preview": "assert jobs.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 98,
+          "preview": "stats = sync_once(store, client)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 100,
+          "preview": "assert stats == {",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 143,
+          "preview": "stats = sync_once(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 148,
+          "preview": "assert stats[\"changes_recorded\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 188,
+          "preview": "stats = sync_once(store, client)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 190,
+          "preview": "assert stats[\"campaigns_checked\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 191,
+          "preview": "assert stats[\"reports_checked\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 254,
+          "preview": "stats = sync_once(store, _Client([second]))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_report_sync_worker.py",
+          "line": 256,
+          "preview": "assert stats[\"changes_recorded\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_incident_lifecycle.py",
+          "line": 58,
+          "preview": "stats = incident_reliability_stats(history)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_incident_lifecycle.py",
+          "line": 59,
+          "preview": "assert stats[\"mttr_seconds\"] == 45.0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_incident_lifecycle.py",
+          "line": 60,
+          "preview": "assert stats[\"mtbf_seconds\"] == 120.0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 110,
+          "preview": "stats = q.stats()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 111,
+          "preview": "assert stats[\"total\"] == 2",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 112,
+          "preview": "assert stats[\"by_status\"][\"completed\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 113,
+          "preview": "assert stats[\"by_status\"][\"queued\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 114,
+          "preview": "assert stats[\"oldest_queued_at\"] is not None",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 115,
+          "preview": "assert \"secret\" not in str(stats)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 116,
+          "preview": "assert \"must-not-leak\" not in str(stats)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 131,
+          "preview": "stats = q.stats()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 133,
+          "preview": "assert stats[\"oldest_running_claimed_at\"] == \"2026-09-13T10:00:00+00:00\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 134,
+          "preview": "assert \"worker-secret-name\" not in str(stats)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 198,
+          "preview": "stats = q.stats()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 199,
+          "preview": "assert stats[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 200,
+          "preview": "assert stats[\"by_status\"][\"queued\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 201,
+          "preview": "assert stats[\"by_status\"][\"running\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 202,
+          "preview": "assert stats[\"oldest_queued_at\"] is not None",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_jobqueue.py",
+          "line": 212,
+          "preview": "assert q.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_metrics.py",
+          "line": 6,
+          "preview": "def stats(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 43,
+          "preview": "assert queue.stats()[\"total\"] == 2",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 67,
+          "preview": "assert queue.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 89,
+          "preview": "assert queue.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 808,
+          "preview": "assert queue.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 918,
+          "preview": "assert queue.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 944,
+          "preview": "assert queue.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 57,
+          "preview": "assert restarted_queue.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 62,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 114,
+          "preview": "assert before_restart.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 128,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 182,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 212,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 219,
+          "preview": "assert JobQueue(db).stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 252,
+          "preview": "assert restarted.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_pentagi_control_api.py",
+          "line": 73,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_pentagi_control_api.py",
+          "line": 126,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_pentagi_control_api.py",
+          "line": 283,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_pentagi_control_api.py",
+          "line": 361,
+          "preview": "assert jobs.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_pentagi_dispatch.py",
+          "line": 59,
+          "preview": "assert queue.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_pentagi_dispatch.py",
+          "line": 92,
+          "preview": "assert queue.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_pentagi_dispatch.py",
+          "line": 108,
+          "preview": "assert queue.stats()[\"total\"] == 2",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 26,
+          "preview": "def stats(self):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_queue_age_metrics.py",
+          "line": 12,
+          "preview": "def stats(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_chaos.py",
+          "line": 54,
+          "preview": "assert restarted.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_chaos.py",
+          "line": 185,
+          "preview": "assert third.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_integration.py",
+          "line": 43,
+          "preview": "assert redis_queue.stats()[\"by_status\"][\"completed\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_jobqueue_integration.py",
+          "line": 63,
+          "preview": "assert restarted.stats()[\"total\"] == 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_jobqueue_integration.py",
+          "line": 162,
+          "preview": "stats = redis_queue.stats()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_jobqueue_integration.py",
+          "line": 164,
+          "preview": "assert stats[\"oldest_running_claimed_at\"] == \"2026-09-13T10:00:00+00:00\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_redis_jobqueue_integration.py",
+          "line": 165,
+          "preview": "assert \"redis-worker-secret-name\" not in str(stats)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_budget_config.py",
+          "line": 141,
+          "preview": "assert queue.stats()[\"total\"] == 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 9,
+          "preview": "def stats(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 64,
+          "preview": "result = queue.stats()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 68,
+          "preview": "queue.stats = stale_stats",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 100
+    },
+    "_campaign": {
+      "definition": {
+        "file": "backend/tests/test_production_migration.py",
         "line": 39,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/deployment_preflight.py",
-          "line": 39,
-          "preview": "def build_deployment_preflight(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_live_readiness.py",
-          "line": 6,
-          "preview": "from .deployment_preflight import build_deployment_preflight",
+          "file": "backend/app/browser.py",
+          "line": 103,
+          "preview": "def _campaign(campaign_id: str, store: StorageBackend | None = None):",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/hackerone_live_readiness.py",
-          "line": 32,
-          "preview": "deployment = build_deployment_preflight(dependencies)",
+          "file": "backend/app/browser.py",
+          "line": 153,
+          "preview": "campaign, version = _campaign(campaign_id, store)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/main.py",
-          "line": 346,
-          "preview": "from .deployment_preflight import build_deployment_preflight",
+          "file": "backend/app/browser.py",
+          "line": 237,
+          "preview": "campaign, version = _campaign(campaign_id, store)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/main.py",
-          "line": 348,
-          "preview": "return build_deployment_preflight(dependency_readiness())",
+          "file": "backend/app/browser.py",
+          "line": 273,
+          "preview": "latest, _latest_version = _campaign(campaign.id, store)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 2,
-          "preview": "from app.deployment_preflight import build_deployment_preflight",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 51,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 65,
-          "preview": "result = build_deployment_preflight({\"ok\": False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 77,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 100,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 120,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 134,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 158,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 183,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 205,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 217,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 231,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 243,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 256,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 269,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 282,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_preflight.py",
-          "line": 1,
-          "preview": "from app.deployment_preflight import build_deployment_preflight",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_preflight.py",
-          "line": 46,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_preflight.py",
-          "line": 73,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_preflight.py",
-          "line": 93,
-          "preview": "result = build_deployment_preflight({\"ok\": True})",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 25
-    },
-    "_clear": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 28,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 28,
-          "preview": "def _clear(monkeypatch):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 49,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
+          "file": "backend/app/worker_service.py",
           "line": 63,
-          "preview": "_clear(monkeypatch)",
+          "preview": "def _campaign(store: Storage, campaign_id: str) -> tuple[Campaign, int]:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 74,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/app/worker_service.py",
+          "line": 120,
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 90,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/app/worker_service.py",
+          "line": 136,
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 115,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/app/worker_service.py",
+          "line": 208,
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 131,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/app/worker_service.py",
+          "line": 287,
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 144,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/app/worker_service.py",
+          "line": 372,
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 155,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/app/worker_service.py",
+          "line": 472,
+          "preview": "campaign, _version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 180,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/app/worker_service.py",
+          "line": 524,
+          "preview": "latest_campaign, _ = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 200,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 215,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 228,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 240,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 252,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 265,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 278,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_live_readiness.py",
-          "line": 18,
-          "preview": "def _clear(monkeypatch):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_live_readiness.py",
-          "line": 32,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_live_readiness.py",
-          "line": 59,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_live_readiness.py",
-          "line": 75,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_live_readiness.py",
-          "line": 101,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_live_readiness.py",
-          "line": 112,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_live_readiness.py",
-          "line": 128,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_preflight.py",
-          "line": 16,
-          "preview": "def _clear(monkeypatch):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_preflight.py",
-          "line": 22,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_preflight.py",
-          "line": 90,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_capabilities.py",
-          "line": 22,
-          "preview": "def _clear(monkeypatch):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_capabilities.py",
-          "line": 28,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_capabilities.py",
-          "line": 66,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_capabilities.py",
-          "line": 79,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_capabilities.py",
-          "line": 114,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_sandbox.py",
-          "line": 22,
-          "preview": "def _clear(monkeypatch):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_sandbox.py",
-          "line": 39,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_sandbox.py",
-          "line": 81,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 39,
-          "preview": "def _clear(monkeypatch):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 57,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 67,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 73,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 85,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 93,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 104,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 113,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 126,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 143,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 174,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 185,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 196,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_totp_auth.py",
-          "line": 207,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_worker_secrets.py",
+          "file": "backend/tests/test_api_outbox.py",
           "line": 9,
-          "preview": "def _clear(monkeypatch):",
+          "preview": "def _campaign(events):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_secrets.py",
-          "line": 34,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 131,
+          "preview": "campaign = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_secrets.py",
-          "line": 45,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 151,
+          "preview": "campaign = _campaign([])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_secrets.py",
-          "line": 57,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 162,
+          "preview": "campaign = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_secrets.py",
-          "line": 68,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 188,
+          "preview": "campaign = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_secrets.py",
-          "line": 77,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 230,
+          "preview": "campaign = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_watchdog.py",
-          "line": 13,
-          "preview": "def _clear(monkeypatch):",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 286,
+          "preview": "campaign = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_watchdog.py",
-          "line": 19,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 321,
+          "preview": "campaign = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_watchdog.py",
-          "line": 30,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 371,
+          "preview": "campaign = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_watchdog.py",
-          "line": 42,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 432,
+          "preview": "base = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_watchdog.py",
-          "line": 54,
-          "preview": "_clear(monkeypatch)",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 500,
+          "preview": "campaign = _campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_worker_watchdog.py",
-          "line": 66,
-          "preview": "_clear(monkeypatch)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 61
-    },
-    "_set_hardened_production": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 35,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 35,
-          "preview": "def _set_hardened_production(monkeypatch):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 181,
-          "preview": "_set_hardened_production(monkeypatch)",
+          "file": "backend/tests/test_browser.py",
+          "line": 29,
+          "preview": "def _campaign() -> Campaign:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 201,
-          "preview": "_set_hardened_production(monkeypatch)",
+          "file": "backend/tests/test_browser.py",
+          "line": 46,
+          "preview": "validate_flow(_campaign(), flow)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 253,
-          "preview": "_set_hardened_production(monkeypatch)",
+          "file": "backend/tests/test_browser.py",
+          "line": 52,
+          "preview": "validate_flow(_campaign(), flow)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 266,
-          "preview": "_set_hardened_production(monkeypatch)",
+          "file": "backend/tests/test_browser.py",
+          "line": 70,
+          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 279,
-          "preview": "_set_hardened_production(monkeypatch)",
+          "file": "backend/tests/test_browser.py",
+          "line": 98,
+          "preview": "campaign = _campaign()",
           "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "test_preflight_is_ok_with_optional_pentagi_disabled": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 48,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+        },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 48,
-          "preview": "def test_preflight_is_ok_with_optional_pentagi_disabled(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_preflight_errors_when_core_dependencies_are_not_ready": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 62,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/tests/test_browser.py",
+          "line": 121,
+          "preview": "execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 62,
-          "preview": "def test_preflight_errors_when_core_dependencies_are_not_ready(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_preflight_reports_missing_pentagi_configuration_without_values": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 73,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 73,
-          "preview": "def test_preflight_reports_missing_pentagi_configuration_without_values(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_preflight_warns_when_execution_intent_cannot_be_enforced": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 89,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 89,
-          "preview": "def test_preflight_warns_when_execution_intent_cannot_be_enforced(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_preflight_warns_on_orphan_pentagi_flags": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 114,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 114,
-          "preview": "def test_preflight_warns_on_orphan_pentagi_flags(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_preflight_reports_invalid_boolean_configuration_fail_closed": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 130,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_deployment_preflight.py",
+          "file": "backend/tests/test_browser.py",
           "line": 130,
-          "preview": "def test_preflight_reports_invalid_boolean_configuration_fail_closed(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_preflight_endpoint_uses_dependency_readiness": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 143,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 143,
-          "preview": "def test_preflight_endpoint_uses_dependency_readiness(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_production_preflight_requires_hardened_backends_and_digest_pinned_images": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 154,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/tests/test_browser.py",
+          "line": 136,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 154,
-          "preview": "def test_production_preflight_requires_hardened_backends_and_digest_pinned_images(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_production_preflight_accepts_hardened_distributed_configuration": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 179,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/tests/test_browser.py",
+          "line": 156,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 179,
-          "preview": "def test_production_preflight_accepts_hardened_distributed_configuration(monkeypatch):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_production_preflight_rejects_mutable_tags": {
-      "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 199,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/tests/test_browser.py",
+          "line": 289,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_deployment_preflight.py",
+          "file": "backend/tests/test_campaign_cancel.py",
+          "line": 7,
+          "preview": "from app.worker_service import _campaign as load_worker_campaign, process_one",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 13,
+          "preview": "def _campaign():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 28,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 58,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 106,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 136,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_control_views.py",
+          "line": 16,
+          "preview": "def _campaign() -> Campaign:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_control_views.py",
+          "line": 46,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 8,
+          "preview": "def _campaign():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 64,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 94,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 138,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
           "line": 199,
-          "preview": "def test_production_preflight_rejects_mutable_tags(monkeypatch):",
-          "definition_candidate": true
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 271,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 316,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 338,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 357,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 23,
+          "preview": "def _campaign(*findings: Finding) -> Campaign:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 42,
+          "preview": "campaign = _campaign(finding)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 48,
+          "preview": "lambda _campaign, _finding: ProbeResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 93,
+          "preview": "campaign = _campaign(finding)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 99,
+          "preview": "lambda _campaign, _finding: ProbeResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_evidence_backed_planner.py",
+          "line": 6,
+          "preview": "def _campaign(status=\"validation_required\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_evidence_backed_planner.py",
+          "line": 60,
+          "preview": "action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=False))[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_evidence_backed_planner.py",
+          "line": 67,
+          "preview": "action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=True))[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_evidence_backed_planner.py",
+          "line": 75,
+          "preview": "_campaign(status=\"confirmed\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 7,
+          "preview": "def _campaign(campaign_id, state, *, activity=None, nmi=None, bounty=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 75,
+          "preview": "_campaign(\"c1\", \"needs-more-info\", nmi=True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 76,
+          "preview": "_campaign(\"c2\", \"triaged\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 77,
+          "preview": "_campaign(\"c3\", \"resolved\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 78,
+          "preview": "_campaign(\"c4\", \"duplicate\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 79,
+          "preview": "_campaign(\"c5\", \"informative\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 102,
+          "preview": "[_campaign(\"c1\", \"triaged\", bounty=True)]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 117,
+          "preview": "result = build_hackerone_attention_center([_campaign(\"c1\", None)])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 141,
+          "preview": "campaign = _campaign(\"c1\", \"triaged\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 165,
+          "preview": "return [_campaign(\"c1\", \"needs-more-info\", nmi=True)]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 177,
+          "preview": "first = _campaign(\"c1\", \"triaged\", activity=\"activity-comment\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 178,
+          "preview": "second = _campaign(\"c1\", \"triaged\", activity=\"activity-comment\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 192,
+          "preview": "campaign = _campaign(\"c1\", \"needs-more-info\", nmi=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 213,
+          "preview": "campaign = _campaign(\"c1\", \"triaged\", bounty=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 17,
+          "preview": "def _campaign(*, allowed_targets=None, rps=2.0):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 34,
+          "preview": "first = _campaign(allowed_targets=[\"example.test\", \"*.example.test\"])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 35,
+          "preview": "second = _campaign(allowed_targets=[\"*.example.test\", \"example.test\"])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 41,
+          "preview": "base = _campaign(rps=2.0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 42,
+          "preview": "changed = _campaign(rps=1.0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 48,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 69,
+          "preview": "campaign = _campaign(rps=2.0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 93,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 112,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 128,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 158,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_api_integration.py",
+          "line": 12,
+          "preview": "def _campaign(*, findings=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_api_integration.py",
+          "line": 35,
+          "preview": "campaign = campaign or _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_api_integration.py",
+          "line": 111,
+          "preview": "campaign=_campaign(findings=[finding]),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_api_integration.py",
+          "line": 147,
+          "preview": "campaign=_campaign(findings=[finding]),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 10,
+          "preview": "def _campaign(*, findings=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 37,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 50,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 70,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 108,
+          "preview": "campaign = _campaign(findings=[finding])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 13,
+          "preview": "def _campaign():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 56,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 82,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 9,
+          "preview": "def _campaign(*, rps: float = 2.0):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 54,
+          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 67,
+          "preview": "assert build_nuclei_plan(_campaign(), str(root / \"job-1\")).dry_run is True",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 70,
+          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-2\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 80,
+          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 108,
+          "preview": "plan = build_nuclei_plan(_campaign(rps=0.25), str(root / \"job-1\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 116,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 151,
+          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 176,
+          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-attest\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 196,
+          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-mismatch\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 6,
+          "preview": "def _campaign():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 47,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"dry_run\", \"independent-validator\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 52,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"observed\", \"scanner\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 57,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"observed\", \"independent-validator\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 10,
+          "preview": "def _campaign() -> Campaign:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 36,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 86,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 143,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_outbox_chaos.py",
+          "line": 198,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_overview_reasoning.py",
+          "line": 7,
+          "preview": "def _campaign():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_overview_reasoning.py",
+          "line": 38,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_overview_reasoning.py",
+          "line": 94,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_overview_reasoning.py",
+          "line": 135,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_pentagi_action_gateway.py",
+          "line": 14,
+          "preview": "def _campaign(*, rps=1.0):",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 120
     },
-    "test_preflight_reports_strict_job_provenance_by_default": {
+    "_configure_source": {
       "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 214,
+        "file": "backend/tests/test_production_migration.py",
+        "line": 59,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 214,
-          "preview": "def test_preflight_reports_strict_job_provenance_by_default(monkeypatch):",
+          "file": "backend/tests/test_production_migration.py",
+          "line": 59,
+          "preview": "def _configure_source(monkeypatch, tmp_path: Path) -> tuple[Path, Path]:",
           "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 72,
+          "preview": "db_path, _artifact_root = _configure_source(monkeypatch, tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 114,
+          "preview": "db_path, _artifact_root = _configure_source(monkeypatch, tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_production_migration.py",
+          "line": 152,
+          "preview": "_configure_source(monkeypatch, tmp_path)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 4
     },
-    "test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled": {
+    "test_plan_reports_source_counts_without_exposing_payloads": {
       "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 227,
+        "file": "backend/tests/test_production_migration.py",
+        "line": 71,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 227,
-          "preview": "def test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled(monkeypatch):",
+          "file": "backend/tests/test_production_migration.py",
+          "line": 71,
+          "preview": "def test_plan_reports_source_counts_without_exposing_payloads(monkeypatch, tmp_path):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_preflight_rejects_invalid_legacy_provenance_boolean": {
+    "test_plan_blocks_running_jobs": {
       "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 239,
+        "file": "backend/tests/test_production_migration.py",
+        "line": 113,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 239,
-          "preview": "def test_preflight_rejects_invalid_legacy_provenance_boolean(monkeypatch):",
+          "file": "backend/tests/test_production_migration.py",
+          "line": 113,
+          "preview": "def test_plan_blocks_running_jobs(monkeypatch, tmp_path):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_production_preflight_rejects_inline_vault_master_key": {
+    "test_plan_blocks_nonempty_targets": {
       "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 251,
+        "file": "backend/tests/test_production_migration.py",
+        "line": 151,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 251,
-          "preview": "def test_production_preflight_rejects_inline_vault_master_key(monkeypatch):",
+          "file": "backend/tests/test_production_migration.py",
+          "line": 151,
+          "preview": "def test_plan_blocks_nonempty_targets(monkeypatch, tmp_path):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_production_preflight_requires_redis_rate_limit_backend": {
+    "test_artifact_verification_detects_tampering": {
       "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 264,
+        "file": "backend/tests/test_production_migration.py",
+        "line": 183,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 264,
-          "preview": "def test_production_preflight_requires_redis_rate_limit_backend(monkeypatch):",
+          "file": "backend/tests/test_production_migration.py",
+          "line": 183,
+          "preview": "def test_artifact_verification_detects_tampering(tmp_path):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_production_preflight_requires_vault_key_file": {
+    "test_artifact_verification_accepts_matching_content": {
       "definition": {
-        "file": "backend/tests/test_deployment_preflight.py",
-        "line": 277,
+        "file": "backend/tests/test_production_migration.py",
+        "line": 208,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_deployment_preflight.py",
-          "line": 277,
-          "preview": "def test_production_preflight_requires_vault_key_file(monkeypatch):",
+          "file": "backend/tests/test_production_migration.py",
+          "line": 208,
+          "preview": "def test_artifact_verification_accepts_matching_content(tmp_path):",
           "definition_candidate": true
         }
       ],

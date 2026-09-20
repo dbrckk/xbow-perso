@@ -22,17 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T09:41:41Z
+Generated: 2026-09-20T09:48:24Z
 
 ### Git
 - Branch: `main`
-- Head: `51f19b845325`
-- Commit date: 2026-09-20T11:41:30+02:00
-- Commit: feat: enforce strict production hardening preflight
-- Tracked files: 487
+- Head: `8d051d3152b5`
+- Commit date: 2026-09-20T11:48:13+02:00
+- Commit: feat: add controlled SQLite to PostgreSQL Redis migration
+- Tracked files: 491
 
 ### Recently changed files
+- `PRODUCTION_MIGRATION.md`
 - `README.md`
+- `backend/app/production_migration.py`
+- `backend/tests/test_production_migration.py`
 - `backend/app/deployment_preflight.py`
 - `backend/tests/test_deployment_preflight.py`
 - `docker-compose.distributed.yml`
@@ -47,8 +50,6 @@ Generated: 2026-09-20T09:41:41Z
 - `frontend/app.js`
 - `frontend/index.html`
 - `frontend/sw.js`
-- `backend/app/surface_temporal.py`
-- `backend/tests/test_surface_temporal.py`
 
 ### Project signals
 - `pyproject.toml`

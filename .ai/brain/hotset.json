@@ -1,17 +1,7 @@
 {
   "files": [
     {
-      "path": "backend/app/main.py",
-      "reasons": [
-        "entrypoint",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 595
-    },
-    {
-      "path": "backend/tests/test_deployment_preflight.py",
+      "path": "backend/tests/test_production_migration.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -20,10 +10,10 @@
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 490
+      "score": 485
     },
     {
-      "path": "backend/app/deployment_preflight.py",
+      "path": "backend/app/production_migration.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -31,66 +21,14 @@
         "impact",
         "symbol-indexed"
       ],
-      "score": 425
+      "score": 460
     },
     {
-      "path": "backend/tests/test_nuclei_preflight.py",
+      "path": "PRODUCTION_MIGRATION.md",
       "reasons": [
-        "impact",
-        "reverse-dependency-neighbor",
-        "selected-test",
-        "symbol-indexed"
+        "changed"
       ],
-      "score": 210
-    },
-    {
-      "path": "backend/app/hackerone_live_readiness.py",
-      "reasons": [
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 125
-    },
-    {
-      "path": "backend/app/hackerone_scope_import.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 110
-    },
-    {
-      "path": "backend/app/pentagi_adapter.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 110
-    },
-    {
-      "path": "backend/app/pentagi_admission.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 110
-    },
-    {
-      "path": "backend/app/pentagi_control.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 110
-    },
-    {
-      "path": "backend/app/pentagi_execution_guard.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 110
+      "score": 100
     },
     {
       "path": "README.md",
@@ -100,169 +38,46 @@
       "score": 100
     },
     {
-      "path": "backend/app/runtime_capabilities.py",
+      "path": "backend/app/postgres_storage.py",
       "reasons": [
         "dependency-neighbor"
       ],
-      "score": 100
+      "score": 50
     },
     {
-      "path": "docker-compose.distributed.yml",
+      "path": "backend/app/redis_jobqueue.py",
       "reasons": [
-        "changed"
+        "dependency-neighbor"
       ],
-      "score": 100
+      "score": 50
     },
     {
-      "path": "backend/app/hackerone_api.py",
+      "path": "backend/app/main.py",
       "reasons": [
-        "reverse-dependency-neighbor"
+        "entrypoint"
       ],
-      "score": 90
+      "score": 40
     },
     {
-      "path": "backend/app/browser.py",
+      "path": "backend/app/jobqueue.py",
       "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
+        "dependency-neighbor"
       ],
-      "score": 85
+      "score": 25
     },
     {
-      "path": "backend/app/campaign_control.py",
+      "path": "backend/app/storage.py",
       "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
+        "dependency-neighbor"
       ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/coverage.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/decision_timeline.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/evidence_quality.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/finding_cluster_consensus.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/finding_cluster_saturation.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/finding_correlation.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/finding_intelligence.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/finding_readiness.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/metrics.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/pentagi_dispatch.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/report_approval_api.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/report_readiness.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/review_queue.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 85
-    },
-    {
-      "path": "backend/app/observation_graph.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 80
-    },
-    {
-      "path": "backend/app/queue_backend.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 80
+      "score": 25
     },
     {
       "path": "frontend/app.js",
       "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
+        "dependency-neighbor"
       ],
-      "score": 80
+      "score": 25
     }
   ],
   "generated_by": "dbrckk/repo-brain-v6",

@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 1252a3af47f71a621f3c9e6806d5f3fa8b048e97
-Head: 51f19b84532563971851353ca2a465612851644b
+Base: 8c060a2aef89089e7074dcb1b35a7302438c29d5
+Head: 8d051d3152b5f305a54e2683e8ac17767d549fb9
 
 ## Changed files
+- A PRODUCTION_MIGRATION.md
 - M README.md
-- M backend/app/deployment_preflight.py
-- M backend/tests/test_deployment_preflight.py
-- M docker-compose.distributed.yml
+- A backend/app/production_migration.py
+- A backend/tests/test_production_migration.py
 
 ## Affected areas
 - (root)

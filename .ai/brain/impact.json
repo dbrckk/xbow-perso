@@ -1,768 +1,242 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "08c78135bd633430eb6a6022226597a3f69dac0d",
-  "head": "51f19b84532563971851353ca2a465612851644b",
+  "base": "51f19b84532563971851353ca2a465612851644b",
+  "head": "8d051d3152b5f305a54e2683e8ac17767d549fb9",
   "index_mode": "incremental",
   "changed_files": [
+    {
+      "path": "PRODUCTION_MIGRATION.md",
+      "status": "A"
+    },
     {
       "path": "README.md",
       "status": "M"
     },
     {
-      "path": "backend/app/deployment_preflight.py",
-      "status": "M"
+      "path": "backend/app/production_migration.py",
+      "status": "A"
     },
     {
-      "path": "backend/tests/test_deployment_preflight.py",
-      "status": "M"
-    },
-    {
-      "path": "docker-compose.distributed.yml",
-      "status": "M"
+      "path": "backend/tests/test_production_migration.py",
+      "status": "A"
     }
   ],
   "changed_source_files": [
-    "backend/app/deployment_preflight.py",
-    "backend/tests/test_deployment_preflight.py"
+    "backend/app/production_migration.py",
+    "backend/tests/test_production_migration.py"
   ],
   "impacted_files": [
-    "backend/app/deployment_preflight.py",
-    "backend/app/hackerone_live_readiness.py",
-    "backend/app/main.py",
-    "backend/tests/test_deployment_preflight.py",
-    "backend/tests/test_nuclei_preflight.py"
+    "backend/app/production_migration.py",
+    "backend/tests/test_production_migration.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_configured",
-      "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 12
+      "name": "ProductionMigrationError",
+      "kind": "class",
+      "file": "backend/app/production_migration.py",
+      "line": 91
     },
     {
       "name": "_bool_env",
       "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 16
+      "file": "backend/app/production_migration.py",
+      "line": 95
     },
     {
-      "name": "_production_mode",
+      "name": "_source_path",
       "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 28
+      "file": "backend/app/production_migration.py",
+      "line": 104
     },
     {
-      "name": "_image_digest_configured",
+      "name": "_artifact_root",
       "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 32
+      "file": "backend/app/production_migration.py",
+      "line": 111
     },
     {
-      "name": "build_deployment_preflight",
+      "name": "_database_url",
       "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 39
+      "file": "backend/app/production_migration.py",
+      "line": 118
     },
     {
-      "name": "_strict_bool",
+      "name": "_redis_url",
       "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 11
+      "file": "backend/app/production_migration.py",
+      "line": 125
     },
     {
-      "name": "_configured",
+      "name": "_connect_source",
       "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 23
+      "file": "backend/app/production_migration.py",
+      "line": 132
     },
     {
-      "name": "build_hackerone_live_readiness",
+      "name": "_table_exists",
       "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 27
+      "file": "backend/app/production_migration.py",
+      "line": 139
     },
     {
-      "name": "authenticate_control_api",
+      "name": "_source_counts",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 36
-    },
-    {
-      "name": "utcnow",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 50
-    },
-    {
-      "name": "storage",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 54
-    },
-    {
-      "name": "queue",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 58
-    },
-    {
-      "name": "incident_store",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 62
-    },
-    {
-      "name": "_stable_key",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 70
-    },
-    {
-      "name": "CampaignState",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 75
-    },
-    {
-      "name": "ProgramRules",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 85
-    },
-    {
-      "name": "TargetInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 98
-    },
-    {
-      "name": "primary_target_must_be_allowed",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 105
-    },
-    {
-      "name": "Finding",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 119
-    },
-    {
-      "name": "FindingReviewMetadataInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 137
-    },
-    {
-      "name": "normalize_review_metadata",
-      "kind": "function",
-      "file": "backend/app/main.py",
+      "file": "backend/app/production_migration.py",
       "line": 147
     },
     {
-      "name": "Campaign",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 162
-    },
-    {
-      "name": "EvidenceInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 172
-    },
-    {
-      "name": "HackerOneScopePreviewInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 179
-    },
-    {
-      "name": "IncidentAcknowledgeInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 183
-    },
-    {
-      "name": "normalize_pattern",
+      "name": "_queue_status",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 188
+      "file": "backend/app/production_migration.py",
+      "line": 163
     },
     {
-      "name": "is_host_allowed",
+      "name": "_verify_artifacts",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 195
+      "file": "backend/app/production_migration.py",
+      "line": 174
     },
     {
-      "name": "save_campaign",
+      "name": "_initialize_targets",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 204
+      "file": "backend/app/production_migration.py",
+      "line": 197
     },
     {
-      "name": "assert_campaign_record",
+      "name": "_postgres_counts",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 211
+      "file": "backend/app/production_migration.py",
+      "line": 207
     },
     {
-      "name": "assert_campaign_exists",
+      "name": "_target_redis_count",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 219
+      "file": "backend/app/production_migration.py",
+      "line": 221
     },
     {
-      "name": "_reject_cancelled_campaign",
+      "name": "plan_migration",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 223
+      "file": "backend/app/production_migration.py",
+      "line": 225
     },
     {
-      "name": "_reject_new_findings_for_closed_campaign",
+      "name": "_backup_sqlite",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 228
+      "file": "backend/app/production_migration.py",
+      "line": 272
     },
     {
-      "name": "_campaign_graph",
+      "name": "_copy_postgres",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 236
+      "file": "backend/app/production_migration.py",
+      "line": 289
     },
     {
-      "name": "_has_evidence_backed_independent_validation",
+      "name": "_timestamp_score",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 243
-    },
-    {
-      "name": "policy_receipt",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 248
-    },
-    {
-      "name": "sanitized_scan_payload",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 274
-    },
-    {
-      "name": "live",
-      "kind": "function",
-      "file": "backend/app/main.py",
+      "file": "backend/app/production_migration.py",
       "line": 311
     },
     {
-      "name": "ready",
+      "name": "_copy_redis_jobs",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 316
+      "file": "backend/app/production_migration.py",
+      "line": 320
+    },
+    {
+      "name": "_clear_targets",
+      "kind": "function",
+      "file": "backend/app/production_migration.py",
+      "line": 371
+    },
+    {
+      "name": "apply_migration",
+      "kind": "function",
+      "file": "backend/app/production_migration.py",
+      "line": 386
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "backend/app/production_migration.py",
+      "line": 443
+    },
+    {
+      "name": "_FakePostgres",
+      "kind": "class",
+      "file": "backend/tests/test_production_migration.py",
+      "line": 17
     },
     {
       "name": "health",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 329
+      "file": "backend/tests/test_production_migration.py",
+      "line": 18
     },
     {
-      "name": "deployment_preflight",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 345
-    },
-    {
-      "name": "system_capabilities",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 352
-    },
-    {
-      "name": "get_observer_health",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 428
-    },
-    {
-      "name": "get_incidents",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 433
-    },
-    {
-      "name": "acknowledge_incident",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 438
-    },
-    {
-      "name": "list_agents",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 453
-    },
-    {
-      "name": "preview_hackerone_scope",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 459
-    },
-    {
-      "name": "create_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 495
-    },
-    {
-      "name": "list_campaigns",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 503
-    },
-    {
-      "name": "get_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 508
-    },
-    {
-      "name": "get_campaign_target_memory",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 513
-    },
-    {
-      "name": "get_campaign_surface_diff",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 525
-    },
-    {
-      "name": "get_campaign_surface_temporal",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 539
-    },
-    {
-      "name": "get_campaign_surface_confidence",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 551
-    },
-    {
-      "name": "campaign_outbox_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 568
-    },
-    {
-      "name": "campaign_outbox_recovery",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 582
-    },
-    {
-      "name": "_apply_local_outbox_repairs",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 603
-    },
-    {
-      "name": "reconcile_campaign_outbox_local",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 642
-    },
-    {
-      "name": "preview_pentagi_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 700
-    },
-    {
-      "name": "_pentagi_dispatch_fingerprint",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 731
-    },
-    {
-      "name": "_record_pentagi_dispatch_intent",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 735
-    },
-    {
-      "name": "_reconcile_pentagi_queued_event",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 761
-    },
-    {
-      "name": "dispatch_pentagi_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 808
-    },
-    {
-      "name": "pentagi_campaign_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 882
-    },
-    {
-      "name": "list_campaign_observations",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 912
-    },
-    {
-      "name": "campaign_decision_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 918
-    },
-    {
-      "name": "campaign_event_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 930
-    },
-    {
-      "name": "campaign_worker_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 940
-    },
-    {
-      "name": "campaign_knowledge",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 952
-    },
-    {
-      "name": "campaign_finding_ranking",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 967
-    },
-    {
-      "name": "campaign_advisory_history",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 994
-    },
-    {
-      "name": "campaign_advisory_delta",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1003
-    },
-    {
-      "name": "campaign_advisory_journal",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1014
-    },
-    {
-      "name": "campaign_hypothesis_history",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1026
-    },
-    {
-      "name": "campaign_hypothesis_delta",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1035
-    },
-    {
-      "name": "campaign_hypothesis_stability",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1046
-    },
-    {
-      "name": "campaign_plan",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1058
-    },
-    {
-      "name": "check_policy",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1108
-    },
-    {
-      "name": "verify_campaign_policy_receipt",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1118
-    },
-    {
-      "name": "_pending_campaign_start_request",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1123
-    },
-    {
-      "name": "_record_campaign_start_intent",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1131
-    },
-    {
-      "name": "_reconcile_campaign_started",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1157
-    },
-    {
-      "name": "start_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1209
-    },
-    {
-      "name": "cancel_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1258
-    },
-    {
-      "name": "get_job",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1291
-    },
-    {
-      "name": "get_job_provenance_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1299
-    },
-    {
-      "name": "_validation_request_id",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1316
-    },
-    {
-      "name": "_reconcile_validation_queued",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1320
-    },
-    {
-      "name": "add_finding",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1369
-    },
-    {
-      "name": "_record_report_request",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1454
-    },
-    {
-      "name": "_reconcile_report_job",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1481
-    },
-    {
-      "name": "_ensure_completion_report",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1527
-    },
-    {
-      "name": "update_finding_review_metadata",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1595
-    },
-    {
-      "name": "validate_finding",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1646
-    },
-    {
-      "name": "queue_report",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1712
-    },
-    {
-      "name": "add_text_artifact",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1755
-    },
-    {
-      "name": "list_artifacts",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1786
-    },
-    {
-      "name": "download_artifact",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1792
-    },
-    {
-      "name": "_clear",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 28
-    },
-    {
-      "name": "_set_hardened_production",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 35
-    },
-    {
-      "name": "test_preflight_is_ok_with_optional_pentagi_disabled",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 48
-    },
-    {
-      "name": "test_preflight_errors_when_core_dependencies_are_not_ready",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 62
-    },
-    {
-      "name": "test_preflight_reports_missing_pentagi_configuration_without_values",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 73
-    },
-    {
-      "name": "test_preflight_warns_when_execution_intent_cannot_be_enforced",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 89
-    },
-    {
-      "name": "test_preflight_warns_on_orphan_pentagi_flags",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 114
-    },
-    {
-      "name": "test_preflight_reports_invalid_boolean_configuration_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 130
-    },
-    {
-      "name": "test_preflight_endpoint_uses_dependency_readiness",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 143
-    },
-    {
-      "name": "test_production_preflight_requires_hardened_backends_and_digest_pinned_images",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 154
-    },
-    {
-      "name": "test_production_preflight_accepts_hardened_distributed_configuration",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 179
-    },
-    {
-      "name": "test_production_preflight_rejects_mutable_tags",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 199
-    },
-    {
-      "name": "test_preflight_reports_strict_job_provenance_by_default",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 214
-    },
-    {
-      "name": "test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 227
-    },
-    {
-      "name": "test_preflight_rejects_invalid_legacy_provenance_boolean",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 239
+      "name": "_FakeQueue",
+      "kind": "class",
+      "file": "backend/tests/test_production_migration.py",
+      "line": 22
     },
     {
-      "name": "test_production_preflight_rejects_inline_vault_master_key",
+      "name": "health",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 251
+      "file": "backend/tests/test_production_migration.py",
+      "line": 23
     },
     {
-      "name": "test_production_preflight_requires_redis_rate_limit_backend",
+      "name": "stats",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 264
+      "file": "backend/tests/test_production_migration.py",
+      "line": 26
     },
     {
-      "name": "test_production_preflight_requires_vault_key_file",
+      "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 277
+      "file": "backend/tests/test_production_migration.py",
+      "line": 39
     },
     {
-      "name": "_clear",
+      "name": "_configure_source",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 16
+      "file": "backend/tests/test_production_migration.py",
+      "line": 59
     },
     {
-      "name": "_active_nuclei",
+      "name": "test_plan_reports_source_counts_without_exposing_payloads",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 21
+      "file": "backend/tests/test_production_migration.py",
+      "line": 71
     },
     {
-      "name": "test_scanner_capability_blocks_active_nuclei_without_pinned_version",
+      "name": "test_plan_blocks_running_jobs",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 28
+      "file": "backend/tests/test_production_migration.py",
+      "line": 113
     },
     {
-      "name": "test_preflight_rejects_incomplete_active_nuclei_configuration",
+      "name": "test_plan_blocks_nonempty_targets",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 42
+      "file": "backend/tests/test_production_migration.py",
+      "line": 151
     },
     {
-      "name": "test_preflight_accepts_complete_active_nuclei_configuration_without_leaking_version",
+      "name": "test_artifact_verification_detects_tampering",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 66
+      "file": "backend/tests/test_production_migration.py",
+      "line": 183
     },
     {
-      "name": "test_preflight_rejects_invalid_nuclei_boolean_fail_closed",
+      "name": "test_artifact_verification_accepts_matching_content",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 89
+      "file": "backend/tests/test_production_migration.py",
+      "line": 208
     }
   ],
   "selected_tests": [
-    "backend/tests/test_deployment_preflight.py",
-    "backend/tests/test_nuclei_preflight.py"
+    "backend/tests/test_production_migration.py"
   ]
 }

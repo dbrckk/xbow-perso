@@ -149,6 +149,7 @@ backend/
     planner_lock.py
     policy_integrity.py
     postgres_storage.py
+    production_migration.py
     queue_backend.py
     readiness.py
     recon_priority.py
@@ -318,6 +319,7 @@ backend/
     test_policy_invariants.py
     test_postgres_integration.py
     test_postgres_storage.py
+    test_production_migration.py
     test_queue_age_metrics.py
     test_queue_backend.py
     test_queue_health.py
@@ -6599,6 +6601,143 @@ parsed = urlparse(self.database_url)
 connection = psycopg.connect(
 ⋮----
 def _init(self) -> None
+````
+
+## File: backend/app/production_migration.py
+````python
+_CORE_TABLES: tuple[tuple[str, tuple[str, ...]], ...] = (
+⋮----
+_JOB_COLUMNS = (
+⋮----
+class ProductionMigrationError(RuntimeError)
+⋮----
+def _bool_env(name: str) -> bool
+⋮----
+value = (os.getenv(name) or "").strip().lower()
+⋮----
+def _source_path() -> Path
+⋮----
+path = Path(os.getenv("XBOW_MIGRATION_SQLITE_PATH", os.getenv("XBOW_DB_PATH", "/data/xbow.sqlite3")))
+⋮----
+def _artifact_root() -> Path
+⋮----
+root = Path(os.getenv("XBOW_ARTIFACT_ROOT", "/data/artifacts"))
+⋮----
+def _database_url() -> str
+⋮----
+value = (os.getenv("XBOW_DATABASE_URL") or "").strip()
+⋮----
+def _redis_url() -> str
+⋮----
+value = (os.getenv("XBOW_REDIS_URL") or "").strip()
+⋮----
+def _connect_source(path: Path) -> sqlite3.Connection
+⋮----
+db = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=30)
+⋮----
+def _table_exists(db: sqlite3.Connection, table: str) -> bool
+⋮----
+row = db.execute(
+⋮----
+def _source_counts(db: sqlite3.Connection) -> dict[str, int]
+⋮----
+counts: dict[str, int] = {}
+⋮----
+def _queue_status(db: sqlite3.Connection) -> dict[str, int]
+⋮----
+counts = {status: 0 for status in ("queued", "running", "completed", "failed", "cancelled")}
+⋮----
+status = str(row["status"])
+⋮----
+def _verify_artifacts(db: sqlite3.Connection, root: Path) -> dict[str, Any]
+⋮----
+checked = 0
+⋮----
+candidate = (root / str(row["relative_path"])).resolve()
+⋮----
+content = candidate.read_bytes()
+⋮----
+def _initialize_targets() -> tuple[PostgresStorage, RedisJobQueue]
+⋮----
+postgres = PostgresStorage(database_url=_database_url(), artifact_root=str(_artifact_root()))
+⋮----
+queue = RedisJobQueue(url=_redis_url())
+⋮----
+def _postgres_counts(url: str) -> dict[str, int]
+⋮----
+result: dict[str, int] = {}
+⋮----
+row = db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
+⋮----
+def _target_redis_count(queue: RedisJobQueue) -> int
+⋮----
+def plan_migration() -> dict[str, Any]
+⋮----
+source = _source_path()
+root = _artifact_root()
+database_url = _database_url()
+⋮----
+counts = _source_counts(db)
+queue_status = _queue_status(db)
+artifacts = _verify_artifacts(db, root)
+⋮----
+target_counts = _postgres_counts(database_url)
+redis_jobs = _target_redis_count(queue)
+⋮----
+blockers: list[str] = []
+⋮----
+def _backup_sqlite(source: Path, destination: Path) -> None
+⋮----
+source_db = sqlite3.connect(str(source))
+target_db = sqlite3.connect(str(destination))
+⋮----
+def _copy_postgres(source_db: sqlite3.Connection, url: str) -> dict[str, int]
+⋮----
+copied: dict[str, int] = {}
+⋮----
+rows = source_db.execute(
+⋮----
+placeholders = ",".join("%s" for _ in columns)
+sql = (
+⋮----
+def _timestamp_score(value: str | None) -> float
+⋮----
+def _copy_redis_jobs(source_db: sqlite3.Connection, queue: RedisJobQueue) -> int
+⋮----
+row = {column: source_row[column] for column in _JOB_COLUMNS}
+job_id = str(row["id"])
+campaign_id = str(row["campaign_id"])
+kind = str(row["kind"])
+⋮----
+encoded = {
+⋮----
+score = _timestamp_score(str(row["created_at"]))
+⋮----
+def _clear_targets(url: str, queue: RedisJobQueue) -> None
+⋮----
+# Safe only because apply refuses non-empty targets before writing.
+⋮----
+keys = list(queue.redis.scan_iter(match=f"{queue.prefix}:*"))
+⋮----
+def apply_migration() -> dict[str, Any]
+⋮----
+plan = plan_migration()
+⋮----
+url = _database_url()
+backup = Path(
+⋮----
+copied = _copy_postgres(source_db, url)
+jobs = _copy_redis_jobs(source_db, queue)
+⋮----
+target_counts = _postgres_counts(url)
+⋮----
+def main() -> int
+⋮----
+parser = argparse.ArgumentParser(
+⋮----
+args = parser.parse_args()
+⋮----
+result = plan_migration() if args.command == "plan" else apply_migration()
 ````
 
 ## File: backend/app/queue_backend.py
@@ -17372,6 +17511,12 @@ This is descriptive only: confidence never changes scope, authorization, task cr
 The recon prioritizer can now use surface confidence as a **damping signal**. High-confidence observations preserve the full bounded diff/history/temporal ordering boost, while low-confidence observations reduce that boost instead of amplifying uncertain data.
 
 The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
+
+## Production migration
+
+Existing single-node SQLite installations can be migrated to PostgreSQL + Redis with the controlled migration CLI documented in [PRODUCTION_MIGRATION.md](PRODUCTION_MIGRATION.md).
+
+The migration performs a redacted plan first, refuses running source jobs or non-empty targets, verifies artifact hashes, creates a private SQLite backup, preserves queue history/dedupe state, and leaves the source database unchanged.
 
 ## Production hardening preflight
 
