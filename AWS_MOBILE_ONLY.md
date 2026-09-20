@@ -169,3 +169,27 @@ sudo docker compose up -d
 ```
 
 Re-open the PWA and verify that live readiness is blocked again.
+
+
+## Production migration preflight from a phone
+
+After the production-migration and vault-migration features are merged, a mobile operator can prepare PostgreSQL + Redis and run the **read-only migration plan** with one pasteable command:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-production-preflight.sh
+```
+
+The script first refuses to continue unless all safe execution gates remain closed:
+
+```text
+DRY_RUN=true
+XBOW_ENABLE_ACTIVE_SCANS=false
+XBOW_ENABLE_NUCLEI=false
+XBOW_ENABLE_HACKERONE_SUBMISSION=false
+```
+
+It then updates `main`, validates the distributed Compose configuration, generates PostgreSQL/Redis credentials into the root-only file `/root/xbow-production-secrets.env`, starts **only** PostgreSQL and Redis, and runs the SQLite → PostgreSQL/Redis migration **plan**.
+
+It does not start scanner services, does not perform the migration, and does not change any scan or HackerOne submission gate.
+
+Do not display, copy into chat, or screenshot `/root/xbow-production-secrets.env`.
