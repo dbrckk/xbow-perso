@@ -144,12 +144,13 @@ def test_live_readiness_exposes_redacted_first_run_operator_guide(monkeypatch):
     assert result["operator_steps"][0]["done"] is True
     assert result["operator_steps"][1]["done"] is True
     assert result["activation_template"] == [
-        "XBOW_ENABLE_ACTIVE_SCANS=true",
-        "DRY_RUN=false",
-        "XBOW_ENABLE_NUCLEI=true",
-        "XBOW_NUCLEI_ALLOWED_VERSION=3.11.1",
-        "XBOW_SCANNER_ALLOWED_ENGINES=nuclei",
-        "XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1",
+        "sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh",
     ]
-    assert result["scanner_start_command"] == "docker compose --profile scanner up -d --build"
+    assert result["scanner_start_command"] == (
+        "sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh"
+    )
+    assert result["scanner_disable_command"] == (
+        "sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh"
+    )
+    assert result["persistent_scanner_profile_supported"] is True
     assert "token" not in "\n".join(result["activation_template"]).lower()
