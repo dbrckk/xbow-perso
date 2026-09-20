@@ -1632,7 +1632,11 @@
     if(profile){
       el('h1Auth').value=String(profile.authorization_reference||'');
       el('h1PolicyVersion').value=String(profile.policy_version||'');
-      el('h1ReviewedAt').value=localDateTimeValue();
+      const storedReviewAt=String(profile.reviewed_at||profile.saved_at||'');
+      const storedReviewDate=storedReviewAt?new Date(storedReviewAt):new Date();
+      el('h1ReviewedAt').value=localDateTimeValue(
+        Number.isNaN(storedReviewDate.getTime())?new Date():storedReviewDate
+      );
       el('h1ReviewedBy').value=String(profile.reviewed_by||reviewer||'');
       el('h1Rps').value=String(profile.max_requests_per_second||'');
       el('h1SafeHarbor').checked=Boolean(profile.safe_harbor_confirmed);
@@ -1674,6 +1678,7 @@
     profiles[key]={
       authorization_reference:String(policy.authorization_reference||''),
       policy_version:String(policy.policy_version||''),
+      reviewed_at:String(policy.reviewed_at||new Date().toISOString()),
       reviewed_by:String(policy.reviewed_by||''),
       max_requests_per_second:Number(policy.max_requests_per_second)||0,
       safe_harbor_confirmed:Boolean(policy.safe_harbor_confirmed),
@@ -1800,7 +1805,7 @@
     const policy={
       authorization_reference:String(profile.authorization_reference||''),
       policy_version:String(profile.policy_version||''),
-      reviewed_at:new Date().toISOString(),
+      reviewed_at:String(profile.reviewed_at||profile.saved_at||''),
       reviewed_by:String(profile.reviewed_by||''),
       safe_harbor_confirmed:Boolean(profile.safe_harbor_confirmed),
       automated_scanning:Boolean(profile.automated_scanning),
@@ -1811,6 +1816,13 @@
         ?profile.additional_restrictions:[],
       program_notes:String(profile.program_notes||'')
     };
+    if(!policy.reviewed_at){
+      throw new Error(String(handle)+': date de revue mémorisée absente');
+    }
+    const reviewedAt=new Date(policy.reviewed_at);
+    if(Number.isNaN(reviewedAt.getTime())){
+      throw new Error(String(handle)+': date de revue mémorisée invalide');
+    }
     const blockers=conservativeBlockers(policy);
     if(blockers.length){
       throw new Error(String(handle)+': '+blockers.join(' · '));
