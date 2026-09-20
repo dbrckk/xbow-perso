@@ -159,16 +159,16 @@ def build_target_memory(store: Any, campaign: dict[str, Any]) -> dict[str, Any]:
                 {
                     "kind": node["kind"],
                     "value": node["value"],
-                    "first_seen_at": str(item.get("created_at") or node["first_seen_at"]),
-                    "last_seen_at": str(item.get("updated_at") or node["last_seen_at"]),
+                    "first_seen_at": node["first_seen_at"] or str(item.get("created_at") or ""),
+                    "last_seen_at": node["last_seen_at"] or str(item.get("updated_at") or ""),
                     "campaign_ids": set(),
                     "sources": set(),
                 },
             )
             agg["campaign_ids"].add(item_id)
             agg["sources"].update(node["sources"])
-            seen_first = str(item.get("created_at") or node["first_seen_at"])
-            seen_last = str(item.get("updated_at") or node["last_seen_at"])
+            seen_first = node["first_seen_at"] or str(item.get("created_at") or "")
+            seen_last = node["last_seen_at"] or str(item.get("updated_at") or "")
             if seen_first and (not agg["first_seen_at"] or seen_first < agg["first_seen_at"]):
                 agg["first_seen_at"] = seen_first
             if seen_last and seen_last > agg["last_seen_at"]:
