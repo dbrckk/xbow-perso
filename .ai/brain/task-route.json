@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 3,
+    "score_margin": 0,
     "tier": "bounded",
-    "top_score": 26
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "25ed25623b65acad2779af87fad608598a79ecf4fd01e512b12fc7e364ca9c5f",
+    "fingerprint": "fca0fb60e8e0c6bf18f35bb936e397af9a648bee5685d3f8374fd6e68c7fcecf",
     "hit": false
   },
-  "candidate_count": 72,
+  "candidate_count": 177,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -20,64 +20,12 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/worker_service.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "CampaignCancelledError",
-        "StaleBrowserJobError",
-        "StaleValidationJobError",
-        "_active_scanner_execution_requested",
-        "_append_event_once",
-        "_campaign",
-        "_claim_for_role",
-        "_lease_heartbeat",
-        "_legacy_unprovenanced_jobs_allowed",
-        "_process_scanner_job",
-        "_record_worker_outcome",
-        "_save",
-        "_verify_policy_bound_job",
-        "_worker_bool",
-        "_worker_poll_seconds",
-        "main",
-        "process_browser_flow",
-        "process_nuclei_scan",
-        "process_one",
-        "process_recon_task"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "_launch_payload",
-        "_resource",
-        "fake_execute",
-        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
       "path": "backend/app/orchestrator.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -103,49 +51,12 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/scanner_adaptation.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "ScannerAdaptation",
-        "_engine_memory",
-        "adapt_scanner_engines",
-        "rank_key"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_sandbox.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "ScannerSandboxAdmission",
-        "ScannerSandboxConfigError",
-        "_allowed_engines",
-        "_runtime_hardening_attestation",
-        "_strict_bool",
-        "require_scanner_sandbox",
-        "safe_scanner_sandbox_admission",
-        "scanner_sandbox_admission"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
       "path": "backend/tests/test_nuclei_queue_lifecycle.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_campaign",
         "fake_execute",
@@ -154,6 +65,89 @@
         "test_scan_engines_default_preserves_strix",
         "test_scan_engines_support_explicit_nuclei_and_fail_closed",
         "test_sqlite_queue_accepts_nuclei_scan"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_normalization.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "test_normalized_ids_are_engine_scoped_and_stable",
+        "test_normalizers_fail_closed_outside_scope",
+        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
+        "test_nuclei_jsonl_parser_rejects_invalid_line",
+        "test_nuclei_jsonl_parser_rejects_oversized_file",
+        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
+        "test_scanner_registry_dispatches_nuclei_parser",
+        "test_scanner_registry_dispatches_strix_parser",
+        "test_scanner_registry_exposes_supported_engines",
+        "test_scanner_registry_missing_run_directory_is_empty",
+        "test_scanner_registry_rejects_symlinked_artifacts",
+        "test_scanner_registry_rejects_unknown_engine",
+        "test_scanner_registry_selects_latest_artifact",
+        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/report.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "render_markdown"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_ingestion.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "ScannerIngestionResult",
+        "ingest_scanner_run"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_normalization.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "NormalizedScannerFinding",
+        "_optional_cvss",
+        "_optional_str",
+        "_severity",
+        "_string_list",
+        "dedupe_normalized",
+        "normalize_nuclei_item",
+        "normalize_strix_item",
+        "normalized_finding_id",
+        "to_campaign_finding"
       ]
     }
   ],

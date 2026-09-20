@@ -261,6 +261,7 @@ backend/
     test_hackerone_report_lifecycle_e2e.py
     test_hackerone_report_sync_worker.py
     test_hackerone_report_tracking.py
+    test_hackerone_review_profiles.py
     test_hackerone_scope_import.py
     test_hackerone_scope_preview_api.py
     test_health.py
@@ -3162,6 +3163,8 @@ document: dict[str, Any]
 policy: HackerOneProgramPolicyInput
 remote_handle: str | None = Field(default=None, min_length=1, max_length=128)
 remote_snapshot_sha256: str | None = Field(
+remember_review_profile: StrictBool = False
+preferred_primary_url: HttpUrl | None = None
 ⋮----
 @model_validator(mode="after")
     def remote_binding_must_be_complete(self)
@@ -3245,7 +3248,7 @@ snapshot = fetch_hackerone_program_snapshot(handle)
 @router.post("/api/imports/hackerone/rules-preview")
 def preview_hackerone_rules(payload: HackerOneRulesPreviewInput)
 ⋮----
-"""Preview exact executable rules without persisting or starting a campaign."""
+"""Preview exact executable rules and optionally persist a reviewed profile."""
 ⋮----
 remote_binding = _verify_remote_binding(payload)
 ⋮----
@@ -3253,17 +3256,30 @@ preview = import_hackerone_structured_scope(payload.document)
 policy = _policy_from_input(payload.policy)
 rules = preview.to_program_rules(policy=policy)
 ⋮----
+policy_snapshot = policy.to_snapshot()
+profile_persisted = False
+profile_persist_reason = None
+⋮----
+reason = _conservative_admission_reason(policy)
+⋮----
+profile_persist_reason = "scope_review_incomplete"
+⋮----
+profile_persist_reason = reason
+⋮----
+target = TargetInput(
+⋮----
+now = utcnow()
+profile = {
+⋮----
+profile_persisted = True
+⋮----
 result = {
 ⋮----
 @router.post("/api/imports/hackerone/campaigns")
 def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput)
 ⋮----
-reason = _conservative_admission_reason(policy)
-⋮----
-target = TargetInput(
-⋮----
 campaign = Campaign(target=target, state=CampaignState.ready)
-policy_snapshot = policy.to_snapshot()
+⋮----
 policy_snapshot_sha256 = _json_sha256(policy_snapshot)
 campaign_policy_fingerprint = policy_snapshot_fingerprint(campaign)
 binding_payload = {
@@ -3290,7 +3306,6 @@ members: list[dict[str, Any]] = []
 admitted = admit_hackerone_campaign(campaign_payload)
 campaign_id = str(admitted["campaign"]["id"])
 ⋮----
-now = utcnow()
 batch = {
 ⋮----
 record = storage().get_hackerone_batch_record(batch_id)
@@ -8417,6 +8432,9 @@ def list_campaigns(self, *, limit: int | None = None) -> list[dict]: ...
 def save_hackerone_catalog_state(self, document: dict, *, expected_version: int | None = None) -> int: ...
 def get_hackerone_catalog_state_record(self, catalog_id: str = "current"): ...
 def get_hackerone_catalog_state(self, catalog_id: str = "current"): ...
+def save_hackerone_review_profile(self, document: dict, *, expected_version: int | None = None) -> int: ...
+def get_hackerone_review_profile(self, profile_id: str): ...
+def list_hackerone_review_profiles(self, *, limit: int = 500) -> list[dict]: ...
 def put_observation(self, campaign_id: str, observation: dict) -> dict: ...
 def list_observations(self, campaign_id: str) -> list[dict]: ...
 def put_hypothesis_snapshot(self, campaign_id: str, graph_fingerprint: str, hypotheses: list[dict]) -> dict: ...
@@ -8539,17 +8557,25 @@ def list_campaigns(self, *, limit: int | None = None) -> list[dict[str, Any]]
 ⋮----
 rows = db.execute(
 ⋮----
-required = {"id", "programs", "fingerprint", "checked_at", "updated_at"}
+required = {
 ⋮----
-programs = document.get("programs")
+profile_id = _bounded_identifier(
+handle = _bounded_identifier(
+snapshot_sha256 = str(document["snapshot_sha256"]).strip().lower()
+⋮----
+policy = document.get("policy")
 ⋮----
 encoded = json.dumps(
 ⋮----
 current = db.execute(
 ⋮----
-catalog_id = _bounded_identifier(catalog_id, "hackerone_catalog_id")
-⋮----
 row = db.execute(
+⋮----
+required = {"id", "programs", "fingerprint", "checked_at", "updated_at"}
+⋮----
+programs = document.get("programs")
+⋮----
+catalog_id = _bounded_identifier(catalog_id, "hackerone_catalog_id")
 ⋮----
 record = self.get_hackerone_catalog_state_record(catalog_id)
 ⋮----
@@ -12447,6 +12473,44 @@ result = hackerone_api.get_hackerone_remote_report_status(
 def test_remote_report_status_requires_recorded_hackerone_submission(tmp_path, monkeypatch)
 ⋮----
 def test_remote_report_status_maps_upstream_unavailability(tmp_path, monkeypatch)
+````
+
+## File: backend/tests/test_hackerone_review_profiles.py
+````python
+def _resource(identifier: str, eligible: bool = True)
+⋮----
+def _policy(**overrides)
+⋮----
+value = {
+⋮----
+def _snapshot(document, fingerprint="a" * 64)
+⋮----
+def _client()
+⋮----
+api = FastAPI()
+⋮----
+def test_rules_preview_can_persist_exact_review_profile(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "profiles.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+document = {"data": [_resource("example.com")], "links": {}}
+⋮----
+response = _client().post(
+⋮----
+body = response.json()
+⋮----
+profile = Storage(db, artifacts).get_hackerone_review_profile(
+⋮----
+def test_review_profile_list_is_redacted_and_read_only(tmp_path, monkeypatch)
+⋮----
+store = Storage(db, artifacts)
+⋮----
+response = _client().get("/api/imports/hackerone/review-profiles")
+⋮----
+def test_review_profile_requires_target_inside_reviewed_scope(tmp_path, monkeypatch)
+⋮----
+def test_non_admissible_preview_is_not_remembered(tmp_path, monkeypatch)
 ````
 
 ## File: backend/tests/test_hackerone_scope_preview_api.py
@@ -17043,6 +17107,12 @@ function rememberLastProgram(handle)
 ⋮----
 function lastProgramHandle()
 ⋮----
+function normalizeServerReviewProfile(profile)
+⋮----
+function exactQuickProfile(key)
+⋮----
+async function loadServerReviewProfiles()
+⋮----
 function quickProfiles()
 ⋮----
 function quickProfileKey(binding=remoteBinding)
@@ -19261,6 +19331,25 @@ This is descriptive only: confidence never changes scope, authorization, task cr
 The recon prioritizer can now use surface confidence as a **damping signal**. High-confidence observations preserve the full bounded diff/history/temporal ordering boost, while low-confidence observations reduce that boost instead of amplifying uncertain data.
 
 The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
+
+## Server-side HackerOne review profiles
+
+A successfully reviewed HackerOne program can now persist its non-secret review profile on the server, keyed by the exact remote snapshot fingerprint. This removes the previous dependency on one browser's localStorage for repeat campaigns.
+
+The persisted profile contains only:
+- program handle and exact snapshot SHA-256
+- preferred primary URL
+- reviewed policy metadata
+- explicit request-rate limit
+- Safe Harbor / automation confirmations
+- test-account constraints and additional restrictions
+- reviewer and original review timestamp
+
+It never stores HackerOne API credentials, tokens, the full StructuredScope document, or decrypted vault material.
+
+Profiles are written only when the rules preview is complete, the conservative admission checks pass, the target is inside the reviewed scope, and the user has enabled the "remember" option. The dashboard still keeps a local copy as a fast fallback, but server profiles survive browser cache loss and can be reused across devices.
+
+A changed HackerOne fingerprint never matches an old server profile; the program falls back to first-review mode until the new fingerprint is reviewed.
 
 ## HackerOne quick start
 

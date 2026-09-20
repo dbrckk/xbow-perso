@@ -247,6 +247,12 @@ function rememberLastProgram(handle)
 ⋮----
 function lastProgramHandle()
 ⋮----
+function normalizeServerReviewProfile(profile)
+⋮----
+function exactQuickProfile(key)
+⋮----
+async function loadServerReviewProfiles()
+⋮----
 function quickProfiles()
 ⋮----
 function quickProfileKey(binding=remoteBinding)

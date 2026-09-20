@@ -1,21 +1,16 @@
 # Change impact
 
-Base: 1d8671445ba25243a9d5af647b0db3e3ccbc05f2
-Head: 86d8b3df43349d5b84f4034afa5ae3aaf0e45a43
+Base: 3ca145885826780d9dfce1dff9667cc4021c5421
+Head: ee85e4d2e34488646374268cffa85eb588789c4f
 
 ## Changed files
-- M .env.example
 - M README.md
 - M backend/app/hackerone_api.py
-- A backend/app/hackerone_catalog.py
+- M backend/app/main.py
 - M backend/app/postgres_storage.py
 - M backend/app/storage_backend.py
 - M backend/app/storage_core.py
-- M backend/app/worker_service.py
-- A backend/tests/test_hackerone_catalog.py
-- M backend/tests/test_hackerone_control_center_api.py
-- M docker-compose.yml
-- M frontend/app.css
+- A backend/tests/test_hackerone_review_profiles.py
 - M frontend/hackerone.js
 - M frontend/index.html
 - M frontend/sw.js
