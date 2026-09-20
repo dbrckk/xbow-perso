@@ -22,28 +22,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:44:37Z
+Generated: 2026-09-20T10:54:31Z
 
 ### Git
 - Branch: `main`
-- Head: `72da62c61381`
-- Commit date: 2026-09-20T12:44:24+02:00
-- Commit: feat: add one-command mobile production update and status
-- Tracked files: 504
+- Head: `a5a21e7e690f`
+- Commit date: 2026-09-20T12:54:16+02:00
+- Commit: feat: add verified one-command mobile vault cutover
+- Tracked files: 506
 
 ### Recently changed files
 - `.github/workflows/ci.yml`
 - `AWS_MOBILE_ONLY.md`
-- `scripts/mobile-production-status.sh`
-- `scripts/mobile-production-update.sh`
-- `README.md`
 - `VAULT_MIGRATION.md`
+- `scripts/mobile-vault-cutover.sh`
+- `scripts/mobile-vault-rollback.sh`
+- `scripts/mobile-production-cutover.sh`
+- `scripts/mobile-production-preflight.sh`
+- `scripts/mobile-production-update.sh`
+- `scripts/mobile-production-status.sh`
+- `README.md`
 - `backend/app/vault_migration.py`
 - `backend/tests/test_vault_migration.py`
-- `scripts/mobile-production-cutover.sh`
 - `scripts/mobile-production-rollback.sh`
-- `docker-compose.yml`
-- `scripts/mobile-production-preflight.sh`
 
 ### Project signals
 - `pyproject.toml`

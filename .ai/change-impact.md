@@ -1,13 +1,14 @@
 # Change impact
 
-Base: 51b1e54eaea0628a4d18f64163adf0c5bad4b731
-Head: 72da62c61381374d4c60ed72b8f47aa2d00b8d31
+Base: baab17523a04391a9153507d25a0049ed26a96d6
+Head: a5a21e7e690ff4b227f9aae661adad4bd249a44e
 
 ## Changed files
 - M .github/workflows/ci.yml
 - M AWS_MOBILE_ONLY.md
-- A scripts/mobile-production-status.sh
-- A scripts/mobile-production-update.sh
+- M VAULT_MIGRATION.md
+- A scripts/mobile-vault-cutover.sh
+- A scripts/mobile-vault-rollback.sh
 
 ## Affected areas
 - .github
