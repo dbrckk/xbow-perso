@@ -31,6 +31,7 @@ from .pipeline_swarm import coordinate_pipeline_action
 from .recon_priority import prioritize_recon_tasks
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
+from .surface_confidence import build_surface_confidence
 from .surface_diff import build_surface_diff_intelligence
 from .surface_temporal import build_temporal_surface_profile
 from .target_memory import build_target_memory
@@ -172,11 +173,13 @@ def _intelligence_context(
     target_memory = build_target_memory(store, campaign_doc)
     surface_diff = build_surface_diff_intelligence(target_memory)
     surface_temporal = build_temporal_surface_profile(store, campaign_doc)
+    surface_confidence = build_surface_confidence(target_memory, surface_temporal)
     recon_priority = prioritize_recon_tasks(
         recon_plan,
         surface_diff,
         target_memory,
         surface_temporal,
+        surface_confidence,
     )
     swarm = coordinate_recon_swarm(list(recon_priority.tasks))
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
@@ -198,6 +201,7 @@ def _intelligence_context(
         "recon_priority": recon_priority,
         "surface_diff": surface_diff,
         "surface_temporal": surface_temporal,
+        "surface_confidence": surface_confidence,
         "swarm": swarm,
         "coverage": coverage,
         "coverage_guidance": coverage_guidance,
@@ -572,6 +576,7 @@ def _result(
             "recon_priority": intelligence["recon_priority"].to_dict(),
             "surface_diff": dict(intelligence["surface_diff"]),
             "surface_temporal": dict(intelligence["surface_temporal"]),
+            "surface_confidence": dict(intelligence["surface_confidence"]),
             "swarm_coordination": intelligence["swarm"].to_dict(),
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
