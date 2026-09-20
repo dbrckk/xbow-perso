@@ -22,16 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T13:50:30Z
+Generated: 2026-09-20T14:22:56Z
 
 ### Git
 - Branch: `main`
-- Head: `5aabea4222d6`
-- Commit date: 2026-09-20T15:50:18+02:00
-- Commit: fix: break HackerOne client import cycle
+- Head: `7162304d150f`
+- Commit date: 2026-09-20T16:22:44+02:00
+- Commit: feat: add fingerprint-bound HackerOne express start
 - Tracked files: 506
 
 ### Recently changed files
+- `README.md`
+- `frontend/app.css`
+- `frontend/hackerone.js`
+- `frontend/index.html`
+- `frontend/sw.js`
 - `backend/app/hackerone_scope_import.py`
 - `backend/tests/test_hackerone_client.py`
 - `scripts/mobile-vault-cutover.sh`

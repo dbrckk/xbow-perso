@@ -3,17 +3,17 @@
 - Index mode: incremental
 - Files indexed: 322
 - Files reparsed this run: 2
-- Symbols: 2887
+- Symbols: 2895
 - Internal import edges: 1109
-- Impacted files: 7
-- Selected tests: 4
+- Impacted files: 2
+- Selected tests: 20
 
 ## Languages
 - python: 319 files
 - javascript: 3 files
 
 ## Highest-density symbol files
-- frontend/hackerone.js: 90 symbols
+- frontend/hackerone.js: 98 symbols
 - backend/app/main.py: 89 symbols
 - backend/tests/test_storage.py: 37 symbols
 - backend/tests/test_jobqueue.py: 32 symbols

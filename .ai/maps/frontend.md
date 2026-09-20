@@ -237,6 +237,22 @@ async function refreshRunMonitor(campaignId)
 ⋮----
 function startRunMonitor(campaignId)
 ⋮----
+function quickProfiles()
+⋮----
+function quickProfileKey(binding=remoteBinding)
+⋮----
+function saveQuickProfiles(profiles)
+⋮----
+function localDateTimeValue(date=new Date())
+⋮----
+function quickTargetSuggestions(snapshot)
+⋮----
+function setQuickState(label,type='')
+⋮----
+function restoreQuickProfile(snapshot)
+⋮----
+function rememberQuickProfile(payload)
+⋮----
 function clearRemoteBinding()
 ⋮----
 function renderProgramOptions()

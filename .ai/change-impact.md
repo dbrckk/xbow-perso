@@ -1,14 +1,18 @@
 # Change impact
 
-Base: d43a1caeb627926e0c65030168d9a41774307f0f
-Head: 5aabea4222d6185c9f60b8940b7786b05260309b
+Base: 58c533f4a37f24d6044b7627fea30dc369a6eeed
+Head: 7162304d150f108b5938c7c848ca10ea8433f507
 
 ## Changed files
-- M backend/app/hackerone_scope_import.py
-- M backend/tests/test_hackerone_client.py
+- M README.md
+- M frontend/app.css
+- M frontend/hackerone.js
+- M frontend/index.html
+- M frontend/sw.js
 
 ## Affected areas
-- backend
+- (root)
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

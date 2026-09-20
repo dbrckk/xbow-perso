@@ -16723,6 +16723,22 @@ async function refreshRunMonitor(campaignId)
 ⋮----
 function startRunMonitor(campaignId)
 ⋮----
+function quickProfiles()
+⋮----
+function quickProfileKey(binding=remoteBinding)
+⋮----
+function saveQuickProfiles(profiles)
+⋮----
+function localDateTimeValue(date=new Date())
+⋮----
+function quickTargetSuggestions(snapshot)
+⋮----
+function setQuickState(label,type='')
+⋮----
+function restoreQuickProfile(snapshot)
+⋮----
+function rememberQuickProfile(payload)
+⋮----
 function clearRemoteBinding()
 ⋮----
 function renderProgramOptions()
@@ -18641,6 +18657,12 @@ This is descriptive only: confidence never changes scope, authorization, task cr
 The recon prioritizer can now use surface confidence as a **damping signal**. High-confidence observations preserve the full bounded diff/history/temporal ordering boost, while low-confidence observations reduce that boost instead of amplifying uncertain data.
 
 The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
+
+## HackerOne quick start
+
+The HackerOne launcher includes an express-start profile for repeated bounty work. After a program policy/scope has been reviewed and accepted once, the non-secret review settings can be remembered locally **only for that exact HackerOne snapshot fingerprint**. If HackerOne changes the policy, scope or exclusions, the fingerprint changes and the launcher requires a fresh review instead of silently reusing the old authorization assumptions.
+
+The express flow can restore the reviewer, verified rate limit, policy reference/date, automation/Safe Harbor confirmations, account constraints, notes and preferred primary URL. Compatible exact-domain/URL targets are also offered as browser suggestions. Secret credentials remain server-side in the encrypted vault.
 
 ## Vault migration
 
