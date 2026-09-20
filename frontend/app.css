@@ -732,3 +732,59 @@ summary:hover{color:white}
 @media(prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;transition:none!important}
 }
+
+.target-memory-grid{
+  display:grid;
+  grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+  gap:12px;
+  margin-top:14px;
+}
+.target-memory-grid>div{
+  min-width:0;
+  padding:14px;
+  border:1px solid rgba(148,163,184,.1);
+  border-radius:14px;
+  background:rgba(4,8,16,.42);
+}
+.memory-kind-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:12px;
+}
+.memory-kind{
+  padding:10px;
+  border:1px solid rgba(148,163,184,.09);
+  border-radius:11px;
+  background:rgba(5,9,17,.52);
+}
+.memory-kind span,.memory-kind strong{display:block}
+.memory-kind span{
+  color:var(--muted-2);
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.memory-kind strong{
+  margin-top:5px;
+  font-size:16px;
+  color:#f8fafc;
+}
+.memory-delta-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.memory-delta-label{
+  display:block;
+  margin-bottom:7px;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+@media(max-width:720px){
+  .target-memory-grid,.memory-delta-columns{grid-template-columns:1fr}
+}
