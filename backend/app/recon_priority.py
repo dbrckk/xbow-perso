@@ -24,6 +24,7 @@ class ReconPriorityAdjustment:
     diff_boost: int
     history_boost: int
     temporal_boost: int
+    confidence_factor: float
     signals: tuple[str, ...]
     historical_signals: tuple[str, ...]
     temporal_signals: tuple[str, ...]
@@ -134,11 +135,36 @@ def _temporal_kind_scores(surface_temporal: dict[str, Any] | None) -> dict[str, 
         scores[kind] = min(5.0, scores.get(kind, 0.0) + adjusted)
     return scores
 
+
+
+def _confidence_kind_scores(surface_confidence: dict[str, Any] | None) -> dict[str, float]:
+    if not surface_confidence:
+        return {}
+    totals: dict[str, float] = {}
+    counts: dict[str, int] = {}
+    for raw in list(surface_confidence.get("nodes") or [])[:500]:
+        kind = str(raw.get("kind") or "")
+        if not kind:
+            continue
+        try:
+            score = float(raw.get("confidence") or 0.0)
+        except (TypeError, ValueError):
+            score = 0.0
+        score = max(0.0, min(1.0, score))
+        totals[kind] = totals.get(kind, 0.0) + score
+        counts[kind] = counts.get(kind, 0) + 1
+    return {
+        kind: totals[kind] / counts[kind]
+        for kind in totals
+        if counts.get(kind, 0) > 0
+    }
+
 def prioritize_recon_tasks(
     tasks: list[ReconTask],
     surface_diff: dict[str, Any],
     target_memory: dict[str, Any] | None = None,
     surface_temporal: dict[str, Any] | None = None,
+    surface_confidence: dict[str, Any] | None = None,
 ) -> ReconPriorityResult:
     """Reorder an already-authorized recon plan using historical change signals.
 
@@ -148,6 +174,7 @@ def prioritize_recon_tasks(
     counts = _signal_counts(surface_diff)
     historical_scores = _historical_kind_scores(target_memory)
     temporal_scores = _temporal_kind_scores(surface_temporal)
+    confidence_scores = _confidence_kind_scores(surface_confidence)
     baseline_available = bool(surface_diff.get("baseline_available"))
     changed_surface_count = max(
         0,
@@ -165,7 +192,18 @@ def prioritize_recon_tasks(
         history_boost = min(5, int(round(history_strength))) if baseline_available else 0
         temporal_strength = sum(temporal_scores.get(kind, 0.0) for kind in signals)
         temporal_boost = min(5, int(round(temporal_strength))) if baseline_available else 0
-        boost = min(20, diff_boost + history_boost + temporal_boost)
+        confidence_values = [
+            confidence_scores[kind]
+            for kind in signals
+            if kind in confidence_scores
+        ]
+        confidence_factor = (
+            max(0.5, min(1.0, sum(confidence_values) / len(confidence_values)))
+            if confidence_values
+            else 1.0
+        )
+        raw_boost = min(20, diff_boost + history_boost + temporal_boost)
+        boost = min(20, int(round(raw_boost * confidence_factor)))
         effective = min(100, int(task.priority) + boost)
         reason = task.reason
         active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
@@ -183,6 +221,8 @@ def prioritize_recon_tasks(
                 details.append(f"history +{history_boost}")
             if temporal_boost:
                 details.append(f"temporal +{temporal_boost}")
+            if confidence_factor < 0.999:
+                details.append(f"confidence x{confidence_factor:.2f}")
             reason = (
                 f"{task.reason}; recon-priority +{boost} "
                 f"({'; '.join(details)}"
@@ -215,6 +255,7 @@ def prioritize_recon_tasks(
                 diff_boost=diff_boost,
                 history_boost=history_boost,
                 temporal_boost=temporal_boost,
+                confidence_factor=round(confidence_factor, 4),
                 signals=active,
                 historical_signals=historical_active,
                 temporal_signals=temporal_active,
