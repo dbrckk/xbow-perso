@@ -1,6 +1,8 @@
 import base64
 import json
 import os
+import subprocess
+import sys
 from email.message import Message
 
 import pytest
@@ -203,3 +205,15 @@ def test_client_post_json_rejects_non_object_payload():
 
     with pytest.raises(HackerOneClientError, match="payload"):
         client.post_json("hackers/reports", ["not", "an", "object"])
+
+
+def test_hackerone_client_imports_cleanly_in_isolated_process():
+    result = subprocess.run(
+        [sys.executable, "-c", "import app.hackerone_client; print('ok')"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "ok"
