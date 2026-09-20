@@ -1,15 +1,15 @@
 # Change impact
 
-Base: bc9418420c01ea6b3116e1976c2ed97f97defcd0
-Head: f112deb6200bee21503eeb8da953fd0588edd43b
+Base: 386a7ed60608634a0221c3b8adcb432713d0d367
+Head: b5653874336d989c4d61f3d72b485eb16659571d
 
 ## Changed files
 - M README.md
 - M backend/app/main.py
 - M backend/app/orchestrator.py
-- A backend/app/recon_priority.py
+- M backend/app/recon_priority.py
 - M backend/app/recon_swarm.py
-- A backend/tests/test_recon_priority.py
+- M backend/tests/test_recon_priority.py
 
 ## Affected areas
 - (root)

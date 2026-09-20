@@ -5509,7 +5509,7 @@ cycle = build_adaptive_cycle(gate, planned_actions, memories, worker_outcomes)
 recon_plan = build_recon_plan(
 target_memory = build_target_memory(store, campaign.model_dump(mode="json"))
 surface_diff = build_surface_diff_intelligence(target_memory)
-recon_priority = prioritize_recon_tasks(recon_plan, surface_diff)
+recon_priority = prioritize_recon_tasks(recon_plan, surface_diff, target_memory)
 swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
@@ -6659,7 +6659,10 @@ kind: str
 original_priority: int
 effective_priority: int
 boost: int
+diff_boost: int
+history_boost: int
 signals: tuple[str, ...]
+historical_signals: tuple[str, ...]
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -6685,12 +6688,29 @@ removed = max(0, int(item.get("removed") or 0))
 # Newly observed surface is a stronger signal. Removed observations are
 # still useful for a refresh but cannot trigger a new target or task.
 ⋮----
+def _historical_kind_scores(target_memory: dict[str, Any] | None) -> dict[str, float]
+⋮----
+delta = dict(target_memory.get("delta") or {})
+added = {
+scores: dict[str, float] = {}
+⋮----
+kind = str(raw.get("kind") or "")
+value = str(raw.get("value") or "")
+⋮----
+campaign_count = max(1, int(raw.get("campaign_count") or 1))
+⋮----
+campaign_count = 1
+# Newly observed nodes (count=1) are the strongest historical novelty
+# signal. Reappearing nodes still contribute, but progressively less.
+novelty = 1.0 / float(campaign_count)
+⋮----
 """Reorder an already-authorized recon plan using historical change signals.
 
     This function may only alter priority/reason. It never creates a task,
     changes a target, changes methods, changes request budgets, or broadens scope.
     """
 counts = _signal_counts(surface_diff)
+historical_scores = _historical_kind_scores(target_memory)
 baseline_available = bool(surface_diff.get("baseline_available"))
 changed_surface_count = max(
 ⋮----
@@ -6699,14 +6719,18 @@ audit: list[ReconPriorityAdjustment] = []
 ⋮----
 signals = _TASK_SIGNALS.get(task.kind, ())
 signal_strength = sum(counts.get(kind, 0) for kind in signals)
-boost = min(15, signal_strength * 2) if baseline_available else 0
+diff_boost = min(15, signal_strength * 2) if baseline_available else 0
+history_strength = sum(historical_scores.get(kind, 0.0) for kind in signals)
+history_boost = min(5, int(round(history_strength))) if baseline_available else 0
+boost = min(20, diff_boost + history_boost)
 effective = min(100, int(task.priority) + boost)
 reason = task.reason
-⋮----
 active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
-reason = (
+historical_active = tuple(
 ⋮----
-active = ()
+details = []
+⋮----
+reason = (
 ⋮----
 updated = replace(task, priority=effective, reason=reason)
 # Fail closed if any field beyond the intended ordering metadata changed.
@@ -6795,7 +6819,7 @@ tasks = build_recon_plan(
 store = storage()
 memory = build_target_memory(store, campaign.model_dump(mode="json"))
 surface_diff = build_surface_diff_intelligence(memory)
-priority = prioritize_recon_tasks(tasks, surface_diff)
+priority = prioritize_recon_tasks(tasks, surface_diff, memory)
 ````
 
 ## File: backend/app/recon_worker.py
@@ -13986,6 +14010,26 @@ original = [task("map_endpoints", 80), task("map_forms", 70)]
 def test_diff_priority_is_bounded_to_fifteen_points()
 ⋮----
 original = [task("map_endpoints", 70)]
+⋮----
+def test_historical_novelty_adds_small_bounded_boost()
+⋮----
+memory = {
+⋮----
+result = prioritize_recon_tasks(original, diff, memory)
+⋮----
+adjustment = result.adjustments[0]
+⋮----
+def test_reappearing_surface_has_less_history_weight_than_novel_surface()
+⋮----
+novel = {
+recurring = {
+⋮----
+novel_result = prioritize_recon_tasks(original, diff, novel)
+recurring_result = prioritize_recon_tasks(original, diff, recurring)
+⋮----
+def test_total_priority_boost_is_bounded_to_twenty_points()
+⋮----
+original = [task("browser_observe", 60)]
 ````
 
 ## File: backend/tests/test_recon_swarm.py
@@ -16992,6 +17036,12 @@ The recon planner can now use the read-only surface diff as a bounded ordering s
 It is explicitly forbidden from creating tasks, rewriting targets, increasing request budgets, changing HTTP methods, or expanding scope. Newly observed endpoints/forms/assets can therefore make an already-authorized recon task run earlier, but they cannot create authority that did not already exist.
 
 The advisory recon-plan endpoint exposes the audit metadata as `diff_priority`; orchestrated campaigns use the same bounded ordering before shared swarm budgets are allocated.
+
+## Historical recon scoring
+
+Diff-prioritized recon also uses bounded historical frequency from Target Memory. Newly observed surface receives a small novelty bonus, while an item that has appeared in many prior campaigns contributes progressively less historical weight.
+
+Historical scoring is intentionally weak relative to the current surface diff: the diff component is capped at +15 priority points, historical novelty at +5, and the combined ordering boost at +20. This still changes **ordering only**. It cannot create tasks, increase request budgets, rewrite targets, change allowed methods, or expand scope.
 
 ## Disaster recovery integrity
 

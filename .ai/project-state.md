@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:28:24Z
+Generated: 2026-09-20T08:33:25Z
 
 ### Git
 - Branch: `main`
-- Head: `f112deb6200b`
-- Commit date: 2026-09-20T10:28:10+02:00
-- Commit: feat: prioritize recon from bounded surface diff
+- Head: `b5653874336d`
+- Commit date: 2026-09-20T10:33:14+02:00
+- Commit: feat: add bounded historical recon scoring
 - Tracked files: 483
 
 ### Recently changed files
@@ -49,9 +49,6 @@ Generated: 2026-09-20T08:28:24Z
 - `backend/app/target_memory.py`
 - `backend/tests/test_target_memory.py`
 - `scripts/bootstrap-mobile-ubuntu.sh`
-- `.github/workflows/ci.yml`
-- `frontend/Dockerfile`
-- `frontend/manifest.webmanifest`
 
 ### Project signals
 - `pyproject.toml`
