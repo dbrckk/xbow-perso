@@ -391,6 +391,7 @@ def system_capabilities():
             "surface_diff_intelligence": "read_only",
             "diff_prioritized_recon": "ordering_only",
             "historical_recon_scoring": "ordering_only",
+            "temporal_surface_profile": "read_only",
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
             "evidence_quality_scoring": "read_only",
@@ -527,6 +528,18 @@ def get_campaign_surface_diff(campaign_id: str):
     try:
         memory = build_target_memory(store, campaign.model_dump(mode="json"))
         return build_surface_diff_intelligence(memory)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/campaigns/{campaign_id}/surface-temporal")
+def get_campaign_surface_temporal(campaign_id: str):
+    from .surface_temporal import build_temporal_surface_profile
+
+    campaign = assert_campaign_exists(campaign_id)
+    store = storage()
+    try:
+        return build_temporal_surface_profile(store, campaign.model_dump(mode="json"))
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
