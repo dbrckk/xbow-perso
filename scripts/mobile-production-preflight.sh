@@ -82,15 +82,15 @@ git_as_owner checkout main
 git_as_owner reset --hard origin/main
 
 echo "=== COMPOSE VALIDATION ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml config --quiet
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml config --quiet
 
 echo "=== START POSTGRES + REDIS ONLY ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml up -d postgres redis
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml up -d postgres redis
 
 echo "=== WAIT FOR DEPENDENCIES ==="
 for _ in $(seq 1 45); do
-  pg_ok="$(docker compose -f docker-compose.yml -f docker-compose.distributed.yml ps --format json postgres 2>/dev/null | grep -c '"Health":"healthy"' || true)"
-  redis_ok="$(docker compose -f docker-compose.yml -f docker-compose.distributed.yml ps --format json redis 2>/dev/null | grep -c '"Health":"healthy"' || true)"
+  pg_ok="$(docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml ps --format json postgres 2>/dev/null | grep -c '"Health":"healthy"' || true)"
+  redis_ok="$(docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml ps --format json redis 2>/dev/null | grep -c '"Health":"healthy"' || true)"
   if [ "$pg_ok" -gt 0 ] && [ "$redis_ok" -gt 0 ]; then
     break
   fi
@@ -98,10 +98,10 @@ for _ in $(seq 1 45); do
 done
 
 echo "=== DEPENDENCY STATUS ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml ps postgres redis
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml ps postgres redis
 
 echo "=== MIGRATION PLAN ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm --no-deps   -e XBOW_MIGRATION_SQLITE_PATH=/data/xbow.sqlite3   -e XBOW_ARTIFACT_ROOT=/data/artifacts   -e XBOW_DATABASE_URL="$XBOW_DATABASE_URL"   -e XBOW_REDIS_URL="$XBOW_REDIS_URL"   backend python -m app.production_migration plan
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml run --rm --no-deps   -e XBOW_MIGRATION_SQLITE_PATH=/data/xbow.sqlite3   -e XBOW_ARTIFACT_ROOT=/data/artifacts   -e XBOW_DATABASE_URL="$XBOW_DATABASE_URL"   -e XBOW_REDIS_URL="$XBOW_REDIS_URL"   backend python -m app.production_migration plan
 
 echo "=== VAULT MIGRATION ==="
 echo "Deferred: vault migration has a separate verified cutover step."
