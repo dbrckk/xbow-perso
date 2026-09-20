@@ -453,6 +453,8 @@ def main() -> int:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
         return 1
     print(json.dumps(result, sort_keys=True))
+    if args.command == "plan" and not bool(result.get("ok")):
+        return 2
     return 0
 
 
