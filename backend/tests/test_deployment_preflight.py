@@ -15,12 +15,34 @@ _ENV_NAMES = (
     "XBOW_BACKEND_IMAGE",
     "XBOW_FRONTEND_IMAGE",
     "XBOW_ALLOW_LEGACY_UNPROVENANCED_JOBS",
+    "XBOW_STORAGE_BACKEND",
+    "XBOW_QUEUE_BACKEND",
+    "XBOW_API_RATE_LIMIT_ENABLED",
+    "XBOW_API_RATE_LIMIT_BACKEND",
+    "XBOW_VAULT_ENABLED",
+    "XBOW_VAULT_MASTER_KEY_FILE",
+    "XBOW_VAULT_MASTER_KEY",
 )
 
 
 def _clear(monkeypatch):
     for name in _ENV_NAMES:
         monkeypatch.delenv(name, raising=False)
+
+
+
+
+def _set_hardened_production(monkeypatch):
+    digest = "a" * 64
+    monkeypatch.setenv("XBOW_DEPLOYMENT_ENV", "production")
+    monkeypatch.setenv("XBOW_BACKEND_IMAGE", f"ghcr.io/example/backend@sha256:{digest}")
+    monkeypatch.setenv("XBOW_FRONTEND_IMAGE", f"ghcr.io/example/frontend@sha256:{digest}")
+    monkeypatch.setenv("XBOW_STORAGE_BACKEND", "postgresql")
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "redis")
+    monkeypatch.setenv("XBOW_API_RATE_LIMIT_ENABLED", "true")
+    monkeypatch.setenv("XBOW_API_RATE_LIMIT_BACKEND", "redis")
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "true")
+    monkeypatch.setenv("XBOW_VAULT_MASTER_KEY_FILE", "/run/secrets/xbow_vault_master_key")
 
 
 def test_preflight_is_ok_with_optional_pentagi_disabled(monkeypatch):
@@ -129,7 +151,7 @@ def test_preflight_endpoint_uses_dependency_readiness(monkeypatch):
     assert "/api/deployment/preflight" in main.app.openapi()["paths"]
 
 
-def test_production_preflight_requires_digest_pinned_images(monkeypatch):
+def test_production_preflight_requires_hardened_backends_and_digest_pinned_images(monkeypatch):
     _clear(monkeypatch)
     monkeypatch.setenv("XBOW_DEPLOYMENT_ENV", "production")
 
@@ -139,30 +161,44 @@ def test_production_preflight_requires_digest_pinned_images(monkeypatch):
     assert {item["code"] for item in result["issues"]} == {
         "backend_image_digest_missing",
         "frontend_image_digest_missing",
+        "production_postgresql_required",
+        "production_redis_queue_required",
+        "production_redis_rate_limit_required",
+        "production_vault_required",
     }
-    assert result["deployment_integrity"]["production_mode"] is True
-    assert result["deployment_integrity"]["backend_image_digest_configured"] is False
-    assert result["deployment_integrity"]["frontend_image_digest_configured"] is False
+    integrity = result["deployment_integrity"]
+    assert integrity["production_mode"] is True
+    assert integrity["backend_image_digest_configured"] is False
+    assert integrity["frontend_image_digest_configured"] is False
+    assert integrity["storage_backend"] == "sqlite"
+    assert integrity["queue_backend"] == "sqlite"
+    assert integrity["api_rate_limit_enabled"] is False
+    assert integrity["vault_enabled"] is False
 
 
-def test_production_preflight_accepts_digest_pinned_images(monkeypatch):
+def test_production_preflight_accepts_hardened_distributed_configuration(monkeypatch):
     _clear(monkeypatch)
-    digest = "a" * 64
-    monkeypatch.setenv("XBOW_DEPLOYMENT_ENV", "production")
-    monkeypatch.setenv("XBOW_BACKEND_IMAGE", f"ghcr.io/example/backend@sha256:{digest}")
-    monkeypatch.setenv("XBOW_FRONTEND_IMAGE", f"ghcr.io/example/frontend@sha256:{digest}")
+    _set_hardened_production(monkeypatch)
 
     result = build_deployment_preflight({"ok": True})
 
     assert result["status"] == "ok"
-    assert result["deployment_integrity"]["production_mode"] is True
-    assert result["deployment_integrity"]["backend_image_digest_configured"] is True
-    assert result["deployment_integrity"]["frontend_image_digest_configured"] is True
+    integrity = result["deployment_integrity"]
+    assert integrity["production_mode"] is True
+    assert integrity["backend_image_digest_configured"] is True
+    assert integrity["frontend_image_digest_configured"] is True
+    assert integrity["storage_backend"] == "postgresql"
+    assert integrity["queue_backend"] == "redis"
+    assert integrity["api_rate_limit_enabled"] is True
+    assert integrity["api_rate_limit_backend"] == "redis"
+    assert integrity["vault_enabled"] is True
+    assert integrity["vault_master_key_file_configured"] is True
+    assert integrity["vault_inline_key_configured"] is False
 
 
 def test_production_preflight_rejects_mutable_tags(monkeypatch):
     _clear(monkeypatch)
-    monkeypatch.setenv("XBOW_DEPLOYMENT_ENV", "production")
+    _set_hardened_production(monkeypatch)
     monkeypatch.setenv("XBOW_BACKEND_IMAGE", "ghcr.io/example/backend:latest")
     monkeypatch.setenv("XBOW_FRONTEND_IMAGE", "ghcr.io/example/frontend:v1")
 
@@ -208,5 +244,44 @@ def test_preflight_rejects_invalid_legacy_provenance_boolean(monkeypatch):
 
     assert result["status"] == "error"
     assert "invalid_legacy_provenance_flag" in {
+        item["code"] for item in result["issues"]
+    }
+
+
+def test_production_preflight_rejects_inline_vault_master_key(monkeypatch):
+    _clear(monkeypatch)
+    _set_hardened_production(monkeypatch)
+    monkeypatch.setenv("XBOW_VAULT_MASTER_KEY", "inline-secret-material")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert "production_inline_vault_key_forbidden" in {
+        item["code"] for item in result["issues"]
+    }
+
+
+def test_production_preflight_requires_redis_rate_limit_backend(monkeypatch):
+    _clear(monkeypatch)
+    _set_hardened_production(monkeypatch)
+    monkeypatch.setenv("XBOW_API_RATE_LIMIT_BACKEND", "memory")
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert "production_redis_rate_limit_required" in {
+        item["code"] for item in result["issues"]
+    }
+
+
+def test_production_preflight_requires_vault_key_file(monkeypatch):
+    _clear(monkeypatch)
+    _set_hardened_production(monkeypatch)
+    monkeypatch.delenv("XBOW_VAULT_MASTER_KEY_FILE", raising=False)
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert "production_vault_key_file_required" in {
         item["code"] for item in result["issues"]
     }

@@ -227,6 +227,28 @@ The recon prioritizer can now use surface confidence as a **damping signal**. Hi
 
 The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
 
+## Production hardening preflight
+
+`GET /api/deployment/preflight` now treats `XBOW_DEPLOYMENT_ENV=production` as a strict fail-closed contract. In addition to digest-pinned backend/frontend images, production mode requires PostgreSQL metadata storage, a Redis queue, Redis-backed API rate limiting, and the encrypted vault with a master-key **file** source.
+
+The preflight reports only redacted configuration state; it never returns database URLs, Redis URLs, vault paths, key material, or credentials.
+
+Required production posture:
+
+```bash
+XBOW_DEPLOYMENT_ENV=production
+XBOW_STORAGE_BACKEND=postgresql
+XBOW_QUEUE_BACKEND=redis
+XBOW_API_RATE_LIMIT_ENABLED=true
+XBOW_API_RATE_LIMIT_BACKEND=redis
+XBOW_VAULT_ENABLED=true
+XBOW_VAULT_MASTER_KEY_FILE=/run/secrets/xbow_vault_master_key
+```
+
+Inline `XBOW_VAULT_MASTER_KEY` is rejected by production preflight. The distributed Compose overlay now enables Redis-backed API rate limiting automatically; vault migration remains an explicit operator step so existing credentials are never silently moved or lost.
+
+Keep `DRY_RUN=true` and active scanner switches disabled while migrating storage/secrets. Production hardening does not imply permission to test any target.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
@@ -259,20 +281,18 @@ A campaign must include written authorization metadata, allowed targets and proh
 
 ## Roadmap
 
-- persistent PostgreSQL storage
-- queued workers (Redis/Celery or equivalent)
+Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypted secret vault, recon graph/target memory, evidence artifacts, audit receipts, TLS deployment hardening, HackerOne program import, and TOTP-backed control-plane authentication.
+
+Remaining major work:
+
+- production migration/runbook automation and tested restore drills
 - real Strix job lifecycle + result parser
-- PentAGI remote lifecycle/status UX
-- Playwright browser worker
-- recon graph / target memory
-- program importers
-- evidence artifacts and screenshots
-- CVSS/CWE normalization
-- HackerOne/Bugcrowd-style report templates
-- authentication + TOTP/WebAuthn
-- encrypted secrets vault
-- audit logs and per-action policy receipts
-- deployment hardening and reverse proxy/TLS
+- enforceable PentAGI remote execution contract
+- Playwright browser worker hardening and authenticated-flow UX
+- stronger CVSS/CWE normalization and report metadata assistance
+- WebAuthn/passkeys and multi-user roles
+- Prometheus/Grafana observability and alert routing
+- signed/pinned production image release workflow
 
 
 ## PentAGI workers
