@@ -22,18 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:12:27Z
+Generated: 2026-09-20T08:28:24Z
 
 ### Git
 - Branch: `main`
-- Head: `622c7f433e0d`
-- Commit date: 2026-09-20T10:12:17+02:00
-- Commit: feat: add recon surface diff intelligence
-- Tracked files: 481
+- Head: `f112deb6200b`
+- Commit date: 2026-09-20T10:28:10+02:00
+- Commit: feat: prioritize recon from bounded surface diff
+- Tracked files: 483
 
 ### Recently changed files
 - `README.md`
 - `backend/app/main.py`
+- `backend/app/orchestrator.py`
+- `backend/app/recon_priority.py`
+- `backend/app/recon_swarm.py`
+- `backend/tests/test_recon_priority.py`
 - `backend/app/surface_diff.py`
 - `backend/tests/test_surface_diff.py`
 - `frontend/app.css`
@@ -48,7 +52,6 @@ Generated: 2026-09-20T08:12:27Z
 - `.github/workflows/ci.yml`
 - `frontend/Dockerfile`
 - `frontend/manifest.webmanifest`
-- `deploy/Caddyfile`
 
 ### Project signals
 - `pyproject.toml`

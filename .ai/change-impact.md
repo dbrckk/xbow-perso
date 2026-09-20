@@ -1,22 +1,19 @@
 # Change impact
 
-Base: ece23ea3b45c65e6ef2c05ad4205f90244b82eea
-Head: 622c7f433e0d5aa6045e40bd592a1a8bf7c39bac
+Base: bc9418420c01ea6b3116e1976c2ed97f97defcd0
+Head: f112deb6200bee21503eeb8da953fd0588edd43b
 
 ## Changed files
 - M README.md
 - M backend/app/main.py
-- A backend/app/surface_diff.py
-- A backend/tests/test_surface_diff.py
-- M frontend/app.css
-- M frontend/app.js
-- M frontend/index.html
-- M frontend/sw.js
+- M backend/app/orchestrator.py
+- A backend/app/recon_priority.py
+- M backend/app/recon_swarm.py
+- A backend/tests/test_recon_priority.py
 
 ## Affected areas
 - (root)
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

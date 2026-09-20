@@ -151,6 +151,7 @@ backend/
     postgres_storage.py
     queue_backend.py
     readiness.py
+    recon_priority.py
     recon_swarm.py
     recon_worker.py
     red_team_coverage.py
@@ -319,6 +320,7 @@ backend/
     test_queue_backend.py
     test_queue_health.py
     test_readiness.py
+    test_recon_priority.py
     test_recon_swarm.py
     test_recon_worker.py
     test_red_team_coverage.py
@@ -5505,7 +5507,10 @@ memories = build_learning_memory(graph)
 worker_outcomes = summarize_worker_outcomes(campaign.events)
 cycle = build_adaptive_cycle(gate, planned_actions, memories, worker_outcomes)
 recon_plan = build_recon_plan(
-swarm = coordinate_recon_swarm(recon_plan)
+target_memory = build_target_memory(store, campaign.model_dump(mode="json"))
+surface_diff = build_surface_diff_intelligence(target_memory)
+recon_priority = prioritize_recon_tasks(recon_plan, surface_diff)
+swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
 scanner_adaptation = adapt_scanner_engines(
@@ -6643,6 +6648,70 @@ def main() -> None
 result = readiness()
 ````
 
+## File: backend/app/recon_priority.py
+````python
+_TASK_SIGNALS: dict[str, tuple[str, ...]] = {
+⋮----
+@dataclass(frozen=True)
+class ReconPriorityAdjustment
+⋮----
+kind: str
+original_priority: int
+effective_priority: int
+boost: int
+signals: tuple[str, ...]
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+@dataclass(frozen=True)
+class ReconPriorityResult
+⋮----
+tasks: tuple[ReconTask, ...]
+adjustments: tuple[ReconPriorityAdjustment, ...]
+baseline_available: bool
+changed_surface_count: int
+⋮----
+def _signal_counts(surface_diff: dict[str, Any]) -> dict[str, int]
+⋮----
+summary = dict(surface_diff.get("summary") or {})
+raw = dict(summary.get("counts_by_kind") or {})
+counts: dict[str, int] = {}
+⋮----
+item = dict(values or {})
+added = max(0, int(item.get("added") or 0))
+removed = max(0, int(item.get("removed") or 0))
+# Newly observed surface is a stronger signal. Removed observations are
+# still useful for a refresh but cannot trigger a new target or task.
+⋮----
+"""Reorder an already-authorized recon plan using historical change signals.
+
+    This function may only alter priority/reason. It never creates a task,
+    changes a target, changes methods, changes request budgets, or broadens scope.
+    """
+counts = _signal_counts(surface_diff)
+baseline_available = bool(surface_diff.get("baseline_available"))
+changed_surface_count = max(
+⋮----
+adjusted: list[ReconTask] = []
+audit: list[ReconPriorityAdjustment] = []
+⋮----
+signals = _TASK_SIGNALS.get(task.kind, ())
+signal_strength = sum(counts.get(kind, 0) for kind in signals)
+boost = min(15, signal_strength * 2) if baseline_available else 0
+effective = min(100, int(task.priority) + boost)
+reason = task.reason
+⋮----
+active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
+reason = (
+⋮----
+active = ()
+⋮----
+updated = replace(task, priority=effective, reason=reason)
+# Fail closed if any field beyond the intended ordering metadata changed.
+````
+
 ## File: backend/app/recon_swarm.py
 ````python
 ReconTaskKind = Literal[
@@ -6722,6 +6791,11 @@ rules = campaign.target.rules
 def scope_checker(host: str) -> bool
 ⋮----
 tasks = build_recon_plan(
+⋮----
+store = storage()
+memory = build_target_memory(store, campaign.model_dump(mode="json"))
+surface_diff = build_surface_diff_intelligence(memory)
+priority = prioritize_recon_tasks(tasks, surface_diff)
 ````
 
 ## File: backend/app/recon_worker.py
@@ -13887,6 +13961,33 @@ def test_main_returns_normally_when_ready(monkeypatch)
 def test_main_exits_nonzero_when_not_ready(monkeypatch)
 ````
 
+## File: backend/tests/test_recon_priority.py
+````python
+def task(kind: str, priority: int = 60) -> ReconTask
+⋮----
+agents = {
+⋮----
+def test_diff_priority_only_reorders_existing_authorized_tasks()
+⋮----
+original = [
+diff = {
+⋮----
+result = prioritize_recon_tasks(original, diff)
+⋮----
+by_kind = {item.kind: item for item in result.tasks}
+before = {item.kind: item for item in original}
+⋮----
+source = before[kind]
+⋮----
+def test_diff_priority_does_nothing_without_baseline()
+⋮----
+original = [task("map_endpoints", 80), task("map_forms", 70)]
+⋮----
+def test_diff_priority_is_bounded_to_fifteen_points()
+⋮----
+original = [task("map_endpoints", 70)]
+````
+
 ## File: backend/tests/test_recon_swarm.py
 ````python
 def test_capabilities_are_bounded_read_only_and_get_head_only()
@@ -16883,6 +16984,14 @@ The target-memory layer also exposes `GET /api/campaigns/{campaign_id}/surface-d
 It classifies added and removed assets, endpoints, forms, technologies and WAF observations, produces a deterministic change score, and highlights newly observed assets/endpoints/forms for operator review. This is advisory only: the diff never expands scope, never authorizes scanning and never influences execution admission.
 
 The dashboard renders the change score and focus set inside **Mémoire de cible** after loading a campaign.
+
+## Diff-prioritized recon
+
+The recon planner can now use the read-only surface diff as a bounded ordering signal. The prioritizer receives only tasks that have already passed normal scope-aware planning and may change **priority/reason only**.
+
+It is explicitly forbidden from creating tasks, rewriting targets, increasing request budgets, changing HTTP methods, or expanding scope. Newly observed endpoints/forms/assets can therefore make an already-authorized recon task run earlier, but they cannot create authority that did not already exist.
+
+The advisory recon-plan endpoint exposes the audit metadata as `diff_priority`; orchestrated campaigns use the same bounded ordering before shared swarm budgets are allocated.
 
 ## Disaster recovery integrity
 
