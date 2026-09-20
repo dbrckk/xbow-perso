@@ -394,6 +394,7 @@ def system_capabilities():
             "temporal_surface_profile": "read_only",
             "temporal_novelty_scoring": "ordering_only",
             "surface_confidence_scoring": "read_only",
+            "confidence_aware_recon": "ordering_only",
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
             "evidence_quality_scoring": "read_only",
