@@ -390,6 +390,7 @@ def system_capabilities():
             "target_memory": "read_only",
             "surface_diff_intelligence": "read_only",
             "diff_prioritized_recon": "ordering_only",
+            "historical_recon_scoring": "ordering_only",
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
             "evidence_quality_scoring": "read_only",
