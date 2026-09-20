@@ -33,6 +33,20 @@ fi
 chmod 600 "$SECRETS_FILE" "$ENV_FILE"
 cd "$INSTALL_DIR"
 
+REPO_OWNER="$(stat -c '%U' "$INSTALL_DIR")"
+if [ -z "$REPO_OWNER" ] || [ "$REPO_OWNER" = "UNKNOWN" ]; then
+  echo "Unable to determine repository owner for safe Git update." >&2
+  exit 1
+fi
+
+git_as_owner() {
+  if [ "$REPO_OWNER" = "root" ]; then
+    git -C "$INSTALL_DIR" "$@"
+  else
+    runuser -u "$REPO_OWNER" -- git -C "$INSTALL_DIR" "$@"
+  fi
+}
+
 read_env_value() {
   local key="$1"
   grep -E "^[[:space:]]*${key}=" "$ENV_FILE" | tail -n1 | cut -d= -f2- || true
@@ -67,9 +81,9 @@ export XBOW_DATABASE_URL="postgresql://${XBOW_POSTGRES_USER}:${XBOW_POSTGRES_PAS
 export XBOW_REDIS_URL="redis://:${XBOW_REDIS_PASSWORD}@redis:6379/0"
 
 echo "=== UPDATE MAIN ==="
-git fetch --prune origin
-git checkout main
-git reset --hard origin/main
+git_as_owner fetch --prune origin
+git_as_owner checkout main
+git_as_owner reset --hard origin/main
 
 echo "=== VERIFY DISTRIBUTED STORAGE ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml config --quiet
