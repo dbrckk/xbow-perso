@@ -472,7 +472,7 @@ function renderFindingIntelligence(data){
   }
 }
 
-function renderTargetMemory(data){
+function renderTargetMemory(data,diff){
   const card=$('targetMemoryCard');
   card.classList.remove('hidden');
   const summary=data?.summary||{};
@@ -488,6 +488,34 @@ function renderTargetMemory(data){
   $('targetMemoryAdded').textContent=String(delta.added_count||0);
   $('targetMemoryRemoved').textContent=String(delta.removed_count||0);
   $('targetMemoryPersistent').textContent=String(delta.persistent_count||0)+' persistant';
+
+  const diffSummary=diff?.summary||{};
+  const priority=String(diffSummary.review_priority||'stable');
+  const score=Number(diffSummary.change_score)||0;
+  const priorityLabels={stable:'Surface stable',low:'Changement faible',medium:'Changement notable',high:'Changement important'};
+  $('surfaceDiffLabel').textContent=priorityLabels[priority]||'Évolution de surface';
+  $('surfaceDiffScore').textContent=String(score);
+  $('surfaceDiffSummary').textContent=diff?.baseline_available
+    ? String(diffSummary.change_count||0)+' changement(s) observé(s) vs campagne précédente · lecture seule'
+    : 'Première campagne de référence : le delta sera disponible au prochain snapshot.';
+  const priorityPill=$('surfaceDiffPriority');
+  priorityPill.textContent=priority;
+  priorityPill.className='pill '+(priority==='high'?'warn':priority==='medium'?'warn':priority==='stable'?'ok':'');
+  const focusWrap=$('surfaceDiffFocusWrap');
+  const focusRoot=$('surfaceDiffFocus');
+  const focus=Array.isArray(diff?.focus)?diff.focus:[];
+  focusRoot.replaceChildren();
+  if(focus.length){
+    focusWrap.classList.remove('hidden');
+    for(const item of focus){
+      const code=document.createElement('code');
+      code.textContent=(item.kind||'surface')+' · '+(item.value||'');
+      code.title=item.reason||'';
+      focusRoot.appendChild(code);
+    }
+  }else{
+    focusWrap.classList.add('hidden');
+  }
 
   const kinds=$('targetMemoryKinds');
   kinds.replaceChildren();
@@ -528,21 +556,22 @@ function renderTargetMemory(data){
 
 async function refreshDashboard(){
   if(!campaign)return;
-  const [control,intelligence,timeline,reviewQueue,reportReadiness,targetMemory]=await Promise.all([
+  const [control,intelligence,timeline,reviewQueue,reportReadiness,targetMemory,surfaceDiff]=await Promise.all([
     api('/campaigns/'+campaign.id+'/control-status'),
     api('/campaigns/'+campaign.id+'/finding-intelligence'),
     api('/campaigns/'+campaign.id+'/decision-timeline'),
     api('/campaigns/'+campaign.id+'/review-queue'),
     api('/campaigns/'+campaign.id+'/report-readiness'),
-    api('/campaigns/'+campaign.id+'/target-memory')
+    api('/campaigns/'+campaign.id+'/target-memory'),
+    api('/campaigns/'+campaign.id+'/surface-diff')
   ]);
   renderControl(control);
-  renderTargetMemory(targetMemory);
+  renderTargetMemory(targetMemory,surfaceDiff);
   renderFindingIntelligence(intelligence);
   renderClusters(intelligence);
   renderDecisionTimeline(timeline);
   renderReviewAndSubmission(reviewQueue,reportReadiness);
-  $('output').textContent=JSON.stringify({control,target_memory:targetMemory,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
+  $('output').textContent=JSON.stringify({control,target_memory:targetMemory,surface_diff:surfaceDiff,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
 }
 
 async function activateCampaign(value){
