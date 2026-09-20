@@ -75,6 +75,8 @@ jobs:
       - run: node --check frontend/hackerone.js
       - run: node --check frontend/sw.js
       - run: bash -n scripts/mobile-production-preflight.sh
+      - run: bash -n scripts/mobile-production-cutover.sh
+      - run: bash -n scripts/mobile-production-rollback.sh
       - run: docker compose config --quiet
       - run: |
           XBOW_POSTGRES_PASSWORD=ci-postgres \
