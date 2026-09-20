@@ -183,6 +183,14 @@ It classifies added and removed assets, endpoints, forms, technologies and WAF o
 
 The dashboard renders the change score and focus set inside **Mémoire de cible** after loading a campaign.
 
+## Diff-prioritized recon
+
+The recon planner can now use the read-only surface diff as a bounded ordering signal. The prioritizer receives only tasks that have already passed normal scope-aware planning and may change **priority/reason only**.
+
+It is explicitly forbidden from creating tasks, rewriting targets, increasing request budgets, changing HTTP methods, or expanding scope. Newly observed endpoints/forms/assets can therefore make an already-authorized recon task run earlier, but they cannot create authority that did not already exist.
+
+The advisory recon-plan endpoint exposes the audit metadata as `diff_priority`; orchestrated campaigns use the same bounded ordering before shared swarm budgets are allocated.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.

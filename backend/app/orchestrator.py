@@ -28,8 +28,11 @@ from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payl
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .planner_budget import PlannerBudget, apply_budget, budget_usage, planner_budget_from_env
 from .pipeline_swarm import coordinate_pipeline_action
+from .recon_priority import prioritize_recon_tasks
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
+from .surface_diff import build_surface_diff_intelligence
+from .target_memory import build_target_memory
 from .scanner_adaptation import adapt_scanner_engines
 from .storage import Storage
 from .swarm_coordinator import coordinate_recon_swarm
@@ -164,7 +167,10 @@ def _intelligence_context(
         scope_checker=scope_checker,
         limit=10,
     )
-    swarm = coordinate_recon_swarm(recon_plan)
+    target_memory = build_target_memory(store, campaign.model_dump(mode="json"))
+    surface_diff = build_surface_diff_intelligence(target_memory)
+    recon_priority = prioritize_recon_tasks(recon_plan, surface_diff)
+    swarm = coordinate_recon_swarm(list(recon_priority.tasks))
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)
     scanner_adaptation = adapt_scanner_engines(
@@ -181,6 +187,8 @@ def _intelligence_context(
         "worker_outcomes": worker_outcomes,
         "cycle": cycle,
         "recon": list(swarm.tasks),
+        "recon_priority": recon_priority,
+        "surface_diff": surface_diff,
         "swarm": swarm,
         "coverage": coverage,
         "coverage_guidance": coverage_guidance,
@@ -552,6 +560,8 @@ def _result(
             "learning_memory": [item.to_dict() for item in intelligence["memory"]],
             "worker_outcomes": dict(intelligence["worker_outcomes"]),
             "recon_plan": [item.to_dict() for item in intelligence["recon"]],
+            "recon_priority": intelligence["recon_priority"].to_dict(),
+            "surface_diff": dict(intelligence["surface_diff"]),
             "swarm_coordination": intelligence["swarm"].to_dict(),
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
