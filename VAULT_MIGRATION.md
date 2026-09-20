@@ -85,3 +85,17 @@ Restart backend/workers with the same safe execution settings and verify:
 - no legacy secret variables remain in the service configuration.
 
 Do not enable scanning or HackerOne submission as part of the secret migration.
+
+
+## Private source env file
+
+For mobile/server migrations, legacy values can be read directly from a private env file instead of relying on the Compose service environment:
+
+```bash
+PYTHONPATH=backend python -m app.vault_migration plan --source-env-file /run/legacy.env
+PYTHONPATH=backend python -m app.vault_migration apply --source-env-file /run/legacy.env
+```
+
+The source file must be a regular non-symlink file with private permissions (no group/other bits). Relevant values from the process environment and source file must match exactly if both are present; mismatches fail closed.
+
+A fresh deployment may point `XBOW_VAULT_MASTER_KEY_FILE` to a file that does not exist yet. `plan` now reports that the key will be created by `apply` without mutating the filesystem. If a vault file already exists but its master-key file is missing, planning fails closed.
