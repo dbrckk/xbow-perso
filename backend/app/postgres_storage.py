@@ -90,6 +90,23 @@ class PostgresStorage(Storage):
                 "CREATE INDEX IF NOT EXISTS campaigns_updated ON campaigns(updated_at DESC)"
             )
             db.execute(
+                """CREATE TABLE IF NOT EXISTS hackerone_batches (
+                    id TEXT PRIMARY KEY,
+                    document TEXT NOT NULL,
+                    state TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    version INTEGER NOT NULL DEFAULT 1
+                )"""
+            )
+            db.execute(
+                "ALTER TABLE hackerone_batches ADD COLUMN IF NOT EXISTS version INTEGER NOT NULL DEFAULT 1"
+            )
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS hackerone_batches_updated "
+                "ON hackerone_batches(updated_at DESC)"
+            )
+            db.execute(
                 """CREATE TABLE IF NOT EXISTS artifacts (
                     id TEXT PRIMARY KEY,
                     campaign_id TEXT NOT NULL REFERENCES campaigns(id),
