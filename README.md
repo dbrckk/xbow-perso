@@ -233,6 +233,8 @@ The HackerOne launcher includes an express-start profile for repeated bounty wor
 
 The express flow can restore the reviewer, verified rate limit, policy reference/date, automation/Safe Harbor confirmations, account constraints, notes and preferred primary URL. Compatible exact-domain/URL targets are also offered as browser suggestions. Secret credentials remain server-side in the encrypted vault.
 
+For repeat work, the browser can also remember the last selected HackerOne program, reload it automatically after API authentication, and automatically rerun the read-only rules preview when the exact saved fingerprint is unchanged. Advanced first-review controls collapse automatically for a reused profile. Human confirmation and the final launch remain explicit actions.
+
 ## Vault migration
 
 Legacy server-side credentials can be moved into the encrypted vault with the redacted migration workflow documented in [VAULT_MIGRATION.md](VAULT_MIGRATION.md). The CLI also supports a private source env file for containerized/mobile cutovers, so legacy values do not need to be copied into the shell. The migration never prints secret values, verifies every encrypted write before legacy cleanup, and keeps vault enablement as a separate fail-closed cutover step.
