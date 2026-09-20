@@ -472,7 +472,7 @@ function renderFindingIntelligence(data){
   }
 }
 
-function renderTargetMemory(data,diff,temporal){
+function renderTargetMemory(data,diff,temporal,confidence){
   const card=$('targetMemoryCard');
   card.classList.remove('hidden');
   const summary=data?.summary||{};
@@ -515,6 +515,27 @@ function renderTargetMemory(data,diff,temporal){
     }
   }else{
     focusWrap.classList.add('hidden');
+  }
+
+  const confidenceSummary=confidence?.summary||{};
+  $('surfaceConfidenceAverage').textContent=Math.round((Number(confidenceSummary.average_confidence)||0)*100)+'%';
+  $('surfaceConfidenceHigh').textContent=String(Number(confidenceSummary.high)||0);
+  $('surfaceConfidenceMedium').textContent=String(Number(confidenceSummary.medium)||0);
+  $('surfaceConfidenceLow').textContent=String(Number(confidenceSummary.low)||0);
+  $('surfaceConfidenceLowCount').textContent=String(Number(confidenceSummary.low)||0);
+  const confidenceWrap=$('surfaceConfidenceLowWrap');
+  const confidenceList=$('surfaceConfidenceLowList');
+  const lowConfidence=Array.isArray(confidence?.low_confidence)?confidence.low_confidence:[];
+  confidenceList.replaceChildren();
+  if(lowConfidence.length){
+    confidenceWrap.classList.remove('hidden');
+    for(const item of lowConfidence.slice(0,20)){
+      const code=document.createElement('code');
+      code.textContent=(item.kind||'surface')+' · '+(item.value||'')+' · '+Math.round((Number(item.confidence)||0)*100)+'% · '+(item.temporal_classification||'unknown');
+      confidenceList.appendChild(code);
+    }
+  }else{
+    confidenceWrap.classList.add('hidden');
   }
 
   const temporalSummary=temporal?.summary||{};
@@ -580,7 +601,7 @@ function renderTargetMemory(data,diff,temporal){
 
 async function refreshDashboard(){
   if(!campaign)return;
-  const [control,intelligence,timeline,reviewQueue,reportReadiness,targetMemory,surfaceDiff,surfaceTemporal]=await Promise.all([
+  const [control,intelligence,timeline,reviewQueue,reportReadiness,targetMemory,surfaceDiff,surfaceTemporal,surfaceConfidence]=await Promise.all([
     api('/campaigns/'+campaign.id+'/control-status'),
     api('/campaigns/'+campaign.id+'/finding-intelligence'),
     api('/campaigns/'+campaign.id+'/decision-timeline'),
@@ -588,15 +609,16 @@ async function refreshDashboard(){
     api('/campaigns/'+campaign.id+'/report-readiness'),
     api('/campaigns/'+campaign.id+'/target-memory'),
     api('/campaigns/'+campaign.id+'/surface-diff'),
-    api('/campaigns/'+campaign.id+'/surface-temporal')
+    api('/campaigns/'+campaign.id+'/surface-temporal'),
+    api('/campaigns/'+campaign.id+'/surface-confidence')
   ]);
   renderControl(control);
-  renderTargetMemory(targetMemory,surfaceDiff,surfaceTemporal);
+  renderTargetMemory(targetMemory,surfaceDiff,surfaceTemporal,surfaceConfidence);
   renderFindingIntelligence(intelligence);
   renderClusters(intelligence);
   renderDecisionTimeline(timeline);
   renderReviewAndSubmission(reviewQueue,reportReadiness);
-  $('output').textContent=JSON.stringify({control,target_memory:targetMemory,surface_diff:surfaceDiff,surface_temporal:surfaceTemporal,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
+  $('output').textContent=JSON.stringify({control,target_memory:targetMemory,surface_diff:surfaceDiff,surface_temporal:surfaceTemporal,surface_confidence:surfaceConfidence,finding_intelligence:intelligence,decision_timeline:timeline,review_queue:reviewQueue,report_readiness:reportReadiness},null,2);
 }
 
 async function activateCampaign(value){
