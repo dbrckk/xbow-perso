@@ -74,6 +74,8 @@ git reset --hard origin/main
 echo "=== VERIFY DISTRIBUTED STORAGE ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml config --quiet
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml exec -T backend python -m app.readiness
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml exec -T backend \
+  python -c 'import os; assert os.getenv("XBOW_STORAGE_BACKEND") == "postgresql"; assert os.getenv("XBOW_QUEUE_BACKEND") == "redis"; print("distributed-backends=ok")'
 
 echo "=== VAULT MIGRATION PLAN ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml run --rm --no-deps \
