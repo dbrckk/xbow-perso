@@ -4,6 +4,7 @@ import hashlib
 import json
 from datetime import datetime
 from typing import Any, Literal
+from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, StrictBool, field_validator, model_validator
@@ -83,6 +84,29 @@ class HackerOneCampaignTargetInput(BaseModel):
 
 class HackerOneCampaignAdmissionInput(HackerOneRulesPreviewInput):
     target: HackerOneCampaignTargetInput
+
+
+class HackerOneBatchLaunchInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    mode: Literal["sequential", "parallel"] = "sequential"
+    campaigns: list[HackerOneCampaignAdmissionInput] = Field(
+        min_length=1,
+        max_length=20,
+    )
+
+    @model_validator(mode="after")
+    def campaigns_must_be_remote_bound_and_unique(self):
+        handles: list[str] = []
+        for campaign in self.campaigns:
+            if campaign.remote_handle is None or campaign.remote_snapshot_sha256 is None:
+                raise ValueError(
+                    "batch campaigns require verified HackerOne remote bindings"
+                )
+            handles.append(campaign.remote_handle)
+        if len(set(handles)) != len(handles):
+            raise ValueError("batch campaigns must use unique HackerOne programs")
+        return self
 
 
 class HackerOneReportSubmissionInput(BaseModel):
@@ -363,6 +387,190 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
     }
 
 
+def _batch_summary(members: list[dict[str, Any]]) -> dict[str, int]:
+    statuses = ("ready", "running", "done", "review", "blocked", "cancelled")
+    return {
+        status: sum(
+            1
+            for member in members
+            if str(member.get("status") or "ready") == status
+        )
+        for status in statuses
+    }
+
+
+def _rollback_admitted_batch_campaigns(campaign_ids: list[str]) -> None:
+    from .main import cancel_campaign
+
+    for campaign_id in campaign_ids:
+        try:
+            cancel_campaign(campaign_id)
+        except Exception:
+            continue
+
+
+@router.post("/api/imports/hackerone/batches/launch")
+def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
+    from .campaign_audit import append_campaign_event
+    from .hackerone_batch import reconcile_hackerone_batch
+    from .main import (
+        assert_campaign_record,
+        save_campaign,
+        start_campaign,
+        storage,
+        queue,
+        utcnow,
+    )
+
+    batch_id = str(uuid4())
+    admitted_ids: list[str] = []
+    members: list[dict[str, Any]] = []
+
+    try:
+        for index, campaign_payload in enumerate(payload.campaigns):
+            admitted = admit_hackerone_campaign(campaign_payload)
+            campaign_id = str(admitted["campaign"]["id"])
+            admitted_ids.append(campaign_id)
+            members.append(
+                {
+                    "index": index,
+                    "campaign_id": campaign_id,
+                    "handle": str(campaign_payload.remote_handle),
+                    "snapshot_sha256": str(
+                        campaign_payload.remote_snapshot_sha256
+                    ),
+                    "status": "ready",
+                    "reason": None,
+                }
+            )
+
+        for member in members:
+            campaign, version = assert_campaign_record(member["campaign_id"])
+            append_campaign_event(
+                campaign.events,
+                {
+                    "type": "hackerone_batch_member",
+                    "batch_id": batch_id,
+                    "batch_mode": payload.mode,
+                    "batch_index": member["index"],
+                    "at": utcnow(),
+                },
+            )
+            campaign.updated_at = utcnow()
+            save_campaign(campaign, expected_version=version)
+
+        now = utcnow()
+        batch = {
+            "id": batch_id,
+            "provider": "hackerone",
+            "mode": payload.mode,
+            "state": "queued",
+            "members": members,
+            "summary": _batch_summary(members),
+            "created_at": now,
+            "updated_at": now,
+            "continues_without_dashboard": True,
+            "automatic_submission": False,
+        }
+        store = storage()
+        store.save_hackerone_batch(batch, expected_version=0)
+    except Exception:
+        _rollback_admitted_batch_campaigns(admitted_ids)
+        raise
+
+    if payload.mode == "parallel":
+        record = storage().get_hackerone_batch_record(batch_id)
+        if record is None:
+            raise HTTPException(status_code=500, detail="HackerOne batch disappeared")
+        batch, version = record
+        changed = False
+        for member in batch["members"]:
+            try:
+                start_campaign(str(member["campaign_id"]))
+            except HTTPException as exc:
+                member["status"] = "blocked"
+                member["reason"] = str(exc.detail)[:500]
+            except Exception as exc:
+                member["status"] = "blocked"
+                member["reason"] = exc.__class__.__name__
+            else:
+                member["status"] = "running"
+            changed = True
+        if changed:
+            batch["summary"] = _batch_summary(batch["members"])
+            batch["state"] = (
+                "running"
+                if any(
+                    member["status"] == "running"
+                    for member in batch["members"]
+                )
+                else "completed"
+            )
+            batch["updated_at"] = utcnow()
+            storage().save_hackerone_batch(batch, expected_version=version)
+    else:
+        reconcile_hackerone_batch(queue(), storage(), batch_id)
+
+    latest = storage().get_hackerone_batch(batch_id)
+    if latest is None:
+        raise HTTPException(status_code=500, detail="HackerOne batch disappeared")
+    return latest
+
+
+@router.get("/api/imports/hackerone/batches")
+def list_hackerone_batches(
+    limit: int = Query(default=50, ge=1, le=200),
+):
+    from .main import storage
+
+    return {
+        "provider": "hackerone",
+        "batches": storage().list_hackerone_batches(limit=limit),
+        "read_only": True,
+    }
+
+
+@router.get("/api/imports/hackerone/batches/{batch_id}")
+def get_hackerone_batch(batch_id: str):
+    from .hackerone_batch import reconcile_hackerone_batch
+    from .main import queue, storage
+
+    batch = reconcile_hackerone_batch(queue(), storage(), batch_id)
+    if batch is None:
+        raise HTTPException(status_code=404, detail="HackerOne batch not found")
+    return batch
+
+
+@router.post("/api/imports/hackerone/batches/{batch_id}/cancel")
+def cancel_hackerone_batch(batch_id: str):
+    from .main import cancel_campaign, storage, utcnow
+
+    store = storage()
+    record = store.get_hackerone_batch_record(batch_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="HackerOne batch not found")
+    batch, version = record
+    if str(batch.get("state")) == "cancelled":
+        return batch
+
+    for member in batch.get("members", []):
+        if str(member.get("status")) in {"done", "cancelled"}:
+            continue
+        try:
+            cancel_campaign(str(member["campaign_id"]))
+        except HTTPException as exc:
+            member["reason"] = str(exc.detail)[:500]
+        except Exception as exc:
+            member["reason"] = exc.__class__.__name__
+        member["status"] = "cancelled"
+
+    batch["state"] = "cancelled"
+    batch["summary"] = _batch_summary(batch.get("members", []))
+    batch["updated_at"] = utcnow()
+    store.save_hackerone_batch(batch, expected_version=version)
+    return batch
+
+
 @router.post("/api/imports/hackerone/campaigns/launch")
 def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
     """Admit a reviewed HackerOne policy and start it in one authenticated mutation."""
@@ -511,8 +719,7 @@ def submit_hackerone_report(
     artifact_id: str,
     payload: HackerOneReportSubmissionInput,
 ):
-    from uuid import uuid4
-
+    
     from .campaign_audit import append_campaign_event
     from .main import (
         assert_campaign_record,
