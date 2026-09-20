@@ -1,17 +1,18 @@
 # Change impact
 
-Base: fbbe9953194afc6cc6e384f1f131d1699d8e4280
-Head: 0d6021d76d093f1e1d3695c11c682add729efc51
+Base: 51b1e54eaea0628a4d18f64163adf0c5bad4b731
+Head: 72da62c61381374d4c60ed72b8f47aa2d00b8d31
 
 ## Changed files
-- M README.md
-- M VAULT_MIGRATION.md
-- M backend/app/vault_migration.py
-- M backend/tests/test_vault_migration.py
+- M .github/workflows/ci.yml
+- M AWS_MOBILE_ONLY.md
+- A scripts/mobile-production-status.sh
+- A scripts/mobile-production-update.sh
 
 ## Affected areas
+- .github
 - (root)
-- backend
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

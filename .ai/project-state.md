@@ -22,22 +22,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:42:22Z
+Generated: 2026-09-20T10:44:37Z
 
 ### Git
 - Branch: `main`
-- Head: `0d6021d76d09`
-- Commit date: 2026-09-20T12:42:11+02:00
-- Commit: fix: make vault migration safe for fresh mobile cutovers
-- Tracked files: 502
+- Head: `72da62c61381`
+- Commit date: 2026-09-20T12:44:24+02:00
+- Commit: feat: add one-command mobile production update and status
+- Tracked files: 504
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `AWS_MOBILE_ONLY.md`
+- `scripts/mobile-production-status.sh`
+- `scripts/mobile-production-update.sh`
 - `README.md`
 - `VAULT_MIGRATION.md`
 - `backend/app/vault_migration.py`
 - `backend/tests/test_vault_migration.py`
-- `.github/workflows/ci.yml`
-- `AWS_MOBILE_ONLY.md`
 - `scripts/mobile-production-cutover.sh`
 - `scripts/mobile-production-rollback.sh`
 - `docker-compose.yml`
