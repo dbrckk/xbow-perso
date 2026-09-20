@@ -105,7 +105,9 @@ class Storage:
     ALLOWED_OBSERVATION_KINDS = {
         "asset",
         "endpoint",
+        "form",
         "technology",
+        "waf",
         "finding",
         "evidence",
         "validation",
