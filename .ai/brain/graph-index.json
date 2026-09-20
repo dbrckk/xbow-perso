@@ -90,6 +90,7 @@
         "backend/app/finding_triage.py",
         "backend/app/hackerone_api.py",
         "backend/app/hackerone_attention.py",
+        "backend/app/hackerone_batch.py",
         "backend/app/hackerone_binding.py",
         "backend/app/hackerone_needs_info.py",
         "backend/app/hackerone_report_tracking.py",
@@ -236,7 +237,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 173,
+      "in_degree": 174,
       "out_degree": 54,
       "path": "backend/app/main.py"
     },
@@ -296,6 +297,8 @@
         "backend/tests/test_frontend_policy_launcher.py",
         "backend/tests/test_hackerone_activity_summary.py",
         "backend/tests/test_hackerone_attention.py",
+        "backend/tests/test_hackerone_batch.py",
+        "backend/tests/test_hackerone_batch_api.py",
         "backend/tests/test_hackerone_binding.py",
         "backend/tests/test_hackerone_client.py",
         "backend/tests/test_hackerone_control_center_api.py",
@@ -428,7 +431,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 180,
+      "in_degree": 182,
       "out_degree": 3,
       "path": "frontend/app.js"
     },
@@ -553,6 +556,7 @@
         "backend/app/browser.py",
         "backend/app/campaign_overview.py",
         "backend/app/hackerone_api.py",
+        "backend/app/hackerone_batch.py",
         "backend/app/hackerone_report_sync_worker.py",
         "backend/app/main.py",
         "backend/app/observation_writer.py",
@@ -581,6 +585,8 @@
         "backend/tests/test_finding_correlation.py",
         "backend/tests/test_finding_review_metadata.py",
         "backend/tests/test_finding_triage.py",
+        "backend/tests/test_hackerone_batch.py",
+        "backend/tests/test_hackerone_batch_api.py",
         "backend/tests/test_hackerone_binding.py",
         "backend/tests/test_hackerone_launch_api.py",
         "backend/tests/test_hackerone_needs_info.py",
@@ -621,7 +627,7 @@
         "backend/tests/test_worker_observations.py",
         "backend/tests/test_worker_outcome_memory.py"
       ],
-      "in_degree": 70,
+      "in_degree": 73,
       "out_degree": 2,
       "path": "backend/app/storage.py"
     },
@@ -693,6 +699,7 @@
         "backend/tests/test_campaign_circuit_breaker.py",
         "backend/tests/test_control_views.py",
         "backend/tests/test_distributed_concurrency.py",
+        "backend/tests/test_hackerone_batch_api.py",
         "backend/tests/test_hackerone_binding.py",
         "backend/tests/test_hackerone_nuclei_e2e.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
@@ -716,7 +723,7 @@
         "backend/tests/test_worker_concurrency.py",
         "backend/tests/test_worker_job_provenance.py"
       ],
-      "in_degree": 36,
+      "in_degree": 37,
       "out_degree": 1,
       "path": "backend/app/jobqueue.py"
     },
@@ -742,6 +749,7 @@
         "backend/app/validator.py",
         "backend/tests/test_auth.py",
         "backend/tests/test_finding_review_metadata.py",
+        "backend/tests/test_hackerone_batch_api.py",
         "backend/tests/test_hackerone_client.py",
         "backend/tests/test_hackerone_control_center_api.py",
         "backend/tests/test_hackerone_launch_api.py",
@@ -760,7 +768,7 @@
         "frontend/app.js",
         "frontend/hackerone.js"
       ],
-      "in_degree": 33,
+      "in_degree": 34,
       "out_degree": 2,
       "path": "backend/tests/test_alert_delivery.py"
     },
@@ -769,6 +777,7 @@
         "backend/app/browser.py",
         "backend/app/campaign_audit.py",
         "backend/app/evidence_quality.py",
+        "backend/app/hackerone_batch.py",
         "backend/app/job_provenance.py",
         "backend/app/jobqueue.py",
         "backend/app/learning_memory.py",
@@ -799,8 +808,44 @@
         "backend/tests/test_worker_state.py"
       ],
       "in_degree": 8,
-      "out_degree": 21,
+      "out_degree": 22,
       "path": "backend/app/worker_service.py"
+    },
+    {
+      "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/hackerone_attention.py",
+        "backend/app/hackerone_batch.py",
+        "backend/app/hackerone_client.py",
+        "backend/app/hackerone_live_readiness.py",
+        "backend/app/hackerone_needs_info.py",
+        "backend/app/hackerone_report_tracking.py",
+        "backend/app/hackerone_scope_import.py",
+        "backend/app/job_provenance.py",
+        "backend/app/main.py",
+        "backend/app/report_approval.py",
+        "backend/app/storage.py",
+        "backend/app/storage_core.py",
+        "backend/app/submission_state.py",
+        "backend/tests/test_alert_delivery.py"
+      ],
+      "dependents": [
+        "backend/app/campaign_control.py",
+        "backend/tests/test_hackerone_attention.py",
+        "backend/tests/test_hackerone_batch_api.py",
+        "backend/tests/test_hackerone_binding.py",
+        "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_launch_api.py",
+        "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_nuclei_e2e.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_remote_binding.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_hackerone_scope_preview_api.py"
+      ],
+      "in_degree": 12,
+      "out_degree": 15,
+      "path": "backend/app/hackerone_api.py"
     },
     {
       "dependencies": [
@@ -837,40 +882,6 @@
       "in_degree": 3,
       "out_degree": 24,
       "path": "backend/app/campaign_overview.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/campaign_audit.py",
-        "backend/app/hackerone_attention.py",
-        "backend/app/hackerone_client.py",
-        "backend/app/hackerone_live_readiness.py",
-        "backend/app/hackerone_needs_info.py",
-        "backend/app/hackerone_report_tracking.py",
-        "backend/app/hackerone_scope_import.py",
-        "backend/app/job_provenance.py",
-        "backend/app/main.py",
-        "backend/app/report_approval.py",
-        "backend/app/storage.py",
-        "backend/app/storage_core.py",
-        "backend/app/submission_state.py",
-        "backend/tests/test_alert_delivery.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_control.py",
-        "backend/tests/test_hackerone_attention.py",
-        "backend/tests/test_hackerone_binding.py",
-        "backend/tests/test_hackerone_control_center_api.py",
-        "backend/tests/test_hackerone_launch_api.py",
-        "backend/tests/test_hackerone_needs_info.py",
-        "backend/tests/test_hackerone_nuclei_e2e.py",
-        "backend/tests/test_hackerone_outbound_submission.py",
-        "backend/tests/test_hackerone_remote_binding.py",
-        "backend/tests/test_hackerone_report_tracking.py",
-        "backend/tests/test_hackerone_scope_preview_api.py"
-      ],
-      "in_degree": 11,
-      "out_degree": 14,
-      "path": "backend/app/hackerone_api.py"
     },
     {
       "dependencies": [],
@@ -968,6 +979,7 @@
         "backend/app/browser.py",
         "backend/app/campaign_overview.py",
         "backend/app/hackerone_api.py",
+        "backend/app/hackerone_batch.py",
         "backend/app/hackerone_report_sync_worker.py",
         "backend/app/main.py",
         "backend/app/report_approval_api.py",
@@ -981,7 +993,7 @@
         "backend/tests/test_storage.py",
         "backend/tests/test_worker_concurrency.py"
       ],
-      "in_degree": 15,
+      "in_degree": 16,
       "out_degree": 2,
       "path": "backend/app/storage_core.py"
     },
@@ -1083,6 +1095,29 @@
     },
     {
       "dependencies": [
+        "backend/app/hackerone_scope_import.py",
+        "backend/app/secret_vault.py",
+        "backend/tests/test_alert_delivery.py"
+      ],
+      "dependents": [
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_live_readiness.py",
+        "backend/app/hackerone_report_sync_worker.py",
+        "backend/tests/test_hackerone_batch_api.py",
+        "backend/tests/test_hackerone_client.py",
+        "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_live_readiness.py",
+        "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_remote_snapshot.py",
+        "backend/tests/test_hackerone_report_tracking.py"
+      ],
+      "in_degree": 11,
+      "out_degree": 3,
+      "path": "backend/app/hackerone_client.py"
+    },
+    {
+      "dependencies": [
         "backend/app/jobqueue.py",
         "backend/app/knowledge_memory.py",
         "backend/app/observation_graph.py"
@@ -1149,28 +1184,6 @@
       "in_degree": 7,
       "out_degree": 7,
       "path": "backend/app/report_readiness.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/hackerone_scope_import.py",
-        "backend/app/secret_vault.py",
-        "backend/tests/test_alert_delivery.py"
-      ],
-      "dependents": [
-        "backend/app/hackerone_api.py",
-        "backend/app/hackerone_live_readiness.py",
-        "backend/app/hackerone_report_sync_worker.py",
-        "backend/tests/test_hackerone_client.py",
-        "backend/tests/test_hackerone_control_center_api.py",
-        "backend/tests/test_hackerone_live_readiness.py",
-        "backend/tests/test_hackerone_needs_info.py",
-        "backend/tests/test_hackerone_outbound_submission.py",
-        "backend/tests/test_hackerone_remote_snapshot.py",
-        "backend/tests/test_hackerone_report_tracking.py"
-      ],
-      "in_degree": 10,
-      "out_degree": 3,
-      "path": "backend/app/hackerone_client.py"
     },
     {
       "dependencies": [
@@ -1978,8 +1991,8 @@
       "path": "backend/app/scanner_ingestion.py"
     }
   ],
-  "edge_count": 1589,
+  "edge_count": 1604,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 319,
+  "node_count": 322,
   "schema_version": 1
 }

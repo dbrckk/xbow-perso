@@ -263,6 +263,34 @@ function restoreQuickProfile(snapshot)
 ⋮----
 function rememberQuickProfile(payload)
 ⋮----
+function batchProgramHasSavedProfile(handle)
+⋮----
+function batchCatalogPrograms()
+⋮----
+function renderBatchCatalog()
+⋮----
+function renderBatchSelectionState()
+⋮----
+async function refreshBatchCatalog()
+⋮----
+function selectReadyBatchProfiles()
+⋮----
+async function batchPayloadForHandle(handle)
+⋮----
+function renderBatchProgress(batch)
+⋮----
+function renderBatchStatus(batch)
+⋮----
+async function refreshActiveBatch()
+⋮----
+function startBatchMonitor(batchId)
+⋮----
+async function restoreActiveBatch()
+⋮----
+async function launchSelectedBatch()
+⋮----
+async function cancelActiveBatch()
+⋮----
 function clearRemoteBinding()
 ⋮----
 function renderProgramOptions()

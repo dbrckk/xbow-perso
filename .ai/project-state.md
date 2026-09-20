@@ -22,17 +22,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T14:35:30Z
+Generated: 2026-09-20T14:58:54Z
 
 ### Git
 - Branch: `main`
-- Head: `391971b68d20`
-- Commit date: 2026-09-20T16:35:20+02:00
-- Commit: feat: add one-touch HackerOne resume flow
-- Tracked files: 506
+- Head: `eaea8fb224ec`
+- Commit date: 2026-09-20T16:58:42+02:00
+- Commit: feat: add persistent multi-bounty HackerOne batch queue
+- Tracked files: 509
 
 ### Recently changed files
 - `README.md`
+- `backend/app/hackerone_api.py`
+- `backend/app/hackerone_batch.py`
+- `backend/app/main.py`
+- `backend/app/postgres_storage.py`
+- `backend/app/storage_core.py`
+- `backend/app/worker_service.py`
+- `backend/tests/test_hackerone_batch.py`
+- `backend/tests/test_hackerone_batch_api.py`
+- `backend/tests/test_storage.py`
 - `frontend/app.css`
 - `frontend/hackerone.js`
 - `frontend/index.html`

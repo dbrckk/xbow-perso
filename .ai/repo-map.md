@@ -94,6 +94,7 @@ backend/
     finding_triage.py
     hackerone_api.py
     hackerone_attention.py
+    hackerone_batch.py
     hackerone_binding.py
     hackerone_client.py
     hackerone_live_readiness.py
@@ -243,6 +244,8 @@ backend/
     test_frontend_policy_launcher.py
     test_hackerone_activity_summary.py
     test_hackerone_attention.py
+    test_hackerone_batch_api.py
+    test_hackerone_batch.py
     test_hackerone_binding.py
     test_hackerone_client.py
     test_hackerone_control_center_api.py
@@ -3168,6 +3171,16 @@ class HackerOneCampaignAdmissionInput(HackerOneRulesPreviewInput)
 ⋮----
 target: HackerOneCampaignTargetInput
 ⋮----
+class HackerOneBatchLaunchInput(BaseModel)
+⋮----
+mode: Literal["sequential", "parallel"] = "sequential"
+campaigns: list[HackerOneCampaignAdmissionInput] = Field(
+⋮----
+@model_validator(mode="after")
+    def campaigns_must_be_remote_bound_and_unique(self)
+⋮----
+handles: list[str] = []
+⋮----
 class HackerOneReportSubmissionInput(BaseModel)
 ⋮----
 actor: str = Field(min_length=1, max_length=120)
@@ -3251,6 +3264,44 @@ binding_event = {
 ⋮----
 policy_binding = {
 ⋮----
+def _batch_summary(members: list[dict[str, Any]]) -> dict[str, int]
+⋮----
+statuses = ("ready", "running", "done", "review", "blocked", "cancelled")
+⋮----
+def _rollback_admitted_batch_campaigns(campaign_ids: list[str]) -> None
+⋮----
+@router.post("/api/imports/hackerone/batches/launch")
+def launch_hackerone_batch(payload: HackerOneBatchLaunchInput)
+⋮----
+batch_id = str(uuid4())
+admitted_ids: list[str] = []
+members: list[dict[str, Any]] = []
+⋮----
+admitted = admit_hackerone_campaign(campaign_payload)
+campaign_id = str(admitted["campaign"]["id"])
+⋮----
+now = utcnow()
+batch = {
+store = storage()
+⋮----
+record = storage().get_hackerone_batch_record(batch_id)
+⋮----
+changed = False
+⋮----
+changed = True
+⋮----
+latest = storage().get_hackerone_batch(batch_id)
+⋮----
+@router.get("/api/imports/hackerone/batches/{batch_id}")
+def get_hackerone_batch(batch_id: str)
+⋮----
+batch = reconcile_hackerone_batch(queue(), storage(), batch_id)
+⋮----
+@router.post("/api/imports/hackerone/batches/{batch_id}/cancel")
+def cancel_hackerone_batch(batch_id: str)
+⋮----
+record = store.get_hackerone_batch_record(batch_id)
+⋮----
 @router.post("/api/imports/hackerone/campaigns/launch")
 def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput)
 ⋮----
@@ -3283,8 +3334,6 @@ document = HackerOneClient().get_json(
 ⋮----
 status = project_remote_report_status(
 request = status.get("needs_more_info")
-⋮----
-store = storage()
 ⋮----
 current_state = submission_status(campaign, artifact)
 ⋮----
@@ -3379,6 +3428,61 @@ bucket_order = {
 counts: dict[str, int] = {}
 ⋮----
 bucket = str(item["bucket"])
+````
+
+## File: backend/app/hackerone_batch.py
+````python
+_TERMINAL_MEMBER_STATES = {"done", "review", "blocked", "cancelled"}
+⋮----
+def _active_job_counts(queue, campaign_id: str) -> dict[str, int]
+⋮----
+def _campaign_state(store, campaign_id: str) -> str | None
+⋮----
+raw = store.get_campaign(campaign_id)
+⋮----
+def _member_finished(queue, store, member: dict[str, Any]) -> tuple[bool, str | None]
+⋮----
+campaign_id = str(member.get("campaign_id") or "")
+state = _campaign_state(store, campaign_id)
+⋮----
+counts = _active_job_counts(queue, campaign_id)
+⋮----
+total_terminal = sum(
+⋮----
+def _start_member(member: dict[str, Any]) -> tuple[str, str | None]
+⋮----
+def _summarize_members(members: list[dict[str, Any]]) -> dict[str, int]
+⋮----
+counts = {
+⋮----
+status = str(member.get("status") or "ready")
+⋮----
+def _batch_state(members: list[dict[str, Any]]) -> str
+⋮----
+statuses = {str(member.get("status") or "ready") for member in members}
+⋮----
+def reconcile_hackerone_batch(queue, store, batch_id: str) -> dict[str, Any] | None
+⋮----
+record = store.get_hackerone_batch_record(batch_id)
+⋮----
+batch = deepcopy(current)
+members = list(batch.get("members") or [])
+changed = False
+⋮----
+changed = True
+⋮----
+mode = str(batch.get("mode") or "sequential")
+⋮----
+has_running = any(
+⋮----
+next_member = next(
+⋮----
+next_state = _batch_state(members)
+⋮----
+def reconcile_hackerone_batches(queue, store, *, limit: int = 20) -> int
+⋮----
+batches = store.list_hackerone_batches(limit=limit)
+reconciled = 0
 ````
 
 ## File: backend/app/hackerone_binding.py
@@ -8310,6 +8414,8 @@ def _init(self) -> None
 ⋮----
 campaign_columns = {row["name"] for row in db.execute("PRAGMA table_info(campaigns)").fetchall()}
 ⋮----
+batch_columns = {
+⋮----
 columns = {row["name"] for row in db.execute("PRAGMA table_info(artifacts)").fetchall()}
 ⋮----
 def health(self) -> dict[str, Any]
@@ -8351,6 +8457,22 @@ def list_campaigns(self, *, limit: int | None = None) -> list[dict[str, Any]]
 ⋮----
 rows = db.execute(
 ⋮----
+required = {"id", "state", "mode", "members", "created_at", "updated_at"}
+⋮----
+members = document.get("members")
+⋮----
+encoded = json.dumps(
+⋮----
+current = db.execute(
+⋮----
+batch_id = _bounded_identifier(batch_id, "hackerone_batch_id")
+⋮----
+row = db.execute(
+⋮----
+def get_hackerone_batch(self, batch_id: str) -> dict[str, Any] | None
+⋮----
+record = self.get_hackerone_batch_record(batch_id)
+⋮----
 def put_observation(self, campaign_id: str, observation: dict[str, Any]) -> dict[str, Any]
 ⋮----
 required = {"id", "kind", "value", "source"}
@@ -8376,8 +8498,6 @@ requested = {key: record[key] for key in ("kind", "value", "source", "parent_ids
 def list_observations(self, campaign_id: str) -> list[dict[str, Any]]
 ⋮----
 fingerprint = _bounded_identifier(fingerprint, "advisory_fingerprint", max_length=64)
-⋮----
-encoded = json.dumps(
 ⋮----
 now = utcnow()
 ⋮----
@@ -8417,8 +8537,6 @@ def list_artifacts(self, campaign_id: str) -> list[dict[str, Any]]
 def get_artifact(self, campaign_id: str, artifact_id: str) -> dict[str, Any] | None
 ⋮----
 artifact_id = _bounded_identifier(artifact_id, "artifact_id")
-⋮----
-row = db.execute(
 ⋮----
 def has_artifact(self, campaign_id: str, *, finding_id: str | None = None, kind: str | None = None) -> bool
 ⋮----
@@ -9550,6 +9668,8 @@ queue = create_queue()
 store = create_storage()
 worker_id = os.getenv("XBOW_WORKER_ID", f"{socket.gethostname()}:{os.getpid()}")
 poll = _worker_poll_seconds()
+⋮----
+# Batch scheduling must fail closed without taking down the worker.
 ⋮----
 worked = process_one(queue, store, worker_id)
 ````
@@ -11548,6 +11668,71 @@ campaign = _campaign("c1", "triaged", bounty=True)
 ⋮----
 first = build_hackerone_attention_center([campaign])["items"][0]
 second = build_hackerone_attention_center([campaign])["items"][0]
+````
+
+## File: backend/tests/test_hackerone_batch_api.py
+````python
+def _resource(identifier: str)
+⋮----
+def _snapshot(handle: str, domain: str, fingerprint: str)
+⋮----
+document = {"data": [_resource(domain)], "links": {}}
+⋮----
+def _campaign_payload(handle: str, domain: str, fingerprint: str)
+⋮----
+def test_sequential_batch_persists_and_starts_only_first_member(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "batch.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+snapshots = {
+⋮----
+api = FastAPI()
+⋮----
+response = TestClient(api).post(
+⋮----
+batch = response.json()
+⋮----
+store = Storage(db, artifacts)
+persisted = store.get_hackerone_batch(batch["id"])
+⋮----
+jobs = JobQueue(db)
+⋮----
+def test_batch_rejects_unbound_campaigns()
+⋮----
+payload = _campaign_payload("program-one", "one.example.com", "a" * 64)
+````
+
+## File: backend/tests/test_hackerone_batch.py
+````python
+class FakeQueue
+⋮----
+def __init__(self, counts)
+⋮----
+def campaign_job_status_counts(self, campaign_id)
+⋮----
+def _campaign(campaign_id, state="running")
+⋮----
+def _batch(mode, members)
+⋮----
+store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+⋮----
+queue = FakeQueue({"c1": {"completed": 2}})
+started = []
+⋮----
+def fake_start(campaign_id)
+⋮----
+result = reconcile_hackerone_batch(queue, store, "batch-1")
+⋮----
+def test_parallel_batch_finishes_after_all_members_drain(tmp_path)
+⋮----
+queue = FakeQueue(
+⋮----
+def test_batch_waits_while_member_has_active_jobs(tmp_path)
+⋮----
+original = _batch(
+⋮----
+queue = FakeQueue({"c1": {"queued": 1, "completed": 1}})
 ````
 
 ## File: backend/tests/test_hackerone_binding.py
@@ -15777,6 +15962,14 @@ result = store.health()
 def test_list_campaigns_can_be_bounded_in_storage(tmp_path)
 ⋮----
 recent = store.list_campaigns(limit=2)
+⋮----
+def test_hackerone_batch_roundtrip_and_versioning(tmp_path)
+⋮----
+batch = {
+⋮----
+record = store.get_hackerone_batch_record("batch-1")
+⋮----
+stale = dict(document)
 ````
 
 ## File: backend/tests/test_submission_api.py
@@ -16748,6 +16941,34 @@ function setQuickState(label,type='')
 function restoreQuickProfile(snapshot)
 ⋮----
 function rememberQuickProfile(payload)
+⋮----
+function batchProgramHasSavedProfile(handle)
+⋮----
+function batchCatalogPrograms()
+⋮----
+function renderBatchCatalog()
+⋮----
+function renderBatchSelectionState()
+⋮----
+async function refreshBatchCatalog()
+⋮----
+function selectReadyBatchProfiles()
+⋮----
+async function batchPayloadForHandle(handle)
+⋮----
+function renderBatchProgress(batch)
+⋮----
+function renderBatchStatus(batch)
+⋮----
+async function refreshActiveBatch()
+⋮----
+function startBatchMonitor(batchId)
+⋮----
+async function restoreActiveBatch()
+⋮----
+async function launchSelectedBatch()
+⋮----
+async function cancelActiveBatch()
 ⋮----
 function clearRemoteBinding()
 ⋮----
@@ -18675,6 +18896,19 @@ The HackerOne launcher includes an express-start profile for repeated bounty wor
 The express flow can restore the reviewer, verified rate limit, policy reference/date, automation/Safe Harbor confirmations, account constraints, notes and preferred primary URL. Compatible exact-domain/URL targets are also offered as browser suggestions. Secret credentials remain server-side in the encrypted vault.
 
 For repeat work, the browser can also remember the last selected HackerOne program, reload it automatically after API authentication, and automatically rerun the read-only rules preview when the exact saved fingerprint is unchanged. Advanced first-review controls collapse automatically for a reused profile. Human confirmation and the final launch remain explicit actions.
+
+## HackerOne multi-bounty batches
+
+The HackerOne control center can load the researcher program catalog read-only, let the operator select up to 20 previously reviewed programs, and launch them as a durable server-side batch.
+
+Two modes are available:
+
+- **sequential** — one campaign is started at a time; when its queued/running worker jobs drain, the server starts the next reviewed campaign;
+- **parallel** — all selected campaigns are admitted and made runnable immediately, while actual concurrency remains bounded by the configured worker pool.
+
+Batch state is persisted in the same durable storage backend as campaigns. The general worker reconciles active batches independently of the browser, so closing the dashboard does not stop the run. Batch cancellation remains an authenticated mutation.
+
+Every selected program is revalidated against its exact HackerOne remote snapshot before admission. Programs without a matching locally reviewed fingerprint are rejected from the batch and require a first review. Batch scheduling never enables scanners, changes request-rate limits, expands scope, or enables HackerOne report submission.
 
 ## Vault migration
 
