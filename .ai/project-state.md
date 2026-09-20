@@ -22,17 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T09:34:11Z
+Generated: 2026-09-20T09:41:41Z
 
 ### Git
 - Branch: `main`
-- Head: `08c78135bd63`
-- Commit date: 2026-09-20T11:34:02+02:00
-- Commit: feat: dampen recon ordering with surface confidence
+- Head: `51f19b845325`
+- Commit date: 2026-09-20T11:41:30+02:00
+- Commit: feat: enforce strict production hardening preflight
 - Tracked files: 487
 
 ### Recently changed files
 - `README.md`
+- `backend/app/deployment_preflight.py`
+- `backend/tests/test_deployment_preflight.py`
+- `docker-compose.distributed.yml`
 - `backend/app/main.py`
 - `backend/app/orchestrator.py`
 - `backend/app/recon_priority.py`

@@ -1577,6 +1577,14 @@ scanner = safe_scanner_runtime_capability()
 issues: list[dict[str, Any]] = []
 production = _production_mode()
 ⋮----
+storage_backend = (os.getenv("XBOW_STORAGE_BACKEND") or "sqlite").strip().lower()
+queue_backend = (os.getenv("XBOW_QUEUE_BACKEND") or "sqlite").strip().lower()
+⋮----
+rate_limit_backend = (
+⋮----
+vault_key_file_configured = _configured("XBOW_VAULT_MASTER_KEY_FILE")
+vault_inline_key_configured = _configured("XBOW_VAULT_MASTER_KEY")
+⋮----
 integration_enabled = bool(pentagi.get("integration_enabled"))
 worker_enabled = bool(pentagi.get("worker_enabled"))
 transport_enabled = bool(pentagi.get("transport_enabled"))
@@ -9785,6 +9793,10 @@ _ENV_NAMES = (
 ⋮----
 def _clear(monkeypatch)
 ⋮----
+def _set_hardened_production(monkeypatch)
+⋮----
+digest = "a" * 64
+⋮----
 def test_preflight_is_ok_with_optional_pentagi_disabled(monkeypatch)
 ⋮----
 result = build_deployment_preflight({"ok": True})
@@ -9809,11 +9821,11 @@ def test_preflight_endpoint_uses_dependency_readiness(monkeypatch)
 ⋮----
 result = main.deployment_preflight()
 ⋮----
-def test_production_preflight_requires_digest_pinned_images(monkeypatch)
+def test_production_preflight_requires_hardened_backends_and_digest_pinned_images(monkeypatch)
 ⋮----
-def test_production_preflight_accepts_digest_pinned_images(monkeypatch)
+integrity = result["deployment_integrity"]
 ⋮----
-digest = "a" * 64
+def test_production_preflight_accepts_hardened_distributed_configuration(monkeypatch)
 ⋮----
 def test_production_preflight_rejects_mutable_tags(monkeypatch)
 ⋮----
@@ -9822,6 +9834,12 @@ def test_preflight_reports_strict_job_provenance_by_default(monkeypatch)
 def test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled(monkeypatch)
 ⋮----
 def test_preflight_rejects_invalid_legacy_provenance_boolean(monkeypatch)
+⋮----
+def test_production_preflight_rejects_inline_vault_master_key(monkeypatch)
+⋮----
+def test_production_preflight_requires_redis_rate_limit_backend(monkeypatch)
+⋮----
+def test_production_preflight_requires_vault_key_file(monkeypatch)
 ```
 
 ## File: tests/test_differential_evidence_integration.py

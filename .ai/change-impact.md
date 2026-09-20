@@ -1,15 +1,13 @@
 # Change impact
 
-Base: 6c9b8da52648797962a3ed6cc1cc89a93155d79d
-Head: 08c78135bd633430eb6a6022226597a3f69dac0d
+Base: 1252a3af47f71a621f3c9e6806d5f3fa8b048e97
+Head: 51f19b84532563971851353ca2a465612851644b
 
 ## Changed files
 - M README.md
-- M backend/app/main.py
-- M backend/app/orchestrator.py
-- M backend/app/recon_priority.py
-- M backend/app/recon_swarm.py
-- M backend/tests/test_recon_priority.py
+- M backend/app/deployment_preflight.py
+- M backend/tests/test_deployment_preflight.py
+- M docker-compose.distributed.yml
 
 ## Affected areas
 - (root)
