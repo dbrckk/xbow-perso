@@ -226,3 +226,24 @@ sudo bash /opt/xbow-perso/scripts/mobile-production-rollback.sh
 The rollback stops distributed application services and restarts the original SQLite application stack. It does not delete PostgreSQL/Redis data, so diagnosis or a later retry remains possible.
 
 The storage cutover does **not** migrate or enable the encrypted vault. Vault cutover remains a separate step after the distributed storage stack is verified.
+
+
+## Day-to-day production commands from a phone
+
+After the PostgreSQL/Redis cutover, routine updates no longer require manually sourcing the root-only database credentials.
+
+Update the repo and redeploy only the safe production services:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-production-update.sh
+```
+
+This command updates `main`, validates Compose, rebuilds/restarts PostgreSQL, Redis, backend, general worker, frontend and TLS proxy, then checks backend readiness and HTTPS. It never starts scanner, PentAGI, or HackerOne submission profiles.
+
+Check current service/readiness state without rebuilding:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-production-status.sh
+```
+
+The status command also prints only the four non-secret execution gates so you can verify they remain closed.
