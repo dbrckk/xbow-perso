@@ -105,3 +105,126 @@ def test_diff_priority_is_bounded_to_fifteen_points():
 
     assert result.tasks[0].priority == 85
     assert result.adjustments[0].boost == 15
+
+
+def test_historical_novelty_adds_small_bounded_boost():
+    original = [task("map_endpoints", 70)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 2,
+            "counts_by_kind": {
+                "endpoint": {"added": 1, "removed": 0},
+                "asset": {"added": 0, "removed": 0},
+            },
+        },
+    }
+    memory = {
+        "delta": {
+            "added": [{"kind": "endpoint", "value": "https://app.example.com/new"}],
+        },
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/new",
+                "campaign_count": 1,
+            }
+        ],
+    }
+
+    result = prioritize_recon_tasks(original, diff, memory)
+
+    adjustment = result.adjustments[0]
+    assert adjustment.diff_boost == 4
+    assert adjustment.history_boost == 1
+    assert adjustment.boost == 5
+    assert result.tasks[0].priority == 75
+    assert adjustment.historical_signals == ("endpoint",)
+
+
+def test_reappearing_surface_has_less_history_weight_than_novel_surface():
+    original = [task("map_endpoints", 70)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 2,
+            "counts_by_kind": {
+                "endpoint": {"added": 1, "removed": 0},
+                "asset": {"added": 0, "removed": 0},
+            },
+        },
+    }
+    novel = {
+        "delta": {
+            "added": [{"kind": "endpoint", "value": "https://app.example.com/new"}],
+        },
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/new",
+                "campaign_count": 1,
+            }
+        ],
+    }
+    recurring = {
+        "delta": {
+            "added": [{"kind": "endpoint", "value": "https://app.example.com/new"}],
+        },
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/new",
+                "campaign_count": 8,
+            }
+        ],
+    }
+
+    novel_result = prioritize_recon_tasks(original, diff, novel)
+    recurring_result = prioritize_recon_tasks(original, diff, recurring)
+
+    assert novel_result.adjustments[0].history_boost >= recurring_result.adjustments[0].history_boost
+
+
+def test_total_priority_boost_is_bounded_to_twenty_points():
+    original = [task("browser_observe", 60)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 100,
+            "counts_by_kind": {
+                "endpoint": {"added": 100, "removed": 0},
+                "form": {"added": 100, "removed": 0},
+                "technology": {"added": 100, "removed": 0},
+            },
+        },
+    }
+    memory = {
+        "delta": {
+            "added": [
+                {"kind": "endpoint", "value": f"https://app.example.com/{i}"}
+                for i in range(20)
+            ]
+            + [{"kind": "form", "value": f"POST /f{i}"} for i in range(20)],
+        },
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": f"https://app.example.com/{i}",
+                "campaign_count": 1,
+            }
+            for i in range(20)
+        ]
+        + [
+            {
+                "kind": "form",
+                "value": f"POST /f{i}",
+                "campaign_count": 1,
+            }
+            for i in range(20)
+        ],
+    }
+
+    result = prioritize_recon_tasks(original, diff, memory)
+
+    assert result.adjustments[0].boost == 20
+    assert result.tasks[0].priority == 80
