@@ -426,6 +426,48 @@
     <button id="resetBreaker" class="danger hidden">Réinitialiser le circuit breaker</button>
   </section>
 
+  <section id="targetMemoryCard" class="card hidden">
+    <div class="finding-head">
+      <div>
+        <span class="section-kicker">Recon memory</span>
+        <h2>Mémoire de cible</h2>
+      </div>
+      <span id="targetMemoryCampaigns" class="pill">0 campagne</span>
+    </div>
+    <p id="targetMemoryIdentity" class="muted compact">Aucune mémoire chargée.</p>
+    <div class="stats">
+      <div class="stat"><h3>Nœuds connus</h3><strong id="targetMemoryNodes">0</strong></div>
+      <div class="stat"><h3>Nouveaux</h3><strong id="targetMemoryAdded">0</strong></div>
+      <div class="stat"><h3>Disparus</h3><strong id="targetMemoryRemoved">0</strong></div>
+    </div>
+    <div class="target-memory-grid">
+      <div>
+        <div class="finding-head">
+          <strong>Surface actuelle</strong>
+          <span id="targetMemoryCurrent" class="pill">0</span>
+        </div>
+        <div id="targetMemoryKinds" class="memory-kind-grid"></div>
+      </div>
+      <div>
+        <div class="finding-head">
+          <strong>Delta vs campagne précédente</strong>
+          <span id="targetMemoryPersistent" class="pill">0 persistant</span>
+        </div>
+        <div class="memory-delta-columns">
+          <div>
+            <span class="memory-delta-label ok">Ajoutés</span>
+            <div id="targetMemoryAddedList" class="scope-list muted">—</div>
+          </div>
+          <div>
+            <span class="memory-delta-label err">Disparus</span>
+            <div id="targetMemoryRemovedList" class="scope-list muted">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="muted compact">Lecture seule. Cette mémoire n’autorise jamais une action et reste isolée par cible + référence d’autorisation.</p>
+  </section>
+
   <section id="evidenceCard" class="card hidden">
     <div class="finding-head">
       <h2>Intelligence findings</h2>
