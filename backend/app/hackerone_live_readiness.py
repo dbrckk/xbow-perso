@@ -224,8 +224,9 @@ def build_hackerone_live_readiness(
             "when": "activation",
             "done": required_ok,
             "instruction": (
-                "Seulement après la revue du programme : activer les scans, désactiver "
-                "DRY_RUN, activer Nuclei et le worker scanner dédié, puis revérifier le pré-vol."
+                "Armer une seule fois le profil Nuclei persistant après revue d'au moins "
+                "un programme autorisé. Les campagnes suivantes restent soumises au "
+                "fingerprint, au scope et à la policy propres à chaque programme."
             ),
         },
         {
@@ -253,14 +254,15 @@ def build_hackerone_live_readiness(
         "contains_secrets": False,
         "operator_steps": operator_steps,
         "activation_template": [
-            "XBOW_ENABLE_ACTIVE_SCANS=true",
-            "DRY_RUN=false",
-            "XBOW_ENABLE_NUCLEI=true",
-            "XBOW_NUCLEI_ALLOWED_VERSION=3.11.1",
-            "XBOW_SCANNER_ALLOWED_ENGINES=nuclei",
-            "XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1",
+            "sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh",
         ],
-        "scanner_start_command": "docker compose --profile scanner up -d --build",
+        "scanner_start_command": (
+            "sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh"
+        ),
+        "scanner_disable_command": (
+            "sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh"
+        ),
+        "persistent_scanner_profile_supported": True,
         "next_operator_step": (
             "Sélectionner un programme HackerOne, relire sa policy et confirmer "
             "Safe Harbor, automation, scope et limite de requêtes."
