@@ -367,6 +367,7 @@ def system_capabilities():
             "outbox_observability": True,
             "policy_bound_job_provenance": True,
             "hackerone_batch_queue": "durable_server_side",
+            "hackerone_review_profiles": "server_side_fingerprint_bound",
         },
         "execution": {
             "strix_scanning": "gated",

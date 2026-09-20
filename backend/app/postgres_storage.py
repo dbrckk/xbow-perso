@@ -115,6 +115,20 @@ class PostgresStorage(Storage):
                 )"""
             )
             db.execute(
+                """CREATE TABLE IF NOT EXISTS hackerone_review_profiles (
+                    id TEXT PRIMARY KEY,
+                    handle TEXT NOT NULL,
+                    snapshot_sha256 TEXT NOT NULL,
+                    document TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    version INTEGER NOT NULL DEFAULT 1
+                )"""
+            )
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS hackerone_review_profiles_handle "
+                "ON hackerone_review_profiles(handle, updated_at DESC)"
+            )
+            db.execute(
                 "ALTER TABLE hackerone_catalog_state "
                 "ADD COLUMN IF NOT EXISTS version INTEGER NOT NULL DEFAULT 1"
             )

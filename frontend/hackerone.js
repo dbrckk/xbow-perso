@@ -3,6 +3,7 @@
   let remoteBinding=null;
   let hackerOnePrograms=[];
   let hackerOneCatalogMeta={};
+  let serverReviewProfiles={};
   let runMonitorTimer=null;
   let runMonitorCampaignId=null;
   let runMonitorBusy=false;
@@ -1571,6 +1572,50 @@
     catch(_error){return '';}
   }
 
+  function normalizeServerReviewProfile(profile){
+    if(!profile||typeof profile!=='object')return null;
+    const policy=profile.policy&&typeof profile.policy==='object'?profile.policy:{};
+    return {
+      authorization_reference:String(policy.authorization_reference||''),
+      policy_version:String(policy.policy_version||''),
+      reviewed_at:String(policy.reviewed_at||profile.saved_at||''),
+      reviewed_by:String(policy.reviewed_by||''),
+      max_requests_per_second:Number(policy.max_requests_per_second)||0,
+      safe_harbor_confirmed:Boolean(policy.safe_harbor_confirmed),
+      automated_scanning:Boolean(policy.automated_scanning),
+      test_account_required:Boolean(policy.test_account_required),
+      test_account_constraints:String(policy.test_account_constraints||''),
+      additional_restrictions:Array.isArray(policy.additional_restrictions)
+        ?policy.additional_restrictions:[],
+      program_notes:String(policy.program_notes||''),
+      primary_url:String(profile.preferred_primary_url||''),
+      saved_at:String(profile.saved_at||''),
+      source:'server'
+    };
+  }
+
+  function exactQuickProfile(key){
+    if(!key)return null;
+    const local=quickProfiles()[key];
+    if(local)return local;
+    return normalizeServerReviewProfile(serverReviewProfiles[key]);
+  }
+
+  async function loadServerReviewProfiles(){
+    try{
+      const result=await api('/imports/hackerone/review-profiles');
+      const profiles=Array.isArray(result?.profiles)?result.profiles:[];
+      serverReviewProfiles=Object.fromEntries(
+        profiles
+          .filter(profile=>profile?.id)
+          .map(profile=>[String(profile.id),profile])
+      );
+    }catch(_error){
+      serverReviewProfiles={};
+    }
+    return serverReviewProfiles;
+  }
+
   function quickProfiles(){
     try{
       const parsed=JSON.parse(localStorage.getItem(QUICK_PROFILE_STORAGE_KEY)||'{}');
@@ -1625,8 +1670,7 @@
 
   function restoreQuickProfile(snapshot){
     const key=quickProfileKey();
-    const profiles=quickProfiles();
-    const profile=key?profiles[key]:null;
+    const profile=exactQuickProfile(key);
     const reviewer=localStorage.getItem(QUICK_REVIEWER_STORAGE_KEY)||'';
     const targets=quickTargetSuggestions(snapshot)||[];
 
@@ -1700,7 +1744,10 @@
 
   function batchProgramHasSavedProfile(handle){
     const prefix=String(handle||'')+'@';
-    return Object.keys(quickProfiles()).some(key=>key.startsWith(prefix));
+    return (
+      Object.keys(quickProfiles()).some(key=>key.startsWith(prefix)) ||
+      Object.keys(serverReviewProfiles).some(key=>key.startsWith(prefix))
+    );
   }
 
   function batchCatalogPrograms(){
@@ -1758,7 +1805,7 @@
           String(program.handle||''),
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
-          batchProgramHasSavedProfile(program.handle)?'profil local':'1re revue requise'
+          batchProgramHasSavedProfile(program.handle)?'profil mémorisé':'1re revue requise'
         ];
         meta.textContent=parts.join(' · ');
         info.append(titleRow,meta);
@@ -1783,7 +1830,10 @@
     const button=el('h1BatchRefresh');
     if(button)button.disabled=true;
     try{
-      const result=await api('/imports/hackerone/programs?refresh=true');
+      const [result]=await Promise.all([
+        api('/imports/hackerone/programs?refresh=true'),
+        loadServerReviewProfiles()
+      ]);
       hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
       hackerOneCatalogMeta=result?.catalog||{};
       renderProgramOptions();
@@ -1819,7 +1869,7 @@
       '/imports/hackerone/programs/'+encodeURIComponent(handle)+'/snapshot'
     );
     const key=String(snapshot.handle||handle)+'@'+String(snapshot.snapshot_sha256||'');
-    const profile=quickProfiles()[key];
+    const profile=exactQuickProfile(key);
     if(!profile){
       const error=new Error(String(handle)+': première revue requise ou fingerprint modifié');
       error.code='review_required';
@@ -2260,7 +2310,10 @@
       setConnectionState('connecté','ok');
       el('h1ProgramSearch').disabled=false;
       el('h1ProgramSelect').disabled=false;
-      const result=await api('/imports/hackerone/programs');
+      const [result]=await Promise.all([
+        api('/imports/hackerone/programs'),
+        loadServerReviewProfiles()
+      ]);
       hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
       hackerOneCatalogMeta=result?.catalog||{};
       const prefs=applyQuickPrefs();
@@ -2415,7 +2468,10 @@
     if(accepted){
       approvedPreview=payloadFingerprint(payload);
       rememberQuickProfile(payload);
-      setLauncherStatus('Scope et policy vérifiés. Confirme la prévisualisation puis saisis un nouveau TOTP pour lancer.','ok');
+      if(preview?.review_profile_persisted){
+        void loadServerReviewProfiles().then(()=>renderBatchCatalog());
+      }
+      setLauncherStatus('Scope et policy vérifiés. Profil mémorisé pour ce fingerprint; confirme puis lance.','ok');
     }else{
       approvedPreview=null;
       el('h1Launch').disabled=true;
@@ -2429,10 +2485,18 @@
       const blockers=conservativeBlockers(payload.policy);
       el('h1Preview').disabled=true;
       setLauncherStatus('Vérification HackerOne en cours…');
-      const previewPayload={document:payload.document,policy:payload.policy};
+      const previewPayload={
+        document:payload.document,
+        policy:payload.policy,
+        remember_review_profile:Boolean(el('h1QuickRemember')?.checked),
+        preferred_primary_url:payload.target.primary_url
+      };
       if(payload.remote_handle){
         previewPayload.remote_handle=payload.remote_handle;
         previewPayload.remote_snapshot_sha256=payload.remote_snapshot_sha256;
+      }else{
+        previewPayload.remember_review_profile=false;
+        delete previewPayload.preferred_primary_url;
       }
       const result=await api('/imports/hackerone/rules-preview',{
         method:'POST',

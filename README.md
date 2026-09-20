@@ -227,6 +227,25 @@ The recon prioritizer can now use surface confidence as a **damping signal**. Hi
 
 The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
 
+## Server-side HackerOne review profiles
+
+A successfully reviewed HackerOne program can now persist its non-secret review profile on the server, keyed by the exact remote snapshot fingerprint. This removes the previous dependency on one browser's localStorage for repeat campaigns.
+
+The persisted profile contains only:
+- program handle and exact snapshot SHA-256
+- preferred primary URL
+- reviewed policy metadata
+- explicit request-rate limit
+- Safe Harbor / automation confirmations
+- test-account constraints and additional restrictions
+- reviewer and original review timestamp
+
+It never stores HackerOne API credentials, tokens, the full StructuredScope document, or decrypted vault material.
+
+Profiles are written only when the rules preview is complete, the conservative admission checks pass, the target is inside the reviewed scope, and the user has enabled the "remember" option. The dashboard still keeps a local copy as a fast fallback, but server profiles survive browser cache loss and can be reused across devices.
+
+A changed HackerOne fingerprint never matches an old server profile; the program falls back to first-review mode until the new fingerprint is reviewed.
+
 ## HackerOne quick start
 
 The HackerOne launcher includes an express-start profile for repeated bounty work. After a program policy/scope has been reviewed and accepted once, the non-secret review settings can be remembered locally **only for that exact HackerOne snapshot fingerprint**. If HackerOne changes the policy, scope or exclusions, the fingerprint changes and the launcher requires a fresh review instead of silently reusing the old authorization assumptions.

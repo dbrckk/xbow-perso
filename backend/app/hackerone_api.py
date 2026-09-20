@@ -68,11 +68,18 @@ class HackerOneRulesPreviewInput(BaseModel):
         default=None,
         pattern=r"^[0-9a-f]{64}$",
     )
+    remember_review_profile: StrictBool = False
+    preferred_primary_url: HttpUrl | None = None
 
     @model_validator(mode="after")
     def remote_binding_must_be_complete(self):
         if (self.remote_handle is None) != (self.remote_snapshot_sha256 is None):
             raise ValueError("remote_handle and remote_snapshot_sha256 must be supplied together")
+        if self.remember_review_profile:
+            if self.remote_handle is None or self.remote_snapshot_sha256 is None:
+                raise ValueError("remembered review profiles require a verified remote binding")
+            if self.preferred_primary_url is None:
+                raise ValueError("remembered review profiles require a preferred primary URL")
         return self
 
 
@@ -319,9 +326,10 @@ def get_hackerone_program_snapshot(handle: str):
 
 @router.post("/api/imports/hackerone/rules-preview")
 def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
-    """Preview exact executable rules without persisting or starting a campaign."""
+    """Preview exact executable rules and optionally persist a reviewed profile."""
 
     from .hackerone_scope_import import HackerOneScopeImportError, import_hackerone_structured_scope
+    from .main import TargetInput, storage, utcnow
 
     remote_binding = _verify_remote_binding(payload)
     try:
@@ -331,18 +339,69 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
     except HackerOneScopeImportError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    policy_snapshot = policy.to_snapshot()
+    profile_persisted = False
+    profile_persist_reason = None
+    if payload.remember_review_profile:
+        reason = _conservative_admission_reason(policy)
+        if not preview.complete:
+            profile_persist_reason = "scope_review_incomplete"
+        elif reason is not None:
+            profile_persist_reason = reason
+        else:
+            try:
+                target = TargetInput(
+                    name=f"H1 {payload.remote_handle}",
+                    primary_url=payload.preferred_primary_url,
+                    rules=rules,
+                )
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+            now = utcnow()
+            profile = {
+                "id": f"{payload.remote_handle}@{payload.remote_snapshot_sha256}",
+                "provider": "hackerone",
+                "handle": payload.remote_handle,
+                "snapshot_sha256": payload.remote_snapshot_sha256,
+                "preferred_primary_url": str(target.primary_url),
+                "policy": policy_snapshot,
+                "policy_snapshot_sha256": _json_sha256(policy_snapshot),
+                "saved_at": now,
+                "updated_at": now,
+                "contains_secrets": False,
+            }
+            storage().save_hackerone_review_profile(profile)
+            profile_persisted = True
+
     result = {
         "provider": "hackerone",
         "complete": preview.complete,
         "requires_review": True,
         "persisted": False,
         "campaign_created": False,
-        "policy_snapshot": policy.to_snapshot(),
+        "review_profile_persisted": profile_persisted,
+        "review_profile_persist_reason": profile_persist_reason,
+        "policy_snapshot": policy_snapshot,
         "rules": rules.model_dump(mode="json"),
     }
     if remote_binding is not None:
         result["remote_binding"] = remote_binding
     return result
+
+
+@router.get("/api/imports/hackerone/review-profiles")
+def list_hackerone_review_profiles(
+    limit: int = Query(default=500, ge=1, le=1000),
+):
+    from .main import storage
+
+    return {
+        "provider": "hackerone",
+        "profiles": storage().list_hackerone_review_profiles(limit=limit),
+        "read_only": True,
+        "contains_secrets": False,
+    }
 
 
 @router.post("/api/imports/hackerone/campaigns")
