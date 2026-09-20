@@ -185,6 +185,7 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
     )
 
     from .recon_priority import prioritize_recon_tasks
+    from .surface_confidence import build_surface_confidence
     from .surface_diff import build_surface_diff_intelligence
     from .surface_temporal import build_temporal_surface_profile
     from .target_memory import build_target_memory
@@ -194,7 +195,14 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
     memory = build_target_memory(store, campaign_doc)
     surface_diff = build_surface_diff_intelligence(memory)
     surface_temporal = build_temporal_surface_profile(store, campaign_doc)
-    priority = prioritize_recon_tasks(tasks, surface_diff, memory, surface_temporal)
+    surface_confidence = build_surface_confidence(memory, surface_temporal)
+    priority = prioritize_recon_tasks(
+        tasks,
+        surface_diff,
+        memory,
+        surface_temporal,
+        surface_confidence,
+    )
 
     return {
         "campaign_id": campaign.id,
@@ -203,6 +211,7 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
         "diff_priority": priority.to_dict(),
         "surface_diff": surface_diff,
         "surface_temporal": surface_temporal,
+        "surface_confidence": surface_confidence,
         "read_only": True,
         "bounded": True,
         "scope_aware": True,
