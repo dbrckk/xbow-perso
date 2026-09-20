@@ -213,6 +213,14 @@ The temporal component is deliberately bounded: it contributes at most +5 priori
 
 As with the other recon intelligence layers, this changes ordering only. It cannot create tasks, rewrite targets, increase request budgets, change allowed methods, expand scope, or authorize execution.
 
+## Surface confidence scoring
+
+The API exposes `GET /api/campaigns/{campaign_id}/surface-confidence`, a read-only reliability score for observed surface nodes.
+
+Confidence combines three bounded signals: source diversity, repetition across campaigns, and temporal persistence. Nodes observed by several independent sources and repeatedly across campaigns score higher than one-off observations from a single source. The dashboard shows high/medium/low confidence counts and highlights low-confidence observations that still need corroboration.
+
+This is descriptive only: confidence never changes scope, authorization, task creation, request budgets, or execution admission.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.
