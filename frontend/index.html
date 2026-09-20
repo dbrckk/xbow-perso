@@ -172,6 +172,42 @@
       </div>
     </div>
 
+    <div id="h1BatchPanel" class="h1-control-center h1-batch-panel">
+      <div class="finding-head">
+        <div>
+          <span class="section-kicker">Multi-bounty</span>
+          <h3>Catalogue HackerOne et lancement par lot</h3>
+          <p class="muted compact">Le catalogue est chargé en lecture seule. Sélectionne plusieurs programmes déjà revus pour les lancer en séquence ou en parallèle. Le lot continue côté serveur même si tu fermes le dashboard.</p>
+        </div>
+        <span id="h1BatchState" class="pill">0 sélectionné</span>
+      </div>
+      <div class="grid h1-batch-controls">
+        <div>
+          <label>Filtrer le catalogue</label>
+          <input id="h1BatchSearch" type="search" autocomplete="off" placeholder="Nom ou handle" />
+        </div>
+        <div>
+          <label>Ordonnancement</label>
+          <select id="h1BatchMode">
+            <option value="sequential">À la suite</option>
+            <option value="parallel">En parallèle</option>
+          </select>
+        </div>
+      </div>
+      <div class="button-row">
+        <label class="check-row compact"><input id="h1BatchBountyOnly" type="checkbox" checked /> <span>Programmes avec bounty uniquement</span></label>
+        <button id="h1BatchRefresh" type="button" class="secondary">Actualiser le catalogue</button>
+        <button id="h1BatchSelectReady" type="button" class="secondary">Sélectionner les profils prêts</button>
+      </div>
+      <div id="h1BatchCatalog" class="h1-batch-catalog muted">Catalogue en attente.</div>
+      <div class="button-row">
+        <button id="h1BatchLaunch" type="button" disabled>Lancer la sélection</button>
+        <button id="h1BatchCancel" type="button" class="danger hidden" disabled>Annuler le lot actif</button>
+      </div>
+      <p id="h1BatchSummary" class="muted compact">Aucun lot actif.</p>
+      <div id="h1BatchProgress" class="scope-list muted">—</div>
+    </div>
+
     <div id="h1QuickStart" class="h1-quick-start">
       <div class="finding-head">
         <div>
