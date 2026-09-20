@@ -1,13 +1,14 @@
 # Change impact
 
-Base: 8c060a2aef89089e7074dcb1b35a7302438c29d5
-Head: 8d051d3152b5f305a54e2683e8ac17767d549fb9
+Base: 13ef6cae529416ec3d0802380a3cf3eba0148079
+Head: 20e75ae29c85e7cd0b7db1dc16f7487c88e2e7a9
 
 ## Changed files
-- A PRODUCTION_MIGRATION.md
+- M .env.example
 - M README.md
-- A backend/app/production_migration.py
-- A backend/tests/test_production_migration.py
+- A VAULT_MIGRATION.md
+- A backend/app/vault_migration.py
+- A backend/tests/test_vault_migration.py
 
 ## Affected areas
 - (root)

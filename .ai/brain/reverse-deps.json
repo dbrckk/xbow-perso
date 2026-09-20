@@ -2183,6 +2183,7 @@
         "backend/app/policy_integrity.py",
         "backend/app/totp_auth.py",
         "backend/app/vault_cli.py",
+        "backend/app/vault_migration.py",
         "backend/app/worker.py",
         "backend/app/worker_audit.py",
         "backend/tests/test_auth.py",
@@ -2191,9 +2192,10 @@
         "backend/tests/test_pentagi_auth.py",
         "backend/tests/test_secret_vault.py",
         "backend/tests/test_totp_auth.py",
+        "backend/tests/test_vault_migration.py",
         "backend/tests/test_worker_secrets.py"
       ],
-      "in_degree": 20,
+      "in_degree": 22,
       "out_degree": 0
     },
     "backend/app/storage.py": {
@@ -2482,6 +2484,16 @@
       ],
       "dependents": [],
       "in_degree": 0,
+      "out_degree": 1
+    },
+    "backend/app/vault_migration.py": {
+      "dependencies": [
+        "backend/app/secret_vault.py"
+      ],
+      "dependents": [
+        "backend/tests/test_vault_migration.py"
+      ],
+      "in_degree": 1,
       "out_degree": 1
     },
     "backend/app/worker.py": {
@@ -4424,6 +4436,16 @@
       "in_degree": 0,
       "out_degree": 4
     },
+    "backend/tests/test_vault_migration.py": {
+      "dependencies": [
+        "backend/app/secret_vault.py",
+        "backend/app/vault_migration.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "backend/tests/test_watchdog_observability.py": {
       "dependencies": [
         "backend/app/metrics.py",
@@ -4709,6 +4731,7 @@
         "backend/tests/test_totp_auth.py",
         "backend/tests/test_validation_state.py",
         "backend/tests/test_validator.py",
+        "backend/tests/test_vault_migration.py",
         "backend/tests/test_watchdog_observability.py",
         "backend/tests/test_worker_concurrency.py",
         "backend/tests/test_worker_job_provenance.py",
@@ -4720,7 +4743,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 179,
+      "in_degree": 180,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

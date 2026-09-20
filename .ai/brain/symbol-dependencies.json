@@ -5,28 +5,28 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "ProductionMigrationError": {
+    "VaultMigrationError": {
       "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 91,
-        "end": 92
+        "file": "backend/app/vault_migration.py",
+        "start": 26,
+        "end": 27
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_bool_env": {
+    "_safe_secret_file": {
       "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 95,
-        "end": 101
+        "file": "backend/app/vault_migration.py",
+        "start": 30,
+        "end": 45
       },
       "symbol_dependencies": [
         {
-          "symbol": "ProductionMigrationError",
+          "symbol": "VaultMigrationError",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
               "kind": "class",
               "language": "python"
             }
@@ -36,19 +36,53 @@
       ],
       "dependency_count": 1
     },
-    "_source_path": {
+    "_legacy_sources": {
       "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 104,
-        "end": 108
+        "file": "backend/app/vault_migration.py",
+        "start": 48,
+        "end": 74
       },
       "symbol_dependencies": [
         {
-          "symbol": "ProductionMigrationError",
+          "symbol": "VaultMigrationError",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_secret_file",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_vault_key_file": {
+      "source": {
+        "file": "backend/app/vault_migration.py",
+        "start": 77,
+        "end": 87
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "VaultMigrationError",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
               "kind": "class",
               "language": "python"
             }
@@ -58,141 +92,99 @@
       ],
       "dependency_count": 1
     },
-    "_artifact_root": {
+    "ensure_master_key_file": {
       "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 111,
-        "end": 115
+        "file": "backend/app/vault_migration.py",
+        "start": 90,
+        "end": 119
       },
       "symbol_dependencies": [
         {
-          "symbol": "ProductionMigrationError",
+          "symbol": "VaultMigrationError",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_vault_key_file",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 77,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 2
     },
-    "_database_url": {
+    "_existing_matches": {
       "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 118,
-        "end": 122
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ProductionMigrationError",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_redis_url": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 125,
+        "file": "backend/app/vault_migration.py",
+        "start": 122,
         "end": 129
       },
       "symbol_dependencies": [
         {
-          "symbol": "ProductionMigrationError",
+          "symbol": "SecretVaultError",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
+              "file": "backend/app/secret_vault.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "VaultMigrationError",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "get_secret",
+          "definitions": [
+            {
+              "file": "backend/app/secret_vault.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 3
     },
-    "_connect_source": {
+    "plan_vault_migration": {
       "source": {
-        "file": "backend/app/production_migration.py",
+        "file": "backend/app/vault_migration.py",
         "start": 132,
-        "end": 136
+        "end": 163
       },
       "symbol_dependencies": [
         {
-          "symbol": "connect",
+          "symbol": "_existing_matches",
           "definitions": [
             {
-              "file": "backend/app/postgres_storage.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_table_exists": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 139,
-        "end": 144
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_source_counts": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 147,
-        "end": 160
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_table_exists",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 139,
+              "file": "backend/app/vault_migration.py",
+              "line": 122,
               "kind": "function",
               "language": "python"
             }
@@ -200,33 +192,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "execute",
+          "symbol": "_legacy_sources",
           "definitions": [
             {
-              "file": "backend/app/postgres_storage.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_queue_status": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 163,
-        "end": 171
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_table_exists",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 139,
+              "file": "backend/app/vault_migration.py",
+              "line": 48,
               "kind": "function",
               "language": "python"
             }
@@ -234,255 +204,93 @@
           "relation": "same_file"
         },
         {
-          "symbol": "execute",
+          "symbol": "_vault_key_file",
           "definitions": [
             {
-              "file": "backend/app/postgres_storage.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_verify_artifacts": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 174,
-        "end": 194
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ProductionMigrationError",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_table_exists",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 139,
+              "file": "backend/app/vault_migration.py",
+              "line": 77,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 3
     },
-    "_initialize_targets": {
+    "apply_vault_migration": {
       "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 197,
-        "end": 204
+        "file": "backend/app/vault_migration.py",
+        "start": 166,
+        "end": 196
       },
       "symbol_dependencies": [
         {
-          "symbol": "PostgresStorage",
+          "symbol": "VaultMigrationError",
           "definitions": [
             {
-              "file": "backend/app/postgres_storage.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProductionMigrationError",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "RedisJobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 23,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_artifact_root",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 111,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_database_url",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 118,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_redis_url",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 125,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "connect",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 179,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "health",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 83,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 9
-    },
-    "_postgres_counts": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 207,
-        "end": 218
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "connect",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
+              "file": "backend/app/vault_migration.py",
               "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_target_redis_count": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 221,
-        "end": 222
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "RedisJobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "get",
+          "symbol": "_existing_matches",
           "definitions": [
             {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 179,
+              "file": "backend/app/vault_migration.py",
+              "line": 122,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "stats",
+          "symbol": "_legacy_sources",
           "definitions": [
             {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 200,
+              "file": "backend/app/vault_migration.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensure_master_key_file",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 90,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "plan_vault_migration",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "set_secret",
+          "definitions": [
+            {
+              "file": "backend/app/secret_vault.py",
+              "line": 112,
               "kind": "function",
               "language": "python"
             }
@@ -490,276 +298,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 6
     },
-    "plan_migration": {
+    "rewrite_env_file": {
       "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 225,
+        "file": "backend/app/vault_migration.py",
+        "start": 199,
         "end": 269
       },
       "symbol_dependencies": [
         {
-          "symbol": "_artifact_root",
+          "symbol": "VaultMigrationError",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 111,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_connect_source",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 132,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_database_url",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 118,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_initialize_targets",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 197,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_postgres_counts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 207,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_queue_status",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 163,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_redis_url",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 125,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_source_counts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 147,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_source_path",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 104,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_target_redis_count",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_verify_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 174,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 179,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "health",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 83,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 13
-    },
-    "_backup_sqlite": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 272,
-        "end": 286
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ProductionMigrationError",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "connect",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_copy_postgres": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 289,
-        "end": 308
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_table_exists",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 139,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "connect",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
+              "file": "backend/app/vault_migration.py",
               "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_timestamp_score": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 311,
-        "end": 317
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_copy_redis_jobs": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 320,
-        "end": 368
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ProductionMigrationError",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
               "kind": "class",
               "language": "python"
             }
@@ -767,95 +320,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "RedisJobQueue",
+          "symbol": "_existing_matches",
           "definitions": [
             {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 23,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_all",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_campaign_key",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_dedupe_key",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 66,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_job_key",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_queued",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 44,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_queued_kind",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_table_exists",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 139,
+              "file": "backend/app/vault_migration.py",
+              "line": 122,
               "kind": "function",
               "language": "python"
             }
@@ -863,11 +332,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_timestamp_score",
+          "symbol": "_legacy_sources",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 311,
+              "file": "backend/app/vault_migration.py",
+              "line": 48,
               "kind": "function",
               "language": "python"
             }
@@ -875,23 +344,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_uses_generic_queue",
+          "symbol": "_vault_key_file",
           "definitions": [
             {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 19,
+              "file": "backend/app/vault_migration.py",
+              "line": 77,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "execute",
+          "symbol": "vault_enabled",
           "definitions": [
             {
-              "file": "backend/app/postgres_storage.py",
-              "line": 26,
+              "file": "backend/app/secret_vault.py",
+              "line": 145,
               "kind": "function",
               "language": "python"
             }
@@ -899,281 +368,33 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 12
-    },
-    "_clear_targets": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 371,
-        "end": 383
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "RedisJobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 23,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "connect",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/postgres_storage.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "apply_migration": {
-      "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 386,
-        "end": 440
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ProductionMigrationError",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_artifact_root",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 111,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_backup_sqlite",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 272,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_bool_env",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 95,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_clear_targets",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 371,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_connect_source",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 132,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_copy_postgres",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 289,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_copy_redis_jobs",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 320,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_database_url",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 118,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_initialize_targets",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 197,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_postgres_counts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 207,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_source_path",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 104,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_target_redis_count",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_verify_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 174,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 179,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "health",
-          "definitions": [
-            {
-              "file": "backend/app/redis_jobqueue.py",
-              "line": 83,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan_migration",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 225,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 17
+      "dependency_count": 5
     },
     "main": {
       "source": {
-        "file": "backend/app/production_migration.py",
-        "start": 443,
-        "end": 456
+        "file": "backend/app/vault_migration.py",
+        "start": 272,
+        "end": 293
       },
       "symbol_dependencies": [
         {
-          "symbol": "ProductionMigrationError",
+          "symbol": "SecretVaultError",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
+              "file": "backend/app/secret_vault.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "VaultMigrationError",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
               "kind": "class",
               "language": "python"
             }
@@ -1181,11 +402,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "apply_migration",
+          "symbol": "apply_vault_migration",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 386,
+              "file": "backend/app/vault_migration.py",
+              "line": 166,
               "kind": "function",
               "language": "python"
             }
@@ -1193,76 +414,131 @@
           "relation": "same_file"
         },
         {
-          "symbol": "plan_migration",
+          "symbol": "plan_vault_migration",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 225,
+              "file": "backend/app/vault_migration.py",
+              "line": 132,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "rewrite_env_file",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 199,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_master_key": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 17,
+        "end": 18
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_configure": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 21,
+        "end": 29
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_master_key",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_clear_sources": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 32,
+        "end": 47
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_plan_is_redacted": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 50,
+        "end": 63
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear_sources",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_configure",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "plan_vault_migration",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
       "dependency_count": 3
     },
-    "_FakePostgres": {
+    "test_apply_migrates_static_and_browser_secrets": {
       "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 17,
-        "end": 19
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 66,
+        "end": 87
       },
       "symbol_dependencies": [
         {
-          "symbol": "health",
+          "symbol": "_clear_sources",
           "definitions": [
             {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "health": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 18,
-        "end": 19
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_FakeQueue": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 22,
-        "end": 36
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "health",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 23,
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1270,102 +546,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "stats",
+          "symbol": "_configure",
           "definitions": [
             {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "stats": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 26,
-        "end": 36
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_campaign": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 39,
-        "end": 159
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_FakePostgres",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_FakeQueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_artifact_root",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 111,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_configure_source",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 59,
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             }
@@ -1373,11 +558,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_initialize_targets",
+          "symbol": "apply_vault_migration",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 197,
+              "file": "backend/app/vault_migration.py",
+              "line": 166,
               "kind": "function",
               "language": "python"
             }
@@ -1385,541 +570,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_postgres_counts",
+          "symbol": "get_secret",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 207,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_target_redis_count",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "claim",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enqueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 122,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan_migration",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 225,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_plan_blocks_nonempty_targets",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 151,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_plan_blocks_running_jobs",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_plan_reports_source_counts_without_exposing_payloads",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 71,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 15
-    },
-    "_configure_source": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 59,
-        "end": 68
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_plan_reports_source_counts_without_exposing_payloads": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 71,
-        "end": 110
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_FakePostgres",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_FakeQueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_artifact_root",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 111,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_configure_source",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_initialize_targets",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 197,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_postgres_counts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 207,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_target_redis_count",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enqueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 122,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan_migration",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 225,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 10
-    },
-    "test_plan_blocks_running_jobs": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 113,
-        "end": 148
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_FakePostgres",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_FakeQueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_artifact_root",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 111,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_configure_source",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_initialize_targets",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 197,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_postgres_counts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 207,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_target_redis_count",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "claim",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enqueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 122,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan_migration",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 225,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 11
-    },
-    "test_plan_blocks_nonempty_targets": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 151,
-        "end": 180
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_FakePostgres",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 17,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_FakeQueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_configure_source",
-          "definitions": [
-            {
-              "file": "backend/tests/test_production_migration.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_initialize_targets",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 197,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_postgres_counts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 207,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_target_redis_count",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan_migration",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 225,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "test_artifact_verification_detects_tampering": {
-      "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 183,
-        "end": 205
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ProductionMigrationError",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_verify_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/production_migration.py",
-              "line": 174,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "connect",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 77,
+              "file": "backend/app/secret_vault.py",
+              "line": 129,
               "kind": "function",
               "language": "python"
             }
@@ -1929,31 +584,43 @@
       ],
       "dependency_count": 4
     },
-    "test_artifact_verification_accepts_matching_content": {
+    "test_plan_blocks_conflicting_existing_vault_entry": {
       "source": {
-        "file": "backend/tests/test_production_migration.py",
-        "start": 208,
-        "end": 229
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 90,
+        "end": 99
       },
       "symbol_dependencies": [
         {
-          "symbol": "Storage",
+          "symbol": "_clear_sources",
           "definitions": [
             {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 32,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "_verify_artifacts",
+          "symbol": "_configure",
           "definitions": [
             {
-              "file": "backend/app/production_migration.py",
-              "line": 174,
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "plan_vault_migration",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 132,
               "kind": "function",
               "language": "python"
             }
@@ -1961,11 +628,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "connect",
+          "symbol": "set_secret",
           "definitions": [
             {
-              "file": "backend/app/jobqueue.py",
-              "line": 77,
+              "file": "backend/app/secret_vault.py",
+              "line": 112,
               "kind": "function",
               "language": "python"
             }
@@ -1973,7 +640,345 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 4
+    },
+    "test_api_token_file_is_supported": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 102,
+        "end": 114
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear_sources",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_configure",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 14,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "apply_vault_migration",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 166,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_secret",
+          "definitions": [
+            {
+              "file": "backend/app/secret_vault.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_conflicting_api_token_sources_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 117,
+        "end": 127
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "VaultMigrationError",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear_sources",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_configure",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 14,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan_vault_migration",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_inline_master_key_is_rejected": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 130,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "VaultMigrationError",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear_sources",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_configure",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_master_key",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "plan_vault_migration",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_rewrite_env_requires_verified_vault_values": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 139,
+        "end": 161
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "VaultMigrationError",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear_sources",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_configure",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "apply_vault_migration",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 166,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rewrite_env_file",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 199,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_rewrite_env_removes_browser_secret_assignments": {
+      "source": {
+        "file": "backend/tests/test_vault_migration.py",
+        "start": 164,
+        "end": 180
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear_sources",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_configure",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vault_migration.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "apply_vault_migration",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 166,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rewrite_env_file",
+          "definitions": [
+            {
+              "file": "backend/app/vault_migration.py",
+              "line": 199,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
     }
   }
 }

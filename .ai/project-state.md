@@ -22,18 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T09:48:24Z
+Generated: 2026-09-20T09:56:07Z
 
 ### Git
 - Branch: `main`
-- Head: `8d051d3152b5`
-- Commit date: 2026-09-20T11:48:13+02:00
-- Commit: feat: add controlled SQLite to PostgreSQL Redis migration
-- Tracked files: 491
+- Head: `20e75ae29c85`
+- Commit date: 2026-09-20T11:55:56+02:00
+- Commit: feat: add redacted legacy secret migration into encrypted vault
+- Tracked files: 495
 
 ### Recently changed files
-- `PRODUCTION_MIGRATION.md`
+- `.env.example`
 - `README.md`
+- `VAULT_MIGRATION.md`
+- `backend/app/vault_migration.py`
+- `backend/tests/test_vault_migration.py`
+- `PRODUCTION_MIGRATION.md`
 - `backend/app/production_migration.py`
 - `backend/tests/test_production_migration.py`
 - `backend/app/deployment_preflight.py`
@@ -48,8 +52,6 @@ Generated: 2026-09-20T09:48:24Z
 - `backend/tests/test_surface_confidence.py`
 - `frontend/app.css`
 - `frontend/app.js`
-- `frontend/index.html`
-- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`

@@ -187,6 +187,7 @@ backend/
     validation_state.py
     validator.py
     vault_cli.py
+    vault_migration.py
     worker_audit.py
     worker_service.py
     worker_watchdog.py
@@ -363,6 +364,7 @@ backend/
     test_totp_auth.py
     test_validation_state.py
     test_validator.py
+    test_vault_migration.py
     test_watchdog_observability.py
     test_worker_concurrency.py
     test_worker_job_provenance.py
@@ -9217,6 +9219,111 @@ args = parser.parse_args()
 result = rekey_vault()
 ````
 
+## File: backend/app/vault_migration.py
+````python
+_STATIC_MAPPINGS: tuple[tuple[str, str], ...] = (
+_BROWSER_PREFIX = "XBOW_BROWSER_SECRET_"
+⋮----
+class VaultMigrationError(RuntimeError)
+⋮----
+def _safe_secret_file(path_value: str) -> str
+⋮----
+path = Path(path_value)
+⋮----
+stat = path.stat()
+⋮----
+value = path.read_text(encoding="utf-8").strip()
+⋮----
+def _legacy_sources() -> dict[str, tuple[str, str]]
+⋮----
+"""Return vault_name -> (source_name, value) without exposing values externally."""
+result: dict[str, tuple[str, str]] = {}
+⋮----
+inline_api = (os.getenv("XBOW_API_TOKEN") or "").strip()
+api_file = (os.getenv("XBOW_API_TOKEN_FILE") or "").strip()
+⋮----
+value = os.getenv(env_name)
+⋮----
+suffix = env_name.removeprefix(_BROWSER_PREFIX).strip().lower()
+⋮----
+def _vault_key_file() -> Path
+⋮----
+inline = (os.getenv("XBOW_VAULT_MASTER_KEY") or "").strip()
+raw = (os.getenv("XBOW_VAULT_MASTER_KEY_FILE") or "").strip()
+⋮----
+path = Path(raw)
+⋮----
+def ensure_master_key_file() -> dict[str, Any]
+⋮----
+path = _vault_key_file()
+⋮----
+existing = path.read_text(encoding="utf-8").strip()
+decoded = base64.urlsafe_b64decode(existing.encode("ascii"))
+⋮----
+encoded = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode("ascii")
+⋮----
+def _existing_matches(name: str, value: str) -> bool | None
+⋮----
+current = get_secret(name)
+⋮----
+def plan_vault_migration() -> dict[str, Any]
+⋮----
+sources = _legacy_sources()
+entries: list[dict[str, Any]] = []
+blockers: list[str] = []
+⋮----
+match = _existing_matches(vault_name, value)
+⋮----
+status = "conflict"
+⋮----
+status = "already_migrated"
+⋮----
+status = "ready"
+⋮----
+def apply_vault_migration() -> dict[str, Any]
+⋮----
+key_state = ensure_master_key_file()
+plan = plan_vault_migration()
+⋮----
+migrated: list[str] = []
+already: list[str] = []
+source_names: list[str] = []
+⋮----
+def rewrite_env_file(path_value: str) -> dict[str, Any]
+⋮----
+"""Remove migrated legacy secret assignments and enable vault atomically."""
+⋮----
+original = path.read_text(encoding="utf-8")
+⋮----
+# Verify every source value is already present in the vault before deleting anything.
+⋮----
+names = {source for source, _value in sources.values()}
+⋮----
+key_file = str(_vault_key_file())
+⋮----
+kept: list[str] = []
+⋮----
+stripped = line.strip()
+⋮----
+name = stripped.split("=", 1)[0].strip()
+⋮----
+rendered = "\n".join(kept).rstrip() + "\n"
+tmp = path.with_name(path.name + ".vault-migrate.tmp")
+backup = path.with_name(path.name + ".pre-vault.bak")
+⋮----
+def main() -> int
+⋮----
+parser = argparse.ArgumentParser(
+⋮----
+args = parser.parse_args()
+⋮----
+result = plan_vault_migration()
+⋮----
+result = apply_vault_migration()
+⋮----
+result = rewrite_env_file(args.env_file)
+````
+
 ## File: backend/app/worker_audit.py
 ````python
 _AUDIT_FIELDS = {
@@ -16040,6 +16147,49 @@ result = safe_http_probe(campaign(), finding(endpoint="/account"))
 def test_invalid_differential_validation_gate_fails_closed_before_network(monkeypatch)
 ````
 
+## File: backend/tests/test_vault_migration.py
+````python
+def _master_key() -> str
+⋮----
+def _configure(monkeypatch, tmp_path)
+⋮----
+key_file = tmp_path / "master.key"
+⋮----
+def _clear_sources(monkeypatch)
+⋮----
+def test_plan_is_redacted(monkeypatch, tmp_path)
+⋮----
+result = plan_vault_migration()
+⋮----
+rendered = str(result)
+⋮----
+def test_apply_migrates_static_and_browser_secrets(monkeypatch, tmp_path)
+⋮----
+result = apply_vault_migration()
+⋮----
+def test_plan_blocks_conflicting_existing_vault_entry(monkeypatch, tmp_path)
+⋮----
+def test_api_token_file_is_supported(monkeypatch, tmp_path)
+⋮----
+token_file = tmp_path / "api.token"
+⋮----
+def test_conflicting_api_token_sources_fail_closed(monkeypatch, tmp_path)
+⋮----
+def test_inline_master_key_is_rejected(monkeypatch, tmp_path)
+⋮----
+def test_rewrite_env_requires_verified_vault_values(monkeypatch, tmp_path)
+⋮----
+key_file = _configure(monkeypatch, tmp_path)
+⋮----
+env_file = tmp_path / ".env"
+⋮----
+result = rewrite_env_file(str(env_file))
+⋮----
+rendered = env_file.read_text(encoding="utf-8")
+⋮----
+def test_rewrite_env_removes_browser_secret_assignments(monkeypatch, tmp_path)
+````
+
 ## File: backend/tests/test_watchdog_observability.py
 ````python
 class Queue
@@ -17511,6 +17661,10 @@ This is descriptive only: confidence never changes scope, authorization, task cr
 The recon prioritizer can now use surface confidence as a **damping signal**. High-confidence observations preserve the full bounded diff/history/temporal ordering boost, while low-confidence observations reduce that boost instead of amplifying uncertain data.
 
 The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
+
+## Vault migration
+
+Legacy server-side credentials can be moved into the encrypted vault with the redacted migration workflow documented in [VAULT_MIGRATION.md](VAULT_MIGRATION.md). The migration never prints secret values, verifies every encrypted write before legacy cleanup, and keeps vault enablement as a separate fail-closed cutover step.
 
 ## Production migration
 

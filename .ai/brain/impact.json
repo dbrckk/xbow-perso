@@ -1,242 +1,168 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "51f19b84532563971851353ca2a465612851644b",
-  "head": "8d051d3152b5f305a54e2683e8ac17767d549fb9",
+  "base": "8d051d3152b5f305a54e2683e8ac17767d549fb9",
+  "head": "20e75ae29c85e7cd0b7db1dc16f7487c88e2e7a9",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "PRODUCTION_MIGRATION.md",
-      "status": "A"
+      "path": ".env.example",
+      "status": "M"
     },
     {
       "path": "README.md",
       "status": "M"
     },
     {
-      "path": "backend/app/production_migration.py",
+      "path": "VAULT_MIGRATION.md",
       "status": "A"
     },
     {
-      "path": "backend/tests/test_production_migration.py",
+      "path": "backend/app/vault_migration.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/tests/test_vault_migration.py",
       "status": "A"
     }
   ],
   "changed_source_files": [
-    "backend/app/production_migration.py",
-    "backend/tests/test_production_migration.py"
+    "backend/app/vault_migration.py",
+    "backend/tests/test_vault_migration.py"
   ],
   "impacted_files": [
-    "backend/app/production_migration.py",
-    "backend/tests/test_production_migration.py"
+    "backend/app/vault_migration.py",
+    "backend/tests/test_vault_migration.py"
   ],
   "impacted_symbols": [
     {
-      "name": "ProductionMigrationError",
+      "name": "VaultMigrationError",
       "kind": "class",
-      "file": "backend/app/production_migration.py",
-      "line": 91
+      "file": "backend/app/vault_migration.py",
+      "line": 26
     },
     {
-      "name": "_bool_env",
+      "name": "_safe_secret_file",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 95
+      "file": "backend/app/vault_migration.py",
+      "line": 30
     },
     {
-      "name": "_source_path",
+      "name": "_legacy_sources",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 104
+      "file": "backend/app/vault_migration.py",
+      "line": 48
     },
     {
-      "name": "_artifact_root",
+      "name": "_vault_key_file",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 111
+      "file": "backend/app/vault_migration.py",
+      "line": 77
     },
     {
-      "name": "_database_url",
+      "name": "ensure_master_key_file",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 118
+      "file": "backend/app/vault_migration.py",
+      "line": 90
     },
     {
-      "name": "_redis_url",
+      "name": "_existing_matches",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 125
+      "file": "backend/app/vault_migration.py",
+      "line": 122
     },
     {
-      "name": "_connect_source",
+      "name": "plan_vault_migration",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
+      "file": "backend/app/vault_migration.py",
       "line": 132
     },
     {
-      "name": "_table_exists",
+      "name": "apply_vault_migration",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 139
+      "file": "backend/app/vault_migration.py",
+      "line": 166
     },
     {
-      "name": "_source_counts",
+      "name": "rewrite_env_file",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 147
-    },
-    {
-      "name": "_queue_status",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 163
-    },
-    {
-      "name": "_verify_artifacts",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 174
-    },
-    {
-      "name": "_initialize_targets",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 197
-    },
-    {
-      "name": "_postgres_counts",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 207
-    },
-    {
-      "name": "_target_redis_count",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 221
-    },
-    {
-      "name": "plan_migration",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 225
-    },
-    {
-      "name": "_backup_sqlite",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 272
-    },
-    {
-      "name": "_copy_postgres",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 289
-    },
-    {
-      "name": "_timestamp_score",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 311
-    },
-    {
-      "name": "_copy_redis_jobs",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 320
-    },
-    {
-      "name": "_clear_targets",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 371
-    },
-    {
-      "name": "apply_migration",
-      "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 386
+      "file": "backend/app/vault_migration.py",
+      "line": 199
     },
     {
       "name": "main",
       "kind": "function",
-      "file": "backend/app/production_migration.py",
-      "line": 443
+      "file": "backend/app/vault_migration.py",
+      "line": 272
     },
     {
-      "name": "_FakePostgres",
-      "kind": "class",
-      "file": "backend/tests/test_production_migration.py",
+      "name": "_master_key",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
       "line": 17
     },
     {
-      "name": "health",
+      "name": "_configure",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 18
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 21
     },
     {
-      "name": "_FakeQueue",
-      "kind": "class",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 22
+      "name": "_clear_sources",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 32
     },
     {
-      "name": "health",
+      "name": "test_plan_is_redacted",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 23
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 50
     },
     {
-      "name": "stats",
+      "name": "test_apply_migrates_static_and_browser_secrets",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 26
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 66
     },
     {
-      "name": "_campaign",
+      "name": "test_plan_blocks_conflicting_existing_vault_entry",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 39
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 90
     },
     {
-      "name": "_configure_source",
+      "name": "test_api_token_file_is_supported",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 59
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 102
     },
     {
-      "name": "test_plan_reports_source_counts_without_exposing_payloads",
+      "name": "test_conflicting_api_token_sources_fail_closed",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 71
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 117
     },
     {
-      "name": "test_plan_blocks_running_jobs",
+      "name": "test_inline_master_key_is_rejected",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 113
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 130
     },
     {
-      "name": "test_plan_blocks_nonempty_targets",
+      "name": "test_rewrite_env_requires_verified_vault_values",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 151
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 139
     },
     {
-      "name": "test_artifact_verification_detects_tampering",
+      "name": "test_rewrite_env_removes_browser_secret_assignments",
       "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 183
-    },
-    {
-      "name": "test_artifact_verification_accepts_matching_content",
-      "kind": "function",
-      "file": "backend/tests/test_production_migration.py",
-      "line": 208
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 164
     }
   ],
   "selected_tests": [
-    "backend/tests/test_production_migration.py"
+    "backend/tests/test_vault_migration.py"
   ]
 }
