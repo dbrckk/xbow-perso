@@ -228,3 +228,131 @@ def test_total_priority_boost_is_bounded_to_twenty_points():
 
     assert result.adjustments[0].boost == 20
     assert result.tasks[0].priority == 80
+
+
+def test_temporal_novelty_favors_never_seen_surface_over_returning_churn():
+    original = [task("map_endpoints", 70)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 1,
+            "counts_by_kind": {
+                "endpoint": {"added": 1, "removed": 0},
+                "asset": {"added": 0, "removed": 0},
+            },
+        },
+    }
+    memory = {
+        "delta": {
+            "added": [{"kind": "endpoint", "value": "https://app.example.com/feature"}],
+        },
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/feature",
+                "campaign_count": 1,
+            }
+        ],
+    }
+    new_temporal = {
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/feature",
+                "classification": "new",
+                "presence_ratio": 0.25,
+            }
+        ]
+    }
+    returning_temporal = {
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/feature",
+                "classification": "returning",
+                "presence_ratio": 0.75,
+            }
+        ]
+    }
+
+    new_result = prioritize_recon_tasks(original, diff, memory, new_temporal)
+    returning_result = prioritize_recon_tasks(original, diff, memory, returning_temporal)
+
+    assert new_result.adjustments[0].temporal_boost > returning_result.adjustments[0].temporal_boost
+    assert new_result.tasks[0].priority >= returning_result.tasks[0].priority
+
+
+def test_intermittent_surface_has_low_temporal_weight():
+    original = [task("browser_observe", 60)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 1,
+            "counts_by_kind": {
+                "endpoint": {"added": 1, "removed": 0},
+                "form": {"added": 0, "removed": 0},
+                "technology": {"added": 0, "removed": 0},
+            },
+        },
+    }
+    temporal = {
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": "https://app.example.com/beta",
+                "classification": "intermittent",
+                "presence_ratio": 0.6,
+            }
+        ]
+    }
+
+    result = prioritize_recon_tasks(original, diff, None, temporal)
+
+    assert result.adjustments[0].temporal_boost <= 1
+
+
+def test_temporal_scoring_never_breaks_total_boost_cap():
+    original = [task("browser_observe", 60)]
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 100,
+            "counts_by_kind": {
+                "endpoint": {"added": 100, "removed": 0},
+                "form": {"added": 100, "removed": 0},
+                "technology": {"added": 100, "removed": 0},
+            },
+        },
+    }
+    memory = {
+        "delta": {
+            "added": [
+                {"kind": "endpoint", "value": f"https://app.example.com/{i}"}
+                for i in range(20)
+            ],
+        },
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": f"https://app.example.com/{i}",
+                "campaign_count": 1,
+            }
+            for i in range(20)
+        ],
+    }
+    temporal = {
+        "nodes": [
+            {
+                "kind": "endpoint",
+                "value": f"https://app.example.com/{i}",
+                "classification": "new",
+                "presence_ratio": 0.1,
+            }
+            for i in range(20)
+        ]
+    }
+
+    result = prioritize_recon_tasks(original, diff, memory, temporal)
+
+    assert result.adjustments[0].boost == 20
+    assert result.tasks[0].priority == 80
