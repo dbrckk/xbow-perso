@@ -191,6 +191,12 @@ It is explicitly forbidden from creating tasks, rewriting targets, increasing re
 
 The advisory recon-plan endpoint exposes the audit metadata as `diff_priority`; orchestrated campaigns use the same bounded ordering before shared swarm budgets are allocated.
 
+## Historical recon scoring
+
+Diff-prioritized recon also uses bounded historical frequency from Target Memory. Newly observed surface receives a small novelty bonus, while an item that has appeared in many prior campaigns contributes progressively less historical weight.
+
+Historical scoring is intentionally weak relative to the current surface diff: the diff component is capped at +15 priority points, historical novelty at +5, and the combined ordering boost at +20. This still changes **ordering only**. It cannot create tasks, increase request budgets, rewrite targets, change allowed methods, or expand scope.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.

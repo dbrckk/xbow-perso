@@ -169,7 +169,7 @@ def _intelligence_context(
     )
     target_memory = build_target_memory(store, campaign.model_dump(mode="json"))
     surface_diff = build_surface_diff_intelligence(target_memory)
-    recon_priority = prioritize_recon_tasks(recon_plan, surface_diff)
+    recon_priority = prioritize_recon_tasks(recon_plan, surface_diff, target_memory)
     swarm = coordinate_recon_swarm(list(recon_priority.tasks))
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)

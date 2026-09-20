@@ -191,7 +191,7 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
     store = storage()
     memory = build_target_memory(store, campaign.model_dump(mode="json"))
     surface_diff = build_surface_diff_intelligence(memory)
-    priority = prioritize_recon_tasks(tasks, surface_diff)
+    priority = prioritize_recon_tasks(tasks, surface_diff, memory)
 
     return {
         "campaign_id": campaign.id,
