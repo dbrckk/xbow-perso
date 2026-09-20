@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:56:00Z
+Generated: 2026-09-20T11:22:39Z
 
 ### Git
 - Branch: `main`
-- Head: `36a4ce63371b`
-- Commit date: 2026-09-20T12:55:48+02:00
-- Commit: fix: make blocked migration plans fail the shell command
+- Head: `bec9251e57e5`
+- Commit date: 2026-09-20T13:22:29+02:00
+- Commit: fix: preserve TLS control network during mobile DB preflight
 - Tracked files: 506
 
 ### Recently changed files
+- `scripts/mobile-production-cutover.sh`
+- `scripts/mobile-production-preflight.sh`
 - `backend/app/production_migration.py`
 - `backend/app/vault_migration.py`
 - `backend/tests/test_production_migration.py`
@@ -41,11 +43,8 @@ Generated: 2026-09-20T10:56:00Z
 - `VAULT_MIGRATION.md`
 - `scripts/mobile-vault-cutover.sh`
 - `scripts/mobile-vault-rollback.sh`
-- `scripts/mobile-production-cutover.sh`
-- `scripts/mobile-production-preflight.sh`
 - `scripts/mobile-production-update.sh`
 - `scripts/mobile-production-status.sh`
-- `README.md`
 
 ### Project signals
 - `pyproject.toml`

@@ -1,16 +1,14 @@
 # Change impact
 
-Base: 23ba48aa315c57b29e82ff72a256e3b19630f896
-Head: 36a4ce63371b2375fdea31f14b7e24d108ac9183
+Base: 61d2cad8f7e6fb47d2142d8cae89c3c08767fd83
+Head: bec9251e57e57d4f3c2665b2c64274e5b8ccb9b9
 
 ## Changed files
-- M backend/app/production_migration.py
-- M backend/app/vault_migration.py
-- M backend/tests/test_production_migration.py
-- M backend/tests/test_vault_migration.py
+- M scripts/mobile-production-cutover.sh
+- M scripts/mobile-production-preflight.sh
 
 ## Affected areas
-- backend
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.
