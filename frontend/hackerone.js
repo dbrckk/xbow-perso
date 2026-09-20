@@ -1742,11 +1742,20 @@
     setQuickState('profil mémorisé','ok');
   }
 
-  function batchProgramHasSavedProfile(handle){
+  function serverProgramHasSavedProfile(handle){
     const prefix=String(handle||'')+'@';
+    return Object.keys(serverReviewProfiles).some(key=>key.startsWith(prefix));
+  }
+
+  function localProgramHasSavedProfile(handle){
+    const prefix=String(handle||'')+'@';
+    return Object.keys(quickProfiles()).some(key=>key.startsWith(prefix));
+  }
+
+  function batchProgramHasSavedProfile(handle){
     return (
-      Object.keys(quickProfiles()).some(key=>key.startsWith(prefix)) ||
-      Object.keys(serverReviewProfiles).some(key=>key.startsWith(prefix))
+      serverProgramHasSavedProfile(handle) ||
+      localProgramHasSavedProfile(handle)
     );
   }
 
@@ -1805,7 +1814,11 @@
           String(program.handle||''),
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
-          batchProgramHasSavedProfile(program.handle)?'profil mémorisé':'1re revue requise'
+          serverProgramHasSavedProfile(program.handle)
+            ?'profil serveur'
+            :(localProgramHasSavedProfile(program.handle)
+              ?'profil local — à resauvegarder'
+              :'1re revue requise')
         ];
         meta.textContent=parts.join(' · ');
         info.append(titleRow,meta);
@@ -1857,7 +1870,7 @@
   function selectReadyBatchProfiles(){
     batchSelectedHandles=new Set(
       batchCatalogPrograms()
-        .filter(program=>batchProgramHasSavedProfile(program.handle))
+        .filter(program=>serverProgramHasSavedProfile(program.handle))
         .slice(0,20)
         .map(program=>String(program.handle||''))
     );
@@ -2003,32 +2016,19 @@
     if(!handles.length)return;
     button.disabled=true;
     try{
-      const campaigns=[];
-      const missing=[];
-      el('h1BatchSummary').textContent='Vérification des fingerprints sélectionnés…';
-      for(const handle of handles){
-        try{
-          campaigns.push(await batchPayloadForHandle(handle));
-        }catch(error){
-          missing.push(error.message);
-        }
-      }
-      if(missing.length){
-        throw new Error(
-          'Lot non lancé. Revue requise pour : '+missing.join(' | ')
-        );
-      }
-      const batch=await api('/imports/hackerone/batches/launch',{
+      el('h1BatchSummary').textContent=
+        'Vérification serveur des fingerprints et profils mémorisés…';
+      const batch=await api('/imports/hackerone/batches/launch-reviewed',{
         method:'POST',
         body:JSON.stringify({
           mode:String(el('h1BatchMode').value||'sequential'),
-          campaigns
+          handles
         })
       });
       renderBatchStatus(batch);
       startBatchMonitor(batch.id);
       setLauncherStatus(
-        'Lot HackerOne enregistré côté serveur. Il continue même si le dashboard est fermé.',
+        'Lot HackerOne vérifié et enregistré côté serveur. Il continue même si le dashboard est fermé.',
         'ok'
       );
     }catch(error){
