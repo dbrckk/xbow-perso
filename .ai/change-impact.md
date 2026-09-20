@@ -1,28 +1,23 @@
 # Change impact
 
-Base: e6015e483e208368c90afcd838b6abc872d65310
-Head: eaea8fb224ecb3be32ada59598b0113f8c97d97b
+Base: 7bba4f2484efbeed5e1f94a384034b1fd0d2d81f
+Head: 5bd86efb9bac8334966468ba6dbdc38c3f554006
 
 ## Changed files
+- M .github/workflows/ci.yml
 - M README.md
-- M backend/app/hackerone_api.py
-- A backend/app/hackerone_batch.py
-- M backend/app/main.py
-- M backend/app/postgres_storage.py
-- M backend/app/storage_core.py
-- M backend/app/worker_service.py
-- A backend/tests/test_hackerone_batch.py
-- A backend/tests/test_hackerone_batch_api.py
-- M backend/tests/test_storage.py
-- M frontend/app.css
-- M frontend/hackerone.js
-- M frontend/index.html
-- M frontend/sw.js
+- M backend/app/hackerone_live_readiness.py
+- M backend/tests/test_hackerone_live_readiness.py
+- A scripts/mobile-disable-hackerone-nuclei.sh
+- A scripts/mobile-enable-hackerone-nuclei.sh
+- M scripts/mobile-production-status.sh
+- M scripts/mobile-production-update.sh
 
 ## Affected areas
+- .github
 - (root)
 - backend
-- frontend
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

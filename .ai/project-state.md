@@ -22,17 +22,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T14:58:54Z
+Generated: 2026-09-20T15:12:31Z
 
 ### Git
 - Branch: `main`
-- Head: `eaea8fb224ec`
-- Commit date: 2026-09-20T16:58:42+02:00
-- Commit: feat: add persistent multi-bounty HackerOne batch queue
-- Tracked files: 509
+- Head: `5bd86efb9bac`
+- Commit date: 2026-09-20T17:12:20+02:00
+- Commit: feat: add persistent HackerOne Nuclei production profile
+- Tracked files: 511
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
 - `README.md`
+- `backend/app/hackerone_live_readiness.py`
+- `backend/tests/test_hackerone_live_readiness.py`
+- `scripts/mobile-disable-hackerone-nuclei.sh`
+- `scripts/mobile-enable-hackerone-nuclei.sh`
+- `scripts/mobile-production-status.sh`
+- `scripts/mobile-production-update.sh`
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_batch.py`
 - `backend/app/main.py`
@@ -45,10 +52,6 @@ Generated: 2026-09-20T14:58:54Z
 - `frontend/app.css`
 - `frontend/hackerone.js`
 - `frontend/index.html`
-- `frontend/sw.js`
-- `backend/app/hackerone_scope_import.py`
-- `backend/tests/test_hackerone_client.py`
-- `scripts/mobile-vault-cutover.sh`
 
 ### Project signals
 - `pyproject.toml`

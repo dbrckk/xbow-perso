@@ -384,6 +384,8 @@ frontend/
   sw.js
 scripts/
   bootstrap-mobile-ubuntu.sh
+  mobile-disable-hackerone-nuclei.sh
+  mobile-enable-hackerone-nuclei.sh
   mobile-production-cutover.sh
   mobile-production-preflight.sh
   mobile-production-rollback.sh
@@ -17106,6 +17108,148 @@ echo "Do not enable active scans until the exact HackerOne program policy/scope 
 echo "Next: configure HTTPS/private access, HackerOne credentials, then use the PWA preflight."
 ````
 
+## File: scripts/mobile-disable-hackerone-nuclei.sh
+````bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+INSTALL_DIR="${XBOW_INSTALL_DIR:-/opt/xbow-perso}"
+LIVE_PROFILE_FILE="${XBOW_LIVE_SCANNER_PROFILE_FILE:-/root/xbow-live-scanner.env}"
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Run with sudo: sudo bash $0" >&2
+  exit 1
+fi
+if [ ! -d "$INSTALL_DIR/.git" ] || [ ! -f "$INSTALL_DIR/.env" ]; then
+  echo "xbow-perso installation not found at $INSTALL_DIR" >&2
+  exit 1
+fi
+
+rm -f "$LIVE_PROFILE_FILE"
+
+echo "=== DISARM PERSISTENT NUCLEI PROFILE ==="
+bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
+
+echo
+echo "PERSISTENT HACKERONE NUCLEI PROFILE DISARMED"
+echo "Production is back on the fail-safe .env baseline."
+````
+
+## File: scripts/mobile-enable-hackerone-nuclei.sh
+````bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+INSTALL_DIR="${XBOW_INSTALL_DIR:-/opt/xbow-perso}"
+SECRETS_FILE="${XBOW_PRODUCTION_SECRETS_FILE:-/root/xbow-production-secrets.env}"
+LIVE_PROFILE_FILE="${XBOW_LIVE_SCANNER_PROFILE_FILE:-/root/xbow-live-scanner.env}"
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Run with sudo: sudo bash $0" >&2
+  exit 1
+fi
+if [ ! -d "$INSTALL_DIR/.git" ] || [ ! -f "$INSTALL_DIR/.env" ]; then
+  echo "xbow-perso installation not found at $INSTALL_DIR" >&2
+  exit 1
+fi
+if [ ! -f "$SECRETS_FILE" ]; then
+  echo "Production secrets file not found: $SECRETS_FILE" >&2
+  exit 1
+fi
+
+cd "$INSTALL_DIR"
+chmod 600 "$SECRETS_FILE"
+
+read_env_value() {
+  local key="$1"
+  grep -E "^[[:space:]]*${key}=" .env | tail -n1 | cut -d= -f2- || true
+}
+
+require_baseline_gate() {
+  local key="$1"
+  local expected="$2"
+  local actual
+  actual="$(read_env_value "$key" | tr '[:upper:]' '[:lower:]')"
+  if [ "$actual" != "$expected" ]; then
+    echo "SAFE-BASELINE BLOCK: $key in .env must remain $expected" >&2
+    exit 1
+  fi
+}
+
+require_baseline_gate "DRY_RUN" "true"
+require_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
+require_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
+require_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
+
+# shellcheck disable=SC1090
+. "$SECRETS_FILE"
+: "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
+: "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
+
+export XBOW_POSTGRES_PASSWORD
+export XBOW_REDIS_PASSWORD
+export XBOW_POSTGRES_DB="${XBOW_POSTGRES_DB:-xbow}"
+export XBOW_POSTGRES_USER="${XBOW_POSTGRES_USER:-xbow}"
+export XBOW_DATABASE_URL="postgresql://${XBOW_POSTGRES_USER}:${XBOW_POSTGRES_PASSWORD}@postgres:5432/${XBOW_POSTGRES_DB}"
+export XBOW_REDIS_URL="redis://:${XBOW_REDIS_PASSWORD}@redis:6379/0"
+
+COMPOSE=(
+  docker compose
+  -f docker-compose.yml
+  -f docker-compose.distributed.yml
+  -f docker-compose.tls.yml
+)
+
+echo "=== BACKEND READINESS ==="
+"${COMPOSE[@]}" exec -T backend python -m app.readiness
+
+echo "=== QUEUE MUST BE IDLE BEFORE ARMING ==="
+"${COMPOSE[@]}" exec -T backend python -c \
+  'from app.main import queue; s=queue().stats(); active=int(s["by_status"].get("queued",0))+int(s["by_status"].get("running",0)); assert active==0, s; print(s)'
+
+TMP_PROFILE="$(mktemp)"
+cleanup_tmp() {
+  rm -f "$TMP_PROFILE"
+}
+trap cleanup_tmp EXIT
+
+cat >"$TMP_PROFILE" <<'EOF'
+DRY_RUN=false
+XBOW_ENABLE_ACTIVE_SCANS=true
+XBOW_ENABLE_SCANNER_WORKER=true
+XBOW_ENABLE_NUCLEI=true
+XBOW_SCAN_ENGINES=nuclei
+XBOW_SCANNER_ALLOWED_ENGINES=nuclei
+XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
+XBOW_NUCLEI_ALLOWED_VERSION=3.11.1
+XBOW_MAX_AUTONOMOUS_RPS=2.0
+XBOW_ENABLE_HACKERONE_SUBMISSION=false
+EOF
+chmod 600 "$TMP_PROFILE"
+
+rollback() {
+  status=$?
+  trap - ERR
+  echo "Activation failed; restoring safe production mode." >&2
+  rm -f "$LIVE_PROFILE_FILE"
+  bash "$INSTALL_DIR/scripts/mobile-production-update.sh" || true
+  exit "$status"
+}
+trap rollback ERR
+
+install -m 600 "$TMP_PROFILE" "$LIVE_PROFILE_FILE"
+
+echo "=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ==="
+bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
+
+trap - ERR
+echo
+echo "PERSISTENT HACKERONE NUCLEI PROFILE ARMED"
+echo "The root-only profile survives normal production updates."
+echo "Every campaign still requires verified HackerOne scope/policy/fingerprint admission."
+echo "HackerOne report submission remains disabled."
+````
+
 ## File: scripts/mobile-production-cutover.sh
 ````bash
 #!/usr/bin/env bash
@@ -17519,6 +17663,7 @@ set -euo pipefail
 
 INSTALL_DIR="${XBOW_INSTALL_DIR:-/opt/xbow-perso}"
 SECRETS_FILE="${XBOW_PRODUCTION_SECRETS_FILE:-/root/xbow-production-secrets.env}"
+LIVE_PROFILE_FILE="${XBOW_LIVE_SCANNER_PROFILE_FILE:-/root/xbow-live-scanner.env}"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Run with sudo: sudo bash $0" >&2
@@ -17545,17 +17690,42 @@ export XBOW_POSTGRES_USER="${XBOW_POSTGRES_USER:-xbow}"
 export XBOW_DATABASE_URL="postgresql://${XBOW_POSTGRES_USER}:${XBOW_POSTGRES_PASSWORD}@postgres:5432/${XBOW_POSTGRES_DB}"
 export XBOW_REDIS_URL="redis://:${XBOW_REDIS_PASSWORD}@redis:6379/0"
 
+LIVE_MODE=false
+if [ -f "$LIVE_PROFILE_FILE" ]; then
+  chmod 600 "$LIVE_PROFILE_FILE"
+  # shellcheck disable=SC1090
+  . "$LIVE_PROFILE_FILE"
+  export DRY_RUN XBOW_ENABLE_ACTIVE_SCANS XBOW_ENABLE_SCANNER_WORKER
+  export XBOW_ENABLE_NUCLEI XBOW_SCAN_ENGINES XBOW_SCANNER_ALLOWED_ENGINES
+  export XBOW_SCANNER_SANDBOX_PROFILE XBOW_NUCLEI_ALLOWED_VERSION
+  export XBOW_ENABLE_HACKERONE_SUBMISSION
+  LIVE_MODE=true
+fi
+
 echo "=== SERVICES ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml ps
 
 echo "=== BACKEND READINESS ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml exec -T backend python -m app.readiness
 
-echo "=== SAFE GATES ==="
+echo "=== BASELINE GATES (.env) ==="
 for key in DRY_RUN XBOW_ENABLE_ACTIVE_SCANS XBOW_ENABLE_NUCLEI XBOW_ENABLE_HACKERONE_SUBMISSION; do
   value="$(grep -E "^[[:space:]]*${key}=" .env | tail -n1 | cut -d= -f2- || true)"
   printf '%s=%s\n' "$key" "$value"
 done
+
+echo "=== PERSISTENT SCANNER PROFILE ==="
+if [ "$LIVE_MODE" = "true" ]; then
+  echo "armed=true"
+  echo "engine=nuclei"
+  echo "submission=false"
+  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner ps scanner-worker
+  echo "=== SCANNER CAPABILITY ==="
+  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python -c \
+    'from app.runtime_capabilities import scanner_runtime_capability; print(scanner_runtime_capability())'
+else
+  echo "armed=false"
+fi
 ````
 
 ## File: scripts/mobile-production-update.sh
@@ -17565,6 +17735,7 @@ set -euo pipefail
 
 INSTALL_DIR="${XBOW_INSTALL_DIR:-/opt/xbow-perso}"
 SECRETS_FILE="${XBOW_PRODUCTION_SECRETS_FILE:-/root/xbow-production-secrets.env}"
+LIVE_PROFILE_FILE="${XBOW_LIVE_SCANNER_PROFILE_FILE:-/root/xbow-live-scanner.env}"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Run with sudo: sudo bash $0" >&2
@@ -17602,21 +17773,32 @@ read_env_value() {
   grep -E "^[[:space:]]*${key}=" .env | tail -n1 | cut -d= -f2- || true
 }
 
-require_gate() {
+require_baseline_gate() {
   local key="$1"
   local expected="$2"
   local actual
   actual="$(read_env_value "$key" | tr '[:upper:]' '[:lower:]')"
   if [ "$actual" != "$expected" ]; then
-    echo "SAFE-GATE BLOCK: $key must be $expected" >&2
+    echo "SAFE-BASELINE BLOCK: $key in .env must remain $expected" >&2
     exit 1
   fi
 }
 
-require_gate "DRY_RUN" "true"
-require_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
-require_gate "XBOW_ENABLE_NUCLEI" "false"
-require_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
+require_live_value() {
+  local key="$1"
+  local expected="$2"
+  local actual="${!key-}"
+  if [ "$actual" != "$expected" ]; then
+    echo "LIVE-PROFILE BLOCK: $key must be $expected" >&2
+    exit 1
+  fi
+}
+
+# The repository .env remains fail-safe even when the root-only live overlay is armed.
+require_baseline_gate "DRY_RUN" "true"
+require_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
+require_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
+require_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
@@ -17630,21 +17812,75 @@ export XBOW_POSTGRES_USER="${XBOW_POSTGRES_USER:-xbow}"
 export XBOW_DATABASE_URL="postgresql://${XBOW_POSTGRES_USER}:${XBOW_POSTGRES_PASSWORD}@postgres:5432/${XBOW_POSTGRES_DB}"
 export XBOW_REDIS_URL="redis://:${XBOW_REDIS_PASSWORD}@redis:6379/0"
 
+LIVE_MODE=false
+if [ -f "$LIVE_PROFILE_FILE" ]; then
+  chmod 600 "$LIVE_PROFILE_FILE"
+  # shellcheck disable=SC1090
+  . "$LIVE_PROFILE_FILE"
+  require_live_value "DRY_RUN" "false"
+  require_live_value "XBOW_ENABLE_ACTIVE_SCANS" "true"
+  require_live_value "XBOW_ENABLE_SCANNER_WORKER" "true"
+  require_live_value "XBOW_ENABLE_NUCLEI" "true"
+  require_live_value "XBOW_SCAN_ENGINES" "nuclei"
+  require_live_value "XBOW_SCANNER_ALLOWED_ENGINES" "nuclei"
+  require_live_value "XBOW_SCANNER_SANDBOX_PROFILE" "restricted-v1"
+  require_live_value "XBOW_NUCLEI_ALLOWED_VERSION" "3.11.1"
+  require_live_value "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
+
+  export DRY_RUN XBOW_ENABLE_ACTIVE_SCANS XBOW_ENABLE_SCANNER_WORKER
+  export XBOW_ENABLE_NUCLEI XBOW_SCAN_ENGINES XBOW_SCANNER_ALLOWED_ENGINES
+  export XBOW_SCANNER_SANDBOX_PROFILE XBOW_NUCLEI_ALLOWED_VERSION
+  export XBOW_ENABLE_HACKERONE_SUBMISSION
+  export XBOW_MAX_AUTONOMOUS_RPS="${XBOW_MAX_AUTONOMOUS_RPS:-2.0}"
+  LIVE_MODE=true
+else
+  export DRY_RUN=true
+  export XBOW_ENABLE_ACTIVE_SCANS=false
+  export XBOW_ENABLE_SCANNER_WORKER=false
+  export XBOW_ENABLE_NUCLEI=false
+  export XBOW_SCAN_ENGINES=nuclei
+  export XBOW_SCANNER_ALLOWED_ENGINES=nuclei
+  export XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
+  export XBOW_ENABLE_HACKERONE_SUBMISSION=false
+  unset XBOW_NUCLEI_ALLOWED_VERSION || true
+fi
+
 echo "=== UPDATE MAIN ==="
 git_as_owner fetch --prune origin
 git_as_owner checkout main
 git_as_owner reset --hard origin/main
 
-echo "=== VALIDATE ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml config --quiet
+COMPOSE=(
+  docker compose
+  -f docker-compose.yml
+  -f docker-compose.distributed.yml
+  -f docker-compose.tls.yml
+)
+if [ "$LIVE_MODE" = "true" ]; then
+  COMPOSE+=(--profile scanner)
+fi
 
-echo "=== DEPLOY SAFE PRODUCTION SERVICES ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml up -d --build \
-  postgres redis backend worker frontend tls-proxy
+echo "=== VALIDATE ==="
+"${COMPOSE[@]}" config --quiet
+
+if [ "$LIVE_MODE" = "true" ]; then
+  echo "=== DEPLOY PRODUCTION + PERSISTENT NUCLEI PROFILE ==="
+  "${COMPOSE[@]}" up -d --build \
+    postgres redis backend worker scanner-worker frontend tls-proxy
+else
+  echo "=== DEPLOY SAFE PRODUCTION SERVICES ==="
+  "${COMPOSE[@]}" up -d --build \
+    postgres redis backend worker frontend tls-proxy
+  docker compose \
+    -f docker-compose.yml \
+    -f docker-compose.distributed.yml \
+    -f docker-compose.tls.yml \
+    --profile scanner rm -sf scanner-worker >/dev/null 2>&1 || true
+fi
 
 echo "=== WAIT FOR BACKEND ==="
 for _ in $(seq 1 60); do
-  backend_id="$(docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml ps -q backend 2>/dev/null || true)"
+  backend_id="$("${COMPOSE[@]}" ps -q backend 2>/dev/null || true)"
   backend_health="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{end}}' "$backend_id" 2>/dev/null || true)"
   if [ "$backend_health" = "healthy" ]; then
     break
@@ -17652,19 +17888,33 @@ for _ in $(seq 1 60); do
   sleep 2
 done
 
-backend_id="$(docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml ps -q backend)"
+backend_id="$("${COMPOSE[@]}" ps -q backend)"
 backend_health="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{end}}' "$backend_id" 2>/dev/null || true)"
 if [ "$backend_health" != "healthy" ]; then
   echo "Backend failed health validation." >&2
-  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml ps
+  "${COMPOSE[@]}" ps
   exit 1
 fi
 
 echo "=== READINESS ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml exec -T backend python -m app.readiness
+"${COMPOSE[@]}" exec -T backend python -m app.readiness
+
+if [ "$LIVE_MODE" = "true" ]; then
+  echo "=== SCANNER CAPABILITY ==="
+  "${COMPOSE[@]}" exec -T backend python -c \
+    'from app.runtime_capabilities import scanner_runtime_capability; c=scanner_runtime_capability(); assert c["dispatch_ready"] and c["nuclei_enabled"] and c["nuclei_execution_intent"], c; print(c)'
+
+  echo "=== SCANNER SANDBOX ATTESTATION ==="
+  "${COMPOSE[@]}" exec -T scanner-worker python -c \
+    'from app.scanner_sandbox import require_scanner_sandbox; print(require_scanner_sandbox("nuclei").to_dict())'
+
+  echo "=== NUCLEI VERSION ==="
+  "${COMPOSE[@]}" exec -T scanner-worker sh -c \
+    'nuclei -version 2>&1 | grep -F "$XBOW_NUCLEI_ALLOWED_VERSION"'
+fi
 
 echo "=== SERVICES ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml ps
+"${COMPOSE[@]}" ps
 
 PUBLIC_HOST="$(read_env_value XBOW_PUBLIC_HOST)"
 if [ -n "$PUBLIC_HOST" ]; then
@@ -17673,8 +17923,14 @@ if [ -n "$PUBLIC_HOST" ]; then
 fi
 
 echo
-echo "SAFE PRODUCTION UPDATE COMPLETE"
-echo "No scanner, PentAGI, or HackerOne submission profile was started."
+if [ "$LIVE_MODE" = "true" ]; then
+  echo "PRODUCTION UPDATE COMPLETE — PERSISTENT NUCLEI PROFILE ARMED"
+  echo "Per-program scope/policy/fingerprint gates remain mandatory."
+  echo "HackerOne report submission remains disabled."
+else
+  echo "SAFE PRODUCTION UPDATE COMPLETE"
+  echo "No active scanner profile is armed."
+fi
 ````
 
 ## File: scripts/mobile-vault-cutover.sh
@@ -18896,6 +19152,28 @@ The HackerOne launcher includes an express-start profile for repeated bounty wor
 The express flow can restore the reviewer, verified rate limit, policy reference/date, automation/Safe Harbor confirmations, account constraints, notes and preferred primary URL. Compatible exact-domain/URL targets are also offered as browser suggestions. Secret credentials remain server-side in the encrypted vault.
 
 For repeat work, the browser can also remember the last selected HackerOne program, reload it automatically after API authentication, and automatically rerun the read-only rules preview when the exact saved fingerprint is unchanged. Advanced first-review controls collapse automatically for a reused profile. Human confirmation and the final launch remain explicit actions.
+
+## Persistent HackerOne Nuclei profile
+
+Active Nuclei execution can be armed once with the root-only production overlay:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh
+```
+
+The repository `.env` intentionally remains on the fail-safe baseline (`DRY_RUN=true`, active scans disabled, Nuclei disabled). The activation script writes a mode-0600 root-only overlay at `/root/xbow-live-scanner.env`, rebuilds the production backend/worker/scanner-worker with the reviewed Nuclei 3.11.1 sandbox profile, verifies backend readiness, scanner capability, Linux sandbox attestation, and the installed Nuclei version.
+
+Normal `mobile-production-update.sh` runs preserve that root-only live profile automatically. This removes repeated global scanner setup between bounty campaigns without weakening campaign admission: every HackerOne campaign must still pass its exact remote fingerprint, scope, policy, Safe Harbor, automation permission, target and rate checks before a scanner job can execute.
+
+The activation refuses to arm while queued/running jobs exist, so dry-run jobs cannot unexpectedly become live jobs. On activation failure it removes the live overlay and restores safe production mode.
+
+Disarm at any time with:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh
+```
+
+Direct HackerOne report submission remains disabled by this profile.
 
 ## HackerOne multi-bounty batches
 
