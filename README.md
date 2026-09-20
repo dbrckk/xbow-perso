@@ -205,6 +205,14 @@ For campaigns sharing the same target + authorization identity, xbow classifies 
 
 Only campaigns at or before the selected campaign timestamp are considered, preventing later observations from leaking into historical views. The profile is read-only and has no execution influence: it cannot expand scope, create recon tasks, alter request budgets, or authorize scanning.
 
+## Temporal novelty scoring
+
+The recon prioritizer can now use the temporal surface profile as a weak ordering signal. A surface that has never been observed before receives more attention than a returning or intermittent element that regularly appears and disappears across campaigns.
+
+The temporal component is deliberately bounded: it contributes at most +5 priority points and the combined diff + historical + temporal boost remains capped at +20. Stable, disappeared and historical-only surface contributes no temporal novelty boost.
+
+As with the other recon intelligence layers, this changes ordering only. It cannot create tasks, rewrite targets, increase request budgets, change allowed methods, expand scope, or authorize execution.
+
 ## Disaster recovery integrity
 
 Backups remain operator-managed. xbow-perso does not automatically restore PostgreSQL, Redis, or vault data.

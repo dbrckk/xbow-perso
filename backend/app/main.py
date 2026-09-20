@@ -392,6 +392,7 @@ def system_capabilities():
             "diff_prioritized_recon": "ordering_only",
             "historical_recon_scoring": "ordering_only",
             "temporal_surface_profile": "read_only",
+            "temporal_novelty_scoring": "ordering_only",
             "hypothesis_engine": "read_only",
             "finding_triage": "read_only",
             "evidence_quality_scoring": "read_only",
