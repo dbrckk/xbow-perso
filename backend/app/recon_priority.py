@@ -23,13 +23,16 @@ class ReconPriorityAdjustment:
     boost: int
     diff_boost: int
     history_boost: int
+    temporal_boost: int
     signals: tuple[str, ...]
     historical_signals: tuple[str, ...]
+    temporal_signals: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["signals"] = list(self.signals)
         payload["historical_signals"] = list(self.historical_signals)
+        payload["temporal_signals"] = list(self.temporal_signals)
         return payload
 
 
@@ -94,10 +97,48 @@ def _historical_kind_scores(target_memory: dict[str, Any] | None) -> dict[str, f
         scores[kind] = min(5.0, scores.get(kind, 0.0) + novelty)
     return scores
 
+
+
+_TEMPORAL_CLASS_WEIGHT = {
+    "new": 1.0,
+    "returning": 0.35,
+    "intermittent": 0.15,
+    "stable": 0.0,
+    "disappeared": 0.0,
+    "historical": 0.0,
+    "unknown": 0.0,
+}
+
+
+def _temporal_kind_scores(surface_temporal: dict[str, Any] | None) -> dict[str, float]:
+    if not surface_temporal:
+        return {}
+    scores: dict[str, float] = {}
+    for raw in list(surface_temporal.get("nodes") or [])[:500]:
+        kind = str(raw.get("kind") or "")
+        classification = str(raw.get("classification") or "unknown")
+        weight = _TEMPORAL_CLASS_WEIGHT.get(classification, 0.0)
+        if weight <= 0:
+            continue
+        try:
+            ratio = float(raw.get("presence_ratio") or 0.0)
+        except (TypeError, ValueError):
+            ratio = 0.0
+        ratio = max(0.0, min(1.0, ratio))
+        if classification == "new":
+            adjusted = weight
+        else:
+            # Returning/intermittent surface is expected churn; reduce its
+            # contribution further as its historical presence rises.
+            adjusted = weight * max(0.1, 1.0 - ratio)
+        scores[kind] = min(5.0, scores.get(kind, 0.0) + adjusted)
+    return scores
+
 def prioritize_recon_tasks(
     tasks: list[ReconTask],
     surface_diff: dict[str, Any],
     target_memory: dict[str, Any] | None = None,
+    surface_temporal: dict[str, Any] | None = None,
 ) -> ReconPriorityResult:
     """Reorder an already-authorized recon plan using historical change signals.
 
@@ -106,6 +147,7 @@ def prioritize_recon_tasks(
     """
     counts = _signal_counts(surface_diff)
     historical_scores = _historical_kind_scores(target_memory)
+    temporal_scores = _temporal_kind_scores(surface_temporal)
     baseline_available = bool(surface_diff.get("baseline_available"))
     changed_surface_count = max(
         0,
@@ -121,12 +163,17 @@ def prioritize_recon_tasks(
         diff_boost = min(15, signal_strength * 2) if baseline_available else 0
         history_strength = sum(historical_scores.get(kind, 0.0) for kind in signals)
         history_boost = min(5, int(round(history_strength))) if baseline_available else 0
-        boost = min(20, diff_boost + history_boost)
+        temporal_strength = sum(temporal_scores.get(kind, 0.0) for kind in signals)
+        temporal_boost = min(5, int(round(temporal_strength))) if baseline_available else 0
+        boost = min(20, diff_boost + history_boost + temporal_boost)
         effective = min(100, int(task.priority) + boost)
         reason = task.reason
         active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
         historical_active = tuple(
             kind for kind in signals if historical_scores.get(kind, 0.0) > 0
+        )
+        temporal_active = tuple(
+            kind for kind in signals if temporal_scores.get(kind, 0.0) > 0
         )
         if boost:
             details = []
@@ -134,11 +181,14 @@ def prioritize_recon_tasks(
                 details.append(f"diff +{diff_boost}")
             if history_boost:
                 details.append(f"history +{history_boost}")
+            if temporal_boost:
+                details.append(f"temporal +{temporal_boost}")
             reason = (
                 f"{task.reason}; recon-priority +{boost} "
                 f"({'; '.join(details)}"
                 + (f"; signals={', '.join(active)}" if active else "")
                 + (f"; novelty={', '.join(historical_active)}" if historical_active else "")
+                + (f"; temporal={', '.join(temporal_active)}" if temporal_active else "")
                 + ")"
             )
 
@@ -164,8 +214,10 @@ def prioritize_recon_tasks(
                 boost=boost,
                 diff_boost=diff_boost,
                 history_boost=history_boost,
+                temporal_boost=temporal_boost,
                 signals=active,
                 historical_signals=historical_active,
+                temporal_signals=temporal_active,
             )
         )
 
