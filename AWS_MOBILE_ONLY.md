@@ -193,3 +193,36 @@ It then updates `main`, validates the distributed Compose configuration, generat
 It does not start scanner services, does not perform the migration, and does not change any scan or HackerOne submission gate.
 
 Do not display, copy into chat, or screenshot `/root/xbow-production-secrets.env`.
+
+
+## Storage cutover from a phone
+
+Run the preflight first and confirm it ends with `PRE-FLIGHT COMPLETE`. When the migration plan is clean, the actual storage cutover is one command:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-production-cutover.sh
+```
+
+The cutover script refuses to run unless the four safe gates remain closed. It then:
+
+1. updates `main`;
+2. verifies PostgreSQL and Redis health;
+3. runs one final read-only migration plan;
+4. stops backend/worker/frontend/TLS and any optional worker that happens to be running;
+5. runs the quiesced SQLite → PostgreSQL/Redis migration;
+6. preserves the original SQLite source and migration backup;
+7. starts the distributed backend/worker/frontend/TLS stack **without scanner profiles**;
+8. waits for backend health and runs readiness;
+9. checks HTTPS when `XBOW_PUBLIC_HOST` is configured.
+
+If migration apply fails, the script automatically restarts the previous SQLite stack.
+
+If the migration succeeds but the distributed stack later fails validation, use:
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-production-rollback.sh
+```
+
+The rollback stops distributed application services and restarts the original SQLite application stack. It does not delete PostgreSQL/Redis data, so diagnosis or a later retry remains possible.
+
+The storage cutover does **not** migrate or enable the encrypted vault. Vault cutover remains a separate step after the distributed storage stack is verified.
