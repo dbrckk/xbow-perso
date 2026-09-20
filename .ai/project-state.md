@@ -22,18 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T11:22:39Z
+Generated: 2026-09-20T11:38:14Z
 
 ### Git
 - Branch: `main`
-- Head: `bec9251e57e5`
-- Commit date: 2026-09-20T13:22:29+02:00
-- Commit: fix: preserve TLS control network during mobile DB preflight
+- Head: `755e4ca6d2f8`
+- Commit date: 2026-09-20T13:38:01+02:00
+- Commit: fix: rebuild backend before migration helper commands
 - Tracked files: 506
 
 ### Recently changed files
 - `scripts/mobile-production-cutover.sh`
 - `scripts/mobile-production-preflight.sh`
+- `scripts/mobile-vault-cutover.sh`
 - `backend/app/production_migration.py`
 - `backend/app/vault_migration.py`
 - `backend/tests/test_production_migration.py`
@@ -41,10 +42,8 @@ Generated: 2026-09-20T11:22:39Z
 - `.github/workflows/ci.yml`
 - `AWS_MOBILE_ONLY.md`
 - `VAULT_MIGRATION.md`
-- `scripts/mobile-vault-cutover.sh`
 - `scripts/mobile-vault-rollback.sh`
 - `scripts/mobile-production-update.sh`
-- `scripts/mobile-production-status.sh`
 
 ### Project signals
 - `pyproject.toml`

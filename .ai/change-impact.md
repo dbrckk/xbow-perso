@@ -1,11 +1,12 @@
 # Change impact
 
-Base: 61d2cad8f7e6fb47d2142d8cae89c3c08767fd83
-Head: bec9251e57e57d4f3c2665b2c64274e5b8ccb9b9
+Base: ad71169de34f5c292ea4141ce2a5704e1fe3a44e
+Head: 755e4ca6d2f814e8260ff45cc313bd92ddd41ca2
 
 ## Changed files
 - M scripts/mobile-production-cutover.sh
 - M scripts/mobile-production-preflight.sh
+- M scripts/mobile-vault-cutover.sh
 
 ## Affected areas
 - scripts

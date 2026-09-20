@@ -220,6 +220,9 @@ git_as_owner fetch --prune origin
 git_as_owner checkout main
 git_as_owner reset --hard origin/main
 
+echo "=== BUILD CURRENT BACKEND IMAGE ==="
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml build backend
+
 echo "=== VALIDATE COMPOSE ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml config --quiet
 
@@ -414,6 +417,9 @@ echo "=== UPDATE ==="
 git_as_owner fetch --prune origin
 git_as_owner checkout main
 git_as_owner reset --hard origin/main
+
+echo "=== BUILD CURRENT BACKEND IMAGE ==="
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml build backend
 
 echo "=== COMPOSE VALIDATION ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml config --quiet
@@ -793,6 +799,9 @@ echo "=== UPDATE MAIN ==="
 git_as_owner fetch --prune origin
 git_as_owner checkout main
 git_as_owner reset --hard origin/main
+
+echo "=== BUILD CURRENT BACKEND IMAGE ==="
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml build backend
 
 echo "=== VERIFY DISTRIBUTED STORAGE ==="
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml config --quiet
