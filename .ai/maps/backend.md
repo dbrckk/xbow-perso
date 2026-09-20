@@ -8631,6 +8631,7 @@ result = rekey_vault()
 ```python
 _STATIC_MAPPINGS: tuple[tuple[str, str], ...] = (
 _BROWSER_PREFIX = "XBOW_BROWSER_SECRET_"
+_RELEVANT_STATIC_ENV = {
 ⋮----
 class VaultMigrationError(RuntimeError)
 ⋮----
@@ -8642,15 +8643,40 @@ stat = path.stat()
 ⋮----
 value = path.read_text(encoding="utf-8").strip()
 ⋮----
-def _legacy_sources() -> dict[str, tuple[str, str]]
+def _decode_env_value(raw: str) -> str
+⋮----
+value = raw.strip()
+⋮----
+value = value[1:-1]
+⋮----
+def _source_env_file(path_value: str) -> dict[str, str]
+⋮----
+text = path.read_text(encoding="utf-8")
+⋮----
+values: dict[str, str] = {}
+⋮----
+stripped = line.strip()
+⋮----
+stripped = stripped.removeprefix("export ").lstrip()
+⋮----
+name = name.strip()
+relevant = name in _RELEVANT_STATIC_ENV or name.startswith(_BROWSER_PREFIX)
+⋮----
+value = _decode_env_value(raw_value)
+existing = values.get(name)
+⋮----
+def _merged_source_environment(source_env_file: str | None = None) -> dict[str, str]
+⋮----
+def _legacy_sources(source_env_file: str | None = None) -> dict[str, tuple[str, str]]
 ⋮----
 """Return vault_name -> (source_name, value) without exposing values externally."""
+env = _merged_source_environment(source_env_file)
 result: dict[str, tuple[str, str]] = {}
 ⋮----
-inline_api = (os.getenv("XBOW_API_TOKEN") or "").strip()
-api_file = (os.getenv("XBOW_API_TOKEN_FILE") or "").strip()
+inline_api = (env.get("XBOW_API_TOKEN") or "").strip()
+api_file = (env.get("XBOW_API_TOKEN_FILE") or "").strip()
 ⋮----
-value = os.getenv(env_name)
+value = env.get(env_name)
 ⋮----
 suffix = env_name.removeprefix(_BROWSER_PREFIX).strip().lower()
 ⋮----
@@ -8661,12 +8687,18 @@ raw = (os.getenv("XBOW_VAULT_MASTER_KEY_FILE") or "").strip()
 ⋮----
 path = Path(raw)
 ⋮----
-def ensure_master_key_file() -> dict[str, Any]
+def _vault_path() -> Path
 ⋮----
-path = _vault_key_file()
+raw = (os.getenv("XBOW_VAULT_PATH") or "/data/secrets.vault.json").strip()
+⋮----
+def _validate_master_key_file(path: Path) -> None
 ⋮----
 existing = path.read_text(encoding="utf-8").strip()
 decoded = base64.urlsafe_b64decode(existing.encode("ascii"))
+⋮----
+def ensure_master_key_file() -> dict[str, Any]
+⋮----
+path = _vault_key_file()
 ⋮----
 encoded = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode("ascii")
 ⋮----
@@ -8674,13 +8706,21 @@ def _existing_matches(name: str, value: str) -> bool | None
 ⋮----
 current = get_secret(name)
 ⋮----
-def plan_vault_migration() -> dict[str, Any]
+def plan_vault_migration(source_env_file: str | None = None) -> dict[str, Any]
 ⋮----
-sources = _legacy_sources()
+key_path = _vault_key_file()
+vault_path = _vault_path()
+sources = _legacy_sources(source_env_file)
 entries: list[dict[str, Any]] = []
 blockers: list[str] = []
 ⋮----
+key_ready = key_path.exists()
+⋮----
 match = _existing_matches(vault_name, value)
+⋮----
+match = None
+⋮----
+status = "unverified"
 ⋮----
 status = "conflict"
 ⋮----
@@ -8688,22 +8728,20 @@ status = "already_migrated"
 ⋮----
 status = "ready"
 ⋮----
-def apply_vault_migration() -> dict[str, Any]
+def apply_vault_migration(source_env_file: str | None = None) -> dict[str, Any]
 ⋮----
 key_state = ensure_master_key_file()
-plan = plan_vault_migration()
+plan = plan_vault_migration(source_env_file)
 ⋮----
 migrated: list[str] = []
 already: list[str] = []
 source_names: list[str] = []
 ⋮----
-def rewrite_env_file(path_value: str) -> dict[str, Any]
-⋮----
 """Remove migrated legacy secret assignments and enable vault atomically."""
 ⋮----
 original = path.read_text(encoding="utf-8")
 ⋮----
-# Verify every source value is already present in the vault before deleting anything.
+sources = _legacy_sources(source_env_file or path_value)
 ⋮----
 names = {source for source, _value in sources.values()}
 ⋮----
@@ -8711,9 +8749,8 @@ key_file = str(_vault_key_file())
 ⋮----
 kept: list[str] = []
 ⋮----
-stripped = line.strip()
-⋮----
-name = stripped.split("=", 1)[0].strip()
+candidate = stripped.removeprefix("export ").lstrip()
+name = candidate.split("=", 1)[0].strip()
 ⋮----
 rendered = "\n".join(kept).rstrip() + "\n"
 tmp = path.with_name(path.name + ".vault-migrate.tmp")
@@ -8725,11 +8762,11 @@ parser = argparse.ArgumentParser(
 ⋮----
 args = parser.parse_args()
 ⋮----
-result = plan_vault_migration()
+result = plan_vault_migration(args.source_env_file)
 ⋮----
-result = apply_vault_migration()
+result = apply_vault_migration(args.source_env_file)
 ⋮----
-result = rewrite_env_file(args.env_file)
+result = rewrite_env_file(
 ```
 
 ## File: app/worker_audit.py
@@ -15596,6 +15633,25 @@ result = rewrite_env_file(str(env_file))
 rendered = env_file.read_text(encoding="utf-8")
 ⋮----
 def test_rewrite_env_removes_browser_secret_assignments(monkeypatch, tmp_path)
+⋮----
+def test_plan_allows_fresh_missing_master_key(monkeypatch, tmp_path)
+⋮----
+key_file = tmp_path / "fresh-master.key"
+⋮----
+def test_plan_blocks_existing_vault_without_master_key(monkeypatch, tmp_path)
+⋮----
+key_file = tmp_path / "missing-master.key"
+vault_file = tmp_path / "existing-vault.json"
+⋮----
+def test_source_env_file_supplies_legacy_values(monkeypatch, tmp_path)
+⋮----
+source = tmp_path / "legacy.env"
+⋮----
+result = apply_vault_migration(str(source))
+⋮----
+def test_source_env_file_conflict_with_process_env_fails_closed(monkeypatch, tmp_path)
+⋮----
+def test_source_env_file_requires_private_permissions(monkeypatch, tmp_path)
 ```
 
 ## File: tests/test_watchdog_observability.py

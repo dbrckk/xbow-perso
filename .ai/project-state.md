@@ -22,27 +22,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:39:25Z
+Generated: 2026-09-20T10:42:22Z
 
 ### Git
 - Branch: `main`
-- Head: `4dd6369f0faf`
-- Commit date: 2026-09-20T12:39:14+02:00
-- Commit: feat: add one-command mobile storage cutover and rollback
+- Head: `0d6021d76d09`
+- Commit date: 2026-09-20T12:42:11+02:00
+- Commit: fix: make vault migration safe for fresh mobile cutovers
 - Tracked files: 502
 
 ### Recently changed files
+- `README.md`
+- `VAULT_MIGRATION.md`
+- `backend/app/vault_migration.py`
+- `backend/tests/test_vault_migration.py`
 - `.github/workflows/ci.yml`
 - `AWS_MOBILE_ONLY.md`
 - `scripts/mobile-production-cutover.sh`
 - `scripts/mobile-production-rollback.sh`
 - `docker-compose.yml`
 - `scripts/mobile-production-preflight.sh`
-- `.env.example`
-- `README.md`
-- `VAULT_MIGRATION.md`
-- `backend/app/vault_migration.py`
-- `backend/tests/test_vault_migration.py`
 
 ### Project signals
 - `pyproject.toml`

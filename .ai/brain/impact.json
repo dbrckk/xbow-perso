@@ -1,29 +1,224 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "c97b6ebcf19965390569ae0abccde99dfba6c131",
-  "head": "4dd6369f0faf9d7293a07b907669c6c55e0006de",
+  "base": "4dd6369f0faf9d7293a07b907669c6c55e0006de",
+  "head": "0d6021d76d093f1e1d3695c11c682add729efc51",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/ci.yml",
+      "path": "README.md",
       "status": "M"
     },
     {
-      "path": "AWS_MOBILE_ONLY.md",
+      "path": "VAULT_MIGRATION.md",
       "status": "M"
     },
     {
-      "path": "scripts/mobile-production-cutover.sh",
-      "status": "A"
+      "path": "backend/app/vault_migration.py",
+      "status": "M"
     },
     {
-      "path": "scripts/mobile-production-rollback.sh",
-      "status": "A"
+      "path": "backend/tests/test_vault_migration.py",
+      "status": "M"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "backend/app/vault_migration.py",
+    "backend/tests/test_vault_migration.py"
+  ],
+  "impacted_files": [
+    "backend/app/vault_migration.py",
+    "backend/tests/test_vault_migration.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "VaultMigrationError",
+      "kind": "class",
+      "file": "backend/app/vault_migration.py",
+      "line": 32
+    },
+    {
+      "name": "_safe_secret_file",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 36
+    },
+    {
+      "name": "_decode_env_value",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 54
+    },
+    {
+      "name": "_source_env_file",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 61
+    },
+    {
+      "name": "_merged_source_environment",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 101
+    },
+    {
+      "name": "_legacy_sources",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 117
+    },
+    {
+      "name": "_vault_key_file",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 149
+    },
+    {
+      "name": "_vault_path",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 162
+    },
+    {
+      "name": "_validate_master_key_file",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 170
+    },
+    {
+      "name": "ensure_master_key_file",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 183
+    },
+    {
+      "name": "_existing_matches",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 206
+    },
+    {
+      "name": "plan_vault_migration",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 216
+    },
+    {
+      "name": "apply_vault_migration",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 266
+    },
+    {
+      "name": "rewrite_env_file",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 301
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "backend/app/vault_migration.py",
+      "line": 386
+    },
+    {
+      "name": "_master_key",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 17
+    },
+    {
+      "name": "_configure",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 21
+    },
+    {
+      "name": "_clear_sources",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 32
+    },
+    {
+      "name": "test_plan_is_redacted",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 50
+    },
+    {
+      "name": "test_apply_migrates_static_and_browser_secrets",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 66
+    },
+    {
+      "name": "test_plan_blocks_conflicting_existing_vault_entry",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 90
+    },
+    {
+      "name": "test_api_token_file_is_supported",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 102
+    },
+    {
+      "name": "test_conflicting_api_token_sources_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 117
+    },
+    {
+      "name": "test_inline_master_key_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 130
+    },
+    {
+      "name": "test_rewrite_env_requires_verified_vault_values",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 139
+    },
+    {
+      "name": "test_rewrite_env_removes_browser_secret_assignments",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 164
+    },
+    {
+      "name": "test_plan_allows_fresh_missing_master_key",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 184
+    },
+    {
+      "name": "test_plan_blocks_existing_vault_without_master_key",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 200
+    },
+    {
+      "name": "test_source_env_file_supplies_legacy_values",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 218
+    },
+    {
+      "name": "test_source_env_file_conflict_with_process_env_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 241
+    },
+    {
+      "name": "test_source_env_file_requires_private_permissions",
+      "kind": "function",
+      "file": "backend/tests/test_vault_migration.py",
+      "line": 253
+    }
+  ],
+  "selected_tests": [
+    "backend/tests/test_vault_migration.py"
+  ]
 }
