@@ -32,6 +32,7 @@ from .recon_priority import prioritize_recon_tasks
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
 from .surface_diff import build_surface_diff_intelligence
+from .surface_temporal import build_temporal_surface_profile
 from .target_memory import build_target_memory
 from .scanner_adaptation import adapt_scanner_engines
 from .storage import Storage
@@ -167,9 +168,16 @@ def _intelligence_context(
         scope_checker=scope_checker,
         limit=10,
     )
-    target_memory = build_target_memory(store, campaign.model_dump(mode="json"))
+    campaign_doc = campaign.model_dump(mode="json")
+    target_memory = build_target_memory(store, campaign_doc)
     surface_diff = build_surface_diff_intelligence(target_memory)
-    recon_priority = prioritize_recon_tasks(recon_plan, surface_diff, target_memory)
+    surface_temporal = build_temporal_surface_profile(store, campaign_doc)
+    recon_priority = prioritize_recon_tasks(
+        recon_plan,
+        surface_diff,
+        target_memory,
+        surface_temporal,
+    )
     swarm = coordinate_recon_swarm(list(recon_priority.tasks))
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)
@@ -189,6 +197,7 @@ def _intelligence_context(
         "recon": list(swarm.tasks),
         "recon_priority": recon_priority,
         "surface_diff": surface_diff,
+        "surface_temporal": surface_temporal,
         "swarm": swarm,
         "coverage": coverage,
         "coverage_guidance": coverage_guidance,
@@ -562,6 +571,7 @@ def _result(
             "recon_plan": [item.to_dict() for item in intelligence["recon"]],
             "recon_priority": intelligence["recon_priority"].to_dict(),
             "surface_diff": dict(intelligence["surface_diff"]),
+            "surface_temporal": dict(intelligence["surface_temporal"]),
             "swarm_coordination": intelligence["swarm"].to_dict(),
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
