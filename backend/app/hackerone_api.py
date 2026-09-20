@@ -263,7 +263,7 @@ def list_hackerone_programs(
     state = store.get_hackerone_catalog_state()
     if refresh or state is None:
         try:
-            state = refresh_hackerone_catalog(store)
+            state = refresh_hackerone_catalog(store, client=HackerOneClient())
         except HackerOneClientError as exc:
             raise _upstream_error(exc) from exc
 
@@ -289,7 +289,7 @@ def hackerone_program_catalog():
     state = storage().get_hackerone_catalog_state()
     if state is None:
         try:
-            state = refresh_hackerone_catalog(storage())
+            state = refresh_hackerone_catalog(storage(), client=HackerOneClient())
         except HackerOneClientError as exc:
             raise _upstream_error(exc) from exc
     return {
