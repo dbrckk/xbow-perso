@@ -227,6 +227,12 @@ The recon prioritizer can now use surface confidence as a **damping signal**. Hi
 
 The confidence factor is bounded between 0.5 and 1.0. It never creates additional priority above the existing +20 global cap and cannot create tasks, rewrite targets, change methods, increase request budgets, expand scope, or authorize execution. Missing confidence data is neutral rather than permissive.
 
+## Production migration
+
+Existing single-node SQLite installations can be migrated to PostgreSQL + Redis with the controlled migration CLI documented in [PRODUCTION_MIGRATION.md](PRODUCTION_MIGRATION.md).
+
+The migration performs a redacted plan first, refuses running source jobs or non-empty targets, verifies artifact hashes, creates a private SQLite backup, preserves queue history/dedupe state, and leaves the source database unchanged.
+
 ## Production hardening preflight
 
 `GET /api/deployment/preflight` now treats `XBOW_DEPLOYMENT_ENV=production` as a strict fail-closed contract. In addition to digest-pinned backend/frontend images, production mode requires PostgreSQL metadata storage, a Redis queue, Redis-backed API rate limiting, and the encrypted vault with a master-key **file** source.
