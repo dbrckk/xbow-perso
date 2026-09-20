@@ -22,30 +22,30 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:48:18Z
+Generated: 2026-09-20T08:54:02Z
 
 ### Git
 - Branch: `main`
-- Head: `ff081fc87923`
-- Commit date: 2026-09-20T10:48:04+02:00
-- Commit: feat: weight recon novelty with temporal surface history
-- Tracked files: 485
+- Head: `ab46ff233a11`
+- Commit date: 2026-09-20T10:53:26+02:00
+- Commit: feat: add surface observation confidence scoring
+- Tracked files: 487
 
 ### Recently changed files
 - `README.md`
 - `backend/app/main.py`
+- `backend/app/surface_confidence.py`
+- `backend/tests/test_surface_confidence.py`
+- `frontend/app.css`
+- `frontend/app.js`
+- `frontend/index.html`
+- `frontend/sw.js`
 - `backend/app/orchestrator.py`
 - `backend/app/recon_priority.py`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_priority.py`
 - `backend/app/surface_temporal.py`
 - `backend/tests/test_surface_temporal.py`
-- `frontend/app.css`
-- `frontend/app.js`
-- `frontend/index.html`
-- `frontend/sw.js`
-- `backend/app/surface_diff.py`
-- `backend/tests/test_surface_diff.py`
 
 ### Project signals
 - `pyproject.toml`

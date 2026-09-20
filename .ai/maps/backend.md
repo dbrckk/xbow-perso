@@ -161,6 +161,7 @@ app/
   strix_parser.py
   submission_api.py
   submission_state.py
+  surface_confidence.py
   surface_diff.py
   surface_temporal.py
   swarm_coordinator.py
@@ -336,6 +337,7 @@ tests/
   test_storage.py
   test_submission_api.py
   test_submission_state.py
+  test_surface_confidence.py
   test_surface_diff.py
   test_surface_temporal.py
   test_swarm_coordinator.py
@@ -4211,6 +4213,13 @@ memory = build_target_memory(store, campaign.model_dump(mode="json"))
 @app.get("/api/campaigns/{campaign_id}/surface-temporal")
 def get_campaign_surface_temporal(campaign_id: str)
 ⋮----
+@app.get("/api/campaigns/{campaign_id}/surface-confidence")
+def get_campaign_surface_confidence(campaign_id: str)
+⋮----
+campaign_doc = campaign.model_dump(mode="json")
+memory = build_target_memory(store, campaign_doc)
+temporal = build_temporal_surface_profile(store, campaign_doc)
+⋮----
 @app.get("/api/campaigns/{campaign_id}/outbox")
 def campaign_outbox_status(campaign_id: str, limit: int = 100)
 ⋮----
@@ -7830,6 +7839,65 @@ latest = current_cycle_submissions[-1]
 def assert_submission_allowed(campaign: Any, artifact: dict[str, Any]) -> SubmissionStatus
 ⋮----
 status = submission_status(campaign, artifact)
+```
+
+## File: app/surface_confidence.py
+```python
+@dataclass(frozen=True)
+class SurfaceConfidenceNode
+⋮----
+kind: str
+value: str
+confidence: float
+grade: str
+source_count: int
+campaign_count: int
+presence_ratio: float
+temporal_classification: str
+rationale: tuple[str, ...]
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def _grade(score: float) -> str
+⋮----
+def _temporal_weight(classification: str) -> float
+⋮----
+"""Score observation reliability from corroboration and temporal persistence.
+
+    Confidence is descriptive only. It never changes scope, authorization,
+    request budgets, task creation, or execution admission.
+    """
+temporal_by_key = {
+⋮----
+nodes: list[SurfaceConfidenceNode] = []
+⋮----
+kind = str(raw.get("kind") or "")
+value = str(raw.get("value") or "")
+⋮----
+sources = sorted({str(item) for item in list(raw.get("sources") or []) if str(item)})
+⋮----
+campaign_count = max(1, int(raw.get("campaign_count") or 1))
+⋮----
+campaign_count = 1
+⋮----
+temporal = temporal_by_key.get((kind, value), {})
+classification = str(temporal.get("classification") or "unknown")
+⋮----
+presence_ratio = float(temporal.get("presence_ratio") or 0.0)
+⋮----
+presence_ratio = 0.0
+presence_ratio = max(0.0, min(1.0, presence_ratio))
+⋮----
+source_component = min(1.0, len(sources) / 3.0)
+campaign_component = min(1.0, campaign_count / 4.0)
+persistence_component = max(presence_ratio, _temporal_weight(classification))
+⋮----
+score = (
+score = round(max(0.0, min(1.0, score)), 4)
+⋮----
+rationale = [
+⋮----
+grades = {"high": 0, "medium": 0, "low": 0}
 ```
 
 ## File: app/surface_diff.py
@@ -14877,6 +14945,28 @@ def test_unapproved_submission_attempt_is_rejected()
 def test_submission_event_requires_complete_metadata()
 ⋮----
 invalid = (
+```
+
+## File: tests/test_surface_confidence.py
+```python
+def test_surface_confidence_rewards_multi_source_persistent_nodes()
+⋮----
+memory = {
+temporal = {
+⋮----
+result = build_surface_confidence(memory, temporal)
+⋮----
+by_value = {item["value"]: item for item in result["nodes"]}
+strong = by_value["https://app.example.com/api"]
+weak = by_value["https://app.example.com/once"]
+⋮----
+def test_surface_confidence_uses_temporal_stability_as_small_component()
+⋮----
+def test_surface_confidence_is_bounded_and_handles_empty_input()
+⋮----
+empty = build_surface_confidence({"campaign_id": "c0", "nodes": []}, {"nodes": []})
+⋮----
+result = build_surface_confidence(
 ```
 
 ## File: tests/test_surface_diff.py

@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 3,
+    "score_margin": 0,
     "tier": "bounded",
-    "top_score": 30
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "5d0d6d018e89fcf86c8012c6a798f3a1e4fc8d2e00d384f59d9690119a3977bf",
+    "fingerprint": "9220dba5d4cfebefb8e52e46042cc34836d52254212edf40f6293d6048f4d48c",
     "hit": false
   },
-  "candidate_count": 160,
+  "candidate_count": 242,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -23,10 +23,9 @@
       "path": "backend/app/orchestrator.py",
       "reasons": [
         "impact",
-        "recently-changed",
         "search-index"
       ],
-      "score": 30,
+      "score": 27,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -66,6 +65,26 @@
         "test_scan_engines_default_preserves_strix",
         "test_scan_engines_support_explicit_nuclei_and_fail_closed",
         "test_sqlite_queue_accepts_nuclei_scan"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_adaptation.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "_memory",
+        "test_adaptation_never_expands_configured_engines",
+        "test_adaptation_never_suppresses_last_configured_engine",
+        "test_adaptation_ranks_successful_memory_first",
+        "test_adaptation_rejects_unknown_or_duplicate_configuration",
+        "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
       ]
     },
     {
@@ -125,30 +144,6 @@
       "symbols": [
         "ScannerIngestionResult",
         "ingest_scanner_run"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_normalization.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "NormalizedScannerFinding",
-        "_optional_cvss",
-        "_optional_str",
-        "_severity",
-        "_string_list",
-        "dedupe_normalized",
-        "normalize_nuclei_item",
-        "normalize_strix_item",
-        "normalized_finding_id",
-        "to_campaign_finding"
       ]
     }
   ],
