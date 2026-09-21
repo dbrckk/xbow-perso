@@ -252,8 +252,13 @@ def _external_output_limit() -> int:
 
 
 def _external_tool_env() -> dict[str, str]:
-    allowed = {"PATH", "HOME", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}
-    return {key: value for key, value in os.environ.items() if key in allowed}
+    allowed = {"PATH", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}
+    environment = {key: value for key, value in os.environ.items() if key in allowed}
+    home = "/tmp/xbow-recon-home"
+    os.makedirs(home, mode=0o700, exist_ok=True)
+    environment["HOME"] = home
+    environment["DISABLE_UPDATE_CHECK"] = "true"
+    return environment
 
 
 def _run_external_tool(command: list[str], *, timeout: float) -> str:
@@ -312,6 +317,7 @@ def _katana_surface(campaign, target: str) -> set[str]:
         "1",
         "-timeout",
         str(timeout),
+        "-duc",
     ]
     output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 180.0))
     endpoints: set[str] = set()
@@ -352,6 +358,7 @@ def _httpx_context(campaign, target: str) -> tuple[set[str], set[str]]:
         str(timeout),
         "-retries",
         "0",
+        "-duc",
     ]
     output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 60.0))
     technologies: set[str] = set()
@@ -411,6 +418,7 @@ def _passive_subdomains(campaign, target: str) -> set[str]:
         "10",
         "-max-time",
         "1",
+        "-duc",
     ]
     output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 75.0))
     assets: set[str] = set()
