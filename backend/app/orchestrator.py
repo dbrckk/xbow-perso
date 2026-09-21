@@ -21,6 +21,7 @@ from .evidence_quality import build_evidence_quality
 from .finding_correlation import cluster_findings
 from .hypothesis_memory import build_hypotheses
 from .high_value_intelligence import build_high_value_intelligence
+from .identity_access import summarize_identity_access_differentials
 from .job_provenance import attach_job_provenance
 from .jobqueue import JobQueue
 from .knowledge_memory import build_knowledge_snapshot, decision_history, rank_findings
@@ -186,6 +187,7 @@ def _intelligence_context(
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)
     high_value_intelligence = build_high_value_intelligence(graph)
+    identity_access = summarize_identity_access_differentials(graph)
     scanner_adaptation = adapt_scanner_engines(
         _scan_engines(),
         memories,
@@ -208,6 +210,7 @@ def _intelligence_context(
         "coverage": coverage,
         "coverage_guidance": coverage_guidance,
         "high_value_intelligence": high_value_intelligence,
+        "identity_access": identity_access,
         "scanner_adaptation": scanner_adaptation,
         "surface_enrichment": _surface_enrichment(campaign, graph),
     }
@@ -584,6 +587,7 @@ def _result(
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
             "high_value_intelligence": dict(intelligence["high_value_intelligence"]),
+            "identity_access": dict(intelligence["identity_access"]),
             "scanner_adaptation": intelligence["scanner_adaptation"].to_dict(),
             "pipeline_coordination": (
                 intelligence["pipeline_coordination"].to_dict()
