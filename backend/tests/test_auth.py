@@ -337,3 +337,31 @@ def test_auth_status_endpoint_bypasses_control_api_auth(monkeypatch):
 
     assert result is sentinel
     assert called is True
+
+
+
+def test_control_api_mutation_uses_api_token_without_totp(monkeypatch):
+    clear_secret_env(monkeypatch)
+    token = "mutation-token-" + "m" * 32
+    monkeypatch.setenv("XBOW_API_TOKEN", token)
+    raw = [(b"authorization", f"Bearer {token}".encode())]
+    request_obj = Request(
+        {
+            "type": "http",
+            "method": "POST",
+            "path": "/api/campaigns",
+            "headers": raw,
+            "query_string": b"",
+            "server": ("test", 80),
+            "client": ("test", 1234),
+            "scheme": "https",
+        }
+    )
+    sentinel = object()
+
+    async def call_next(_request):
+        return sentinel
+
+    result = asyncio.run(authenticate_control_api(request_obj, call_next))
+
+    assert result is sentinel
