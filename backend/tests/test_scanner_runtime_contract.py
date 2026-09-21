@@ -26,3 +26,21 @@ def test_scanner_dockerfile_verifies_pinned_nuclei_and_templates():
 def test_ci_builds_the_scanner_profile_image():
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
     assert "docker compose --profile scanner build --pull scanner-worker" in workflow
+
+
+
+def test_general_worker_image_verifies_pinned_recon_toolchain():
+    dockerfile = (ROOT / "backend" / "Dockerfile").read_text()
+    assert "KATANA_VERSION=1.7.0" in dockerfile
+    assert "HTTPX_VERSION=1.12.0" in dockerfile
+    assert "SUBFINDER_VERSION=2.16.0" in dockerfile
+    assert "sha256sum -c -" in dockerfile
+    assert '"/usr/local/bin/$tool" -version' in dockerfile
+
+
+def test_compose_wires_recon_flags_to_general_worker():
+    compose = (ROOT / "docker-compose.yml").read_text()
+    worker = compose.split("  worker:", 1)[1].split("\n  scanner-worker:", 1)[0]
+    assert "XBOW_ENABLE_RECON: ${XBOW_ENABLE_RECON:-false}" in worker
+    assert "XBOW_ENABLE_EXTERNAL_RECON: ${XBOW_ENABLE_EXTERNAL_RECON:-false}" in worker
+    assert "XBOW_EXTERNAL_RECON_MAX_OUTPUT_BYTES:" in worker
