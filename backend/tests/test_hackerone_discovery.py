@@ -18,7 +18,13 @@ def test_exact_profile_and_snapshot_is_ready():
     result = build_program_discovery(
         programs=[_program()],
         review_profiles=[{"handle": "alpha", "snapshot_sha256": "abc"}],
-        intelligence={"program_signals": {"alpha": {"historical_value_score": 12}}},
+        intelligence={"program_signals": {"alpha": {
+            "historical_value_score": 12,
+            "high_critical_count": 2,
+            "disclosed_report_count": 3,
+            "usd_awarded_max": 15000,
+            "top_categories": ["api_graphql"],
+        }}},
         verified_snapshots={"alpha": "abc"},
         runtime={"recon": True, "scanner": False},
         catalog_changes={},
@@ -26,6 +32,8 @@ def test_exact_profile_and_snapshot_is_ready():
     item = result["programs"][0]
     assert item["status"] == "READY"
     assert item["exact_review_profile"] is True
+    assert item["opportunity_score"] > 0
+    assert item["research_focus"] == ["api_graphql"]
     assert item["automatic_launch"] is False
 
 
