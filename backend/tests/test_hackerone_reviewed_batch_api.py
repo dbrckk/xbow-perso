@@ -99,6 +99,10 @@ def test_reviewed_batch_launch_needs_only_handles(tmp_path, monkeypatch):
         "fetch_hackerone_program_snapshot",
         lambda handle: snapshots[handle],
     )
+    monkeypatch.setattr(
+        "app.hackerone_client.fetch_hackerone_program_snapshot",
+        lambda handle: snapshots[handle],
+    )
 
     store = Storage(db, artifacts)
     store.save_hackerone_review_profile(
