@@ -5,167 +5,28 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "build_chain_intelligence": {
+    "_stable_id": {
       "source": {
-        "file": "backend/app/chain_intelligence.py",
-        "start": 48,
-        "end": 133
+        "file": "backend/app/orchestrator.py",
+        "start": 47,
+        "end": 49
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_utcnow": {
+    "_graph_fingerprint": {
       "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 254,
-        "end": 255
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_bounded_text": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 258,
-        "end": 262
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_amount": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 265,
-        "end": 274
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_bounded_int": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 277,
-        "end": 284
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_relationship_attributes": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 287,
-        "end": 298
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "normalize_hacktivity_item": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 301,
-        "end": 336
+        "file": "backend/app/orchestrator.py",
+        "start": 52,
+        "end": 66
       },
       "symbol_dependencies": [
         {
-          "symbol": "_amount",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 265,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_bounded_int",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 277,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_bounded_text",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 258,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_relationship_attributes",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "classify_report": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 339,
-        "end": 350
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_max_pages": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 353,
-        "end": 361
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "intelligence_poll_seconds": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 364,
-        "end": 374
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_enabled": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 377,
-        "end": 383
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "fetch_disclosed_hacktivity": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 386,
-        "end": 412
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HackerOneClient",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_client.py",
-              "line": 123,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
               "kind": "class",
               "language": "python"
             }
@@ -173,23 +34,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_max_pages",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 353,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get_all_pages",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_client.py",
-              "line": 255,
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
               "kind": "function",
               "language": "python"
             }
@@ -197,134 +46,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "normalize_hacktivity_item",
+          "symbol": "values",
           "definitions": [
             {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 301,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "_category_statistics": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 415,
-        "end": 470
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "classify_report",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 339,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_program_signals": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 473,
-        "end": 515
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "classify_report",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 339,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_capability_gaps": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 518,
-        "end": 533
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "build_hackerone_intelligence": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 536,
-        "end": 578
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_capability_gaps",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 518,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_category_statistics",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 415,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_program_signals",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 473,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 254,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_chain_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/chain_intelligence.py",
-              "line": 48,
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
               "kind": "function",
               "language": "python"
             }
@@ -332,33 +58,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 3
     },
-    "refresh_hackerone_intelligence": {
+    "_load_graph": {
       "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 581,
-        "end": 604
+        "file": "backend/app/orchestrator.py",
+        "start": 69,
+        "end": 70
       },
       "symbol_dependencies": [
         {
-          "symbol": "CampaignConflictError",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/storage_core.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "HackerOneClient",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_client.py",
-              "line": 123,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
               "kind": "class",
               "language": "python"
             }
@@ -366,56 +80,56 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_hackerone_intelligence",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 536,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "fetch_disclosed_hacktivity",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 386,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "maybe_refresh_hackerone_intelligence": {
-      "source": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "start": 607,
-        "end": 629
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CampaignConflictError",
-          "definitions": [
-            {
-              "file": "backend/app/storage_core.py",
-              "line": 22,
+              "file": "backend/app/storage.py",
+              "line": 19,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "imported_module"
         },
         {
-          "symbol": "HackerOneClientError",
+          "symbol": "from_records",
           "definitions": [
             {
-              "file": "backend/app/hackerone_client.py",
+              "file": "backend/app/observation_graph.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_seed_primary_target": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 73,
+        "end": 87
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
               "line": 24,
               "kind": "class",
               "language": "python"
@@ -424,10 +138,255 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_enabled",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/hackerone_intelligence.py",
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_stable_id",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/agent_registry.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_risk.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_minimum_enrichment_score": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 90,
+        "end": 98
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_surface_enrichment": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 101,
+        "end": 122
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_minimum_enrichment_score",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 90,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_attack_surface",
+          "definitions": [
+            {
+              "file": "backend/app/attack_surface.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "is_host_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "_intelligence_context": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 125,
+        "end": 226
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannedAction",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannerBudget",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_scan_engines",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
               "line": 377,
               "kind": "function",
               "language": "python"
@@ -436,11 +395,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "intelligence_poll_seconds",
+          "symbol": "_surface_enrichment",
           "definitions": [
             {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 364,
+              "file": "backend/app/orchestrator.py",
+              "line": 101,
               "kind": "function",
               "language": "python"
             }
@@ -448,42 +407,2132 @@
           "relation": "same_file"
         },
         {
-          "symbol": "refresh_hackerone_intelligence",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/hackerone_intelligence.py",
-              "line": 581,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_usage",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_adaptive_cycle",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 66,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_autonomy_gate",
+          "definitions": [
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_campaign_risk",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_risk.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_coverage_guidance",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 88,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_decision_consensus",
+          "definitions": [
+            {
+              "file": "backend/app/decision_consensus.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_coverage",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_high_value_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/high_value_intelligence.py",
+              "line": 168,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_red_team_decisions",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_decision.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_surface_confidence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_confidence.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_surface_diff_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_diff.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_temporal_surface_profile",
+          "definitions": [
+            {
+              "file": "backend/app/surface_temporal.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_job_status_counts",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 238,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "coordinate_recon_swarm",
+          "definitions": [
+            {
+              "file": "backend/app/swarm_coordinator.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "is_host_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_action_with_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/planner_intelligence.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 162,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 136,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "summarize_identity_access_differentials",
+          "definitions": [
+            {
+              "file": "backend/app/identity_access.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 33
     },
-    "_category": {
+    "scope_checker": {
       "source": {
-        "file": "backend/tests/test_chain_intelligence.py",
-        "start": 4,
-        "end": 10
+        "file": "backend/app/orchestrator.py",
+        "start": 136,
+        "end": 256
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_scan_engines",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 377,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_surface_enrichment",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 101,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_validation_saturated_cluster_ids",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 229,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "adapt_scanner_engines",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_usage",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_adaptive_cycle",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 66,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_autonomy_gate",
+          "definitions": [
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_campaign_risk",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_risk.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_coverage_guidance",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 88,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_decision_consensus",
+          "definitions": [
+            {
+              "file": "backend/app/decision_consensus.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_coverage",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_quality",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_quality.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_high_value_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/high_value_intelligence.py",
+              "line": 168,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_red_team_decisions",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_decision.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_surface_confidence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_confidence.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_surface_diff_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_diff.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_temporal_surface_profile",
+          "definitions": [
+            {
+              "file": "backend/app/surface_temporal.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_job_status_counts",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 238,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "cluster_findings",
+          "definitions": [
+            {
+              "file": "backend/app/finding_correlation.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "coordinate_recon_swarm",
+          "definitions": [
+            {
+              "file": "backend/app/swarm_coordinator.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "is_host_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observed_independent_finding_ids",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_action_with_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/planner_intelligence.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 162,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_identity_access_differentials",
+          "definitions": [
+            {
+              "file": "backend/app/identity_access.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 34
+    },
+    "_validation_saturated_cluster_ids": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 229,
+        "end": 266
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_quality",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_quality.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "cluster_findings",
+          "definitions": [
+            {
+              "file": "backend/app/finding_correlation.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observed_independent_finding_ids",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "_pending_findings": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 269,
+        "end": 312
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_validation_saturated_cluster_ids",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 229,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_memory.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "cluster_findings",
+          "definitions": [
+            {
+              "file": "backend/app/finding_correlation.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observed_independent_finding_ids",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_findings",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 149,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "_enqueue_recon_tasks": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 315,
+        "end": 374
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_graph_fingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attach_job_provenance",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 122,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "_scan_engines": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 377,
+        "end": 385
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "values",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_enqueue_action": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 388,
+        "end": 463
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannedAction",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_graph_fingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_pending_findings",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 269,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_scan_engines",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 377,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attach_job_provenance",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 122,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "policy_receipt",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 248,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sanitized_scan_payload",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "_decision_explanation": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 466,
+        "end": 510
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/agent_registry.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_risk.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_record_decision": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 513,
+        "end": 553
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannedAction",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_decision_explanation",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 466,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph_fingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_stable_id",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "next_audit_link",
+          "definitions": [
+            {
+              "file": "backend/app/decision_audit.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "seal_decision_metadata",
+          "definitions": [
+            {
+              "file": "backend/app/decision_audit.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/agent_registry.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_risk.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "_result": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 556,
+        "end": 620
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannedAction",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannerBudget",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_load_graph",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_record_decision",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 513,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "agent_for_action",
+          "definitions": [
+            {
+              "file": "backend/app/agent_registry.py",
+              "line": 93,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_usage",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_memory.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_knowledge_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 97,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "decision_history",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/agent_registry.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_risk.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 16
+    },
+    "advance_campaign": {
+      "source": {
+        "file": "backend/app/orchestrator.py",
+        "start": 623,
+        "end": 863
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AdaptivePlanner",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 110,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignRuntimeLimit",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannedAction",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannerBudget",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_enqueue_action",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 388,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_enqueue_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 315,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_intelligence_context",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_load_graph",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_pending_findings",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 269,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_result",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 556,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_seed_primary_target",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "apply_budget",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_runtime_limit_from_env",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "circuit_breaker_state",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "coordinate_pipeline_action",
+          "definitions": [
+            {
+              "file": "backend/app/pipeline_swarm.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planner_budget_from_env",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planner_stability_breaker_reason",
+          "definitions": [
+            {
+              "file": "backend/app/decision_timeline.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planner_stability_from_graph",
+          "definitions": [
+            {
+              "file": "backend/app/decision_timeline.py",
+              "line": 190,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_action_with_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/planner_intelligence.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_circuit_open",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "runtime_status",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 28
+    },
+    "prioritize_action_with_intelligence": {
+      "source": {
+        "file": "backend/app/planner_intelligence.py",
+        "start": 8,
+        "end": 61
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "PlannedAction",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_intel": {
+      "source": {
+        "file": "backend/tests/test_planner_intelligence.py",
+        "start": 5,
+        "end": 15
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_named_chain_is_ranked_without_execution": {
+    "test_priority_preserves_kind_and_target": {
       "source": {
-        "file": "backend/tests/test_chain_intelligence.py",
-        "start": 13,
-        "end": 26
+        "file": "backend/tests/test_planner_intelligence.py",
+        "start": 18,
+        "end": 27
       },
       "symbol_dependencies": [
         {
-          "symbol": "_category",
+          "symbol": "PlannedAction",
           "definitions": [
             {
-              "file": "backend/tests/test_chain_intelligence.py",
-              "line": 4,
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_intel",
+          "definitions": [
+            {
+              "file": "backend/tests/test_planner_intelligence.py",
+              "line": 5,
               "kind": "function",
               "language": "python"
             }
@@ -491,11 +2540,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_chain_intelligence",
+          "symbol": "prioritize_action_with_intelligence",
           "definitions": [
             {
-              "file": "backend/app/chain_intelligence.py",
-              "line": 48,
+              "file": "backend/app/planner_intelligence.py",
+              "line": 8,
               "kind": "function",
               "language": "python"
             }
@@ -503,21 +2552,33 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     },
-    "test_partial_chain_remains_hypothesis": {
+    "test_stop_is_never_reprioritized": {
       "source": {
-        "file": "backend/tests/test_chain_intelligence.py",
-        "start": 29,
-        "end": 38
+        "file": "backend/tests/test_planner_intelligence.py",
+        "start": 30,
+        "end": 34
       },
       "symbol_dependencies": [
         {
-          "symbol": "_category",
+          "symbol": "PlannedAction",
           "definitions": [
             {
-              "file": "backend/tests/test_chain_intelligence.py",
-              "line": 4,
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_intel",
+          "definitions": [
+            {
+              "file": "backend/tests/test_planner_intelligence.py",
+              "line": 5,
               "kind": "function",
               "language": "python"
             }
@@ -525,11 +2586,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_chain_intelligence",
+          "symbol": "prioritize_action_with_intelligence",
           "definitions": [
             {
-              "file": "backend/app/chain_intelligence.py",
-              "line": 48,
+              "file": "backend/app/planner_intelligence.py",
+              "line": 8,
               "kind": "function",
               "language": "python"
             }
@@ -537,21 +2598,33 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     },
-    "test_single_family_does_not_invent_chain": {
+    "test_weak_public_signal_does_not_change_action": {
       "source": {
-        "file": "backend/tests/test_chain_intelligence.py",
-        "start": 41,
-        "end": 43
+        "file": "backend/tests/test_planner_intelligence.py",
+        "start": 37,
+        "end": 41
       },
       "symbol_dependencies": [
         {
-          "symbol": "_category",
+          "symbol": "PlannedAction",
           "definitions": [
             {
-              "file": "backend/tests/test_chain_intelligence.py",
-              "line": 4,
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_intel",
+          "definitions": [
+            {
+              "file": "backend/tests/test_planner_intelligence.py",
+              "line": 5,
               "kind": "function",
               "language": "python"
             }
@@ -559,11 +2632,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_chain_intelligence",
+          "symbol": "prioritize_action_with_intelligence",
           "definitions": [
             {
-              "file": "backend/app/chain_intelligence.py",
-              "line": 48,
+              "file": "backend/app/planner_intelligence.py",
+              "line": 8,
               "kind": "function",
               "language": "python"
             }
@@ -571,7 +2644,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     }
   }
 }

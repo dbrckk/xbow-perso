@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T07:26:17Z
+Generated: 2026-09-21T07:46:18Z
 
 ### Git
 - Branch: `main`
-- Head: `c5c68ba5d405`
-- Commit date: 2026-09-21T09:26:05+02:00
-- Commit: Merge pull request #283 from dbrckk/feat/chain-aware-intelligence
-- Tracked files: 523
+- Head: `733851b8ce02`
+- Commit date: 2026-09-21T09:46:07+02:00
+- Commit: Merge pull request #284 from dbrckk/feat/high-value-planner-priority
+- Tracked files: 525
 
 ### Recently changed files
+- `backend/tests/test_planner_intelligence.py`
+- `backend/app/orchestrator.py`
+- `backend/app/planner_intelligence.py`
 - `backend/tests/test_chain_intelligence.py`
-- `backend/app/hackerone_intelligence.py`
-- `backend/app/chain_intelligence.py`
-- `frontend/hackerone.js`
 
 ### Project signals
 - `pyproject.toml`

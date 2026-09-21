@@ -1383,6 +1383,7 @@
         "backend/app/orchestrator.py",
         "backend/app/planner_advisory.py",
         "backend/app/planner_budget.py",
+        "backend/app/planner_intelligence.py",
         "backend/app/planner_limits.py",
         "backend/app/recon_swarm.py",
         "backend/app/red_team_coverage.py",
@@ -1437,6 +1438,7 @@
         "backend/tests/test_overview_reasoning.py",
         "backend/tests/test_planner_advisory.py",
         "backend/tests/test_planner_budget.py",
+        "backend/tests/test_planner_intelligence.py",
         "backend/tests/test_planner_limits.py",
         "backend/tests/test_recon_swarm.py",
         "backend/tests/test_red_team_coverage.py",
@@ -1450,7 +1452,7 @@
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 104,
+      "in_degree": 106,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -1605,6 +1607,7 @@
         "backend/app/observation_graph.py",
         "backend/app/pipeline_swarm.py",
         "backend/app/planner_budget.py",
+        "backend/app/planner_intelligence.py",
         "backend/app/recon_priority.py",
         "backend/app/recon_swarm.py",
         "backend/app/red_team_decision.py",
@@ -1627,7 +1630,7 @@
         "backend/tests/test_runtime_budget_config.py"
       ],
       "in_degree": 7,
-      "out_degree": 35
+      "out_degree": 36
     },
     "backend/app/outbox_recovery.py": {
       "dependencies": [
@@ -1890,6 +1893,17 @@
       ],
       "in_degree": 11,
       "out_degree": 3
+    },
+    "backend/app/planner_intelligence.py": {
+      "dependencies": [
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/orchestrator.py",
+        "backend/tests/test_planner_intelligence.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
     },
     "backend/app/planner_limits.py": {
       "dependencies": [
@@ -4159,6 +4173,16 @@
       "in_degree": 0,
       "out_degree": 4
     },
+    "backend/tests/test_planner_intelligence.py": {
+      "dependencies": [
+        "backend/app/observation_graph.py",
+        "backend/app/planner_intelligence.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "backend/tests/test_planner_limits.py": {
       "dependencies": [
         "backend/app/observation_graph.py",
@@ -4916,6 +4940,7 @@
         "backend/tests/test_plan_evidence_quality.py",
         "backend/tests/test_planner_advisory.py",
         "backend/tests/test_planner_budget.py",
+        "backend/tests/test_planner_intelligence.py",
         "backend/tests/test_planner_limits.py",
         "backend/tests/test_policy_integrity.py",
         "backend/tests/test_policy_invariants.py",
@@ -4976,7 +5001,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 189,
+      "in_degree": 190,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

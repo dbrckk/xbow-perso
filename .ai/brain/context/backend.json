@@ -2,7 +2,7 @@
   "area": "backend",
   "files": [
     {
-      "path": "backend/app/hackerone_intelligence.py",
+      "path": "backend/app/orchestrator.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -11,10 +11,18 @@
         "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 490
+      "score": 590
     },
     {
-      "path": "backend/tests/test_chain_intelligence.py",
+      "path": "backend/app/main.py",
+      "reasons": [
+        "dependency-neighbor",
+        "entrypoint"
+      ],
+      "score": 440
+    },
+    {
+      "path": "backend/tests/test_planner_intelligence.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -26,7 +34,14 @@
       "score": 420
     },
     {
-      "path": "backend/app/chain_intelligence.py",
+      "path": "backend/app/observation_graph.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 400
+    },
+    {
+      "path": "backend/app/planner_intelligence.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -37,13 +52,14 @@
       "score": 355
     },
     {
-      "path": "backend/app/hackerone_api.py",
+      "path": "backend/tests/test_orchestrator.py",
       "reasons": [
         "impact",
         "reverse-dependency-neighbor",
+        "selected-test",
         "symbol-indexed"
       ],
-      "score": 330
+      "score": 305
     },
     {
       "path": "backend/app/worker_service.py",
@@ -55,85 +71,82 @@
       "score": 230
     },
     {
-      "path": "backend/tests/test_hackerone_intelligence.py",
+      "path": "backend/tests/test_runtime_budget_config.py",
       "reasons": [
         "impact",
         "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 220
+      "score": 225
     },
     {
-      "path": "backend/app/main.py",
+      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
       "reasons": [
-        "dependency-neighbor",
-        "entrypoint"
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
       ],
-      "score": 165
+      "score": 215
     },
     {
-      "path": "backend/app/hackerone_client.py",
+      "path": "backend/tests/test_campaign_circuit_breaker.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 210
+    },
+    {
+      "path": "backend/tests/test_job_provenance_integration.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 210
+    },
+    {
+      "path": "backend/tests/test_orchestrator_validation_alignment.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 205
+    },
+    {
+      "path": "backend/app/campaign_runtime.py",
       "reasons": [
         "dependency-neighbor"
       ],
-      "score": 100
+      "score": 175
+    },
+    {
+      "path": "backend/app/jobqueue.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 175
     },
     {
       "path": "backend/app/storage.py",
       "reasons": [
         "dependency-neighbor"
       ],
-      "score": 100
+      "score": 150
     },
     {
-      "path": "backend/app/job_provenance.py",
+      "path": "backend/app/planner_budget.py",
       "reasons": [
         "dependency-neighbor"
       ],
-      "score": 75
-    },
-    {
-      "path": "backend/app/observation_graph.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 75
-    },
-    {
-      "path": "backend/app/storage_core.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 75
-    },
-    {
-      "path": "backend/tests/test_hackerone_binding.py",
-      "reasons": [
-        "reverse-dependency-neighbor"
-      ],
-      "score": 60
-    },
-    {
-      "path": "backend/tests/test_hackerone_outbound_submission.py",
-      "reasons": [
-        "reverse-dependency-neighbor"
-      ],
-      "score": 60
-    },
-    {
-      "path": "backend/tests/test_hackerone_scope_preview_api.py",
-      "reasons": [
-        "reverse-dependency-neighbor"
-      ],
-      "score": 60
-    },
-    {
-      "path": "backend/app/browser.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
+      "score": 125
     }
   ],
   "generated_by": "dbrckk/repo-brain-v6",

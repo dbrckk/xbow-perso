@@ -1,12 +1,12 @@
 # Change impact
 
-Base: 35aaa371a7108babb8d5ae3f638dddc5d8e492a1
-Head: c5c68ba5d405cef83c7cf8f68270df505c05253d
+Base: 29f114f2d03575159dda8ae5caf39cce54bf04e9
+Head: 733851b8ce028543b8ed07a811da4dcbe09041a8
 
 ## Changed files
-- A backend/app/chain_intelligence.py
-- M backend/app/hackerone_intelligence.py
-- A backend/tests/test_chain_intelligence.py
+- M backend/app/orchestrator.py
+- A backend/app/planner_intelligence.py
+- A backend/tests/test_planner_intelligence.py
 
 ## Affected areas
 - backend

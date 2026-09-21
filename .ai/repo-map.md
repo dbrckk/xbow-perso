@@ -151,6 +151,7 @@ backend/
     pipeline_swarm.py
     planner_advisory.py
     planner_budget.py
+    planner_intelligence.py
     planner_limits.py
     planner_lock.py
     policy_integrity.py
@@ -330,6 +331,7 @@ backend/
     test_plan_evidence_quality.py
     test_planner_advisory.py
     test_planner_budget.py
+    test_planner_intelligence.py
     test_planner_limits.py
     test_policy_integrity.py
     test_policy_invariants.py
@@ -6124,6 +6126,9 @@ swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
 high_value_intelligence = build_high_value_intelligence(graph)
+planner_action = planned_actions[0] if planned_actions else None
+planner_intelligence = None
+⋮----
 identity_access = summarize_identity_access_differentials(graph)
 scanner_adaptation = adapt_scanner_engines(
 ⋮----
@@ -6237,6 +6242,9 @@ planned_actions = planner.plan(campaign, graph)
 action = planned_actions[0]
 ⋮----
 intelligence = _intelligence_context(
+# Intelligence may raise metadata priority/reason only. It cannot
+# change the action kind/target or bypass policy/budget decisions.
+⋮----
 cycle = intelligence["cycle"]
 ⋮----
 breaker_blockers = {"failed_jobs", "runtime_exhausted", "budget_blocked", "campaign_risk_blocked"}
@@ -7070,6 +7078,28 @@ usage = budget_usage(graph, queue, campaign_id, limits)
 reason = usage.blocked_actions.get(action.kind)
 ⋮----
 def validation_batch_limit(usage: BudgetUsage, budget: PlannerBudget | None = None) -> int
+````
+
+## File: backend/app/planner_intelligence.py
+````python
+"""Attach advisory public-case focus to an already-safe planner transition.
+
+    This function deliberately cannot change the action kind, target, scope,
+    request budget, scanner selection, or policy gate. It only raises the
+    presentation priority of crawl/scan/validate actions and records why.
+    """
+focuses = list(high_value_intelligence.get("focuses") or [])
+matched = [item for item in focuses if int(item.get("score") or 0) >= 50]
+⋮----
+selected = matched[:3]
+⋮----
+context = {
+⋮----
+max_score = max(int(item.get("score") or 0) for item in selected)
+# Priority is metadata/order only; it is bounded and never outranks safety stops.
+priority = min(99, max(action.priority, 80 + min(15, max_score // 6)))
+families = ", ".join(context["families"])
+prioritized = PlannedAction(
 ````
 
 ## File: backend/app/planner_limits.py
@@ -15249,6 +15279,23 @@ def test_scan_batch_limit_respects_scan_and_inflight_capacity(tmp_path)
 limits = PlannerBudget(max_scans=3, max_inflight_jobs=3)
 ⋮----
 def test_scan_batch_limit_rejects_negative_request(tmp_path)
+````
+
+## File: backend/tests/test_planner_intelligence.py
+````python
+def _intel(score: int = 80) -> dict
+⋮----
+def test_priority_preserves_kind_and_target()
+⋮----
+original = PlannedAction("scan", "example.test", "safe planner transition", 80)
+⋮----
+def test_stop_is_never_reprioritized()
+⋮----
+original = PlannedAction("stop", "example.test", "policy blocked", 100)
+⋮----
+def test_weak_public_signal_does_not_change_action()
+⋮----
+original = PlannedAction("crawl", "example.test", "needs inventory", 90)
 ````
 
 ## File: backend/tests/test_planner_limits.py
