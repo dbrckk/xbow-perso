@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from types import SimpleNamespace
 
 from app.hackerone_batch import reconcile_hackerone_batch
@@ -270,14 +271,64 @@ def test_sequential_batch_retries_after_transient_remote_revalidation_failure(
         "app.main.start_campaign",
         lambda campaign_id: started.append(campaign_id),
     )
+    moments = iter(
+        [
+            datetime(2026, 9, 21, 10, 0, tzinfo=timezone.utc),
+            datetime(2026, 9, 21, 10, 1, tzinfo=timezone.utc),
+        ]
+    )
+    monkeypatch.setattr(
+        "app.hackerone_batch._utc_now",
+        lambda: next(moments),
+    )
 
     first = reconcile_hackerone_batch(queue, store, "batch-1")
     assert first is not None
     assert first["members"][0]["status"] == "ready"
     assert first["members"][0]["reason"] == "remote_revalidation_unavailable"
+    assert first["members"][0]["remote_revalidation_attempts"] == 1
+    assert first["members"][0]["remote_revalidation_retry_at"]
     assert started == []
 
     second = reconcile_hackerone_batch(queue, store, "batch-1")
     assert second is not None
     assert second["members"][0]["status"] == "running"
     assert started == ["c1"]
+
+
+
+def test_sequential_batch_stops_retrying_on_hackerone_authorization_failure(
+    tmp_path,
+    monkeypatch,
+):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign(_campaign("c1", state="ready"))
+    store.save_hackerone_batch(
+        _batch(
+            "sequential",
+            [
+                {
+                    "index": 0,
+                    "campaign_id": "c1",
+                    "handle": "one",
+                    "status": "ready",
+                }
+            ],
+        ),
+        expected_version=0,
+    )
+    queue = FakeQueue({})
+    monkeypatch.setattr(
+        "app.hackerone_client.fetch_hackerone_program_snapshot",
+        lambda handle: (_ for _ in ()).throw(
+            HackerOneClientError("denied", status_code=401)
+        ),
+    )
+
+    result = reconcile_hackerone_batch(queue, store, "batch-1")
+
+    assert result is not None
+    assert result["members"][0]["status"] == "review"
+    assert result["members"][0]["reason"] == "remote_hackerone_authorization_failed"
+    assert "remote_revalidation_retry_at" not in result["members"][0]
+    assert result["state"] == "completed"
