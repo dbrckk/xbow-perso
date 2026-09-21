@@ -16,7 +16,12 @@ def test_public_case_lessons_are_bounded_and_evidence_oriented():
     assert 4 <= len(cases) <= 20
     assert any(case.documented_reward_usd == 25000 for case in cases)
     assert any(case.documented_reward_usd == 20000 for case in cases)
-    assert all(case.source_url.startswith("https://www.hackerone.com/") for case in cases)
+    assert all(
+        case.source_url.startswith(
+            ("https://www.hackerone.com/", "https://www.coinbase.com/")
+        )
+        for case in cases
+    )
     assert all(case.observation_goals for case in cases)
 
 
