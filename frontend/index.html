@@ -8,11 +8,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>xbow-perso</title>
   <link rel="manifest" href="/manifest.webmanifest" />
-  <link rel="stylesheet" href="/app.css?v=59" />
-  <script src="/app.js?v=59" defer></script>
-  <script src="/hackerone.js?v=59" defer></script>
+  <link rel="stylesheet" href="/app.css?v=60" />
+  <script src="/app.js?v=60" defer></script>
+  <script src="/hackerone.js?v=60" defer></script>
+  <script src="/quick.js?v=60" defer></script>
 </head>
-<body>
+<body class="quick-ui">
 <header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="#overview" aria-label="xbow-perso — accueil">
@@ -46,6 +47,40 @@
       <div class="hero-signal"><span>Revue humaine</span><strong>Requise</strong></div>
       <div class="hero-signal"><span>Destructif / DoS</span><strong>Bloqué</strong></div>
       <div class="hero-panel-foot">Les actions restent soumises aux règles du programme sélectionné.</div>
+    </div>
+  </section>
+
+  <section id="quickConsole" class="card quick-console">
+    <div class="quick-head">
+      <div>
+        <span class="section-kicker">Mode simple</span>
+        <h1>Bug bounty automatique</h1>
+        <p class="muted">6 programmes déjà revus : 2 simples, 2 moyens, 2 à fort potentiel historique.</p>
+      </div>
+      <span id="quickState" class="pill">prêt</span>
+    </div>
+
+    <div class="quick-actions">
+      <button id="quickSelect" type="button">Sélectionner les 6</button>
+      <div class="quick-mode" role="group" aria-label="Mode d'exécution">
+        <label><input type="radio" name="quickMode" value="parallel" checked /> Tous à la fois</label>
+        <label><input type="radio" name="quickMode" value="sequential" /> À la suite</label>
+      </div>
+      <button id="quickStart" type="button" disabled>Démarrer</button>
+    </div>
+
+    <p id="quickMessage" class="muted">Sélectionne d’abord les 6 programmes.</p>
+    <div id="quickSelection" class="quick-selection"></div>
+
+    <div class="quick-journal-head">
+      <div>
+        <h2>Journal de bord</h2>
+        <p class="muted compact">Le serveur continue même si tu fermes cette page.</p>
+      </div>
+      <button id="quickJournalRefresh" type="button" class="secondary">Actualiser</button>
+    </div>
+    <div id="quickJournal" class="quick-journal">
+      <p class="muted">Chargement du journal…</p>
     </div>
   </section>
 
