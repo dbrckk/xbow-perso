@@ -112,6 +112,16 @@ def campaign_brief(campaign: dict[str, Any]) -> dict[str, Any]:
     event_counts = Counter(str(item.get("type") or "unknown") for item in events)
     confirmed = [item for item in findings if item.get("status") == "confirmed"]
     severities = Counter(str(item.get("severity") or "unknown") for item in confirmed)
+    confirmed_summary = [
+        {
+            "title": str(item.get("title") or "")[:240],
+            "severity": str(item.get("severity") or "unknown"),
+            "cwe": str(item.get("cwe") or "")[:32] or None,
+            "discovered_by": str(item.get("discovered_by") or "")[:120] or None,
+            "validated_by": str(item.get("validated_by") or "")[:120] or None,
+        }
+        for item in confirmed[:50]
+    ]
     return {
         "campaign_id": str(campaign.get("id") or ""),
         "name": str((campaign.get("target") or {}).get("name") or ""),
@@ -122,7 +132,9 @@ def campaign_brief(campaign: dict[str, Any]) -> dict[str, Any]:
         "findings_total": len(findings),
         "findings_confirmed": len(confirmed),
         "confirmed_by_severity": dict(severities),
+        "confirmed_findings": confirmed_summary,
         "events_total": len(events),
+        "event_type_counts": dict(event_counts),
         "activity": {
             key: int(value)
             for key, value in event_counts.items()
