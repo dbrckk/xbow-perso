@@ -68,3 +68,14 @@ def test_production_update_normalizes_api_token_source():
     assert "unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE" in script
     assert "export XBOW_API_TOKEN" in script
     assert "XBOW_VAULT_ENABLED" in script
+
+
+
+def test_production_update_attests_frontend_diagnostic_proxy():
+    script = _text("mobile-production-update.sh")
+
+    assert "=== FRONTEND DIAGNOSTIC PROXY ===" in script
+    assert "http://127.0.0.1:8080/live" in script
+    assert "http://127.0.0.1:8080/auth-status" in script
+    assert "0.5.3" in script
+    assert "contains_secrets" in script

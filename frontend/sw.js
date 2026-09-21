@@ -1,5 +1,5 @@
-const CACHE='xbow-perso-v56';
-const PRECACHE=['/','/app.css','/app.js','/hackerone.js','/manifest.webmanifest'];
+const CACHE='xbow-perso-v57';
+const PRECACHE=['/','/app.css?v=57','/app.js?v=57','/hackerone.js?v=57','/manifest.webmanifest'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(
@@ -20,7 +20,7 @@ self.addEventListener('activate',event=>{
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
   const url=new URL(event.request.url);
-  if(url.origin===self.location.origin&&url.pathname.startsWith('/api/')){
+  if(url.origin===self.location.origin&&(url.pathname.startsWith('/api/')||['/auth-status','/live','/ready','/health'].includes(url.pathname))){
     event.respondWith(fetch(event.request));
     return;
   }

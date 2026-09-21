@@ -195,6 +195,12 @@ fi
 echo "=== READINESS ==="
 "${COMPOSE[@]}" exec -T backend python -m app.readiness
 
+echo "=== FRONTEND DIAGNOSTIC PROXY ==="
+"${COMPOSE[@]}" exec -T frontend sh -c \
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.3\""'
+"${COMPOSE[@]}" exec -T frontend sh -c \
+  'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
+
 if [ "$LIVE_MODE" = "true" ]; then
   echo "=== SCANNER CAPABILITY ==="
   "${COMPOSE[@]}" exec -T backend python -c \
