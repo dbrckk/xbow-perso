@@ -244,9 +244,13 @@ def prioritize_recon_tasks(
             task.kind,
             high_value_intelligence,
         )
+        baseline_boost = min(
+            20,
+            diff_boost + history_boost + temporal_boost,
+        )
         raw_boost = min(
             25,
-            diff_boost + history_boost + temporal_boost + high_value_boost,
+            baseline_boost + high_value_boost,
         )
         boost = min(25, int(round(raw_boost * confidence_factor)))
         effective = min(100, int(task.priority) + boost)
