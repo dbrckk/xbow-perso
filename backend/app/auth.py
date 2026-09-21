@@ -84,3 +84,35 @@ def require_api_token(request: Request) -> None:
         raise AuthError(401, "Authentication required")
     if not hmac.compare_digest(presented.encode("utf-8"), expected.encode("utf-8")):
         raise AuthError(403, "Invalid API token")
+
+
+
+def api_token_source_status() -> dict[str, object]:
+    """Return a redacted description of the active API-token source."""
+    inline = os.getenv("XBOW_API_TOKEN", "").strip()
+    token_file = os.getenv("XBOW_API_TOKEN_FILE", "").strip()
+    try:
+        use_vault = vault_enabled()
+    except SecretVaultError:
+        return {
+            "configured": False,
+            "source": "configuration_error",
+            "contains_secrets": False,
+        }
+
+    source = "vault" if use_vault else ("file" if token_file else "env")
+    try:
+        configured_api_token()
+    except AuthError:
+        configured = False
+    else:
+        configured = True
+
+    return {
+        "configured": configured,
+        "source": source,
+        "legacy_inline_present": bool(inline),
+        "legacy_file_present": bool(token_file),
+        "vault_enabled": use_vault,
+        "contains_secrets": False,
+    }

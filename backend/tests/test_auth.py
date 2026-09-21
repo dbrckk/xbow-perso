@@ -4,7 +4,7 @@ import base64
 import pytest
 from starlette.requests import Request
 
-from app.auth import AuthError, configured_api_token, require_api_token
+from app.auth import AuthError, api_token_source_status, configured_api_token, require_api_token
 from app.main import authenticate_control_api
 from app.secret_vault import set_secret
 
@@ -286,3 +286,54 @@ def test_vault_enabled_missing_api_token_fails_closed(monkeypatch, tmp_path):
 
     assert exc.value.status_code == 503
     assert "vault secret is unavailable" in exc.value.detail
+
+
+
+def test_api_token_source_status_reports_env_without_secret(monkeypatch):
+    clear_secret_env(monkeypatch)
+    monkeypatch.setenv("XBOW_API_TOKEN", "e" * 32)
+
+    result = api_token_source_status()
+
+    assert result["configured"] is True
+    assert result["source"] == "env"
+    assert result["vault_enabled"] is False
+    assert result["contains_secrets"] is False
+    assert "token" not in result
+
+
+def test_api_token_source_status_reports_vault_without_secret(monkeypatch, tmp_path):
+    clear_secret_env(monkeypatch)
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "true")
+    monkeypatch.setenv(
+        "XBOW_VAULT_MASTER_KEY",
+        base64.urlsafe_b64encode(b"k" * 32).decode("ascii"),
+    )
+    monkeypatch.setenv("XBOW_VAULT_PATH", str(tmp_path / "vault.json"))
+    set_secret("api_token", "v" * 32)
+
+    result = api_token_source_status()
+
+    assert result["configured"] is True
+    assert result["source"] == "vault"
+    assert result["legacy_inline_present"] is False
+    assert result["contains_secrets"] is False
+
+
+
+def test_auth_status_endpoint_bypasses_control_api_auth(monkeypatch):
+    clear_secret_env(monkeypatch)
+    called = False
+    sentinel = object()
+
+    async def call_next(_request):
+        nonlocal called
+        called = True
+        return sentinel
+
+    result = asyncio.run(
+        authenticate_control_api(_request_for_path("/auth-status"), call_next)
+    )
+
+    assert result is sentinel
+    assert called is True
