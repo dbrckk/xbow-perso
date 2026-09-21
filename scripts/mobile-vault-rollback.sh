@@ -24,7 +24,7 @@ chmod 600 "$SECRETS_FILE" "$BACKUP_FILE"
 # When vault is active, legacy API-token env/file sources must not leak into
 # the backend. Without vault, secrets loaded from the root-only secrets file
 # must be exported so docker compose receives the same token the operator uses.
-auth_vault_mode="$(read_env_value XBOW_VAULT_ENABLED | tr '[:upper:]' '[:lower:]')"
+auth_vault_mode="$(grep -E '^[[:space:]]*XBOW_VAULT_ENABLED=' "$ENV_FILE" | tail -n1 | cut -d= -f2- | tr '[:upper:]' '[:lower:]' || true)"
 case "$auth_vault_mode" in
   true|1|yes|on)
     unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
