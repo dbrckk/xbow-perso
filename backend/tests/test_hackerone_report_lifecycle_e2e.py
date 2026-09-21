@@ -3,7 +3,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from app import scanner_worker, worker_service
+from app import hackerone_api, scanner_worker, worker_service
 from app.jobqueue import JobQueue
 from app.main import app
 from app.storage import Storage
@@ -71,6 +71,11 @@ def test_hackerone_full_lifecycle_produces_downloadable_report(
     monkeypatch.delenv("XBOW_API_TOKEN_FILE", raising=False)
     monkeypatch.setenv("XBOW_API_TOKEN", TOKEN)
     monkeypatch.setenv("XBOW_TOTP_ENABLED", "false")
+    monkeypatch.setattr(
+        hackerone_api,
+        "_assert_hackerone_live_scan_ready",
+        lambda: None,
+    )
 
     def fake_execute(plan):
         run_dir = Path(plan.output_dir)
