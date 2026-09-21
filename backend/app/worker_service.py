@@ -238,6 +238,8 @@ def process_browser_flow(job: dict, store: Storage) -> None:
                         "http_status": observation.get("status"),
                         "content_sha256": observation.get("content_sha256"),
                         "content_bytes": observation.get("content_bytes"),
+                        "structure_sha256": observation.get("structure_sha256"),
+                        "structure_metrics": observation.get("structure_metrics"),
                     },
                     identity=(
                         f"browser-access\x1f{result.identity_label}\x1f{endpoint_url}"
