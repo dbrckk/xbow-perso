@@ -8,11 +8,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>xbow-perso</title>
   <link rel="manifest" href="/manifest.webmanifest" />
-  <link rel="stylesheet" href="/app.css?v=59" />
-  <script src="/app.js?v=59" defer></script>
-  <script src="/hackerone.js?v=59" defer></script>
+  <link rel="stylesheet" href="/app.css?v=60" />
+  <script src="/app.js?v=60" defer></script>
+  <script src="/hackerone.js?v=60" defer></script>
+  <script src="/quick.js?v=60" defer></script>
 </head>
-<body>
+<body class="simple-mode">
 <header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="#overview" aria-label="xbow-perso — accueil">
@@ -30,6 +31,48 @@
 </header>
 
 <main class="app-shell">
+  <section id="quickDashboard" class="quick-dashboard" aria-live="polite">
+    <div class="quick-hero">
+      <div>
+        <span class="section-kicker">Mode simple</span>
+        <h1>Bug bounty automatique</h1>
+        <p>2 faciles estimés + 2 moyens estimés + 2 programmes à fort historique de récompense. Uniquement parmi les programmes READY déjà validés.</p>
+      </div>
+      <span class="pill ok">scope-first</span>
+    </div>
+
+    <section class="quick-card">
+      <label for="quickToken">Jeton API</label>
+      <input id="quickToken" type="password" autocomplete="off" placeholder="Jeton API" />
+      <p class="muted compact">Enregistré sur cet appareil.</p>
+
+      <div class="quick-actions">
+        <button id="quickSelect" type="button">Sélectionner 6 programmes</button>
+        <select id="quickMode" aria-label="Mode d’exécution">
+          <option value="sequential">À la suite</option>
+          <option value="parallel">Tous à la fois</option>
+        </select>
+        <button id="quickStart" type="button" disabled>Démarrer</button>
+      </div>
+      <p id="quickStatus" class="quick-status">Prêt.</p>
+      <div id="quickSelection" class="quick-selection"></div>
+    </section>
+
+    <section class="quick-card">
+      <div class="quick-section-head">
+        <div>
+          <span class="section-kicker">Historique</span>
+          <h2>Journal de bord</h2>
+        </div>
+        <button id="quickRefreshJournal" type="button" class="secondary">Actualiser</button>
+      </div>
+      <p id="quickJournalUpdated" class="muted compact">Chargement…</p>
+      <div id="quickJournal" class="quick-journal">
+        <p class="muted">Aucune campagne chargée.</p>
+      </div>
+    </section>
+  </section>
+
   <section id="overview" class="hero">
     <div class="hero-copy">
       <div class="eyebrow"><span class="eyebrow-dot"></span> Console d’opérations autorisées</div>
