@@ -4,6 +4,9 @@ from app import hackerone_live_readiness as readiness
 _ENV_NAMES = (
     "XBOW_API_TOKEN",
     "XBOW_ENABLE_ACTIVE_SCANS",
+    "XBOW_ENABLE_RECON",
+    "XBOW_ENABLE_EXTERNAL_RECON",
+    "XBOW_ENABLE_BROWSER_AUTOMATION",
     "XBOW_ENABLE_SCANNER_WORKER",
     "XBOW_ENABLE_NUCLEI",
     "XBOW_SCANNER_SANDBOX_PROFILE",
@@ -43,6 +46,7 @@ def test_live_readiness_is_blocked_by_safe_defaults(monkeypatch):
         if item["required"] and not item["ok"]
     }
     assert {
+        "recon_dispatch",
         "active_scans",
         "dry_run_disabled",
         "scanner_worker",
@@ -76,6 +80,7 @@ def test_live_readiness_passes_only_with_explicit_scanner_gates(monkeypatch):
     _credentials_ok(monkeypatch)
     monkeypatch.setenv("XBOW_API_TOKEN", "x" * 64)
     monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "true")
     monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
     monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
     monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
@@ -154,3 +159,36 @@ def test_live_readiness_exposes_redacted_first_run_operator_guide(monkeypatch):
     )
     assert result["persistent_scanner_profile_supported"] is True
     assert "token" not in "\n".join(result["activation_template"]).lower()
+
+
+
+def test_browser_automation_is_optional_but_reported(monkeypatch):
+    _clear(monkeypatch)
+    _credentials_ok(monkeypatch)
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "false")
+
+    result = readiness.build_hackerone_live_readiness({"ok": True})
+    by_id = {item["id"]: item for item in result["checks"]}
+
+    assert by_id["browser_automation"]["required"] is False
+    assert by_id["browser_automation"]["ok"] is False
+    assert "browser_automation_disabled" in result["browser_block_reasons"]
+
+
+def test_live_readiness_blocks_when_recon_is_disabled(monkeypatch):
+    _clear(monkeypatch)
+    _credentials_ok(monkeypatch)
+    monkeypatch.setenv("XBOW_API_TOKEN", "x" * 64)
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+    monkeypatch.setenv("XBOW_NUCLEI_ALLOWED_VERSION", "3.11.1")
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "false")
+
+    result = readiness.build_hackerone_live_readiness({"ok": True})
+
+    assert result["live_scan_ready"] is False
+    assert "recon_disabled" in result["recon_block_reasons"]
