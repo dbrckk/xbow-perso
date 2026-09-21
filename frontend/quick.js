@@ -9,6 +9,10 @@
     return ($('token')?.value||'').trim();
   }
 
+  function syncTokenVisibility(){
+    document.body.classList.toggle('quick-token-ready',Boolean(token()));
+  }
+
   async function api(path,opts={}){
     const headers={'content-type':'application/json',...(opts.headers||{})};
     const value=token();
@@ -17,6 +21,9 @@
     let data={};
     try{data=await response.json();}catch(_error){}
     if(!response.ok){
+      if(response.status===401||response.status===403){
+        document.body.classList.remove('quick-token-ready');
+      }
       const detail=data?.detail;
       const message=typeof detail==='string'
         ?detail
@@ -228,10 +235,12 @@
     }
   }
 
+  $('token')?.addEventListener('input',syncTokenVisibility);
   $('quickSelect')?.addEventListener('click',()=>void selectSix());
   $('quickStart')?.addEventListener('click',()=>void startBatch());
   $('quickJournalRefresh')?.addEventListener('click',()=>void refreshJournal());
 
+  syncTokenVisibility();
   renderSelection();
   void refreshJournal();
   setInterval(()=>void refreshJournal(),15000);
