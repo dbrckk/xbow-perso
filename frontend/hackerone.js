@@ -1873,6 +1873,12 @@
           Number(program.local_confirmed_findings||0)>0
             ?'local '+String(program.local_confirmed_findings)+' confirmé(s)'
             :null,
+          Number(program.local_cost_efficiency_score||0)>0
+            ?'coût local '+String(program.local_cost_efficiency_score)+'/10'
+            :null,
+          Number(program.local_average_duration_hours||0)>0
+            ?'durée moy. '+String(program.local_average_duration_hours)+' h'
+            :null,
           'priorité '+String(program.priority_score??0)+'/100',
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
