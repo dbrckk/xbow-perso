@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .opportunity_ranking import build_opportunity_signal
+
 
 def build_program_discovery(
     *,
@@ -77,6 +79,15 @@ def build_program_discovery(
         historical = float(signal.get("historical_value_score") or 0.0)
         score += min(25, int(historical))
 
+        opportunity = build_opportunity_signal(
+            status=status,
+            program=program,
+            signal=signal,
+            runtime=runtime,
+            is_new=handle in added,
+            is_changed=handle in changed,
+        )
+
         items.append({
             "handle": handle,
             "name": program.get("name") or handle,
@@ -87,6 +98,12 @@ def build_program_discovery(
             "submission_state": program.get("submission_state"),
             "state": program.get("state"),
             "priority_score": min(100, score),
+            "opportunity_score": opportunity["opportunity_score"],
+            "opportunity_reasons": opportunity["reasons"],
+            "research_focus": opportunity["research_focus"],
+            "runtime_ready_categories": opportunity["runtime_ready_categories"],
+            "runtime_partial_categories": opportunity["runtime_partial_categories"],
+            "public_high_critical_density": opportunity["public_high_critical_density"],
             "historical_value_score": historical,
             "historical_usd_awarded_max": float(signal.get("usd_awarded_max") or 0.0),
             "top_categories": list(signal.get("top_categories") or [])[:4],
@@ -102,6 +119,7 @@ def build_program_discovery(
     items.sort(
         key=lambda item: (
             {"READY": 0, "REVIEW": 1, "BLOCKED": 2}[item["status"]],
+            -int(item["opportunity_score"]),
             -int(item["priority_score"]),
             str(item["name"]).lower(),
         )

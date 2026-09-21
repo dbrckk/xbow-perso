@@ -1782,7 +1782,7 @@
     const query=String(el('h1BatchSearch')?.value||'').trim().toLowerCase();
     const bountyOnly=Boolean(el('h1BatchBountyOnly')?.checked);
     const readiness=String(el('h1BatchReadiness')?.value||'all');
-    const sort=String(el('h1BatchSort')?.value||'priority');
+    const sort=String(el('h1BatchSort')?.value||'opportunity');
     const programs=hackerOnePrograms.filter(program=>{
       if(bountyOnly&&program?.offers_bounties!==true)return false;
       if(readiness!=='all'&&String(program?.status||'REVIEW')!==readiness)return false;
@@ -1797,6 +1797,11 @@
       }
       if(sort==='historical_value'){
         return Number(right?.historical_value_score||0)-Number(left?.historical_value_score||0);
+      }
+      if(sort==='opportunity'){
+        return Number(right?.opportunity_score||0)-Number(left?.opportunity_score||0)
+          || Number(right?.priority_score||0)-Number(left?.priority_score||0)
+          || String(left?.name||left?.handle||'').localeCompare(String(right?.name||right?.handle||''));
       }
       const order={READY:0,REVIEW:1,BLOCKED:2};
       return (
@@ -1857,6 +1862,7 @@
         meta.className='muted compact';
         const parts=[
           String(program.handle||''),
+          'opportunité '+String(program.opportunity_score??0)+'/100',
           'priorité '+String(program.priority_score??0)+'/100',
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
@@ -1947,9 +1953,10 @@
     const candidates=hackerOnePrograms
       .filter(program=>String(program?.status||'')==='READY')
       .filter(program=>program?.offers_bounties===true)
-      .filter(program=>Number(program?.priority_score||0)>=minScore)
+      .filter(program=>Number(program?.opportunity_score||0)>=minScore)
       .sort((left,right)=>
-        Number(right?.priority_score||0)-Number(left?.priority_score||0)
+        Number(right?.opportunity_score||0)-Number(left?.opportunity_score||0)
+        || Number(right?.priority_score||0)-Number(left?.priority_score||0)
         || Number(right?.historical_value_score||0)-Number(left?.historical_value_score||0)
         || String(left?.name||left?.handle||'').localeCompare(String(right?.name||right?.handle||''))
       )
@@ -1957,7 +1964,7 @@
     batchSelectedHandles=new Set(candidates.map(program=>String(program.handle||'')));
     renderBatchCatalog();
     el('h1BatchSummary').textContent=candidates.length
-      ?candidates.length+' programme(s) READY sélectionné(s) automatiquement · validation serveur requise au lancement'
+      ?candidates.length+' programme(s) READY sélectionné(s) par Opportunity Score · validation serveur requise au lancement'
       :'Aucun programme READY ne correspond aux critères Auto-select.';
   }
 
