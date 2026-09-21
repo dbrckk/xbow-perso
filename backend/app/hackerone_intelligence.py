@@ -9,7 +9,11 @@ from typing import Any
 
 from .chain_intelligence import build_chain_intelligence
 from .hackerone_client import HackerOneClient, HackerOneClientError
-from .runtime_capabilities import safe_recon_runtime_capability, safe_scanner_runtime_capability
+from .runtime_capabilities import (
+    safe_browser_runtime_capability,
+    safe_recon_runtime_capability,
+    safe_scanner_runtime_capability,
+)
 from .runtime_gap_analysis import rank_runtime_capability_gaps, runtime_capability_snapshot
 from .storage import CampaignConflictError
 
@@ -539,9 +543,11 @@ def build_hackerone_intelligence(reports: list[dict[str, Any]]) -> dict[str, Any
     categories = _category_statistics(reports)
     programs = _program_signals(reports)
     capability_gaps = _capability_gaps(categories)
+    browser = safe_browser_runtime_capability()
     runtime = runtime_capability_snapshot(
         scanner=safe_scanner_runtime_capability(),
         recon=safe_recon_runtime_capability(),
+        browser_available=bool(browser.get("dispatch_ready")),
     )
     runtime_capability_gaps = rank_runtime_capability_gaps(capability_gaps, runtime)
 
