@@ -21,6 +21,7 @@ from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_intelligence import refresh_hackerone_intelligence
 from .local_outcome_intelligence import build_local_outcome_signals
 from .hackerone_discovery import build_program_discovery
+from .value_efficiency import select_diversified_portfolio
 from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_review_draft import build_hackerone_review_draft
 from .hackerone_report_tracking import (
@@ -222,6 +223,16 @@ def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any
     }
 
 
+def _remote_program_launch_block_reason(program: dict[str, Any]) -> str | None:
+    submission_state = str(program.get("submission_state") or "").strip().lower()
+    state = str(program.get("state") or "").strip().lower()
+    if submission_state in {"paused", "closed", "disabled"}:
+        return "program_submissions_not_open"
+    if state in {"closed", "disabled", "archived"}:
+        return "program_not_currently_open"
+    return None
+
+
 def _conservative_admission_reason(policy: Any) -> str | None:
     if not policy.safe_harbor_confirmed:
         return "safe_harbor_required"
@@ -391,6 +402,32 @@ def hackerone_program_discovery(
         "verification_limit": verify_limit,
         "catalog_checked_at": catalog.get("checked_at"),
         **result,
+    }
+
+
+@router.get("/api/hackerone/discovery/selection")
+def hackerone_discovery_selection(
+    limit: int = Query(default=5, ge=1, le=20),
+    min_score: int = Query(default=50, ge=0, le=100),
+):
+    """Return a server-ranked READY bounty portfolio without launching it."""
+    discovery = hackerone_program_discovery(verify_limit=50)
+    selected = select_diversified_portfolio(
+        list(discovery.get("programs") or []),
+        limit=limit,
+        min_score=min_score,
+    )
+    return {
+        "provider": "hackerone",
+        "selection": selected,
+        "handles": [str(item.get("handle") or "") for item in selected if item.get("handle")],
+        "limit": limit,
+        "min_score": min_score,
+        "catalog_checked_at": discovery.get("catalog_checked_at"),
+        "read_only": True,
+        "automatic_launch": False,
+        "scope_expansion": False,
+        "requires_launch_revalidation": True,
     }
 
 
@@ -630,6 +667,17 @@ def _reviewed_campaign_input(
         snapshot = fetch_hackerone_program_snapshot(handle)
     except HackerOneClientError as exc:
         raise _upstream_error(exc) from exc
+
+    block_reason = _remote_program_launch_block_reason(dict(snapshot.program or {}))
+    if block_reason is not None:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne program is no longer launchable",
+                "reason": block_reason,
+                "handles": [snapshot.handle],
+            },
+        )
 
     profile_id = f"{snapshot.handle}@{snapshot.snapshot_sha256}"
     profile = store.get_hackerone_review_profile(profile_id)
