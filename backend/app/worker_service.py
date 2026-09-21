@@ -40,7 +40,7 @@ from .storage_backend import create_storage
 from .validator import ValidationPolicyError, safe_http_probe
 from .worker import WorkerPolicyError
 from .worker_audit import seal_worker_outcome_event
-from .worker_liveness import write_worker_heartbeat
+from .worker_liveness import start_worker_heartbeat
 
 
 class CampaignCancelledError(ValueError):
@@ -611,12 +611,12 @@ def main() -> None:
     worker_role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
     heartbeat_role = "general" if worker_role in {"", "general"} else worker_role
     coordinator = heartbeat_role == "general"
+    try:
+        start_worker_heartbeat(heartbeat_role)
+    except ValueError:
+        # Invalid role/configuration still fails closed in the normal claim path.
+        pass
     while True:
-        try:
-            write_worker_heartbeat(heartbeat_role)
-        except (OSError, ValueError):
-            # Liveness reporting must never bypass worker policy or crash execution.
-            pass
         if coordinator:
             try:
                 maybe_refresh_hackerone_catalog(store)
