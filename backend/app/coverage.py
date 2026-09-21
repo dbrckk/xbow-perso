@@ -144,3 +144,41 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
         "may_unlock_actions": False,
         "interpretation": "evidence_guidance_not_security_assurance",
     }
+
+
+
+def prioritize_action_with_coverage(
+    action,
+    guidance: dict[str, Any],
+):
+    """Bound priority of repetitive scans without changing action kind or target."""
+    from .observation_graph import PlannedAction
+
+    if not isinstance(action, PlannedAction):
+        raise TypeError("action must be PlannedAction")
+
+    signal = {
+        "applied": False,
+        "priority_delta": 0,
+        "focus": str(guidance.get("focus") or "none"),
+        "advisory_only": True,
+        "action_kind_unchanged": True,
+        "target_unchanged": True,
+    }
+    if action.kind != "scan" or signal["focus"] != "surface_rotation":
+        return action, signal
+
+    diminishing = max(0.0, min(1.0, float(guidance.get("diminishing_returns") or 0.0)))
+    penalty = min(15, max(5, int(round(diminishing * 15))))
+    adjusted = PlannedAction(
+        kind=action.kind,
+        target=action.target,
+        reason=action.reason + "; marginal scan yield is low, deprioritized versus fresh in-scope surface work",
+        priority=max(0, int(action.priority) - penalty),
+    )
+    signal.update({
+        "applied": True,
+        "priority_delta": -penalty,
+        "diminishing_returns": diminishing,
+    })
+    return adjusted, signal
