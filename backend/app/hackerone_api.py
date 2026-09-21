@@ -909,38 +909,7 @@ def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
         _rollback_admitted_batch_campaigns(admitted_ids)
         raise
 
-    if payload.mode == "parallel":
-        record = storage().get_hackerone_batch_record(batch_id)
-        if record is None:
-            raise HTTPException(status_code=500, detail="HackerOne batch disappeared")
-        batch, version = record
-        changed = False
-        for member in batch["members"]:
-            try:
-                start_campaign(str(member["campaign_id"]))
-            except HTTPException as exc:
-                member["status"] = "blocked"
-                member["reason"] = str(exc.detail)[:500]
-            except Exception as exc:
-                member["status"] = "blocked"
-                member["reason"] = exc.__class__.__name__
-            else:
-                member["status"] = "running"
-            changed = True
-        if changed:
-            batch["summary"] = _batch_summary(batch["members"])
-            batch["state"] = (
-                "running"
-                if any(
-                    member["status"] == "running"
-                    for member in batch["members"]
-                )
-                else "completed"
-            )
-            batch["updated_at"] = utcnow()
-            storage().save_hackerone_batch(batch, expected_version=version)
-    else:
-        reconcile_hackerone_batch(queue(), storage(), batch_id)
+    reconcile_hackerone_batch(queue(), storage(), batch_id)
 
     latest = storage().get_hackerone_batch(batch_id)
     if latest is None:
