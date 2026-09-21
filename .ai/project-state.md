@@ -22,36 +22,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T19:12:50Z
+Generated: 2026-09-21T19:37:33Z
 
 ### Git
 - Branch: `main`
-- Head: `e4c2eda6995f`
-- Commit date: 2026-09-21T21:12:03+02:00
-- Commit: feat: minimal 2+2+2 auto bounty dashboard with learning journal (#333)
+- Head: `1dacbd48ab6a`
+- Commit date: 2026-09-21T21:36:36+02:00
+- Commit: fix: make simple bounty first-run flow actionable (#334)
 - Tracked files: 560
 
 ### Recently changed files
-- `.env.example`
-- `backend/app/github_learning_sync.py`
-- `backend/app/hackerone_api.py`
+- `backend/app/hackerone_review_draft.py`
 - `backend/app/main.py`
-- `backend/app/worker_service.py`
+- `backend/app/simple_portfolio.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_github_learning_sync.py`
+- `backend/tests/test_hackerone_review_draft.py`
 - `backend/tests/test_live_activation_profile.py`
-- `docker-compose.yml`
+- `backend/tests/test_simple_portfolio.py`
+- `frontend/app.css`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
 - `scripts/mobile-production-update.sh`
+- `.env.example`
+- `backend/app/github_learning_sync.py`
+- `backend/app/hackerone_api.py`
+- `backend/app/worker_service.py`
+- `backend/tests/test_github_learning_sync.py`
+- `docker-compose.yml`
 - `frontend/Dockerfile`
-- `.github/workflows/ci.yml`
-- `backend/app/simple_portfolio.py`
-- `backend/tests/test_simple_portfolio.py`
-- `VAULT_MIGRATION.md`
-- `backend/app/totp_auth.py`
 
 ### Project signals
 - `pyproject.toml`

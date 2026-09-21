@@ -5057,7 +5057,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: app/main.py
 ```python
-app = FastAPI(title="xbow-perso", version="0.6.1")
+app = FastAPI(title="xbow-perso", version="0.6.2")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -8969,7 +8969,12 @@ ciphertext = AESGCM(new_key).encrypt(
 ```python
 def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]
 ⋮----
-"""Pick a disjoint 2 easy + 2 medium + 2 high-value READY portfolio."""
+"""Pick 2 easy + 2 medium + 2 high-value bounty candidates.
+
+    READY programs are preferred. REVIEW programs may be proposed for the one-time
+    human review flow, but they remain non-launchable until an exact reviewed
+    profile is persisted for the current HackerOne snapshot.
+    """
 pool = [
 ⋮----
 def efficiency(item: dict[str, Any]) -> tuple[float, float, str]
@@ -8991,6 +8996,9 @@ high_value = sorted(
 ⋮----
 groups = {"easy": easy, "medium": medium, "high_value": high_value}
 selected = easy + medium + high_value
+ready_count = sum(
+review_count = sum(
+complete = len(easy) == 2 and len(medium) == 2 and len(high_value) == 2
 ```
 
 ## File: app/storage_backend.py
@@ -12399,6 +12407,8 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image()
 dockerfile = _text("frontend/Dockerfile")
 ⋮----
 def test_service_worker_matches_precache_assets_by_path()
+⋮----
+def test_simple_dashboard_exposes_first_run_review_flow()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -17205,7 +17215,7 @@ def test_simple_six_is_disjoint_and_complete()
 programs = [
 result = select_simple_six(programs)
 ⋮----
-def test_simple_six_never_selects_unreviewed_or_non_bounty_programs()
+def test_simple_six_can_propose_safe_harbor_review_candidates_but_not_launch_them()
 ```
 
 ## File: tests/test_storage_backend.py

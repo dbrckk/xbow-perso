@@ -1,20 +1,12 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "887c618b15b22a8a04b766cf95449761682d290f",
-  "head": "e4c2eda6995f523bbcc156b9bd3bd01b183c5773",
+  "base": "e4c2eda6995f523bbcc156b9bd3bd01b183c5773",
+  "head": "1dacbd48ab6a7cc8ee68fd631df1d6ad8e19c09f",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".env.example",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/github_learning_sync.py",
-      "status": "A"
-    },
-    {
-      "path": "backend/app/hackerone_api.py",
+      "path": "backend/app/hackerone_review_draft.py",
       "status": "M"
     },
     {
@@ -22,7 +14,7 @@
       "status": "M"
     },
     {
-      "path": "backend/app/worker_service.py",
+      "path": "backend/app/simple_portfolio.py",
       "status": "M"
     },
     {
@@ -34,15 +26,19 @@
       "status": "M"
     },
     {
-      "path": "backend/tests/test_github_learning_sync.py",
-      "status": "A"
+      "path": "backend/tests/test_hackerone_review_draft.py",
+      "status": "M"
     },
     {
       "path": "backend/tests/test_live_activation_profile.py",
       "status": "M"
     },
     {
-      "path": "docker-compose.yml",
+      "path": "backend/tests/test_simple_portfolio.py",
+      "status": "M"
+    },
+    {
+      "path": "frontend/app.css",
       "status": "M"
     },
     {
@@ -63,14 +59,14 @@
     }
   ],
   "changed_source_files": [
-    "backend/app/github_learning_sync.py",
-    "backend/app/hackerone_api.py",
+    "backend/app/hackerone_review_draft.py",
     "backend/app/main.py",
-    "backend/app/worker_service.py",
+    "backend/app/simple_portfolio.py",
     "backend/tests/test_frontend_auth_proxy.py",
     "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_github_learning_sync.py",
+    "backend/tests/test_hackerone_review_draft.py",
     "backend/tests/test_live_activation_profile.py",
+    "backend/tests/test_simple_portfolio.py",
     "frontend/simple.js",
     "frontend/sw.js"
   ],
@@ -96,9 +92,9 @@
     "backend/app/finding_lifecycle.py",
     "backend/app/finding_readiness.py",
     "backend/app/finding_triage.py",
-    "backend/app/github_learning_sync.py",
     "backend/app/hackerone_api.py",
     "backend/app/hackerone_batch.py",
+    "backend/app/hackerone_review_draft.py",
     "backend/app/hackerone_scope_import.py",
     "backend/app/high_value_intelligence.py",
     "backend/app/hypothesis_engine.py",
@@ -129,6 +125,7 @@
     "backend/app/scanner_normalization.py",
     "backend/app/scanner_registry.py",
     "backend/app/scanner_worker.py",
+    "backend/app/simple_portfolio.py",
     "backend/app/strix_parser.py",
     "backend/app/submission_api.py",
     "backend/app/validator.py",
@@ -164,21 +161,13 @@
     "backend/tests/test_finding_triage.py",
     "backend/tests/test_frontend_auth_proxy.py",
     "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_github_learning_sync.py",
     "backend/tests/test_hackerone_attention.py",
-    "backend/tests/test_hackerone_batch_api.py",
-    "backend/tests/test_hackerone_binding.py",
-    "backend/tests/test_hackerone_control_center_api.py",
-    "backend/tests/test_hackerone_launch_api.py",
     "backend/tests/test_hackerone_needs_info.py",
-    "backend/tests/test_hackerone_nuclei_e2e.py",
     "backend/tests/test_hackerone_outbound_submission.py",
-    "backend/tests/test_hackerone_remote_binding.py",
     "backend/tests/test_hackerone_report_lifecycle_e2e.py",
     "backend/tests/test_hackerone_report_sync_worker.py",
     "backend/tests/test_hackerone_report_tracking.py",
-    "backend/tests/test_hackerone_review_profiles.py",
-    "backend/tests/test_hackerone_reviewed_batch_api.py",
+    "backend/tests/test_hackerone_review_draft.py",
     "backend/tests/test_hackerone_scope_preview_api.py",
     "backend/tests/test_health.py",
     "backend/tests/test_high_value_intelligence.py",
@@ -227,6 +216,7 @@
     "backend/tests/test_scanner_observation_chain.py",
     "backend/tests/test_scanner_worker.py",
     "backend/tests/test_scope.py",
+    "backend/tests/test_simple_portfolio.py",
     "backend/tests/test_submission_api.py",
     "backend/tests/test_submission_state.py",
     "backend/tests/test_validator.py",
@@ -235,7 +225,6 @@
     "backend/tests/test_worker_observations.py",
     "backend/tests/test_worker_outcome_memory.py",
     "backend/tests/test_worker_parser.py",
-    "backend/tests/test_worker_roles.py",
     "backend/tests/test_worker_state.py",
     "frontend/simple.js",
     "frontend/sw.js"
@@ -968,90 +957,6 @@
       "line": 143
     },
     {
-      "name": "LearningSyncError",
-      "kind": "class",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 22
-    },
-    {
-      "name": "_bool_env",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 26
-    },
-    {
-      "name": "_repo",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 38
-    },
-    {
-      "name": "_token",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 45
-    },
-    {
-      "name": "learning_sync_configuration",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 56
-    },
-    {
-      "name": "_safe_text",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 70
-    },
-    {
-      "name": "_campaign_digest",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 75
-    },
-    {
-      "name": "build_learning_digest",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 122
-    },
-    {
-      "name": "_render_issue_body",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 155
-    },
-    {
-      "name": "_github_json",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 214
-    },
-    {
-      "name": "_existing_issue",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 246
-    },
-    {
-      "name": "sync_batch_learning_issue",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 256
-    },
-    {
-      "name": "_retry_due",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 292
-    },
-    {
-      "name": "sync_completed_learning_batches",
-      "kind": "function",
-      "file": "backend/app/github_learning_sync.py",
-      "line": 305
-    },
-    {
       "name": "HackerOneProgramPolicyInput",
       "kind": "class",
       "file": "backend/app/hackerone_api.py",
@@ -1440,6 +1345,12 @@
       "kind": "function",
       "file": "backend/app/hackerone_batch.py",
       "line": 281
+    },
+    {
+      "name": "build_hackerone_review_draft",
+      "kind": "function",
+      "file": "backend/app/hackerone_review_draft.py",
+      "line": 6
     },
     {
       "name": "HackerOneScopeImportError",
@@ -2040,6 +1951,84 @@
       "kind": "function",
       "file": "backend/app/main.py",
       "line": 897
+    },
+    {
+      "name": "list_campaign_observations",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 927
+    },
+    {
+      "name": "campaign_decision_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 933
+    },
+    {
+      "name": "campaign_event_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 945
+    },
+    {
+      "name": "campaign_worker_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 955
+    },
+    {
+      "name": "campaign_knowledge",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 967
+    },
+    {
+      "name": "campaign_finding_ranking",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 982
+    },
+    {
+      "name": "campaign_advisory_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1009
+    },
+    {
+      "name": "campaign_advisory_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1018
+    },
+    {
+      "name": "campaign_advisory_journal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1029
+    },
+    {
+      "name": "campaign_hypothesis_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1041
+    },
+    {
+      "name": "campaign_hypothesis_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1050
+    },
+    {
+      "name": "campaign_hypothesis_stability",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1061
+    },
+    {
+      "name": "campaign_plan",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1073
     }
   ],
   "selected_tests": [
@@ -2075,21 +2064,13 @@
     "backend/tests/test_finding_triage.py",
     "backend/tests/test_frontend_auth_proxy.py",
     "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_github_learning_sync.py",
     "backend/tests/test_hackerone_attention.py",
-    "backend/tests/test_hackerone_batch_api.py",
-    "backend/tests/test_hackerone_binding.py",
-    "backend/tests/test_hackerone_control_center_api.py",
-    "backend/tests/test_hackerone_launch_api.py",
     "backend/tests/test_hackerone_needs_info.py",
-    "backend/tests/test_hackerone_nuclei_e2e.py",
     "backend/tests/test_hackerone_outbound_submission.py",
-    "backend/tests/test_hackerone_remote_binding.py",
     "backend/tests/test_hackerone_report_lifecycle_e2e.py",
     "backend/tests/test_hackerone_report_sync_worker.py",
     "backend/tests/test_hackerone_report_tracking.py",
-    "backend/tests/test_hackerone_review_profiles.py",
-    "backend/tests/test_hackerone_reviewed_batch_api.py",
+    "backend/tests/test_hackerone_review_draft.py",
     "backend/tests/test_hackerone_scope_preview_api.py",
     "backend/tests/test_health.py",
     "backend/tests/test_high_value_intelligence.py",
@@ -2118,7 +2099,6 @@
     "backend/tests/test_pentagi_control_api.py",
     "backend/tests/test_pentagi_dispatch.py",
     "backend/tests/test_pentagi_execution_guard.py",
-    "backend/tests/test_pentagi_status_worker_service.py",
     "backend/tests/test_pentagi_transport.py",
     "backend/tests/test_pentagi_worker_service.py",
     "backend/tests/test_pipeline_swarm.py",
@@ -2142,6 +2122,15 @@
     "backend/tests/test_scanner_worker.py",
     "backend/tests/test_scope.py",
     "backend/tests/test_simple_portfolio.py",
-    "backend/tests/test_submission_api.py"
+    "backend/tests/test_submission_api.py",
+    "backend/tests/test_submission_state.py",
+    "backend/tests/test_swarm_coordinator.py",
+    "backend/tests/test_validator.py",
+    "backend/tests/test_worker_concurrency.py",
+    "backend/tests/test_worker_job_provenance.py",
+    "backend/tests/test_worker_observations.py",
+    "backend/tests/test_worker_outcome_memory.py",
+    "backend/tests/test_worker_parser.py",
+    "backend/tests/test_worker_state.py"
   ]
 }

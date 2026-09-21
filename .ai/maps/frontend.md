@@ -371,9 +371,21 @@ async function api(path,options=
 ⋮----
 function money(value)
 ⋮----
+function stateLabel(item)
+⋮----
 function renderSelection(result)
 ⋮----
+function clearReviewPanel()
+⋮----
+function reviewableDraft(draft)
+⋮----
+function renderReviewDrafts()
+⋮----
+async function loadReviewDrafts(result)
+⋮----
 async function prepare()
+⋮----
+async function saveReviews()
 ⋮----
 async function start()
 ⋮----

@@ -1,26 +1,24 @@
 # Change impact
 
-Base: f2c7cf81924b462fde945568b0f5e9c005921d74
-Head: e4c2eda6995f523bbcc156b9bd3bd01b183c5773
+Base: 335c719de45405aae9f11125b22c8e24cf0eb2f0
+Head: 1dacbd48ab6a7cc8ee68fd631df1d6ad8e19c09f
 
 ## Changed files
-- M .env.example
-- A backend/app/github_learning_sync.py
-- M backend/app/hackerone_api.py
+- M backend/app/hackerone_review_draft.py
 - M backend/app/main.py
-- M backend/app/worker_service.py
+- M backend/app/simple_portfolio.py
 - M backend/tests/test_frontend_auth_proxy.py
 - M backend/tests/test_frontend_policy_launcher.py
-- A backend/tests/test_github_learning_sync.py
+- M backend/tests/test_hackerone_review_draft.py
 - M backend/tests/test_live_activation_profile.py
-- M docker-compose.yml
+- M backend/tests/test_simple_portfolio.py
+- M frontend/app.css
 - M frontend/index.html
 - M frontend/simple.js
 - M frontend/sw.js
 - M scripts/mobile-production-update.sh
 
 ## Affected areas
-- (root)
 - backend
 - frontend
 - scripts
