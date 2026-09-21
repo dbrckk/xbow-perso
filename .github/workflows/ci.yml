@@ -73,6 +73,7 @@ jobs:
           node-version: '22'
       - run: node --check frontend/app.js
       - run: node --check frontend/hackerone.js
+      - run: node --check frontend/quick.js
       - run: node --check frontend/sw.js
       - run: bash -n scripts/mobile-production-preflight.sh
       - run: bash -n scripts/mobile-production-cutover.sh
@@ -124,6 +125,8 @@ jobs:
           curl -fsSI http://127.0.0.1:8080/app.css
           curl -fsSI http://127.0.0.1:8080/app.js
           curl -fsSI http://127.0.0.1:8080/hackerone.js
+          curl -fsSI http://127.0.0.1:8080/quick.js
           curl -fsS http://127.0.0.1:8080/ | grep -q 'class="topbar"'
+          curl -fsS http://127.0.0.1:8080/ | grep -q 'id="quickDashboard"'
           docker compose down -v
       - run: docker compose --profile scanner build --pull scanner-worker
