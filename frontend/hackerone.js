@@ -2076,6 +2076,18 @@
     };
   }
 
+  function hackerOneBatchMemberReason(reason){
+    const value=String(reason||'');
+    const labels={
+      remote_snapshot_binding_missing:'binding HackerOne incomplet · revue requise',
+      remote_revalidation_unavailable:'HackerOne temporairement indisponible · nouvelle tentative automatique',
+      remote_snapshot_changed_since_batch_admission:'scope/policy modifié depuis la mise en file · revue requise',
+      remote_submissions_no_longer_open:'soumissions HackerOne désormais pausées/fermées · revue requise',
+      remote_program_no_longer_open:'programme HackerOne désormais fermé · revue requise'
+    };
+    return labels[value]||value;
+  }
+
   function renderBatchProgress(batch){
     const members=Array.isArray(batch?.members)?batch.members:[];
     const progress=el('h1BatchProgress');
@@ -2094,7 +2106,7 @@
       const detail=document.createElement('div');
       detail.className='muted compact';
       detail.textContent='campagne '+String(member.campaign_id||'—')+
-        (member.reason?' · '+String(member.reason):'');
+        (member.reason?' · '+hackerOneBatchMemberReason(member.reason):'');
       info.append(title,detail);
       const badge=document.createElement('span');
       const status=String(member.status||'ready');
