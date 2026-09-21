@@ -40,6 +40,9 @@ require_baseline_gate() {
 require_baseline_gate "DRY_RUN" "true"
 require_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
+require_baseline_gate "XBOW_ENABLE_RECON" "false"
+require_baseline_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+require_baseline_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
 require_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
@@ -79,6 +82,9 @@ DRY_RUN=false
 XBOW_ENABLE_ACTIVE_SCANS=true
 XBOW_ENABLE_SCANNER_WORKER=true
 XBOW_ENABLE_NUCLEI=true
+XBOW_ENABLE_RECON=true
+XBOW_ENABLE_EXTERNAL_RECON=false
+XBOW_ENABLE_BROWSER_AUTOMATION=false
 XBOW_SCAN_ENGINES=nuclei
 XBOW_SCANNER_ALLOWED_ENGINES=nuclei
 XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
@@ -107,5 +113,6 @@ trap - ERR
 echo
 echo "PERSISTENT HACKERONE NUCLEI PROFILE ARMED"
 echo "The root-only profile survives normal production updates."
+echo "Bounded builtin recon is enabled; external recon and browser automation remain disabled."
 echo "Every campaign still requires verified HackerOne scope/policy/fingerprint admission."
 echo "HackerOne report submission remains disabled."
