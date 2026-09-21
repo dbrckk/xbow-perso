@@ -97,7 +97,6 @@ def _campaign_digest(store, campaign_id: str) -> dict[str, Any]:
     for item in findings[:40]:
         finding_brief.append(
             {
-                "title": _safe_text(item.get("title"), 180),
                 "severity": _safe_text(item.get("severity"), 32),
                 "status": _safe_text(item.get("status"), 32),
                 "cwe": _safe_text(item.get("cwe"), 40),
