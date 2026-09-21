@@ -1,14 +1,24 @@
 # Change impact
 
-Base: b9cca18d46bbe964d3aad05a5363fbacff29882b
-Head: cbdbb7384001b35f6890eac9c555fd1a6a001fc1
+Base: b1141d241e48b40ab119c3065811d6672f0b31e3
+Head: 88e6e7c674a22385bbea8cdfc21bb2cbaeee808a
 
 ## Changed files
-- M frontend/app.js
+- M .deploy-trigger
+- M backend/app/main.py
+- A backend/tests/test_frontend_auth_proxy.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M backend/tests/test_live_activation_profile.py
+- M frontend/index.html
+- M frontend/nginx.conf
 - M frontend/sw.js
+- M scripts/mobile-production-update.sh
 
 ## Affected areas
+- (root)
+- backend
 - frontend
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

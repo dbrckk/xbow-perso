@@ -9,12 +9,43 @@
     "top_score": 27
   },
   "cache": {
-    "fingerprint": "f0dfa13b96e0d9372c95c40816886adbe3dd830129ca8d648610fc866f7125b0",
+    "fingerprint": "119685ecff6951444b30afeb019a0902e350f04d169a5ad1dca127808c65b537",
     "hit": false
   },
-  "candidate_count": 217,
+  "candidate_count": 167,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/orchestrator.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "_decision_explanation",
+        "_enqueue_action",
+        "_enqueue_recon_tasks",
+        "_graph_fingerprint",
+        "_intelligence_context",
+        "_load_graph",
+        "_minimum_enrichment_score",
+        "_pending_findings",
+        "_record_decision",
+        "_result",
+        "_scan_engines",
+        "_seed_primary_target",
+        "_stable_id",
+        "_surface_enrichment",
+        "_validation_saturated_cluster_ids",
+        "advance_campaign",
+        "scope_checker"
+      ]
+    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -34,26 +65,6 @@
         "test_scan_engines_default_preserves_strix",
         "test_scan_engines_support_explicit_nuclei_and_fail_closed",
         "test_sqlite_queue_accepts_nuclei_scan"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_adaptation.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 27,
-      "symbols": [
-        "_memory",
-        "test_adaptation_never_expands_configured_engines",
-        "test_adaptation_never_suppresses_last_configured_engine",
-        "test_adaptation_ranks_successful_memory_first",
-        "test_adaptation_rejects_unknown_or_duplicate_configuration",
-        "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
       ]
     },
     {
@@ -89,17 +100,14 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "path": "backend/app/report.py",
       "reasons": [
         "impact",
         "search-index"
       ],
       "score": 23,
       "symbols": [
-        "_launch_payload",
-        "_resource",
-        "fake_execute",
-        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue"
+        "render_markdown"
       ]
     },
     {
@@ -107,18 +115,15 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "path": "backend/app/scanner_ingestion.py",
       "reasons": [
         "impact",
         "search-index"
       ],
       "score": 23,
       "symbols": [
-        "_headers",
-        "_launch_payload",
-        "_resource",
-        "fake_execute",
-        "test_hackerone_full_lifecycle_produces_downloadable_report"
+        "ScannerIngestionResult",
+        "ingest_scanner_run"
       ]
     },
     {
@@ -126,27 +131,23 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_hypothesis_memory.py",
+      "path": "backend/app/scanner_normalization.py",
       "reasons": [
         "impact",
         "search-index"
       ],
       "score": 23,
       "symbols": [
-        "_graph",
-        "test_hypothesis_becomes_partially_supported_after_independent_validation",
-        "test_hypothesis_delta_explains_confidence_status_and_evidence_changes",
-        "test_hypothesis_delta_is_empty_for_equivalent_snapshots",
-        "test_hypothesis_delta_tracks_added_and_removed_findings",
-        "test_hypothesis_fingerprint_ignores_planner_decision_memory",
-        "test_hypothesis_fingerprint_ignores_unrelated_evidence",
-        "test_hypothesis_requires_observed_validation_and_evidence_for_support",
-        "test_hypothesis_snapshot_becomes_stale_when_graph_changes",
-        "test_hypothesis_starts_unvalidated",
-        "test_self_validation_never_supports_hypothesis",
-        "test_stability_detects_confidence_reversal_as_contradictory",
-        "test_stability_marks_single_snapshot_as_fresh",
-        "test_stability_marks_three_identical_snapshots_as_stable"
+        "NormalizedScannerFinding",
+        "_optional_cvss",
+        "_optional_str",
+        "_severity",
+        "_string_list",
+        "dedupe_normalized",
+        "normalize_nuclei_item",
+        "normalize_strix_item",
+        "normalized_finding_id",
+        "to_campaign_finding"
       ]
     }
   ],

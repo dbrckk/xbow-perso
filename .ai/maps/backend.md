@@ -244,6 +244,7 @@ tests/
   test_finding_review_metadata.py
   test_finding_triage.py
   test_form_waf_reasoning.py
+  test_frontend_auth_proxy.py
   test_frontend_policy_launcher.py
   test_hackerone_activity_summary.py
   test_hackerone_attention.py
@@ -4907,7 +4908,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: app/main.py
 ```python
-app = FastAPI(title="xbow-perso", version="0.5.2")
+app = FastAPI(title="xbow-perso", version="0.5.3")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -12262,6 +12263,25 @@ before = build_red_team_coverage(graph)
 after = build_red_team_coverage(graph)
 ```
 
+## File: tests/test_frontend_auth_proxy.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def _text(path: str) -> str
+⋮----
+def test_frontend_proxies_redacted_backend_diagnostics()
+⋮----
+nginx = _text("frontend/nginx.conf")
+⋮----
+def test_diagnostic_routes_bypass_service_worker_cache()
+⋮----
+sw = _text("frontend/sw.js")
+⋮----
+def test_frontend_assets_are_explicitly_cache_busted()
+⋮----
+index = _text("frontend/index.html")
+```
+
 ## File: tests/test_frontend_policy_launcher.py
 ```python
 ROOT = Path(__file__).resolve().parents[2]
@@ -14139,6 +14159,8 @@ script = _text(name)
 def test_live_production_update_requires_backend_go_no_go_readiness()
 ⋮----
 def test_production_update_normalizes_api_token_source()
+⋮----
+def test_production_update_attests_frontend_diagnostic_proxy()
 ```
 
 ## File: tests/test_local_outcome_intelligence.py

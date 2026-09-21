@@ -22,36 +22,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T13:49:28Z
+Generated: 2026-09-21T14:06:27Z
 
 ### Git
 - Branch: `main`
-- Head: `cbdbb7384001`
-- Commit date: 2026-09-21T15:49:16+02:00
-- Commit: fix: prevent auth source status from staying on verifying (#322)
-- Tracked files: 554
+- Head: `88e6e7c674a2`
+- Commit date: 2026-09-21T16:06:13+02:00
+- Commit: fix: proxy auth diagnostics correctly and defeat stale mobile cache (#323)
+- Tracked files: 555
 
 ### Recently changed files
-- `frontend/app.js`
-- `frontend/sw.js`
 - `.deploy-trigger`
-- `.github/workflows/mobile-vps-deploy.yml`
-- `backend/app/auth.py`
 - `backend/app/main.py`
-- `backend/tests/test_auth.py`
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_live_activation_profile.py`
 - `frontend/index.html`
+- `frontend/nginx.conf`
+- `frontend/sw.js`
+- `scripts/mobile-production-update.sh`
+- `frontend/app.js`
+- `.github/workflows/mobile-vps-deploy.yml`
+- `backend/app/auth.py`
+- `backend/tests/test_auth.py`
 - `scripts/mobile-production-cutover.sh`
 - `scripts/mobile-production-preflight.sh`
-- `scripts/mobile-production-update.sh`
 - `scripts/mobile-vault-rollback.sh`
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_batch.py`
 - `backend/app/storage_backend.py`
 - `backend/app/storage_core.py`
-- `backend/tests/test_hackerone_batch.py`
-- `backend/tests/test_hackerone_batch_api.py`
-- `backend/tests/test_hackerone_prelaunch.py`
 
 ### Project signals
 - `pyproject.toml`
