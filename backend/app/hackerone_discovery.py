@@ -14,11 +14,13 @@ def build_program_discovery(
     verified_snapshots: dict[str, str] | None = None,
     runtime: dict[str, Any] | None = None,
     catalog_changes: dict[str, list[str]] | None = None,
+    local_outcomes: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build a read-only discovery view for low-friction program selection."""
     verified = verified_snapshots or {}
     runtime = runtime or {}
     changes = catalog_changes or {}
+    local_outcomes = local_outcomes or {}
     added = set(changes.get("added") or [])
     changed = set(changes.get("changed") or [])
     profiles_by_handle: dict[str, list[dict[str, Any]]] = {}
@@ -64,6 +66,7 @@ def build_program_discovery(
                 reasons.append("first_review_required")
 
         signal = dict(program_signals.get(handle) or {})
+        local_signal = dict(local_outcomes.get(handle) or {})
         score = 0
         if program.get("offers_bounties") is True:
             score += 25
@@ -88,6 +91,17 @@ def build_program_discovery(
             is_new=handle in added,
             is_changed=handle in changed,
         )
+        local_bonus = min(10, int(local_signal.get("local_outcome_score") or 0))
+        if local_bonus:
+            opportunity = {
+                **opportunity,
+                "opportunity_score": min(
+                    100,
+                    int(opportunity["opportunity_score"]) + local_bonus,
+                ),
+                "reasons": list(opportunity["reasons"]) + ["local_confirmed_outcome_signal"],
+            }
+
         efficiency = build_value_efficiency_signal(
             status=status,
             opportunity_score=int(opportunity["opportunity_score"]),
@@ -116,6 +130,11 @@ def build_program_discovery(
             "value_efficiency_score": efficiency["value_efficiency_score"],
             "effort_factor": efficiency["effort_factor"],
             "efficiency_reasons": efficiency["efficiency_reasons"],
+            "local_outcome_score": int(local_signal.get("local_outcome_score") or 0),
+            "local_confirmed_findings": int(local_signal.get("confirmed_finding_count") or 0),
+            "local_high_critical_confirmed": int(local_signal.get("high_critical_confirmed_count") or 0),
+            "local_submitted_reports": int(local_signal.get("submitted_report_count") or 0),
+            "local_smoothed_success_rate": float(local_signal.get("smoothed_success_rate") or 0.0),
             "historical_value_score": historical,
             "historical_usd_awarded_max": float(signal.get("usd_awarded_max") or 0.0),
             "top_categories": list(signal.get("top_categories") or [])[:4],
