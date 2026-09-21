@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T14:16:12Z
+Generated: 2026-09-21T14:35:15Z
 
 ### Git
 - Branch: `main`
-- Head: `e22e0ed67292`
-- Commit date: 2026-09-21T16:16:01+02:00
-- Commit: fix: self-heal production baseline and honor vault API token (#324)
-- Tracked files: 555
+- Head: `f1ceaf3882a1`
+- Commit date: 2026-09-21T16:35:01+02:00
+- Commit: fix: add verified vault API token reset helper (#325)
+- Tracked files: 557
 
 ### Recently changed files
+- `backend/tests/test_mobile_reset_api_token.py`
+- `scripts/mobile-reset-api-token.sh`
 - `.deploy-trigger`
 - `backend/app/hackerone_live_readiness.py`
 - `backend/app/main.py`
@@ -45,11 +47,6 @@ Generated: 2026-09-21T14:16:12Z
 - `frontend/sw.js`
 - `frontend/app.js`
 - `.github/workflows/mobile-vps-deploy.yml`
-- `backend/app/auth.py`
-- `backend/tests/test_auth.py`
-- `scripts/mobile-production-cutover.sh`
-- `scripts/mobile-production-preflight.sh`
-- `scripts/mobile-vault-rollback.sh`
 
 ### Project signals
 - `pyproject.toml`

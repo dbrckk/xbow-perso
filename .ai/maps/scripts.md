@@ -46,6 +46,7 @@ mobile-production-preflight.sh
 mobile-production-rollback.sh
 mobile-production-status.sh
 mobile-production-update.sh
+mobile-reset-api-token.sh
 mobile-vault-cutover.sh
 mobile-vault-rollback.sh
 ```
@@ -1080,6 +1081,53 @@ else
   echo "SAFE PRODUCTION UPDATE COMPLETE"
   echo "No active scanner profile is armed."
 fi
+```
+
+## File: mobile-reset-api-token.sh
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+INSTALL_DIR="${XBOW_INSTALL_DIR:-/opt/xbow-perso}"
+cd "$INSTALL_DIR"
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Run with sudo: sudo bash $0" >&2
+  exit 1
+fi
+
+COMPOSE=(
+  docker compose
+  -f docker-compose.yml
+  -f docker-compose.distributed.yml
+  -f docker-compose.tls.yml
+)
+
+TOKEN="$(openssl rand -hex 32)"
+printf '%s' "$TOKEN" | "${COMPOSE[@]}" exec -T backend python -c '
+import sys
+from app.secret_vault import set_secret, vault_enabled
+from app.auth import configured_api_token
+if not vault_enabled():
+    raise SystemExit("vault is not enabled")
+token = sys.stdin.read().strip()
+if len(token) < 32:
+    raise SystemExit("generated token is unexpectedly short")
+set_secret("api_token", token)
+if configured_api_token() != token:
+    raise SystemExit("vault api_token verification failed")
+print("vault api_token updated and verified")
+'
+
+install -m 600 /dev/null /root/xbow-api-token.txt
+printf '%s\n' "$TOKEN" > /root/xbow-api-token.txt
+
+echo
+echo "NEW XBOW API TOKEN:"
+printf '%s\n' "$TOKEN"
+echo
+echo "Saved root-only at /root/xbow-api-token.txt"
+echo "Paste this exact token into the dashboard Jeton API field."
 ```
 
 ## File: mobile-vault-cutover.sh

@@ -1,18 +1,13 @@
 # Change impact
 
-Base: 024db1329a639c98ca120c3de3284b3b44aa1939
-Head: e22e0ed67292cb0bc36c6e9567d4c01fe03d13a6
+Base: d3df7ecc99a6cdb75ba035f1d5b81a4df8b3f665
+Head: f1ceaf3882a14a861461651d9c6e4feb4bfd818c
 
 ## Changed files
-- M .deploy-trigger
-- M backend/app/hackerone_live_readiness.py
-- M backend/app/main.py
-- M backend/tests/test_hackerone_live_readiness.py
-- M backend/tests/test_live_activation_profile.py
-- M scripts/mobile-production-update.sh
+- A backend/tests/test_mobile_reset_api_token.py
+- A scripts/mobile-reset-api-token.sh
 
 ## Affected areas
-- (root)
 - backend
 - scripts
 

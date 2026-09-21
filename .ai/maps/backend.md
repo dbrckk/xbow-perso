@@ -294,6 +294,7 @@ tests/
   test_live_activation_profile.py
   test_local_outcome_intelligence.py
   test_metrics.py
+  test_mobile_reset_api_token.py
   test_nuclei_preflight.py
   test_nuclei_queue_lifecycle.py
   test_nuclei_worker_plan.py
@@ -14205,6 +14206,15 @@ result = build_operational_metrics(Queue(), Storage())
 rendered = str(result)
 ⋮----
 def test_metrics_route_is_exposed_under_authenticated_api()
+```
+
+## File: tests/test_mobile_reset_api_token.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def test_mobile_api_token_reset_is_vault_only_and_verifies_round_trip()
+⋮----
+script = (ROOT / "scripts" / "mobile-reset-api-token.sh").read_text(encoding="utf-8")
 ```
 
 ## File: tests/test_nuclei_preflight.py
