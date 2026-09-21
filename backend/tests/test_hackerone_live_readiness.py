@@ -29,6 +29,15 @@ def _credentials_ok(monkeypatch):
         "load_hackerone_credentials",
         lambda: object(),
     )
+    monkeypatch.setattr(
+        readiness,
+        "worker_liveness_snapshot",
+        lambda: {
+            "general": {"role": "general", "live": True, "contains_secrets": False},
+            "scanner": {"role": "scanner", "live": True, "contains_secrets": False},
+            "contains_secrets": False,
+        },
+    )
 
 
 def test_live_readiness_is_blocked_by_safe_defaults(monkeypatch):
@@ -192,3 +201,42 @@ def test_live_readiness_blocks_when_recon_is_disabled(monkeypatch):
 
     assert result["live_scan_ready"] is False
     assert "recon_disabled" in result["recon_block_reasons"]
+
+
+
+def test_live_readiness_blocks_when_scanner_heartbeat_is_stale(monkeypatch):
+    _clear(monkeypatch)
+    _credentials_ok(monkeypatch)
+    monkeypatch.setattr(
+        readiness,
+        "worker_liveness_snapshot",
+        lambda: {
+            "general": {"role": "general", "live": True, "contains_secrets": False},
+            "scanner": {
+                "role": "scanner",
+                "live": False,
+                "reason": "heartbeat_stale",
+                "age_seconds": 45,
+                "max_age_seconds": 30,
+                "contains_secrets": False,
+            },
+            "contains_secrets": False,
+        },
+    )
+    monkeypatch.setenv("XBOW_API_TOKEN", "x" * 64)
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "true")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+    monkeypatch.setenv("XBOW_NUCLEI_ALLOWED_VERSION", "3.11.1")
+    monkeypatch.setenv("DRY_RUN", "false")
+
+    result = readiness.build_hackerone_live_readiness({"ok": True})
+    by_id = {item["id"]: item for item in result["checks"]}
+
+    assert result["live_scan_ready"] is False
+    assert by_id["scanner_worker_live"]["ok"] is False
+    assert result["worker_liveness"]["scanner"]["reason"] == "heartbeat_stale"
+    assert result["contains_secrets"] is False
