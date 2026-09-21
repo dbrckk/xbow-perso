@@ -1,19 +1,17 @@
 # Change impact
 
-Base: 0ae6e0f23b0250face518da9a23d3202e1550cfa
-Head: 5c14cae792675a3993a5f056f537fb9b38f42da7
+Base: 3683a040d2e2d27666ba86cb3a749321d625a3be
+Head: 38e1de38c379b0cec7665c0a91127f83849ad9c0
 
 ## Changed files
-- A backend/tests/test_live_activation_profile.py
-- M scripts/mobile-enable-hackerone-nuclei.sh
-- M scripts/mobile-production-cutover.sh
-- M scripts/mobile-production-preflight.sh
-- M scripts/mobile-production-rollback.sh
-- M scripts/mobile-production-update.sh
+- M backend/app/hackerone_live_readiness.py
+- A backend/app/worker_liveness.py
+- M backend/app/worker_service.py
+- M backend/tests/test_hackerone_live_readiness.py
+- A backend/tests/test_worker_liveness.py
 
 ## Affected areas
 - backend
-- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

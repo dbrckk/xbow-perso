@@ -190,6 +190,7 @@ app/
   vault_cli.py
   vault_migration.py
   worker_audit.py
+  worker_liveness.py
   worker_service.py
   worker_watchdog.py
   worker.py
@@ -392,6 +393,7 @@ tests/
   test_watchdog_observability.py
   test_worker_concurrency.py
   test_worker_job_provenance.py
+  test_worker_liveness.py
   test_worker_observations.py
   test_worker_outcome_memory.py
   test_worker_parser.py
@@ -3587,6 +3589,9 @@ deployment = build_deployment_preflight(dependencies)
 scanner = safe_scanner_runtime_capability()
 recon = safe_recon_runtime_capability()
 browser = safe_browser_runtime_capability()
+workers = worker_liveness_snapshot()
+general_worker = dict(workers.get("general") or {})
+scanner_worker = dict(workers.get("scanner") or {})
 ⋮----
 credentials_configured = True
 ⋮----
@@ -10032,6 +10037,70 @@ expected_signature = hmac.new(
 previous_hash = str(item["worker_hash"])
 ```
 
+## File: app/worker_liveness.py
+```python
+_ALLOWED_ROLES = {"general", "scanner"}
+_DEFAULT_ROOT = "/data/worker-heartbeats"
+⋮----
+def _root() -> Path
+⋮----
+raw = (os.getenv("XBOW_WORKER_HEARTBEAT_ROOT") or _DEFAULT_ROOT).strip()
+⋮----
+def _max_age_seconds() -> int
+⋮----
+raw = (os.getenv("XBOW_WORKER_HEARTBEAT_MAX_AGE_SECONDS") or "30").strip()
+⋮----
+value = int(raw)
+⋮----
+def _role(value: str) -> str
+⋮----
+role = value.strip().lower()
+⋮----
+def _path(role: str) -> Path
+⋮----
+def write_worker_heartbeat(role: str) -> None
+⋮----
+safe_role = _role(role)
+root = _root()
+⋮----
+payload = {
+target = root / f"{safe_role}.json"
+temporary = root / f".{safe_role}.{os.getpid()}.tmp"
+encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+⋮----
+def start_worker_heartbeat(role: str) -> threading.Event
+⋮----
+max_age = _max_age_seconds()
+interval = max(1.0, min(10.0, max_age / 3.0))
+stop = threading.Event()
+⋮----
+def emit() -> None
+⋮----
+thread = threading.Thread(
+⋮----
+def worker_liveness(role: str, *, now: datetime | None = None) -> dict[str, Any]
+⋮----
+target = _path(safe_role)
+current = now or datetime.now(timezone.utc)
+⋮----
+raw = target.read_text(encoding="utf-8")
+document = json.loads(raw)
+⋮----
+observed = datetime.fromisoformat(str(document.get("observed_at") or ""))
+⋮----
+age = max(0, int((current - observed.astimezone(timezone.utc)).total_seconds()))
+⋮----
+live = age <= max_age
+⋮----
+def worker_liveness_snapshot() -> dict[str, Any]
+⋮----
+general = worker_liveness("general")
+scanner = worker_liveness("scanner")
+⋮----
+general = {
+scanner = {
+```
+
 ## File: app/worker_service.py
 ```python
 class CampaignCancelledError(ValueError)
@@ -10178,7 +10247,10 @@ store = create_storage()
 worker_id = os.getenv("XBOW_WORKER_ID", f"{socket.gethostname()}:{os.getpid()}")
 poll = _worker_poll_seconds()
 worker_role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
-coordinator = worker_role in {"", "general"}
+heartbeat_role = "general" if worker_role in {"", "general"} else worker_role
+coordinator = heartbeat_role == "general"
+⋮----
+# Invalid role/configuration still fails closed in the normal claim path.
 ⋮----
 # Read-only catalog monitoring must never take down execution workers.
 ⋮----
@@ -12632,6 +12704,8 @@ def test_live_readiness_exposes_redacted_first_run_operator_guide(monkeypatch)
 def test_browser_automation_is_optional_but_reported(monkeypatch)
 ⋮----
 def test_live_readiness_blocks_when_recon_is_disabled(monkeypatch)
+⋮----
+def test_live_readiness_blocks_when_scanner_heartbeat_is_stale(monkeypatch)
 ```
 
 ## File: tests/test_hackerone_needs_info.py
@@ -17628,6 +17702,33 @@ final = queue.get(job["id"])
 def test_worker_rejects_unprovenanced_governed_job_by_default(tmp_path, monkeypatch)
 ⋮----
 def test_worker_legacy_flag_allows_unprovenanced_governed_job(tmp_path, monkeypatch)
+```
+
+## File: tests/test_worker_liveness.py
+```python
+def test_worker_heartbeat_round_trip_is_redacted(tmp_path, monkeypatch)
+⋮----
+result = worker_liveness.worker_liveness("scanner")
+⋮----
+def test_missing_worker_heartbeat_fails_closed(tmp_path, monkeypatch)
+⋮----
+result = worker_liveness.worker_liveness("general")
+⋮----
+def test_stale_worker_heartbeat_fails_closed(tmp_path, monkeypatch)
+⋮----
+observed = datetime.now(timezone.utc) - timedelta(seconds=20)
+⋮----
+result = worker_liveness.worker_liveness(
+⋮----
+def test_invalid_heartbeat_configuration_fails_closed(tmp_path, monkeypatch)
+⋮----
+result = worker_liveness.worker_liveness_snapshot()
+⋮----
+def test_background_heartbeat_stays_independent_from_job_loop(tmp_path, monkeypatch)
+⋮----
+stop = worker_liveness.start_worker_heartbeat("scanner")
+⋮----
+deadline = time.monotonic() + 1.0
 ```
 
 ## File: tests/test_worker_observations.py

@@ -22,16 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T11:01:55Z
+Generated: 2026-09-21T11:30:48Z
 
 ### Git
 - Branch: `main`
-- Head: `5c14cae79267`
-- Commit date: 2026-09-21T13:01:32+02:00
-- Commit: feat: align live activation with factual recon runtime
-- Tracked files: 548
+- Head: `38e1de38c379`
+- Commit date: 2026-09-21T13:30:36+02:00
+- Commit: feat: require live worker heartbeat before real scan (#317)
+- Tracked files: 550
 
 ### Recently changed files
+- `backend/app/hackerone_live_readiness.py`
+- `backend/app/worker_liveness.py`
+- `backend/app/worker_service.py`
+- `backend/tests/test_hackerone_live_readiness.py`
+- `backend/tests/test_worker_liveness.py`
 - `backend/tests/test_live_activation_profile.py`
 - `scripts/mobile-enable-hackerone-nuclei.sh`
 - `scripts/mobile-production-cutover.sh`
@@ -39,9 +44,7 @@ Generated: 2026-09-21T11:01:55Z
 - `scripts/mobile-production-rollback.sh`
 - `scripts/mobile-production-update.sh`
 - `backend/app/hackerone_intelligence.py`
-- `backend/app/hackerone_live_readiness.py`
 - `backend/app/runtime_capabilities.py`
-- `backend/tests/test_hackerone_live_readiness.py`
 - `docker-compose.yml`
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_hackerone_prelaunch.py`
@@ -49,9 +52,6 @@ Generated: 2026-09-21T11:01:55Z
 - `frontend/sw.js`
 - `backend/app/high_value_intelligence.py`
 - `backend/app/recon_priority.py`
-- `backend/tests/test_high_value_intelligence.py`
-- `backend/tests/test_recon_priority.py`
-- `backend/app/orchestrator.py`
 
 ### Project signals
 - `pyproject.toml`

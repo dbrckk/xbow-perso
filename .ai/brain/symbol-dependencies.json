@@ -5,28 +5,460 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_text": {
+    "_strict_bool": {
       "source": {
-        "file": "backend/tests/test_live_activation_profile.py",
-        "start": 7,
-        "end": 8
+        "file": "backend/app/hackerone_live_readiness.py",
+        "start": 16,
+        "end": 25
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_live_hackerone_profile_enables_bounded_recon_only": {
+    "_configured": {
       "source": {
-        "file": "backend/tests/test_live_activation_profile.py",
-        "start": 11,
-        "end": 19
+        "file": "backend/app/hackerone_live_readiness.py",
+        "start": 28,
+        "end": 29
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_hackerone_live_readiness": {
+      "source": {
+        "file": "backend/app/hackerone_live_readiness.py",
+        "start": 32,
+        "end": 313
       },
       "symbol_dependencies": [
         {
-          "symbol": "_text",
+          "symbol": "HackerOneClientError",
           "definitions": [
             {
-              "file": "backend/tests/test_live_activation_profile.py",
-              "line": 7,
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "_configured",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_live_readiness.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_live_readiness.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_hackerone_credentials",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 199,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 251,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 163,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "worker_liveness",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 88,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "worker_liveness_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 133,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "_root": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 14,
+        "end": 18
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_max_age_seconds": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 21,
+        "end": 29
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_role": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 32,
+        "end": 36
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_path": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 39,
+        "end": 40
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_role",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_root",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "write_worker_heartbeat": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 43,
+        "end": 61
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_role",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_root",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "start_worker_heartbeat": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 64,
+        "end": 85
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_max_age_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_role",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "emit",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "write_worker_heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "emit": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 70,
+        "end": 190
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_max_age_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_path",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_role",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "worker_liveness",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 88,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "worker_liveness_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 133,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "write_worker_heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "worker_liveness": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 88,
+        "end": 130
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_max_age_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_path",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_role",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "worker_liveness_snapshot": {
+      "source": {
+        "file": "backend/app/worker_liveness.py",
+        "start": 133,
+        "end": 154
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "worker_liveness",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 88,
               "kind": "function",
               "language": "python"
             }
@@ -36,63 +468,2107 @@
       ],
       "dependency_count": 1
     },
-    "test_production_update_propagates_and_attests_bounded_recon": {
+    "CampaignCancelledError": {
       "source": {
-        "file": "backend/tests/test_live_activation_profile.py",
-        "start": 22,
-        "end": 30
+        "file": "backend/app/worker_service.py",
+        "start": 46,
+        "end": 47
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/tests/test_live_activation_profile.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "test_safe_production_update_keeps_recon_and_browser_disabled": {
+    "StaleValidationJobError": {
       "source": {
-        "file": "backend/tests/test_live_activation_profile.py",
-        "start": 33,
-        "end": 38
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/tests/test_live_activation_profile.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_all_safe_production_scripts_require_recon_browser_baseline_off": {
-      "source": {
-        "file": "backend/tests/test_live_activation_profile.py",
-        "start": 42,
+        "file": "backend/app/worker_service.py",
+        "start": 50,
         "end": 51
       },
       "symbol_dependencies": [
         {
-          "symbol": "_text",
+          "symbol": "ValidationPolicyError",
           "definitions": [
             {
-              "file": "backend/tests/test_live_activation_profile.py",
-              "line": 7,
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "StaleBrowserJobError": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 54,
+        "end": 55
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "BrowserPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_save": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 62,
+        "end": 64
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_campaign": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 67,
+        "end": 187
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignCancelledError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 46,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleValidationJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 50,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_lease_heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_process_scanner_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 416,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "json_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observation_id",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "process_nuclei_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_strix_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 130,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_validation",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "put_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_finding_chain",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "renew",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_nuclei_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_strix_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_http_probe",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 226,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 30
+    },
+    "_append_event_once": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 78,
+        "end": 83
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_lease_heartbeat": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 95,
+        "end": 120
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 416,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "renew",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "renew": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 102,
+        "end": 222
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleBrowserJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 54,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StaleValidationJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 50,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_process_scanner_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "execute_browser_flow",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 384,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 416,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "json_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_browser_result",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 588,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "process_browser_flow",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 211,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_nuclei_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_strix_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 130,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_validation",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "put_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_finding_chain",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_nuclei_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_strix_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_http_probe",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 226,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 29
+    },
+    "_process_scanner_job": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 123,
+        "end": 127
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "process_strix_scan": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 130,
+        "end": 131
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_process_scanner_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_strix_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "process_nuclei_scan": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 134,
+        "end": 135
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_process_scanner_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_nuclei_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "process_validation": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 138,
+        "end": 208
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleValidationJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 50,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "json_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "put_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_finding_chain",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_http_probe",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 226,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "process_browser_flow": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 211,
+        "end": 312
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleBrowserJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 54,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "execute_browser_flow",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 384,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_browser_result",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 588,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_typed_child",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "process_recon_task": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 315,
+        "end": 406
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "execute_recon_task",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 437,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_typed_child",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "process_report": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 409,
+        "end": 448
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_evidence_quality",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_quality.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "from_records",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_observations",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "put_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "render_markdown",
+          "definitions": [
+            {
+              "file": "backend/app/report.py",
+              "line": 10,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_quality.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "_record_worker_outcome": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 451,
+        "end": 478
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignConflictError",
+          "definitions": [
+            {
+              "file": "backend/app/storage_core.py",
+              "line": 22,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "seal_worker_outcome_event",
+          "definitions": [
+            {
+              "file": "backend/app/worker_audit.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "worker_outcome_event",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "_worker_bool": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 481,
+        "end": 490
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_legacy_unprovenanced_jobs_allowed": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 493,
+        "end": 494
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_worker_bool",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 481,
               "kind": "function",
               "language": "python"
             }
@@ -101,6 +2577,1200 @@
         }
       ],
       "dependency_count": 1
+    },
+    "_verify_policy_bound_job": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 497,
+        "end": 514
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobProvenanceError",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "WorkerPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 30,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_legacy_unprovenanced_jobs_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 493,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "provenance_required_for_job_kind",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 184,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "require_job_provenance",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 163,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "_active_scanner_execution_requested": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 517,
+        "end": 521
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_worker_bool",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 481,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_claim_for_role": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 524,
+        "end": 535
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_active_scanner_execution_requested",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 517,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "claim",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "claim_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 338,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "process_one": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 538,
+        "end": 592
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "BrowserPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignCancelledError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 46,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignConflictError",
+          "definitions": [
+            {
+              "file": "backend/app/storage_core.py",
+              "line": 22,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleBrowserJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 54,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StaleValidationJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 50,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "WorkerPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 30,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_claim_for_role",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 524,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_lease_heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_record_worker_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 451,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verify_policy_bound_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 497,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 639,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_planner_lock",
+          "definitions": [
+            {
+              "file": "backend/app/planner_lock.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "cancel_owned",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 264,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finish",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 429,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "process_browser_flow",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 211,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_nuclei_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_recon_task",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 315,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_report",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 409,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_strix_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 130,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_validation",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 26
+    },
+    "_worker_poll_seconds": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 595,
+        "end": 603
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "main": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 606,
+        "end": 638
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_worker_poll_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 595,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "claim",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_queue",
+          "definitions": [
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "maybe_refresh_hackerone_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_catalog.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "maybe_refresh_hackerone_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_intelligence.py",
+              "line": 623,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "process_one",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 538,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reconcile_hackerone_batches",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_batch.py",
+              "line": 155,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "start_worker_heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "_clear": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 21,
+        "end": 23
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_credentials_ok": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 26,
+        "end": 40
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_live_readiness_is_blocked_by_safe_defaults": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 43,
+        "end": 68
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_live_readiness_requires_hackerone_credentials": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 71,
+        "end": 84
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "unavailable",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 74,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "unavailable": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 74,
+        "end": 194
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_browser_automation_is_optional_but_reported",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 174,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_invalid_optional_boolean_fails_closed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_live_readiness_blocks_when_recon_is_disabled",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 187,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_live_readiness_exposes_redacted_first_run_operator_guide",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_live_readiness_passes_only_with_explicit_scanner_gates",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 87,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_submission_and_sync_are_optional",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "test_live_readiness_passes_only_with_explicit_scanner_gates": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 87,
+        "end": 111
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_submission_and_sync_are_optional": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 114,
+        "end": 122
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_invalid_optional_boolean_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 125,
+        "end": 138
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_live_readiness_exposes_redacted_first_run_operator_guide": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 141,
+        "end": 170
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_browser_automation_is_optional_but_reported": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 174,
+        "end": 184
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_live_readiness_blocks_when_recon_is_disabled": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 187,
+        "end": 203
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_live_readiness_blocks_when_scanner_heartbeat_is_stale": {
+      "source": {
+        "file": "backend/tests/test_hackerone_live_readiness.py",
+        "start": 205,
+        "end": 240
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_credentials_ok",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_live_readiness.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_worker_heartbeat_round_trip_is_redacted": {
+      "source": {
+        "file": "backend/tests/test_worker_liveness.py",
+        "start": 7,
+        "end": 17
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_missing_worker_heartbeat_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_worker_liveness.py",
+        "start": 20,
+        "end": 26
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_stale_worker_heartbeat_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_worker_liveness.py",
+        "start": 29,
+        "end": 45
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_invalid_heartbeat_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_worker_liveness.py",
+        "start": 48,
+        "end": 57
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_background_heartbeat_stays_independent_from_job_loop": {
+      "source": {
+        "file": "backend/tests/test_worker_liveness.py",
+        "start": 59,
+        "end": 72
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
     }
   }
 }
