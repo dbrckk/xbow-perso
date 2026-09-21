@@ -38,7 +38,7 @@ def test_frontend_assets_are_explicitly_cache_busted():
 
 
 def test_api_token_is_persisted_across_browser_sessions():
-    app = _text("frontend/app.js")
+    app = _text("frontend/simple.js")
     html = _text("frontend/index.html")
 
     assert "API_TOKEN_STORAGE_KEY='xbowApiToken'" in app
