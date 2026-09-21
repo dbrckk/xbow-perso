@@ -21,6 +21,7 @@ from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_intelligence import refresh_hackerone_intelligence
 from .hackerone_discovery import build_program_discovery
 from .hackerone_needs_info import render_needs_more_info_draft
+from .hackerone_review_draft import build_hackerone_review_draft
 from .hackerone_report_tracking import (
     latest_remote_submission,
     project_remote_report_status,
@@ -407,6 +408,15 @@ def hackerone_learning_intelligence(
         "advisory_only": True,
         "automatic_tool_enablement": False,
     }
+
+
+@router.get("/api/imports/hackerone/programs/{handle}/review-draft")
+def get_hackerone_program_review_draft(handle: str):
+    try:
+        snapshot = fetch_hackerone_program_snapshot(handle)
+    except HackerOneClientError as exc:
+        raise _upstream_error(exc) from exc
+    return build_hackerone_review_draft(snapshot)
 
 
 @router.get("/api/imports/hackerone/programs/{handle}/snapshot")
