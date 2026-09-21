@@ -1,4 +1,5 @@
 from app.high_value_intelligence import build_high_value_intelligence, public_case_lessons
+from app.main import app
 from app.observation_graph import Observation, ObservationGraph
 
 
@@ -99,3 +100,11 @@ def test_transaction_reconciliation_signals_raise_business_invariant_focus():
     ).lower()
     assert "reconciliation" in goals
     assert "idempotency" in goals
+
+
+
+def test_high_value_intelligence_route_is_exposed():
+    assert (
+        "/api/campaigns/{campaign_id}/high-value-intelligence"
+        in app.openapi()["paths"]
+    )
