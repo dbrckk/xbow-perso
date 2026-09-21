@@ -53,6 +53,8 @@ const clamp=(v,min,max)
 const fmtSeconds=value=>{
   const seconds=Math.max(0,Number(value)||0);
 ⋮----
+async function refreshAuthSourceStatus()
+⋮----
 async function api(path,opts=
 ⋮----
 function setStatus(message,type='muted')

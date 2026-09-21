@@ -832,6 +832,16 @@ def require_api_token(request: Request) -> None
 ⋮----
 expected = configured_api_token()
 presented = presented_api_token(request)
+⋮----
+def api_token_source_status() -> dict[str, object]
+⋮----
+"""Return a redacted description of the active API-token source."""
+⋮----
+source = "vault" if use_vault else ("file" if token_file else "env")
+⋮----
+configured = False
+⋮----
+configured = True
 ```
 
 ## File: app/autonomy_gate.py
@@ -4897,7 +4907,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: app/main.py
 ```python
-app = FastAPI(title="xbow-perso", version="0.5.1")
+app = FastAPI(title="xbow-perso", version="0.5.2")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -5066,6 +5076,9 @@ def live()
 def ready()
 ⋮----
 dependencies = dependency_readiness()
+⋮----
+@app.get("/auth-status")
+def auth_status()
 ⋮----
 @app.get("/health")
 def health()
@@ -10891,6 +10904,14 @@ token = "vault-token-" + "v" * 32
 def test_vault_enabled_refuses_legacy_api_token_fallback(monkeypatch, tmp_path)
 ⋮----
 def test_vault_enabled_missing_api_token_fails_closed(monkeypatch, tmp_path)
+⋮----
+def test_api_token_source_status_reports_env_without_secret(monkeypatch)
+⋮----
+result = api_token_source_status()
+⋮----
+def test_api_token_source_status_reports_vault_without_secret(monkeypatch, tmp_path)
+⋮----
+def test_auth_status_endpoint_bypasses_control_api_auth(monkeypatch)
 ```
 
 ## File: tests/test_autonomy_gate.py
@@ -14116,6 +14137,8 @@ def test_all_safe_production_scripts_require_recon_browser_baseline_off()
 script = _text(name)
 ⋮----
 def test_live_production_update_requires_backend_go_no_go_readiness()
+⋮----
+def test_production_update_normalizes_api_token_source()
 ```
 
 ## File: tests/test_local_outcome_intelligence.py

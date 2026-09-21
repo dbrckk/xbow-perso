@@ -1,27 +1,23 @@
 # Change impact
 
-Base: e333ff6b40fcca27eaf9fb7c1beef54cf44d3720
-Head: 34203501338b332e0519cb7606146470d93d7e39
+Base: d2d06f60c77311395bbc0a91f6f011c926f9290c
+Head: 7ea734ef6b5ac430359b82f6257367c7a7e432f9
 
 ## Changed files
-- M backend/app/hackerone_api.py
-- M backend/app/hackerone_batch.py
+- M backend/app/auth.py
 - M backend/app/main.py
-- M backend/app/storage_backend.py
-- M backend/app/storage_core.py
-- M backend/tests/test_hackerone_batch.py
-- M backend/tests/test_hackerone_batch_api.py
-- M backend/tests/test_hackerone_prelaunch.py
-- M backend/tests/test_hackerone_reviewed_batch_api.py
+- M backend/tests/test_auth.py
 - M backend/tests/test_live_activation_profile.py
-- A docs/RELEASE_0.5.1.md
-- M frontend/hackerone.js
+- M frontend/app.js
+- M frontend/index.html
 - M frontend/sw.js
+- M scripts/mobile-production-cutover.sh
+- M scripts/mobile-production-preflight.sh
 - M scripts/mobile-production-update.sh
+- M scripts/mobile-vault-rollback.sh
 
 ## Affected areas
 - backend
-- docs
 - frontend
 - scripts
 

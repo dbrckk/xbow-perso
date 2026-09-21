@@ -9,10 +9,10 @@
     "top_score": 27
   },
   "cache": {
-    "fingerprint": "ad454adaa6a63b9257143242f9712fef984b5b5239ecafcb16fc769ea0b58e4d",
+    "fingerprint": "64a3866940abbcf4431f69d0b12ab852c4f03bfd4cc5056bc5bd67bad7f1d8c9",
     "hit": false
   },
-  "candidate_count": 180,
+  "candidate_count": 274,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -72,6 +72,26 @@
       "matched_terms": [
         "engine"
       ],
+      "path": "backend/tests/test_scanner_adaptation.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "_memory",
+        "test_adaptation_never_expands_configured_engines",
+        "test_adaptation_never_suppresses_last_configured_engine",
+        "test_adaptation_ranks_successful_memory_first",
+        "test_adaptation_rejects_unknown_or_duplicate_configuration",
+        "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
       "path": "backend/tests/test_scanner_normalization.py",
       "reasons": [
         "impact",
@@ -124,30 +144,6 @@
       "symbols": [
         "ScannerIngestionResult",
         "ingest_scanner_run"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_normalization.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "NormalizedScannerFinding",
-        "_optional_cvss",
-        "_optional_str",
-        "_severity",
-        "_string_list",
-        "dedupe_normalized",
-        "normalize_nuclei_item",
-        "normalize_strix_item",
-        "normalized_finding_id",
-        "to_campaign_finding"
       ]
     }
   ],

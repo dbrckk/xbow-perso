@@ -22,36 +22,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T11:46:36Z
+Generated: 2026-09-21T12:53:19Z
 
 ### Git
 - Branch: `main`
-- Head: `34203501338b`
-- Commit date: 2026-09-21T13:46:23+02:00
-- Commit: release: final stability patch 0.5.1 (#319)
+- Head: `7ea734ef6b5a`
+- Commit date: 2026-09-21T14:52:32+02:00
+- Commit: fix: make API token source deterministic and diagnosable (#320)
 - Tracked files: 552
 
 ### Recently changed files
+- `backend/app/auth.py`
+- `backend/app/main.py`
+- `backend/tests/test_auth.py`
+- `backend/tests/test_live_activation_profile.py`
+- `frontend/app.js`
+- `frontend/index.html`
+- `frontend/sw.js`
+- `scripts/mobile-production-cutover.sh`
+- `scripts/mobile-production-preflight.sh`
+- `scripts/mobile-production-update.sh`
+- `scripts/mobile-vault-rollback.sh`
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_batch.py`
-- `backend/app/main.py`
 - `backend/app/storage_backend.py`
 - `backend/app/storage_core.py`
 - `backend/tests/test_hackerone_batch.py`
 - `backend/tests/test_hackerone_batch_api.py`
 - `backend/tests/test_hackerone_prelaunch.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/tests/test_live_activation_profile.py`
 - `docs/RELEASE_0.5.1.md`
-- `frontend/hackerone.js`
-- `frontend/sw.js`
-- `scripts/mobile-production-update.sh`
-- `.env.example`
-- `FIRST_REAL_HACKERONE_RUN.md`
-- `docs/RELEASE_0.5.0.md`
-- `backend/app/hackerone_live_readiness.py`
-- `backend/app/worker_liveness.py`
-- `backend/app/worker_service.py`
 
 ### Project signals
 - `pyproject.toml`

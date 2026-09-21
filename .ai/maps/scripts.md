@@ -359,6 +359,24 @@ require_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
+# XBOW_API_TOKEN_FILE auth-source normalization
+# When vault is active, legacy API-token env/file sources must not leak into
+# the backend. Without vault, secrets loaded from the root-only secrets file
+# must be exported so docker compose receives the same token the operator uses.
+auth_vault_mode="$(read_env_value XBOW_VAULT_ENABLED | tr '[:upper:]' '[:lower:]')"
+case "$auth_vault_mode" in
+  true|1|yes|on)
+    unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
+    ;;
+  *)
+    if [ -n "${XBOW_API_TOKEN-}" ]; then
+      export XBOW_API_TOKEN
+    fi
+    if [ -n "${XBOW_API_TOKEN_FILE-}" ]; then
+      export XBOW_API_TOKEN_FILE
+    fi
+    ;;
+esac
 : "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
 : "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
 
@@ -559,6 +577,24 @@ fi
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
+# XBOW_API_TOKEN_FILE auth-source normalization
+# When vault is active, legacy API-token env/file sources must not leak into
+# the backend. Without vault, secrets loaded from the root-only secrets file
+# must be exported so docker compose receives the same token the operator uses.
+auth_vault_mode="$(read_env_value XBOW_VAULT_ENABLED | tr '[:upper:]' '[:lower:]')"
+case "$auth_vault_mode" in
+  true|1|yes|on)
+    unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
+    ;;
+  *)
+    if [ -n "${XBOW_API_TOKEN-}" ]; then
+      export XBOW_API_TOKEN
+    fi
+    if [ -n "${XBOW_API_TOKEN_FILE-}" ]; then
+      export XBOW_API_TOKEN_FILE
+    fi
+    ;;
+esac
 
 : "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD in $SECRETS_FILE}"
 : "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD in $SECRETS_FILE}"
@@ -855,6 +891,24 @@ require_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
+# XBOW_API_TOKEN_FILE auth-source normalization
+# When vault is active, legacy API-token env/file sources must not leak into
+# the backend. Without vault, secrets loaded from the root-only secrets file
+# must be exported so docker compose receives the same token the operator uses.
+auth_vault_mode="$(read_env_value XBOW_VAULT_ENABLED | tr '[:upper:]' '[:lower:]')"
+case "$auth_vault_mode" in
+  true|1|yes|on)
+    unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
+    ;;
+  *)
+    if [ -n "${XBOW_API_TOKEN-}" ]; then
+      export XBOW_API_TOKEN
+    fi
+    if [ -n "${XBOW_API_TOKEN_FILE-}" ]; then
+      export XBOW_API_TOKEN_FILE
+    fi
+    ;;
+esac
 : "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
 : "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
 
@@ -1287,6 +1341,24 @@ chmod 600 "$SECRETS_FILE" "$BACKUP_FILE"
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
+# XBOW_API_TOKEN_FILE auth-source normalization
+# When vault is active, legacy API-token env/file sources must not leak into
+# the backend. Without vault, secrets loaded from the root-only secrets file
+# must be exported so docker compose receives the same token the operator uses.
+auth_vault_mode="$(grep -E '^[[:space:]]*XBOW_VAULT_ENABLED=' "$ENV_FILE" | tail -n1 | cut -d= -f2- | tr '[:upper:]' '[:lower:]' || true)"
+case "$auth_vault_mode" in
+  true|1|yes|on)
+    unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
+    ;;
+  *)
+    if [ -n "${XBOW_API_TOKEN-}" ]; then
+      export XBOW_API_TOKEN
+    fi
+    if [ -n "${XBOW_API_TOKEN_FILE-}" ]; then
+      export XBOW_API_TOKEN_FILE
+    fi
+    ;;
+esac
 : "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
 : "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
 export XBOW_POSTGRES_PASSWORD

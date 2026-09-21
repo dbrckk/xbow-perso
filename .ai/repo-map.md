@@ -1433,6 +1433,16 @@ def require_api_token(request: Request) -> None
 ⋮----
 expected = configured_api_token()
 presented = presented_api_token(request)
+⋮----
+def api_token_source_status() -> dict[str, object]
+⋮----
+"""Return a redacted description of the active API-token source."""
+⋮----
+source = "vault" if use_vault else ("file" if token_file else "env")
+⋮----
+configured = False
+⋮----
+configured = True
 ````
 
 ## File: backend/app/autonomy_gate.py
@@ -5498,7 +5508,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.5.1")
+app = FastAPI(title="xbow-perso", version="0.5.2")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -5667,6 +5677,9 @@ def live()
 def ready()
 ⋮----
 dependencies = dependency_readiness()
+⋮----
+@app.get("/auth-status")
+def auth_status()
 ⋮----
 @app.get("/health")
 def health()
@@ -11492,6 +11505,14 @@ token = "vault-token-" + "v" * 32
 def test_vault_enabled_refuses_legacy_api_token_fallback(monkeypatch, tmp_path)
 ⋮----
 def test_vault_enabled_missing_api_token_fails_closed(monkeypatch, tmp_path)
+⋮----
+def test_api_token_source_status_reports_env_without_secret(monkeypatch)
+⋮----
+result = api_token_source_status()
+⋮----
+def test_api_token_source_status_reports_vault_without_secret(monkeypatch, tmp_path)
+⋮----
+def test_auth_status_endpoint_bypasses_control_api_auth(monkeypatch)
 ````
 
 ## File: backend/tests/test_autonomy_gate.py
@@ -14717,6 +14738,8 @@ def test_all_safe_production_scripts_require_recon_browser_baseline_off()
 script = _text(name)
 ⋮----
 def test_live_production_update_requires_backend_go_no_go_readiness()
+⋮----
+def test_production_update_normalizes_api_token_source()
 ````
 
 ## File: backend/tests/test_local_outcome_intelligence.py
@@ -18598,6 +18621,8 @@ const clamp=(v,min,max)
 const fmtSeconds=value=>{
   const seconds=Math.max(0,Number(value)||0);
 ⋮----
+async function refreshAuthSourceStatus()
+⋮----
 async function api(path,opts=
 ⋮----
 function setStatus(message,type='muted')
@@ -19207,6 +19232,24 @@ require_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
+# XBOW_API_TOKEN_FILE auth-source normalization
+# When vault is active, legacy API-token env/file sources must not leak into
+# the backend. Without vault, secrets loaded from the root-only secrets file
+# must be exported so docker compose receives the same token the operator uses.
+auth_vault_mode="$(read_env_value XBOW_VAULT_ENABLED | tr '[:upper:]' '[:lower:]')"
+case "$auth_vault_mode" in
+  true|1|yes|on)
+    unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
+    ;;
+  *)
+    if [ -n "${XBOW_API_TOKEN-}" ]; then
+      export XBOW_API_TOKEN
+    fi
+    if [ -n "${XBOW_API_TOKEN_FILE-}" ]; then
+      export XBOW_API_TOKEN_FILE
+    fi
+    ;;
+esac
 : "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
 : "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
 
@@ -19407,6 +19450,24 @@ fi
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
+# XBOW_API_TOKEN_FILE auth-source normalization
+# When vault is active, legacy API-token env/file sources must not leak into
+# the backend. Without vault, secrets loaded from the root-only secrets file
+# must be exported so docker compose receives the same token the operator uses.
+auth_vault_mode="$(read_env_value XBOW_VAULT_ENABLED | tr '[:upper:]' '[:lower:]')"
+case "$auth_vault_mode" in
+  true|1|yes|on)
+    unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
+    ;;
+  *)
+    if [ -n "${XBOW_API_TOKEN-}" ]; then
+      export XBOW_API_TOKEN
+    fi
+    if [ -n "${XBOW_API_TOKEN_FILE-}" ]; then
+      export XBOW_API_TOKEN_FILE
+    fi
+    ;;
+esac
 
 : "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD in $SECRETS_FILE}"
 : "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD in $SECRETS_FILE}"
@@ -19703,6 +19764,24 @@ require_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
+# XBOW_API_TOKEN_FILE auth-source normalization
+# When vault is active, legacy API-token env/file sources must not leak into
+# the backend. Without vault, secrets loaded from the root-only secrets file
+# must be exported so docker compose receives the same token the operator uses.
+auth_vault_mode="$(read_env_value XBOW_VAULT_ENABLED | tr '[:upper:]' '[:lower:]')"
+case "$auth_vault_mode" in
+  true|1|yes|on)
+    unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
+    ;;
+  *)
+    if [ -n "${XBOW_API_TOKEN-}" ]; then
+      export XBOW_API_TOKEN
+    fi
+    if [ -n "${XBOW_API_TOKEN_FILE-}" ]; then
+      export XBOW_API_TOKEN_FILE
+    fi
+    ;;
+esac
 : "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
 : "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
 
@@ -20135,6 +20214,24 @@ chmod 600 "$SECRETS_FILE" "$BACKUP_FILE"
 
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
+# XBOW_API_TOKEN_FILE auth-source normalization
+# When vault is active, legacy API-token env/file sources must not leak into
+# the backend. Without vault, secrets loaded from the root-only secrets file
+# must be exported so docker compose receives the same token the operator uses.
+auth_vault_mode="$(grep -E '^[[:space:]]*XBOW_VAULT_ENABLED=' "$ENV_FILE" | tail -n1 | cut -d= -f2- | tr '[:upper:]' '[:lower:]' || true)"
+case "$auth_vault_mode" in
+  true|1|yes|on)
+    unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE || true
+    ;;
+  *)
+    if [ -n "${XBOW_API_TOKEN-}" ]; then
+      export XBOW_API_TOKEN
+    fi
+    if [ -n "${XBOW_API_TOKEN_FILE-}" ]; then
+      export XBOW_API_TOKEN_FILE
+    fi
+    ;;
+esac
 : "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
 : "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
 export XBOW_POSTGRES_PASSWORD
