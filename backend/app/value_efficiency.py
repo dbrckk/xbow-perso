@@ -73,7 +73,7 @@ def select_diversified_portfolio(
     limit: int = 5,
     min_score: int = 50,
 ) -> list[dict[str, Any]]:
-    """Select READY bounty programs while avoiding over-concentration by research focus."""
+    """Select READY bounty programs with diversification and bounded exploration."""
     safe_limit = max(1, min(20, int(limit)))
     safe_min = max(0, min(100, int(min_score)))
 
@@ -121,5 +121,42 @@ def select_diversified_portfolio(
             item for item in candidates
             if str(item.get("handle") or "") != str(picked.get("handle") or "")
         ]
+
+    if safe_limit >= 4 and selected:
+        selected_handles = {str(item.get("handle") or "") for item in selected}
+        exploration = [
+            dict(item)
+            for item in programs
+            if str(item.get("status") or "") == "READY"
+            and item.get("offers_bounties") is True
+            and int(item.get("value_efficiency_score") or 0) >= safe_min
+            and str(item.get("handle") or "") not in selected_handles
+            and any(
+                reason in {"new_program", "catalog_changed", "recent_catalog_change"}
+                for reason in (
+                    list(item.get("reasons") or [])
+                    + list(item.get("opportunity_reasons") or [])
+                )
+            )
+        ]
+        exploration.sort(
+            key=lambda item: (
+                -int(item.get("opportunity_score") or 0),
+                -int(item.get("value_efficiency_score") or 0),
+                str(item.get("handle") or ""),
+            )
+        )
+        if exploration:
+            candidate = exploration[0]
+            candidate["portfolio_score"] = int(candidate.get("value_efficiency_score") or 0)
+            candidate["portfolio_primary_focus"] = str(
+                (list(candidate.get("research_focus") or []) or ["other"])[0]
+            )
+            candidate["portfolio_concentration_penalty"] = 0
+            candidate["portfolio_exploration_slot"] = True
+            if len(selected) >= safe_limit:
+                selected[-1] = candidate
+            else:
+                selected.append(candidate)
 
     return selected
