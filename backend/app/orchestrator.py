@@ -702,11 +702,13 @@ def advance_campaign(
             runtime,
             [action],
         )
-        # Intelligence may raise metadata priority/reason only. Re-apply the
-        # resulting action while preserving kind, target, policy and budgets.
-        prioritized = intelligence.get("planner_intelligence") or {}
-        if prioritized.get("applied"):
-            action = intelligence["cycle"].planned_actions[0] if hasattr(intelligence["cycle"], "planned_actions") else prioritize_action_with_intelligence(action, intelligence["high_value_intelligence"])[0]
+        # Intelligence may raise metadata priority/reason only. It cannot
+        # change the action kind/target or bypass policy/budget decisions.
+        action, planner_intelligence = prioritize_action_with_intelligence(
+            action,
+            intelligence["high_value_intelligence"],
+        )
+        intelligence["planner_intelligence"] = planner_intelligence
         cycle = intelligence["cycle"]
 
         if cycle.next_action == "stop" or not cycle.safe_to_progress:
