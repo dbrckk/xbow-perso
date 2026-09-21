@@ -15,7 +15,10 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
         for item in programs
         if str(item.get("status") or "") in {"READY", "REVIEW"}
         and item.get("offers_bounties") is True
-        and item.get("gold_standard_safe_harbor") is True
+        and (
+            str(item.get("status") or "") == "READY"
+            or item.get("gold_standard_safe_harbor") is True
+        )
     ]
 
     def efficiency(item: dict[str, Any]) -> tuple[float, float, str]:
@@ -28,6 +31,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     easy_pool = sorted(
         pool,
         key=lambda item: (
+            0 if str(item.get("status") or "") == "READY" else 1,
             float(item.get("effort_factor") or 99),
             -float(item.get("value_efficiency_score") or 0),
             -float(item.get("opportunity_score") or 0),
@@ -44,6 +48,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
         medium_pool = sorted(
             remaining,
             key=lambda item: (
+                0 if str(item.get("status") or "") == "READY" else 1,
                 abs(float(item.get("effort_factor") or 0) - median),
                 *efficiency(item),
             ),
@@ -57,6 +62,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     high_value = sorted(
         remaining,
         key=lambda item: (
+            0 if str(item.get("status") or "") == "READY" else 1,
             -float(item.get("historical_usd_awarded_max") or 0),
             -float(item.get("historical_value_score") or 0),
             -float(item.get("opportunity_score") or 0),
