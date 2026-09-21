@@ -1847,7 +1847,9 @@
               ?'revue nécessaire'
               :'non lançable'),
           Number(program.historical_usd_awarded_max||0)>0
-            ?'max public historique 
+            ?'max public historique USD '+Number(program.historical_usd_awarded_max).toLocaleString()
+            :null
+        ].filter(Boolean);
         meta.textContent=parts.join(' · ');
         info.append(titleRow,meta);
         row.append(checkbox,info);
