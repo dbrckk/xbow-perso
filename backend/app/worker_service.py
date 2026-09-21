@@ -216,13 +216,32 @@ def process_browser_flow(job: dict, store: Storage) -> None:
     for observation in result.observations:
         operation = observation.get("operation")
         if operation == "navigate" and observation.get("url"):
+            endpoint_url = str(observation["url"])
             record_endpoint(
                 store,
                 campaign,
-                str(observation["url"]),
+                endpoint_url,
                 source="browser",
                 parent_id=asset_id,
             )
+            if result.identity_label:
+                record_typed_child(
+                    store,
+                    campaign,
+                    kind="access_surface",
+                    value=endpoint_url,
+                    source="browser",
+                    parent_id=asset_id,
+                    metadata={
+                        "identity_label": result.identity_label,
+                        "http_status": observation.get("status"),
+                        "content_sha256": observation.get("content_sha256"),
+                        "content_bytes": observation.get("content_bytes"),
+                    },
+                    identity=(
+                        f"browser-access\x1f{result.identity_label}\x1f{endpoint_url}"
+                    ),
+                )
         elif operation == "surface_links":
             for endpoint in observation.get("urls", [])[:100]:
                 record_endpoint(
@@ -270,7 +289,10 @@ def process_browser_flow(job: dict, store: Storage) -> None:
             artifact,
             source="browser",
             parent_ids=(asset_id,),
-            metadata={"browser_status": result.status},
+            metadata={
+                "browser_status": result.status,
+                "identity_label": result.identity_label,
+            },
         )
     _append_event_once(
         campaign,
@@ -278,6 +300,7 @@ def process_browser_flow(job: dict, store: Storage) -> None:
             "type": "browser_flow_completed" if result.status == "completed" else "browser_flow_dry_run",
             "job_id": job["id"],
             "status": result.status,
+            "identity_label": result.identity_label,
             "artifact_ids": [artifact["id"] for artifact in artifacts],
             "at": utcnow(),
         },
@@ -295,6 +318,14 @@ def process_recon_task(job: dict, store: Storage) -> None:
         str(campaign.target.primary_url),
         source,
     )
+
+    for discovered_asset in result.assets:
+        record_asset(
+            store,
+            campaign,
+            discovered_asset,
+            f"{source}:passive",
+        )
 
     for endpoint in result.endpoints:
         record_endpoint(
@@ -348,6 +379,7 @@ def process_recon_task(job: dict, store: Storage) -> None:
             "task_kind": job["payload"].get("kind"),
             "status": result.status,
             "http_status": result.http_status,
+            "assets": len(result.assets),
             "endpoints": len(result.endpoints),
             "forms": len(result.forms),
             "technologies": len(result.technologies),

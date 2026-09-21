@@ -12,6 +12,7 @@ from app.browser import (
     BrowserStep,
     _assert_read_only_browser_method,
     _browser_secret,
+    _browser_storage_state,
     _flow_dedupe_key,
     _flow_fingerprint,
     execute_browser_flow,
@@ -431,3 +432,104 @@ def test_browser_pending_intent_is_visible_in_outbox(tmp_path, monkeypatch):
     assert snapshot["pending_by_kind"] == {"browser_flow": 1}
     assert "browser-pending-request" not in str(snapshot)
     assert fingerprint not in str(snapshot)
+
+
+
+def test_browser_storage_state_accepts_only_in_scope_session_state(monkeypatch):
+    state = {
+        "cookies": [
+            {
+                "name": "session",
+                "value": "opaque-secret",
+                "domain": ".test.local",
+                "path": "/",
+                "httpOnly": True,
+                "secure": True,
+                "sameSite": "Lax",
+            }
+        ],
+        "origins": [
+            {
+                "origin": "https://app.test.local",
+                "localStorage": [{"name": "theme", "value": "dark"}],
+            }
+        ],
+    }
+    monkeypatch.setattr(
+        browser,
+        "_browser_secret",
+        lambda name: __import__("json").dumps(state),
+    )
+
+    loaded = _browser_storage_state(
+        _campaign(),
+        "XBOW_BROWSER_SECRET_TEST_SESSION",
+    )
+
+    assert loaded == state
+    assert "opaque-secret" not in repr(
+        BrowserFlowInput(
+            steps=[BrowserStep(operation="navigate", url="https://app.test.local")],
+            identity_label="user-a",
+            storage_state_secret_env="XBOW_BROWSER_SECRET_TEST_SESSION",
+        ).model_dump(mode="json")
+    )
+
+
+def test_browser_storage_state_rejects_out_of_scope_cookie(monkeypatch):
+    state = {
+        "cookies": [
+            {
+                "name": "session",
+                "value": "secret",
+                "domain": "outside.example",
+                "path": "/",
+            }
+        ],
+        "origins": [],
+    }
+    monkeypatch.setattr(
+        browser,
+        "_browser_secret",
+        lambda name: __import__("json").dumps(state),
+    )
+
+    with pytest.raises(BrowserPolicyError, match="out-of-scope cookie"):
+        _browser_storage_state(
+            _campaign(),
+            "XBOW_BROWSER_SECRET_TEST_SESSION",
+        )
+
+
+def test_browser_storage_state_rejects_out_of_scope_origin(monkeypatch):
+    state = {
+        "cookies": [],
+        "origins": [{"origin": "https://outside.example", "localStorage": []}],
+    }
+    monkeypatch.setattr(
+        browser,
+        "_browser_secret",
+        lambda name: __import__("json").dumps(state),
+    )
+
+    with pytest.raises(BrowserPolicyError, match="outside declared scope"):
+        _browser_storage_state(
+            _campaign(),
+            "XBOW_BROWSER_SECRET_TEST_SESSION",
+        )
+
+
+def test_browser_dry_run_keeps_identity_label_but_not_session_secret(monkeypatch):
+    monkeypatch.delenv("XBOW_ENABLE_BROWSER_AUTOMATION", raising=False)
+    flow = BrowserFlowInput(
+        steps=[BrowserStep(operation="navigate", url="https://app.test.local/account")],
+        identity_label="role-user",
+        storage_state_secret_env="XBOW_BROWSER_SECRET_TEST_SESSION",
+    )
+
+    result = execute_browser_flow(_campaign(), flow.model_dump(mode="json"))
+
+    assert result.status == "dry_run"
+    assert result.identity_label == "role-user"
+    assert result.observations == [{"steps": 1, "identity_label": "role-user"}]
+    assert "TEST_SESSION" not in str(result.observations)

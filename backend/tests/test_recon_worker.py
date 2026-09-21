@@ -520,3 +520,121 @@ def test_recon_worker_reports_incomplete_frontier_when_budget_prevents_followup(
     assert result.stopped_by_request_budget is True
     assert result.deferred_by_request_budget >= 1
     assert result.coverage_complete is False
+
+
+
+class _CompletedTool:
+    def __init__(self, stdout: bytes, returncode: int = 0):
+        self.stdout = stdout
+        self.stderr = b""
+        self.returncode = returncode
+
+
+def _wildcard_campaign():
+    return Campaign(
+        id="c-wildcard",
+        target=TargetInput(
+            name="wildcard-fixture",
+            primary_url="https://app.example.test",
+            rules=ProgramRules(
+                authorization_reference="explicit-test-authorization",
+                allowed_targets=["*.example.test"],
+            ),
+        ),
+    )
+
+
+def test_external_recon_enriches_crawl_and_filters_every_result_to_scope(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_ENABLE_EXTERNAL_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "2")
+    response = _Response(b"<html></html>", {"Content-Type": "text/html"})
+    monkeypatch.setattr(
+        "app.recon_worker.build_opener",
+        lambda *_args, **_kwargs: _Opener(response),
+    )
+
+    commands = []
+
+    def fake_run(command, **_kwargs):
+        commands.append(command)
+        if command[0] == "katana":
+            return _CompletedTool(
+                b"https://app.example.test/api\nhttps://outside.test/escape\n"
+            )
+        if command[0] == "subfinder":
+            return _CompletedTool(
+                b"api.example.test\noutside.test\n"
+            )
+        raise AssertionError(f"unexpected tool: {command[0]}")
+
+    monkeypatch.setattr("app.recon_worker.subprocess.run", fake_run)
+
+    result = execute_recon_task(
+        _wildcard_campaign(),
+        {"kind": "crawl", "target": "https://app.example.test"},
+    )
+
+    assert result.status == "observed"
+    assert result.assets == ("api.example.test",)
+    assert result.endpoints == ("https://app.example.test/api",)
+    assert [command[0] for command in commands] == ["katana", "subfinder"]
+    katana = commands[0]
+    assert "-cs" in katana
+    assert "app\\.example\\.test" in katana[katana.index("-cs") + 1]
+    assert "outside.test" not in str(result)
+
+
+def test_external_httpx_context_is_bounded_and_scope_checked(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_ENABLE_EXTERNAL_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "2")
+    response = _Response(b"", {"Content-Type": "text/plain"})
+    monkeypatch.setattr(
+        "app.recon_worker.build_opener",
+        lambda *_args, **_kwargs: _Opener(response),
+    )
+
+    def fake_run(command, **_kwargs):
+        assert command[0] == "httpx"
+        payload = (
+            b'{"url":"https://example.test/","tech":["GraphQL","nginx"],'
+            b'"webserver":"edge","cdn_name":"cloudflare"}\n'
+            b'{"url":"https://outside.test/","tech":["should-not-pass"]}\n'
+        )
+        return _CompletedTool(payload)
+
+    monkeypatch.setattr("app.recon_worker.subprocess.run", fake_run)
+
+    result = execute_recon_task(
+        _campaign(),
+        {"kind": "detect_technology", "target": "https://example.test"},
+    )
+
+    assert {"GraphQL", "nginx", "Server:edge"} <= set(result.technologies)
+    assert "should-not-pass" not in result.technologies
+    assert "cdn:cloudflare" in result.waf
+
+
+def test_external_recon_is_disabled_unless_explicitly_enabled(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.delenv("XBOW_ENABLE_EXTERNAL_RECON", raising=False)
+    response = _Response(b"<html></html>", {"Content-Type": "text/html"})
+    monkeypatch.setattr(
+        "app.recon_worker.build_opener",
+        lambda *_args, **_kwargs: _Opener(response),
+    )
+    monkeypatch.setattr(
+        "app.recon_worker.subprocess.run",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("external tool must not execute")
+        ),
+    )
+
+    result = execute_recon_task(
+        _campaign(),
+        {"kind": "crawl", "target": "https://example.test"},
+    )
+
+    assert result.status == "observed"
+    assert result.assets == ()

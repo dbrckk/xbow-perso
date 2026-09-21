@@ -352,11 +352,13 @@ def deployment_preflight():
 def system_capabilities():
     from .runtime_capabilities import (
         safe_pentagi_runtime_capability,
+        safe_recon_runtime_capability,
         safe_scanner_runtime_capability,
     )
 
     pentagi = safe_pentagi_runtime_capability()
     scanners = safe_scanner_runtime_capability()
+    recon = safe_recon_runtime_capability()
     return {
         "campaign_control": {
             "scope_enforcement": True,
@@ -376,6 +378,8 @@ def system_capabilities():
             "scanner_worker_detail": scanners,
             "http_validation": "gated",
             "browser_automation": "gated",
+            "recon": recon["mode"],
+            "recon_detail": recon,
             "pentagi": pentagi["mode"],
             "pentagi_detail": pentagi,
             "pentagi_status_tracking": (
@@ -1819,6 +1823,8 @@ from .evidence_quality import router as evidence_quality_router  # noqa: E402
 from .finding_cluster_consensus import router as finding_cluster_consensus_router  # noqa: E402
 from .finding_cluster_saturation import router as finding_cluster_saturation_router  # noqa: E402
 from .finding_intelligence import router as finding_intelligence_router  # noqa: E402
+from .high_value_intelligence import router as high_value_intelligence_router  # noqa: E402
+from .identity_access import router as identity_access_router  # noqa: E402
 from .finding_correlation import router as finding_correlation_router  # noqa: E402
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
@@ -1836,6 +1842,8 @@ app.include_router(finding_correlation_router)
 app.include_router(finding_cluster_consensus_router)
 app.include_router(finding_cluster_saturation_router)
 app.include_router(finding_intelligence_router)
+app.include_router(high_value_intelligence_router)
+app.include_router(identity_access_router)
 app.include_router(finding_readiness_router)
 app.include_router(metrics_router)
 app.include_router(alerts_router)

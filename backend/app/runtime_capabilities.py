@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 from typing import Any
 
 
@@ -177,6 +178,67 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "dispatch_ready": False,
             "dispatch_block_reasons": ["invalid_boolean_configuration"],
             "worker_admission_enforced": True,
+            "contains_secrets": False,
+            "configuration_error": True,
+        }
+
+
+
+def recon_runtime_capability() -> dict[str, Any]:
+    """Return a redacted preflight for the bounded recon execution path."""
+    recon_enabled = _strict_bool("XBOW_ENABLE_RECON", False)
+    external_enabled = _strict_bool("XBOW_ENABLE_EXTERNAL_RECON", False)
+    required_tools = ("katana", "httpx", "subfinder")
+    available_tools = {
+        name: bool(shutil.which(name))
+        for name in required_tools
+    }
+
+    reasons: list[str] = []
+    if not recon_enabled:
+        reasons.append("recon_disabled")
+    if external_enabled:
+        missing = [
+            name
+            for name, available in available_tools.items()
+            if not available
+        ]
+        reasons.extend(f"{name}_unavailable" for name in missing)
+
+    return {
+        "mode": (
+            "external_gated"
+            if external_enabled
+            else ("builtin_only" if recon_enabled else "disabled")
+        ),
+        "recon_enabled": recon_enabled,
+        "external_recon_enabled": external_enabled,
+        "tools": available_tools,
+        "dispatch_ready": not reasons,
+        "dispatch_block_reasons": reasons,
+        "scope_revalidation": True,
+        "read_only_default": True,
+        "contains_secrets": False,
+    }
+
+
+def safe_recon_runtime_capability() -> dict[str, Any]:
+    try:
+        return recon_runtime_capability()
+    except CapabilityConfigError:
+        return {
+            "mode": "configuration_error",
+            "recon_enabled": False,
+            "external_recon_enabled": False,
+            "tools": {
+                "katana": False,
+                "httpx": False,
+                "subfinder": False,
+            },
+            "dispatch_ready": False,
+            "dispatch_block_reasons": ["invalid_boolean_configuration"],
+            "scope_revalidation": True,
+            "read_only_default": True,
             "contains_secrets": False,
             "configuration_error": True,
         }

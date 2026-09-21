@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
 import math
 import os
+import re
+import subprocess
 import time
 from dataclasses import dataclass
 from html.parser import HTMLParser
@@ -23,6 +26,7 @@ class _NoRedirect(HTTPRedirectHandler):
 class ReconResult:
     status: str
     target: str
+    assets: tuple[str, ...] = ()
     endpoints: tuple[str, ...] = ()
     forms: tuple[dict, ...] = ()
     technologies: tuple[str, ...] = ()
@@ -225,6 +229,211 @@ def _fetch_page(opener, target: str, max_bytes: int, timeout_seconds: float):
         return b"", None, None, str(exc)
 
 
+def _external_recon_enabled() -> bool:
+    raw = os.getenv("XBOW_ENABLE_EXTERNAL_RECON", "0").strip().lower()
+    if raw in {"1", "true", "yes", "on"}:
+        return True
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    raise ReconPolicyError("XBOW_ENABLE_EXTERNAL_RECON must be a boolean")
+
+
+def _external_output_limit() -> int:
+    raw = os.getenv("XBOW_EXTERNAL_RECON_MAX_OUTPUT_BYTES", "1048576")
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ReconPolicyError("XBOW_EXTERNAL_RECON_MAX_OUTPUT_BYTES must be an integer") from exc
+    if not 65536 <= value <= 8 * 1024 * 1024:
+        raise ReconPolicyError(
+            "XBOW_EXTERNAL_RECON_MAX_OUTPUT_BYTES must be between 64 KiB and 8 MiB"
+        )
+    return value
+
+
+def _external_tool_env() -> dict[str, str]:
+    allowed = {"PATH", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}
+    environment = {key: value for key, value in os.environ.items() if key in allowed}
+    home = "/tmp/xbow-recon-home"
+    os.makedirs(home, mode=0o700, exist_ok=True)
+    environment["HOME"] = home
+    environment["DISABLE_UPDATE_CHECK"] = "true"
+    return environment
+
+
+def _run_external_tool(command: list[str], *, timeout: float) -> str:
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            check=False,
+            timeout=timeout,
+            env=_external_tool_env(),
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    if result.returncode != 0:
+        return ""
+    limit = _external_output_limit()
+    stdout = bytes(result.stdout or b"")
+    if len(stdout) > limit:
+        stdout = stdout[:limit]
+    return stdout.decode("utf-8", errors="replace")
+
+
+def _scope_regex(target: str) -> str:
+    parsed = urlparse(target)
+    host = re.escape((parsed.hostname or "").lower().rstrip("."))
+    if not host:
+        raise ReconPolicyError("external recon target has no hostname")
+    return rf"^https?://{host}(?::[0-9]+)?(?:/|$)"
+
+
+def _external_rate(campaign) -> int | None:
+    rps = _recon_rps(campaign)
+    if rps < 1.0:
+        return None
+    return max(1, int(math.floor(rps)))
+
+
+def _katana_surface(campaign, target: str) -> set[str]:
+    rate = _external_rate(campaign)
+    if rate is None:
+        return set()
+    timeout = min(30, max(5, int(math.ceil(_timeout_seconds()))))
+    command = [
+        "katana",
+        "-u",
+        target,
+        "-silent",
+        "-d",
+        str(min(3, _max_crawl_depth())),
+        "-jc",
+        "-cs",
+        _scope_regex(target),
+        "-rl",
+        str(rate),
+        "-c",
+        "1",
+        "-timeout",
+        str(timeout),
+        "-duc",
+    ]
+    output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 180.0))
+    endpoints: set[str] = set()
+    for raw in output.splitlines():
+        candidate = raw.strip()
+        if not candidate or len(candidate) > 4096:
+            continue
+        try:
+            safe = _safe_url(campaign, candidate)
+        except ReconPolicyError:
+            continue
+        if _same_origin(target, safe):
+            endpoints.add(safe)
+        if len(endpoints) >= 100:
+            break
+    return endpoints
+
+
+def _httpx_context(campaign, target: str) -> tuple[set[str], set[str]]:
+    rate = _external_rate(campaign)
+    if rate is None:
+        return set(), set()
+    timeout = min(30, max(5, int(math.ceil(_timeout_seconds()))))
+    command = [
+        "httpx",
+        "-u",
+        target,
+        "-silent",
+        "-json",
+        "-status-code",
+        "-tech-detect",
+        "-server",
+        "-threads",
+        "1",
+        "-rl",
+        str(rate),
+        "-timeout",
+        str(timeout),
+        "-retries",
+        "0",
+        "-duc",
+    ]
+    output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 60.0))
+    technologies: set[str] = set()
+    waf: set[str] = set()
+    for raw in output.splitlines()[:20]:
+        try:
+            item = json.loads(raw)
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if not isinstance(item, dict):
+            continue
+        observed_url = str(item.get("url") or target)
+        try:
+            safe = _safe_url(campaign, observed_url)
+        except ReconPolicyError:
+            continue
+        if not _same_origin(target, safe):
+            continue
+        tech = item.get("tech")
+        if isinstance(tech, list):
+            technologies.update(str(value)[:200] for value in tech[:30] if value)
+        server = item.get("webserver") or item.get("server")
+        if server:
+            technologies.add(f"Server:{str(server)[:180]}")
+        cdn_name = item.get("cdn_name")
+        if cdn_name:
+            waf.add(f"cdn:{str(cdn_name)[:180]}")
+    return technologies, waf
+
+
+def _passive_domain(campaign, target: str) -> str:
+    host = (urlparse(target).hostname or "").lower().rstrip(".")
+    if not host:
+        raise ReconPolicyError("passive recon target has no hostname")
+    candidates: list[str] = []
+    for raw in campaign.target.rules.allowed_targets:
+        value = str(raw).strip().lower().rstrip(".")
+        if value.startswith("*."):
+            suffix = value[2:]
+            if host == suffix or host.endswith(f".{suffix}"):
+                candidates.append(suffix)
+    if candidates:
+        return sorted(candidates, key=len)[-1]
+    return host
+
+
+def _passive_subdomains(campaign, target: str) -> set[str]:
+    from .main import is_host_allowed
+
+    domain = _passive_domain(campaign, target)
+    command = [
+        "subfinder",
+        "-silent",
+        "-d",
+        domain,
+        "-timeout",
+        "10",
+        "-max-time",
+        "1",
+        "-duc",
+    ]
+    output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 75.0))
+    assets: set[str] = set()
+    rules = campaign.target.rules
+    for raw in output.splitlines():
+        host = raw.strip().lower().rstrip(".")
+        if not host or len(host) > 253 or "/" in host or ":" in host:
+            continue
+        if is_host_allowed(host, rules.allowed_targets, rules.denied_targets):
+            assets.add(host)
+        if len(assets) >= 200:
+            break
+    return assets
+
+
 def execute_recon_task(campaign, payload: dict) -> ReconResult:
     kind = str(payload.get("kind") or "")
     if kind not in {"crawl", "map_endpoints", "detect_technology", "map_forms"}:
@@ -263,6 +472,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
 
     pending: list[tuple[str, int]] = [(target, 0)]
     visited: set[str] = set()
+    assets: set[str] = set()
     endpoints: set[str] = set()
     forms: list[dict] = []
     technologies: set[str] = set()
@@ -392,6 +602,15 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
         and deferred_by_request_budget == 0
     )
 
+    if _external_recon_enabled():
+        if kind == "crawl":
+            endpoints.update(_katana_surface(campaign, target))
+            assets.update(_passive_subdomains(campaign, target))
+        elif kind == "detect_technology":
+            external_technologies, external_waf = _httpx_context(campaign, target)
+            technologies.update(external_technologies)
+            waf.update(external_waf)
+
     if not visited:
         return ReconResult(
             status="error",
@@ -414,6 +633,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     return ReconResult(
         status="observed",
         target=target,
+        assets=tuple(sorted(assets)[:200]),
         endpoints=tuple(sorted(endpoints)[:100]),
         forms=tuple(forms[:50]),
         technologies=tuple(sorted(technologies)[:20]),
