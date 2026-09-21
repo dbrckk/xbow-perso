@@ -1,11 +1,10 @@
 # Change impact
 
-Base: 3db4a5c70680fb2be3c24615657ebb3f96353003
-Head: 15f446808597dc2c926df22f957adabe52d30601
+Base: a42a3bd2d469b298e0bff288c06089807be65dce
+Head: b6623d3f2ad8a5fd24f4b59c8a0e7ee7740e533e
 
 ## Changed files
 - M frontend/hackerone.js
-- M frontend/index.html
 - M frontend/sw.js
 
 ## Affected areas

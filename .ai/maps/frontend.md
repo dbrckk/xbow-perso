@@ -301,6 +301,8 @@ async function refreshActiveBatch()
 ⋮----
 function startBatchMonitor(batchId)
 ⋮----
+function latestActiveBatch(batches)
+⋮----
 async function restoreActiveBatch()
 ⋮----
 async function launchSelectedBatch()
