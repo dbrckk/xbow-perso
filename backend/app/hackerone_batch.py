@@ -1,12 +1,101 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .storage import CampaignConflictError
 
 
 _TERMINAL_MEMBER_STATES = {"done", "review", "blocked", "cancelled"}
+_REMOTE_REVALIDATION_MAX_ATTEMPTS = 8
+_REMOTE_REVALIDATION_BASE_SECONDS = 15
+_REMOTE_REVALIDATION_MAX_SECONDS = 300
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _retry_due(member: dict[str, Any]) -> bool:
+    raw = str(member.get("remote_revalidation_retry_at") or "").strip()
+    if not raw:
+        return True
+    try:
+        retry_at = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return True
+    if retry_at.tzinfo is None:
+        return True
+    return _utc_now() >= retry_at
+
+
+def _clear_retry_state(member: dict[str, Any]) -> None:
+    member.pop("remote_revalidation_attempts", None)
+    member.pop("remote_revalidation_retry_at", None)
+
+
+def _schedule_retry(member: dict[str, Any]) -> tuple[str, str]:
+    try:
+        previous_attempts = max(
+            0,
+            int(member.get("remote_revalidation_attempts") or 0),
+        )
+    except (TypeError, ValueError):
+        previous_attempts = 0
+    attempts = previous_attempts + 1
+    if attempts >= _REMOTE_REVALIDATION_MAX_ATTEMPTS:
+        _clear_retry_state(member)
+        return "review", "remote_revalidation_retry_exhausted"
+    delay = min(
+        _REMOTE_REVALIDATION_MAX_SECONDS,
+        _REMOTE_REVALIDATION_BASE_SECONDS * (2 ** max(0, attempts - 1)),
+    )
+    member["remote_revalidation_attempts"] = attempts
+    member["remote_revalidation_retry_at"] = (
+        _utc_now() + timedelta(seconds=delay)
+    ).isoformat()
+    return "ready", "remote_revalidation_unavailable"
+
+
+def _remote_member_revalidation(
+    member: dict[str, Any],
+) -> tuple[str, str | None]:
+    from .hackerone_client import HackerOneClientError, fetch_hackerone_program_snapshot
+
+    handle = str(member.get("handle") or "").strip()
+    expected_sha = str(member.get("snapshot_sha256") or "").strip()
+    if not handle or not expected_sha:
+        return "review", "remote_snapshot_binding_missing"
+
+    try:
+        snapshot = fetch_hackerone_program_snapshot(handle)
+    except HackerOneClientError as exc:
+        if exc.status_code in {401, 403}:
+            return "review", "remote_hackerone_authorization_failed"
+        if exc.status_code == 404:
+            return "review", "remote_program_unavailable"
+        if (
+            exc.status_code is not None
+            and 400 <= exc.status_code < 500
+            and exc.status_code not in {408, 429}
+        ):
+            return "review", "remote_revalidation_rejected"
+        return "ready", "remote_revalidation_unavailable"
+
+    if snapshot.snapshot_sha256 != expected_sha:
+        return "review", "remote_snapshot_changed_since_batch_admission"
+
+    submission_state = str(
+        snapshot.program.get("submission_state") or ""
+    ).strip().lower()
+    program_state = str(snapshot.program.get("state") or "").strip().lower()
+    if submission_state in {"paused", "closed", "disabled"}:
+        return "review", "remote_submissions_no_longer_open"
+    if program_state in {"closed", "disabled", "archived"}:
+        return "review", "remote_program_no_longer_open"
+
+    return "ok", None
 
 
 def _active_job_counts(queue, campaign_id: str) -> dict[str, int]:
@@ -51,6 +140,10 @@ def _start_member(member: dict[str, Any]) -> tuple[str, str | None]:
     from fastapi import HTTPException
 
     from .main import start_campaign
+
+    remote_state, remote_reason = _remote_member_revalidation(member)
+    if remote_state != "ok":
+        return remote_state, remote_reason
 
     campaign_id = str(member.get("campaign_id") or "")
     try:
@@ -124,11 +217,20 @@ def reconcile_hackerone_batch(queue, store, batch_id: str) -> dict[str, Any] | N
                     ),
                     None,
                 )
-                if next_member is not None:
+                if next_member is not None and _retry_due(next_member):
                     next_status, reason = _start_member(next_member)
+                    if (
+                        next_status == "ready"
+                        and reason == "remote_revalidation_unavailable"
+                    ):
+                        next_status, reason = _schedule_retry(next_member)
+                    else:
+                        _clear_retry_state(next_member)
                     next_member["status"] = next_status
                     if reason:
                         next_member["reason"] = reason[:500]
+                    else:
+                        next_member.pop("reason", None)
                     changed = True
 
         batch["members"] = members
