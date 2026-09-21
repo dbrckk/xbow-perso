@@ -91,6 +91,10 @@ def test_sequential_batch_persists_and_starts_only_first_member(tmp_path, monkey
         "fetch_hackerone_program_snapshot",
         lambda handle: snapshots[handle],
     )
+    monkeypatch.setattr(
+        "app.hackerone_client.fetch_hackerone_program_snapshot",
+        lambda handle: snapshots[handle],
+    )
 
     api = FastAPI()
     api.include_router(hackerone_api.router)
