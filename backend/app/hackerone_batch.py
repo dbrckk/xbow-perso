@@ -264,6 +264,15 @@ def reconcile_hackerone_batch(queue, store, batch_id: str) -> dict[str, Any] | N
             batch["state"] = next_state
             changed = True
 
+        if next_state == "completed" and not isinstance(batch.get("learning_brief"), dict):
+            from .hackerone_quick import build_batch_learning_brief
+            from .runtime_learning import persist_learning_brief
+
+            brief = build_batch_learning_brief(store, batch)
+            batch["learning_brief"] = brief
+            batch["learning_delivery"] = persist_learning_brief(brief)
+            changed = True
+
         if not changed:
             return current
 
