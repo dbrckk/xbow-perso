@@ -84,6 +84,11 @@ def test_reviewed_batch_launch_needs_only_handles(tmp_path, monkeypatch):
     monkeypatch.setenv("XBOW_DB_PATH", db)
     monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
     monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+    monkeypatch.setattr(
+        hackerone_api,
+        "_assert_hackerone_live_scan_ready",
+        lambda: None,
+    )
 
     snapshots = {
         "program-one": _snapshot("program-one", "one.example.com", "a" * 64),
