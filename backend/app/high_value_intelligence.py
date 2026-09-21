@@ -3,7 +3,11 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from .observation_graph import ObservationGraph
+from fastapi import APIRouter
+
+from .observation_graph import ObservationGraph, load_observation_graph
+
+router = APIRouter()
 
 
 @dataclass(frozen=True)
@@ -220,4 +224,18 @@ def build_high_value_intelligence(
         "advisory_only": True,
         "scope_expansion": False,
         "automatic_exploitation": False,
+    }
+
+
+
+@router.get("/api/campaigns/{campaign_id}/high-value-intelligence")
+def campaign_high_value_intelligence(campaign_id: str, limit: int = 6):
+    from .main import assert_campaign_exists, storage
+
+    campaign = assert_campaign_exists(campaign_id)
+    graph = load_observation_graph(storage(), campaign.id)
+    result = build_high_value_intelligence(graph, limit=limit)
+    return {
+        "campaign_id": campaign.id,
+        **result,
     }
