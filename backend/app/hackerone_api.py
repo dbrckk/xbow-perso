@@ -191,7 +191,11 @@ def _json_sha256(value: Any) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any] | None:
+def _verify_remote_binding(
+    payload: HackerOneRulesPreviewInput,
+    *,
+    require_open: bool = False,
+) -> dict[str, Any] | None:
     if payload.remote_handle is None:
         return None
     try:
@@ -215,6 +219,19 @@ def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any
                 "reason": "hackerone_snapshot_document_mismatch",
             },
         )
+    if require_open:
+        block_reason = _program_launch_block_reason(dict(snapshot.program or {}))
+        if block_reason:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne program is not currently open for launch",
+                    "reason": block_reason,
+                    "handle": snapshot.handle,
+                    "submission_state": snapshot.program.get("submission_state"),
+                    "program_state": snapshot.program.get("state"),
+                },
+            )
     return {
         "handle": snapshot.handle,
         "snapshot_sha256": snapshot.snapshot_sha256,
@@ -234,6 +251,44 @@ def _conservative_admission_reason(policy: Any) -> str | None:
     if policy.additional_restrictions:
         return "additional_restrictions_require_manual_enforcement"
     return None
+
+
+def _program_launch_block_reason(program: dict[str, Any]) -> str | None:
+    submission_state = str(program.get("submission_state") or "").strip().lower()
+    program_state = str(program.get("state") or "").strip().lower()
+    if submission_state in {"paused", "closed", "disabled"}:
+        return "hackerone_submissions_not_open"
+    if program_state in {"closed", "disabled", "archived"}:
+        return "hackerone_program_not_open"
+    return None
+
+
+def _assert_hackerone_live_scan_ready() -> None:
+    from .main import dependency_readiness
+
+    readiness = build_hackerone_live_readiness(dependency_readiness())
+    if readiness.get("live_scan_ready") is True:
+        return
+
+    failed_checks = [
+        str(item.get("id") or "")
+        for item in list(readiness.get("checks") or [])
+        if isinstance(item, dict)
+        and item.get("required") is True
+        and item.get("ok") is not True
+        and str(item.get("id") or "")
+    ]
+    raise HTTPException(
+        status_code=503,
+        detail={
+            "message": "HackerOne live scan preflight is not ready",
+            "reason": "hackerone_live_scan_not_ready",
+            "failed_checks": failed_checks,
+            "scanner_block_reasons": list(
+                readiness.get("scanner_block_reasons") or []
+            ),
+        },
+    )
 
 
 
@@ -448,7 +503,7 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
     from .hackerone_scope_import import HackerOneScopeImportError, import_hackerone_structured_scope
     from .main import TargetInput, storage, utcnow
 
-    remote_binding = _verify_remote_binding(payload)
+    remote_binding = _verify_remote_binding(payload, require_open=True)
     try:
         preview = import_hackerone_structured_scope(payload.document)
         policy = _policy_from_input(payload.policy)
@@ -749,6 +804,8 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
 
 @router.post("/api/imports/hackerone/batches/launch")
 def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
+    _assert_hackerone_live_scan_ready()
+
     from .campaign_audit import append_campaign_event
     from .hackerone_batch import reconcile_hackerone_batch
     from .main import (
@@ -912,6 +969,8 @@ def cancel_hackerone_batch(batch_id: str):
 @router.post("/api/imports/hackerone/campaigns/launch")
 def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
     """Admit a reviewed HackerOne policy and start it in one authenticated mutation."""
+
+    _assert_hackerone_live_scan_ready()
 
     from .main import assert_campaign_exists, start_campaign
 
