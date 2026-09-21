@@ -30,10 +30,10 @@ def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
 
-    assert '/app.js?v=58' in index
-    assert '/hackerone.js?v=58' in index
-    assert '/app.css?v=58' in index
-    assert "xbow-perso-v58" in sw
+    assert '/app.js?v=59' in index
+    assert '/hackerone.js?v=59' in index
+    assert '/app.css?v=59' in index
+    assert "xbow-perso-v59" in sw
 
 
 
@@ -47,3 +47,14 @@ def test_api_token_is_persisted_across_browser_sessions():
     assert "sessionStorage.getItem(API_TOKEN_STORAGE_KEY)" in app
     assert "sessionStorage.removeItem(API_TOKEN_STORAGE_KEY)" in app
     assert "Le jeton reste enregistré sur cet appareil." in html
+
+
+
+def test_frontend_has_no_totp_control():
+    app = _text("frontend/app.js")
+    html = _text("frontend/index.html")
+
+    assert 'id="totp"' not in html
+    assert "Code TOTP" not in html
+    assert "x-totp-code" not in app
+    assert "$('totp')" not in app
