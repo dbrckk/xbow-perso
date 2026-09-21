@@ -20,6 +20,7 @@ from .hackerone_catalog import refresh_hackerone_catalog
 from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_intelligence import refresh_hackerone_intelligence
 from .local_outcome_intelligence import build_local_outcome_signals
+from .quick_bounty import batch_journal_entry, learning_digest, select_quick_portfolio
 from .hackerone_discovery import build_program_discovery
 from .value_efficiency import select_diversified_portfolio
 from .hackerone_needs_info import render_needs_more_info_draft
@@ -120,6 +121,23 @@ class HackerOneBatchLaunchInput(BaseModel):
         if len(set(handles)) != len(handles):
             raise ValueError("batch campaigns must use unique HackerOne programs")
         return self
+
+
+class HackerOneQuickLaunchInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    mode: Literal["sequential", "parallel"] = "parallel"
+    handles: list[str] = Field(min_length=1, max_length=6)
+
+    @field_validator("handles")
+    @classmethod
+    def quick_handles_must_be_unique(cls, value: list[str]) -> list[str]:
+        normalized = [str(item).strip() for item in value]
+        if any(not item or item != item.lower() or len(item) > 128 for item in normalized):
+            raise ValueError("quick launch handles are invalid")
+        if len(set(normalized)) != len(normalized):
+            raise ValueError("quick launch handles must be unique")
+        return normalized
 
 
 class HackerOneReviewedBatchLaunchInput(BaseModel):
@@ -428,6 +446,84 @@ def hackerone_discovery_selection(
         "automatic_launch": False,
         "scope_expansion": False,
         "requires_launch_revalidation": True,
+    }
+
+
+@router.get("/api/hackerone/quick/selection")
+def hackerone_quick_selection():
+    """Return six reviewed READY programs split into easy/medium/high-value buckets."""
+    discovery = hackerone_program_discovery(verify_limit=50)
+    result = select_quick_portfolio(list(discovery.get("programs") or []))
+    return {
+        "provider": "hackerone",
+        **result,
+        "catalog_checked_at": discovery.get("catalog_checked_at"),
+        "read_only": True,
+        "launch_requires_revalidation": True,
+    }
+
+
+@router.post("/api/hackerone/quick/launch")
+def hackerone_quick_launch(payload: HackerOneQuickLaunchInput):
+    """Launch only the exact six reviewed handles selected by the quick console."""
+    selected = hackerone_quick_selection()
+    allowed = {str(item.get("handle") or "") for item in list(selected.get("selection") or [])}
+    requested = list(payload.handles)
+    if len(requested) != 6:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Quick launch requires exactly six READY programs",
+                "reason": "quick_selection_incomplete",
+            },
+        )
+    if set(requested) != allowed:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Quick selection changed; select the six programs again",
+                "reason": "quick_selection_stale",
+            },
+        )
+    return launch_reviewed_hackerone_batch(
+        HackerOneReviewedBatchLaunchInput(
+            mode=payload.mode,
+            handles=requested,
+        )
+    )
+
+
+@router.get("/api/hackerone/quick/journal")
+def hackerone_quick_journal(
+    limit: int = Query(default=30, ge=1, le=100),
+):
+    """Return durable batch history and sanitized learning digests."""
+    from .main import storage
+
+    store = storage()
+    campaigns = store.list_campaigns(limit=1000)
+    campaigns_by_id = {
+        str(item.get("id") or ""): item
+        for item in campaigns
+        if isinstance(item, dict) and item.get("id")
+    }
+    batches = store.list_hackerone_batches(limit=limit)
+    entries = [
+        batch_journal_entry(batch, campaigns_by_id)
+        for batch in batches
+        if isinstance(batch, dict)
+    ]
+    return {
+        "provider": "hackerone",
+        "journal": entries,
+        "learning": [
+            learning_digest(batch, campaigns_by_id)
+            for batch in batches
+            if isinstance(batch, dict) and str(batch.get("state") or "") == "completed"
+        ],
+        "continues_without_dashboard": True,
+        "sanitized_learning_export": True,
+        "automatic_code_changes": False,
     }
 
 
