@@ -50,6 +50,16 @@ class BrowserStep(BaseModel):
 
 class BrowserFlowInput(BaseModel):
     steps: list[BrowserStep] = Field(min_length=1, max_length=25)
+    identity_label: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=80,
+        pattern=r"^[A-Za-z0-9._ -]+$",
+    )
+    storage_state_secret_env: str | None = Field(
+        default=None,
+        pattern=r"^XBOW_BROWSER_SECRET_[A-Z0-9_]+$",
+    )
 
 
 @dataclass(frozen=True)
@@ -57,6 +67,7 @@ class BrowserExecutionResult:
     status: str
     observations: list[dict]
     screenshots: list[tuple[str, bytes]]
+    identity_label: str | None = None
 
 
 def _bool_env(name: str, default: bool = False) -> bool:
@@ -200,6 +211,72 @@ def _allowed_url(campaign, candidate: str, base: str | None = None) -> str:
     return resolved
 
 
+def _browser_storage_state(campaign, secret_env: str | None) -> dict | None:
+    """Load a Playwright storage-state secret and reject any out-of-scope state."""
+    if not secret_env:
+        return None
+
+    raw = _browser_secret(secret_env)
+    encoded = raw.encode("utf-8")
+    if len(encoded) > 131_072:
+        raise BrowserPolicyError("browser storage state exceeds 128 KiB")
+    try:
+        document = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise BrowserPolicyError("browser storage state must be valid JSON") from exc
+    if not isinstance(document, dict):
+        raise BrowserPolicyError("browser storage state must be a JSON object")
+
+    cookies = document.get("cookies", [])
+    origins = document.get("origins", [])
+    if not isinstance(cookies, list) or len(cookies) > 100:
+        raise BrowserPolicyError("browser storage state cookies must be a list of at most 100")
+    if not isinstance(origins, list) or len(origins) > 30:
+        raise BrowserPolicyError("browser storage state origins must be a list of at most 30")
+
+    from .main import is_host_allowed
+
+    rules = campaign.target.rules
+    primary_host = (urlparse(str(campaign.target.primary_url)).hostname or "").lower().rstrip(".")
+
+    for cookie in cookies:
+        if not isinstance(cookie, dict):
+            raise BrowserPolicyError("browser storage state cookie is invalid")
+        domain = str(cookie.get("domain") or "").lower().lstrip(".").rstrip(".")
+        name = cookie.get("name")
+        value = cookie.get("value")
+        if not domain or not isinstance(name, str) or not isinstance(value, str):
+            raise BrowserPolicyError("browser storage state cookie fields are invalid")
+        domain_covers_primary = bool(
+            primary_host
+            and (primary_host == domain or primary_host.endswith(f".{domain}"))
+            and is_host_allowed(
+                primary_host,
+                rules.allowed_targets,
+                rules.denied_targets,
+            )
+        )
+        if not domain_covers_primary and not is_host_allowed(
+            domain,
+            rules.allowed_targets,
+            rules.denied_targets,
+        ):
+            raise BrowserPolicyError("browser storage state contains an out-of-scope cookie domain")
+
+    for origin in origins:
+        if not isinstance(origin, dict):
+            raise BrowserPolicyError("browser storage state origin is invalid")
+        origin_url = str(origin.get("origin") or "")
+        _allowed_url(campaign, origin_url)
+        local_storage = origin.get("localStorage", [])
+        if not isinstance(local_storage, list) or len(local_storage) > 200:
+            raise BrowserPolicyError(
+                "browser storage state localStorage must be a list of at most 200 entries"
+            )
+
+    return {"cookies": cookies, "origins": origins}
+
+
 def _assert_read_only_browser_method(method: str) -> None:
     normalized = method.strip().upper()
     if normalized not in {"GET", "HEAD", "OPTIONS"}:
@@ -283,7 +360,7 @@ def queue_browser_flow(campaign_id: str, flow: BrowserFlowInput):
         "browser_flow",
         {
             "campaign_id": latest.id,
-            "steps": flow.model_dump(mode="json")["steps"],
+            **flow.model_dump(mode="json"),
         },
         max_attempts=2,
         dedupe_key=f"browser:{request_id}",
@@ -299,9 +376,17 @@ def queue_browser_flow(campaign_id: str, flow: BrowserFlowInput):
 
 
 def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
-    flow = validate_flow(campaign, BrowserFlowInput.model_validate({"steps": payload.get("steps", [])}))
+    flow = validate_flow(campaign, BrowserFlowInput.model_validate(payload))
     if not _bool_env("XBOW_ENABLE_BROWSER_AUTOMATION", False):
-        return BrowserExecutionResult(status="dry_run", observations=[{"steps": len(flow.steps)}], screenshots=[])
+        preview = {"steps": len(flow.steps)}
+        if flow.identity_label:
+            preview["identity_label"] = flow.identity_label
+        return BrowserExecutionResult(
+            status="dry_run",
+            observations=[preview],
+            screenshots=[],
+            identity_label=flow.identity_label,
+        )
 
     try:
         from playwright.sync_api import sync_playwright
@@ -312,7 +397,11 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
     screenshots: list[tuple[str, bytes]] = []
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True, args=["--disable-dev-shm-usage", "--no-sandbox"])
-        context = browser.new_context(ignore_https_errors=False)
+        storage_state = _browser_storage_state(campaign, flow.storage_state_secret_env)
+        context_options = {"ignore_https_errors": False}
+        if storage_state is not None:
+            context_options["storage_state"] = storage_state
+        context = browser.new_context(**context_options)
         page = context.new_page()
 
         def route_guard(route):
@@ -335,7 +424,18 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
                     target = _allowed_url(campaign, step.url or "", page.url if page.url != "about:blank" else None)
                     response = page.goto(target, wait_until="domcontentloaded", timeout=step.timeout_ms)
                     final_url = _allowed_url(campaign, page.url, target)
-                    observations.append({"step": index, "operation": "navigate", "url": final_url, "status": response.status if response else None})
+                    rendered = page.content().encode("utf-8", errors="replace")
+                    navigation = {
+                        "step": index,
+                        "operation": "navigate",
+                        "url": final_url,
+                        "status": response.status if response else None,
+                        "content_sha256": hashlib.sha256(rendered).hexdigest(),
+                        "content_bytes": len(rendered),
+                    }
+                    if flow.identity_label:
+                        navigation["identity_label"] = flow.identity_label
+                    observations.append(navigation)
 
                     links = []
                     for href in page.locator("a[href]").evaluate_all(
@@ -446,7 +546,12 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
         finally:
             context.close()
             browser.close()
-    return BrowserExecutionResult(status="completed", observations=observations, screenshots=screenshots)
+    return BrowserExecutionResult(
+        status="completed",
+        observations=observations,
+        screenshots=screenshots,
+        identity_label=flow.identity_label,
+    )
 
 
 def persist_browser_result(
@@ -460,7 +565,15 @@ def persist_browser_result(
         store.put_artifact(
             campaign_id,
             "http_evidence",
-            json.dumps({"status": result.status, "observations": result.observations}, ensure_ascii=False, sort_keys=True).encode("utf-8"),
+            json.dumps(
+                {
+                    "status": result.status,
+                    "identity_label": result.identity_label,
+                    "observations": result.observations,
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            ).encode("utf-8"),
             media_type="application/json",
             idempotency_key=f"{idempotency_prefix}:browser:evidence" if idempotency_prefix else None,
         )
