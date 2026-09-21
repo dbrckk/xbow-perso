@@ -2084,6 +2084,7 @@
       remote_revalidation_retry_exhausted:'revalidation HackerOne impossible après plusieurs tentatives · revue requise',
       remote_hackerone_authorization_failed:'accès API HackerOne refusé · vérifier les credentials avant reprise',
       remote_program_unavailable:'programme HackerOne devenu inaccessible · revue requise',
+      remote_revalidation_rejected:'HackerOne refuse la revalidation · revue requise',
       remote_snapshot_changed_since_batch_admission:'scope/policy modifié depuis la mise en file · revue requise',
       remote_submissions_no_longer_open:'soumissions HackerOne désormais pausées/fermées · revue requise',
       remote_program_no_longer_open:'programme HackerOne désormais fermé · revue requise'
