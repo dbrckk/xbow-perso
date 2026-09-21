@@ -10,6 +10,7 @@ from .runtime_capabilities import (
     safe_recon_runtime_capability,
     safe_scanner_runtime_capability,
 )
+from .worker_liveness import worker_liveness_snapshot
 
 
 def _strict_bool(name: str, default: bool = False) -> tuple[bool, bool]:
@@ -37,6 +38,9 @@ def build_hackerone_live_readiness(
     scanner = safe_scanner_runtime_capability()
     recon = safe_recon_runtime_capability()
     browser = safe_browser_runtime_capability()
+    workers = worker_liveness_snapshot()
+    general_worker = dict(workers.get("general") or {})
+    scanner_worker = dict(workers.get("scanner") or {})
 
     try:
         load_hackerone_credentials()
@@ -79,6 +83,13 @@ def build_hackerone_live_readiness(
             "action": "Définir XBOW_ENABLE_RECON=true et résoudre les recon dispatch_block_reasons.",
         },
         {
+            "id": "general_worker_live",
+            "label": "Worker général actif",
+            "required": True,
+            "ok": general_worker.get("live") is True,
+            "action": "Démarrer ou redémarrer le worker général et vérifier son heartbeat.",
+        },
+        {
             "id": "browser_automation",
             "label": "Observation navigateur",
             "required": False,
@@ -105,6 +116,13 @@ def build_hackerone_live_readiness(
             "required": True,
             "ok": bool(scanner.get("scanner_worker_enabled")),
             "action": "Démarrer le profil Docker scanner et garder le worker dédié.",
+        },
+        {
+            "id": "scanner_worker_live",
+            "label": "Worker scanner réellement actif",
+            "required": True,
+            "ok": scanner_worker.get("live") is True,
+            "action": "Démarrer ou redémarrer le profil scanner et vérifier son heartbeat.",
         },
         {
             "id": "nuclei_enabled",
@@ -269,6 +287,7 @@ def build_hackerone_live_readiness(
         "scanner_block_reasons": list(scanner.get("dispatch_block_reasons") or []),
         "recon_block_reasons": list(recon.get("dispatch_block_reasons") or []),
         "browser_block_reasons": list(browser.get("dispatch_block_reasons") or []),
+        "worker_liveness": workers,
         "deployment_status": deployment.get("status"),
         "submission_enabled": submission_enabled if submission_valid else False,
         "report_sync_enabled": report_sync_enabled if report_sync_valid else False,
