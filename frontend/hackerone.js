@@ -2268,13 +2268,22 @@
     try{
       el('h1LoadProgram').disabled=true;
       setLauncherStatus('Chargement du programme HackerOne…');
-      const snapshot=await api('/imports/hackerone/programs/'+encodeURIComponent(handle)+'/snapshot');
+      const [snapshot,reviewDraft]=await Promise.all([
+        api('/imports/hackerone/programs/'+encodeURIComponent(handle)+'/snapshot'),
+        api('/imports/hackerone/programs/'+encodeURIComponent(handle)+'/review-draft')
+      ]);
       remoteBinding={
         handle:String(snapshot.handle),
         snapshot_sha256:String(snapshot.snapshot_sha256)
       };
-      el('h1ScopeJson').value=JSON.stringify(snapshot.document,null,2);
-      if(snapshot.program?.name)el('h1Name').value=String(snapshot.program.name).slice(0,120);
+      const prefill=reviewDraft?.prefill||{};
+      el('h1ScopeJson').value=JSON.stringify(prefill.scope_document||snapshot.document,null,2);
+      if(prefill.name||snapshot.program?.name){
+        el('h1Name').value=String(prefill.name||snapshot.program.name).slice(0,120);
+      }
+      if(prefill.primary_url)el('h1Url').value=String(prefill.primary_url);
+      if(prefill.authorization_reference)el('h1Auth').value=String(prefill.authorization_reference);
+      if(prefill.policy_version)el('h1PolicyVersion').value=String(prefill.policy_version);
       const program=snapshot.program||{};
       const meta=[
         String(program.name||snapshot.handle),
@@ -2288,7 +2297,12 @@
       const reused=restoreQuickProfile(snapshot);
       rememberLastProgram(remoteBinding.handle);
       invalidatePreview();
-      setLauncherStatus('Programme HackerOne chargé. Le mode express a prérempli tout ce qui peut l’être sans deviner les règles.','ok');
+      const manual=Array.isArray(reviewDraft?.manual_required)?reviewDraft.manual_required.length:0;
+      setLauncherStatus(
+        'Programme HackerOne chargé. Scope, référence, version et cible déductible préremplis · '+
+        String(manual)+' élément(s) de policy restent à confirmer manuellement.',
+        'ok'
+      );
       if(reused&&el('h1QuickAutoPreview')?.checked){
         await preview();
         if(approvedPreview){
