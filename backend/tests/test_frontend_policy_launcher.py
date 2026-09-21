@@ -43,7 +43,8 @@ def test_frontend_requires_authorization_and_scope_review_before_launch():
     for element_id in required_ids:
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/hackerone.js?v=60" defer></script>' in html
+    assert '<script src="/hackerone.js?v=60" defer></script>' not in html
+    assert '<script src="/quick.js?v=60" defer></script>' in html
     assert "api('/imports/hackerone/rules-preview'" in launcher
     assert "api('/imports/hackerone/campaigns/launch'" in launcher
     assert '<button id="h1Launch" disabled>' in html
@@ -406,3 +407,15 @@ def test_frontend_exposes_first_live_run_operator_guide():
     assert "scanner_start_command" in launcher
     assert "Configuration de passage en réel" in html
     assert "À appliquer uniquement après revue du programme" in html
+
+
+
+def test_simple_quick_routes_exist():
+    schema = app.openapi()
+
+    assert "/api/hackerone/quick-plan" in schema["paths"]
+    assert "get" in schema["paths"]["/api/hackerone/quick-plan"]
+    assert "/api/hackerone/quick-run" in schema["paths"]
+    assert "post" in schema["paths"]["/api/hackerone/quick-run"]
+    assert "/api/hackerone/quick-journal" in schema["paths"]
+    assert "get" in schema["paths"]["/api/hackerone/quick-journal"]
