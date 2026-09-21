@@ -5,28 +5,71 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "PublicCaseLesson": {
+    "HackerOneProgramPolicyInput": {
       "source": {
-        "file": "backend/app/high_value_intelligence.py",
-        "start": 14,
-        "end": 28
+        "file": "backend/app/hackerone_api.py",
+        "start": 36,
+        "end": 63
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "request_rate_must_be_explicit_number",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewed_at_must_be_timezone_aware",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "reviewed_at_must_be_timezone_aware": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 53,
+        "end": 56
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "to_dict": {
+    "request_rate_must_be_explicit_number": {
       "source": {
-        "file": "backend/app/high_value_intelligence.py",
-        "start": 24,
-        "end": 144
+        "file": "backend/app/hackerone_api.py",
+        "start": 60,
+        "end": 63
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneRulesPreviewInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 66,
+        "end": 88
       },
       "symbol_dependencies": [
         {
-          "symbol": "HighValueFocus",
+          "symbol": "HackerOneProgramPolicyInput",
           "definitions": [
             {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 32,
+              "file": "backend/app/hackerone_api.py",
+              "line": 36,
               "kind": "class",
               "language": "python"
             }
@@ -34,11 +77,63 @@
           "relation": "same_file"
         },
         {
-          "symbol": "PublicCaseLesson",
+          "symbol": "remote_binding_must_be_complete",
           "definitions": [
             {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 14,
+              "file": "backend/app/hackerone_api.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "remote_binding_must_be_complete": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 80,
+        "end": 88
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneCampaignTargetInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 91,
+        "end": 95
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneCampaignAdmissionInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 98,
+        "end": 99
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneCampaignTargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 91,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneRulesPreviewInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 66,
               "kind": "class",
               "language": "python"
             }
@@ -48,29 +143,63 @@
       ],
       "dependency_count": 2
     },
-    "HighValueFocus": {
+    "HackerOneBatchLaunchInput": {
       "source": {
-        "file": "backend/app/high_value_intelligence.py",
-        "start": 32,
-        "end": 44
+        "file": "backend/app/hackerone_api.py",
+        "start": 102,
+        "end": 122
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneCampaignAdmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 98,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "campaigns_must_be_remote_bound_and_unique",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 112,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "campaigns_must_be_remote_bound_and_unique": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 112,
+        "end": 122
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "public_case_lessons": {
+    "HackerOneReviewedBatchLaunchInput": {
       "source": {
-        "file": "backend/app/high_value_intelligence.py",
-        "start": 148,
+        "file": "backend/app/hackerone_api.py",
+        "start": 125,
         "end": 149
       },
       "symbol_dependencies": [
         {
-          "symbol": "PublicCaseLesson",
+          "symbol": "reviewed_handles_must_be_unique",
           "definitions": [
             {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 14,
-              "kind": "class",
+              "file": "backend/app/hackerone_api.py",
+              "line": 133,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -79,65 +208,59 @@
       ],
       "dependency_count": 1
     },
-    "_surface_tokens": {
+    "reviewed_handles_must_be_unique": {
       "source": {
-        "file": "backend/app/high_value_intelligence.py",
+        "file": "backend/app/hackerone_api.py",
+        "start": 133,
+        "end": 149
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneReportSubmissionInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
         "start": 152,
-        "end": 165
+        "end": 164
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "normalize_actor",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/hackerone_api.py",
+              "line": 160,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "by_kind",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 95,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 1
     },
-    "_family_coverage": {
+    "normalize_actor": {
       "source": {
-        "file": "backend/app/high_value_intelligence.py",
-        "start": 169,
-        "end": 211
+        "file": "backend/app/hackerone_api.py",
+        "start": 160,
+        "end": 164
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_policy_from_input": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 167,
+        "end": 182
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "HackerOneProgramPolicy",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 78,
               "kind": "class",
               "language": "python"
             }
@@ -145,57 +268,42 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "add",
+          "symbol": "HackerOneProgramPolicyInput",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
+              "file": "backend/app/hackerone_api.py",
+              "line": 36,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "values",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 2
     },
-    "build_high_value_intelligence": {
+    "_json_sha256": {
       "source": {
-        "file": "backend/app/high_value_intelligence.py",
-        "start": 213,
-        "end": 299
+        "file": "backend/app/hackerone_api.py",
+        "start": 185,
+        "end": 192
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_verify_remote_binding": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 195,
+        "end": 223
       },
       "symbol_dependencies": [
         {
-          "symbol": "HighValueFocus",
+          "symbol": "HackerOneClientError",
           "definitions": [
             {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
               "kind": "class",
               "language": "python"
             }
@@ -203,11 +311,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_family_coverage",
+          "symbol": "HackerOneRulesPreviewInput",
           "definitions": [
             {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 169,
+              "file": "backend/app/hackerone_api.py",
+              "line": 66,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_json_sha256",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 185,
               "kind": "function",
               "language": "python"
             }
@@ -215,11 +335,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_surface_tokens",
+          "symbol": "_upstream_error",
           "definitions": [
             {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 152,
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
               "kind": "function",
               "language": "python"
             }
@@ -227,11 +347,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "fetch_hackerone_program_snapshot",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
               "kind": "function",
               "language": "python"
             }
@@ -241,19 +361,81 @@
       ],
       "dependency_count": 5
     },
-    "campaign_high_value_intelligence": {
+    "_remote_program_launch_block_reason": {
       "source": {
-        "file": "backend/app/high_value_intelligence.py",
-        "start": 304,
-        "end": 313
+        "file": "backend/app/hackerone_api.py",
+        "start": 226,
+        "end": 233
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_conservative_admission_reason": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 236,
+        "end": 247
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_upstream_error": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 251,
+        "end": 256
       },
       "symbol_dependencies": [
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "HackerOneClientError",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 219,
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_program_list_item": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 259,
+        "end": 276
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "hackerone_attention_center": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 280,
+        "end": 286
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_hackerone_attention_center",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_attention.py",
+              "line": 177,
               "kind": "function",
               "language": "python"
             }
@@ -261,11 +443,125 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_high_value_intelligence",
+          "symbol": "list_campaigns",
           "definitions": [
             {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 213,
+              "file": "backend/app/main.py",
+              "line": 511,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "hackerone_live_readiness": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 290,
+        "end": 293
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_hackerone_live_readiness",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_live_readiness.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "hackerone_connection": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 297,
+        "end": 302
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_hackerone_credentials",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "list_hackerone_programs": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 306,
+        "end": 331
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
               "kind": "function",
               "language": "python"
             }
@@ -273,11 +569,1005 @@
           "relation": "same_file"
         },
         {
-          "symbol": "load_observation_graph",
+          "symbol": "refresh_hackerone_catalog",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 99,
+              "file": "backend/app/hackerone_catalog.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "hackerone_program_catalog": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 335,
+        "end": 349
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refresh_hackerone_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_catalog.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "hackerone_program_discovery": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 353,
+        "end": 405
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_local_outcome_signals",
+          "definitions": [
+            {
+              "file": "backend/app/local_outcome_intelligence.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_program_discovery",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_discovery.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_campaigns",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 511,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_hackerone_review_profiles",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 548,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refresh_hackerone_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_catalog.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "hackerone_discovery_selection": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 409,
+        "end": 431
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "hackerone_program_discovery",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 353,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "select_diversified_portfolio",
+          "definitions": [
+            {
+              "file": "backend/app/value_efficiency.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "hackerone_learning_intelligence": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 435,
+        "end": 452
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refresh_hackerone_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_intelligence.py",
+              "line": 591,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "get_hackerone_program_review_draft": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 456,
+        "end": 461
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_hackerone_review_draft",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "get_hackerone_program_snapshot": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 465,
+        "end": 478
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "preview_hackerone_rules": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 482,
+        "end": 544
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneRulesPreviewInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 66,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneScopeImportError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 98,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_conservative_admission_reason",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 236,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_json_sha256",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 185,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_policy_from_input",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 167,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verify_remote_binding",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "import_hackerone_structured_scope",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 369,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_program_rules",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 171,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "list_hackerone_review_profiles": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 548,
+        "end": 558
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "admit_hackerone_campaign": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 562,
+        "end": 637
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 162,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneCampaignAdmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 98,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneScopeImportError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 98,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_conservative_admission_reason",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 236,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_json_sha256",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 185,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_policy_from_input",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 167,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verify_remote_binding",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "import_hackerone_structured_scope",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 369,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "policy_snapshot_fingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_program_rules",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 171,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "_batch_summary": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 640,
+        "end": 649
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_rollback_admitted_batch_campaigns": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 652,
+        "end": 659
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "cancel_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1266,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_reviewed_campaign_input": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 662,
+        "end": 755
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneCampaignAdmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 98,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneCampaignTargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 91,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneProgramPolicyInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 36,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_remote_program_launch_block_reason",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 226,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "preflight_reviewed_hackerone_batch": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 759,
+        "end": 800
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reviewed_campaign_input",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 662,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
               "kind": "function",
               "language": "python"
             }
@@ -299,37 +1589,19 @@
       ],
       "dependency_count": 4
     },
-    "_high_value_task_boost": {
+    "launch_reviewed_hackerone_batch": {
       "source": {
-        "file": "backend/app/recon_priority.py",
-        "start": 28,
-        "end": 53
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "ReconPriorityAdjustment": {
-      "source": {
-        "file": "backend/app/recon_priority.py",
-        "start": 57,
-        "end": 78
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "ReconPriorityResult": {
-      "source": {
-        "file": "backend/app/recon_priority.py",
-        "start": 82,
-        "end": 99
+        "file": "backend/app/hackerone_api.py",
+        "start": 804,
+        "end": 840
       },
       "symbol_dependencies": [
         {
-          "symbol": "ReconPriorityAdjustment",
+          "symbol": "HackerOneBatchLaunchInput",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 57,
+              "file": "backend/app/hackerone_api.py",
+              "line": 102,
               "kind": "class",
               "language": "python"
             }
@@ -337,69 +1609,81 @@
           "relation": "same_file"
         },
         {
-          "symbol": "ReconTask",
+          "symbol": "HackerOneCampaignAdmissionInput",
           "definitions": [
             {
-              "file": "backend/app/recon_swarm.py",
-              "line": 46,
+              "file": "backend/app/hackerone_api.py",
+              "line": 98,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reviewed_campaign_input",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 662,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 844,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 6
     },
-    "_signal_counts": {
+    "launch_hackerone_batch": {
       "source": {
-        "file": "backend/app/recon_priority.py",
-        "start": 102,
-        "end": 113
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_historical_kind_scores": {
-      "source": {
-        "file": "backend/app/recon_priority.py",
-        "start": 118,
-        "end": 140
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_temporal_kind_scores": {
-      "source": {
-        "file": "backend/app/recon_priority.py",
-        "start": 155,
-        "end": 177
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_confidence_kind_scores": {
-      "source": {
-        "file": "backend/app/recon_priority.py",
-        "start": 181,
-        "end": 201
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "prioritize_recon_tasks": {
-      "source": {
-        "file": "backend/app/recon_priority.py",
-        "start": 203,
-        "end": 330
+        "file": "backend/app/hackerone_api.py",
+        "start": 844,
+        "end": 948
       },
       "symbol_dependencies": [
         {
-          "symbol": "ReconPriorityAdjustment",
+          "symbol": "HackerOneBatchLaunchInput",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 57,
+              "file": "backend/app/hackerone_api.py",
+              "line": 102,
               "kind": "class",
               "language": "python"
             }
@@ -407,11 +1691,303 @@
           "relation": "same_file"
         },
         {
-          "symbol": "ReconPriorityResult",
+          "symbol": "_batch_summary",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 82,
+              "file": "backend/app/hackerone_api.py",
+              "line": 640,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_rollback_admitted_batch_campaigns",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 652,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "admit_hackerone_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 562,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 211,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 965,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reconcile_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_batch.py",
+              "line": 90,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "start_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "list_hackerone_batches": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 952,
+        "end": 961
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "get_hackerone_batch": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 965,
+        "end": 972
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reconcile_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_batch.py",
+              "line": 90,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "cancel_hackerone_batch": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 976,
+        "end": 1002
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_batch_summary",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 640,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "cancel_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1266,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "launch_hackerone_campaign": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1006,
+        "end": 1019
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneCampaignAdmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 98,
               "kind": "class",
               "language": "python"
             }
@@ -419,11 +1995,84 @@
           "relation": "same_file"
         },
         {
-          "symbol": "ReconTask",
+          "symbol": "admit_hackerone_campaign",
           "definitions": [
             {
-              "file": "backend/app/recon_swarm.py",
-              "line": 46,
+              "file": "backend/app/hackerone_api.py",
+              "line": 562,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "start_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_hackerone_submission_enabled": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1022,
+        "end": 1033
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_verified_remote_team_handle": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1036,
+        "end": 1052
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_unresolved_hackerone_attempt": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1055,
+        "end": 1072
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "get_hackerone_remote_report_status": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1078,
+        "end": 1098
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
               "kind": "class",
               "language": "python"
             }
@@ -431,11 +2080,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_confidence_kind_scores",
+          "symbol": "HackerOneClientError",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 181,
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
               "kind": "function",
               "language": "python"
             }
@@ -443,11 +2104,93 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_high_value_task_boost",
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 28,
+              "file": "backend/app/main.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_json",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "project_remote_report_status",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "remote_submission_for_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "get_hackerone_needs_more_info_draft": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1104,
+        "end": 1142
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 251,
               "kind": "function",
               "language": "python"
             }
@@ -455,11 +2198,129 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_historical_kind_scores",
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 118,
+              "file": "backend/app/main.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_json",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "project_remote_report_status",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "remote_submission_for_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "render_needs_more_info_draft",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_needs_info.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "submit_hackerone_report": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1148,
+        "end": 1342
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ArtifactIntegrityError",
+          "definitions": [
+            {
+              "file": "backend/app/storage_core.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneReportSubmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 152,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_hackerone_submission_enabled",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1022,
               "kind": "function",
               "language": "python"
             }
@@ -467,25 +2328,2676 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_signal_counts",
+          "symbol": "_unresolved_hackerone_attempt",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
+              "file": "backend/app/hackerone_api.py",
+              "line": 1055,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verified_remote_team_handle",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1036,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "approval_status_from_storage",
+          "definitions": [
+            {
+              "file": "backend/app/report_approval.py",
+              "line": 145,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 211,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "latest_remote_submission",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "post_json",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 180,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "submission_event",
+          "definitions": [
+            {
+              "file": "backend/app/submission_state.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "submission_status",
+          "definitions": [
+            {
+              "file": "backend/app/submission_state.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 18
+    },
+    "test_remote_program_launch_gate_blocks_closed_states": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 6,
+        "end": 12
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_remote_program_launch_gate_allows_open_program": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 15,
+        "end": 18
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_server_discovery_selection_is_read_only_and_bounded": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 21,
+        "end": 70
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_reviewed_campaign_input_blocks_program_that_closed_after_review": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 73,
+        "end": 100
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Snapshot",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 74,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Store",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 84,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_hackerone_review_profile",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "Snapshot": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 74,
+        "end": 194
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Prepared",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 116,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Store",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 84,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fake_reviewed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_hackerone_review_profile",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_reviewed_batch_preflight_reports_blocked_members",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "Store": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 84,
+        "end": 204
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Prepared",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 116,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Snapshot",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 74,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fake_reviewed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_hackerone_review_profile",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_reviewed_batch_preflight_reports_blocked_members",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "get_hackerone_review_profile": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 85,
+        "end": 205
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Prepared",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 116,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Snapshot",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 74,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Store",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 84,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fake_reviewed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_reviewed_batch_preflight_reports_blocked_members",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_reviewed_batch_preflight_reports_blocked_members": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 104,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Prepared",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 116,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fake_reviewed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "fake_reviewed": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 105,
+        "end": 225
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Prepared",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 116,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "Prepared": {
+      "source": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "start": 116,
+        "end": 236
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "fake_reviewed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_hackerone_prelaunch.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "setLauncherStatus": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 27,
+        "end": 147
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensureAttentionBaseline",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 116,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "hackerOneAttentionLabel",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 49,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "hackerOneNotificationLabel",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 63,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "isAttentionUnread",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 127,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
               "line": 102,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "_temporal_kind_scores",
+          "symbol": "setConnectionState",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 155,
+              "file": "frontend/hackerone.js",
+              "line": 31,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "setConnectionState": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 31,
+        "end": 151
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensureAttentionBaseline",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 116,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "hackerOneAttentionLabel",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 49,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "hackerOneNotificationLabel",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 63,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "isAttentionUnread",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 127,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "hackerOneAttentionLabel": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 49,
+        "end": 169
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensureAttentionBaseline",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 116,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "hackerOneNotificationLabel",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 63,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "isAttentionUnread",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 127,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "hackerOneNotificationLabel": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 63,
+        "end": 183
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensureAttentionBaseline",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 116,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "isAttentionUnread",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 127,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "attentionSeenKey": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 76,
+        "end": 196
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensureAttentionBaseline",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 116,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "isAttentionUnread",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 127,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "loadAttentionSeen": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 84,
+        "end": 204
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensureAttentionBaseline",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 116,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "isAttentionUnread",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 127,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "saveAttentionSeen": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 102,
+        "end": 222
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensureAttentionBaseline",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 116,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "isAttentionUnread",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 127,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "ensureAttentionBaseline": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 116,
+        "end": 236
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "isAttentionUnread",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 127,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 15
+    },
+    "isAttentionUnread": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 127,
+        "end": 247
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "applyHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 246,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 16
+    },
+    "markHackerOneAttentionSeen": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 133,
+        "end": 253
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "applyHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 246,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markAllHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 144,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 15
+    },
+    "markAllHackerOneAttentionSeen": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 144,
+        "end": 264
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "applyHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 246,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionSeenKey",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 76,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "focusHackerOneAttentionCampaign",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 156,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 84,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 102,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 16
+    },
+    "focusHackerOneAttentionCampaign": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 156,
+        "end": 276
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "applyHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 246,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attentionText",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 169,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "markHackerOneAttentionSeen",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 133,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "startRunMonitor",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 1523,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "attentionText": {
+      "source": {
+        "file": "frontend/hackerone.js",
+        "start": 169,
+        "end": 289
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "applyHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 246,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
@@ -493,973 +5005,1213 @@
       ],
       "dependency_count": 8
     },
-    "_focuses": {
+    "updateAttentionSelectOptions": {
       "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 6,
-        "end": 10
+        "file": "frontend/hackerone.js",
+        "start": 173,
+        "end": 293
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_high_value_intelligence",
+          "symbol": "applyHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 213,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_public_case_lessons_are_bounded_and_evidence_oriented": {
-      "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 13,
-        "end": 25
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "public_case_lessons",
-          "definitions": [
-            {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 148,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_graphql_surface_prioritizes_graphql_authorization_lessons": {
-      "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 28,
-        "end": 51
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_focuses",
-          "definitions": [
-            {
-              "file": "backend/tests/test_high_value_intelligence.py",
-              "line": 6,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_auth_and_server_side_fetch_signals_raise_matching_families": {
-      "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 54,
-        "end": 77
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_focuses",
-          "definitions": [
-            {
-              "file": "backend/tests/test_high_value_intelligence.py",
-              "line": 6,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_high_value_intelligence_is_advisory_only": {
-      "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 80,
-        "end": 85
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_high_value_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/high_value_intelligence.py",
-              "line": 213,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_transaction_reconciliation_signals_raise_business_invariant_focus": {
-      "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 89,
-        "end": 107
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_focuses",
-          "definitions": [
-            {
-              "file": "backend/tests/test_high_value_intelligence.py",
-              "line": 6,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 14,
+              "file": "frontend/hackerone.js",
+              "line": 246,
               "kind": "function",
               "language": "javascript"
             }
           ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_high_value_intelligence_route_is_exposed": {
-      "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 111,
-        "end": 115
-      },
-      "symbol_dependencies": [
+          "relation": "same_file"
+        },
         {
-          "symbol": "api",
+          "symbol": "currentHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 14,
+              "file": "frontend/hackerone.js",
+              "line": 206,
               "kind": "function",
               "language": "javascript"
             }
           ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_high_value_family_coverage_tracks_scan_and_validation_evidence": {
-      "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 119,
-        "end": 154
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "ObservationGraph",
+          "symbol": "loadHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_focuses",
-          "definitions": [
-            {
-              "file": "backend/tests/test_high_value_intelligence.py",
-              "line": 6,
+              "file": "frontend/hackerone.js",
+              "line": 220,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "restoreHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "frontend/hackerone.js",
+              "line": 259,
               "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_surface_signal_without_scan_remains_undercovered": {
-      "source": {
-        "file": "backend/tests/test_high_value_intelligence.py",
-        "start": 157,
-        "end": 175
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_focuses",
-          "definitions": [
-            {
-              "file": "backend/tests/test_high_value_intelligence.py",
-              "line": 6,
-              "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "sameAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "frontend/hackerone.js",
+              "line": 289,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "task": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 7,
-        "end": 22
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ReconTask",
-          "definitions": [
-            {
-              "file": "backend/app/recon_swarm.py",
-              "line": 46,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_diff_priority_only_reorders_existing_authorized_tasks": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 25,
-        "end": 66
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "task",
+          "symbol": "saveHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
+              "file": "frontend/hackerone.js",
+              "line": 230,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "syncHackerOneAttentionFilterOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 193,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 8
     },
-    "test_diff_priority_does_nothing_without_baseline": {
+    "syncHackerOneAttentionFilterOptions": {
       "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 69,
-        "end": 88
+        "file": "frontend/hackerone.js",
+        "start": 193,
+        "end": 313
       },
       "symbol_dependencies": [
         {
-          "symbol": "prioritize_recon_tasks",
+          "symbol": "applyHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
+              "file": "frontend/hackerone.js",
+              "line": 246,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "task",
+          "symbol": "applyHackerOneAttentionSavedView",
           "definitions": [
             {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
+              "file": "frontend/hackerone.js",
+              "line": 307,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 345,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttentionViewState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 294,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sameAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 289,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateAttentionSelectOptions",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 173,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 12
     },
-    "test_diff_priority_is_bounded_to_fifteen_points": {
+    "currentHackerOneAttentionFilters": {
       "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 91,
-        "end": 107
+        "file": "frontend/hackerone.js",
+        "start": 206,
+        "end": 326
       },
       "symbol_dependencies": [
         {
-          "symbol": "prioritize_recon_tasks",
+          "symbol": "applyHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
+              "file": "frontend/hackerone.js",
+              "line": 246,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "task",
+          "symbol": "applyHackerOneAttentionSavedView",
           "definitions": [
             {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
+              "file": "frontend/hackerone.js",
+              "line": 307,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 345,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "normalizeAttentionCustomViewName",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 315,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttentionViewState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 294,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sameAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 289,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sanitizeAttentionCustomViewFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 319,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 12
     },
-    "test_historical_novelty_adds_small_bounded_boost": {
+    "loadHackerOneAttentionFilters": {
       "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 110,
-        "end": 142
+        "file": "frontend/hackerone.js",
+        "start": 220,
+        "end": 340
       },
       "symbol_dependencies": [
         {
-          "symbol": "prioritize_recon_tasks",
+          "symbol": "applyHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
+              "file": "frontend/hackerone.js",
+              "line": 246,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "task",
+          "symbol": "applyHackerOneAttentionSavedView",
           "definitions": [
             {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
+              "file": "frontend/hackerone.js",
+              "line": 307,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 345,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "normalizeAttentionCustomViewName",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 315,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttentionViewState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 294,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sameAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 289,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sanitizeAttentionCustomViewFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 319,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 12
     },
-    "test_reappearing_surface_has_less_history_weight_than_novel_surface": {
+    "saveHackerOneAttentionFilters": {
       "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 145,
-        "end": 185
+        "file": "frontend/hackerone.js",
+        "start": 230,
+        "end": 350
       },
       "symbol_dependencies": [
         {
-          "symbol": "prioritize_recon_tasks",
+          "symbol": "applyHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
+              "file": "frontend/hackerone.js",
+              "line": 246,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "task",
+          "symbol": "applyHackerOneAttentionSavedView",
           "definitions": [
             {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
+              "file": "frontend/hackerone.js",
+              "line": 307,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 345,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "normalizeAttentionCustomViewName",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 315,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttentionViewState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 294,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sameAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 289,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sanitizeAttentionCustomViewFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 319,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 12
     },
-    "test_total_priority_boost_is_bounded_to_twenty_points": {
+    "setSelectValueIfAvailable": {
       "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 188,
-        "end": 230
+        "file": "frontend/hackerone.js",
+        "start": 239,
+        "end": 359
       },
       "symbol_dependencies": [
         {
-          "symbol": "prioritize_recon_tasks",
+          "symbol": "applyHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
+              "file": "frontend/hackerone.js",
+              "line": 246,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "task",
+          "symbol": "applyHackerOneAttentionSavedView",
           "definitions": [
             {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
+              "file": "frontend/hackerone.js",
+              "line": 307,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 345,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "normalizeAttentionCustomViewName",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 315,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttentionViewState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 294,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sameAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 289,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sanitizeAttentionCustomViewFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 319,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 12
     },
-    "test_temporal_novelty_favors_never_seen_surface_over_returning_churn": {
+    "applyHackerOneAttentionFilters": {
       "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 233,
-        "end": 282
+        "file": "frontend/hackerone.js",
+        "start": 246,
+        "end": 366
       },
       "symbol_dependencies": [
         {
-          "symbol": "prioritize_recon_tasks",
+          "symbol": "applyHackerOneAttentionSavedView",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
+              "file": "frontend/hackerone.js",
+              "line": 307,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "task",
+          "symbol": "currentHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
+              "file": "frontend/hackerone.js",
+              "line": 206,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 345,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViewsFromValue",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 371,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "normalizeAttentionCustomViewName",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 315,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttentionViewState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 294,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restoreHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 259,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sameAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 289,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sanitizeAttentionCustomViewFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 319,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 362,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 230,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setSelectValueIfAvailable",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 239,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 14
     },
-    "test_intermittent_surface_has_low_temporal_weight": {
+    "restoreHackerOneAttentionFilters": {
       "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 285,
-        "end": 311
+        "file": "frontend/hackerone.js",
+        "start": 259,
+        "end": 379
       },
       "symbol_dependencies": [
         {
-          "symbol": "prioritize_recon_tasks",
+          "symbol": "applyHackerOneAttentionFilters",
           "definitions": [
             {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
+              "file": "frontend/hackerone.js",
+              "line": 246,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "task",
+          "symbol": "applyHackerOneAttentionSavedView",
           "definitions": [
             {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
+              "file": "frontend/hackerone.js",
+              "line": 307,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "currentHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 206,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 345,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionCustomViewsFromValue",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 371,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "loadHackerOneAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 220,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "normalizeAttentionCustomViewName",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 315,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttention",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 660,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderHackerOneAttentionViewState",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 294,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sameAttentionFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 289,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sanitizeAttentionCustomViewFilters",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 319,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveHackerOneAttentionCustomViews",
+          "definitions": [
+            {
+              "file": "frontend/hackerone.js",
+              "line": 362,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
-    },
-    "test_temporal_scoring_never_breaks_total_boost_cap": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 314,
-        "end": 358
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "task",
-          "definitions": [
-            {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_low_confidence_dampens_recon_boost_without_changing_authority": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 361,
-        "end": 395
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "task",
-          "definitions": [
-            {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_high_confidence_preserves_full_bounded_boost": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 398,
-        "end": 429
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "task",
-          "definitions": [
-            {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_missing_confidence_is_neutral_and_never_increases_cap": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 432,
-        "end": 449
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "task",
-          "definitions": [
-            {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_high_value_focus_boosts_matching_existing_task_only": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 453,
-        "end": 487
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "task",
-          "definitions": [
-            {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_high_value_boost_preserves_recon_authority_fields": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 490,
-        "end": 520
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "task",
-          "definitions": [
-            {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_fully_covered_high_value_family_does_not_receive_extra_boost": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 524,
-        "end": 550
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "task",
-          "definitions": [
-            {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_undercovered_high_value_score_drives_existing_task_boost": {
-      "source": {
-        "file": "backend/tests/test_recon_priority.py",
-        "start": 553,
-        "end": 579
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "prioritize_recon_tasks",
-          "definitions": [
-            {
-              "file": "backend/app/recon_priority.py",
-              "line": 203,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "task",
-          "definitions": [
-            {
-              "file": "backend/tests/test_recon_priority.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
+      "dependency_count": 12
     }
   }
 }

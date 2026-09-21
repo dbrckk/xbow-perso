@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T10:03:30Z
+Generated: 2026-09-21T10:46:22Z
 
 ### Git
 - Branch: `main`
-- Head: `f4901c72b7db`
-- Commit date: 2026-09-21T12:03:19+02:00
-- Commit: feat: prioritize high-value families by real undercoverage
-- Tracked files: 546
+- Head: `417f94be5989`
+- Commit date: 2026-09-21T12:46:11+02:00
+- Commit: feat: harden prelaunch selection and final HackerOne gate
+- Tracked files: 547
 
 ### Recently changed files
+- `backend/app/hackerone_api.py`
+- `backend/tests/test_hackerone_prelaunch.py`
+- `frontend/hackerone.js`
+- `frontend/sw.js`
 - `backend/app/high_value_intelligence.py`
 - `backend/app/recon_priority.py`
 - `backend/tests/test_high_value_intelligence.py`
@@ -39,18 +43,12 @@ Generated: 2026-09-21T10:03:30Z
 - `backend/app/orchestrator.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
-- `backend/app/hackerone_api.py`
 - `backend/app/hackerone_discovery.py`
 - `backend/app/local_outcome_intelligence.py`
 - `backend/app/value_efficiency.py`
 - `backend/tests/test_local_outcome_intelligence.py`
 - `backend/tests/test_value_efficiency.py`
-- `frontend/hackerone.js`
 - `frontend/index.html`
-- `frontend/sw.js`
-- `backend/app/opportunity_ranking.py`
-- `backend/tests/test_hackerone_discovery.py`
-- `backend/tests/test_opportunity_ranking.py`
 
 ### Project signals
 - `pyproject.toml`

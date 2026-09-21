@@ -275,6 +275,7 @@ backend/
     test_hackerone_needs_info.py
     test_hackerone_nuclei_e2e.py
     test_hackerone_outbound_submission.py
+    test_hackerone_prelaunch.py
     test_hackerone_remote_binding.py
     test_hackerone_remote_snapshot.py
     test_hackerone_report_lifecycle_e2e.py
@@ -3368,6 +3369,11 @@ def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any
 ⋮----
 snapshot = fetch_hackerone_program_snapshot(payload.remote_handle)
 ⋮----
+def _remote_program_launch_block_reason(program: dict[str, Any]) -> str | None
+⋮----
+submission_state = str(program.get("submission_state") or "").strip().lower()
+state = str(program.get("state") or "").strip().lower()
+⋮----
 def _conservative_admission_reason(policy: Any) -> str | None
 ⋮----
 def _upstream_error(exc: HackerOneClientError) -> HTTPException
@@ -3418,6 +3424,10 @@ snapshot = fetch_hackerone_program_snapshot(handle)
 runtime = dict(intelligence.get("runtime_capability_snapshot") or {})
 local_outcomes = build_local_outcome_signals(
 result = build_program_discovery(
+⋮----
+"""Return a server-ranked READY bounty portfolio without launching it."""
+discovery = hackerone_program_discovery(verify_limit=50)
+selected = select_diversified_portfolio(
 ⋮----
 state = store.get_hackerone_intelligence_state()
 ⋮----
@@ -3480,6 +3490,8 @@ statuses = ("ready", "running", "done", "review", "blocked", "cancelled")
 ⋮----
 def _rollback_admitted_batch_campaigns(campaign_ids: list[str]) -> None
 ⋮----
+block_reason = _remote_program_launch_block_reason(dict(snapshot.program or {}))
+⋮----
 profile_id = f"{snapshot.handle}@{snapshot.snapshot_sha256}"
 profile = store.get_hackerone_review_profile(profile_id)
 ⋮----
@@ -3493,20 +3505,31 @@ program_name = str(snapshot.program.get("name") or "").strip()
 program_name = f"H1 {snapshot.handle}"
 program_name = program_name[:120]
 ⋮----
+@router.post("/api/imports/hackerone/batches/preflight-reviewed")
+def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
+⋮----
+"""Validate every selected reviewed program without creating campaigns."""
+⋮----
+members: list[dict[str, Any]] = []
+⋮----
+prepared = _reviewed_campaign_input(handle, store)
+⋮----
+detail = exc.detail if isinstance(exc.detail, dict) else {}
+⋮----
+ready = [item for item in members if item["status"] == "ready"]
+blocked = [item for item in members if item["status"] == "blocked"]
+⋮----
 @router.post("/api/imports/hackerone/batches/launch-reviewed")
 def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
 ⋮----
 prepared: list[HackerOneCampaignAdmissionInput] = []
 missing: list[str] = []
 ⋮----
-detail = exc.detail if isinstance(exc.detail, dict) else {}
-⋮----
 @router.post("/api/imports/hackerone/batches/launch")
 def launch_hackerone_batch(payload: HackerOneBatchLaunchInput)
 ⋮----
 batch_id = str(uuid4())
 admitted_ids: list[str] = []
-members: list[dict[str, Any]] = []
 ⋮----
 admitted = admit_hackerone_campaign(campaign_payload)
 campaign_id = str(admitted["campaign"]["id"])
@@ -13324,6 +13347,45 @@ def test_hackerone_timeout_leaves_unresolved_attempt_and_blocks_retry(tmp_path, 
 calls = 0
 ⋮----
 def fail(self, path, payload)
+````
+
+## File: backend/tests/test_hackerone_prelaunch.py
+````python
+def test_remote_program_launch_gate_blocks_closed_states()
+⋮----
+def test_remote_program_launch_gate_allows_open_program()
+⋮----
+def test_server_discovery_selection_is_read_only_and_bounded(monkeypatch)
+⋮----
+programs = [
+⋮----
+result = hackerone_api.hackerone_discovery_selection(limit=2, min_score=50)
+⋮----
+def test_reviewed_campaign_input_blocks_program_that_closed_after_review(monkeypatch)
+⋮----
+class Snapshot
+⋮----
+handle = "alpha"
+snapshot_sha256 = "a" * 64
+program = {
+document = {"data": []}
+⋮----
+class Store
+⋮----
+def get_hackerone_review_profile(self, _profile_id)
+⋮----
+def test_reviewed_batch_preflight_reports_blocked_members(monkeypatch)
+⋮----
+def fake_reviewed(handle, _store)
+⋮----
+class Prepared
+⋮----
+remote_snapshot_sha256 = "b" * 64
+⋮----
+payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+result = hackerone_api.preflight_reviewed_hackerone_batch(payload)
+⋮----
+blocked = next(item for item in result["members"] if item["handle"] == "closed")
 ````
 
 ## File: backend/tests/test_hackerone_remote_binding.py

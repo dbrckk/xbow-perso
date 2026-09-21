@@ -1,16 +1,17 @@
 # Change impact
 
-Base: b7da7d63766cebb6f8fd5a039cb3450d7589faa7
-Head: f4901c72b7dbe5f06e853fa3d100ffa3a48853a6
+Base: ede81c5ade9d5476344fb085ca2af33f058a728b
+Head: 417f94be5989f7d7072fdc6cf2d42c931a300a23
 
 ## Changed files
-- M backend/app/high_value_intelligence.py
-- M backend/app/recon_priority.py
-- M backend/tests/test_high_value_intelligence.py
-- M backend/tests/test_recon_priority.py
+- M backend/app/hackerone_api.py
+- A backend/tests/test_hackerone_prelaunch.py
+- M frontend/hackerone.js
+- M frontend/sw.js
 
 ## Affected areas
 - backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
