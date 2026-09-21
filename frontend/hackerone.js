@@ -2222,21 +2222,21 @@
     try{
       const mode=String(el('h1BatchMode').value||'sequential');
       el('h1BatchSummary').textContent=
-        'Préflight serveur des programmes, fingerprints et profils mémorisés…';
-      const preflight=await api('/imports/hackerone/batches/preflight-reviewed',{
+        'Go/no-go serveur : runtime, programmes, fingerprints et profils…';
+      const preflight=await api('/imports/hackerone/batches/go-no-go',{
         method:'POST',
         body:JSON.stringify({mode,handles})
       });
-      if(preflight?.ready!==true){
-        const blocked=(Array.isArray(preflight?.members)?preflight.members:[])
-          .filter(member=>String(member?.status||'')==='blocked')
-          .map(member=>String(member?.handle||'programme')+': '+String(member?.reason||'bloqué'));
+      if(preflight?.go!==true){
+        const blockers=Array.isArray(preflight?.blockers)
+          ?preflight.blockers.map(value=>String(value||'')).filter(Boolean)
+          :[];
         throw new Error(
-          'Préflight du lot bloqué'+(blocked.length?' · '+blocked.join(' · '):'')
+          'Go/no-go bloqué'+(blockers.length?' · '+blockers.join(' · '):'')
         );
       }
       el('h1BatchSummary').textContent=
-        'Préflight OK · revalidation finale et création du lot…';
+        'GO confirmé côté serveur · revalidation finale et création du lot…';
       const batch=await api('/imports/hackerone/batches/launch-reviewed',{
         method:'POST',
         body:JSON.stringify({mode,handles})
