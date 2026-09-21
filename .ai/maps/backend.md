@@ -14215,6 +14215,8 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_mobile_api_token_reset_is_vault_only_and_verifies_round_trip()
 ⋮----
 script = (ROOT / "scripts" / "mobile-reset-api-token.sh").read_text(encoding="utf-8")
+⋮----
+def test_mobile_api_token_reset_loads_distributed_compose_secrets()
 ```
 
 ## File: tests/test_nuclei_preflight.py

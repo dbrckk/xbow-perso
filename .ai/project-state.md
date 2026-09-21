@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T14:35:15Z
+Generated: 2026-09-21T14:42:59Z
 
 ### Git
 - Branch: `main`
-- Head: `f1ceaf3882a1`
-- Commit date: 2026-09-21T16:35:01+02:00
-- Commit: fix: add verified vault API token reset helper (#325)
+- Head: `03969e2fe1e6`
+- Commit date: 2026-09-21T16:42:47+02:00
+- Commit: fix: load production compose secrets before vault token reset (#326)
 - Tracked files: 557
 
 ### Recently changed files
@@ -46,7 +46,6 @@ Generated: 2026-09-21T14:35:15Z
 - `frontend/nginx.conf`
 - `frontend/sw.js`
 - `frontend/app.js`
-- `.github/workflows/mobile-vps-deploy.yml`
 
 ### Project signals
 - `pyproject.toml`

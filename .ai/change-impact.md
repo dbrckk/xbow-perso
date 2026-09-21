@@ -1,11 +1,11 @@
 # Change impact
 
-Base: d3df7ecc99a6cdb75ba035f1d5b81a4df8b3f665
-Head: f1ceaf3882a14a861461651d9c6e4feb4bfd818c
+Base: fd24641fe623f6000b1e10db4b139cbba8117f8b
+Head: 03969e2fe1e67a5a9d145f215ab7bff83919b7be
 
 ## Changed files
-- A backend/tests/test_mobile_reset_api_token.py
-- A scripts/mobile-reset-api-token.sh
+- M backend/tests/test_mobile_reset_api_token.py
+- M scripts/mobile-reset-api-token.sh
 
 ## Affected areas
 - backend
