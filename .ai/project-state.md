@@ -22,19 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T09:58:05Z
+Generated: 2026-09-21T10:03:30Z
 
 ### Git
 - Branch: `main`
-- Head: `10241873eb97`
-- Commit date: 2026-09-21T11:57:55+02:00
-- Commit: feat: prioritize high-value undercovered recon surfaces
+- Head: `f4901c72b7db`
+- Commit date: 2026-09-21T12:03:19+02:00
+- Commit: feat: prioritize high-value families by real undercoverage
 - Tracked files: 546
 
 ### Recently changed files
-- `backend/app/orchestrator.py`
+- `backend/app/high_value_intelligence.py`
 - `backend/app/recon_priority.py`
+- `backend/tests/test_high_value_intelligence.py`
 - `backend/tests/test_recon_priority.py`
+- `backend/app/orchestrator.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
 - `backend/app/hackerone_api.py`
@@ -49,9 +51,6 @@ Generated: 2026-09-21T09:58:05Z
 - `backend/app/opportunity_ranking.py`
 - `backend/tests/test_hackerone_discovery.py`
 - `backend/tests/test_opportunity_ranking.py`
-- `backend/app/browser.py`
-- `backend/app/identity_access.py`
-- `backend/app/worker_service.py`
 
 ### Project signals
 - `pyproject.toml`

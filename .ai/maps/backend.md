@@ -3930,6 +3930,20 @@ metadata = item.metadata if isinstance(item.metadata, dict) else {}
 ⋮----
 raw = metadata.get(key)
 ⋮----
+def _family_coverage(graph: ObservationGraph, family: str) -> dict[str, Any]
+⋮----
+cases = [case for case in _CASES if case.family == family]
+signals = {signal.lower() for case in cases for signal in case.signals}
+observed = 0
+scan = 0
+validation = 0
+sources: set[str] = set()
+⋮----
+haystack = " ".join(
+matched = family in haystack or any(signal in haystack for signal in signals)
+⋮----
+coverage_score = min(
+⋮----
 """Rank public-case lessons against observed, already-authorized surface data.
 
     This is advisory only. It does not create payloads, execute requests, expand
@@ -3950,6 +3964,10 @@ reasons = ["public resolved-case lesson"]
 current = grouped.setdefault(
 ⋮----
 focuses = [
+enriched_focuses: list[dict[str, Any]] = []
+⋮----
+coverage = _family_coverage(graph, item.family)
+payload = item.to_dict()
 ⋮----
 @router.get("/api/campaigns/{campaign_id}/high-value-intelligence")
 def campaign_high_value_intelligence(campaign_id: str, limit: int = 6)
@@ -7180,7 +7198,7 @@ matched: list[tuple[str, int]] = []
 ⋮----
 family = str(raw.get("family") or "")
 ⋮----
-score = int(raw.get("score") or 0)
+score = int(
 ⋮----
 score = 0
 ⋮----
@@ -13153,6 +13171,14 @@ def test_transaction_reconciliation_signals_raise_business_invariant_focus()
 goals = " ".join(
 ⋮----
 def test_high_value_intelligence_route_is_exposed()
+⋮----
+def test_high_value_family_coverage_tracks_scan_and_validation_evidence()
+⋮----
+item = focuses["graphql-authorization"]
+⋮----
+def test_surface_signal_without_scan_remains_undercovered()
+⋮----
+item = focuses["authentication-state-machine"]
 ```
 
 ## File: tests/test_hypothesis_engine.py
@@ -15613,6 +15639,12 @@ def test_high_value_boost_preserves_recon_authority_fields()
 source = task("browser_observe", 65)
 ⋮----
 updated = result.tasks[0]
+⋮----
+def test_fully_covered_high_value_family_does_not_receive_extra_boost()
+⋮----
+original = [task("map_endpoints", 60)]
+⋮----
+def test_undercovered_high_value_score_drives_existing_task_boost()
 ```
 
 ## File: tests/test_recon_swarm.py

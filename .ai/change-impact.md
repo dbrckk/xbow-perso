@@ -1,11 +1,12 @@
 # Change impact
 
-Base: e724fca24cfb2800ae23c9dbb0143fcc419fd713
-Head: 10241873eb9756c22391dfbdbc0e717799362da5
+Base: b7da7d63766cebb6f8fd5a039cb3450d7589faa7
+Head: f4901c72b7dbe5f06e853fa3d100ffa3a48853a6
 
 ## Changed files
-- M backend/app/orchestrator.py
+- M backend/app/high_value_intelligence.py
 - M backend/app/recon_priority.py
+- M backend/tests/test_high_value_intelligence.py
 - M backend/tests/test_recon_priority.py
 
 ## Affected areas
