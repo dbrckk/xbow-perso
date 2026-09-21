@@ -352,11 +352,13 @@ def deployment_preflight():
 def system_capabilities():
     from .runtime_capabilities import (
         safe_pentagi_runtime_capability,
+        safe_recon_runtime_capability,
         safe_scanner_runtime_capability,
     )
 
     pentagi = safe_pentagi_runtime_capability()
     scanners = safe_scanner_runtime_capability()
+    recon = safe_recon_runtime_capability()
     return {
         "campaign_control": {
             "scope_enforcement": True,
@@ -376,6 +378,8 @@ def system_capabilities():
             "scanner_worker_detail": scanners,
             "http_validation": "gated",
             "browser_automation": "gated",
+            "recon": recon["mode"],
+            "recon_detail": recon,
             "pentagi": pentagi["mode"],
             "pentagi_detail": pentagi,
             "pentagi_status_tracking": (
