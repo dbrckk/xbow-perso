@@ -69,6 +69,22 @@ _CORE_TABLES: tuple[tuple[str, tuple[str, ...]], ...] = (
             "created_at",
         ),
     ),
+    (
+        "hackerone_batches",
+        ("id", "document", "state", "created_at", "updated_at", "version"),
+    ),
+    (
+        "hackerone_catalog_state",
+        ("id", "document", "updated_at", "version"),
+    ),
+    (
+        "hackerone_review_profiles",
+        ("id", "handle", "snapshot_sha256", "document", "updated_at", "version"),
+    ),
+    (
+        "hackerone_intelligence_state",
+        ("id", "document", "updated_at", "version"),
+    ),
 )
 
 _JOB_COLUMNS = (

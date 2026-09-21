@@ -182,6 +182,12 @@ class Storage:
                 updated_at TEXT NOT NULL,
                 version INTEGER NOT NULL DEFAULT 1
             )""")
+            db.execute("""CREATE TABLE IF NOT EXISTS hackerone_intelligence_state (
+                id TEXT PRIMARY KEY,
+                document TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                version INTEGER NOT NULL DEFAULT 1
+            )""")
             db.execute(
                 "CREATE INDEX IF NOT EXISTS hackerone_review_profiles_handle "
                 "ON hackerone_review_profiles(handle, updated_at DESC)"
@@ -456,6 +462,101 @@ class Storage:
                 (limit,),
             ).fetchall()
         return [json.loads(row["document"]) for row in rows]
+
+    def save_hackerone_intelligence_state(
+        self,
+        document: dict[str, Any],
+        *,
+        expected_version: int | None = None,
+    ) -> int:
+        required = {"id", "reports", "categories", "program_signals", "checked_at", "updated_at"}
+        if not required.issubset(document):
+            raise ValueError("HackerOne intelligence document missing required fields")
+        document = dict(document)
+        document["id"] = _bounded_identifier(
+            str(document["id"]), "hackerone_intelligence_id"
+        )
+        reports = document.get("reports")
+        if not isinstance(reports, list) or len(reports) > 500:
+            raise ValueError("HackerOne intelligence reports are invalid")
+        encoded = json.dumps(
+            document,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
+        if len(encoded.encode("utf-8")) > _max_campaign_document_bytes():
+            raise ValueError("HackerOne intelligence document exceeds size limit")
+
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            current = db.execute(
+                "SELECT version FROM hackerone_intelligence_state WHERE id=?",
+                (document["id"],),
+            ).fetchone()
+            if current is None:
+                if expected_version not in (None, 0):
+                    db.execute("ROLLBACK")
+                    raise CampaignConflictError("HackerOne intelligence version conflict")
+                db.execute(
+                    """INSERT INTO hackerone_intelligence_state(
+                           id,document,updated_at,version
+                       ) VALUES(?,?,?,1)""",
+                    (
+                        document["id"],
+                        encoded,
+                        str(document["updated_at"]),
+                    ),
+                )
+                db.execute("COMMIT")
+                return 1
+
+            current_version = int(current["version"])
+            if expected_version is not None and expected_version != current_version:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("HackerOne intelligence version conflict")
+            next_version = current_version + 1
+            cursor = db.execute(
+                """UPDATE hackerone_intelligence_state
+                   SET document=?, updated_at=?, version=?
+                   WHERE id=? AND version=?""",
+                (
+                    encoded,
+                    str(document["updated_at"]),
+                    next_version,
+                    document["id"],
+                    current_version,
+                ),
+            )
+            if getattr(cursor, "rowcount", 0) != 1:
+                db.execute("ROLLBACK")
+                raise CampaignConflictError("HackerOne intelligence version conflict")
+            db.execute("COMMIT")
+            return next_version
+
+    def get_hackerone_intelligence_state_record(
+        self,
+        intelligence_id: str = "current",
+    ) -> tuple[dict[str, Any], int] | None:
+        intelligence_id = _bounded_identifier(
+            intelligence_id, "hackerone_intelligence_id"
+        )
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT document,version FROM hackerone_intelligence_state WHERE id=?",
+                (intelligence_id,),
+            ).fetchone()
+        return (
+            (json.loads(row["document"]), int(row["version"]))
+            if row
+            else None
+        )
+
+    def get_hackerone_intelligence_state(
+        self,
+        intelligence_id: str = "current",
+    ) -> dict[str, Any] | None:
+        record = self.get_hackerone_intelligence_state_record(intelligence_id)
+        return record[0] if record else None
 
     def save_hackerone_catalog_state(
         self,

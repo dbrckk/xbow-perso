@@ -276,6 +276,36 @@ sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh
 
 Direct HackerOne report submission remains disabled by this profile.
 
+## HackerOne disclosed-report learning
+
+The general worker also learns from **publicly disclosed Hacktivity reports**. It fetches two bounded views through the HackerOne Hacker API:
+
+- highest historical disclosed awards (sorted by `-total_awarded_amount`);
+- most recently disclosed reports (sorted by `-disclosed_at`).
+
+Only reports with `disclosed:true` are normalized. The persisted learning dataset is deliberately redacted to public report metadata: report id/title/URL, CWE label, severity, votes, disclosed award amount/currency, public generated summary, and program identity. Reporter details, credentials, private reports, full report bodies, scope documents and secrets are not persisted.
+
+The engine deterministically classifies reports into vulnerability families such as access control/IDOR, authentication/session, API/GraphQL, business logic/races, XSS, SSRF/OOB, injection/RCE, cache/proxy, cloud surface, file/path, information disclosure and AI/LLM. It aggregates:
+
+- report and high/critical counts;
+- historical public USD award totals/maxima where currency is actually USD;
+- per-program historical disclosed-value signals;
+- current repo capability gaps and candidate tooling.
+
+This data is **advisory only**. It never authorizes a target, expands scope, turns on a scanner, changes rate limits or enables report submission. Public Hacktivity is an incomplete disclosed subset, so historical award signals are never represented as current bounty promises.
+
+The dashboard can sort the HackerOne catalog by this historical signal and shows the strongest observed vulnerability patterns plus capability gaps.
+
+Configuration:
+
+```bash
+XBOW_ENABLE_HACKERONE_INTELLIGENCE=true
+XBOW_HACKERONE_INTEL_POLL_SECONDS=21600
+XBOW_HACKERONE_INTEL_MAX_PAGES=2
+```
+
+The default learns from up to two 100-item pages from each bounded view every six hours.
+
 ## HackerOne background catalog monitor
 
 The general worker refreshes the read-only HackerOne researcher-program catalog every 15 minutes by default, even when no dashboard is open. The latest normalized catalog is persisted in SQLite/PostgreSQL and excludes policy text, credentials, tokens and scope details.

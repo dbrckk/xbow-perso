@@ -18,6 +18,7 @@ from .hackerone_client import (
 )
 from .hackerone_catalog import refresh_hackerone_catalog
 from .hackerone_live_readiness import build_hackerone_live_readiness
+from .hackerone_intelligence import refresh_hackerone_intelligence
 from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_report_tracking import (
     latest_remote_submission,
@@ -331,6 +332,27 @@ def hackerone_program_catalog():
         "read_only": True,
         "contains_secrets": False,
         **state,
+    }
+
+
+@router.get("/api/hackerone/intelligence")
+def hackerone_learning_intelligence(
+    refresh: bool = Query(default=False),
+):
+    from .main import storage
+
+    store = storage()
+    state = store.get_hackerone_intelligence_state()
+    if refresh or state is None:
+        try:
+            state = refresh_hackerone_intelligence(store, client=HackerOneClient())
+        except HackerOneClientError as exc:
+            raise _upstream_error(exc) from exc
+    return {
+        **state,
+        "read_only": True,
+        "advisory_only": True,
+        "automatic_tool_enablement": False,
     }
 
 
