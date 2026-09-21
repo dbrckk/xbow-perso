@@ -2169,13 +2169,28 @@
   }
 
   function latestActiveBatch(batches){
-    const active=(Array.isArray(batches)?batches:[])
+    const source=Array.isArray(batches)?batches:[];
+    const active=source
       .filter(batch=>!['completed','cancelled'].includes(String(batch?.state||'')))
       .sort((left,right)=>
         String(right?.updated_at||right?.created_at||'')
           .localeCompare(String(left?.updated_at||left?.created_at||''))
       );
     return active[0]||null;
+  }
+
+  function latestBatchNeedingReview(batches){
+    const source=Array.isArray(batches)?batches:[];
+    return source
+      .filter(batch=>String(batch?.state||'')==='completed')
+      .filter(batch=>
+        Number(batch?.summary?.review||0)>0||
+        Number(batch?.summary?.blocked||0)>0
+      )
+      .sort((left,right)=>
+        String(right?.updated_at||right?.created_at||'')
+          .localeCompare(String(left?.updated_at||left?.created_at||''))
+      )[0]||null;
   }
 
   async function restoreActiveBatch(){
@@ -2201,6 +2216,15 @@
       if(batch?.id){
         startBatchMonitor(batch.id);
         setLauncherStatus('Lot HackerOne actif retrouvé côté serveur et repris automatiquement.','ok');
+        return;
+      }
+      const reviewBatch=latestBatchNeedingReview(result?.batches);
+      if(reviewBatch?.id){
+        renderBatchStatus(reviewBatch);
+        setLauncherStatus(
+          'Dernier lot terminé avec des programmes à revoir/bloqués. Les détails restent affichés.',
+          'warn'
+        );
       }
     }catch(_error){}
   }
@@ -2220,6 +2244,14 @@
     }
     if(reason==='stale_hackerone_snapshot'||reason==='hackerone_snapshot_document_mismatch'){
       return 'Le programme HackerOne a changé depuis la revue. Recharge-le puis confirme le nouveau fingerprint.';
+    }
+    if(reason==='review_profile_required'){
+      const handles=Array.isArray(detail?.handles)?detail.handles.filter(Boolean):[];
+      return 'Première revue requise'+(handles.length?' : '+handles.join(', '):'.');
+    }
+    if(['review_profile_invalid','review_profile_incomplete','review_profile_binding_mismatch'].includes(reason)){
+      const handles=Array.isArray(detail?.handles)?detail.handles.filter(Boolean):[];
+      return 'Profil de revue à actualiser'+(handles.length?' : '+handles.join(', '):'.');
     }
     return String(error?.message||'Lancement HackerOne impossible.');
   }
