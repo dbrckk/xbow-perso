@@ -1870,6 +1870,9 @@
           'rendement '+String(program.value_efficiency_score??0)+'/100',
           'opportunité '+String(program.opportunity_score??0)+'/100',
           'effort x'+String(program.effort_factor??'—'),
+          Number(program.local_confirmed_findings||0)>0
+            ?'local '+String(program.local_confirmed_findings)+' confirmé(s)'
+            :null,
           'priorité '+String(program.priority_score??0)+'/100',
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
