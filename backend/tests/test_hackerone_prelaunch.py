@@ -205,3 +205,29 @@ def test_go_no_go_returns_go_only_when_everything_is_ready(monkeypatch):
 
     assert result["go"] is True
     assert result["blockers"] == []
+
+
+
+def test_launch_reviewed_enforces_go_no_go_server_side(monkeypatch):
+    monkeypatch.setattr(
+        hackerone_api,
+        "hackerone_batch_go_no_go",
+        lambda _payload: {
+            "go": False,
+            "blockers": ["recon_dispatch"],
+        },
+    )
+
+    payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+        mode="sequential",
+        handles=["alpha"],
+    )
+
+    try:
+        hackerone_api.launch_reviewed_hackerone_batch(payload)
+    except HTTPException as exc:
+        assert exc.status_code == 409
+        assert exc.detail["reason"] == "batch_go_no_go_blocked"
+        assert exc.detail["blockers"] == ["recon_dispatch"]
+    else:
+        raise AssertionError("server-side go/no-go should block launch")
