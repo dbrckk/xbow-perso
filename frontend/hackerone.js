@@ -1782,7 +1782,7 @@
     const query=String(el('h1BatchSearch')?.value||'').trim().toLowerCase();
     const bountyOnly=Boolean(el('h1BatchBountyOnly')?.checked);
     const readiness=String(el('h1BatchReadiness')?.value||'all');
-    const sort=String(el('h1BatchSort')?.value||'opportunity');
+    const sort=String(el('h1BatchSort')?.value||'efficiency');
     const programs=hackerOnePrograms.filter(program=>{
       if(bountyOnly&&program?.offers_bounties!==true)return false;
       if(readiness!=='all'&&String(program?.status||'REVIEW')!==readiness)return false;
@@ -1797,6 +1797,11 @@
       }
       if(sort==='historical_value'){
         return Number(right?.historical_value_score||0)-Number(left?.historical_value_score||0);
+      }
+      if(sort==='efficiency'){
+        return Number(right?.value_efficiency_score||0)-Number(left?.value_efficiency_score||0)
+          || Number(right?.opportunity_score||0)-Number(left?.opportunity_score||0)
+          || String(left?.name||left?.handle||'').localeCompare(String(right?.name||right?.handle||''));
       }
       if(sort==='opportunity'){
         return Number(right?.opportunity_score||0)-Number(left?.opportunity_score||0)
@@ -1862,7 +1867,9 @@
         meta.className='muted compact';
         const parts=[
           String(program.handle||''),
+          'rendement '+String(program.value_efficiency_score??0)+'/100',
           'opportunité '+String(program.opportunity_score??0)+'/100',
+          'effort x'+String(program.effort_factor??'—'),
           'priorité '+String(program.priority_score??0)+'/100',
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
@@ -1950,21 +1957,32 @@
   function autoSelectBatchProfiles(){
     const limit=Math.max(1,Math.min(20,Number(el('h1BatchAutoLimit')?.value||5)));
     const minScore=Math.max(0,Math.min(100,Number(el('h1BatchAutoMinScore')?.value||50)));
-    const candidates=hackerOnePrograms
+    const pool=hackerOnePrograms
       .filter(program=>String(program?.status||'')==='READY')
       .filter(program=>program?.offers_bounties===true)
-      .filter(program=>Number(program?.opportunity_score||0)>=minScore)
-      .sort((left,right)=>
-        Number(right?.opportunity_score||0)-Number(left?.opportunity_score||0)
-        || Number(right?.priority_score||0)-Number(left?.priority_score||0)
-        || Number(right?.historical_value_score||0)-Number(left?.historical_value_score||0)
-        || String(left?.name||left?.handle||'').localeCompare(String(right?.name||right?.handle||''))
-      )
-      .slice(0,limit);
+      .filter(program=>Number(program?.value_efficiency_score||0)>=minScore)
+      .map(program=>({...program}));
+    const candidates=[];
+    const focusCounts=new Map();
+    while(pool.length&&candidates.length<limit){
+      pool.sort((left,right)=>{
+        const leftFocus=String(left?.research_focus?.[0]||'other');
+        const rightFocus=String(right?.research_focus?.[0]||'other');
+        const leftScore=Math.max(0,Number(left?.value_efficiency_score||0)-12*Number(focusCounts.get(leftFocus)||0));
+        const rightScore=Math.max(0,Number(right?.value_efficiency_score||0)-12*Number(focusCounts.get(rightFocus)||0));
+        return rightScore-leftScore
+          || Number(right?.opportunity_score||0)-Number(left?.opportunity_score||0)
+          || String(left?.name||left?.handle||'').localeCompare(String(right?.name||right?.handle||''));
+      });
+      const picked=pool.shift();
+      candidates.push(picked);
+      const focus=String(picked?.research_focus?.[0]||'other');
+      focusCounts.set(focus,Number(focusCounts.get(focus)||0)+1);
+    }
     batchSelectedHandles=new Set(candidates.map(program=>String(program.handle||'')));
     renderBatchCatalog();
     el('h1BatchSummary').textContent=candidates.length
-      ?candidates.length+' programme(s) READY sélectionné(s) par Opportunity Score · validation serveur requise au lancement'
+      ?candidates.length+' programme(s) READY sélectionné(s) par rendement/effort avec diversification · validation serveur requise au lancement'
       :'Aucun programme READY ne correspond aux critères Auto-select.';
   }
 
