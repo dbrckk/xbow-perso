@@ -355,13 +355,19 @@ def queue_browser_flow(campaign_id: str, flow: BrowserFlowInput):
             detail=f"Cannot queue browser flow from {latest.state}",
         )
 
+    job_payload = {
+        "campaign_id": latest.id,
+        "steps": flow.model_dump(mode="json")["steps"],
+    }
+    if flow.identity_label is not None:
+        job_payload["identity_label"] = flow.identity_label
+    if flow.storage_state_secret_env is not None:
+        job_payload["storage_state_secret_env"] = flow.storage_state_secret_env
+
     job = jobs.enqueue(
         latest.id,
         "browser_flow",
-        {
-            "campaign_id": latest.id,
-            **flow.model_dump(mode="json", exclude_none=True),
-        },
+        job_payload,
         max_attempts=2,
         dedupe_key=f"browser:{request_id}",
     )
