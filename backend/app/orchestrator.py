@@ -12,6 +12,7 @@ from .agent_registry import agent_for_action
 from .autonomy_gate import build_autonomy_gate
 from .campaign_risk import build_campaign_risk
 from .campaign_runtime import CampaignRuntimeLimit, campaign_runtime_limit_from_env, runtime_status
+from .campaign_chain_priority import build_campaign_chain_context, prioritize_with_chain_context
 from .circuit_breaker import circuit_breaker_state, record_circuit_open
 from .coverage import build_coverage_guidance, build_evidence_coverage
 from .decision_audit import next_audit_link, seal_decision_metadata
@@ -188,6 +189,7 @@ def _intelligence_context(
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)
     high_value_intelligence = build_high_value_intelligence(graph)
+    campaign_chain_intelligence = build_campaign_chain_context(graph, high_value_intelligence)
     planner_action = planned_actions[0] if planned_actions else None
     planner_intelligence = None
     if planner_action is not None:
@@ -219,6 +221,7 @@ def _intelligence_context(
         "coverage": coverage,
         "coverage_guidance": coverage_guidance,
         "high_value_intelligence": high_value_intelligence,
+        "campaign_chain_intelligence": campaign_chain_intelligence,
         "planner_intelligence": planner_intelligence,
         "identity_access": identity_access,
         "scanner_adaptation": scanner_adaptation,
@@ -597,6 +600,8 @@ def _result(
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
             "high_value_intelligence": dict(intelligence["high_value_intelligence"]),
+            "campaign_chain_intelligence": dict(intelligence["campaign_chain_intelligence"]),
+            "chain_planner_intelligence": dict(intelligence.get("chain_planner_intelligence") or {}),
             "planner_intelligence": dict(intelligence["planner_intelligence"] or {}),
             "identity_access": dict(intelligence["identity_access"]),
             "scanner_adaptation": intelligence["scanner_adaptation"].to_dict(),
@@ -709,6 +714,11 @@ def advance_campaign(
             intelligence["high_value_intelligence"],
         )
         intelligence["planner_intelligence"] = planner_intelligence
+        action, chain_planner_intelligence = prioritize_with_chain_context(
+            action,
+            intelligence["campaign_chain_intelligence"],
+        )
+        intelligence["chain_planner_intelligence"] = chain_planner_intelligence
         cycle = intelligence["cycle"]
 
         if cycle.next_action == "stop" or not cycle.safe_to_progress:
