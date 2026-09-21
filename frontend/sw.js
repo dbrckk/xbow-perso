@@ -30,7 +30,7 @@ self.addEventListener('fetch',event=>{
         if(
           response.ok
           && url.origin===self.location.origin
-          && PRECACHE.includes(url.pathname)
+          && PRECACHE.some(item=>new URL(item,self.location.origin).pathname===url.pathname)
         ){
           const copy=response.clone();
           caches.open(CACHE).then(cache=>cache.put(event.request,copy)).catch(()=>{});
