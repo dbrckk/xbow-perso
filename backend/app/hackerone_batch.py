@@ -270,7 +270,15 @@ def reconcile_hackerone_batch(queue, store, batch_id: str) -> dict[str, Any] | N
 
             brief = build_batch_learning_brief(store, batch)
             batch["learning_brief"] = brief
-            batch["learning_delivery"] = persist_learning_brief(brief)
+            try:
+                batch["learning_delivery"] = persist_learning_brief(brief)
+            except Exception:
+                batch["learning_delivery"] = {
+                    "queued": False,
+                    "delivered": False,
+                    "issue_url": None,
+                    "reason": "local_outbox_failed",
+                }
             changed = True
 
         if not changed:
