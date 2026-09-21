@@ -77,3 +77,25 @@ def test_high_value_intelligence_is_advisory_only():
     assert result["advisory_only"] is True
     assert result["scope_expansion"] is False
     assert result["automatic_exploitation"] is False
+
+
+
+def test_transaction_reconciliation_signals_raise_business_invariant_focus():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "endpoint:withdraw",
+            "endpoint",
+            "https://example.test/api/withdrawals/transaction/status",
+            "recon:katana",
+        )
+    )
+
+    focuses = _focuses(graph)
+
+    assert focuses["transaction-reconciliation-invariants"]["score"] > 35
+    goals = " ".join(
+        focuses["transaction-reconciliation-invariants"]["observation_goals"]
+    ).lower()
+    assert "reconciliation" in goals
+    assert "idempotency" in goals
