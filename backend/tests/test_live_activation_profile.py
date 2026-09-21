@@ -58,3 +58,13 @@ def test_live_production_update_requires_backend_go_no_go_readiness():
     assert "=== HACKERONE LIVE GO/NO-GO ===" in script
     assert "build_hackerone_live_readiness" in script
     assert 'assert r["live_scan_ready"]' in script
+
+
+
+def test_production_update_normalizes_api_token_source():
+    script = _text("mobile-production-update.sh")
+
+    assert "auth-source normalization" in script
+    assert "unset XBOW_API_TOKEN XBOW_API_TOKEN_FILE" in script
+    assert "export XBOW_API_TOKEN" in script
+    assert "XBOW_VAULT_ENABLED" in script
