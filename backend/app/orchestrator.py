@@ -179,16 +179,6 @@ def _intelligence_context(
     surface_diff = build_surface_diff_intelligence(target_memory)
     surface_temporal = build_temporal_surface_profile(store, campaign_doc)
     surface_confidence = build_surface_confidence(target_memory, surface_temporal)
-    recon_priority = prioritize_recon_tasks(
-        recon_plan,
-        surface_diff,
-        target_memory,
-        surface_temporal,
-        surface_confidence,
-    )
-    swarm = coordinate_recon_swarm(list(recon_priority.tasks))
-    coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
-    coverage_guidance = build_coverage_guidance(coverage)
     passive_response_intelligence = build_passive_response_context(
         graph, scope_checker=scope_checker
     )
@@ -196,6 +186,17 @@ def _intelligence_context(
         graph,
         passive_response_intelligence=passive_response_intelligence,
     )
+    recon_priority = prioritize_recon_tasks(
+        recon_plan,
+        surface_diff,
+        target_memory,
+        surface_temporal,
+        surface_confidence,
+        high_value_intelligence,
+    )
+    swarm = coordinate_recon_swarm(list(recon_priority.tasks))
+    coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
+    coverage_guidance = build_coverage_guidance(coverage)
     campaign_chain_intelligence = build_campaign_chain_context(graph, high_value_intelligence)
     planner_action = planned_actions[0] if planned_actions else None
     planner_intelligence = None
