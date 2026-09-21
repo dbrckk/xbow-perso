@@ -22,17 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T08:13:42Z
+Generated: 2026-09-21T08:17:53Z
 
 ### Git
 - Branch: `main`
-- Head: `cf6cc0509018`
-- Commit date: 2026-09-21T10:13:26+02:00
-- Commit: feat: expose passive response signals to campaign intelligence
-- Tracked files: 533
+- Head: `1ec3d8754853`
+- Commit date: 2026-09-21T10:17:42+02:00
+- Commit: feat: use passive response hints in high-value ranking
+- Tracked files: 534
 
 ### Recently changed files
+- `backend/app/high_value_intelligence.py`
 - `backend/app/orchestrator.py`
+- `backend/tests/test_passive_high_value_ranking.py`
 - `backend/app/passive_response_context.py`
 - `backend/tests/test_passive_response_context.py`
 - `backend/app/passive_response_intelligence.py`
@@ -42,7 +44,6 @@ Generated: 2026-09-21T08:13:42Z
 - `backend/tests/test_runtime_gap_analysis.py`
 - `backend/app/campaign_chain_priority.py`
 - `backend/tests/test_campaign_chain_priority.py`
-- `backend/tests/test_planner_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`

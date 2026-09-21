@@ -1,12 +1,12 @@
 # Change impact
 
-Base: 25a4f935113569fa671eedb9a0502006c3eef272
-Head: cf6cc05090186f4f0e4bea382372331d39de330c
+Base: 95e8ff973a12bd303a51628c9e8dd76c512dddb7
+Head: 1ec3d87548539318b35ac0e87599edae68bbf91e
 
 ## Changed files
+- M backend/app/high_value_intelligence.py
 - M backend/app/orchestrator.py
-- A backend/app/passive_response_context.py
-- A backend/tests/test_passive_response_context.py
+- A backend/tests/test_passive_high_value_ranking.py
 
 ## Affected areas
 - backend

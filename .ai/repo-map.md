@@ -318,6 +318,7 @@ backend/
     test_orchestrator.py
     test_outbox_chaos.py
     test_overview_reasoning.py
+    test_passive_high_value_ranking.py
     test_passive_response_context.py
     test_passive_response_intelligence.py
     test_pentagi_action_gateway.py
@@ -4410,6 +4411,9 @@ raw = metadata.get(key)
     """
 ⋮----
 surface = _surface_tokens(graph)
+passive = passive_response_intelligence or {}
+passive_hints = {
+⋮----
 joined = "\n".join(sorted(surface))
 grouped: dict[str, dict[str, Any]] = {}
 ⋮----
@@ -6164,8 +6168,8 @@ recon_priority = prioritize_recon_tasks(
 swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
-high_value_intelligence = build_high_value_intelligence(graph)
 passive_response_intelligence = build_passive_response_context(
+high_value_intelligence = build_high_value_intelligence(
 campaign_chain_intelligence = build_campaign_chain_context(graph, high_value_intelligence)
 planner_action = planned_actions[0] if planned_actions else None
 planner_intelligence = None
@@ -14749,6 +14753,16 @@ result = campaign_overview(campaign.id)
 def test_overview_chain_becomes_complete_after_independent_evidence(tmp_path, monkeypatch)
 ⋮----
 def test_overview_counts_duplicate_candidate_groups(tmp_path, monkeypatch)
+````
+
+## File: backend/tests/test_passive_high_value_ranking.py
+````python
+def test_passive_endpoint_hint_can_raise_matching_public_case_focus()
+⋮----
+result = build_high_value_intelligence(
+graphql = next(
+⋮----
+def test_passive_hints_do_not_create_execution_capability()
 ````
 
 ## File: backend/tests/test_passive_response_context.py
