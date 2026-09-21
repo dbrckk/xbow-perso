@@ -6,13 +6,13 @@
     "requested_max_files": 12,
     "score_margin": 0,
     "tier": "bounded",
-    "top_score": 21
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "6fd632b6abbc706396f0688adc6ff571ead0f55336c198c05f39244833053b1a",
+    "fingerprint": "f0dfa13b96e0d9372c95c40816886adbe3dd830129ca8d648610fc866f7125b0",
     "hit": false
   },
-  "candidate_count": 31,
+  "candidate_count": 217,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -20,79 +20,12 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/orchestrator.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "_decision_explanation",
-        "_enqueue_action",
-        "_enqueue_recon_tasks",
-        "_graph_fingerprint",
-        "_intelligence_context",
-        "_load_graph",
-        "_minimum_enrichment_score",
-        "_pending_findings",
-        "_record_decision",
-        "_result",
-        "_scan_engines",
-        "_seed_primary_target",
-        "_stable_id",
-        "_surface_enrichment",
-        "_validation_saturated_cluster_ids",
-        "advance_campaign",
-        "scope_checker"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_adaptation.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "ScannerAdaptation",
-        "_engine_memory",
-        "adapt_scanner_engines",
-        "rank_key"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_sandbox.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "ScannerSandboxAdmission",
-        "ScannerSandboxConfigError",
-        "_allowed_engines",
-        "_runtime_hardening_attestation",
-        "_strict_bool",
-        "require_scanner_sandbox",
-        "safe_scanner_sandbox_admission",
-        "scanner_sandbox_admission"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
       "path": "backend/tests/test_nuclei_queue_lifecycle.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_campaign",
         "fake_execute",
@@ -110,9 +43,10 @@
       ],
       "path": "backend/tests/test_scanner_adaptation.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_memory",
         "test_adaptation_never_expands_configured_engines",
@@ -129,9 +63,10 @@
       ],
       "path": "backend/tests/test_scanner_normalization.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "test_normalized_ids_are_engine_scoped_and_stable",
         "test_normalizers_fail_closed_outside_scope",
@@ -147,6 +82,71 @@
         "test_scanner_registry_rejects_unknown_engine",
         "test_scanner_registry_selects_latest_artifact",
         "test_strix_and_nuclei_normalize_to_same_canonical_shape"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "_launch_payload",
+        "_resource",
+        "fake_execute",
+        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "_headers",
+        "_launch_payload",
+        "_resource",
+        "fake_execute",
+        "test_hackerone_full_lifecycle_produces_downloadable_report"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_hypothesis_memory.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "_graph",
+        "test_hypothesis_becomes_partially_supported_after_independent_validation",
+        "test_hypothesis_delta_explains_confidence_status_and_evidence_changes",
+        "test_hypothesis_delta_is_empty_for_equivalent_snapshots",
+        "test_hypothesis_delta_tracks_added_and_removed_findings",
+        "test_hypothesis_fingerprint_ignores_planner_decision_memory",
+        "test_hypothesis_fingerprint_ignores_unrelated_evidence",
+        "test_hypothesis_requires_observed_validation_and_evidence_for_support",
+        "test_hypothesis_snapshot_becomes_stale_when_graph_changes",
+        "test_hypothesis_starts_unvalidated",
+        "test_self_validation_never_supports_hypothesis",
+        "test_stability_detects_confidence_reversal_as_contradictory",
+        "test_stability_marks_single_snapshot_as_fresh",
+        "test_stability_marks_three_identical_snapshots_as_stable"
       ]
     }
   ],

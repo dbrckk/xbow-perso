@@ -22,25 +22,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T13:28:29Z
+Generated: 2026-09-21T13:49:28Z
 
 ### Git
 - Branch: `main`
-- Head: `bd95e8ec9bc7`
-- Commit date: 2026-09-21T15:28:18+02:00
-- Commit: ops: trigger safe mobile VPS update (#321)
-- Tracked files: 553
+- Head: `cbdbb7384001`
+- Commit date: 2026-09-21T15:49:16+02:00
+- Commit: fix: prevent auth source status from staying on verifying (#322)
+- Tracked files: 554
 
 ### Recently changed files
+- `frontend/app.js`
+- `frontend/sw.js`
 - `.deploy-trigger`
 - `.github/workflows/mobile-vps-deploy.yml`
 - `backend/app/auth.py`
 - `backend/app/main.py`
 - `backend/tests/test_auth.py`
 - `backend/tests/test_live_activation_profile.py`
-- `frontend/app.js`
 - `frontend/index.html`
-- `frontend/sw.js`
 - `scripts/mobile-production-cutover.sh`
 - `scripts/mobile-production-preflight.sh`
 - `scripts/mobile-production-update.sh`

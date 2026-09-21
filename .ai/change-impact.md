@@ -1,15 +1,14 @@
 # Change impact
 
-Base: bb0c54e21da10d7711895b8ec11d0dae53f8b648
-Head: bd95e8ec9bc7a0fd64649452cd0dc1dfa0bfe4bf
+Base: b9cca18d46bbe964d3aad05a5363fbacff29882b
+Head: cbdbb7384001b35f6890eac9c555fd1a6a001fc1
 
 ## Changed files
-- A .deploy-trigger
-- M .github/workflows/mobile-vps-deploy.yml
+- M frontend/app.js
+- M frontend/sw.js
 
 ## Affected areas
-- (root)
-- .github
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
