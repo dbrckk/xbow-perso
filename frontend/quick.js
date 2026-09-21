@@ -4,6 +4,34 @@
     handles:[],
     selection:[]
   };
+  const TOKEN_KEY='xbowApiToken';
+
+  function loadToken(){
+    let value='';
+    try{value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
+    if($('token'))$('token').value=value;
+  }
+
+  function persistToken(){
+    try{localStorage.setItem(TOKEN_KEY,token());}catch(_error){}
+    syncTokenVisibility();
+  }
+
+  async function refreshAuthStatus(){
+    const target=$('authSourceStatus');
+    if(!target)return;
+    try{
+      const response=await fetch('/auth-status',{cache:'no-store'});
+      if(!response.ok)throw new Error('unavailable');
+      const data=await response.json();
+      target.textContent='Authentification : '+String(data.source||'inconnue')+
+        (data.configured===true?' · configurée':' · non valide');
+      target.className='muted compact'+(data.configured===true?'':' err');
+    }catch(_error){
+      target.textContent='Authentification : indisponible';
+      target.className='muted compact err';
+    }
+  }
 
   function token(){
     return ($('token')?.value||'').trim();
@@ -235,12 +263,14 @@
     }
   }
 
-  $('token')?.addEventListener('input',syncTokenVisibility);
+  $('token')?.addEventListener('input',persistToken);
   $('quickSelect')?.addEventListener('click',()=>void selectSix());
   $('quickStart')?.addEventListener('click',()=>void startBatch());
   $('quickJournalRefresh')?.addEventListener('click',()=>void refreshJournal());
 
+  loadToken();
   syncTokenVisibility();
+  void refreshAuthStatus();
   renderSelection();
   void refreshJournal();
   setInterval(()=>void refreshJournal(),15000);
