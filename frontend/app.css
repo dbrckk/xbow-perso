@@ -1033,3 +1033,137 @@ summary:hover{color:white}
 @media(max-width:720px){
   .h1-intel-grid{grid-template-columns:1fr}
 }
+
+
+/* QUICK BOUNTY CONSOLE */
+.quick-ui .desktop-nav,
+.quick-ui .hero,
+.quick-ui #campaigns,
+.quick-ui #hackerone,
+.quick-ui #controlCard,
+.quick-ui #details,
+.quick-ui .app-shell > .hidden,
+.quick-ui .app-shell > section:not(#quickConsole):not(.overview-grid) {
+  display: none !important;
+}
+
+.quick-ui .overview-grid {
+  grid-template-columns: 1fr;
+  margin-bottom: 18px;
+}
+
+.quick-ui .overview-grid > :not(#access) {
+  display: none !important;
+}
+
+.quick-ui.quick-token-ready #access {
+  display: none !important;
+}
+
+.quick-console {
+  max-width: 900px;
+  margin: 22px auto;
+}
+
+.quick-head,
+.quick-journal-head,
+.quick-journal-entry-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.quick-head h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(1.8rem, 7vw, 3rem);
+}
+
+.quick-actions {
+  display: grid;
+  gap: 12px;
+  margin: 22px 0 14px;
+}
+
+.quick-actions > button {
+  width: 100%;
+  min-height: 54px;
+  font-size: 1rem;
+}
+
+.quick-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.quick-mode label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.quick-selection,
+.quick-journal {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.quick-program,
+.quick-journal-entry,
+.quick-journal-member {
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.quick-program {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quick-journal-head {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border, rgba(255,255,255,.12));
+}
+
+.quick-journal-members {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.quick-journal-member {
+  background: rgba(255,255,255,.02);
+}
+
+.quick-brief {
+  overflow: auto;
+  max-height: 320px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: .78rem;
+}
+
+@media (max-width: 640px) {
+  .quick-console {
+    margin: 10px 0 18px;
+  }
+  .quick-mode {
+    grid-template-columns: 1fr;
+  }
+  .quick-head,
+  .quick-journal-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
