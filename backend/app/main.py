@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, HttpUrl, model_validator
 
 from .api_outbox import has_event, outbox_snapshot, pending_request_id
 from .api_rate_limit import api_rate_limit_middleware
-from .auth import AuthError, require_api_token
+from .auth import AuthError, api_token_source_status, require_api_token
 from .incident_api import IncidentApiConflict, acknowledge_incident_versioned, read_incident_status
 from .incident_store import IncidentStore
 from .job_provenance import attach_job_provenance, verify_job_provenance
@@ -323,6 +323,15 @@ def ready():
     if not payload["ok"]:
         return JSONResponse(status_code=503, content=payload)
     return payload
+
+
+@app.get("/auth-status")
+def auth_status():
+    return {
+        "service": "xbow-perso",
+        "version": app.version,
+        **api_token_source_status(),
+    }
 
 
 @app.get("/health")
