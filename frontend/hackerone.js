@@ -1922,6 +1922,26 @@
     renderBatchCatalog();
   }
 
+  function autoSelectBatchProfiles(){
+    const limit=Math.max(1,Math.min(20,Number(el('h1BatchAutoLimit')?.value||5)));
+    const minScore=Math.max(0,Math.min(100,Number(el('h1BatchAutoMinScore')?.value||50)));
+    const candidates=hackerOnePrograms
+      .filter(program=>String(program?.status||'')==='READY')
+      .filter(program=>program?.offers_bounties===true)
+      .filter(program=>Number(program?.priority_score||0)>=minScore)
+      .sort((left,right)=>
+        Number(right?.priority_score||0)-Number(left?.priority_score||0)
+        || Number(right?.historical_value_score||0)-Number(left?.historical_value_score||0)
+        || String(left?.name||left?.handle||'').localeCompare(String(right?.name||right?.handle||''))
+      )
+      .slice(0,limit);
+    batchSelectedHandles=new Set(candidates.map(program=>String(program.handle||'')));
+    renderBatchCatalog();
+    el('h1BatchSummary').textContent=candidates.length
+      ?candidates.length+' programme(s) READY sélectionné(s) automatiquement · validation serveur requise au lancement'
+      :'Aucun programme READY ne correspond aux critères Auto-select.';
+  }
+
   async function batchPayloadForHandle(handle){
     const snapshot=await api(
       '/imports/hackerone/programs/'+encodeURIComponent(handle)+'/snapshot'
@@ -2676,6 +2696,7 @@
   el('h1BatchSort').addEventListener('change',renderBatchCatalog);
   el('h1BatchRefresh').addEventListener('click',()=>void refreshBatchCatalog());
   el('h1BatchSelectReady').addEventListener('click',selectReadyBatchProfiles);
+  el('h1BatchAutoSelect').addEventListener('click',autoSelectBatchProfiles);
   el('h1BatchLaunch').addEventListener('click',()=>void launchSelectedBatch());
   el('h1BatchCancel').addEventListener('click',()=>void cancelActiveBatch());
   el('h1QuickAutoResume').addEventListener('change',saveQuickPrefs);
