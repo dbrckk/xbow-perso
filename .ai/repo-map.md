@@ -136,6 +136,7 @@ backend/
     observer_slo.py
     operational_alerts.py
     operational_slo.py
+    opportunity_ranking.py
     orchestrator.py
     outbox_recovery.py
     passive_api_intelligence.py
@@ -319,6 +320,7 @@ backend/
     test_openapi_integrity.py
     test_operational_alerts.py
     test_operational_slo.py
+    test_opportunity_ranking.py
     test_orchestrator_validation_alignment.py
     test_orchestrator.py
     test_outbox_chaos.py
@@ -3964,6 +3966,8 @@ score = 0
 ⋮----
 historical = float(signal.get("historical_value_score") or 0.0)
 ⋮----
+opportunity = build_opportunity_signal(
+⋮----
 summary = {
 ````
 
@@ -6222,6 +6226,38 @@ def classify(name: str, value: int, warning: int, critical: int) -> None
 watchdog = str((metrics.get("worker_watchdog") or {}).get("status") or "ok")
 ⋮----
 state = (
+````
+
+## File: backend/app/opportunity_ranking.py
+````python
+_RUNTIME_REQUIREMENTS = {
+⋮----
+"""Explainable advisory ranking for researcher time allocation.
+
+    Uses only public historical metadata, current program catalog state, current
+    runtime readiness and prior explicit review state. It never authorizes a
+    target or enables an execution capability.
+    """
+reasons: list[str] = []
+score = 0
+⋮----
+historical_value = max(0.0, float(signal.get("historical_value_score") or 0.0))
+value_bonus = min(15, int(round(historical_value)))
+⋮----
+high_critical = max(0, int(signal.get("high_critical_count") or 0))
+disclosed_count = max(0, int(signal.get("disclosed_report_count") or 0))
+severity_density = (
+severity_bonus = int(round(severity_density * 10))
+⋮----
+usd_max = max(0.0, float(signal.get("usd_awarded_max") or 0.0))
+award_signal = min(10, int(math.log10(1.0 + usd_max) * 2)) if usd_max else 0
+⋮----
+categories = [str(item) for item in list(signal.get("top_categories") or [])[:4]]
+runtime_ready_categories: list[str] = []
+runtime_partial_categories: list[str] = []
+⋮----
+requirements = _RUNTIME_REQUIREMENTS.get(category, ("recon",))
+ready_count = sum(1 for name in requirements if bool(runtime.get(name)))
 ````
 
 ## File: backend/app/orchestrator.py
@@ -14698,6 +14734,24 @@ def test_slo_critical_on_queue_age(monkeypatch)
 def test_slo_critical_when_watchdog_errors(monkeypatch)
 ⋮----
 def test_slo_rejects_inverted_thresholds(monkeypatch)
+````
+
+## File: backend/tests/test_opportunity_ranking.py
+````python
+def test_ready_high_value_runtime_match_scores_above_review()
+⋮----
+program = {
+signal = {
+runtime = {"recon": True, "browser": True, "scanner": False}
+⋮----
+ready = build_opportunity_signal(
+review = build_opportunity_signal(
+⋮----
+def test_blocked_program_never_receives_opportunity_score()
+⋮----
+result = build_opportunity_signal(
+⋮----
+def test_runtime_focus_prefers_categories_currently_supported()
 ````
 
 ## File: backend/tests/test_orchestrator_validation_alignment.py

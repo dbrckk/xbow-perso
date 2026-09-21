@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 1,
+    "score_margin": 0,
     "tier": "bounded",
-    "top_score": 27
+    "top_score": 21
   },
   "cache": {
-    "fingerprint": "9ad5c52bdb46f3b8d039439e129b2f75fecb9ea8d287069e54aca9e1f6cc3b46",
+    "fingerprint": "d51e931adcf3580889317bfe673095424d45ad75331b1f837ab26d7e66446ae0",
     "hit": false
   },
-  "candidate_count": 42,
+  "candidate_count": 37,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -22,10 +22,9 @@
       ],
       "path": "backend/app/orchestrator.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 27,
+      "score": 21,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -44,41 +43,6 @@
         "_validation_saturated_cluster_ids",
         "advance_campaign",
         "scope_checker"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/worker_service.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "CampaignCancelledError",
-        "StaleBrowserJobError",
-        "StaleValidationJobError",
-        "_active_scanner_execution_requested",
-        "_append_event_once",
-        "_campaign",
-        "_claim_for_role",
-        "_lease_heartbeat",
-        "_legacy_unprovenanced_jobs_allowed",
-        "_process_scanner_job",
-        "_record_worker_outcome",
-        "_save",
-        "_verify_policy_bound_job",
-        "_worker_bool",
-        "_worker_poll_seconds",
-        "main",
-        "process_browser_flow",
-        "process_nuclei_scan",
-        "process_one",
-        "process_recon_task"
       ]
     },
     {
@@ -156,6 +120,33 @@
         "test_adaptation_ranks_successful_memory_first",
         "test_adaptation_rejects_unknown_or_duplicate_configuration",
         "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_normalization.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "test_normalized_ids_are_engine_scoped_and_stable",
+        "test_normalizers_fail_closed_outside_scope",
+        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
+        "test_nuclei_jsonl_parser_rejects_invalid_line",
+        "test_nuclei_jsonl_parser_rejects_oversized_file",
+        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
+        "test_scanner_registry_dispatches_nuclei_parser",
+        "test_scanner_registry_dispatches_strix_parser",
+        "test_scanner_registry_exposes_supported_engines",
+        "test_scanner_registry_missing_run_directory_is_empty",
+        "test_scanner_registry_rejects_symlinked_artifacts",
+        "test_scanner_registry_rejects_unknown_engine",
+        "test_scanner_registry_selects_latest_artifact",
+        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
       ]
     }
   ],

@@ -756,13 +756,15 @@
       "out_degree": 3
     },
     "backend/app/hackerone_discovery.py": {
-      "dependencies": [],
+      "dependencies": [
+        "backend/app/opportunity_ranking.py"
+      ],
       "dependents": [
         "backend/app/hackerone_api.py",
         "backend/tests/test_hackerone_discovery.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "backend/app/hackerone_intelligence.py": {
       "dependencies": [
@@ -1620,6 +1622,15 @@
       "dependents": [
         "backend/app/incident_observer.py",
         "backend/tests/test_operational_slo.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 0
+    },
+    "backend/app/opportunity_ranking.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/app/hackerone_discovery.py",
+        "backend/tests/test_opportunity_ranking.py"
       ],
       "in_degree": 2,
       "out_degree": 0
@@ -4037,6 +4048,15 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "backend/tests/test_opportunity_ranking.py": {
+      "dependencies": [
+        "backend/app/opportunity_ranking.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_orchestrator.py": {
       "dependencies": [
         "backend/app/campaign_runtime.py",
@@ -5083,6 +5103,7 @@
         "backend/tests/test_openapi_integrity.py",
         "backend/tests/test_operational_alerts.py",
         "backend/tests/test_operational_slo.py",
+        "backend/tests/test_opportunity_ranking.py",
         "backend/tests/test_orchestrator.py",
         "backend/tests/test_orchestrator_validation_alignment.py",
         "backend/tests/test_outbox_chaos.py",
@@ -5171,7 +5192,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 198,
+      "in_degree": 199,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

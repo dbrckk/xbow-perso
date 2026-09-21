@@ -22,16 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T09:12:26Z
+Generated: 2026-09-21T09:14:10Z
 
 ### Git
 - Branch: `main`
-- Head: `fd9b5d666c4b`
-- Commit date: 2026-09-21T11:12:14+02:00
-- Commit: feat: prioritize structural access differentials across test identities
-- Tracked files: 540
+- Head: `6f78cdcb7f48`
+- Commit date: 2026-09-21T11:13:57+02:00
+- Commit: feat: rank READY bounty programs by opportunity yield
+- Tracked files: 542
 
 ### Recently changed files
+- `backend/app/hackerone_discovery.py`
+- `backend/app/opportunity_ranking.py`
+- `backend/tests/test_hackerone_discovery.py`
+- `backend/tests/test_opportunity_ranking.py`
+- `frontend/hackerone.js`
+- `frontend/index.html`
+- `frontend/sw.js`
 - `backend/app/browser.py`
 - `backend/app/identity_access.py`
 - `backend/app/worker_service.py`
@@ -39,9 +46,6 @@ Generated: 2026-09-21T09:12:26Z
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/tests/test_hackerone_review_draft.py`
-- `frontend/hackerone.js`
-- `frontend/sw.js`
-- `frontend/index.html`
 
 ### Project signals
 - `pyproject.toml`
