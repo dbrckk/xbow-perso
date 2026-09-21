@@ -30,10 +30,11 @@ def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
 
-    assert '/app.js?v=59' in index
-    assert '/hackerone.js?v=59' in index
-    assert '/app.css?v=59' in index
-    assert "xbow-perso-v59" in sw
+    assert '/app.js?v=60' in index
+    assert '/hackerone.js?v=60' in index
+    assert '/quick.js?v=60' in index
+    assert '/app.css?v=60' in index
+    assert "xbow-perso-v60" in sw
 
 
 
@@ -58,3 +59,31 @@ def test_frontend_has_no_totp_control():
     assert "Code TOTP" not in html
     assert "x-totp-code" not in app
     assert "$('totp')" not in app
+
+
+
+def test_simple_dashboard_is_the_visible_primary_ui():
+    html = _text("frontend/index.html")
+    css = _text("frontend/app.css")
+    quick = _text("frontend/quick.js")
+
+    assert '<body class="simple-mode">' in html
+    for element_id in (
+        "quickDashboard",
+        "quickToken",
+        "quickSelect",
+        "quickMode",
+        "quickStart",
+        "quickStatus",
+        "quickSelection",
+        "quickJournal",
+        "quickRefreshJournal",
+    ):
+        assert f'id="{element_id}"' in html
+
+    assert ".simple-mode .app-shell > *:not(#quickDashboard)" in css
+    assert "display:none!important" in css
+    assert "api('/hackerone/quick-plan')" in quick
+    assert "api('/hackerone/quick-run'" in quick
+    assert "api('/hackerone/quick-journal?limit=20')" in quick
+    assert "setInterval(()=>void refreshJournal(),15000)" in quick
