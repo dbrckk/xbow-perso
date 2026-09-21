@@ -12,6 +12,27 @@ const fmtSeconds=value=>{
 $('token').value=sessionStorage.getItem('xbowApiToken')||'';
 $('token').addEventListener('input',()=>sessionStorage.setItem('xbowApiToken',$('token').value));
 
+async function refreshAuthSourceStatus(){
+  const target=$('authSourceStatus');
+  if(!target)return null;
+  try{
+    const response=await fetch('/auth-status',{cache:'no-store'});
+    const data=await response.json();
+    const source=String(data?.source||'unknown');
+    const configured=data?.configured===true;
+    const conflict=Boolean(data?.vault_enabled&&(data?.legacy_inline_present||data?.legacy_file_present));
+    target.textContent='Source d’authentification serveur : '+source+
+      (configured?' · configurée':' · non valide')+
+      (conflict?' · conflit legacy/vault':'');
+    target.className='muted compact'+(configured&&!conflict?'':' err');
+    return data;
+  }catch(_error){
+    target.textContent='Source d’authentification serveur : indisponible';
+    target.className='muted compact err';
+    return null;
+  }
+}
+
 async function api(path,opts={}){
   const token=$('token').value.trim();
   const method=(opts.method||'GET').toUpperCase();
@@ -682,3 +703,5 @@ $('resetBreaker').onclick=async()=>{if(!campaign)return;try{
 }catch(e){setStatus(e.message,'err')}};
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+void refreshAuthSourceStatus();
