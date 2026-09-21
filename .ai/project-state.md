@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T07:46:18Z
+Generated: 2026-09-21T07:49:11Z
 
 ### Git
 - Branch: `main`
-- Head: `733851b8ce02`
-- Commit date: 2026-09-21T09:46:07+02:00
-- Commit: Merge pull request #284 from dbrckk/feat/high-value-planner-priority
-- Tracked files: 525
+- Head: `f4c67289670d`
+- Commit date: 2026-09-21T09:48:59+02:00
+- Commit: feat: prioritize observed vulnerability chains in campaign planning
+- Tracked files: 527
 
 ### Recently changed files
-- `backend/tests/test_planner_intelligence.py`
+- `backend/app/campaign_chain_priority.py`
 - `backend/app/orchestrator.py`
+- `backend/tests/test_campaign_chain_priority.py`
+- `backend/tests/test_planner_intelligence.py`
 - `backend/app/planner_intelligence.py`
-- `backend/tests/test_chain_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`

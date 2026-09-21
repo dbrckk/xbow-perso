@@ -171,6 +171,19 @@
       "in_degree": 18,
       "out_degree": 2
     },
+    "backend/app/campaign_chain_priority.py": {
+      "dependencies": [
+        "backend/app/chain_intelligence.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/orchestrator.py",
+        "backend/tests/test_campaign_chain_priority.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 3
+    },
     "backend/app/campaign_control.py": {
       "dependencies": [
         "backend/app/campaign_runtime.py",
@@ -295,10 +308,11 @@
         "backend/app/main.py"
       ],
       "dependents": [
+        "backend/app/campaign_chain_priority.py",
         "backend/app/hackerone_intelligence.py",
         "backend/tests/test_chain_intelligence.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 1
     },
     "backend/app/circuit_breaker.py": {
@@ -1133,6 +1147,7 @@
         "backend/app/autonomy_gate.py",
         "backend/app/browser.py",
         "backend/app/campaign_audit.py",
+        "backend/app/campaign_chain_priority.py",
         "backend/app/campaign_control.py",
         "backend/app/campaign_overview.py",
         "backend/app/campaign_review_state.py",
@@ -1306,7 +1321,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 178,
+      "in_degree": 179,
       "out_degree": 56
     },
     "backend/app/metrics.py": {
@@ -1348,6 +1363,7 @@
         "backend/app/adaptive_cycle.py",
         "backend/app/attack_surface.py",
         "backend/app/autonomy_gate.py",
+        "backend/app/campaign_chain_priority.py",
         "backend/app/campaign_control.py",
         "backend/app/campaign_overview.py",
         "backend/app/campaign_review_state.py",
@@ -1401,6 +1417,7 @@
         "backend/tests/test_api_idempotency.py",
         "backend/tests/test_attack_surface.py",
         "backend/tests/test_attack_surface_scope.py",
+        "backend/tests/test_campaign_chain_priority.py",
         "backend/tests/test_campaign_circuit_breaker.py",
         "backend/tests/test_campaign_overview.py",
         "backend/tests/test_campaign_review_state.py",
@@ -1452,7 +1469,7 @@
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 106,
+      "in_degree": 108,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -1587,6 +1604,7 @@
         "backend/app/agent_registry.py",
         "backend/app/attack_surface.py",
         "backend/app/autonomy_gate.py",
+        "backend/app/campaign_chain_priority.py",
         "backend/app/campaign_risk.py",
         "backend/app/campaign_runtime.py",
         "backend/app/circuit_breaker.py",
@@ -1630,7 +1648,7 @@
         "backend/tests/test_runtime_budget_config.py"
       ],
       "in_degree": 7,
-      "out_degree": 36
+      "out_degree": 37
     },
     "backend/app/outbox_recovery.py": {
       "dependencies": [
@@ -2897,6 +2915,16 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 6
+    },
+    "backend/tests/test_campaign_chain_priority.py": {
+      "dependencies": [
+        "backend/app/campaign_chain_priority.py",
+        "backend/app/observation_graph.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
     },
     "backend/tests/test_campaign_circuit_breaker.py": {
       "dependencies": [
@@ -4823,6 +4851,7 @@
         "backend/tests/test_browser.py",
         "backend/tests/test_campaign_audit.py",
         "backend/tests/test_campaign_cancel.py",
+        "backend/tests/test_campaign_chain_priority.py",
         "backend/tests/test_campaign_circuit_breaker.py",
         "backend/tests/test_campaign_overview.py",
         "backend/tests/test_campaign_review_state.py",
@@ -5001,7 +5030,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 190,
+      "in_degree": 191,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

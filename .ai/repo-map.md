@@ -65,6 +65,7 @@ backend/
     autonomy_gate.py
     browser.py
     campaign_audit.py
+    campaign_chain_priority.py
     campaign_control.py
     campaign_overview.py
     campaign_review_state.py
@@ -213,6 +214,7 @@ backend/
     test_browser.py
     test_campaign_audit.py
     test_campaign_cancel.py
+    test_campaign_chain_priority.py
     test_campaign_circuit_breaker.py
     test_campaign_overview.py
     test_campaign_review_state.py
@@ -1663,6 +1665,34 @@ secret = None
 expected = hmac.new(secret.encode(), canonical, hashlib.sha256).hexdigest()
 ⋮----
 previous = digest
+````
+
+## File: backend/app/campaign_chain_priority.py
+````python
+_FAMILY_TO_CATEGORY = {
+⋮----
+observed: set[str] = set()
+⋮----
+family = str(focus.get("family") or "")
+⋮----
+joined = "\n".join(str(item.value).lower() for item in graph.values())
+signal_map = {
+⋮----
+observed = _observed_categories(graph, high_value_intelligence)
+# Chain scoring consumes campaign observations only. Historical award/category
+# data is not treated as target evidence.
+categories = [
+chain = build_chain_intelligence(categories)
+candidates = [
+⋮----
+candidates = list(context.get("candidates") or [])
+complete = [item for item in candidates if float(item.get("completeness") or 0) >= 1.0]
+selected = complete[:3] if complete else candidates[:2]
+result = {
+⋮----
+boost = 4 if complete else 2
+priority = min(99, max(action.priority, min(99, action.priority + boost)))
+chain_ids = ", ".join(result["chain_ids"])
 ````
 
 ## File: backend/app/campaign_control.py
@@ -6126,6 +6156,7 @@ swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
 high_value_intelligence = build_high_value_intelligence(graph)
+campaign_chain_intelligence = build_campaign_chain_context(graph, high_value_intelligence)
 planner_action = planned_actions[0] if planned_actions else None
 planner_intelligence = None
 ⋮----
@@ -11097,6 +11128,26 @@ final = jobs.get(job["id"])
 def test_cancelled_campaign_rejects_new_mutations(tmp_path, monkeypatch)
 ⋮----
 candidate = Finding(
+````
+
+## File: backend/tests/test_campaign_chain_priority.py
+````python
+def test_chain_requires_multiple_observed_categories()
+⋮----
+graph = ObservationGraph()
+⋮----
+context = build_campaign_chain_context(graph, {"focuses": []})
+⋮----
+def test_observed_auth_and_api_can_form_advisory_candidate()
+⋮----
+def test_chain_priority_never_changes_kind_or_target()
+⋮----
+action = PlannedAction("validate", "example.test", "needs validation", 90)
+context = {
+⋮----
+def test_stop_is_immutable()
+⋮----
+action = PlannedAction("stop", "example.test", "policy blocked", 100)
 ````
 
 ## File: backend/tests/test_campaign_circuit_breaker.py

@@ -1,12 +1,12 @@
 # Change impact
 
-Base: 29f114f2d03575159dda8ae5caf39cce54bf04e9
-Head: 733851b8ce028543b8ed07a811da4dcbe09041a8
+Base: fd142144c2ffdb9ea87a53da73c3151ca78133dc
+Head: f4c67289670d5f773f4ef46f0ba342f180ad9c10
 
 ## Changed files
+- A backend/app/campaign_chain_priority.py
 - M backend/app/orchestrator.py
-- A backend/app/planner_intelligence.py
-- A backend/tests/test_planner_intelligence.py
+- A backend/tests/test_campaign_chain_priority.py
 
 ## Affected areas
 - backend

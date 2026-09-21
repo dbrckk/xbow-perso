@@ -5,11 +5,125 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
+    "_observed_categories": {
+      "source": {
+        "file": "backend/app/campaign_chain_priority.py",
+        "start": 19,
+        "end": 43
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "values",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "build_campaign_chain_context": {
+      "source": {
+        "file": "backend/app/campaign_chain_priority.py",
+        "start": 46,
+        "end": 73
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_observed_categories",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_chain_priority.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_chain_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/chain_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "prioritize_with_chain_context": {
+      "source": {
+        "file": "backend/app/campaign_chain_priority.py",
+        "start": 76,
+        "end": 104
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "PlannedAction",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
     "_stable_id": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 47,
-        "end": 49
+        "start": 48,
+        "end": 50
       },
       "symbol_dependencies": [],
       "dependency_count": 0
@@ -17,8 +131,8 @@
     "_graph_fingerprint": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 52,
-        "end": 66
+        "start": 53,
+        "end": 67
       },
       "symbol_dependencies": [
         {
@@ -63,8 +177,8 @@
     "_load_graph": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 69,
-        "end": 70
+        "start": 70,
+        "end": 71
       },
       "symbol_dependencies": [
         {
@@ -109,8 +223,8 @@
     "_seed_primary_target": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 73,
-        "end": 87
+        "start": 74,
+        "end": 88
       },
       "symbol_dependencies": [
         {
@@ -154,7 +268,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 47,
+              "line": 48,
               "kind": "function",
               "language": "python"
             }
@@ -203,8 +317,8 @@
     "_minimum_enrichment_score": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 90,
-        "end": 98
+        "start": 91,
+        "end": 99
       },
       "symbol_dependencies": [],
       "dependency_count": 0
@@ -212,8 +326,8 @@
     "_surface_enrichment": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 101,
-        "end": 122
+        "start": 102,
+        "end": 123
       },
       "symbol_dependencies": [
         {
@@ -245,7 +359,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 90,
+              "line": 91,
               "kind": "function",
               "language": "python"
             }
@@ -293,7 +407,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 136,
+              "line": 137,
               "kind": "function",
               "language": "python"
             }
@@ -306,8 +420,8 @@
     "_intelligence_context": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 125,
-        "end": 226
+        "start": 126,
+        "end": 229
       },
       "symbol_dependencies": [
         {
@@ -387,7 +501,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 377,
+              "line": 380,
               "kind": "function",
               "language": "python"
             }
@@ -399,7 +513,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 101,
+              "line": 102,
               "kind": "function",
               "language": "python"
             }
@@ -448,6 +562,18 @@
             {
               "file": "backend/app/autonomy_gate.py",
               "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_campaign_chain_context",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_chain_priority.py",
+              "line": 46,
               "kind": "function",
               "language": "python"
             }
@@ -675,7 +801,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 136,
+              "line": 137,
               "kind": "function",
               "language": "python"
             }
@@ -707,13 +833,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 33
+      "dependency_count": 34
     },
     "scope_checker": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 136,
-        "end": 256
+        "start": 137,
+        "end": 257
       },
       "symbol_dependencies": [
         {
@@ -745,7 +871,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 377,
+              "line": 380,
               "kind": "function",
               "language": "python"
             }
@@ -757,7 +883,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 101,
+              "line": 102,
               "kind": "function",
               "language": "python"
             }
@@ -769,7 +895,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 229,
+              "line": 232,
               "kind": "function",
               "language": "python"
             }
@@ -818,6 +944,18 @@
             {
               "file": "backend/app/autonomy_gate.py",
               "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_campaign_chain_context",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_chain_priority.py",
+              "line": 46,
               "kind": "function",
               "language": "python"
             }
@@ -1010,18 +1148,6 @@
             {
               "file": "backend/app/swarm_coordinator.py",
               "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 182,
               "kind": "function",
               "language": "python"
             }
@@ -1130,8 +1256,8 @@
     "_validation_saturated_cluster_ids": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 229,
-        "end": 266
+        "start": 232,
+        "end": 269
       },
       "symbol_dependencies": [
         {
@@ -1236,8 +1362,8 @@
     "_pending_findings": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 269,
-        "end": 312
+        "start": 272,
+        "end": 315
       },
       "symbol_dependencies": [
         {
@@ -1269,7 +1395,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 229,
+              "line": 232,
               "kind": "function",
               "language": "python"
             }
@@ -1354,8 +1480,8 @@
     "_enqueue_recon_tasks": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 315,
-        "end": 374
+        "start": 318,
+        "end": 377
       },
       "symbol_dependencies": [
         {
@@ -1399,7 +1525,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 52,
+              "line": 53,
               "kind": "function",
               "language": "python"
             }
@@ -1448,8 +1574,8 @@
     "_scan_engines": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 377,
-        "end": 385
+        "start": 380,
+        "end": 388
       },
       "symbol_dependencies": [
         {
@@ -1470,8 +1596,8 @@
     "_enqueue_action": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 388,
-        "end": 463
+        "start": 391,
+        "end": 466
       },
       "symbol_dependencies": [
         {
@@ -1527,7 +1653,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 52,
+              "line": 53,
               "kind": "function",
               "language": "python"
             }
@@ -1539,7 +1665,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 269,
+              "line": 272,
               "kind": "function",
               "language": "python"
             }
@@ -1551,7 +1677,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 377,
+              "line": 380,
               "kind": "function",
               "language": "python"
             }
@@ -1624,8 +1750,8 @@
     "_decision_explanation": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 466,
-        "end": 510
+        "start": 469,
+        "end": 513
       },
       "symbol_dependencies": [
         {
@@ -1694,8 +1820,8 @@
     "_record_decision": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 513,
-        "end": 553
+        "start": 516,
+        "end": 556
       },
       "symbol_dependencies": [
         {
@@ -1763,7 +1889,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 466,
+              "line": 469,
               "kind": "function",
               "language": "python"
             }
@@ -1775,7 +1901,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 52,
+              "line": 53,
               "kind": "function",
               "language": "python"
             }
@@ -1787,7 +1913,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 47,
+              "line": 48,
               "kind": "function",
               "language": "python"
             }
@@ -1902,8 +2028,8 @@
     "_result": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 556,
-        "end": 620
+        "start": 559,
+        "end": 625
       },
       "symbol_dependencies": [
         {
@@ -1983,7 +2109,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 69,
+              "line": 70,
               "kind": "function",
               "language": "python"
             }
@@ -1995,7 +2121,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 513,
+              "line": 516,
               "kind": "function",
               "language": "python"
             }
@@ -2128,8 +2254,8 @@
     "advance_campaign": {
       "source": {
         "file": "backend/app/orchestrator.py",
-        "start": 623,
-        "end": 863
+        "start": 628,
+        "end": 873
       },
       "symbol_dependencies": [
         {
@@ -2221,7 +2347,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 388,
+              "line": 391,
               "kind": "function",
               "language": "python"
             }
@@ -2233,7 +2359,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 315,
+              "line": 318,
               "kind": "function",
               "language": "python"
             }
@@ -2245,7 +2371,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 125,
+              "line": 126,
               "kind": "function",
               "language": "python"
             }
@@ -2257,7 +2383,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 69,
+              "line": 70,
               "kind": "function",
               "language": "python"
             }
@@ -2269,7 +2395,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 269,
+              "line": 272,
               "kind": "function",
               "language": "python"
             }
@@ -2281,7 +2407,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 556,
+              "line": 559,
               "kind": "function",
               "language": "python"
             }
@@ -2293,7 +2419,7 @@
           "definitions": [
             {
               "file": "backend/app/orchestrator.py",
-              "line": 73,
+              "line": 74,
               "kind": "function",
               "language": "python"
             }
@@ -2409,6 +2535,18 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "prioritize_with_chain_context",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_chain_priority.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "queue",
           "definitions": [
             {
@@ -2475,44 +2613,129 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 28
+      "dependency_count": 29
     },
-    "prioritize_action_with_intelligence": {
+    "test_chain_requires_multiple_observed_categories": {
       "source": {
-        "file": "backend/app/planner_intelligence.py",
-        "start": 8,
-        "end": 61
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_intel": {
-      "source": {
-        "file": "backend/tests/test_planner_intelligence.py",
+        "file": "backend/tests/test_campaign_chain_priority.py",
         "start": 5,
-        "end": 15
+        "end": 10
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_campaign_chain_context",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_chain_priority.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
     },
-    "test_priority_preserves_kind_and_target": {
+    "test_observed_auth_and_api_can_form_advisory_candidate": {
       "source": {
-        "file": "backend/tests/test_planner_intelligence.py",
-        "start": 18,
-        "end": 27
+        "file": "backend/tests/test_campaign_chain_priority.py",
+        "start": 13,
+        "end": 19
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_campaign_chain_context",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_chain_priority.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_chain_priority_never_changes_kind_or_target": {
+      "source": {
+        "file": "backend/tests/test_campaign_chain_priority.py",
+        "start": 22,
+        "end": 32
       },
       "symbol_dependencies": [
         {
@@ -2528,23 +2751,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_intel",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/tests/test_planner_intelligence.py",
-              "line": 5,
+              "file": "frontend/app.js",
+              "line": 14,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "prioritize_action_with_intelligence",
+          "symbol": "prioritize_with_chain_context",
           "definitions": [
             {
-              "file": "backend/app/planner_intelligence.py",
-              "line": 8,
+              "file": "backend/app/campaign_chain_priority.py",
+              "line": 76,
               "kind": "function",
               "language": "python"
             }
@@ -2554,11 +2777,11 @@
       ],
       "dependency_count": 3
     },
-    "test_stop_is_never_reprioritized": {
+    "test_stop_is_immutable": {
       "source": {
-        "file": "backend/tests/test_planner_intelligence.py",
-        "start": 30,
-        "end": 34
+        "file": "backend/tests/test_campaign_chain_priority.py",
+        "start": 35,
+        "end": 42
       },
       "symbol_dependencies": [
         {
@@ -2574,23 +2797,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_intel",
+          "symbol": "prioritize_with_chain_context",
           "definitions": [
             {
-              "file": "backend/tests/test_planner_intelligence.py",
-              "line": 5,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "prioritize_action_with_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/planner_intelligence.py",
-              "line": 8,
+              "file": "backend/app/campaign_chain_priority.py",
+              "line": 76,
               "kind": "function",
               "language": "python"
             }
@@ -2598,53 +2809,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
-    },
-    "test_weak_public_signal_does_not_change_action": {
-      "source": {
-        "file": "backend/tests/test_planner_intelligence.py",
-        "start": 37,
-        "end": 41
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_intel",
-          "definitions": [
-            {
-              "file": "backend/tests/test_planner_intelligence.py",
-              "line": 5,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "prioritize_action_with_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/planner_intelligence.py",
-              "line": 8,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
+      "dependency_count": 2
     }
   }
 }
