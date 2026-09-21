@@ -202,8 +202,6 @@ def test_live_readiness_blocks_when_recon_is_disabled(monkeypatch):
     assert result["live_scan_ready"] is False
     assert "recon_disabled" in result["recon_block_reasons"]
 
-
-
 def test_live_readiness_blocks_when_scanner_heartbeat_is_stale(monkeypatch):
     _clear(monkeypatch)
     _credentials_ok(monkeypatch)
