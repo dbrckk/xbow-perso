@@ -43,6 +43,7 @@ def test_review_draft_prefills_only_deterministic_fields():
     assert draft["prefill"]["primary_url"] == "https://app.example.com"
     assert draft["prefill"]["authorization_reference"] == "https://hackerone.com/alpha"
     assert draft["prefill"]["policy_version"] == "snapshot:" + ("a" * 16)
+    assert draft["policy_text"] == "Policy text"
     assert "safe_harbor_confirmed" in draft["manual_required"]
     assert "automated_scanning" in draft["manual_required"]
     assert draft["automatic_confirmation"] is False

@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=61' in index
-    assert '/app.css?v=61' in index
-    assert "xbow-perso-v61" in sw
+    assert '/simple.js?v=62' in index
+    assert '/app.css?v=62' in index
+    assert "xbow-perso-v62" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,9 +52,23 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=61" defer></script>' in index
+    assert '<script src="/simple.js?v=62" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
     sw = _text("frontend/sw.js")
     assert "new URL(item,self.location.origin).pathname===url.pathname" in sw
+
+
+
+def test_simple_dashboard_exposes_first_run_review_flow():
+    script = _text("frontend/simple.js")
+    html = _text("frontend/index.html")
+    assert 'id="reviewPanel"' in html
+    assert 'id="reviewList"' in html
+    assert 'id="saveReviews"' in html
+    assert "loadReviewDrafts" in script
+    assert "saveReviews" in script
+    assert "/review-draft" in script
+    assert "/rules-preview" in script
+    assert "review_profile_persisted" in script

@@ -7,8 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>xbow-perso</title>
   <link rel="manifest" href="/manifest.webmanifest" />
-  <link rel="stylesheet" href="/app.css?v=61" />
-  <script src="/simple.js?v=61" defer></script>
+  <link rel="stylesheet" href="/app.css?v=62" />
+  <script src="/simple.js?v=62" defer></script>
 </head>
 <body>
 <main class="app-shell simple-shell">
@@ -41,6 +41,15 @@
         <option value="parallel">Toutes à la fois</option>
         <option value="sequential">Une après l’autre</option>
       </select>
+    </div>
+
+    <div id="reviewPanel" class="simple-review hidden" aria-live="polite">
+      <div class="simple-review-head">
+        <strong>Première validation uniquement</strong>
+        <p class="muted compact">Les programmes non encore READY doivent être relus une fois. Après validation, ils pourront être relancés directement tant que leur scope HackerOne ne change pas.</p>
+      </div>
+      <div id="reviewList"></div>
+      <button id="saveReviews" type="button" class="secondary">Valider les programmes cochés</button>
     </div>
 
     <button id="start" type="button" disabled>Commencer</button>

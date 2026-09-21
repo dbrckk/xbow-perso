@@ -7,6 +7,7 @@ def _program(handle, *, effort, efficiency, award):
         "name": handle.upper(),
         "status": "READY",
         "offers_bounties": True,
+        "gold_standard_safe_harbor": True,
         "effort_factor": effort,
         "value_efficiency_score": efficiency,
         "opportunity_score": efficiency,
@@ -36,13 +37,27 @@ def test_simple_six_is_disjoint_and_complete():
     assert len(result["groups"]["high_value"]) == 2
 
 
-def test_simple_six_never_selects_unreviewed_or_non_bounty_programs():
+def test_simple_six_can_propose_safe_harbor_review_candidates_but_not_launch_them():
     programs = [
         _program("ready", effort=1, efficiency=90, award=1000),
-        {**_program("review", effort=0.1, efficiency=100, award=999999), "status": "REVIEW"},
+        {
+            **_program("review", effort=0.1, efficiency=100, award=999999),
+            "status": "REVIEW",
+            "gold_standard_safe_harbor": True,
+        },
+        {
+            **_program("unsafe-review", effort=0.1, efficiency=100, award=999999),
+            "status": "REVIEW",
+            "gold_standard_safe_harbor": False,
+        },
         {**_program("free", effort=0.1, efficiency=100, award=999999), "offers_bounties": False},
     ]
     result = select_simple_six(programs)
 
-    assert result["handles"] == ["ready"]
+    assert "ready" in result["handles"]
+    assert "review" in result["handles"]
+    assert "unsafe-review" not in result["handles"]
+    assert "free" not in result["handles"]
+    assert result["review_count"] == 1
+    assert result["launch_ready"] is False
     assert result["complete"] is False

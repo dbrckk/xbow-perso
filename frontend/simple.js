@@ -2,6 +2,8 @@
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   let selection=[];
+  let selectionResult=null;
+  let reviewDrafts=[];
   let timer=null;
 
   const $=id=>document.getElementById(id);
@@ -57,6 +59,10 @@
     return amount>0?' · historique max $'+amount.toLocaleString():'';
   }
 
+  function stateLabel(item){
+    return String(item?.status||'')==='READY'?'prêt':'revue initiale';
+  }
+
   function renderSelection(result){
     const groups=result?.groups||{};
     const root=$('selection');
@@ -75,13 +81,102 @@
       for(const item of items){
         const row=document.createElement('div');
         row.className='simple-program';
-        row.textContent=String(item?.name||item?.handle||'Programme')+
+        const text=document.createElement('span');
+        text.textContent=String(item?.name||item?.handle||'Programme')+
           ' · '+String(item?.handle||'')+
           (showValue?money(item?.historical_usd_awarded_max):'');
+        const state=document.createElement('span');
+        state.className=String(item?.status||'')==='READY'?'state-ready':'state-review';
+        state.textContent=' · '+stateLabel(item);
+        row.append(text,state);
         section.appendChild(row);
       }
       root.appendChild(section);
     }
+  }
+
+  function clearReviewPanel(){
+    reviewDrafts=[];
+    const panel=$('reviewPanel');
+    const list=$('reviewList');
+    if(list)list.replaceChildren();
+    panel?.classList.add('hidden');
+  }
+
+  function reviewableDraft(draft){
+    return Boolean(
+      draft?.prefill?.primary_url
+      && draft?.evidence?.scope_complete===true
+      && draft?.evidence?.offers_bounties===true
+      && draft?.evidence?.submission_state!=='closed'
+      && draft?.evidence?.program_state!=='closed'
+    );
+  }
+
+  function renderReviewDrafts(){
+    const panel=$('reviewPanel');
+    const list=$('reviewList');
+    list.replaceChildren();
+
+    for(const draft of reviewDrafts){
+      const details=document.createElement('details');
+      details.className='simple-review-item';
+
+      const summary=document.createElement('summary');
+      summary.textContent=String(draft?.prefill?.name||draft?.handle||'Programme')+
+        ' · '+String(draft?.handle||'');
+      details.appendChild(summary);
+
+      const body=document.createElement('div');
+      body.className='simple-review-body';
+
+      const meta=document.createElement('p');
+      meta.className='muted compact';
+      meta.textContent='Cible proposée : '+String(draft?.prefill?.primary_url||'aucune cible compatible')+
+        ' · safe harbor H1 : '+(draft?.evidence?.gold_standard_safe_harbor===true?'oui':'à vérifier')+
+        ' · scope complet : '+(draft?.evidence?.scope_complete===true?'oui':'non');
+      body.appendChild(meta);
+
+      const policy=document.createElement('div');
+      policy.className='simple-review-policy';
+      policy.textContent=String(draft?.policy_text||'Aucun texte de politique fourni par HackerOne.');
+      body.appendChild(policy);
+
+      const label=document.createElement('label');
+      label.className='simple-review-confirm';
+      const check=document.createElement('input');
+      check.type='checkbox';
+      check.dataset.handle=String(draft?.handle||'');
+      check.disabled=!reviewableDraft(draft);
+      const copy=document.createElement('span');
+      copy.textContent=reviewableDraft(draft)
+        ?'J’ai relu cette politique et son scope. Je confirme le safe harbor, l’autorisation du scan automatisé, l’absence de compte de test obligatoire et l’absence de restriction incompatible avec un profil conservateur à 1 requête/s.'
+        :'Ce programme ne peut pas être validé automatiquement depuis cette vue : cible ou scope incompatible/incomplet.';
+      label.append(check,copy);
+      body.appendChild(label);
+
+      details.appendChild(body);
+      list.appendChild(details);
+    }
+
+    panel.classList.remove('hidden');
+  }
+
+  async function loadReviewDrafts(result){
+    const candidates=(result?.selection||[])
+      .filter(item=>String(item?.status||'')==='REVIEW')
+      .map(item=>String(item?.handle||''))
+      .filter(Boolean);
+    if(!candidates.length){
+      clearReviewPanel();
+      return;
+    }
+
+    setStatus('Première utilisation : chargement des politiques à valider…');
+    reviewDrafts=await Promise.all(
+      candidates.map(handle=>api('/imports/hackerone/programs/'+encodeURIComponent(handle)+'/review-draft'))
+    );
+    renderReviewDrafts();
   }
 
   async function prepare(){
@@ -89,22 +184,95 @@
     const button=$('prepare');
     button.disabled=true;
     $('start').disabled=true;
-    setStatus('Sélection automatique de 6 programmes READY déjà revus…');
+    clearReviewPanel();
+    setStatus('Sélection automatique : 2 faciles + 2 moyens + 2 fort potentiel…');
     try{
       const result=await api('/hackerone/simple-selection');
+      selectionResult=result;
       selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
       renderSelection(result);
       if(result?.complete!==true||selection.length!==6){
         throw new Error(
-          '6 programmes READY déjà revus sont nécessaires. Disponibles : '+selection.length+'.'
+          'Pas assez de programmes bounty compatibles pour constituer les 6 campagnes. Disponibles : '+selection.length+'.'
         );
       }
+      const reviewCount=Number(result?.review_count||0);
+      if(reviewCount>0){
+        await loadReviewDrafts(result);
+        $('start').disabled=true;
+        setStatus(
+          reviewCount+' programme(s) doivent être validés une seule fois. Ouvre chaque politique, coche la confirmation puis valide.',
+          'warn'
+        );
+        return;
+      }
       $('start').disabled=false;
-      setStatus('Sélection prête : 2 faciles + 2 moyens + 2 fort potentiel.','ok');
+      setStatus('Sélection prête : les 6 programmes sont READY.','ok');
     }catch(error){
       selection=[];
+      selectionResult=null;
       $('selection').textContent='Aucune sélection exploitable.';
+      clearReviewPanel();
       setStatus('Sélection impossible : '+error.message,'err');
+    }finally{
+      button.disabled=false;
+    }
+  }
+
+  async function saveReviews(){
+    if(!requireToken())return;
+    if(!reviewDrafts.length){
+      setStatus('Aucune revue initiale à enregistrer.','err');
+      return;
+    }
+    const checks=[...document.querySelectorAll('#reviewList input[type="checkbox"]')];
+    const required=checks.filter(item=>!item.disabled);
+    if(required.length!==reviewDrafts.length||required.some(item=>!item.checked)){
+      setStatus('Lis puis confirme chaque programme avant de valider.','err');
+      return;
+    }
+
+    const button=$('saveReviews');
+    button.disabled=true;
+    setStatus('Enregistrement des profils revus…');
+    try{
+      for(const draft of reviewDrafts){
+        const prefill=draft?.prefill||{};
+        const payload={
+          document:prefill.scope_document,
+          policy:{
+            authorization_reference:String(prefill.authorization_reference||''),
+            policy_version:String(prefill.policy_version||''),
+            reviewed_at:new Date().toISOString(),
+            reviewed_by:'simple-dashboard-operator',
+            safe_harbor_confirmed:true,
+            automated_scanning:true,
+            max_requests_per_second:1,
+            test_account_required:false,
+            test_account_constraints:'',
+            additional_restrictions:[],
+            program_notes:'Revue humaine confirmée depuis le dashboard minimal. Profil conservateur à 1 requête/s.'
+          },
+          remote_handle:String(draft?.handle||''),
+          remote_snapshot_sha256:String(draft?.snapshot_sha256||''),
+          remember_review_profile:true,
+          preferred_primary_url:String(prefill.primary_url||'')
+        };
+        const result=await api('/imports/hackerone/rules-preview',{
+          method:'POST',
+          body:JSON.stringify(payload)
+        });
+        if(result?.review_profile_persisted!==true){
+          throw new Error(
+            String(draft?.handle||'programme')+' : '+
+            String(result?.review_profile_persist_reason||'profil non enregistré')
+          );
+        }
+      }
+      setStatus('Profils enregistrés. Revalidation de la sélection…','ok');
+      await prepare();
+    }catch(error){
+      setStatus('Validation interrompue : '+error.message,'err');
     }finally{
       button.disabled=false;
     }
@@ -114,6 +282,10 @@
     if(!requireToken())return;
     if(selection.length!==6){
       setStatus('Sélectionne d’abord les 6 campagnes.','err');
+      return;
+    }
+    if(Number(selectionResult?.review_count||0)>0){
+      setStatus('Valide d’abord les programmes indiqués « revue initiale ».','err');
       return;
     }
     const button=$('start');
@@ -234,6 +406,7 @@
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     $('token').addEventListener('input',saveToken);
     $('prepare').addEventListener('click',()=>void prepare());
+    $('saveReviews').addEventListener('click',()=>void saveReviews());
     $('start').addEventListener('click',()=>void start());
     $('refresh').addEventListener('click',()=>void refreshJournal());
     window.addEventListener('unhandledrejection',event=>{
