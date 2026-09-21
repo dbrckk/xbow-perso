@@ -136,6 +136,7 @@ backend/
     operational_slo.py
     orchestrator.py
     outbox_recovery.py
+    passive_api_intelligence.py
     passive_response_context.py
     passive_response_intelligence.py
     pentagi_action_gateway.py
@@ -318,6 +319,7 @@ backend/
     test_orchestrator.py
     test_outbox_chaos.py
     test_overview_reasoning.py
+    test_passive_api_intelligence.py
     test_passive_high_value_ranking.py
     test_passive_response_context.py
     test_passive_response_intelligence.py
@@ -6347,6 +6349,34 @@ completion_type = intent.get("completion_type")
 ⋮----
 event: dict[str, Any] = {
 kind = intent.get("kind")
+````
+
+## File: backend/app/passive_api_intelligence.py
+````python
+_GRAPHQL_OPERATION_RE = re.compile(
+_GRAPHQL_FIELD_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*(?:\([^{}]*\))?\s*\{")
+_OPENAPI_PATH_RE = re.compile(r"^/(?:[^\s{}]+)$")
+⋮----
+"""Extract API/GraphQL structure from text already collected in scope.
+
+    No network activity is performed and no request payload is generated.
+    """
+text = str(body or "")[:max_body_chars]
+operations = [
+graphql_fields = sorted(set(_GRAPHQL_FIELD_RE.findall(text)))[:200]
+⋮----
+openapi_paths: list[str] = []
+openapi_methods: dict[str, list[str]] = {}
+⋮----
+parsed = json.loads(text)
+⋮----
+parsed = None
+⋮----
+paths = parsed.get("paths")
+⋮----
+path = str(raw_path)
+⋮----
+methods = sorted({
 ````
 
 ## File: backend/app/passive_response_context.py
@@ -14753,6 +14783,22 @@ result = campaign_overview(campaign.id)
 def test_overview_chain_becomes_complete_after_independent_evidence(tmp_path, monkeypatch)
 ⋮----
 def test_overview_counts_duplicate_candidate_groups(tmp_path, monkeypatch)
+````
+
+## File: backend/tests/test_passive_api_intelligence.py
+````python
+def test_extracts_graphql_operation_names_without_generating_requests()
+⋮----
+result = analyze_api_schema_text(
+⋮----
+def test_extracts_openapi_paths_and_methods_from_existing_document()
+⋮----
+body = json.dumps({
+result = analyze_api_schema_text(body, content_type="application/json")
+⋮----
+def test_invalid_json_remains_fail_closed()
+⋮----
+result = analyze_api_schema_text("{not-json")
 ````
 
 ## File: backend/tests/test_passive_high_value_ranking.py

@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T08:17:53Z
+Generated: 2026-09-21T08:24:41Z
 
 ### Git
 - Branch: `main`
-- Head: `1ec3d8754853`
-- Commit date: 2026-09-21T10:17:42+02:00
-- Commit: feat: use passive response hints in high-value ranking
-- Tracked files: 534
+- Head: `7944a2119241`
+- Commit date: 2026-09-21T10:24:30+02:00
+- Commit: feat: add passive API and GraphQL schema intelligence
+- Tracked files: 536
 
 ### Recently changed files
+- `backend/app/passive_api_intelligence.py`
+- `backend/tests/test_passive_api_intelligence.py`
 - `backend/app/high_value_intelligence.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_passive_high_value_ranking.py`
@@ -42,8 +44,6 @@ Generated: 2026-09-21T08:17:53Z
 - `backend/app/hackerone_intelligence.py`
 - `backend/app/runtime_gap_analysis.py`
 - `backend/tests/test_runtime_gap_analysis.py`
-- `backend/app/campaign_chain_priority.py`
-- `backend/tests/test_campaign_chain_priority.py`
 
 ### Project signals
 - `pyproject.toml`
