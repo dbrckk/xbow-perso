@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
+from .auth import AuthError, configured_api_token
 from .deployment_preflight import build_deployment_preflight
 from .hackerone_client import HackerOneClientError, load_hackerone_credentials
 from .runtime_capabilities import (
@@ -47,6 +48,12 @@ def build_hackerone_live_readiness(
         credentials_configured = True
     except HackerOneClientError:
         credentials_configured = False
+
+    try:
+        configured_api_token()
+        api_token_configured = True
+    except AuthError:
+        api_token_configured = False
 
     submission_enabled, submission_valid = _strict_bool(
         "XBOW_ENABLE_HACKERONE_SUBMISSION",
@@ -166,8 +173,8 @@ def build_hackerone_live_readiness(
             "id": "api_token",
             "label": "Token API xbow configuré",
             "required": True,
-            "ok": _configured("XBOW_API_TOKEN"),
-            "action": "Configurer XBOW_API_TOKEN avec un secret long côté serveur.",
+            "ok": api_token_configured,
+            "action": "Configurer le token API xbow via le vault, un fichier ou XBOW_API_TOKEN.",
         },
         {
             "id": "report_sync",
@@ -220,7 +227,7 @@ def build_hackerone_live_readiness(
             "id": "configure_access",
             "title": "Configurer l'accès local xbow",
             "when": "setup",
-            "done": _configured("XBOW_API_TOKEN"),
+            "done": api_token_configured,
             "instruction": (
                 "Configurer XBOW_API_TOKEN côté serveur, démarrer xbow-perso, "
                 "puis ouvrir l'interface graphique sur le port 8080 ou son origine HTTPS."
