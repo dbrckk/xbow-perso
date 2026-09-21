@@ -1538,17 +1538,33 @@
         return {
           version:1,
           auto_resume:parsed.auto_resume!==false,
-          auto_preview:parsed.auto_preview!==false
+          auto_preview:parsed.auto_preview!==false,
+          batch_auto_limit:[3,5,10,20].includes(Number(parsed.batch_auto_limit))
+            ?Number(parsed.batch_auto_limit):5,
+          batch_auto_min_score:[0,25,50,75].includes(Number(parsed.batch_auto_min_score))
+            ?Number(parsed.batch_auto_min_score):50,
+          batch_mode:['sequential','parallel'].includes(String(parsed.batch_mode))
+            ?String(parsed.batch_mode):'sequential'
         };
       }
     }catch(_error){}
-    return {version:1,auto_resume:true,auto_preview:true};
+    return {
+      version:1,
+      auto_resume:true,
+      auto_preview:true,
+      batch_auto_limit:5,
+      batch_auto_min_score:50,
+      batch_mode:'sequential'
+    };
   }
 
   function applyQuickPrefs(){
     const prefs=loadQuickPrefs();
     if(el('h1QuickAutoResume'))el('h1QuickAutoResume').checked=prefs.auto_resume;
     if(el('h1QuickAutoPreview'))el('h1QuickAutoPreview').checked=prefs.auto_preview;
+    if(el('h1BatchAutoLimit'))el('h1BatchAutoLimit').value=String(prefs.batch_auto_limit);
+    if(el('h1BatchAutoMinScore'))el('h1BatchAutoMinScore').value=String(prefs.batch_auto_min_score);
+    if(el('h1BatchMode'))el('h1BatchMode').value=prefs.batch_mode;
     return prefs;
   }
 
@@ -1556,7 +1572,10 @@
     const prefs={
       version:1,
       auto_resume:Boolean(el('h1QuickAutoResume')?.checked),
-      auto_preview:Boolean(el('h1QuickAutoPreview')?.checked)
+      auto_preview:Boolean(el('h1QuickAutoPreview')?.checked),
+      batch_auto_limit:Number(el('h1BatchAutoLimit')?.value||5),
+      batch_auto_min_score:Number(el('h1BatchAutoMinScore')?.value||50),
+      batch_mode:String(el('h1BatchMode')?.value||'sequential')
     };
     try{localStorage.setItem(QUICK_PREFS_STORAGE_KEY,JSON.stringify(prefs));}catch(_error){}
     return prefs;
@@ -1940,6 +1959,19 @@
     el('h1BatchSummary').textContent=candidates.length
       ?candidates.length+' programme(s) READY sélectionné(s) automatiquement · validation serveur requise au lancement'
       :'Aucun programme READY ne correspond aux critères Auto-select.';
+  }
+
+  async function autoQueueBatch(){
+    const button=el('h1BatchAutoQueue');
+    if(button)button.disabled=true;
+    try{
+      saveQuickPrefs();
+      autoSelectBatchProfiles();
+      if(!batchSelectedHandles.size)return;
+      await launchSelectedBatch();
+    }finally{
+      if(button)button.disabled=false;
+    }
   }
 
   async function batchPayloadForHandle(handle){
@@ -2696,7 +2728,11 @@
   el('h1BatchSort').addEventListener('change',renderBatchCatalog);
   el('h1BatchRefresh').addEventListener('click',()=>void refreshBatchCatalog());
   el('h1BatchSelectReady').addEventListener('click',selectReadyBatchProfiles);
-  el('h1BatchAutoSelect').addEventListener('click',autoSelectBatchProfiles);
+  el('h1BatchAutoSelect').addEventListener('click',()=>{saveQuickPrefs();autoSelectBatchProfiles();});
+  el('h1BatchAutoQueue').addEventListener('click',()=>void autoQueueBatch());
+  el('h1BatchAutoLimit').addEventListener('change',saveQuickPrefs);
+  el('h1BatchAutoMinScore').addEventListener('change',saveQuickPrefs);
+  el('h1BatchMode').addEventListener('change',saveQuickPrefs);
   el('h1BatchLaunch').addEventListener('click',()=>void launchSelectedBatch());
   el('h1BatchCancel').addEventListener('click',()=>void cancelActiveBatch());
   el('h1QuickAutoResume').addEventListener('change',saveQuickPrefs);
