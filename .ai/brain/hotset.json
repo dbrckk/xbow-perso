@@ -11,7 +11,7 @@
         "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 8585
+      "score": 8720
     },
     {
       "path": "backend/app/observation_graph.py",
@@ -19,7 +19,7 @@
         "dependency-neighbor",
         "reverse-dependency-neighbor"
       ],
-      "score": 3455
+      "score": 3530
     },
     {
       "path": "frontend/app.js",
@@ -27,14 +27,27 @@
         "dependency-neighbor",
         "reverse-dependency-neighbor"
       ],
-      "score": 2535
+      "score": 2910
     },
     {
       "path": "backend/app/storage.py",
       "reasons": [
-        "dependency-neighbor"
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
       ],
-      "score": 1475
+      "score": 1905
+    },
+    {
+      "path": "backend/app/hackerone_api.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 1275
     },
     {
       "path": "backend/app/worker_service.py",
@@ -46,10 +59,10 @@
         "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 1130
+      "score": 1250
     },
     {
-      "path": "backend/app/orchestrator.py",
+      "path": "backend/app/hackerone_client.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -58,7 +71,49 @@
         "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 1040
+      "score": 1110
+    },
+    {
+      "path": "backend/app/storage_core.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 970
+    },
+    {
+      "path": "backend/app/orchestrator.py",
+      "reasons": [
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 820
+    },
+    {
+      "path": "backend/app/jobqueue.py",
+      "reasons": [
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
+      ],
+      "score": 805
+    },
+    {
+      "path": "backend/app/storage_backend.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 760
     },
     {
       "path": "backend/app/pentagi_adapter.py",
@@ -78,40 +133,17 @@
         "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 675
+      "score": 705
     },
     {
-      "path": "backend/app/hackerone_api.py",
+      "path": "backend/tests/test_alert_delivery.py",
       "reasons": [
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 675
-    },
-    {
-      "path": "backend/app/jobqueue.py",
-      "reasons": [
-        "dependency-neighbor",
-        "reverse-dependency-neighbor"
-      ],
-      "score": 655
-    },
-    {
-      "path": "backend/tests/test_browser.py",
-      "reasons": [
-        "changed",
-        "changed-source",
-        "impact",
-        "reverse-dependency-neighbor",
-        "selected-test",
-        "symbol-indexed"
+        "dependency-neighbor"
       ],
       "score": 650
     },
     {
-      "path": "backend/app/browser.py",
+      "path": "backend/app/postgres_storage.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -120,19 +152,7 @@
         "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 625
-    },
-    {
-      "path": "backend/tests/test_recon_worker.py",
-      "reasons": [
-        "changed",
-        "changed-source",
-        "impact",
-        "reverse-dependency-neighbor",
-        "selected-test",
-        "symbol-indexed"
-      ],
-      "score": 615
+      "score": 620
     },
     {
       "path": "backend/app/red_team_decision.py",
@@ -145,18 +165,6 @@
       "score": 600
     },
     {
-      "path": "backend/app/recon_worker.py",
-      "reasons": [
-        "changed",
-        "changed-source",
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 580
-    },
-    {
       "path": "backend/app/pentagi_execution_guard.py",
       "reasons": [
         "dependency-neighbor",
@@ -165,6 +173,18 @@
         "symbol-indexed"
       ],
       "score": 565
+    },
+    {
+      "path": "backend/app/hackerone_intelligence.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 550
     },
     {
       "path": "backend/app/pentagi_admission.py",
@@ -177,6 +197,18 @@
       "score": 535
     },
     {
+      "path": "backend/app/production_migration.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 520
+    },
+    {
       "path": "backend/app/campaign_risk.py",
       "reasons": [
         "dependency-neighbor",
@@ -187,27 +219,24 @@
       "score": 515
     },
     {
-      "path": "backend/app/runtime_capabilities.py",
+      "path": "backend/app/browser.py",
       "reasons": [
-        "changed",
-        "changed-source",
         "dependency-neighbor",
         "impact",
+        "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 515
+      "score": 495
     },
     {
-      "path": "backend/tests/test_runtime_capabilities.py",
+      "path": "backend/app/pentagi_worker_service.py",
       "reasons": [
-        "changed",
-        "changed-source",
+        "dependency-neighbor",
         "impact",
         "reverse-dependency-neighbor",
-        "selected-test",
         "symbol-indexed"
       ],
-      "score": 510
+      "score": 495
     },
     {
       "path": "backend/app/worker.py",
@@ -250,30 +279,6 @@
       "score": 485
     },
     {
-      "path": "backend/app/high_value_intelligence.py",
-      "reasons": [
-        "changed",
-        "changed-source",
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 465
-    },
-    {
-      "path": "backend/tests/test_high_value_intelligence.py",
-      "reasons": [
-        "changed",
-        "changed-source",
-        "impact",
-        "reverse-dependency-neighbor",
-        "selected-test",
-        "symbol-indexed"
-      ],
-      "score": 465
-    },
-    {
       "path": "backend/app/adaptive_cycle.py",
       "reasons": [
         "dependency-neighbor",
@@ -284,28 +289,14 @@
       "score": 460
     },
     {
-      "path": "backend/app/identity_access.py",
+      "path": "backend/tests/test_browser.py",
       "reasons": [
-        "changed",
-        "changed-source",
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 455
-    },
-    {
-      "path": "backend/tests/test_identity_access.py",
-      "reasons": [
-        "changed",
-        "changed-source",
         "impact",
         "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 455
+      "score": 460
     },
     {
       "path": "backend/app/evidence_chain.py",
@@ -328,11 +319,13 @@
       "score": 450
     },
     {
-      "path": "backend/app/pentagi_worker_service.py",
+      "path": "backend/tests/test_hackerone_intelligence.py",
       "reasons": [
-        "dependency-neighbor",
+        "changed",
+        "changed-source",
         "impact",
         "reverse-dependency-neighbor",
+        "selected-test",
         "symbol-indexed"
       ],
       "score": 440

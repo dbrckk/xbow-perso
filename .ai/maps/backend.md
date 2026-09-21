@@ -82,6 +82,7 @@ app/
   hackerone_binding.py
   hackerone_catalog.py
   hackerone_client.py
+  hackerone_intelligence.py
   hackerone_live_readiness.py
   hackerone_needs_info.py
   hackerone_report_sync_worker.py
@@ -237,6 +238,7 @@ tests/
   test_hackerone_catalog.py
   test_hackerone_client.py
   test_hackerone_control_center_api.py
+  test_hackerone_intelligence.py
   test_hackerone_launch_api.py
   test_hackerone_live_readiness.py
   test_hackerone_needs_info.py
@@ -2691,6 +2693,10 @@ state = storage().get_hackerone_catalog_state()
 ⋮----
 state = refresh_hackerone_catalog(storage(), client=HackerOneClient())
 ⋮----
+state = store.get_hackerone_intelligence_state()
+⋮----
+state = refresh_hackerone_intelligence(store, client=HackerOneClient())
+⋮----
 @router.get("/api/imports/hackerone/programs/{handle}/snapshot")
 def get_hackerone_program_snapshot(handle: str)
 ⋮----
@@ -3170,11 +3176,12 @@ body = json.dumps(
 ⋮----
 headers = self.credentials.headers()
 ⋮----
-def get_all_pages(self, path: str) -> list[dict[str, Any]]
+base_query = dict(query or {})
 ⋮----
 items: list[dict[str, Any]] = []
 ⋮----
-document = self.get_json(
+page_query = {
+document = self.get_json(path, page_query)
 data = document.get("data")
 ⋮----
 _HANDLE_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_-")
@@ -3221,6 +3228,142 @@ preview = _preview_dict(document)
 ⋮----
 canonical = {
 digest = hashlib.sha256(
+```
+
+## File: app/hackerone_intelligence.py
+```python
+INTELLIGENCE_ID = "current"
+_next_attempt_monotonic = 0.0
+⋮----
+_SEVERITY_WEIGHT = {
+⋮----
+_CATEGORY_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
+⋮----
+_CAPABILITY_MAP: dict[str, dict[str, Any]] = {
+⋮----
+def _utcnow() -> str
+⋮----
+def _bounded_text(value: Any, limit: int) -> str
+⋮----
+text = str(value).replace("\x00", "").strip()
+⋮----
+def _amount(value: Any) -> float
+⋮----
+number = float(value or 0)
+⋮----
+def _bounded_int(value: Any, *, minimum: int = 0, maximum: int = 10_000_000) -> int
+⋮----
+number = int(value or 0)
+⋮----
+def _relationship_attributes(resource: dict[str, Any], name: str) -> dict[str, Any]
+⋮----
+relationships = resource.get("relationships")
+⋮----
+rel = relationships.get(name)
+⋮----
+data = rel.get("data")
+⋮----
+attributes = data.get("attributes")
+⋮----
+def normalize_hacktivity_item(resource: Any) -> dict[str, Any] | None
+⋮----
+attributes = resource.get("attributes")
+⋮----
+report_id = _bounded_text(resource.get("id"), 64)
+⋮----
+severity = _bounded_text(attributes.get("severity_rating"), 32).lower()
+⋮----
+severity = "none"
+⋮----
+program = _relationship_attributes(resource, "program")
+generated = _relationship_attributes(resource, "report_generated_content")
+currency = _bounded_text(program.get("currency"), 12).upper()
+⋮----
+currency = ""
+⋮----
+def classify_report(report: dict[str, Any]) -> str
+⋮----
+haystack = " ".join(
+⋮----
+def _max_pages() -> int
+⋮----
+raw = (os.getenv("XBOW_HACKERONE_INTEL_MAX_PAGES") or "2").strip()
+⋮----
+value = int(raw)
+⋮----
+def intelligence_poll_seconds() -> int
+⋮----
+raw = (os.getenv("XBOW_HACKERONE_INTEL_POLL_SECONDS") or "21600").strip()
+⋮----
+def _enabled() -> bool
+⋮----
+raw = (os.getenv("XBOW_ENABLE_HACKERONE_INTELLIGENCE") or "true").strip().lower()
+⋮----
+api = client or HackerOneClient()
+pages = _max_pages()
+common = {"queryString": "disclosed:true"}
+⋮----
+high_value = api.get_all_pages(
+recent = api.get_all_pages(
+⋮----
+deduped: dict[str, dict[str, Any]] = {}
+⋮----
+item = normalize_hacktivity_item(resource)
+⋮----
+def _category_statistics(reports: list[dict[str, Any]]) -> list[dict[str, Any]]
+⋮----
+stats: dict[str, dict[str, Any]] = {}
+⋮----
+category = classify_report(report)
+item = stats.setdefault(
+⋮----
+severity = str(report.get("severity") or "none")
+⋮----
+amount = float(report.get("award_amount") or 0)
+⋮----
+evidence = (
+⋮----
+def _program_signals(reports: list[dict[str, Any]]) -> dict[str, dict[str, Any]]
+⋮----
+grouped: dict[str, dict[str, Any]] = {}
+categories: dict[str, Counter[str]] = defaultdict(Counter)
+⋮----
+handle = str(report.get("program_handle") or "").strip()
+⋮----
+entry = grouped.setdefault(
+⋮----
+def _capability_gaps(categories: list[dict[str, Any]]) -> list[dict[str, Any]]
+⋮----
+result: list[dict[str, Any]] = []
+⋮----
+name = str(category["category"])
+mapping = dict(_CAPABILITY_MAP.get(name, _CAPABILITY_MAP["other"]))
+⋮----
+def build_hackerone_intelligence(reports: list[dict[str, Any]]) -> dict[str, Any]
+⋮----
+categories = _category_statistics(reports)
+programs = _program_signals(reports)
+⋮----
+high_value_reports = sorted(
+recent_reports = sorted(
+⋮----
+now = _utcnow()
+⋮----
+reports = fetch_disclosed_hacktivity(client=client)
+state = build_hackerone_intelligence(reports)
+⋮----
+record = store.get_hackerone_intelligence_state_record(INTELLIGENCE_ID)
+expected_version = 0 if record is None else record[1]
+⋮----
+latest = store.get_hackerone_intelligence_state(INTELLIGENCE_ID)
+⋮----
+def maybe_refresh_hackerone_intelligence(store) -> dict[str, Any]
+⋮----
+now = time.monotonic()
+⋮----
+_next_attempt_monotonic = now + intelligence_poll_seconds()
+⋮----
+state = refresh_hackerone_intelligence(store)
 ```
 
 ## File: app/hackerone_live_readiness.py
@@ -8134,6 +8277,9 @@ def get_hackerone_catalog_state(self, catalog_id: str = "current"): ...
 def save_hackerone_review_profile(self, document: dict, *, expected_version: int | None = None) -> int: ...
 def get_hackerone_review_profile(self, profile_id: str): ...
 def list_hackerone_review_profiles(self, *, limit: int = 500) -> list[dict]: ...
+def save_hackerone_intelligence_state(self, document: dict, *, expected_version: int | None = None) -> int: ...
+def get_hackerone_intelligence_state_record(self, intelligence_id: str = "current"): ...
+def get_hackerone_intelligence_state(self, intelligence_id: str = "current"): ...
 def put_observation(self, campaign_id: str, observation: dict) -> dict: ...
 def list_observations(self, campaign_id: str) -> list[dict]: ...
 def put_hypothesis_snapshot(self, campaign_id: str, graph_fingerprint: str, hypotheses: list[dict]) -> dict: ...
@@ -8269,6 +8415,14 @@ encoded = json.dumps(
 current = db.execute(
 ⋮----
 row = db.execute(
+⋮----
+required = {"id", "reports", "categories", "program_signals", "checked_at", "updated_at"}
+⋮----
+reports = document.get("reports")
+⋮----
+intelligence_id = _bounded_identifier(
+⋮----
+record = self.get_hackerone_intelligence_state_record(intelligence_id)
 ⋮----
 required = {"id", "programs", "fingerprint", "checked_at", "updated_at"}
 ⋮----
@@ -9489,6 +9643,8 @@ worker_role = (os.getenv("XBOW_WORKER_ROLE") or "").strip().lower()
 coordinator = worker_role in {"", "general"}
 ⋮----
 # Read-only catalog monitoring must never take down execution workers.
+⋮----
+# Public Hacktivity learning is advisory and must never stop workers.
 ⋮----
 # Batch scheduling must fail closed without taking down the worker.
 ⋮----
@@ -11771,6 +11927,47 @@ def test_upstream_auth_error_is_mapped_without_leaking_detail(tmp_path, monkeypa
 class FailingClient
 ⋮----
 def test_upstream_rate_limit_is_service_unavailable(tmp_path, monkeypatch)
+```
+
+## File: tests/test_hackerone_intelligence.py
+```python
+class FakeClient
+⋮----
+def __init__(self, high_value, recent)
+⋮----
+def get_all_pages(self, path, query=None, *, max_pages=100, page_size=100)
+⋮----
+def test_normalize_disclosed_hacktivity_is_redacted_and_bounded()
+⋮----
+raw = _item(
+⋮----
+item = normalize_hacktivity_item(raw)
+⋮----
+def test_undisclosed_hacktivity_is_not_learned()
+⋮----
+def test_fetch_combines_high_value_and_recent_views(monkeypatch)
+⋮----
+shared = _item(
+client = FakeClient(
+⋮----
+reports = fetch_disclosed_hacktivity(client=client)
+⋮----
+def test_intelligence_prioritizes_patterns_and_historical_value()
+⋮----
+reports = [
+reports = [item for item in reports if item is not None]
+⋮----
+state = build_hackerone_intelligence(reports)
+⋮----
+access_gap = next(
+⋮----
+def test_refresh_persists_hacktivity_learning(tmp_path, monkeypatch)
+⋮----
+store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+⋮----
+state = refresh_hackerone_intelligence(store, client=client)
+⋮----
+persisted = store.get_hackerone_intelligence_state()
 ```
 
 ## File: tests/test_hackerone_launch_api.py

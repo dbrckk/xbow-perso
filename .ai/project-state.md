@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T06:16:06Z
+Generated: 2026-09-21T07:00:54Z
 
 ### Git
 - Branch: `main`
-- Head: `53e059b52493`
-- Commit date: 2026-09-21T08:15:53+02:00
-- Commit: feat: high-value bounty recon and public-case intelligence (#282)
-- Tracked files: 519
+- Head: `21b3f073b740`
+- Commit date: 2026-09-21T09:00:42+02:00
+- Commit: Merge pull request #281 from dbrckk/feat/hackerone-hacktivity-learning
+- Tracked files: 521
 
 ### Recently changed files
+- `frontend/hackerone.js`
 - `.env.example`
 - `backend/Dockerfile`
 - `backend/app/browser.py`
@@ -49,9 +50,7 @@ Generated: 2026-09-21T06:16:06Z
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_scanner_runtime_contract.py`
 - `docker-compose.yml`
-- `README.md`
-- `backend/app/hackerone_api.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
+- `backend/app/hackerone_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`

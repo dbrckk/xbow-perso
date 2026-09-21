@@ -1,30 +1,30 @@
 # Change impact
 
-Base: 906fe961e6e1dc3d41f008da586ee54da77fa762
-Head: 53e059b524937bf85cabb459d50917192ef9716e
+Base: bbbd4e32e76e672abfa7491d6f78276d8397eb93
+Head: 21b3f073b74011255c44411ecce7c380e5fb413b
 
 ## Changed files
 - M .env.example
-- M backend/Dockerfile
-- M backend/app/browser.py
-- A backend/app/high_value_intelligence.py
-- A backend/app/identity_access.py
+- M README.md
+- M backend/app/hackerone_api.py
+- M backend/app/hackerone_client.py
+- A backend/app/hackerone_intelligence.py
 - M backend/app/main.py
-- M backend/app/orchestrator.py
-- M backend/app/recon_worker.py
-- M backend/app/runtime_capabilities.py
+- M backend/app/postgres_storage.py
+- M backend/app/production_migration.py
+- M backend/app/storage_backend.py
+- M backend/app/storage_core.py
 - M backend/app/worker_service.py
-- M backend/tests/test_browser.py
-- A backend/tests/test_high_value_intelligence.py
-- A backend/tests/test_identity_access.py
-- M backend/tests/test_recon_worker.py
-- M backend/tests/test_runtime_capabilities.py
-- M backend/tests/test_scanner_runtime_contract.py
+- A backend/tests/test_hackerone_intelligence.py
 - M docker-compose.yml
+- M frontend/app.css
+- M frontend/index.html
+- M frontend/sw.js
 
 ## Affected areas
 - (root)
 - backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
