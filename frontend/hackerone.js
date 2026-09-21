@@ -2220,14 +2220,26 @@
     if(!handles.length)return;
     button.disabled=true;
     try{
+      const mode=String(el('h1BatchMode').value||'sequential');
       el('h1BatchSummary').textContent=
-        'Vérification serveur des fingerprints et profils mémorisés…';
+        'Préflight serveur des programmes, fingerprints et profils mémorisés…';
+      const preflight=await api('/imports/hackerone/batches/preflight-reviewed',{
+        method:'POST',
+        body:JSON.stringify({mode,handles})
+      });
+      if(preflight?.ready!==true){
+        const blocked=(Array.isArray(preflight?.members)?preflight.members:[])
+          .filter(member=>String(member?.status||'')==='blocked')
+          .map(member=>String(member?.handle||'programme')+': '+String(member?.reason||'bloqué'));
+        throw new Error(
+          'Préflight du lot bloqué'+(blocked.length?' · '+blocked.join(' · '):'')
+        );
+      }
+      el('h1BatchSummary').textContent=
+        'Préflight OK · revalidation finale et création du lot…';
       const batch=await api('/imports/hackerone/batches/launch-reviewed',{
         method:'POST',
-        body:JSON.stringify({
-          mode:String(el('h1BatchMode').value||'sequential'),
-          handles
-        })
+        body:JSON.stringify({mode,handles})
       });
       renderBatchStatus(batch);
       startBatchMonitor(batch.id);
