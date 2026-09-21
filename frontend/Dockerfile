@@ -2,8 +2,7 @@ FROM nginxinc/nginx-unprivileged:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY index.html /usr/share/nginx/html/index.html
 COPY app.css /usr/share/nginx/html/app.css
-COPY app.js /usr/share/nginx/html/app.js
-COPY hackerone.js /usr/share/nginx/html/hackerone.js
+COPY simple.js /usr/share/nginx/html/simple.js
 COPY manifest.webmanifest /usr/share/nginx/html/manifest.webmanifest
 COPY sw.js /usr/share/nginx/html/sw.js
 EXPOSE 8080
