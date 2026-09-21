@@ -19,6 +19,7 @@ from .hackerone_client import (
 from .hackerone_catalog import refresh_hackerone_catalog
 from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_intelligence import refresh_hackerone_intelligence
+from .local_outcome_intelligence import build_local_outcome_signals
 from .hackerone_discovery import build_program_discovery
 from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_review_draft import build_hackerone_review_draft
@@ -372,6 +373,9 @@ def hackerone_program_discovery(
         verified[handle] = snapshot.snapshot_sha256
 
     runtime = dict(intelligence.get("runtime_capability_snapshot") or {})
+    local_outcomes = build_local_outcome_signals(
+        store.list_campaigns(limit=1000)
+    )
     result = build_program_discovery(
         programs=list(catalog.get("programs") or []),
         review_profiles=profiles,
@@ -379,6 +383,7 @@ def hackerone_program_discovery(
         verified_snapshots=verified,
         runtime=runtime,
         catalog_changes=dict(catalog.get("changes") or {}),
+        local_outcomes=local_outcomes,
     )
     return {
         "provider": "hackerone",
