@@ -114,3 +114,66 @@ def test_portfolio_diversifies_primary_focus():
 
     assert [item["handle"] for item in result] == ["api-a", "access"]
     assert result[1]["portfolio_concentration_penalty"] == 0
+
+
+
+def test_portfolio_reserves_bounded_exploration_slot_for_fresh_ready_program():
+    programs = [
+        {
+            "handle": "stable-a",
+            "status": "READY",
+            "offers_bounties": True,
+            "value_efficiency_score": 95,
+            "opportunity_score": 95,
+            "research_focus": ["api_graphql"],
+            "reasons": [],
+            "opportunity_reasons": [],
+        },
+        {
+            "handle": "stable-b",
+            "status": "READY",
+            "offers_bounties": True,
+            "value_efficiency_score": 93,
+            "opportunity_score": 94,
+            "research_focus": ["access_control"],
+            "reasons": [],
+            "opportunity_reasons": [],
+        },
+        {
+            "handle": "stable-c",
+            "status": "READY",
+            "offers_bounties": True,
+            "value_efficiency_score": 92,
+            "opportunity_score": 93,
+            "research_focus": ["auth_session"],
+            "reasons": [],
+            "opportunity_reasons": [],
+        },
+        {
+            "handle": "stable-d",
+            "status": "READY",
+            "offers_bounties": True,
+            "value_efficiency_score": 91,
+            "opportunity_score": 92,
+            "research_focus": ["ssrf_oob"],
+            "reasons": [],
+            "opportunity_reasons": [],
+        },
+        {
+            "handle": "fresh",
+            "status": "READY",
+            "offers_bounties": True,
+            "value_efficiency_score": 80,
+            "opportunity_score": 90,
+            "research_focus": ["information_disclosure"],
+            "reasons": ["new_program"],
+            "opportunity_reasons": ["new_program"],
+        },
+    ]
+
+    result = select_diversified_portfolio(programs, limit=4, min_score=50)
+
+    assert len(result) == 4
+    assert "fresh" in [item["handle"] for item in result]
+    fresh = next(item for item in result if item["handle"] == "fresh")
+    assert fresh["portfolio_exploration_slot"] is True
