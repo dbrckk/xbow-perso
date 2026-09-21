@@ -15,6 +15,40 @@ _TASK_SIGNALS: dict[str, tuple[str, ...]] = {
 }
 
 
+_HIGH_VALUE_TASKS: dict[str, tuple[str, ...]] = {
+    "alternate-representation-access-control": ("map_endpoints", "browser_observe"),
+    "graphql-authorization": ("map_endpoints", "browser_observe"),
+    "graphql-data-segregation": ("map_endpoints", "browser_observe"),
+    "authentication-state-machine": ("browser_observe", "map_forms"),
+    "transaction-reconciliation-invariants": ("browser_observe", "map_forms"),
+    "server-side-fetch-boundaries": ("map_forms", "map_endpoints"),
+}
+
+
+def _high_value_task_boost(
+    task_kind: str,
+    high_value_intelligence: dict[str, Any] | None,
+) -> tuple[int, tuple[str, ...]]:
+    if not high_value_intelligence:
+        return 0, ()
+    matched: list[tuple[str, int]] = []
+    for raw in list(high_value_intelligence.get("focuses") or [])[:20]:
+        family = str(raw.get("family") or "")
+        if task_kind not in _HIGH_VALUE_TASKS.get(family, ()):
+            continue
+        try:
+            score = int(raw.get("score") or 0)
+        except (TypeError, ValueError):
+            score = 0
+        if score >= 50:
+            matched.append((family, score))
+    if not matched:
+        return 0, ()
+    matched.sort(key=lambda item: (-item[1], item[0]))
+    boost = min(10, 3 + 2 * len(matched))
+    return boost, tuple(item[0] for item in matched[:3])
+
+
 @dataclass(frozen=True)
 class ReconPriorityAdjustment:
     kind: str
@@ -25,12 +59,15 @@ class ReconPriorityAdjustment:
     history_boost: int
     temporal_boost: int
     confidence_factor: float
+    high_value_boost: int
+    high_value_families: tuple[str, ...]
     signals: tuple[str, ...]
     historical_signals: tuple[str, ...]
     temporal_signals: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
+        payload["high_value_families"] = list(self.high_value_families)
         payload["signals"] = list(self.signals)
         payload["historical_signals"] = list(self.historical_signals)
         payload["temporal_signals"] = list(self.temporal_signals)
@@ -165,6 +202,7 @@ def prioritize_recon_tasks(
     target_memory: dict[str, Any] | None = None,
     surface_temporal: dict[str, Any] | None = None,
     surface_confidence: dict[str, Any] | None = None,
+    high_value_intelligence: dict[str, Any] | None = None,
 ) -> ReconPriorityResult:
     """Reorder an already-authorized recon plan using historical change signals.
 
@@ -202,8 +240,19 @@ def prioritize_recon_tasks(
             if confidence_values
             else 1.0
         )
-        raw_boost = min(20, diff_boost + history_boost + temporal_boost)
-        boost = min(20, int(round(raw_boost * confidence_factor)))
+        high_value_boost, high_value_families = _high_value_task_boost(
+            task.kind,
+            high_value_intelligence,
+        )
+        baseline_boost = min(
+            20,
+            diff_boost + history_boost + temporal_boost,
+        )
+        raw_boost = min(
+            25,
+            baseline_boost + high_value_boost,
+        )
+        boost = min(25, int(round(raw_boost * confidence_factor)))
         effective = min(100, int(task.priority) + boost)
         reason = task.reason
         active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
@@ -221,6 +270,8 @@ def prioritize_recon_tasks(
                 details.append(f"history +{history_boost}")
             if temporal_boost:
                 details.append(f"temporal +{temporal_boost}")
+            if high_value_boost:
+                details.append(f"high-value +{high_value_boost}")
             if confidence_factor < 0.999:
                 details.append(f"confidence x{confidence_factor:.2f}")
             reason = (
@@ -256,6 +307,8 @@ def prioritize_recon_tasks(
                 history_boost=history_boost,
                 temporal_boost=temporal_boost,
                 confidence_factor=round(confidence_factor, 4),
+                high_value_boost=high_value_boost,
+                high_value_families=high_value_families,
                 signals=active,
                 historical_signals=historical_active,
                 temporal_signals=temporal_active,

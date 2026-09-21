@@ -447,3 +447,74 @@ def test_missing_confidence_is_neutral_and_never_increases_cap():
 
     assert result.adjustments[0].confidence_factor == 1.0
     assert result.adjustments[0].boost <= 20
+
+
+
+def test_high_value_focus_boosts_matching_existing_task_only():
+    original = [
+        task("map_endpoints", 60),
+        task("detect_technology", 60),
+    ]
+    diff = {
+        "baseline_available": False,
+        "summary": {"change_count": 0, "counts_by_kind": {}},
+    }
+    high_value = {
+        "focuses": [
+            {
+                "family": "graphql-authorization",
+                "score": 80,
+            }
+        ]
+    }
+
+    result = prioritize_recon_tasks(
+        original,
+        diff,
+        None,
+        None,
+        None,
+        high_value,
+    )
+
+    by_kind = {item.kind: item for item in result.tasks}
+    adjustments = {item.kind: item for item in result.adjustments}
+
+    assert by_kind["map_endpoints"].priority > 60
+    assert adjustments["map_endpoints"].high_value_boost > 0
+    assert "graphql-authorization" in adjustments["map_endpoints"].high_value_families
+    assert by_kind["detect_technology"].priority == 60
+    assert adjustments["detect_technology"].high_value_boost == 0
+
+
+def test_high_value_boost_preserves_recon_authority_fields():
+    source = task("browser_observe", 65)
+    diff = {
+        "baseline_available": False,
+        "summary": {"change_count": 0, "counts_by_kind": {}},
+    }
+    high_value = {
+        "focuses": [
+            {"family": "authentication-state-machine", "score": 90},
+            {"family": "graphql-data-segregation", "score": 75},
+        ]
+    }
+
+    result = prioritize_recon_tasks(
+        [source],
+        diff,
+        None,
+        None,
+        None,
+        high_value,
+    )
+
+    updated = result.tasks[0]
+    assert updated.kind == source.kind
+    assert updated.target == source.target
+    assert updated.agent == source.agent
+    assert updated.max_requests == source.max_requests
+    assert updated.allowed_methods == source.allowed_methods
+    assert updated.same_origin_only == source.same_origin_only
+    assert updated.read_only == source.read_only
+    assert result.adjustments[0].boost <= 25
