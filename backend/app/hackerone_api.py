@@ -755,6 +755,51 @@ def _reviewed_campaign_input(
         ) from exc
 
 
+@router.post("/api/imports/hackerone/batches/preflight-reviewed")
+def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
+    """Validate every selected reviewed program without creating campaigns."""
+    from .main import storage
+
+    store = storage()
+    members: list[dict[str, Any]] = []
+    for handle in payload.handles:
+        try:
+            prepared = _reviewed_campaign_input(handle, store)
+        except HTTPException as exc:
+            detail = exc.detail if isinstance(exc.detail, dict) else {}
+            members.append({
+                "handle": handle,
+                "status": "blocked",
+                "reason": str(detail.get("reason") or "reviewed_preflight_blocked"),
+                "message": str(detail.get("message") or exc.detail),
+            })
+            continue
+        members.append({
+            "handle": handle,
+            "status": "ready",
+            "snapshot_sha256": str(prepared.remote_snapshot_sha256 or ""),
+        })
+
+    ready = [item for item in members if item["status"] == "ready"]
+    blocked = [item for item in members if item["status"] == "blocked"]
+    return {
+        "provider": "hackerone",
+        "mode": payload.mode,
+        "ready": len(blocked) == 0 and len(ready) == len(members),
+        "members": members,
+        "summary": {
+            "total": len(members),
+            "ready": len(ready),
+            "blocked": len(blocked),
+        },
+        "read_only": True,
+        "campaigns_created": False,
+        "automatic_launch": False,
+        "scope_expansion": False,
+        "requires_launch_revalidation": True,
+    }
+
+
 @router.post("/api/imports/hackerone/batches/launch-reviewed")
 def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
     from .main import storage
