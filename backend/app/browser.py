@@ -360,7 +360,7 @@ def queue_browser_flow(campaign_id: str, flow: BrowserFlowInput):
         "browser_flow",
         {
             "campaign_id": latest.id,
-            **flow.model_dump(mode="json"),
+            **flow.model_dump(mode="json", exclude_none=True),
         },
         max_attempts=2,
         dedupe_key=f"browser:{request_id}",
