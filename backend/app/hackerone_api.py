@@ -804,6 +804,10 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
 
 @router.post("/api/imports/hackerone/batches/launch")
 def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
+    # Authorization/snapshot/program-state checks take precedence over runtime
+    # readiness so stale authority is reported deterministically before execution.
+    for campaign_payload in payload.campaigns:
+        _verify_remote_binding(campaign_payload, require_open=True)
     _assert_hackerone_live_scan_ready()
 
     from .campaign_audit import append_campaign_event
@@ -970,6 +974,7 @@ def cancel_hackerone_batch(batch_id: str):
 def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
     """Admit a reviewed HackerOne policy and start it in one authenticated mutation."""
 
+    _verify_remote_binding(payload, require_open=True)
     _assert_hackerone_live_scan_ready()
 
     from .main import assert_campaign_exists, start_campaign
