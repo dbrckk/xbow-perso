@@ -296,6 +296,14 @@ def process_recon_task(job: dict, store: Storage) -> None:
         source,
     )
 
+    for discovered_asset in result.assets:
+        record_asset(
+            store,
+            campaign,
+            discovered_asset,
+            f"{source}:passive",
+        )
+
     for endpoint in result.endpoints:
         record_endpoint(
             store,
@@ -348,6 +356,7 @@ def process_recon_task(job: dict, store: Storage) -> None:
             "task_kind": job["payload"].get("kind"),
             "status": result.status,
             "http_status": result.http_status,
+            "assets": len(result.assets),
             "endpoints": len(result.endpoints),
             "forms": len(result.forms),
             "technologies": len(result.technologies),
