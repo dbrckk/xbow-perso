@@ -9,6 +9,38 @@ from .storage import CampaignConflictError
 _TERMINAL_MEMBER_STATES = {"done", "review", "blocked", "cancelled"}
 
 
+def _remote_member_revalidation(
+    member: dict[str, Any],
+) -> tuple[str, str | None]:
+    """Revalidate remote HackerOne state immediately before delayed member start."""
+    from .hackerone_client import HackerOneClientError, fetch_hackerone_program_snapshot
+
+    handle = str(member.get("handle") or "").strip()
+    expected_sha = str(member.get("snapshot_sha256") or "").strip()
+    if not handle or not expected_sha:
+        return "review", "remote_snapshot_binding_missing"
+
+    try:
+        snapshot = fetch_hackerone_program_snapshot(handle)
+    except HackerOneClientError:
+        # Transient upstream failures keep the member queued for a later retry.
+        return "ready", "remote_revalidation_unavailable"
+
+    if snapshot.snapshot_sha256 != expected_sha:
+        return "review", "remote_snapshot_changed_since_batch_admission"
+
+    submission_state = str(
+        snapshot.program.get("submission_state") or ""
+    ).strip().lower()
+    program_state = str(snapshot.program.get("state") or "").strip().lower()
+    if submission_state in {"paused", "closed", "disabled"}:
+        return "review", "remote_submissions_no_longer_open"
+    if program_state in {"closed", "disabled", "archived"}:
+        return "review", "remote_program_no_longer_open"
+
+    return "ok", None
+
+
 def _active_job_counts(queue, campaign_id: str) -> dict[str, int]:
     return queue.campaign_job_status_counts(campaign_id)
 
@@ -51,6 +83,10 @@ def _start_member(member: dict[str, Any]) -> tuple[str, str | None]:
     from fastapi import HTTPException
 
     from .main import start_campaign
+
+    remote_state, remote_reason = _remote_member_revalidation(member)
+    if remote_state != "ok":
+        return remote_state, remote_reason
 
     campaign_id = str(member.get("campaign_id") or "")
     try:
