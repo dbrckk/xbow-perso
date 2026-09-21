@@ -231,3 +231,86 @@ def test_launch_reviewed_enforces_go_no_go_server_side(monkeypatch):
         assert exc.detail["blockers"] == ["recon_dispatch"]
     else:
         raise AssertionError("server-side go/no-go should block launch")
+
+
+
+def _launch_campaign_input():
+    return hackerone_api.HackerOneCampaignAdmissionInput(
+        document={"data": []},
+        policy=hackerone_api.HackerOneProgramPolicyInput(
+            authorization_reference="https://hackerone.com/alpha",
+            policy_version="snapshot:test",
+            reviewed_at="2026-09-21T10:00:00+00:00",
+            reviewed_by="tester",
+            safe_harbor_confirmed=True,
+            automated_scanning=True,
+            max_requests_per_second=1.0,
+            test_account_required=False,
+            test_account_constraints="",
+            additional_restrictions=[],
+            program_notes="",
+        ),
+        target=hackerone_api.HackerOneCampaignTargetInput(
+            name="Alpha",
+            primary_url="https://example.test",
+        ),
+        remote_handle="alpha",
+        remote_snapshot_sha256="a" * 64,
+    )
+
+
+def test_direct_batch_launch_checks_live_readiness_before_creation(monkeypatch):
+    monkeypatch.setattr(
+        hackerone_api,
+        "_verify_remote_binding",
+        lambda _payload, require_open=False: {
+            "handle": "alpha",
+            "snapshot_sha256": "a" * 64,
+            "verified": True,
+        },
+    )
+
+    def blocked():
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "reason": "hackerone_live_scan_not_ready",
+                "failed_checks": ["recon_dispatch"],
+            },
+        )
+
+    monkeypatch.setattr(hackerone_api, "_assert_hackerone_live_scan_ready", blocked)
+    payload = hackerone_api.HackerOneBatchLaunchInput(
+        mode="sequential",
+        campaigns=[_launch_campaign_input()],
+    )
+
+    try:
+        hackerone_api.launch_hackerone_batch(payload)
+    except HTTPException as exc:
+        assert exc.status_code == 503
+        assert exc.detail["reason"] == "hackerone_live_scan_not_ready"
+    else:
+        raise AssertionError("direct batch launch should require live readiness")
+
+
+def test_single_launch_checks_remote_open_state(monkeypatch):
+    calls = []
+
+    def verify(_payload, require_open=False):
+        calls.append(require_open)
+        raise HTTPException(
+            status_code=409,
+            detail={"reason": "program_submissions_not_open"},
+        )
+
+    monkeypatch.setattr(hackerone_api, "_verify_remote_binding", verify)
+
+    try:
+        hackerone_api.launch_hackerone_campaign(_launch_campaign_input())
+    except HTTPException as exc:
+        assert exc.status_code == 409
+        assert exc.detail["reason"] == "program_submissions_not_open"
+    else:
+        raise AssertionError("single launch should fail closed")
+    assert calls == [True]
