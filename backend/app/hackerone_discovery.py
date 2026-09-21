@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from .opportunity_ranking import build_opportunity_signal
+from .value_efficiency import build_value_efficiency_signal, select_diversified_portfolio
 
 
 def build_program_discovery(
@@ -87,6 +88,14 @@ def build_program_discovery(
             is_new=handle in added,
             is_changed=handle in changed,
         )
+        efficiency = build_value_efficiency_signal(
+            status=status,
+            opportunity_score=int(opportunity["opportunity_score"]),
+            research_focus=list(opportunity["research_focus"]),
+            runtime_ready_categories=list(opportunity["runtime_ready_categories"]),
+            runtime_partial_categories=list(opportunity["runtime_partial_categories"]),
+            gold_standard_safe_harbor=program.get("gold_standard_safe_harbor"),
+        )
 
         items.append({
             "handle": handle,
@@ -104,6 +113,9 @@ def build_program_discovery(
             "runtime_ready_categories": opportunity["runtime_ready_categories"],
             "runtime_partial_categories": opportunity["runtime_partial_categories"],
             "public_high_critical_density": opportunity["public_high_critical_density"],
+            "value_efficiency_score": efficiency["value_efficiency_score"],
+            "effort_factor": efficiency["effort_factor"],
+            "efficiency_reasons": efficiency["efficiency_reasons"],
             "historical_value_score": historical,
             "historical_usd_awarded_max": float(signal.get("usd_awarded_max") or 0.0),
             "top_categories": list(signal.get("top_categories") or [])[:4],
@@ -119,6 +131,7 @@ def build_program_discovery(
     items.sort(
         key=lambda item: (
             {"READY": 0, "REVIEW": 1, "BLOCKED": 2}[item["status"]],
+            -int(item["value_efficiency_score"]),
             -int(item["opportunity_score"]),
             -int(item["priority_score"]),
             str(item["name"]).lower(),
@@ -133,6 +146,11 @@ def build_program_discovery(
     return {
         "summary": summary,
         "programs": items,
+        "recommended_portfolio": select_diversified_portfolio(
+            items,
+            limit=5,
+            min_score=50,
+        ),
         "read_only": True,
         "automatic_launch": False,
         "scope_expansion": False,
