@@ -19,11 +19,13 @@ from .hackerone_client import (
 from .hackerone_catalog import refresh_hackerone_catalog
 from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_intelligence import refresh_hackerone_intelligence
+from .hackerone_quick import build_batch_learning_brief, select_quick_six
 from .local_outcome_intelligence import build_local_outcome_signals
 from .hackerone_discovery import build_program_discovery
 from .value_efficiency import select_diversified_portfolio
 from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_review_draft import build_hackerone_review_draft
+from .runtime_learning import learning_delivery_status, persist_learning_brief
 from .hackerone_report_tracking import (
     latest_remote_submission,
     project_remote_report_status,
@@ -147,6 +149,12 @@ class HackerOneReviewedBatchLaunchInput(BaseModel):
         if len(set(normalized)) != len(normalized):
             raise ValueError("reviewed batch handles must be unique")
         return normalized
+
+
+class HackerOneQuickRunInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    mode: Literal["sequential", "parallel"] = "sequential"
 
 
 class HackerOneReportSubmissionInput(BaseModel):
@@ -428,6 +436,151 @@ def hackerone_discovery_selection(
         "automatic_launch": False,
         "scope_expansion": False,
         "requires_launch_revalidation": True,
+    }
+
+
+@router.get("/api/hackerone/quick-plan")
+def hackerone_quick_plan():
+    """Select exactly 2 low-effort, 2 medium and 2 historically high-value READY programs."""
+    discovery = hackerone_program_discovery(verify_limit=50)
+    plan = select_quick_six(list(discovery.get("programs") or []))
+    return {
+        "provider": "hackerone",
+        "catalog_checked_at": discovery.get("catalog_checked_at"),
+        **plan,
+        "read_only": True,
+        "automatic_launch": False,
+    }
+
+
+@router.post("/api/hackerone/quick-run")
+def hackerone_quick_run(payload: HackerOneQuickRunInput):
+    """Launch the current six-program READY plan through the existing reviewed batch gates."""
+    from .main import storage
+
+    plan = hackerone_quick_plan()
+    if plan.get("complete") is not True:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Six READY bounty programs are required for quick run",
+                "reason": "insufficient_ready_programs",
+                "ready_candidates": int(plan.get("ready_candidates") or 0),
+                "selected": int(plan.get("selected") or 0),
+            },
+        )
+
+    handles = [str(item) for item in list(plan.get("handles") or []) if str(item)]
+    launched = launch_reviewed_hackerone_batch(
+        HackerOneReviewedBatchLaunchInput(mode=payload.mode, handles=handles)
+    )
+
+    store = storage()
+    batch_id = str(launched.get("id") or "")
+    record = store.get_hackerone_batch_record(batch_id)
+    if record is not None:
+        batch, version = record
+        group_by_handle = {
+            str(item.get("handle") or ""): str(item.get("quick_group") or "")
+            for item in list(plan.get("selection") or [])
+            if isinstance(item, dict)
+        }
+        for member in list(batch.get("members") or []):
+            if isinstance(member, dict):
+                member["quick_group"] = group_by_handle.get(
+                    str(member.get("handle") or ""),
+                    "",
+                )
+        batch["selection_strategy"] = str(plan.get("strategy") or "")
+        batch["quick_plan"] = {
+            "handles": handles,
+            "groups": {
+                key: [
+                    {
+                        "handle": str(item.get("handle") or ""),
+                        "name": str(item.get("name") or item.get("handle") or ""),
+                    }
+                    for item in list((plan.get("groups") or {}).get(key) or [])
+                    if isinstance(item, dict)
+                ]
+                for key in ("easy", "medium", "high_value")
+            },
+        }
+        store.save_hackerone_batch(batch, expected_version=version)
+        launched = store.get_hackerone_batch(batch_id) or batch
+
+    return {
+        "provider": "hackerone",
+        "batch": launched,
+        "plan": plan,
+        "continues_without_dashboard": True,
+        "automatic_submission": False,
+        "scope_expansion": False,
+    }
+
+
+@router.get("/api/hackerone/quick-journal")
+def hackerone_quick_journal(
+    limit: int = Query(default=20, ge=1, le=100),
+):
+    """Return durable batch history and sanitized learning briefs for the simple UI."""
+    from .hackerone_batch import reconcile_hackerone_batch
+    from .main import queue, storage
+
+    store = storage()
+    jobs = queue()
+    batches = store.list_hackerone_batches(limit=limit)
+    journal: list[dict[str, Any]] = []
+    for raw in batches:
+        batch_id = str(raw.get("id") or "")
+        batch = raw
+        if str(raw.get("state") or "") not in {"completed", "cancelled"}:
+            try:
+                batch = reconcile_hackerone_batch(jobs, store, batch_id) or raw
+            except Exception:
+                batch = raw
+
+        brief = batch.get("learning_brief")
+        if str(batch.get("state") or "") == "completed" and not isinstance(brief, dict):
+            brief = build_batch_learning_brief(store, batch)
+            try:
+                persist_learning_brief(brief)
+            except Exception:
+                pass
+
+        journal.append(
+            {
+                "id": batch_id,
+                "state": batch.get("state"),
+                "mode": batch.get("mode"),
+                "summary": dict(batch.get("summary") or {}),
+                "created_at": batch.get("created_at"),
+                "updated_at": batch.get("updated_at"),
+                "selection_strategy": batch.get("selection_strategy"),
+                "members": [
+                    {
+                        "campaign_id": member.get("campaign_id"),
+                        "handle": member.get("handle"),
+                        "status": member.get("status"),
+                        "quick_group": member.get("quick_group"),
+                        "reason": member.get("reason"),
+                    }
+                    for member in list(batch.get("members") or [])
+                    if isinstance(member, dict)
+                ],
+                "brief": brief if isinstance(brief, dict) else None,
+                "learning_delivery": learning_delivery_status(batch_id),
+                "continues_without_dashboard": bool(
+                    batch.get("continues_without_dashboard", True)
+                ),
+            }
+        )
+
+    return {
+        "provider": "hackerone",
+        "journal": journal,
+        "read_only": True,
+        "contains_secrets": False,
     }
 
 
