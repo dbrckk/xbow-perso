@@ -9,8 +9,23 @@ const fmtSeconds=value=>{
   if(seconds>=60)return Math.ceil(seconds/60)+' min';
   return Math.ceil(seconds)+' s';
 };
-$('token').value=sessionStorage.getItem('xbowApiToken')||'';
-$('token').addEventListener('input',()=>sessionStorage.setItem('xbowApiToken',$('token').value));
+const API_TOKEN_STORAGE_KEY='xbowApiToken';
+function loadPersistedApiToken(){
+  let token='';
+  try{token=localStorage.getItem(API_TOKEN_STORAGE_KEY)||'';}catch(_error){}
+  if(!token){
+    try{token=sessionStorage.getItem(API_TOKEN_STORAGE_KEY)||'';}catch(_error){}
+    if(token){
+      try{localStorage.setItem(API_TOKEN_STORAGE_KEY,token);}catch(_error){}
+      try{sessionStorage.removeItem(API_TOKEN_STORAGE_KEY);}catch(_error){}
+    }
+  }
+  return token;
+}
+$('token').value=loadPersistedApiToken();
+$('token').addEventListener('input',()=>{
+  try{localStorage.setItem(API_TOKEN_STORAGE_KEY,$('token').value);}catch(_error){}
+});
 
 async function refreshAuthSourceStatus(){
   const target=$('authSourceStatus');
