@@ -30,10 +30,11 @@ def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
 
-    assert '/app.js?v=59' in index
-    assert '/hackerone.js?v=59' in index
-    assert '/app.css?v=59' in index
-    assert "xbow-perso-v59" in sw
+    assert '/app.js?v=60' in index
+    assert '/hackerone.js?v=60' in index
+    assert '/app.css?v=60' in index
+    assert '/quick.js?v=60' in index
+    assert "xbow-perso-v60" in sw
 
 
 
