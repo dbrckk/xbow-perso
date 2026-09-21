@@ -518,3 +518,62 @@ def test_high_value_boost_preserves_recon_authority_fields():
     assert updated.same_origin_only == source.same_origin_only
     assert updated.read_only == source.read_only
     assert result.adjustments[0].boost <= 25
+
+
+
+def test_fully_covered_high_value_family_does_not_receive_extra_boost():
+    original = [task("map_endpoints", 60)]
+    diff = {
+        "baseline_available": False,
+        "summary": {"change_count": 0, "counts_by_kind": {}},
+    }
+    high_value = {
+        "focuses": [
+            {
+                "family": "graphql-authorization",
+                "score": 90,
+                "undercovered_high_value_score": 0,
+            }
+        ]
+    }
+
+    result = prioritize_recon_tasks(
+        original,
+        diff,
+        None,
+        None,
+        None,
+        high_value,
+    )
+
+    assert result.tasks[0].priority == 60
+    assert result.adjustments[0].high_value_boost == 0
+
+
+def test_undercovered_high_value_score_drives_existing_task_boost():
+    original = [task("map_endpoints", 60)]
+    diff = {
+        "baseline_available": False,
+        "summary": {"change_count": 0, "counts_by_kind": {}},
+    }
+    high_value = {
+        "focuses": [
+            {
+                "family": "graphql-authorization",
+                "score": 90,
+                "undercovered_high_value_score": 72,
+            }
+        ]
+    }
+
+    result = prioritize_recon_tasks(
+        original,
+        diff,
+        None,
+        None,
+        None,
+        high_value,
+    )
+
+    assert result.tasks[0].priority > 60
+    assert result.adjustments[0].high_value_boost > 0

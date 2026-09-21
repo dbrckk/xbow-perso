@@ -113,3 +113,63 @@ def test_high_value_intelligence_route_is_exposed():
         "/api/campaigns/{campaign_id}/high-value-intelligence"
         in app.openapi()["paths"]
     )
+
+
+
+def test_high_value_family_coverage_tracks_scan_and_validation_evidence():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "endpoint:graphql",
+            "endpoint",
+            "https://example.test/graphql",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:graphql",
+            "evidence",
+            "graphql scan complete",
+            "scanner",
+            metadata={"phase": "scan", "status": "completed"},
+        )
+    )
+    graph.add(
+        Observation(
+            "validation:graphql",
+            "validation",
+            "graphql authorization validated",
+            "validator",
+        )
+    )
+
+    focuses = _focuses(graph)
+    item = focuses["graphql-authorization"]
+
+    assert item["coverage"]["observations"] >= 3
+    assert item["coverage"]["scan_evidence"] >= 1
+    assert item["coverage"]["validation_evidence"] >= 1
+    assert item["coverage"]["coverage_score"] == 1.0
+    assert item["undercovered_high_value_score"] == 0
+
+
+def test_surface_signal_without_scan_remains_undercovered():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "endpoint:mfa",
+            "endpoint",
+            "https://example.test/mfa/reset",
+            "recon",
+        )
+    )
+
+    focuses = _focuses(graph)
+    item = focuses["authentication-state-machine"]
+
+    assert item["coverage"]["observations"] >= 1
+    assert item["coverage"]["scan_evidence"] == 0
+    assert item["coverage"]["validation_evidence"] == 0
+    assert item["coverage"]["undercoverage_score"] > 0
+    assert item["undercovered_high_value_score"] > 0

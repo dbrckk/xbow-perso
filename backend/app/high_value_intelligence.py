@@ -165,6 +165,51 @@ def _surface_tokens(graph: ObservationGraph) -> set[str]:
     return tokens
 
 
+
+def _family_coverage(graph: ObservationGraph, family: str) -> dict[str, Any]:
+    cases = [case for case in _CASES if case.family == family]
+    signals = {signal.lower() for case in cases for signal in case.signals}
+    observed = 0
+    scan = 0
+    validation = 0
+    sources: set[str] = set()
+
+    for item in graph.values():
+        metadata = item.metadata if isinstance(item.metadata, dict) else {}
+        haystack = " ".join(
+            [
+                str(item.value).lower(),
+                str(metadata.get("phase") or "").lower(),
+                str(metadata.get("status") or "").lower(),
+                str(metadata.get("family") or "").lower(),
+                str(metadata.get("category") or "").lower(),
+            ]
+        )
+        matched = family in haystack or any(signal in haystack for signal in signals)
+        if not matched:
+            continue
+        observed += 1
+        sources.add(str(item.source))
+        if item.kind == "evidence" and str(metadata.get("phase") or "") == "scan":
+            scan += 1
+        if item.kind == "validation":
+            validation += 1
+
+    coverage_score = min(
+        1.0,
+        (0.35 if observed else 0.0)
+        + (0.35 if scan else 0.0)
+        + (0.30 if validation else 0.0),
+    )
+    return {
+        "observations": observed,
+        "scan_evidence": scan,
+        "validation_evidence": validation,
+        "source_count": len(sources),
+        "coverage_score": round(coverage_score, 3),
+        "undercoverage_score": round(1.0 - coverage_score, 3),
+    }
+
 def build_high_value_intelligence(
     graph: ObservationGraph,
     *,
@@ -226,10 +271,25 @@ def build_high_value_intelligence(
         )
         for family, payload in grouped.items()
     ]
-    focuses.sort(key=lambda item: (-item.score, item.family))
+    enriched_focuses: list[dict[str, Any]] = []
+    for item in focuses:
+        coverage = _family_coverage(graph, item.family)
+        payload = item.to_dict()
+        payload["coverage"] = coverage
+        payload["undercovered_high_value_score"] = int(
+            round(item.score * float(coverage["undercoverage_score"]))
+        )
+        enriched_focuses.append(payload)
+    enriched_focuses.sort(
+        key=lambda item: (
+            -int(item["undercovered_high_value_score"]),
+            -int(item["score"]),
+            str(item["family"]),
+        )
+    )
 
     return {
-        "focuses": [item.to_dict() for item in focuses[:limit]],
+        "focuses": enriched_focuses[:limit],
         "cases": [item.to_dict() for item in _CASES],
         "surface_signal_count": len(surface),
         "passive_response_signal_count": len(passive_hints),

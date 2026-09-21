@@ -37,7 +37,11 @@ def _high_value_task_boost(
         if task_kind not in _HIGH_VALUE_TASKS.get(family, ()):
             continue
         try:
-            score = int(raw.get("score") or 0)
+            score = int(
+                raw.get("undercovered_high_value_score")
+                if raw.get("undercovered_high_value_score") is not None
+                else raw.get("score") or 0
+            )
         except (TypeError, ValueError):
             score = 0
         if score >= 50:
