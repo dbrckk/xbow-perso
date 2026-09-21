@@ -98,3 +98,39 @@ def test_reviewed_campaign_input_blocks_program_that_closed_after_review(monkeyp
         assert exc.detail["reason"] == "program_submissions_not_open"
     else:
         raise AssertionError("closed program should be blocked")
+
+
+
+def test_reviewed_batch_preflight_reports_blocked_members(monkeypatch):
+    def fake_reviewed(handle, _store):
+        if handle == "closed":
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne program is no longer launchable",
+                    "reason": "program_submissions_not_open",
+                    "handles": [handle],
+                },
+            )
+
+        class Prepared:
+            remote_snapshot_sha256 = "b" * 64
+
+        return Prepared()
+
+    monkeypatch.setattr(hackerone_api, "_reviewed_campaign_input", fake_reviewed)
+    monkeypatch.setattr("app.main.storage", lambda: object())
+
+    payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+        mode="sequential",
+        handles=["alpha", "closed"],
+    )
+    result = hackerone_api.preflight_reviewed_hackerone_batch(payload)
+
+    assert result["ready"] is False
+    assert result["summary"] == {"total": 2, "ready": 1, "blocked": 1}
+    blocked = next(item for item in result["members"] if item["handle"] == "closed")
+    assert blocked["reason"] == "program_submissions_not_open"
+    assert result["campaigns_created"] is False
+    assert result["automatic_launch"] is False
+    assert result["scope_expansion"] is False
