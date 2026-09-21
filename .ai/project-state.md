@@ -22,30 +22,30 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T14:42:59Z
+Generated: 2026-09-21T14:52:23Z
 
 ### Git
 - Branch: `main`
-- Head: `03969e2fe1e6`
-- Commit date: 2026-09-21T16:42:47+02:00
-- Commit: fix: load production compose secrets before vault token reset (#326)
+- Head: `20580383a7c0`
+- Commit date: 2026-09-21T16:52:10+02:00
+- Commit: feat: persist API token across browser sessions (#327)
 - Tracked files: 557
 
 ### Recently changed files
+- `backend/app/main.py`
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_live_activation_profile.py`
+- `frontend/app.js`
+- `frontend/index.html`
+- `frontend/sw.js`
+- `scripts/mobile-production-update.sh`
 - `backend/tests/test_mobile_reset_api_token.py`
 - `scripts/mobile-reset-api-token.sh`
 - `.deploy-trigger`
 - `backend/app/hackerone_live_readiness.py`
-- `backend/app/main.py`
 - `backend/tests/test_hackerone_live_readiness.py`
-- `backend/tests/test_live_activation_profile.py`
-- `scripts/mobile-production-update.sh`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
 - `frontend/nginx.conf`
-- `frontend/sw.js`
-- `frontend/app.js`
 
 ### Project signals
 - `pyproject.toml`

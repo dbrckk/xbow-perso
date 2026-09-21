@@ -1,40 +1,2220 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "f1ceaf3882a14a861461651d9c6e4feb4bfd818c",
-  "head": "03969e2fe1e67a5a9d145f215ab7bff83919b7be",
+  "base": "03969e2fe1e67a5a9d145f215ab7bff83919b7be",
+  "head": "20580383a7c089dc826f3608414a993d79fda596",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/tests/test_mobile_reset_api_token.py",
+      "path": "backend/app/main.py",
       "status": "M"
     },
     {
-      "path": "scripts/mobile-reset-api-token.sh",
+      "path": "backend/tests/test_frontend_auth_proxy.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_frontend_policy_launcher.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_live_activation_profile.py",
+      "status": "M"
+    },
+    {
+      "path": "frontend/app.js",
+      "status": "M"
+    },
+    {
+      "path": "frontend/index.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend/sw.js",
+      "status": "M"
+    },
+    {
+      "path": "scripts/mobile-production-update.sh",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/tests/test_mobile_reset_api_token.py"
+    "backend/app/main.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_live_activation_profile.py",
+    "frontend/app.js",
+    "frontend/sw.js"
   ],
   "impacted_files": [
-    "backend/tests/test_mobile_reset_api_token.py"
+    "backend/app/adaptive_cycle.py",
+    "backend/app/attack_surface.py",
+    "backend/app/autonomy_gate.py",
+    "backend/app/browser.py",
+    "backend/app/campaign_control.py",
+    "backend/app/campaign_overview.py",
+    "backend/app/campaign_review_state.py",
+    "backend/app/campaign_risk.py",
+    "backend/app/coverage.py",
+    "backend/app/decision_consensus.py",
+    "backend/app/decision_timeline.py",
+    "backend/app/evidence_chain.py",
+    "backend/app/evidence_quality.py",
+    "backend/app/finding_cluster_consensus.py",
+    "backend/app/finding_cluster_saturation.py",
+    "backend/app/finding_consensus.py",
+    "backend/app/finding_correlation.py",
+    "backend/app/finding_intelligence.py",
+    "backend/app/finding_lifecycle.py",
+    "backend/app/finding_readiness.py",
+    "backend/app/finding_triage.py",
+    "backend/app/hackerone_api.py",
+    "backend/app/hackerone_batch.py",
+    "backend/app/hackerone_scope_import.py",
+    "backend/app/high_value_intelligence.py",
+    "backend/app/hypothesis_engine.py",
+    "backend/app/identity_access.py",
+    "backend/app/learning_memory.py",
+    "backend/app/main.py",
+    "backend/app/metrics.py",
+    "backend/app/nuclei_parser.py",
+    "backend/app/observation_writer.py",
+    "backend/app/operational_alerts.py",
+    "backend/app/orchestrator.py",
+    "backend/app/pentagi_action_gateway.py",
+    "backend/app/pentagi_adapter.py",
+    "backend/app/pentagi_admission.py",
+    "backend/app/pentagi_control.py",
+    "backend/app/pentagi_dispatch.py",
+    "backend/app/pentagi_execution_guard.py",
+    "backend/app/pentagi_worker_service.py",
+    "backend/app/recon_swarm.py",
+    "backend/app/recon_worker.py",
+    "backend/app/red_team_coverage.py",
+    "backend/app/red_team_decision.py",
+    "backend/app/report.py",
+    "backend/app/report_approval_api.py",
+    "backend/app/report_readiness.py",
+    "backend/app/review_queue.py",
+    "backend/app/scanner_ingestion.py",
+    "backend/app/scanner_normalization.py",
+    "backend/app/scanner_registry.py",
+    "backend/app/scanner_worker.py",
+    "backend/app/strix_parser.py",
+    "backend/app/submission_api.py",
+    "backend/app/validator.py",
+    "backend/app/worker.py",
+    "backend/app/worker_service.py",
+    "backend/tests/test_adaptive_cycle.py",
+    "backend/tests/test_agent_registry.py",
+    "backend/tests/test_alert_delivery.py",
+    "backend/tests/test_api_idempotency.py",
+    "backend/tests/test_api_outbox.py",
+    "backend/tests/test_api_rate_limit.py",
+    "backend/tests/test_attack_surface.py",
+    "backend/tests/test_attack_surface_scope.py",
+    "backend/tests/test_auth.py",
+    "backend/tests/test_autonomy_gate.py",
+    "backend/tests/test_browser.py",
+    "backend/tests/test_campaign_audit.py",
+    "backend/tests/test_campaign_cancel.py",
+    "backend/tests/test_campaign_chain_priority.py",
+    "backend/tests/test_campaign_circuit_breaker.py",
+    "backend/tests/test_campaign_overview.py",
+    "backend/tests/test_campaign_review_state.py",
+    "backend/tests/test_campaign_risk.py",
+    "backend/tests/test_campaign_runtime.py",
+    "backend/tests/test_chain_detector.py",
+    "backend/tests/test_chain_intelligence.py",
+    "backend/tests/test_control_views.py",
+    "backend/tests/test_coverage.py",
+    "backend/tests/test_decision_audit.py",
+    "backend/tests/test_decision_consensus.py",
+    "backend/tests/test_decision_timeline.py",
+    "backend/tests/test_deployment_preflight.py",
+    "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_differential_intelligence.py",
+    "backend/tests/test_distributed_concurrency.py",
+    "backend/tests/test_domain_incident_lifecycle.py",
+    "backend/tests/test_domain_lifecycle_integration.py",
+    "backend/tests/test_dr_cli.py",
+    "backend/tests/test_dr_manifest.py",
+    "backend/tests/test_error_budget.py",
+    "backend/tests/test_evidence_backed_planner.py",
+    "backend/tests/test_evidence_chain.py",
+    "backend/tests/test_evidence_quality.py",
+    "backend/tests/test_finding_cluster_consensus.py",
+    "backend/tests/test_finding_cluster_saturation.py",
+    "backend/tests/test_finding_consensus.py",
+    "backend/tests/test_finding_correlation.py",
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_finding_lifecycle.py",
+    "backend/tests/test_finding_readiness.py",
+    "backend/tests/test_finding_review_metadata.py",
+    "backend/tests/test_finding_triage.py",
+    "backend/tests/test_form_waf_reasoning.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_hackerone_activity_summary.py",
+    "backend/tests/test_hackerone_attention.py",
+    "backend/tests/test_hackerone_batch.py",
+    "backend/tests/test_hackerone_batch_api.py",
+    "backend/tests/test_hackerone_binding.py",
+    "backend/tests/test_hackerone_catalog.py",
+    "backend/tests/test_hackerone_client.py",
+    "backend/tests/test_hackerone_control_center_api.py",
+    "backend/tests/test_hackerone_discovery.py",
+    "backend/tests/test_hackerone_intelligence.py",
+    "backend/tests/test_hackerone_launch_api.py",
+    "backend/tests/test_hackerone_live_readiness.py",
+    "backend/tests/test_hackerone_needs_info.py",
+    "backend/tests/test_hackerone_nuclei_e2e.py",
+    "backend/tests/test_hackerone_outbound_submission.py",
+    "backend/tests/test_hackerone_prelaunch.py",
+    "backend/tests/test_hackerone_remote_binding.py",
+    "backend/tests/test_hackerone_remote_snapshot.py",
+    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+    "backend/tests/test_hackerone_report_sync_worker.py",
+    "backend/tests/test_hackerone_report_tracking.py",
+    "backend/tests/test_hackerone_review_draft.py",
+    "backend/tests/test_hackerone_review_profiles.py",
+    "backend/tests/test_hackerone_reviewed_batch_api.py",
+    "backend/tests/test_hackerone_scope_import.py",
+    "backend/tests/test_hackerone_scope_preview_api.py",
+    "backend/tests/test_health.py",
+    "backend/tests/test_high_value_intelligence.py",
+    "backend/tests/test_hypothesis_engine.py",
+    "backend/tests/test_hypothesis_memory.py",
+    "backend/tests/test_identity_access.py",
+    "backend/tests/test_incident_api.py",
+    "backend/tests/test_incident_domains.py",
+    "backend/tests/test_incident_engine.py",
+    "backend/tests/test_incident_http_api.py",
+    "backend/tests/test_incident_lifecycle.py",
+    "backend/tests/test_incident_observer.py",
+    "backend/tests/test_incident_store.py",
+    "backend/tests/test_incident_store_fencing.py",
+    "backend/tests/test_job_provenance.py",
+    "backend/tests/test_job_provenance_api_integration.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_jobqueue.py",
+    "backend/tests/test_knowledge_memory.py",
+    "backend/tests/test_learning_memory.py",
+    "backend/tests/test_live_activation_profile.py",
+    "backend/tests/test_local_outcome_intelligence.py",
+    "backend/tests/test_metrics.py",
+    "backend/tests/test_nuclei_preflight.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_nuclei_worker_plan.py",
+    "backend/tests/test_observation_graph.py",
+    "backend/tests/test_observation_writer_provenance.py",
+    "backend/tests/test_observer_deadline_heartbeat.py",
+    "backend/tests/test_observer_fencing.py",
+    "backend/tests/test_observer_fencing_integration.py",
+    "backend/tests/test_observer_health_http.py",
+    "backend/tests/test_observer_health_metrics.py",
+    "backend/tests/test_observer_resilience.py",
+    "backend/tests/test_observer_runtime.py",
+    "backend/tests/test_observer_scheduler.py",
+    "backend/tests/test_observer_slo.py",
+    "backend/tests/test_openapi_integrity.py",
+    "backend/tests/test_operational_alerts.py",
+    "backend/tests/test_operational_slo.py",
+    "backend/tests/test_opportunity_ranking.py",
+    "backend/tests/test_orchestrator.py",
+    "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_outbox_chaos.py",
+    "backend/tests/test_overview_reasoning.py",
+    "backend/tests/test_passive_api_intelligence.py",
+    "backend/tests/test_passive_high_value_ranking.py",
+    "backend/tests/test_passive_response_context.py",
+    "backend/tests/test_passive_response_intelligence.py",
+    "backend/tests/test_pentagi_action_gateway.py",
+    "backend/tests/test_pentagi_adapter.py",
+    "backend/tests/test_pentagi_admission.py",
+    "backend/tests/test_pentagi_auth.py",
+    "backend/tests/test_pentagi_control.py",
+    "backend/tests/test_pentagi_control_api.py",
+    "backend/tests/test_pentagi_dispatch.py",
+    "backend/tests/test_pentagi_execution_guard.py",
+    "backend/tests/test_pentagi_flow_status.py",
+    "backend/tests/test_pentagi_status_poller.py",
+    "backend/tests/test_pentagi_status_tracker.py",
+    "backend/tests/test_pentagi_status_worker_service.py",
+    "backend/tests/test_pentagi_transport.py",
+    "backend/tests/test_pentagi_worker_service.py",
+    "backend/tests/test_pipeline_swarm.py",
+    "backend/tests/test_plan_evidence_quality.py",
+    "backend/tests/test_planner_advisory.py",
+    "backend/tests/test_planner_budget.py",
+    "backend/tests/test_planner_intelligence.py",
+    "backend/tests/test_planner_limits.py",
+    "backend/tests/test_policy_integrity.py",
+    "backend/tests/test_policy_invariants.py",
+    "backend/tests/test_postgres_integration.py",
+    "backend/tests/test_postgres_storage.py",
+    "backend/tests/test_production_migration.py",
+    "backend/tests/test_queue_age_metrics.py",
+    "backend/tests/test_queue_backend.py",
+    "backend/tests/test_queue_health.py",
+    "backend/tests/test_readiness.py",
+    "backend/tests/test_recon_priority.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_recon_worker.py",
+    "backend/tests/test_red_team_coverage.py",
+    "backend/tests/test_red_team_decision.py",
+    "backend/tests/test_redis_chaos.py",
+    "backend/tests/test_redis_integration.py",
+    "backend/tests/test_redis_jobqueue.py",
+    "backend/tests/test_redis_jobqueue_integration.py",
+    "backend/tests/test_report.py",
+    "backend/tests/test_report_approval.py",
+    "backend/tests/test_report_approval_api.py",
+    "backend/tests/test_report_readiness.py",
+    "backend/tests/test_review_queue.py",
+    "backend/tests/test_rolling_telemetry.py",
+    "backend/tests/test_runtime_budget_config.py",
+    "backend/tests/test_runtime_capabilities.py",
+    "backend/tests/test_runtime_gap_analysis.py",
+    "backend/tests/test_scan_payload_idempotency.py",
+    "backend/tests/test_scanner_adaptation.py",
+    "backend/tests/test_scanner_ingestion.py",
+    "backend/tests/test_scanner_normalization.py",
+    "backend/tests/test_scanner_observation_chain.py",
+    "backend/tests/test_scanner_sandbox.py",
+    "backend/tests/test_scanner_worker.py",
+    "backend/tests/test_scope.py",
+    "backend/tests/test_secret_vault.py",
+    "backend/tests/test_storage.py",
+    "backend/tests/test_storage_backend.py",
+    "backend/tests/test_submission_api.py",
+    "backend/tests/test_submission_state.py",
+    "backend/tests/test_surface_confidence.py",
+    "backend/tests/test_surface_diff.py",
+    "backend/tests/test_surface_temporal.py",
+    "backend/tests/test_swarm_coordinator.py",
+    "backend/tests/test_target_memory.py",
+    "backend/tests/test_totp_auth.py",
+    "backend/tests/test_validation_state.py",
+    "backend/tests/test_validator.py",
+    "backend/tests/test_value_efficiency.py",
+    "backend/tests/test_vault_migration.py",
+    "backend/tests/test_watchdog_observability.py",
+    "backend/tests/test_worker_concurrency.py",
+    "backend/tests/test_worker_job_provenance.py",
+    "backend/tests/test_worker_liveness.py",
+    "backend/tests/test_worker_observations.py",
+    "backend/tests/test_worker_outcome_memory.py",
+    "backend/tests/test_worker_parser.py",
+    "backend/tests/test_worker_roles.py",
+    "backend/tests/test_worker_secrets.py",
+    "backend/tests/test_worker_state.py",
+    "backend/tests/test_worker_watchdog.py",
+    "frontend/app.js",
+    "frontend/sw.js"
   ],
   "impacted_symbols": [
     {
-      "name": "test_mobile_api_token_reset_is_vault_only_and_verifies_round_trip",
-      "kind": "function",
-      "file": "backend/tests/test_mobile_reset_api_token.py",
-      "line": 7
+      "name": "AdaptiveCycle",
+      "kind": "class",
+      "file": "backend/app/adaptive_cycle.py",
+      "line": 23
     },
     {
-      "name": "test_mobile_api_token_reset_loads_distributed_compose_secrets",
+      "name": "to_dict",
       "kind": "function",
-      "file": "backend/tests/test_mobile_reset_api_token.py",
+      "file": "backend/app/adaptive_cycle.py",
+      "line": 32
+    },
+    {
+      "name": "_suppressed_techniques",
+      "kind": "function",
+      "file": "backend/app/adaptive_cycle.py",
+      "line": 39
+    },
+    {
+      "name": "_unstable_job_kinds",
+      "kind": "function",
+      "file": "backend/app/adaptive_cycle.py",
+      "line": 49
+    },
+    {
+      "name": "build_adaptive_cycle",
+      "kind": "function",
+      "file": "backend/app/adaptive_cycle.py",
+      "line": 66
+    },
+    {
+      "name": "campaign_adaptive_cycle",
+      "kind": "function",
+      "file": "backend/app/adaptive_cycle.py",
+      "line": 141
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/adaptive_cycle.py",
+      "line": 149
+    },
+    {
+      "name": "canonical_host",
+      "kind": "function",
+      "file": "backend/app/attack_surface.py",
+      "line": 16
+    },
+    {
+      "name": "canonical_endpoint",
+      "kind": "function",
+      "file": "backend/app/attack_surface.py",
+      "line": 21
+    },
+    {
+      "name": "_safe_form",
+      "kind": "function",
+      "file": "backend/app/attack_surface.py",
+      "line": 53
+    },
+    {
+      "name": "build_attack_surface",
+      "kind": "function",
+      "file": "backend/app/attack_surface.py",
+      "line": 73
+    },
+    {
+      "name": "campaign_attack_surface",
+      "kind": "function",
+      "file": "backend/app/attack_surface.py",
+      "line": 205
+    },
+    {
+      "name": "AutonomyGate",
+      "kind": "class",
+      "file": "backend/app/autonomy_gate.py",
+      "line": 19
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/autonomy_gate.py",
+      "line": 26
+    },
+    {
+      "name": "build_autonomy_gate",
+      "kind": "function",
+      "file": "backend/app/autonomy_gate.py",
+      "line": 33
+    },
+    {
+      "name": "campaign_autonomy_gate",
+      "kind": "function",
+      "file": "backend/app/autonomy_gate.py",
+      "line": 100
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/autonomy_gate.py",
+      "line": 107
+    },
+    {
+      "name": "BrowserPolicyError",
+      "kind": "class",
+      "file": "backend/app/browser.py",
+      "line": 27
+    },
+    {
+      "name": "BrowserStep",
+      "kind": "class",
+      "file": "backend/app/browser.py",
+      "line": 31
+    },
+    {
+      "name": "validate_shape",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 39
+    },
+    {
+      "name": "BrowserFlowInput",
+      "kind": "class",
+      "file": "backend/app/browser.py",
+      "line": 51
+    },
+    {
+      "name": "BrowserExecutionResult",
+      "kind": "class",
+      "file": "backend/app/browser.py",
+      "line": 66
+    },
+    {
+      "name": "_bool_env",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 73
+    },
+    {
+      "name": "_browser_secret",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 85
+    },
+    {
+      "name": "_utcnow",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 110
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 114
+    },
+    {
+      "name": "_flow_fingerprint",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 125
+    },
+    {
+      "name": "_flow_dedupe_key",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 135
+    },
+    {
+      "name": "_save_campaign",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 141
+    },
+    {
+      "name": "_reconcile_browser_flow_queued",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 154
+    },
+    {
+      "name": "_allowed_url",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 200
+    },
+    {
+      "name": "_browser_storage_state",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 214
+    },
+    {
+      "name": "_assert_read_only_browser_method",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 280
+    },
+    {
+      "name": "_assert_browser_policy",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 286
+    },
+    {
+      "name": "validate_flow",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 301
+    },
+    {
+      "name": "queue_browser_flow",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 311
+    },
+    {
+      "name": "execute_browser_flow",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 384
+    },
+    {
+      "name": "route_guard",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 413
+    },
+    {
+      "name": "persist_browser_result",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 588
+    },
+    {
+      "name": "_recon_telemetry",
+      "kind": "function",
+      "file": "backend/app/campaign_control.py",
       "line": 18
+    },
+    {
+      "name": "_autonomy_block_reasons",
+      "kind": "function",
+      "file": "backend/app/campaign_control.py",
+      "line": 56
+    },
+    {
+      "name": "campaign_control_status",
+      "kind": "function",
+      "file": "backend/app/campaign_control.py",
+      "line": 68
+    },
+    {
+      "name": "reset_campaign_circuit_breaker",
+      "kind": "function",
+      "file": "backend/app/campaign_control.py",
+      "line": 111
+    },
+    {
+      "name": "campaign_overview",
+      "kind": "function",
+      "file": "backend/app/campaign_overview.py",
+      "line": 45
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/campaign_overview.py",
+      "line": 54
+    },
+    {
+      "name": "build_campaign_review_state",
+      "kind": "function",
+      "file": "backend/app/campaign_review_state.py",
+      "line": 15
+    },
+    {
+      "name": "campaign_review_state",
+      "kind": "function",
+      "file": "backend/app/campaign_review_state.py",
+      "line": 82
+    },
+    {
+      "name": "CampaignRisk",
+      "kind": "class",
+      "file": "backend/app/campaign_risk.py",
+      "line": 21
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/campaign_risk.py",
+      "line": 29
+    },
+    {
+      "name": "build_campaign_risk",
+      "kind": "function",
+      "file": "backend/app/campaign_risk.py",
+      "line": 35
+    },
+    {
+      "name": "campaign_risk",
+      "kind": "function",
+      "file": "backend/app/campaign_risk.py",
+      "line": 130
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/campaign_risk.py",
+      "line": 137
+    },
+    {
+      "name": "build_evidence_coverage",
+      "kind": "function",
+      "file": "backend/app/coverage.py",
+      "line": 14
+    },
+    {
+      "name": "campaign_coverage",
+      "kind": "function",
+      "file": "backend/app/coverage.py",
+      "line": 91
+    },
+    {
+      "name": "build_coverage_guidance",
+      "kind": "function",
+      "file": "backend/app/coverage.py",
+      "line": 108
+    },
+    {
+      "name": "prioritize_action_with_coverage",
+      "kind": "function",
+      "file": "backend/app/coverage.py",
+      "line": 150
+    },
+    {
+      "name": "DecisionConsensus",
+      "kind": "class",
+      "file": "backend/app/decision_consensus.py",
+      "line": 23
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/decision_consensus.py",
+      "line": 31
+    },
+    {
+      "name": "build_decision_consensus",
+      "kind": "function",
+      "file": "backend/app/decision_consensus.py",
+      "line": 38
+    },
+    {
+      "name": "campaign_decision_consensus",
+      "kind": "function",
+      "file": "backend/app/decision_consensus.py",
+      "line": 90
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/decision_consensus.py",
+      "line": 97
+    },
+    {
+      "name": "_flatten_explanation",
+      "kind": "function",
+      "file": "backend/app/decision_timeline.py",
+      "line": 14
+    },
+    {
+      "name": "_signal_diff",
+      "kind": "function",
+      "file": "backend/app/decision_timeline.py",
+      "line": 28
+    },
+    {
+      "name": "_causal_summary",
+      "kind": "function",
+      "file": "backend/app/decision_timeline.py",
+      "line": 47
+    },
+    {
+      "name": "planner_stability",
+      "kind": "function",
+      "file": "backend/app/decision_timeline.py",
+      "line": 115
+    },
+    {
+      "name": "planner_stability_from_graph",
+      "kind": "function",
+      "file": "backend/app/decision_timeline.py",
+      "line": 190
+    },
+    {
+      "name": "planner_stability_breaker_reason",
+      "kind": "function",
+      "file": "backend/app/decision_timeline.py",
+      "line": 210
+    },
+    {
+      "name": "build_decision_timeline",
+      "kind": "function",
+      "file": "backend/app/decision_timeline.py",
+      "line": 221
+    },
+    {
+      "name": "campaign_decision_timeline",
+      "kind": "function",
+      "file": "backend/app/decision_timeline.py",
+      "line": 318
+    },
+    {
+      "name": "EvidenceChain",
+      "kind": "class",
+      "file": "backend/app/evidence_chain.py",
+      "line": 17
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/evidence_chain.py",
+      "line": 29
+    },
+    {
+      "name": "_ancestry_integrity",
+      "kind": "function",
+      "file": "backend/app/evidence_chain.py",
+      "line": 39
+    },
+    {
+      "name": "visit",
+      "kind": "function",
+      "file": "backend/app/evidence_chain.py",
+      "line": 48
+    },
+    {
+      "name": "build_evidence_chains",
+      "kind": "function",
+      "file": "backend/app/evidence_chain.py",
+      "line": 67
+    },
+    {
+      "name": "campaign_evidence_chains",
+      "kind": "function",
+      "file": "backend/app/evidence_chain.py",
+      "line": 133
+    },
+    {
+      "name": "EvidenceQuality",
+      "kind": "class",
+      "file": "backend/app/evidence_quality.py",
+      "line": 16
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/evidence_quality.py",
+      "line": 29
+    },
+    {
+      "name": "_grade",
+      "kind": "function",
+      "file": "backend/app/evidence_quality.py",
+      "line": 35
+    },
+    {
+      "name": "build_evidence_quality",
+      "kind": "function",
+      "file": "backend/app/evidence_quality.py",
+      "line": 43
+    },
+    {
+      "name": "campaign_evidence_quality",
+      "kind": "function",
+      "file": "backend/app/evidence_quality.py",
+      "line": 132
+    },
+    {
+      "name": "ClusterConsensus",
+      "kind": "class",
+      "file": "backend/app/finding_cluster_consensus.py",
+      "line": 16
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_cluster_consensus.py",
+      "line": 30
+    },
+    {
+      "name": "build_cluster_consensus",
+      "kind": "function",
+      "file": "backend/app/finding_cluster_consensus.py",
+      "line": 37
+    },
+    {
+      "name": "campaign_finding_cluster_consensus",
+      "kind": "function",
+      "file": "backend/app/finding_cluster_consensus.py",
+      "line": 119
+    },
+    {
+      "name": "ClusterSaturation",
+      "kind": "class",
+      "file": "backend/app/finding_cluster_saturation.py",
+      "line": 17
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_cluster_saturation.py",
+      "line": 27
+    },
+    {
+      "name": "build_cluster_saturation",
+      "kind": "function",
+      "file": "backend/app/finding_cluster_saturation.py",
+      "line": 33
+    },
+    {
+      "name": "campaign_finding_cluster_saturation",
+      "kind": "function",
+      "file": "backend/app/finding_cluster_saturation.py",
+      "line": 103
+    },
+    {
+      "name": "FindingConsensus",
+      "kind": "class",
+      "file": "backend/app/finding_consensus.py",
+      "line": 14
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_consensus.py",
+      "line": 25
+    },
+    {
+      "name": "_children",
+      "kind": "function",
+      "file": "backend/app/finding_consensus.py",
+      "line": 31
+    },
+    {
+      "name": "build_finding_consensus",
+      "kind": "function",
+      "file": "backend/app/finding_consensus.py",
+      "line": 39
+    },
+    {
+      "name": "campaign_finding_consensus",
+      "kind": "function",
+      "file": "backend/app/finding_consensus.py",
+      "line": 116
+    },
+    {
+      "name": "_canonical_url",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 21
+    },
+    {
+      "name": "FindingCorrelation",
+      "kind": "class",
+      "file": "backend/app/finding_correlation.py",
+      "line": 43
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 52
+    },
+    {
+      "name": "correlate_findings",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 58
+    },
+    {
+      "name": "campaign_finding_correlations",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 101
+    },
+    {
+      "name": "_title_tokens",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 122
+    },
+    {
+      "name": "_jaccard",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 133
+    },
+    {
+      "name": "FindingSimilarity",
+      "kind": "class",
+      "file": "backend/app/finding_correlation.py",
+      "line": 140
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 150
+    },
+    {
+      "name": "FindingCluster",
+      "kind": "class",
+      "file": "backend/app/finding_correlation.py",
+      "line": 157
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 164
+    },
+    {
+      "name": "score_finding_similarity",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 171
+    },
+    {
+      "name": "cluster_findings",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 216
+    },
+    {
+      "name": "campaign_finding_clusters",
+      "kind": "function",
+      "file": "backend/app/finding_correlation.py",
+      "line": 285
+    },
+    {
+      "name": "build_finding_intelligence",
+      "kind": "function",
+      "file": "backend/app/finding_intelligence.py",
+      "line": 18
+    },
+    {
+      "name": "campaign_finding_intelligence",
+      "kind": "function",
+      "file": "backend/app/finding_intelligence.py",
+      "line": 148
+    },
+    {
+      "name": "FindingLifecycleAdvice",
+      "kind": "class",
+      "file": "backend/app/finding_lifecycle.py",
+      "line": 17
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_lifecycle.py",
+      "line": 27
+    },
+    {
+      "name": "build_finding_lifecycle",
+      "kind": "function",
+      "file": "backend/app/finding_lifecycle.py",
+      "line": 33
+    },
+    {
+      "name": "campaign_finding_lifecycle",
+      "kind": "function",
+      "file": "backend/app/finding_lifecycle.py",
+      "line": 116
+    },
+    {
+      "name": "FindingReadiness",
+      "kind": "class",
+      "file": "backend/app/finding_readiness.py",
+      "line": 18
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_readiness.py",
+      "line": 31
+    },
+    {
+      "name": "build_finding_readiness",
+      "kind": "function",
+      "file": "backend/app/finding_readiness.py",
+      "line": 37
+    },
+    {
+      "name": "campaign_finding_readiness",
+      "kind": "function",
+      "file": "backend/app/finding_readiness.py",
+      "line": 131
+    },
+    {
+      "name": "FindingTriage",
+      "kind": "class",
+      "file": "backend/app/finding_triage.py",
+      "line": 28
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/finding_triage.py",
+      "line": 42
+    },
+    {
+      "name": "build_finding_triage",
+      "kind": "function",
+      "file": "backend/app/finding_triage.py",
+      "line": 46
+    },
+    {
+      "name": "campaign_finding_triage",
+      "kind": "function",
+      "file": "backend/app/finding_triage.py",
+      "line": 143
+    },
+    {
+      "name": "HackerOneProgramPolicyInput",
+      "kind": "class",
+      "file": "backend/app/hackerone_api.py",
+      "line": 36
+    },
+    {
+      "name": "reviewed_at_must_be_timezone_aware",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 53
+    },
+    {
+      "name": "request_rate_must_be_explicit_number",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 60
+    },
+    {
+      "name": "HackerOneRulesPreviewInput",
+      "kind": "class",
+      "file": "backend/app/hackerone_api.py",
+      "line": 66
+    },
+    {
+      "name": "remote_binding_must_be_complete",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 80
+    },
+    {
+      "name": "HackerOneCampaignTargetInput",
+      "kind": "class",
+      "file": "backend/app/hackerone_api.py",
+      "line": 91
+    },
+    {
+      "name": "HackerOneCampaignAdmissionInput",
+      "kind": "class",
+      "file": "backend/app/hackerone_api.py",
+      "line": 98
+    },
+    {
+      "name": "HackerOneBatchLaunchInput",
+      "kind": "class",
+      "file": "backend/app/hackerone_api.py",
+      "line": 102
+    },
+    {
+      "name": "campaigns_must_be_remote_bound_and_unique",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 112
+    },
+    {
+      "name": "HackerOneReviewedBatchLaunchInput",
+      "kind": "class",
+      "file": "backend/app/hackerone_api.py",
+      "line": 125
+    },
+    {
+      "name": "reviewed_handles_must_be_unique",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 133
+    },
+    {
+      "name": "HackerOneReportSubmissionInput",
+      "kind": "class",
+      "file": "backend/app/hackerone_api.py",
+      "line": 152
+    },
+    {
+      "name": "normalize_actor",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 160
+    },
+    {
+      "name": "_policy_from_input",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 167
+    },
+    {
+      "name": "_json_sha256",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 185
+    },
+    {
+      "name": "_verify_remote_binding",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 195
+    },
+    {
+      "name": "_remote_program_launch_block_reason",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 226
+    },
+    {
+      "name": "_conservative_admission_reason",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 236
+    },
+    {
+      "name": "_upstream_error",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 251
+    },
+    {
+      "name": "_program_list_item",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 259
+    },
+    {
+      "name": "hackerone_attention_center",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 280
+    },
+    {
+      "name": "hackerone_live_readiness",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 290
+    },
+    {
+      "name": "hackerone_connection",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 297
+    },
+    {
+      "name": "list_hackerone_programs",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 306
+    },
+    {
+      "name": "hackerone_program_catalog",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 335
+    },
+    {
+      "name": "hackerone_program_discovery",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 353
+    },
+    {
+      "name": "hackerone_discovery_selection",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 409
+    },
+    {
+      "name": "hackerone_learning_intelligence",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 435
+    },
+    {
+      "name": "get_hackerone_program_review_draft",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 456
+    },
+    {
+      "name": "get_hackerone_program_snapshot",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 465
+    },
+    {
+      "name": "preview_hackerone_rules",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 482
+    },
+    {
+      "name": "list_hackerone_review_profiles",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 548
+    },
+    {
+      "name": "admit_hackerone_campaign",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 562
+    },
+    {
+      "name": "_batch_summary",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 640
+    },
+    {
+      "name": "_rollback_admitted_batch_campaigns",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 652
+    },
+    {
+      "name": "_reviewed_campaign_input",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 662
+    },
+    {
+      "name": "hackerone_batch_go_no_go",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 759
+    },
+    {
+      "name": "preflight_reviewed_hackerone_batch",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 799
+    },
+    {
+      "name": "launch_reviewed_hackerone_batch",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 844
+    },
+    {
+      "name": "launch_hackerone_batch",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 895
+    },
+    {
+      "name": "list_hackerone_batches",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 971
+    },
+    {
+      "name": "get_hackerone_batch",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 984
+    },
+    {
+      "name": "cancel_hackerone_batch",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 995
+    },
+    {
+      "name": "launch_hackerone_campaign",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 1025
+    },
+    {
+      "name": "_hackerone_submission_enabled",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 1041
+    },
+    {
+      "name": "_verified_remote_team_handle",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 1055
+    },
+    {
+      "name": "_unresolved_hackerone_attempt",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 1074
+    },
+    {
+      "name": "get_hackerone_remote_report_status",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 1097
+    },
+    {
+      "name": "get_hackerone_needs_more_info_draft",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 1123
+    },
+    {
+      "name": "submit_hackerone_report",
+      "kind": "function",
+      "file": "backend/app/hackerone_api.py",
+      "line": 1167
+    },
+    {
+      "name": "_utc_now",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 16
+    },
+    {
+      "name": "_retry_due",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 20
+    },
+    {
+      "name": "_clear_retry_state",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 33
+    },
+    {
+      "name": "_schedule_retry",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 38
+    },
+    {
+      "name": "_remote_member_revalidation",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 58
+    },
+    {
+      "name": "_active_job_counts",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 96
+    },
+    {
+      "name": "_campaign_state",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 100
+    },
+    {
+      "name": "_member_finished",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 107
+    },
+    {
+      "name": "_start_member",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 134
+    },
+    {
+      "name": "_summarize_members",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 162
+    },
+    {
+      "name": "_batch_state",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 178
+    },
+    {
+      "name": "reconcile_hackerone_batch",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 187
+    },
+    {
+      "name": "reconcile_hackerone_batches",
+      "kind": "function",
+      "file": "backend/app/hackerone_batch.py",
+      "line": 281
+    },
+    {
+      "name": "HackerOneScopeImportError",
+      "kind": "class",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 21
+    },
+    {
+      "name": "_explicit_text",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 25
+    },
+    {
+      "name": "_reviewed_at",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 46
+    },
+    {
+      "name": "_restrictions",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 58
+    },
+    {
+      "name": "HackerOneProgramPolicy",
+      "kind": "class",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 78
+    },
+    {
+      "name": "__post_init__",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 99
+    },
+    {
+      "name": "to_snapshot",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 171
+    },
+    {
+      "name": "HackerOneScopeAsset",
+      "kind": "class",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 188
+    },
+    {
+      "name": "HackerOneScopePreview",
+      "kind": "class",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 198
+    },
+    {
+      "name": "to_program_rules",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 206
+    },
+    {
+      "name": "_clean_identifier",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 243
+    },
+    {
+      "name": "_canonical_asset_type",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 254
+    },
+    {
+      "name": "_ascii_domain",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 283
+    },
+    {
+      "name": "_compatible_host_pattern",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 314
+    },
+    {
+      "name": "_resource_attributes",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 356
+    },
+    {
+      "name": "import_hackerone_structured_scope",
+      "kind": "function",
+      "file": "backend/app/hackerone_scope_import.py",
+      "line": 369
+    },
+    {
+      "name": "PublicCaseLesson",
+      "kind": "class",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 14
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 24
+    },
+    {
+      "name": "HighValueFocus",
+      "kind": "class",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 32
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 39
+    },
+    {
+      "name": "public_case_lessons",
+      "kind": "function",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 148
+    },
+    {
+      "name": "_surface_tokens",
+      "kind": "function",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 152
+    },
+    {
+      "name": "_family_coverage",
+      "kind": "function",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 169
+    },
+    {
+      "name": "build_high_value_intelligence",
+      "kind": "function",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 213
+    },
+    {
+      "name": "campaign_high_value_intelligence",
+      "kind": "function",
+      "file": "backend/app/high_value_intelligence.py",
+      "line": 304
+    },
+    {
+      "name": "Hypothesis",
+      "kind": "class",
+      "file": "backend/app/hypothesis_engine.py",
+      "line": 28
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/hypothesis_engine.py",
+      "line": 39
+    },
+    {
+      "name": "_safe_endpoint",
+      "kind": "function",
+      "file": "backend/app/hypothesis_engine.py",
+      "line": 46
+    },
+    {
+      "name": "_lineage_hosts",
+      "kind": "function",
+      "file": "backend/app/hypothesis_engine.py",
+      "line": 66
+    },
+    {
+      "name": "_scope_allows",
+      "kind": "function",
+      "file": "backend/app/hypothesis_engine.py",
+      "line": 93
+    },
+    {
+      "name": "build_hypotheses",
+      "kind": "function",
+      "file": "backend/app/hypothesis_engine.py",
+      "line": 104
+    },
+    {
+      "name": "campaign_hypotheses",
+      "kind": "function",
+      "file": "backend/app/hypothesis_engine.py",
+      "line": 236
+    },
+    {
+      "name": "IdentityAccessDifferential",
+      "kind": "class",
+      "file": "backend/app/identity_access.py",
+      "line": 14
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/identity_access.py",
+      "line": 25
+    },
+    {
+      "name": "_bounded_structure_metrics",
+      "kind": "function",
+      "file": "backend/app/identity_access.py",
+      "line": 31
+    },
+    {
+      "name": "build_identity_access_differentials",
+      "kind": "function",
+      "file": "backend/app/identity_access.py",
+      "line": 49
+    },
+    {
+      "name": "summarize_identity_access_differentials",
+      "kind": "function",
+      "file": "backend/app/identity_access.py",
+      "line": 156
+    },
+    {
+      "name": "campaign_identity_access_differentials",
+      "kind": "function",
+      "file": "backend/app/identity_access.py",
+      "line": 184
+    },
+    {
+      "name": "TechniqueMemory",
+      "kind": "class",
+      "file": "backend/app/learning_memory.py",
+      "line": 15
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 25
+    },
+    {
+      "name": "build_learning_memory",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 29
+    },
+    {
+      "name": "campaign_learning_memory",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 91
+    },
+    {
+      "name": "worker_outcome_event",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 123
+    },
+    {
+      "name": "summarize_worker_outcomes",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 143
+    },
+    {
+      "name": "authenticate_control_api",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 36
+    },
+    {
+      "name": "utcnow",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 50
+    },
+    {
+      "name": "storage",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 54
+    },
+    {
+      "name": "queue",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 58
+    },
+    {
+      "name": "incident_store",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 62
+    },
+    {
+      "name": "_stable_key",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 70
+    },
+    {
+      "name": "CampaignState",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 75
+    },
+    {
+      "name": "ProgramRules",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 85
+    },
+    {
+      "name": "TargetInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 98
+    },
+    {
+      "name": "primary_target_must_be_allowed",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 105
+    },
+    {
+      "name": "Finding",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 119
+    },
+    {
+      "name": "FindingReviewMetadataInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 137
+    },
+    {
+      "name": "normalize_review_metadata",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 147
+    },
+    {
+      "name": "Campaign",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 162
+    },
+    {
+      "name": "EvidenceInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 172
+    },
+    {
+      "name": "HackerOneScopePreviewInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 179
+    },
+    {
+      "name": "IncidentAcknowledgeInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 183
+    },
+    {
+      "name": "normalize_pattern",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 188
+    },
+    {
+      "name": "is_host_allowed",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 195
+    },
+    {
+      "name": "save_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 204
+    },
+    {
+      "name": "assert_campaign_record",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 211
+    },
+    {
+      "name": "assert_campaign_exists",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 219
+    },
+    {
+      "name": "_reject_cancelled_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 223
+    },
+    {
+      "name": "_reject_new_findings_for_closed_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 228
+    },
+    {
+      "name": "_campaign_graph",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 236
+    },
+    {
+      "name": "_has_evidence_backed_independent_validation",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 243
+    },
+    {
+      "name": "policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 248
+    },
+    {
+      "name": "sanitized_scan_payload",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 274
+    },
+    {
+      "name": "live",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 311
+    },
+    {
+      "name": "ready",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 316
+    },
+    {
+      "name": "auth_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 329
+    },
+    {
+      "name": "health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 338
+    },
+    {
+      "name": "deployment_preflight",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 354
+    },
+    {
+      "name": "system_capabilities",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 361
+    },
+    {
+      "name": "get_observer_health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 445
+    },
+    {
+      "name": "get_incidents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 450
+    },
+    {
+      "name": "acknowledge_incident",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 455
+    },
+    {
+      "name": "list_agents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 470
+    },
+    {
+      "name": "preview_hackerone_scope",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 476
+    },
+    {
+      "name": "create_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 512
+    },
+    {
+      "name": "list_campaigns",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 520
+    },
+    {
+      "name": "get_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 525
+    },
+    {
+      "name": "get_campaign_target_memory",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 530
+    },
+    {
+      "name": "get_campaign_surface_diff",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 542
+    },
+    {
+      "name": "get_campaign_surface_temporal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 556
+    },
+    {
+      "name": "get_campaign_surface_confidence",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 568
+    },
+    {
+      "name": "campaign_outbox_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 585
+    },
+    {
+      "name": "campaign_outbox_recovery",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 599
+    },
+    {
+      "name": "_apply_local_outbox_repairs",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 620
+    },
+    {
+      "name": "reconcile_campaign_outbox_local",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 659
+    },
+    {
+      "name": "preview_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 717
+    },
+    {
+      "name": "_pentagi_dispatch_fingerprint",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 748
+    },
+    {
+      "name": "_record_pentagi_dispatch_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 752
+    },
+    {
+      "name": "_reconcile_pentagi_queued_event",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 778
+    },
+    {
+      "name": "dispatch_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 825
+    },
+    {
+      "name": "pentagi_campaign_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 899
+    },
+    {
+      "name": "list_campaign_observations",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 929
+    },
+    {
+      "name": "campaign_decision_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 935
+    },
+    {
+      "name": "campaign_event_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 947
+    },
+    {
+      "name": "campaign_worker_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 957
+    },
+    {
+      "name": "campaign_knowledge",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 969
+    },
+    {
+      "name": "campaign_finding_ranking",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 984
+    },
+    {
+      "name": "campaign_advisory_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1011
+    },
+    {
+      "name": "campaign_advisory_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1020
+    },
+    {
+      "name": "campaign_advisory_journal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1031
+    },
+    {
+      "name": "campaign_hypothesis_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1043
+    },
+    {
+      "name": "campaign_hypothesis_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1052
+    },
+    {
+      "name": "campaign_hypothesis_stability",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1063
+    },
+    {
+      "name": "campaign_plan",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1075
+    },
+    {
+      "name": "check_policy",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1125
+    },
+    {
+      "name": "verify_campaign_policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1135
+    },
+    {
+      "name": "_pending_campaign_start_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1140
     }
   ],
   "selected_tests": [
-    "backend/tests/test_mobile_reset_api_token.py"
+    "backend/tests/test_adaptive_cycle.py",
+    "backend/tests/test_agent_registry.py",
+    "backend/tests/test_alert_delivery.py",
+    "backend/tests/test_api_idempotency.py",
+    "backend/tests/test_api_outbox.py",
+    "backend/tests/test_api_rate_limit.py",
+    "backend/tests/test_attack_surface.py",
+    "backend/tests/test_attack_surface_scope.py",
+    "backend/tests/test_auth.py",
+    "backend/tests/test_autonomy_gate.py",
+    "backend/tests/test_browser.py",
+    "backend/tests/test_campaign_audit.py",
+    "backend/tests/test_campaign_cancel.py",
+    "backend/tests/test_campaign_chain_priority.py",
+    "backend/tests/test_campaign_circuit_breaker.py",
+    "backend/tests/test_campaign_overview.py",
+    "backend/tests/test_campaign_review_state.py",
+    "backend/tests/test_campaign_risk.py",
+    "backend/tests/test_campaign_runtime.py",
+    "backend/tests/test_chain_detector.py",
+    "backend/tests/test_chain_intelligence.py",
+    "backend/tests/test_control_views.py",
+    "backend/tests/test_coverage.py",
+    "backend/tests/test_decision_audit.py",
+    "backend/tests/test_decision_consensus.py",
+    "backend/tests/test_decision_timeline.py",
+    "backend/tests/test_deployment_preflight.py",
+    "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_differential_intelligence.py",
+    "backend/tests/test_distributed_concurrency.py",
+    "backend/tests/test_domain_incident_lifecycle.py",
+    "backend/tests/test_domain_lifecycle_integration.py",
+    "backend/tests/test_dr_cli.py",
+    "backend/tests/test_dr_manifest.py",
+    "backend/tests/test_error_budget.py",
+    "backend/tests/test_evidence_backed_planner.py",
+    "backend/tests/test_evidence_chain.py",
+    "backend/tests/test_evidence_quality.py",
+    "backend/tests/test_finding_cluster_consensus.py",
+    "backend/tests/test_finding_cluster_saturation.py",
+    "backend/tests/test_finding_consensus.py",
+    "backend/tests/test_finding_correlation.py",
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_finding_lifecycle.py",
+    "backend/tests/test_finding_readiness.py",
+    "backend/tests/test_finding_review_metadata.py",
+    "backend/tests/test_finding_triage.py",
+    "backend/tests/test_form_waf_reasoning.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_hackerone_activity_summary.py",
+    "backend/tests/test_hackerone_attention.py",
+    "backend/tests/test_hackerone_batch.py",
+    "backend/tests/test_hackerone_batch_api.py",
+    "backend/tests/test_hackerone_binding.py",
+    "backend/tests/test_hackerone_catalog.py",
+    "backend/tests/test_hackerone_client.py",
+    "backend/tests/test_hackerone_control_center_api.py",
+    "backend/tests/test_hackerone_discovery.py",
+    "backend/tests/test_hackerone_intelligence.py",
+    "backend/tests/test_hackerone_launch_api.py",
+    "backend/tests/test_hackerone_live_readiness.py",
+    "backend/tests/test_hackerone_needs_info.py",
+    "backend/tests/test_hackerone_nuclei_e2e.py",
+    "backend/tests/test_hackerone_outbound_submission.py",
+    "backend/tests/test_hackerone_prelaunch.py",
+    "backend/tests/test_hackerone_remote_binding.py",
+    "backend/tests/test_hackerone_remote_snapshot.py",
+    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+    "backend/tests/test_hackerone_report_sync_worker.py",
+    "backend/tests/test_hackerone_report_tracking.py",
+    "backend/tests/test_hackerone_review_draft.py",
+    "backend/tests/test_hackerone_review_profiles.py",
+    "backend/tests/test_hackerone_reviewed_batch_api.py",
+    "backend/tests/test_hackerone_scope_import.py",
+    "backend/tests/test_hackerone_scope_preview_api.py",
+    "backend/tests/test_health.py",
+    "backend/tests/test_high_value_intelligence.py",
+    "backend/tests/test_hypothesis_engine.py",
+    "backend/tests/test_hypothesis_memory.py",
+    "backend/tests/test_identity_access.py",
+    "backend/tests/test_incident_api.py",
+    "backend/tests/test_incident_domains.py",
+    "backend/tests/test_incident_engine.py",
+    "backend/tests/test_incident_http_api.py",
+    "backend/tests/test_incident_lifecycle.py",
+    "backend/tests/test_incident_observer.py",
+    "backend/tests/test_incident_store.py",
+    "backend/tests/test_incident_store_fencing.py",
+    "backend/tests/test_job_provenance.py",
+    "backend/tests/test_job_provenance_api_integration.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_jobqueue.py",
+    "backend/tests/test_knowledge_memory.py",
+    "backend/tests/test_learning_memory.py",
+    "backend/tests/test_live_activation_profile.py",
+    "backend/tests/test_local_outcome_intelligence.py",
+    "backend/tests/test_metrics.py",
+    "backend/tests/test_nuclei_preflight.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py"
   ]
 }

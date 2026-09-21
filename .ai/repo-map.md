@@ -5519,7 +5519,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.5.4")
+app = FastAPI(title="xbow-perso", version="0.5.5")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -12891,6 +12891,11 @@ sw = _text("frontend/sw.js")
 def test_frontend_assets_are_explicitly_cache_busted()
 ⋮----
 index = _text("frontend/index.html")
+⋮----
+def test_api_token_is_persisted_across_browser_sessions()
+⋮----
+app = _text("frontend/app.js")
+html = _text("frontend/index.html")
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -18668,6 +18673,8 @@ const clamp=(v,min,max)
 const fmtSeconds=value=>{
   const seconds=Math.max(0,Number(value)||0);
 ⋮----
+function loadPersistedApiToken()
+⋮----
 async function refreshAuthSourceStatus()
 ⋮----
 async function api(path,opts=
@@ -19955,7 +19962,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.4\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.5\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 

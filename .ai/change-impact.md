@@ -1,14 +1,21 @@
 # Change impact
 
-Base: fd24641fe623f6000b1e10db4b139cbba8117f8b
-Head: 03969e2fe1e67a5a9d145f215ab7bff83919b7be
+Base: a0630d552c51dd2527d8c2d80bf095d22e4aebe1
+Head: 20580383a7c089dc826f3608414a993d79fda596
 
 ## Changed files
-- M backend/tests/test_mobile_reset_api_token.py
-- M scripts/mobile-reset-api-token.sh
+- M backend/app/main.py
+- M backend/tests/test_frontend_auth_proxy.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M backend/tests/test_live_activation_profile.py
+- M frontend/app.js
+- M frontend/index.html
+- M frontend/sw.js
+- M scripts/mobile-production-update.sh
 
 ## Affected areas
 - backend
+- frontend
 - scripts
 
 ## Related test candidates
