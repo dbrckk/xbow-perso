@@ -1,12 +1,12 @@
 # Change impact
 
-Base: fd142144c2ffdb9ea87a53da73c3151ca78133dc
-Head: f4c67289670d5f773f4ef46f0ba342f180ad9c10
+Base: e5dc5205eb9d84c133145cfe34048aeea18c6a1d
+Head: c1dc0e3c2c4703d42f1e16288c85e2a8cdb67a34
 
 ## Changed files
-- A backend/app/campaign_chain_priority.py
-- M backend/app/orchestrator.py
-- A backend/tests/test_campaign_chain_priority.py
+- M backend/app/hackerone_intelligence.py
+- A backend/app/runtime_gap_analysis.py
+- A backend/tests/test_runtime_gap_analysis.py
 
 ## Affected areas
 - backend

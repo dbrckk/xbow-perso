@@ -157,6 +157,7 @@ app/
   review_queue.py
   rolling_telemetry.py
   runtime_capabilities.py
+  runtime_gap_analysis.py
   scanner_adaptation.py
   scanner_ingestion.py
   scanner_normalization.py
@@ -345,6 +346,7 @@ tests/
   test_rolling_telemetry.py
   test_runtime_budget_config.py
   test_runtime_capabilities.py
+  test_runtime_gap_analysis.py
   test_scan_payload_idempotency.py
   test_scanner_adaptation.py
   test_scanner_ingestion.py
@@ -3404,6 +3406,9 @@ def build_hackerone_intelligence(reports: list[dict[str, Any]]) -> dict[str, Any
 ⋮----
 categories = _category_statistics(reports)
 programs = _program_signals(reports)
+capability_gaps = _capability_gaps(categories)
+runtime = runtime_capability_snapshot(
+runtime_capability_gaps = rank_runtime_capability_gaps(capability_gaps, runtime)
 ⋮----
 high_value_reports = sorted(
 recent_reports = sorted(
@@ -7974,6 +7979,36 @@ available_tools = {
 missing = [
 ⋮----
 def safe_recon_runtime_capability() -> dict[str, Any]
+```
+
+## File: app/runtime_gap_analysis.py
+```python
+_GAP_RUNTIME_REQUIREMENTS: dict[str, tuple[str, ...]] = {
+⋮----
+_STATUS_FACTOR = {"missing": 1.0, "partial": 0.55, "available": 0.0}
+⋮----
+"""Normalize redacted runtime readiness used only for advisory gap ranking."""
+⋮----
+"""Rank historical capability gaps against current runtime readiness.
+
+    This is advisory only. Readiness never enables a tool, expands scope, creates
+    requests, or changes a campaign action.
+    """
+ranked: list[dict[str, Any]] = []
+⋮----
+category = str(gap.get("category") or "other")
+required = _GAP_RUNTIME_REQUIREMENTS.get(category, ("recon",))
+ready = [name for name in required if bool(runtime.get(name))]
+unavailable = [name for name in required if not bool(runtime.get(name))]
+declared_status = str(gap.get("status") or "missing")
+evidence = max(0.0, float(gap.get("evidence_score") or 0.0))
+high_critical = max(0, int(gap.get("high_critical_count") or 0))
+gap_factor = _STATUS_FACTOR.get(declared_status, 1.0)
+⋮----
+# Prioritize strong public evidence where declared analysis coverage is
+# weak. Runtime readiness is surfaced separately rather than interpreted
+# as permission to execute anything.
+priority = round((evidence + (2.0 * high_critical)) * gap_factor, 3)
 ```
 
 ## File: app/scanner_adaptation.py
@@ -15846,6 +15881,22 @@ result = safe_recon_runtime_capability()
 def test_capabilities_api_exposes_recon_preflight(monkeypatch)
 ⋮----
 recon = result["execution"]["recon_detail"]
+```
+
+## File: tests/test_runtime_gap_analysis.py
+```python
+def test_runtime_snapshot_is_redacted_and_readiness_only()
+⋮----
+snapshot = runtime_capability_snapshot(
+⋮----
+def test_missing_high_evidence_gap_ranks_above_partial_gap()
+⋮----
+gaps = [
+ranked = rank_runtime_capability_gaps(
+⋮----
+def test_runtime_readiness_never_enables_tools_or_scope()
+⋮----
+item = ranked[0]
 ```
 
 ## File: tests/test_scan_payload_idempotency.py

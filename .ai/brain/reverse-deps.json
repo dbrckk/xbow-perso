@@ -758,6 +758,8 @@
         "backend/app/chain_intelligence.py",
         "backend/app/hackerone_client.py",
         "backend/app/observation_graph.py",
+        "backend/app/runtime_capabilities.py",
+        "backend/app/runtime_gap_analysis.py",
         "backend/app/storage.py",
         "backend/app/storage_core.py",
         "backend/tests/test_alert_delivery.py"
@@ -768,7 +770,7 @@
         "backend/tests/test_hackerone_intelligence.py"
       ],
       "in_degree": 3,
-      "out_degree": 6
+      "out_degree": 8
     },
     "backend/app/hackerone_live_readiness.py": {
       "dependencies": [
@@ -1211,6 +1213,7 @@
         "backend/app/report_approval_api.py",
         "backend/app/report_readiness.py",
         "backend/app/review_queue.py",
+        "backend/app/runtime_gap_analysis.py",
         "backend/app/scanner_ingestion.py",
         "backend/app/scanner_normalization.py",
         "backend/app/scanner_registry.py",
@@ -1321,7 +1324,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 179,
+      "in_degree": 180,
       "out_degree": 56
     },
     "backend/app/metrics.py": {
@@ -2221,13 +2224,25 @@
       "dependents": [
         "backend/app/campaign_control.py",
         "backend/app/deployment_preflight.py",
+        "backend/app/hackerone_intelligence.py",
         "backend/app/hackerone_live_readiness.py",
         "backend/app/main.py",
         "backend/tests/test_nuclei_preflight.py",
         "backend/tests/test_runtime_capabilities.py"
       ],
-      "in_degree": 6,
+      "in_degree": 7,
       "out_degree": 0
+    },
+    "backend/app/runtime_gap_analysis.py": {
+      "dependencies": [
+        "backend/app/main.py"
+      ],
+      "dependents": [
+        "backend/app/hackerone_intelligence.py",
+        "backend/tests/test_runtime_gap_analysis.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
     },
     "backend/app/scanner_adaptation.py": {
       "dependencies": [
@@ -4491,6 +4506,15 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "backend/tests/test_runtime_gap_analysis.py": {
+      "dependencies": [
+        "backend/app/runtime_gap_analysis.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_scan_payload_idempotency.py": {
       "dependencies": [
         "backend/app/main.py",
@@ -4997,6 +5021,7 @@
         "backend/tests/test_rolling_telemetry.py",
         "backend/tests/test_runtime_budget_config.py",
         "backend/tests/test_runtime_capabilities.py",
+        "backend/tests/test_runtime_gap_analysis.py",
         "backend/tests/test_scan_payload_idempotency.py",
         "backend/tests/test_scanner_adaptation.py",
         "backend/tests/test_scanner_ingestion.py",
@@ -5030,7 +5055,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 191,
+      "in_degree": 192,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

@@ -22,21 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T07:49:11Z
+Generated: 2026-09-21T08:04:37Z
 
 ### Git
 - Branch: `main`
-- Head: `f4c67289670d`
-- Commit date: 2026-09-21T09:48:59+02:00
-- Commit: feat: prioritize observed vulnerability chains in campaign planning
-- Tracked files: 527
+- Head: `c1dc0e3c2c47`
+- Commit date: 2026-09-21T10:04:26+02:00
+- Commit: feat: rank bounty capability gaps against runtime readiness
+- Tracked files: 529
 
 ### Recently changed files
+- `backend/app/hackerone_intelligence.py`
+- `backend/app/runtime_gap_analysis.py`
+- `backend/tests/test_runtime_gap_analysis.py`
 - `backend/app/campaign_chain_priority.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_campaign_chain_priority.py`
 - `backend/tests/test_planner_intelligence.py`
-- `backend/app/planner_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`
