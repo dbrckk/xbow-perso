@@ -2017,10 +2017,31 @@
     const button=el('h1BatchAutoQueue');
     if(button)button.disabled=true;
     try{
-      saveQuickPrefs();
-      autoSelectBatchProfiles();
-      if(!batchSelectedHandles.size)return;
+      const prefs=saveQuickPrefs();
+      el('h1BatchSummary').textContent='Sélection serveur des programmes READY à meilleur rendement…';
+      const result=await api(
+        '/hackerone/discovery/selection?limit='+
+        encodeURIComponent(String(prefs.batch_auto_limit))+
+        '&min_score='+
+        encodeURIComponent(String(prefs.batch_auto_min_score))
+      );
+      const handles=Array.isArray(result?.handles)
+        ?result.handles.map(value=>String(value||'')).filter(Boolean).slice(0,20)
+        :[];
+      batchSelectedHandles=new Set(handles);
+      renderBatchCatalog();
+      if(!batchSelectedHandles.size){
+        el('h1BatchSummary').textContent=
+          'Aucun programme READY ne correspond aux critères côté serveur.';
+        return;
+      }
+      el('h1BatchSummary').textContent=
+        handles.length+
+        ' programme(s) sélectionné(s) côté serveur · revalidation finale au lancement…';
       await launchSelectedBatch();
+    }catch(error){
+      el('h1BatchSummary').textContent='Auto Queue bloquée : '+error.message;
+      setLauncherStatus(error.message,'err');
     }finally{
       if(button)button.disabled=false;
     }
