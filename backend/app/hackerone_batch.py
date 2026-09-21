@@ -47,7 +47,7 @@ def _member_finished(queue, store, member: dict[str, Any]) -> tuple[bool, str | 
     return True, "done"
 
 
-def _start_member(member: dict[str, Any]) -> tuple[str, str | None]:
+def _start_member(store, member: dict[str, Any]) -> tuple[str, str | None]:
     from fastapi import HTTPException
 
     from .main import start_campaign
@@ -56,6 +56,15 @@ def _start_member(member: dict[str, Any]) -> tuple[str, str | None]:
     try:
         start_campaign(campaign_id)
     except HTTPException as exc:
+        state = _campaign_state(store, campaign_id)
+        if state == "running":
+            return "running", None
+        if state == "completed":
+            return "done", None
+        if state == "cancelled":
+            return "cancelled", None
+        if exc.status_code == 409 and state in {"ready", "failed"}:
+            return "ready", "start_conflict_retry"
         return "blocked", str(exc.detail)
     except Exception as exc:
         return "blocked", exc.__class__.__name__
@@ -125,11 +134,24 @@ def reconcile_hackerone_batch(queue, store, batch_id: str) -> dict[str, Any] | N
                     None,
                 )
                 if next_member is not None:
-                    next_status, reason = _start_member(next_member)
+                    next_status, reason = _start_member(store, next_member)
                     next_member["status"] = next_status
                     if reason:
                         next_member["reason"] = reason[:500]
+                    else:
+                        next_member.pop("reason", None)
                     changed = True
+        elif mode == "parallel":
+            for member in members:
+                if str(member.get("status") or "ready") != "ready":
+                    continue
+                next_status, reason = _start_member(store, member)
+                member["status"] = next_status
+                if reason:
+                    member["reason"] = reason[:500]
+                else:
+                    member.pop("reason", None)
+                changed = True
 
         batch["members"] = members
         batch["summary"] = _summarize_members(members)
