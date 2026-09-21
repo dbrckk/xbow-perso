@@ -1988,6 +1988,24 @@
       const focus=String(picked?.research_focus?.[0]||'other');
       focusCounts.set(focus,Number(focusCounts.get(focus)||0)+1);
     }
+    if(limit>=4&&candidates.length){
+      const selected=new Set(candidates.map(program=>String(program.handle||'')));
+      const exploration=hackerOnePrograms
+        .filter(program=>String(program?.status||'')==='READY')
+        .filter(program=>program?.offers_bounties===true)
+        .filter(program=>Number(program?.value_efficiency_score||0)>=minScore)
+        .filter(program=>!selected.has(String(program?.handle||'')))
+        .filter(program=>[
+          ...(Array.isArray(program?.reasons)?program.reasons:[]),
+          ...(Array.isArray(program?.opportunity_reasons)?program.opportunity_reasons:[])
+        ].some(reason=>['new_program','catalog_changed','recent_catalog_change'].includes(String(reason))))
+        .sort((left,right)=>
+          Number(right?.opportunity_score||0)-Number(left?.opportunity_score||0)
+          || Number(right?.value_efficiency_score||0)-Number(left?.value_efficiency_score||0)
+          || String(left?.handle||'').localeCompare(String(right?.handle||''))
+        )[0];
+      if(exploration)candidates[candidates.length-1]=exploration;
+    }
     batchSelectedHandles=new Set(candidates.map(program=>String(program.handle||'')));
     renderBatchCatalog();
     el('h1BatchSummary').textContent=candidates.length
