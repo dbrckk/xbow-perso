@@ -199,7 +199,6 @@ backend/
     surface_temporal.py
     swarm_coordinator.py
     target_memory.py
-    totp_auth.py
     validation_state.py
     validator.py
     value_efficiency.py
@@ -403,7 +402,6 @@ backend/
     test_surface_temporal.py
     test_swarm_coordinator.py
     test_target_memory.py
-    test_totp_auth.py
     test_validation_state.py
     test_validator.py
     test_value_efficiency.py
@@ -5519,7 +5517,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.5.5")
+app = FastAPI(title="xbow-perso", version="0.5.6")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -10205,73 +10203,6 @@ persistent = sorted(current_keys & previous_keys)
 by_kind: dict[str, int] = {kind: 0 for kind in SURFACE_KINDS}
 ````
 
-## File: backend/app/totp_auth.py
-````python
-def _strict_bool(name: str, default: bool = False) -> bool
-⋮----
-raw = os.getenv(name)
-⋮----
-value = raw.strip().lower()
-⋮----
-def totp_enabled() -> bool
-⋮----
-def configured_totp_secret() -> bytes
-⋮----
-inline = os.getenv("XBOW_TOTP_SECRET", "").strip()
-⋮----
-use_vault = vault_enabled()
-⋮----
-inline = get_secret("totp_secret")
-⋮----
-normalized = inline.replace(" ", "").upper()
-⋮----
-secret = base64.b32decode(normalized, casefold=True)
-⋮----
-def _totp(secret: bytes, counter: int, digits: int = 6) -> str
-⋮----
-digest = hmac.new(secret, struct.pack(">Q", counter), hashlib.sha1).digest()
-offset = digest[-1] & 0x0F
-binary = struct.unpack(">I", digest[offset : offset + 4])[0] & 0x7FFFFFFF
-⋮----
-def _matching_totp_counter(code: str, *, now: float | None = None) -> int | None
-⋮----
-secret = configured_totp_secret()
-timestamp = time.time() if now is None else now
-counter = int(timestamp // 30)
-# One adjacent step tolerates small clock skew while remaining bounded.
-⋮----
-def verify_totp_code(code: str, *, now: float | None = None) -> bool
-⋮----
-_replay_lock = Lock()
-_used_totp: dict[str, float] = {}
-⋮----
-def _replay_backend() -> str
-⋮----
-backend = os.getenv("XBOW_TOTP_REPLAY_BACKEND", "memory").strip().lower()
-⋮----
-def _consume_memory(key: str, ttl_seconds: int, now: float) -> bool
-⋮----
-expired = [item for item, expiry in _used_totp.items() if expiry <= now]
-⋮----
-def _consume_redis(key: str, ttl_seconds: int) -> bool
-⋮----
-url = os.getenv("XBOW_TOTP_REPLAY_REDIS_URL", "").strip()
-⋮----
-client = redis.Redis.from_url(
-⋮----
-def consume_totp_code(code: str, *, now: float | None = None) -> bool
-⋮----
-counter = _matching_totp_counter(code, now=timestamp)
-⋮----
-fingerprint = hashlib.sha256(
-ttl_seconds = 90
-key = f"xbow:totp-used:{fingerprint}"
-⋮----
-def require_totp_for_mutation(request: Request) -> None
-⋮----
-code = request.headers.get("x-totp-code", "").strip()
-````
-
 ## File: backend/app/validation_state.py
 ````python
 @dataclass(frozen=True)
@@ -11524,6 +11455,15 @@ result = api_token_source_status()
 def test_api_token_source_status_reports_vault_without_secret(monkeypatch, tmp_path)
 ⋮----
 def test_auth_status_endpoint_bypasses_control_api_auth(monkeypatch)
+⋮----
+def test_control_api_mutation_uses_api_token_without_totp(monkeypatch)
+⋮----
+token = "mutation-token-" + "m" * 32
+⋮----
+raw = [(b"authorization", f"Bearer {token}".encode())]
+request_obj = Request(
+⋮----
+result = asyncio.run(authenticate_control_api(request_obj, call_next))
 ````
 
 ## File: backend/tests/test_autonomy_gate.py
@@ -12294,21 +12234,6 @@ queue = JobQueue(str(tmp_path / "queue.sqlite3"))
 @pytest.mark.skipif(not _redis_url(), reason="Redis integration URL unavailable")
 def test_redis_planner_lock_rejects_invalid_lease(monkeypatch)
 ⋮----
-@pytest.mark.skipif(not _redis_url(), reason="Redis integration URL unavailable")
-def test_redis_totp_replay_is_atomic_across_concurrent_consumers(monkeypatch)
-⋮----
-secret = base64.b32encode(uuid4().bytes).decode("ascii")
-⋮----
-code = _totp(configured_totp_secret(), 1)
-⋮----
-results = []
-⋮----
-def consume()
-⋮----
-accepted = consume_totp_code(code, now=30.0)
-⋮----
-threads = [threading.Thread(target=consume) for _ in range(8)]
-⋮----
 @pytest.mark.skipif(not _postgres_url(), reason="PostgreSQL integration URL unavailable")
 def test_postgres_cas_stress_has_exactly_one_winner(tmp_path)
 ⋮----
@@ -12896,6 +12821,8 @@ def test_api_token_is_persisted_across_browser_sessions()
 ⋮----
 app = _text("frontend/app.js")
 html = _text("frontend/index.html")
+⋮----
+def test_frontend_has_no_totp_control()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -18107,60 +18034,6 @@ form = store.put_observation(
 waf = store.put_observation(
 ````
 
-## File: backend/tests/test_totp_auth.py
-````python
-RFC_SECRET = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-⋮----
-def _request(method="POST", headers=None)
-⋮----
-raw = [(k.lower().encode(), v.encode()) for k, v in (headers or {}).items()]
-⋮----
-def _clear(monkeypatch)
-⋮----
-def test_totp_matches_rfc6238_sha1_vector(monkeypatch)
-⋮----
-secret = configured_totp_secret()
-⋮----
-def test_totp_disabled_preserves_mutating_api_compatibility(monkeypatch)
-⋮----
-def test_totp_enabled_requires_code_for_mutation(monkeypatch)
-⋮----
-def test_totp_enabled_does_not_require_code_for_get(monkeypatch)
-⋮----
-def test_totp_rejects_invalid_code(monkeypatch)
-⋮----
-def test_totp_accepts_adjacent_time_step(monkeypatch)
-⋮----
-code = _totp(secret, 2)
-⋮----
-def test_totp_vault_secret_is_supported(monkeypatch, tmp_path)
-⋮----
-def test_totp_vault_mode_refuses_env_fallback(monkeypatch, tmp_path)
-⋮----
-def test_control_middleware_requires_token_and_totp_for_mutation(monkeypatch)
-⋮----
-token = "control-token-" + "x" * 32
-⋮----
-code = _totp(secret, 1)
-⋮----
-async def call_next(_request)
-⋮----
-result = asyncio.run(
-⋮----
-def test_invalid_totp_configuration_fails_closed(monkeypatch)
-⋮----
-def test_totp_code_is_single_use_in_memory_backend(monkeypatch)
-⋮----
-def test_totp_replay_state_expires_after_window(monkeypatch)
-⋮----
-first = _totp(configured_totp_secret(), 1)
-later = _totp(configured_totp_secret(), 5)
-⋮----
-def test_totp_replay_backend_invalid_fails_closed(monkeypatch)
-⋮----
-code = _totp(configured_totp_secret(), 1)
-````
-
 ## File: backend/tests/test_validation_state.py
 ````python
 def _graph(validation_value="observed", validation_source="validator")
@@ -19962,7 +19835,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.5\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.6\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 
@@ -20586,8 +20459,6 @@ services:
       XBOW_API_RATE_LIMIT_ENABLED: "true"
       XBOW_API_RATE_LIMIT_BACKEND: redis
       XBOW_API_RATE_LIMIT_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
-      XBOW_TOTP_REPLAY_BACKEND: redis
-      XBOW_TOTP_REPLAY_REDIS_URL: ${XBOW_REDIS_URL:?set XBOW_REDIS_URL}
 
   worker:
     depends_on:
@@ -20743,8 +20614,6 @@ services:
       XBOW_ALERT_WEBHOOK_HMAC_KEY: ${XBOW_ALERT_WEBHOOK_HMAC_KEY:-}
       XBOW_HACKERONE_API_USERNAME: ${XBOW_HACKERONE_API_USERNAME:-}
       XBOW_HACKERONE_API_TOKEN: ${XBOW_HACKERONE_API_TOKEN:-}
-      XBOW_TOTP_ENABLED: ${XBOW_TOTP_ENABLED:-false}
-      XBOW_TOTP_SECRET: ${XBOW_TOTP_SECRET:-}
       XBOW_AUDIT_HMAC_KEY: ${XBOW_AUDIT_HMAC_KEY:-}
       XBOW_VAULT_ENABLED: ${XBOW_VAULT_ENABLED:-false}
       XBOW_VAULT_PATH: ${XBOW_VAULT_PATH:-/data/secrets.vault.json}

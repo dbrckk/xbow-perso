@@ -1,12 +1,36 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "03969e2fe1e67a5a9d145f215ab7bff83919b7be",
-  "head": "20580383a7c089dc826f3608414a993d79fda596",
+  "base": "20580383a7c089dc826f3608414a993d79fda596",
+  "head": "599f8589191d40aebb17d2c3171cadc6ac3ba5b2",
   "index_mode": "incremental",
   "changed_files": [
     {
+      "path": ".env.example",
+      "status": "M"
+    },
+    {
+      "path": "VAULT_MIGRATION.md",
+      "status": "M"
+    },
+    {
       "path": "backend/app/main.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/totp_auth.py",
+      "status": "D"
+    },
+    {
+      "path": "backend/app/vault_migration.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_auth.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_distributed_concurrency.py",
       "status": "M"
     },
     {
@@ -19,6 +43,18 @@
     },
     {
       "path": "backend/tests/test_live_activation_profile.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_totp_auth.py",
+      "status": "D"
+    },
+    {
+      "path": "docker-compose.distributed.yml",
+      "status": "M"
+    },
+    {
+      "path": "docker-compose.yml",
       "status": "M"
     },
     {
@@ -40,6 +76,9 @@
   ],
   "changed_source_files": [
     "backend/app/main.py",
+    "backend/app/vault_migration.py",
+    "backend/tests/test_auth.py",
+    "backend/tests/test_distributed_concurrency.py",
     "backend/tests/test_frontend_auth_proxy.py",
     "backend/tests/test_frontend_policy_launcher.py",
     "backend/tests/test_live_activation_profile.py",
@@ -103,6 +142,7 @@
     "backend/app/strix_parser.py",
     "backend/app/submission_api.py",
     "backend/app/validator.py",
+    "backend/app/vault_migration.py",
     "backend/app/worker.py",
     "backend/app/worker_service.py",
     "backend/tests/test_adaptive_cycle.py",
@@ -294,7 +334,6 @@
     "backend/tests/test_surface_temporal.py",
     "backend/tests/test_swarm_coordinator.py",
     "backend/tests/test_target_memory.py",
-    "backend/tests/test_totp_auth.py",
     "backend/tests/test_validation_state.py",
     "backend/tests/test_validator.py",
     "backend/tests/test_value_efficiency.py",
@@ -1686,433 +1725,433 @@
       "name": "authenticate_control_api",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 36
+      "line": 35
     },
     {
       "name": "utcnow",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 50
+      "line": 48
     },
     {
       "name": "storage",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 54
+      "line": 52
     },
     {
       "name": "queue",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 58
+      "line": 56
     },
     {
       "name": "incident_store",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 62
+      "line": 60
     },
     {
       "name": "_stable_key",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 70
+      "line": 68
     },
     {
       "name": "CampaignState",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 75
+      "line": 73
     },
     {
       "name": "ProgramRules",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 85
+      "line": 83
     },
     {
       "name": "TargetInput",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 98
+      "line": 96
     },
     {
       "name": "primary_target_must_be_allowed",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 105
+      "line": 103
     },
     {
       "name": "Finding",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 119
+      "line": 117
     },
     {
       "name": "FindingReviewMetadataInput",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 137
+      "line": 135
     },
     {
       "name": "normalize_review_metadata",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 147
+      "line": 145
     },
     {
       "name": "Campaign",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 162
+      "line": 160
     },
     {
       "name": "EvidenceInput",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 172
+      "line": 170
     },
     {
       "name": "HackerOneScopePreviewInput",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 179
+      "line": 177
     },
     {
       "name": "IncidentAcknowledgeInput",
       "kind": "class",
       "file": "backend/app/main.py",
-      "line": 183
+      "line": 181
     },
     {
       "name": "normalize_pattern",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 188
+      "line": 186
     },
     {
       "name": "is_host_allowed",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 195
+      "line": 193
     },
     {
       "name": "save_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 204
+      "line": 202
     },
     {
       "name": "assert_campaign_record",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 211
+      "line": 209
     },
     {
       "name": "assert_campaign_exists",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 219
+      "line": 217
     },
     {
       "name": "_reject_cancelled_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 223
+      "line": 221
     },
     {
       "name": "_reject_new_findings_for_closed_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 228
+      "line": 226
     },
     {
       "name": "_campaign_graph",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 236
+      "line": 234
     },
     {
       "name": "_has_evidence_backed_independent_validation",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 243
+      "line": 241
     },
     {
       "name": "policy_receipt",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 248
+      "line": 246
     },
     {
       "name": "sanitized_scan_payload",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 274
+      "line": 272
     },
     {
       "name": "live",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 311
+      "line": 309
     },
     {
       "name": "ready",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 316
+      "line": 314
     },
     {
       "name": "auth_status",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 329
+      "line": 327
     },
     {
       "name": "health",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 338
+      "line": 336
     },
     {
       "name": "deployment_preflight",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 354
+      "line": 352
     },
     {
       "name": "system_capabilities",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 361
+      "line": 359
     },
     {
       "name": "get_observer_health",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 445
+      "line": 443
     },
     {
       "name": "get_incidents",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 450
+      "line": 448
     },
     {
       "name": "acknowledge_incident",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 455
+      "line": 453
     },
     {
       "name": "list_agents",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 470
+      "line": 468
     },
     {
       "name": "preview_hackerone_scope",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 476
+      "line": 474
     },
     {
       "name": "create_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 512
+      "line": 510
     },
     {
       "name": "list_campaigns",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 520
+      "line": 518
     },
     {
       "name": "get_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 525
+      "line": 523
     },
     {
       "name": "get_campaign_target_memory",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 530
+      "line": 528
     },
     {
       "name": "get_campaign_surface_diff",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 542
+      "line": 540
     },
     {
       "name": "get_campaign_surface_temporal",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 556
+      "line": 554
     },
     {
       "name": "get_campaign_surface_confidence",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 568
+      "line": 566
     },
     {
       "name": "campaign_outbox_status",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 585
+      "line": 583
     },
     {
       "name": "campaign_outbox_recovery",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 599
+      "line": 597
     },
     {
       "name": "_apply_local_outbox_repairs",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 620
+      "line": 618
     },
     {
       "name": "reconcile_campaign_outbox_local",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 659
+      "line": 657
     },
     {
       "name": "preview_pentagi_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 717
+      "line": 715
     },
     {
       "name": "_pentagi_dispatch_fingerprint",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 748
+      "line": 746
     },
     {
       "name": "_record_pentagi_dispatch_intent",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 752
+      "line": 750
     },
     {
       "name": "_reconcile_pentagi_queued_event",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 778
+      "line": 776
     },
     {
       "name": "dispatch_pentagi_campaign",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 825
+      "line": 823
     },
     {
       "name": "pentagi_campaign_status",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 899
+      "line": 897
     },
     {
       "name": "list_campaign_observations",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 929
+      "line": 927
     },
     {
       "name": "campaign_decision_audit",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 935
+      "line": 933
     },
     {
       "name": "campaign_event_audit",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 947
+      "line": 945
     },
     {
       "name": "campaign_worker_audit",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 957
+      "line": 955
     },
     {
       "name": "campaign_knowledge",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 969
+      "line": 967
     },
     {
       "name": "campaign_finding_ranking",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 984
+      "line": 982
     },
     {
       "name": "campaign_advisory_history",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1011
+      "line": 1009
     },
     {
       "name": "campaign_advisory_delta",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1020
+      "line": 1018
     },
     {
       "name": "campaign_advisory_journal",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1031
+      "line": 1029
     },
     {
       "name": "campaign_hypothesis_history",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1043
+      "line": 1041
     },
     {
       "name": "campaign_hypothesis_delta",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1052
+      "line": 1050
     },
     {
       "name": "campaign_hypothesis_stability",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1063
+      "line": 1061
     },
     {
       "name": "campaign_plan",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1075
+      "line": 1073
     },
     {
       "name": "check_policy",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1125
+      "line": 1123
     },
     {
       "name": "verify_campaign_policy_receipt",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1135
+      "line": 1133
     },
     {
       "name": "_pending_campaign_start_request",
       "kind": "function",
       "file": "backend/app/main.py",
-      "line": 1140
+      "line": 1138
     }
   ],
   "selected_tests": [

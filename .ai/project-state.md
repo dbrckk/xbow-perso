@@ -22,20 +22,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T14:52:23Z
+Generated: 2026-09-21T15:05:52Z
 
 ### Git
 - Branch: `main`
-- Head: `20580383a7c0`
-- Commit date: 2026-09-21T16:52:10+02:00
-- Commit: feat: persist API token across browser sessions (#327)
-- Tracked files: 557
+- Head: `599f8589191d`
+- Commit date: 2026-09-21T17:05:41+02:00
+- Commit: fix: remove TOTP from dashboard and control API (#328)
+- Tracked files: 555
 
 ### Recently changed files
+- `.env.example`
+- `VAULT_MIGRATION.md`
 - `backend/app/main.py`
+- `backend/app/totp_auth.py`
+- `backend/app/vault_migration.py`
+- `backend/tests/test_auth.py`
+- `backend/tests/test_distributed_concurrency.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_live_activation_profile.py`
+- `backend/tests/test_totp_auth.py`
+- `docker-compose.distributed.yml`
+- `docker-compose.yml`
 - `frontend/app.js`
 - `frontend/index.html`
 - `frontend/sw.js`
@@ -43,9 +52,6 @@ Generated: 2026-09-21T14:52:23Z
 - `backend/tests/test_mobile_reset_api_token.py`
 - `scripts/mobile-reset-api-token.sh`
 - `.deploy-trigger`
-- `backend/app/hackerone_live_readiness.py`
-- `backend/tests/test_hackerone_live_readiness.py`
-- `frontend/nginx.conf`
 
 ### Project signals
 - `pyproject.toml`

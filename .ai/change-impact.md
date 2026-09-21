@@ -1,19 +1,29 @@
 # Change impact
 
-Base: a0630d552c51dd2527d8c2d80bf095d22e4aebe1
-Head: 20580383a7c089dc826f3608414a993d79fda596
+Base: 384ac7e2b7dbc5e666842ddf27af4d351fbbd791
+Head: 599f8589191d40aebb17d2c3171cadc6ac3ba5b2
 
 ## Changed files
+- M .env.example
+- M VAULT_MIGRATION.md
 - M backend/app/main.py
+- D backend/app/totp_auth.py
+- M backend/app/vault_migration.py
+- M backend/tests/test_auth.py
+- M backend/tests/test_distributed_concurrency.py
 - M backend/tests/test_frontend_auth_proxy.py
 - M backend/tests/test_frontend_policy_launcher.py
 - M backend/tests/test_live_activation_profile.py
+- D backend/tests/test_totp_auth.py
+- M docker-compose.distributed.yml
+- M docker-compose.yml
 - M frontend/app.js
 - M frontend/index.html
 - M frontend/sw.js
 - M scripts/mobile-production-update.sh
 
 ## Affected areas
+- (root)
 - backend
 - frontend
 - scripts
