@@ -22,22 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T09:01:18Z
+Generated: 2026-09-21T09:05:16Z
 
 ### Git
 - Branch: `main`
-- Head: `b6623d3f2ad8`
-- Commit date: 2026-09-21T11:01:07+02:00
-- Commit: feat: restore active HackerOne batch from server
-- Tracked files: 538
+- Head: `504fc7280cd0`
+- Commit date: 2026-09-21T11:05:02+02:00
+- Commit: feat: prefill deterministic HackerOne first-review fields
+- Tracked files: 540
 
 ### Recently changed files
+- `backend/app/hackerone_api.py`
+- `backend/app/hackerone_review_draft.py`
+- `backend/tests/test_hackerone_review_draft.py`
 - `frontend/hackerone.js`
 - `frontend/sw.js`
 - `frontend/index.html`
-- `backend/app/hackerone_api.py`
-- `backend/app/hackerone_discovery.py`
-- `backend/tests/test_hackerone_discovery.py`
 
 ### Project signals
 - `pyproject.toml`

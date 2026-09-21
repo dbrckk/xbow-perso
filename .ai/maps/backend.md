@@ -90,6 +90,7 @@ app/
   hackerone_needs_info.py
   hackerone_report_sync_worker.py
   hackerone_report_tracking.py
+  hackerone_review_draft.py
   hackerone_scope_import.py
   high_value_intelligence.py
   hypothesis_engine.py
@@ -260,6 +261,7 @@ tests/
   test_hackerone_report_lifecycle_e2e.py
   test_hackerone_report_sync_worker.py
   test_hackerone_report_tracking.py
+  test_hackerone_review_draft.py
   test_hackerone_review_profiles.py
   test_hackerone_reviewed_batch_api.py
   test_hackerone_scope_import.py
@@ -2788,6 +2790,9 @@ state = store.get_hackerone_intelligence_state()
 ⋮----
 state = refresh_hackerone_intelligence(store, client=HackerOneClient())
 ⋮----
+@router.get("/api/imports/hackerone/programs/{handle}/review-draft")
+def get_hackerone_program_review_draft(handle: str)
+⋮----
 @router.get("/api/imports/hackerone/programs/{handle}/snapshot")
 def get_hackerone_program_snapshot(handle: str)
 ⋮----
@@ -3688,6 +3693,24 @@ needs_more_info = project_needs_more_info_request(
 public_activities = project_public_report_activities(
 ⋮----
 def status_fingerprint_fields(status: dict[str, Any]) -> dict[str, Any]
+```
+
+## File: app/hackerone_review_draft.py
+```python
+def build_hackerone_review_draft(snapshot) -> dict[str, Any]
+⋮----
+"""Build conservative first-review defaults from a verified HackerOne snapshot."""
+program = dict(snapshot.program or {})
+preview = dict(snapshot.preview or {})
+⋮----
+primary_url = None
+⋮----
+identifier = str(asset.get("identifier") or "").strip().rstrip(".").lower()
+⋮----
+primary_url = f"https://{identifier}"
+⋮----
+handle = str(snapshot.handle)
+snapshot_sha = str(snapshot.snapshot_sha256)
 ```
 
 ## File: app/hackerone_scope_import.py
@@ -12702,6 +12725,21 @@ result = hackerone_api.get_hackerone_remote_report_status(
 def test_remote_report_status_requires_recorded_hackerone_submission(tmp_path, monkeypatch)
 ⋮----
 def test_remote_report_status_maps_upstream_unavailability(tmp_path, monkeypatch)
+```
+
+## File: tests/test_hackerone_review_draft.py
+```python
+def _snapshot()
+⋮----
+def test_review_draft_prefills_only_deterministic_fields()
+⋮----
+draft = build_hackerone_review_draft(_snapshot())
+⋮----
+def test_review_draft_does_not_invent_primary_url_without_plain_domain()
+⋮----
+snapshot = _snapshot()
+⋮----
+draft = build_hackerone_review_draft(snapshot)
 ```
 
 ## File: tests/test_hackerone_review_profiles.py

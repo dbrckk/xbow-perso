@@ -1,13 +1,17 @@
 # Change impact
 
-Base: a42a3bd2d469b298e0bff288c06089807be65dce
-Head: b6623d3f2ad8a5fd24f4b59c8a0e7ee7740e533e
+Base: 40f05aa354a1b6ec32b0a47098a62dc4a902e4e8
+Head: 504fc7280cd04b7934b301f7a199133150bcc352
 
 ## Changed files
+- M backend/app/hackerone_api.py
+- A backend/app/hackerone_review_draft.py
+- A backend/tests/test_hackerone_review_draft.py
 - M frontend/hackerone.js
 - M frontend/sw.js
 
 ## Affected areas
+- backend
 - frontend
 
 ## Related test candidates
