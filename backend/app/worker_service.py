@@ -35,6 +35,7 @@ from .planner_lock import campaign_planner_lock
 from .recon_worker import ReconPolicyError, execute_recon_task
 from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_nuclei_job, run_strix_job
 from .report import render_markdown
+from .runtime_learning import maybe_flush_learning_outbox
 from .storage import CampaignConflictError, Storage
 from .storage_backend import create_storage
 from .validator import ValidationPolicyError, safe_http_probe
@@ -632,6 +633,11 @@ def main() -> None:
                 reconcile_hackerone_batches(queue, store, limit=20)
             except Exception:
                 # Batch scheduling must fail closed without taking down the worker.
+                pass
+            try:
+                maybe_flush_learning_outbox()
+            except Exception:
+                # Learning delivery is advisory and must never stop campaign execution.
                 pass
         worked = process_one(queue, store, worker_id)
         if not worked:
