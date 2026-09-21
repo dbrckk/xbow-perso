@@ -755,6 +755,46 @@ def _reviewed_campaign_input(
         ) from exc
 
 
+@router.post("/api/imports/hackerone/batches/go-no-go")
+def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):
+    """Return one read-only prelaunch verdict without creating campaigns."""
+    from .main import dependency_readiness
+
+    runtime = build_hackerone_live_readiness(dependency_readiness())
+    batch = preflight_reviewed_hackerone_batch(payload)
+    runtime_ready = runtime.get("live_scan_ready") is True
+    batch_ready = batch.get("ready") is True
+    blockers = []
+    if not runtime_ready:
+        blockers.extend(
+            str(item.get("id") or "runtime_check")
+            for item in list(runtime.get("checks") or [])
+            if isinstance(item, dict)
+            and item.get("required") is True
+            and item.get("ok") is not True
+        )
+    blockers.extend(
+        str(item.get("handle") or "program")
+        + ":"
+        + str(item.get("reason") or "blocked")
+        for item in list(batch.get("members") or [])
+        if isinstance(item, dict) and item.get("status") == "blocked"
+    )
+    return {
+        "provider": "hackerone",
+        "go": bool(runtime_ready and batch_ready),
+        "runtime_ready": runtime_ready,
+        "batch_ready": batch_ready,
+        "blockers": blockers,
+        "runtime": runtime,
+        "batch": batch,
+        "read_only": True,
+        "campaigns_created": False,
+        "automatic_launch": False,
+        "scope_expansion": False,
+    }
+
+
 @router.post("/api/imports/hackerone/batches/preflight-reviewed")
 def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
     """Validate every selected reviewed program without creating campaigns."""
@@ -832,6 +872,17 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
             },
         )
 
+    verdict = hackerone_batch_go_no_go(payload)
+    if verdict.get("go") is not True:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed batch go/no-go blocked",
+                "reason": "batch_go_no_go_blocked",
+                "blockers": list(verdict.get("blockers") or []),
+            },
+        )
+
     return launch_hackerone_batch(
         HackerOneBatchLaunchInput(
             mode=payload.mode,
@@ -847,7 +898,6 @@ def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
     from .main import (
         assert_campaign_record,
         save_campaign,
-        start_campaign,
         storage,
         queue,
         utcnow,
@@ -909,38 +959,7 @@ def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
         _rollback_admitted_batch_campaigns(admitted_ids)
         raise
 
-    if payload.mode == "parallel":
-        record = storage().get_hackerone_batch_record(batch_id)
-        if record is None:
-            raise HTTPException(status_code=500, detail="HackerOne batch disappeared")
-        batch, version = record
-        changed = False
-        for member in batch["members"]:
-            try:
-                start_campaign(str(member["campaign_id"]))
-            except HTTPException as exc:
-                member["status"] = "blocked"
-                member["reason"] = str(exc.detail)[:500]
-            except Exception as exc:
-                member["status"] = "blocked"
-                member["reason"] = exc.__class__.__name__
-            else:
-                member["status"] = "running"
-            changed = True
-        if changed:
-            batch["summary"] = _batch_summary(batch["members"])
-            batch["state"] = (
-                "running"
-                if any(
-                    member["status"] == "running"
-                    for member in batch["members"]
-                )
-                else "completed"
-            )
-            batch["updated_at"] = utcnow()
-            storage().save_hackerone_batch(batch, expected_version=version)
-    else:
-        reconcile_hackerone_batch(queue(), storage(), batch_id)
+    reconcile_hackerone_batch(queue(), storage(), batch_id)
 
     latest = storage().get_hackerone_batch(batch_id)
     if latest is None:

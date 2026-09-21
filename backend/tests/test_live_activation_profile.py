@@ -49,3 +49,12 @@ def test_all_safe_production_scripts_require_recon_browser_baseline_off():
         assert 'require_gate "XBOW_ENABLE_RECON" "false"' in script
         assert 'require_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"' in script
         assert 'require_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"' in script
+
+
+
+def test_live_production_update_requires_backend_go_no_go_readiness():
+    script = _text("mobile-production-update.sh")
+
+    assert "=== HACKERONE LIVE GO/NO-GO ===" in script
+    assert "build_hackerone_live_readiness" in script
+    assert 'assert r["live_scan_ready"]' in script
