@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T11:30:48Z
+Generated: 2026-09-21T11:34:44Z
 
 ### Git
 - Branch: `main`
-- Head: `38e1de38c379`
-- Commit date: 2026-09-21T13:30:36+02:00
-- Commit: feat: require live worker heartbeat before real scan (#317)
-- Tracked files: 550
+- Head: `8c9192dcf5e2`
+- Commit date: 2026-09-21T13:34:34+02:00
+- Commit: release: freeze stable prelaunch baseline 0.5.0 (#318)
+- Tracked files: 551
 
 ### Recently changed files
+- `.env.example`
+- `FIRST_REAL_HACKERONE_RUN.md`
+- `backend/app/main.py`
+- `docs/RELEASE_0.5.0.md`
 - `backend/app/hackerone_live_readiness.py`
 - `backend/app/worker_liveness.py`
 - `backend/app/worker_service.py`
@@ -48,10 +52,6 @@ Generated: 2026-09-21T11:30:48Z
 - `docker-compose.yml`
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_hackerone_prelaunch.py`
-- `frontend/hackerone.js`
-- `frontend/sw.js`
-- `backend/app/high_value_intelligence.py`
-- `backend/app/recon_priority.py`
 
 ### Project signals
 - `pyproject.toml`

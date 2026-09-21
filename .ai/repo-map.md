@@ -5461,7 +5461,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.4.0")
+app = FastAPI(title="xbow-perso", version="0.5.0")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)

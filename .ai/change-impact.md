@@ -1,17 +1,18 @@
 # Change impact
 
-Base: 3683a040d2e2d27666ba86cb3a749321d625a3be
-Head: 38e1de38c379b0cec7665c0a91127f83849ad9c0
+Base: 23a3705116531c740a587ad5e0561d29b703e134
+Head: 8c9192dcf5e2a1a547ae8685c6d60cdcc1c728bc
 
 ## Changed files
-- M backend/app/hackerone_live_readiness.py
-- A backend/app/worker_liveness.py
-- M backend/app/worker_service.py
-- M backend/tests/test_hackerone_live_readiness.py
-- A backend/tests/test_worker_liveness.py
+- M .env.example
+- M FIRST_REAL_HACKERONE_RUN.md
+- M backend/app/main.py
+- A docs/RELEASE_0.5.0.md
 
 ## Affected areas
+- (root)
 - backend
+- docs
 
 ## Related test candidates
 - No direct filename-based test match detected.
