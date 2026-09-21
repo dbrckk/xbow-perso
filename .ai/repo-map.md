@@ -2057,12 +2057,21 @@ discovery = float(summary["enrichment_score"])
 ⋮----
 scan_evidence = [
 scanner_sources = sorted({item.source for item in scan_evidence})
+scan_count = len(scan_evidence)
 scan_score = 1.0 if scan_evidence else 0.0
 ⋮----
 validation = analyze_validation_state(graph)
 finding_count = len(validation.finding_ids)
 validated_count = len(validation.observed_independent_finding_ids)
 validation_score = (
+findings_per_scan = (
+validated_per_scan = (
+⋮----
+diminishing_returns = min(1.0, round(scan_count / 6.0, 4))
+⋮----
+diminishing_returns = min(
+⋮----
+diminishing_returns = 0.0
 ⋮----
 overall = round(discovery * 0.625 + scan_score * 0.375, 4)
 ⋮----
@@ -2082,6 +2091,8 @@ dimensions = coverage.get("dimensions") or {}
 discovery = float(dimensions.get("surface_discovery") or 0.0)
 scanner = float(dimensions.get("scanner_execution") or 0.0)
 validation = dimensions.get("independent_validation")
+diminishing_returns = float(dimensions.get("diminishing_returns") or 0.0)
+marginal_yield = dimensions.get("marginal_scan_yield")
 ⋮----
 focus = "surface_discovery"
 reason = "surface evidence is still sparse"
@@ -2092,8 +2103,19 @@ reason = "surface evidence exists but no completed scanner evidence is recorded"
 focus = "independent_validation"
 reason = "not all observed findings have independent validation evidence"
 ⋮----
+focus = "surface_rotation"
+reason = "repeated completed scans show low marginal finding yield; prefer an underexplored in-scope surface"
+⋮----
 focus = "none"
 reason = "no evidence-coverage gap requires advisory emphasis"
+⋮----
+"""Bound priority of repetitive scans without changing action kind or target."""
+⋮----
+signal = {
+⋮----
+diminishing = max(0.0, min(1.0, float(guidance.get("diminishing_returns") or 0.0)))
+penalty = min(15, max(5, int(round(diminishing * 15))))
+adjusted = PlannedAction(
 ````
 
 ## File: backend/app/decision_audit.py
@@ -11745,6 +11767,21 @@ def test_coverage_guidance_is_advisory_only()
 guidance = build_coverage_guidance(
 ⋮----
 def test_coverage_guidance_prioritizes_validation_after_scan()
+⋮----
+def test_coverage_detects_diminishing_scan_returns_without_findings()
+⋮----
+coverage = build_evidence_coverage(graph, scope_checker=lambda _host: True)
+guidance = build_coverage_guidance(coverage)
+⋮----
+def test_diminishing_returns_does_not_override_needed_validation()
+⋮----
+coverage = {
+⋮----
+def test_low_yield_scan_deprioritization_preserves_kind_and_target()
+⋮----
+action = PlannedAction(
+⋮----
+def test_coverage_priority_never_changes_non_scan_action()
 ````
 
 ## File: backend/tests/test_decision_audit.py

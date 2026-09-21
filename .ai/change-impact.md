@@ -1,22 +1,15 @@
 # Change impact
 
-Base: 2b4b526b92306660c48069c9c7b6b700b3c93c95
-Head: 4e533e30e6efbdaad2ad5e569033c6b84019eed7
+Base: ece32788efe656db082a6e649fe35c3ac3fce543
+Head: 1ad6d444abedf9644695510588ddf93b0f5ed094
 
 ## Changed files
-- M backend/app/hackerone_api.py
-- M backend/app/hackerone_discovery.py
-- A backend/app/local_outcome_intelligence.py
-- A backend/app/value_efficiency.py
-- A backend/tests/test_local_outcome_intelligence.py
-- A backend/tests/test_value_efficiency.py
-- M frontend/hackerone.js
-- M frontend/index.html
-- M frontend/sw.js
+- M backend/app/coverage.py
+- M backend/app/orchestrator.py
+- M backend/tests/test_coverage.py
 
 ## Affected areas
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

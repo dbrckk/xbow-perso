@@ -5,3267 +5,1661 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "HackerOneProgramPolicyInput": {
+    "build_evidence_coverage": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 35,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 35,
-          "preview": "class HackerOneProgramPolicyInput(BaseModel):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 69,
-          "preview": "policy: HackerOneProgramPolicyInput",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 166,
-          "preview": "def _policy_from_input(payload: HackerOneProgramPolicyInput):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 672,
-          "preview": "policy = HackerOneProgramPolicyInput.model_validate(policy_raw)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 7,
-          "preview": "HackerOneProgramPolicyInput,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 46,
-          "preview": "return HackerOneProgramPolicyInput(**_policy_values(**overrides))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 196,
-          "preview": "HackerOneProgramPolicyInput(**policy)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 7
-    },
-    "reviewed_at_must_be_timezone_aware": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 52,
+        "file": "backend/app/coverage.py",
+        "line": 14,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 52,
-          "preview": "def reviewed_at_must_be_timezone_aware(cls, value: datetime) -> datetime:",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "request_rate_must_be_explicit_number": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 59,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 59,
-          "preview": "def request_rate_must_be_explicit_number(cls, value: Any) -> Any:",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "HackerOneRulesPreviewInput": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 65,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 65,
-          "preview": "class HackerOneRulesPreviewInput(BaseModel):",
+          "file": "backend/app/coverage.py",
+          "line": 14,
+          "preview": "def build_evidence_coverage(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/hackerone_api.py",
+          "file": "backend/app/coverage.py",
           "line": 97,
-          "preview": "class HackerOneCampaignAdmissionInput(HackerOneRulesPreviewInput):",
+          "preview": "coverage = build_evidence_coverage(",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 194,
-          "preview": "def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any] | None:",
+          "file": "backend/app/orchestrator.py",
+          "line": 17,
+          "preview": "from .coverage import build_coverage_guidance, build_evidence_coverage, prioritize_action_with_coverage",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 445,
-          "preview": "def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):",
+          "file": "backend/app/orchestrator.py",
+          "line": 190,
+          "preview": "coverage = build_evidence_coverage(graph, scope_checker=scope_checker)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 8,
-          "preview": "HackerOneRulesPreviewInput,",
+          "file": "backend/tests/test_coverage.py",
+          "line": 1,
+          "preview": "from app.coverage import build_coverage_guidance, build_evidence_coverage, prioritize_action_with_coverage",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 118,
-          "preview": "payload = HackerOneRulesPreviewInput(",
+          "file": "backend/tests/test_coverage.py",
+          "line": 19,
+          "preview": "result = build_evidence_coverage(graph, scope_checker=lambda _host: True)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 172,
-          "preview": "HackerOneRulesPreviewInput(",
+          "file": "backend/tests/test_coverage.py",
+          "line": 68,
+          "preview": "result = build_evidence_coverage(graph, scope_checker=lambda _host: True)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 210,
-          "preview": "payload = HackerOneRulesPreviewInput(",
+          "file": "backend/tests/test_coverage.py",
+          "line": 156,
+          "preview": "coverage = build_evidence_coverage(graph, scope_checker=lambda _host: True)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 8
     },
-    "remote_binding_must_be_complete": {
+    "campaign_coverage": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 79,
+        "file": "backend/app/coverage.py",
+        "line": 91,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 79,
-          "preview": "def remote_binding_must_be_complete(self):",
+          "file": "backend/app/coverage.py",
+          "line": 91,
+          "preview": "def campaign_coverage(campaign_id: str):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "HackerOneCampaignTargetInput": {
+    "build_coverage_guidance": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 90,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 90,
-          "preview": "class HackerOneCampaignTargetInput(BaseModel):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 98,
-          "preview": "target: HackerOneCampaignTargetInput",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 692,
-          "preview": "target=HackerOneCampaignTargetInput(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "HackerOneCampaignAdmissionInput": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 97,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 97,
-          "preview": "class HackerOneCampaignAdmissionInput(HackerOneRulesPreviewInput):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 105,
-          "preview": "campaigns: list[HackerOneCampaignAdmissionInput] = Field(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 525,
-          "preview": "def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 628,
-          "preview": ") -> HackerOneCampaignAdmissionInput:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 689,
-          "preview": "return HackerOneCampaignAdmissionInput(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 715,
-          "preview": "prepared: list[HackerOneCampaignAdmissionInput] = []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 913,
-          "preview": "def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 5,
-          "preview": "from app.hackerone_api import HackerOneCampaignAdmissionInput, admit_hackerone_campaign",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 12,
-          "preview": "return HackerOneCampaignAdmissionInput(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 9
-    },
-    "HackerOneBatchLaunchInput": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 101,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 101,
-          "preview": "class HackerOneBatchLaunchInput(BaseModel):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 743,
-          "preview": "HackerOneBatchLaunchInput(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 751,
-          "preview": "def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "campaigns_must_be_remote_bound_and_unique": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 111,
+        "file": "backend/app/coverage.py",
+        "line": 108,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 111,
-          "preview": "def campaigns_must_be_remote_bound_and_unique(self):",
+          "file": "backend/app/coverage.py",
+          "line": 108,
+          "preview": "def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:",
           "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 17,
+          "preview": "from .coverage import build_coverage_guidance, build_evidence_coverage, prioritize_action_with_coverage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 191,
+          "preview": "coverage_guidance = build_coverage_guidance(coverage)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1,
+          "preview": "from app.coverage import build_coverage_guidance, build_evidence_coverage, prioritize_action_with_coverage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 81,
+          "preview": "guidance = build_coverage_guidance(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 99,
+          "preview": "guidance = build_coverage_guidance(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 157,
+          "preview": "guidance = build_coverage_guidance(coverage)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 180,
+          "preview": "guidance = build_coverage_guidance(coverage)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 8
     },
-    "HackerOneReviewedBatchLaunchInput": {
+    "prioritize_action_with_coverage": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 124,
-        "kind": "class",
+        "file": "backend/app/coverage.py",
+        "line": 150,
+        "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 124,
-          "preview": "class HackerOneReviewedBatchLaunchInput(BaseModel):",
+          "file": "backend/app/coverage.py",
+          "line": 150,
+          "preview": "def prioritize_action_with_coverage(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 711,
-          "preview": "def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):",
+          "file": "backend/app/orchestrator.py",
+          "line": 17,
+          "preview": "from .coverage import build_coverage_guidance, build_evidence_coverage, prioritize_action_with_coverage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 732,
+          "preview": "action, coverage_priority = prioritize_action_with_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1,
+          "preview": "from app.coverage import build_coverage_guidance, build_evidence_coverage, prioritize_action_with_coverage",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 193,
+          "preview": "adjusted, signal = prioritize_action_with_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 218,
+          "preview": "adjusted, signal = prioritize_action_with_coverage(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_stable_id": {
+      "definition": {
+        "file": "backend/app/orchestrator.py",
+        "line": 49,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 49,
+          "preview": "def _stable_id(prefix: str, *parts: str) -> str:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 80,
+          "preview": "asset_id = _stable_id(\"asset\", host, \"planner-seed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 533,
+          "preview": "observation_id = _stable_id(\"decision\", action.kind, action.reason, fingerprint)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_graph_fingerprint": {
+      "definition": {
+        "file": "backend/app/orchestrator.py",
+        "line": 54,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 54,
+          "preview": "def _graph_fingerprint(graph: ObservationGraph) -> str:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 332,
+          "preview": "fingerprint = _graph_fingerprint(graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 408,
+          "preview": "fingerprint = _graph_fingerprint(graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 532,
+          "preview": "fingerprint = _graph_fingerprint(graph)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "_load_graph": {
+      "definition": {
+        "file": "backend/app/orchestrator.py",
+        "line": 71,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 71,
+          "preview": "def _load_graph(store: Storage, campaign_id: str) -> ObservationGraph:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 580,
+          "preview": "refreshed_graph = _load_graph(store, campaign.id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 655,
+          "preview": "initial_graph = _load_graph(store, campaign.id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 690,
+          "preview": "graph = _load_graph(store, campaign.id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 704,
+          "preview": "graph = _load_graph(store, campaign.id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 866,
+          "preview": "graph = _load_graph(store, campaign.id)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_seed_primary_target": {
+      "definition": {
+        "file": "backend/app/orchestrator.py",
+        "line": 75,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 75,
+          "preview": "def _seed_primary_target(store: Storage, campaign: Campaign) -> None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 764,
+          "preview": "_seed_primary_target(store, campaign)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 2
     },
-    "reviewed_handles_must_be_unique": {
+    "_minimum_enrichment_score": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 132,
+        "file": "backend/app/orchestrator.py",
+        "line": 92,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 132,
-          "preview": "def reviewed_handles_must_be_unique(cls, value: list[str]) -> list[str]:",
+          "file": "backend/app/orchestrator.py",
+          "line": 92,
+          "preview": "def _minimum_enrichment_score() -> float:",
           "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 117,
+          "preview": "threshold = _minimum_enrichment_score()",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 2
     },
-    "HackerOneReportSubmissionInput": {
+    "_surface_enrichment": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 151,
-        "kind": "class",
+        "file": "backend/app/orchestrator.py",
+        "line": 103,
+        "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 151,
-          "preview": "class HackerOneReportSubmissionInput(BaseModel):",
+          "file": "backend/app/orchestrator.py",
+          "line": 103,
+          "preview": "def _surface_enrichment(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 1058,
-          "preview": "payload: HackerOneReportSubmissionInput,",
+          "file": "backend/app/orchestrator.py",
+          "line": 236,
+          "preview": "\"surface_enrichment\": _surface_enrichment(campaign, graph),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_intelligence_context": {
+      "definition": {
+        "file": "backend/app/orchestrator.py",
+        "line": 127,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 127,
+          "preview": "def _intelligence_context(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 711,
+          "preview": "intelligence = _intelligence_context(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
+          "file": "backend/app/orchestrator.py",
+          "line": 870,
+          "preview": "intelligence = _intelligence_context(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "scope_checker": {
+      "definition": {
+        "file": "backend/app/orchestrator.py",
+        "line": 138,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 149,
+          "preview": "def scope_checker(host: str) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 152,
+          "preview": "decisions = build_red_team_decisions(campaign.findings, graph, scope_checker=scope_checker, limit=10)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 154,
+          "preview": "risk = build_campaign_risk(campaign.findings, graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/attack_surface.py",
+          "line": 53,
+          "preview": "def _safe_form(item: Any, scope_checker: Callable[[str], bool] | None) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/attack_surface.py",
+          "line": 67,
+          "preview": "\"in_scope\": scope_checker(host) if scope_checker and action[\"valid\"] else None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/attack_surface.py",
+          "line": 76,
+          "preview": "scope_checker: Callable[[str], bool] | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/attack_surface.py",
+          "line": 88,
+          "preview": "\"in_scope\": scope_checker(host) if scope_checker and host else None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/attack_surface.py",
+          "line": 104,
+          "preview": "\"in_scope\": scope_checker(host) if scope_checker and normalized[\"valid\"] else None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/attack_surface.py",
+          "line": 113,
+          "preview": "forms = [_safe_form(item, scope_checker) for item in graph.by_kind(\"form\")]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/attack_surface.py",
+          "line": 213,
+          "preview": "scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/autonomy_gate.py",
+          "line": 107,
+          "preview": "def scope_checker(host: str) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/autonomy_gate.py",
+          "line": 113,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/autonomy_gate.py",
+          "line": 120,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 54,
+          "preview": "def scope_checker(host: str) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 60,
+          "preview": "surface = build_attack_surface(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 61,
+          "preview": "hypotheses = build_hypotheses(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 68,
+          "preview": "coverage = build_red_team_coverage(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 69,
+          "preview": "review_tasks = build_review_queue(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 73,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 79,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_overview.py",
+          "line": 84,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 39,
+          "preview": "scope_checker: Callable[[str], bool] | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 46,
+          "preview": "surface = build_attack_surface(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 47,
+          "preview": "coverage = build_red_team_coverage(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 52,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 137,
+          "preview": "def scope_checker(host: str) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_risk.py",
+          "line": 143,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/coverage.py",
+          "line": 17,
+          "preview": "scope_checker: Callable[[str], bool] | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/coverage.py",
+          "line": 19,
+          "preview": "surface = build_attack_surface(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/coverage.py",
+          "line": 99,
+          "preview": "scope_checker=lambda host: is_host_allowed(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/decision_consensus.py",
+          "line": 97,
+          "preview": "def scope_checker(host: str) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/decision_consensus.py",
+          "line": 103,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 96,
+          "preview": "scope_checker: Callable[[str], bool] | None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 98,
+          "preview": "if scope_checker is None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 101,
+          "preview": "return not hosts or any(scope_checker(host) for host in hosts)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 108,
+          "preview": "scope_checker: Callable[[str], bool] | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 123,
+          "preview": "if not _scope_allows(graph, endpoint.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 155,
+          "preview": "if not _scope_allows(graph, form.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 175,
+          "preview": "if not _scope_allows(graph, technology.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 190,
+          "preview": "if not _scope_allows(graph, waf.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 207,
+          "preview": "if not _scope_allows(graph, finding.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 245,
+          "preview": "scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 110,
+          "preview": "scope_checker=lambda host: is_host_allowed(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 138,
+          "preview": "def scope_checker(host: str) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 144,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 152,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 174,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 190,
+          "preview": "coverage = build_evidence_coverage(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 193,
+          "preview": "graph, scope_checker=scope_checker",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/passive_response_context.py",
+          "line": 13,
+          "preview": "scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/passive_response_context.py",
+          "line": 29,
+          "preview": "if not host or not scope_checker(host) or url in seen:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
           "line": 102,
-          "preview": "return hackerone_api.HackerOneReportSubmissionInput(",
+          "preview": "scope_checker: Callable[[str], bool],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 110,
+          "preview": "if not safe_target or not scope_checker(host):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 177,
+          "preview": "def scope_checker(host: str) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 183,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 46,
+          "preview": "scope_checker: Callable[[str], bool] | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 49,
+          "preview": "surface = build_attack_surface(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 50,
+          "preview": "hypotheses = build_hypotheses(graph, limit=100, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 67,
+          "preview": "if scope_checker is None",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 77,
+          "preview": "if scope_checker is None",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 94,
+          "preview": "if scope_checker is None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 221,
+          "preview": "\"scope_aware\": scope_checker is not None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 236,
+          "preview": "scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 51,
+          "preview": "scope_checker: Callable[[str], bool] | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 59,
+          "preview": "surface = build_attack_surface(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 60,
+          "preview": "coverage = build_red_team_coverage(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 81,
+          "preview": "hypotheses = build_hypotheses(graph, limit=100, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 244,
+          "preview": "def scope_checker(host: str) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 250,
+          "preview": "scope_checker=scope_checker,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/review_queue.py",
+          "line": 48,
+          "preview": "scope_checker: Callable[[str], bool] | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/review_queue.py",
+          "line": 63,
+          "preview": "for hypothesis in build_hypotheses(graph, limit=100, scope_checker=scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/review_queue.py",
+          "line": 188,
+          "preview": "scope_checker=lambda host: is_host_allowed(host, rules.allowed_targets, rules.denied_targets),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_attack_surface.py",
+          "line": 110,
+          "preview": "result = build_attack_surface(graph, scope_checker=lambda host: host == \"example.test\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_attack_surface_scope.py",
+          "line": 40,
+          "preview": "result = build_attack_surface(graph, scope_checker=lambda host: host == \"example.test\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_risk.py",
+          "line": 20,
+          "preview": "risk = build_campaign_risk([], graph, scope_checker=lambda host: host == \"example.test\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 19,
+          "preview": "result = build_evidence_coverage(graph, scope_checker=lambda _host: True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 68,
+          "preview": "result = build_evidence_coverage(graph, scope_checker=lambda _host: True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 156,
+          "preview": "coverage = build_evidence_coverage(graph, scope_checker=lambda _host: True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 79,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_passive_response_context.py",
+          "line": 31,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_recon_swarm.py",
+          "line": 31,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_recon_swarm.py",
+          "line": 56,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_recon_swarm.py",
+          "line": 74,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_recon_swarm.py",
+          "line": 82,
+          "preview": "scope_checker=lambda host: True,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_recon_swarm.py",
+          "line": 128,
+          "preview": "scope_checker=lambda host: host in {\"example.test\", \"other.test\"},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_recon_swarm.py",
+          "line": 141,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_red_team_decision.py",
+          "line": 23,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_review_queue.py",
+          "line": 62,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_swarm_coordinator.py",
+          "line": 23,
+          "preview": "scope_checker=lambda host: host == \"example.test\",",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 89
     },
-    "normalize_actor": {
+    "_validation_saturated_cluster_ids": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 159,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 159,
-          "preview": "def normalize_actor(cls, value: str) -> str:",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "_policy_from_input": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 166,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 166,
-          "preview": "def _policy_from_input(payload: HackerOneProgramPolicyInput):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 454,
-          "preview": "policy = _policy_from_input(payload.policy)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 534,
-          "preview": "policy = _policy_from_input(payload.policy)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "_json_sha256": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 184,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 184,
-          "preview": "def _json_sha256(value: Any) -> str:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 210,
-          "preview": "if _json_sha256(snapshot.document) != _json_sha256(payload.document):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 486,
-          "preview": "\"policy_snapshot_sha256\": _json_sha256(policy_snapshot),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 557,
-          "preview": "policy_snapshot_sha256 = _json_sha256(policy_snapshot)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 567,
-          "preview": "binding_fingerprint = _json_sha256(binding_payload)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 5
-    },
-    "_verify_remote_binding": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 194,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 194,
-          "preview": "def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any] | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 451,
-          "preview": "remote_binding = _verify_remote_binding(payload)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 531,
-          "preview": "remote_binding = _verify_remote_binding(payload)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "_conservative_admission_reason": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 225,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 225,
-          "preview": "def _conservative_admission_reason(policy: Any) -> str | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 463,
-          "preview": "reason = _conservative_admission_reason(policy)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 535,
-          "preview": "reason = _conservative_admission_reason(policy)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "_upstream_error": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
+        "file": "backend/app/orchestrator.py",
         "line": 240,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 200,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
+          "file": "backend/app/orchestrator.py",
           "line": 240,
-          "preview": "def _upstream_error(exc: HackerOneClientError) -> HTTPException:",
+          "preview": "def _validation_saturated_cluster_ids(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 306,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 332,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 354,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 409,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 423,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 432,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 632,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 999,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 1025,
-          "preview": "raise _upstream_error(exc) from exc",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 11
-    },
-    "_program_list_item": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 248,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 248,
-          "preview": "def _program_list_item(resource: Any) -> dict[str, Any]:",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "hackerone_attention_center": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 269,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 269,
-          "preview": "def hackerone_attention_center(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 169,
-          "preview": "result = hackerone_api.hackerone_attention_center(limit=25)",
+          "file": "backend/app/orchestrator.py",
+          "line": 310,
+          "preview": "saturated_clusters = _validation_saturated_cluster_ids(campaign, graph)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 2
     },
-    "hackerone_live_readiness": {
+    "_pending_findings": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 279,
+        "file": "backend/app/orchestrator.py",
+        "line": 280,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 20,
-          "preview": "from .hackerone_live_readiness import build_hackerone_live_readiness",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 279,
-          "preview": "def hackerone_live_readiness():",
+          "file": "backend/app/orchestrator.py",
+          "line": 280,
+          "preview": "def _pending_findings(campaign: Campaign, graph: ObservationGraph) -> list:",
           "definition_candidate": true
         },
         {
-          "file": "backend/tests/test_hackerone_live_readiness.py",
-          "line": 1,
-          "preview": "from app import hackerone_live_readiness as readiness",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "hackerone_connection": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 286,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 286,
-          "preview": "def hackerone_connection():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "list_hackerone_programs": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 295,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 295,
-          "preview": "def list_hackerone_programs(",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "hackerone_program_catalog": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 324,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 324,
-          "preview": "def hackerone_program_catalog():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "hackerone_program_discovery": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 342,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 342,
-          "preview": "def hackerone_program_discovery(",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "hackerone_learning_intelligence": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 398,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 398,
-          "preview": "def hackerone_learning_intelligence(",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "get_hackerone_program_review_draft": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 419,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 419,
-          "preview": "def get_hackerone_program_review_draft(handle: str):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "get_hackerone_program_snapshot": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 428,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 428,
-          "preview": "def get_hackerone_program_snapshot(handle: str):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "preview_hackerone_rules": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 445,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 445,
-          "preview": "def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 9,
-          "preview": "preview_hackerone_rules,",
+          "file": "backend/app/orchestrator.py",
+          "line": 438,
+          "preview": "pending = _pending_findings(campaign, graph)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 128,
-          "preview": "result = preview_hackerone_rules(payload)",
+          "file": "backend/app/orchestrator.py",
+          "line": 823,
+          "preview": "pending_count = len(_pending_findings(campaign, graph))",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 221,
-          "preview": "preview_hackerone_rules(payload)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "list_hackerone_review_profiles": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 511,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 357,
-          "preview": "profiles = store.list_hackerone_review_profiles(limit=1000)",
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 3,
+          "preview": "from app.orchestrator import _pending_findings",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 511,
-          "preview": "def list_hackerone_review_profiles(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 518,
-          "preview": "\"profiles\": storage().list_hackerone_review_profiles(limit=limit),",
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 47,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"dry_run\", \"independent-validator\"))",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/storage_backend.py",
-          "line": 23,
-          "preview": "def list_hackerone_review_profiles(self, *, limit: int = 500) -> list[dict]: ...",
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 52,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"observed\", \"scanner\"))",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/storage_core.py",
-          "line": 451,
-          "preview": "def list_hackerone_review_profiles(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_review_profiles.py",
-          "line": 159,
-          "preview": "assert Storage(db, artifacts).list_hackerone_review_profiles() == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_review_profiles.py",
-          "line": 191,
-          "preview": "assert Storage(db, artifacts).list_hackerone_review_profiles() == []",
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 57,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"observed\", \"independent-validator\"))",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 7
     },
-    "admit_hackerone_campaign": {
+    "_enqueue_recon_tasks": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 525,
+        "file": "backend/app/orchestrator.py",
+        "line": 326,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 525,
-          "preview": "def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):",
+          "file": "backend/app/orchestrator.py",
+          "line": 326,
+          "preview": "def _enqueue_recon_tasks(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 769,
-          "preview": "admitted = admit_hackerone_campaign(campaign_payload)",
+          "file": "backend/app/orchestrator.py",
+          "line": 767,
+          "preview": "recon_jobs = _enqueue_recon_tasks(",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 918,
-          "preview": "admitted = admit_hackerone_campaign(payload)",
+          "file": "backend/app/orchestrator.py",
+          "line": 784,
+          "preview": "recon_jobs = _enqueue_recon_tasks(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 5,
-          "preview": "from app.hackerone_api import HackerOneCampaignAdmissionInput, admit_hackerone_campaign",
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 7,
+          "preview": "from app.orchestrator import _enqueue_action, _enqueue_recon_tasks",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 50,
-          "preview": "admitted = admit_hackerone_campaign(_admission_payload())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 61,
-          "preview": "admitted = admit_hackerone_campaign(_admission_payload())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 126,
-          "preview": "admitted = admit_hackerone_campaign(_admission_payload())",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 7
-    },
-    "_batch_summary": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 603,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 603,
-          "preview": "def _batch_summary(members: list[dict[str, Any]]) -> dict[str, int]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 807,
-          "preview": "\"summary\": _batch_summary(members),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 838,
-          "preview": "batch[\"summary\"] = _batch_summary(batch[\"members\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 906,
-          "preview": "batch[\"summary\"] = _batch_summary(batch.get(\"members\", []))",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "_rollback_admitted_batch_campaigns": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 615,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 615,
-          "preview": "def _rollback_admitted_batch_campaigns(campaign_ids: list[str]) -> None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 816,
-          "preview": "_rollback_admitted_batch_campaigns(admitted_ids)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_reviewed_campaign_input": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 625,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 625,
-          "preview": "def _reviewed_campaign_input(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 720,
-          "preview": "prepared.append(_reviewed_campaign_input(handle, store))",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "launch_reviewed_hackerone_batch": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 711,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 711,
-          "preview": "def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "launch_hackerone_batch": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 751,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 742,
-          "preview": "return launch_hackerone_batch(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 751,
-          "preview": "def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "list_hackerone_batches": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 859,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 859,
-          "preview": "def list_hackerone_batches(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 866,
-          "preview": "\"batches\": storage().list_hackerone_batches(limit=limit),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_batch.py",
-          "line": 156,
-          "preview": "batches = store.list_hackerone_batches(limit=limit)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage_core.py",
-          "line": 749,
-          "preview": "def list_hackerone_batches(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
-          "line": 177,
-          "preview": "assert store.list_hackerone_batches(limit=10) == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_storage.py",
-          "line": 603,
-          "preview": "assert [item[\"id\"] for item in store.list_hackerone_batches(limit=10)] == [\"batch-1\"]",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "get_hackerone_batch": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 872,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 852,
-          "preview": "latest = storage().get_hackerone_batch(batch_id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 872,
-          "preview": "def get_hackerone_batch(batch_id: str):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_batch.py",
-          "line": 152,
-          "preview": "return store.get_hackerone_batch(batch_id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage_core.py",
-          "line": 745,
-          "preview": "def get_hackerone_batch(self, batch_id: str) -> dict[str, Any] | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch_api.py",
-          "line": 112,
-          "preview": "persisted = store.get_hackerone_batch(batch[\"id\"])",
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 90,
+          "preview": "jobs = _enqueue_recon_tasks(campaign, graph, queue, tasks)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 5
     },
-    "cancel_hackerone_batch": {
+    "_scan_engines": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 883,
+        "file": "backend/app/orchestrator.py",
+        "line": 388,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 883,
-          "preview": "def cancel_hackerone_batch(batch_id: str):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "launch_hackerone_campaign": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 913,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/orchestrator.py",
+          "line": 210,
+          "preview": "_scan_engines(),",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 913,
-          "preview": "def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "_hackerone_submission_enabled": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 929,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 929,
-          "preview": "def _hackerone_submission_enabled() -> bool:",
+          "file": "backend/app/orchestrator.py",
+          "line": 388,
+          "preview": "def _scan_engines() -> tuple[str, ...]:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 1073,
-          "preview": "if not _hackerone_submission_enabled():",
+          "file": "backend/app/orchestrator.py",
+          "line": 417,
+          "preview": "engines = scan_engines if scan_engines is not None else _scan_engines()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 8,
+          "preview": "from app.orchestrator import _scan_engines",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 29,
+          "preview": "assert _scan_engines() == (\"strix\",)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 34,
+          "preview": "assert _scan_engines() == (\"strix\", \"nuclei\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 38,
+          "preview": "_scan_engines()",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 7
     },
-    "_verified_remote_team_handle": {
+    "_enqueue_action": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 943,
+        "file": "backend/app/orchestrator.py",
+        "line": 399,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 943,
-          "preview": "def _verified_remote_team_handle(campaign) -> str:",
+          "file": "backend/app/orchestrator.py",
+          "line": 399,
+          "preview": "def _enqueue_action(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 1138,
-          "preview": "team_handle = _verified_remote_team_handle(campaign)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_unresolved_hackerone_attempt": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 962,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 962,
-          "preview": "def _unresolved_hackerone_attempt(campaign, artifact_id: str) -> dict[str, Any] | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 1106,
-          "preview": "if _unresolved_hackerone_attempt(campaign, artifact_id) is not None:",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "get_hackerone_remote_report_status": {
-      "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 985,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 985,
-          "preview": "def get_hackerone_remote_report_status(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_hackerone_needs_info.py",
-          "line": 156,
-          "preview": "result = hackerone_api.get_hackerone_remote_report_status(",
+          "file": "backend/app/orchestrator.py",
+          "line": 840,
+          "preview": "jobs = _enqueue_action(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_report_tracking.py",
-          "line": 88,
-          "preview": "result = hackerone_api.get_hackerone_remote_report_status(",
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 7,
+          "preview": "from app.orchestrator import _enqueue_action, _enqueue_recon_tasks",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_report_tracking.py",
-          "line": 135,
-          "preview": "hackerone_api.get_hackerone_remote_report_status(",
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 54,
+          "preview": "jobs = _enqueue_action(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_report_tracking.py",
-          "line": 161,
-          "preview": "hackerone_api.get_hackerone_remote_report_status(",
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 121,
+          "preview": "validation_jobs = _enqueue_action(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_report_tracking.py",
-          "line": 181,
-          "preview": "hackerone_api.get_hackerone_remote_report_status(",
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 127,
+          "preview": "report_jobs = _enqueue_action(",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 6
     },
-    "get_hackerone_needs_more_info_draft": {
+    "_decision_explanation": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 1011,
+        "file": "backend/app/orchestrator.py",
+        "line": 477,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 1011,
-          "preview": "def get_hackerone_needs_more_info_draft(",
+          "file": "backend/app/orchestrator.py",
+          "line": 477,
+          "preview": "def _decision_explanation(intelligence: dict | None) -> dict | None:",
           "definition_candidate": true
         },
         {
-          "file": "backend/tests/test_hackerone_needs_info.py",
-          "line": 174,
-          "preview": "result = hackerone_api.get_hackerone_needs_more_info_draft(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_needs_info.py",
-          "line": 204,
-          "preview": "hackerone_api.get_hackerone_needs_more_info_draft(",
+          "file": "backend/app/orchestrator.py",
+          "line": 541,
+          "preview": "explanation = _decision_explanation(intelligence)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 2
     },
-    "submit_hackerone_report": {
+    "_record_decision": {
       "definition": {
-        "file": "backend/app/hackerone_api.py",
-        "line": 1055,
+        "file": "backend/app/orchestrator.py",
+        "line": 524,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 1055,
-          "preview": "def submit_hackerone_report(",
+          "file": "backend/app/orchestrator.py",
+          "line": 524,
+          "preview": "def _record_decision(",
           "definition_candidate": true
         },
         {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 113,
-          "preview": "hackerone_api.submit_hackerone_report(campaign.id, artifact[\"id\"], _payload())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 124,
-          "preview": "hackerone_api.submit_hackerone_report(campaign.id, artifact[\"id\"], _payload())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 135,
-          "preview": "hackerone_api.submit_hackerone_report(campaign.id, artifact[\"id\"], _payload())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 152,
-          "preview": "result = hackerone_api.submit_hackerone_report(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 179,
-          "preview": "repeated = hackerone_api.submit_hackerone_report(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 201,
-          "preview": "hackerone_api.submit_hackerone_report(campaign.id, artifact[\"id\"], _payload())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 212,
-          "preview": "hackerone_api.submit_hackerone_report(campaign.id, artifact[\"id\"], _payload())",
+          "file": "backend/app/orchestrator.py",
+          "line": 579,
+          "preview": "_record_decision(store, campaign, graph, action, agent.name, intelligence)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 8
+      "occurrence_count": 2
     },
-    "build_program_discovery": {
+    "_result": {
       "definition": {
-        "file": "backend/app/hackerone_discovery.py",
-        "line": 9,
+        "file": "backend/app/orchestrator.py",
+        "line": 567,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 23,
-          "preview": "from .hackerone_discovery import build_program_discovery",
+          "file": "backend/app/orchestrator.py",
+          "line": 567,
+          "preview": "def _result(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 658,
+          "preview": "return _result(",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 379,
-          "preview": "result = build_program_discovery(",
+          "file": "backend/app/orchestrator.py",
+          "line": 668,
+          "preview": "return _result(",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/hackerone_discovery.py",
+          "file": "backend/app/orchestrator.py",
+          "line": 692,
+          "preview": "return _result(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 752,
+          "preview": "return _result(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 773,
+          "preview": "return _result(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 800,
+          "preview": "return _result(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 855,
+          "preview": "return _result(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 879,
+          "preview": "return _result(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 9
+    },
+    "advance_campaign": {
+      "definition": {
+        "file": "backend/app/orchestrator.py",
+        "line": 638,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 638,
+          "preview": "def advance_campaign(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 33,
+          "preview": "from .orchestrator import advance_campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 562,
+          "preview": "advance_campaign(latest_campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
           "line": 9,
-          "preview": "def build_program_discovery(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_hackerone_discovery.py",
-          "line": 1,
-          "preview": "from app.hackerone_discovery import build_program_discovery",
+          "preview": "from app.orchestrator import advance_campaign",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_discovery.py",
-          "line": 18,
-          "preview": "result = build_program_discovery(",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 64,
+          "preview": "first = advance_campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_discovery.py",
-          "line": 41,
-          "preview": "result = build_program_discovery(",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 77,
+          "preview": "second = advance_campaign(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_discovery.py",
-          "line": 55,
-          "preview": "result = build_program_discovery(",
+          "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+          "line": 116,
+          "preview": "\"advance_campaign\",",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_discovery.py",
-          "line": 67,
-          "preview": "result = build_program_discovery(",
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 9,
+          "preview": "from app.orchestrator import advance_campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 36,
+          "preview": "first = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 37,
+          "preview": "second = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 61,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 78,
+          "preview": "result = advance_campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 134,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 155,
+          "preview": "waiting = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 163,
+          "preview": "report = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 208,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 262,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 279,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 309,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 343,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 372,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 414,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 432,
+          "preview": "advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 468,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 484,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 541,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 586,
+          "preview": "result = advance_campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 659,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 713,
+          "preview": "first = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 728,
+          "preview": "second = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 804,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 866,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 911,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 937,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator.py",
+          "line": 959,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_budget_config.py",
+          "line": 8,
+          "preview": "from app.orchestrator import advance_campaign",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_budget_config.py",
+          "line": 136,
+          "preview": "result = advance_campaign(campaign, queue, store)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_job_provenance.py",
+          "line": 33,
+          "preview": "\"advance_campaign\",",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 8
+      "occurrence_count": 38
     },
-    "_duration_hours": {
+    "test_coverage_is_read_only_and_does_not_claim_unknown_completeness": {
       "definition": {
-        "file": "backend/app/local_outcome_intelligence.py",
-        "line": 10,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/local_outcome_intelligence.py",
-          "line": 10,
-          "preview": "def _duration_hours(campaign: dict[str, Any]) -> float | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/local_outcome_intelligence.py",
-          "line": 92,
-          "preview": "duration = _duration_hours(campaign)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_verified_hackerone_handle": {
-      "definition": {
-        "file": "backend/app/local_outcome_intelligence.py",
-        "line": 24,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/local_outcome_intelligence.py",
-          "line": 24,
-          "preview": "def _verified_hackerone_handle(campaign: dict[str, Any]) -> str | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/local_outcome_intelligence.py",
-          "line": 49,
-          "preview": "handle = _verified_hackerone_handle(campaign)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "build_local_outcome_signals": {
-      "definition": {
-        "file": "backend/app/local_outcome_intelligence.py",
-        "line": 40,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 22,
-          "preview": "from .local_outcome_intelligence import build_local_outcome_signals",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 376,
-          "preview": "local_outcomes = build_local_outcome_signals(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/local_outcome_intelligence.py",
-          "line": 40,
-          "preview": "def build_local_outcome_signals(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 1,
-          "preview": "from app.local_outcome_intelligence import build_local_outcome_signals",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 46,
-          "preview": "signal = build_local_outcome_signals(campaigns)[\"alpha\"]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 73,
-          "preview": "assert build_local_outcome_signals(campaigns) == {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 85,
-          "preview": "signal = build_local_outcome_signals(campaigns)[\"alpha\"]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 106,
-          "preview": "signal = build_local_outcome_signals(campaigns)[\"alpha\"]",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "build_value_efficiency_signal": {
-      "definition": {
-        "file": "backend/app/value_efficiency.py",
+        "file": "backend/tests/test_coverage.py",
         "line": 6,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_discovery.py",
+          "file": "backend/tests/test_coverage.py",
           "line": 6,
-          "preview": "from .value_efficiency import build_value_efficiency_signal, select_diversified_portfolio",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_discovery.py",
-          "line": 105,
-          "preview": "efficiency = build_value_efficiency_signal(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/value_efficiency.py",
-          "line": 6,
-          "preview": "def build_value_efficiency_signal(",
+          "preview": "def test_coverage_is_read_only_and_does_not_claim_unknown_completeness():",
           "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 2,
-          "preview": "build_value_efficiency_signal,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 8,
-          "preview": "ready = build_value_efficiency_signal(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 16,
-          "preview": "review = build_value_efficiency_signal(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 32,
-          "preview": "result = build_value_efficiency_signal(",
-          "definition_candidate": false
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 1
     },
-    "select_diversified_portfolio": {
+    "test_coverage_counts_scan_and_independent_validation": {
       "definition": {
-        "file": "backend/app/value_efficiency.py",
-        "line": 70,
+        "file": "backend/tests/test_coverage.py",
+        "line": 28,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_discovery.py",
-          "line": 6,
-          "preview": "from .value_efficiency import build_value_efficiency_signal, select_diversified_portfolio",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_discovery.py",
-          "line": 185,
-          "preview": "\"recommended_portfolio\": select_diversified_portfolio(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/value_efficiency.py",
-          "line": 70,
-          "preview": "def select_diversified_portfolio(",
+          "file": "backend/tests/test_coverage.py",
+          "line": 28,
+          "preview": "def test_coverage_counts_scan_and_independent_validation():",
           "definition_candidate": true
-        },
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_coverage_route_is_exposed": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 76,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 3,
-          "preview": "select_diversified_portfolio,",
-          "definition_candidate": false
-        },
+          "file": "backend/tests/test_coverage.py",
+          "line": 76,
+          "preview": "def test_coverage_route_is_exposed():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_coverage_guidance_is_advisory_only": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 80,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "backend/tests/test_value_efficiency.py",
+          "file": "backend/tests/test_coverage.py",
           "line": 80,
-          "preview": "result = select_diversified_portfolio(programs, limit=5, min_score=50)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 113,
-          "preview": "result = select_diversified_portfolio(programs, limit=2, min_score=50)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 174,
-          "preview": "result = select_diversified_portfolio(programs, limit=4, min_score=50)",
-          "definition_candidate": false
+          "preview": "def test_coverage_guidance_is_advisory_only():",
+          "definition_candidate": true
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 1
     },
-    "_campaign": {
+    "test_coverage_guidance_prioritizes_validation_after_scan": {
       "definition": {
-        "file": "backend/tests/test_local_outcome_intelligence.py",
-        "line": 4,
+        "file": "backend/tests/test_coverage.py",
+        "line": 98,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/browser.py",
+          "file": "backend/tests/test_coverage.py",
+          "line": 98,
+          "preview": "def test_coverage_guidance_prioritizes_validation_after_scan():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_coverage_detects_diminishing_scan_returns_without_findings": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 114,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_coverage.py",
           "line": 114,
-          "preview": "def _campaign(campaign_id: str, store: StorageBackend | None = None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 164,
-          "preview": "campaign, version = _campaign(campaign_id, store)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 314,
-          "preview": "campaign, version = _campaign(campaign_id, store)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 350,
-          "preview": "latest, _latest_version = _campaign(campaign.id, store)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 66,
-          "preview": "def _campaign(store: Storage, campaign_id: str) -> tuple[Campaign, int]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 123,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 139,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 211,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 315,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 409,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 509,
-          "preview": "campaign, _version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 561,
-          "preview": "latest_campaign, _ = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 9,
-          "preview": "def _campaign(events):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 131,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 151,
-          "preview": "campaign = _campaign([])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 162,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 188,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 230,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 286,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 321,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 371,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 432,
-          "preview": "base = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 500,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 30,
-          "preview": "def _campaign() -> Campaign:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 47,
-          "preview": "validate_flow(_campaign(), flow)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 53,
-          "preview": "validate_flow(_campaign(), flow)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 71,
-          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 99,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 122,
-          "preview": "execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 131,
-          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 137,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 157,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 290,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 465,
-          "preview": "_campaign(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 499,
-          "preview": "_campaign(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 517,
-          "preview": "_campaign(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 530,
-          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_cancel.py",
-          "line": 7,
-          "preview": "from app.worker_service import _campaign as load_worker_campaign, process_one",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 13,
-          "preview": "def _campaign():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 28,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 58,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 106,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 136,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_control_views.py",
-          "line": 16,
-          "preview": "def _campaign() -> Campaign:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_control_views.py",
-          "line": 46,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 8,
-          "preview": "def _campaign():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 64,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 94,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 138,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 199,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 271,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 316,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 338,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 357,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 23,
-          "preview": "def _campaign(*findings: Finding) -> Campaign:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 42,
-          "preview": "campaign = _campaign(finding)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 48,
-          "preview": "lambda _campaign, _finding: ProbeResult(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 93,
-          "preview": "campaign = _campaign(finding)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 99,
-          "preview": "lambda _campaign, _finding: ProbeResult(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_backed_planner.py",
-          "line": 6,
-          "preview": "def _campaign(status=\"validation_required\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_backed_planner.py",
-          "line": 60,
-          "preview": "action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=False))[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_backed_planner.py",
-          "line": 67,
-          "preview": "action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=True))[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_backed_planner.py",
-          "line": 75,
-          "preview": "_campaign(status=\"confirmed\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 7,
-          "preview": "def _campaign(campaign_id, state, *, activity=None, nmi=None, bounty=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 75,
-          "preview": "_campaign(\"c1\", \"needs-more-info\", nmi=True),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 76,
-          "preview": "_campaign(\"c2\", \"triaged\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 77,
-          "preview": "_campaign(\"c3\", \"resolved\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 78,
-          "preview": "_campaign(\"c4\", \"duplicate\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 79,
-          "preview": "_campaign(\"c5\", \"informative\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 102,
-          "preview": "[_campaign(\"c1\", \"triaged\", bounty=True)]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 117,
-          "preview": "result = build_hackerone_attention_center([_campaign(\"c1\", None)])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 141,
-          "preview": "campaign = _campaign(\"c1\", \"triaged\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 165,
-          "preview": "return [_campaign(\"c1\", \"needs-more-info\", nmi=True)]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 177,
-          "preview": "first = _campaign(\"c1\", \"triaged\", activity=\"activity-comment\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 178,
-          "preview": "second = _campaign(\"c1\", \"triaged\", activity=\"activity-comment\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 192,
-          "preview": "campaign = _campaign(\"c1\", \"needs-more-info\", nmi=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 213,
-          "preview": "campaign = _campaign(\"c1\", \"triaged\", bounty=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 20,
-          "preview": "def _campaign(campaign_id, state=\"running\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 45,
-          "preview": "store.save_campaign(_campaign(\"c1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 46,
-          "preview": "store.save_campaign(_campaign(\"c2\", state=\"ready\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 77,
-          "preview": "store.save_campaign(_campaign(campaign_id))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 104,
-          "preview": "store.save_campaign(_campaign(\"c1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 17,
-          "preview": "def _campaign(*, allowed_targets=None, rps=2.0):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 34,
-          "preview": "first = _campaign(allowed_targets=[\"example.test\", \"*.example.test\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 35,
-          "preview": "second = _campaign(allowed_targets=[\"*.example.test\", \"example.test\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 41,
-          "preview": "base = _campaign(rps=2.0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 42,
-          "preview": "changed = _campaign(rps=1.0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 48,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 69,
-          "preview": "campaign = _campaign(rps=2.0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 93,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 112,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 128,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 158,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_api_integration.py",
-          "line": 12,
-          "preview": "def _campaign(*, findings=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_api_integration.py",
-          "line": 35,
-          "preview": "campaign = campaign or _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_api_integration.py",
-          "line": 111,
-          "preview": "campaign=_campaign(findings=[finding]),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_api_integration.py",
-          "line": 147,
-          "preview": "campaign=_campaign(findings=[finding]),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 10,
-          "preview": "def _campaign(*, findings=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 37,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 50,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 70,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 108,
-          "preview": "campaign = _campaign(findings=[finding])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 4,
-          "preview": "def _campaign(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 34,
-          "preview": "_campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 43,
-          "preview": "_campaign(\"alpha\", findings=[], submitted=0),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 78,
-          "preview": "_campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 96,
-          "preview": "_campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-          "line": 13,
-          "preview": "def _campaign():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-          "line": 56,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-          "line": 82,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 9,
-          "preview": "def _campaign(*, rps: float = 2.0):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 54,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 67,
-          "preview": "assert build_nuclei_plan(_campaign(), str(root / \"job-1\")).dry_run is True",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 70,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-2\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 80,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 108,
-          "preview": "plan = build_nuclei_plan(_campaign(rps=0.25), str(root / \"job-1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 116,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 151,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 176,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-attest\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 196,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-mismatch\"))",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 120
-    },
-    "test_local_outcome_signal_counts_confirmed_and_submitted_reports": {
-      "definition": {
-        "file": "backend/tests/test_local_outcome_intelligence.py",
-        "line": 32,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 32,
-          "preview": "def test_local_outcome_signal_counts_confirmed_and_submitted_reports():",
+          "preview": "def test_coverage_detects_diminishing_scan_returns_without_findings():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_unverified_binding_is_ignored": {
+    "test_diminishing_returns_does_not_override_needed_validation": {
       "definition": {
-        "file": "backend/tests/test_local_outcome_intelligence.py",
-        "line": 59,
+        "file": "backend/tests/test_coverage.py",
+        "line": 168,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 59,
-          "preview": "def test_unverified_binding_is_ignored():",
+          "file": "backend/tests/test_coverage.py",
+          "line": 168,
+          "preview": "def test_diminishing_returns_does_not_override_needed_validation():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_running_campaign_does_not_inflate_terminal_success_rate": {
+    "test_low_yield_scan_deprioritization_preserves_kind_and_target": {
       "definition": {
-        "file": "backend/tests/test_local_outcome_intelligence.py",
-        "line": 76,
+        "file": "backend/tests/test_coverage.py",
+        "line": 186,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 76,
-          "preview": "def test_running_campaign_does_not_inflate_terminal_success_rate():",
+          "file": "backend/tests/test_coverage.py",
+          "line": 186,
+          "preview": "def test_low_yield_scan_deprioritization_preserves_kind_and_target():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_local_cost_efficiency_uses_terminal_duration_and_events": {
+    "test_coverage_priority_never_changes_non_scan_action": {
       "definition": {
-        "file": "backend/tests/test_local_outcome_intelligence.py",
-        "line": 94,
+        "file": "backend/tests/test_coverage.py",
+        "line": 210,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 94,
-          "preview": "def test_local_cost_efficiency_uses_terminal_duration_and_events():",
+          "file": "backend/tests/test_coverage.py",
+          "line": 210,
+          "preview": "def test_coverage_priority_never_changes_non_scan_action():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
-    },
-    "test_ready_runtime_match_has_better_efficiency_than_review_gap": {
-      "definition": {
-        "file": "backend/tests/test_value_efficiency.py",
-        "line": 7,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 7,
-          "preview": "def test_ready_runtime_match_has_better_efficiency_than_review_gap():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_blocked_efficiency_is_zero": {
-      "definition": {
-        "file": "backend/tests/test_value_efficiency.py",
-        "line": 31,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 31,
-          "preview": "def test_blocked_efficiency_is_zero():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_portfolio_only_selects_ready_bounty_above_threshold": {
-      "definition": {
-        "file": "backend/tests/test_value_efficiency.py",
-        "line": 44,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 44,
-          "preview": "def test_portfolio_only_selects_ready_bounty_above_threshold():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_portfolio_diversifies_primary_focus": {
-      "definition": {
-        "file": "backend/tests/test_value_efficiency.py",
-        "line": 85,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 85,
-          "preview": "def test_portfolio_diversifies_primary_focus():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_portfolio_reserves_bounded_exploration_slot_for_fresh_ready_program": {
-      "definition": {
-        "file": "backend/tests/test_value_efficiency.py",
-        "line": 120,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_value_efficiency.py",
-          "line": 120,
-          "preview": "def test_portfolio_reserves_bounded_exploration_slot_for_fresh_ready_program():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "setLauncherStatus": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 27,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "frontend/hackerone.js",
-          "line": 28,
-          "preview": "function setLauncherStatus(message,type='muted'){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2191,
-          "preview": "setLauncherStatus('Lot HackerOne actif retrouv\u00e9 c\u00f4t\u00e9 serveur et repris automatiquement.','ok');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2213,
-          "preview": "setLauncherStatus(",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2219,
-          "preview": "setLauncherStatus(error.message,'err');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2235,
-          "preview": "setLauncherStatus('Lot HackerOne annul\u00e9.','ok');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2322,
-          "preview": "setLauncherStatus('Chargement du programme HackerOne\u2026');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2353,
-          "preview": "setLauncherStatus(",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2368,
-          "preview": "setLauncherStatus(error.message,'err');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2538,
-          "preview": "setLauncherStatus('HackerOne API indisponible : '+error.message+'. Le mode manuel reste disponible.','err');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2672,
-          "preview": "setLauncherStatus('Scope et policy v\u00e9rifi\u00e9s. Profil m\u00e9moris\u00e9 pour ce fingerprint; confirme puis lance.','ok');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2676,
-          "preview": "setLauncherStatus('Lancement bloqu\u00e9 : '+(blockers.join(' \u00b7 ')||'scope incomplet ou incompatible')+'.','err');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2685,
-          "preview": "setLauncherStatus('V\u00e9rification HackerOne en cours\u2026');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2709,
-          "preview": "setLauncherStatus(error.message,'err');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2728,
-          "preview": "setLauncherStatus('Admission et d\u00e9marrage HackerOne\u2026');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2739,
-          "preview": "setLauncherStatus('Campagne HackerOne admise et d\u00e9marr\u00e9e avec policy li\u00e9e.','ok');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2741,
-          "preview": "setLauncherStatus(error.message,'err');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2758,
-          "preview": "setLauncherStatus('Export StructuredScope charg\u00e9. V\u00e9rification requise avant lancement.');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2761,
-          "preview": "setLauncherStatus(error.message,'err');",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 18
-    },
-    "setConnectionState": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 31,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "frontend/hackerone.js",
-          "line": 32,
-          "preview": "function setConnectionState(label,type=''){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2501,
-          "preview": "setConnectionState('non configur\u00e9','warn');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2507,
-          "preview": "setConnectionState('connect\u00e9','ok');",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2534,
-          "preview": "setConnectionState('indisponible','err');",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "hackerOneAttentionLabel": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 49,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "frontend/hackerone.js",
-          "line": 52,
-          "preview": "function hackerOneAttentionLabel(item){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 715,
-          "preview": "hackerOneAttentionLabel(item)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "hackerOneNotificationLabel": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 63,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "frontend/hackerone.js",
-          "line": 64,
-          "preview": "function hackerOneNotificationLabel(item){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 731,
-          "preview": "notice.textContent=hackerOneNotificationLabel(item);",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "attentionSeenKey": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 76,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "frontend/hackerone.js",
-          "line": 77,
-          "preview": "function attentionSeenKey(item){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 122,
-          "preview": "if(cursor)state.seen[attentionSeenKey(item)]=cursor;",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 131,
-          "preview": "return String(state?.seen?.[attentionSeenKey(item)]||'')!==cursor;",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 140,
-          "preview": "state.seen[attentionSeenKey(item)]=cursor;",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 151,
-          "preview": "if(cursor)state.seen[attentionSeenKey(item)]=cursor;",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 558,
-          "preview": "if(cursor)state.seen[attentionSeenKey(item)]=cursor;",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "loadAttentionSeen": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 84,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 231,
-          "preview": "assert \"loadAttentionSeen\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 85,
-          "preview": "function loadAttentionSeen(){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 118,
-          "preview": "let state=loadAttentionSeen();",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 138,
-          "preview": "const state=loadAttentionSeen();",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 147,
-          "preview": "const state=loadAttentionSeen();",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 554,
-          "preview": "const state=loadAttentionSeen();",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 565,
-          "preview": "const seen=loadAttentionSeen();",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 7
-    },
-    "saveAttentionSeen": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 102,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 232,
-          "preview": "assert \"saveAttentionSeen\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 103,
-          "preview": "function saveAttentionSeen(state){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 125,
-          "preview": "return saveAttentionSeen(state);",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 141,
-          "preview": "saveAttentionSeen(state);",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 153,
-          "preview": "saveAttentionSeen(state);",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 560,
-          "preview": "saveAttentionSeen(state);",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "ensureAttentionBaseline": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 116,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 233,
-          "preview": "assert \"ensureAttentionBaseline\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 117,
-          "preview": "function ensureAttentionBaseline(items){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 547,
-          "preview": "const seen=ensureAttentionBaseline(items);",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 678,
-          "preview": "const seen=ensureAttentionBaseline(items);",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "isAttentionUnread": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 127,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 234,
-          "preview": "assert \"isAttentionUnread\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 128,
-          "preview": "function isAttentionUnread(item,state){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 496,
-          "preview": "const unread=isAttentionUnread(item,seen);",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 577,
-          "preview": "unread:isAttentionUnread(item,seen),",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 679,
-          "preview": "const unreadCount=items.filter(item=>isAttentionUnread(item,seen)).length;",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 686,
-          "preview": "const visibleUnread=visible.filter(item=>isAttentionUnread(item,seen)).length;",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 705,
-          "preview": "const itemUnread=isAttentionUnread(item,seen);",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 7
-    },
-    "markHackerOneAttentionSeen": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 133,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 235,
-          "preview": "assert \"markHackerOneAttentionSeen\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 134,
-          "preview": "function markHackerOneAttentionSeen(item){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 160,
-          "preview": "markHackerOneAttentionSeen(item);",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 742,
-          "preview": "seenButton.addEventListener('click',()=>markHackerOneAttentionSeen(item));",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "markAllHackerOneAttentionSeen": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 144,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 236,
-          "preview": "assert \"markAllHackerOneAttentionSeen\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 145,
-          "preview": "function markAllHackerOneAttentionSeen(){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2793,
-          "preview": "el('h1AttentionMarkAll').addEventListener('click',()=>markAllHackerOneAttentionSeen());",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "focusHackerOneAttentionCampaign": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 156,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 212,
-          "preview": "assert \"focusHackerOneAttentionCampaign\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 157,
-          "preview": "async function focusHackerOneAttentionCampaign(item){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 642,
-          "preview": "await focusHackerOneAttentionCampaign(next);",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 750,
-          "preview": "open.addEventListener('click',()=>void focusHackerOneAttentionCampaign(item));",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "attentionText": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 169,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "frontend/hackerone.js",
-          "line": 170,
-          "preview": "function attentionText(value){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 485,
-          "preview": "const query=attentionText(el('h1AttentionSearch').value.trim());",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 508,
-          "preview": "const haystack=attentionText([",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "updateAttentionSelectOptions": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 173,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "frontend/hackerone.js",
-          "line": 174,
-          "preview": "function updateAttentionSelectOptions(id,values,allLabel){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 195,
-          "preview": "updateAttentionSelectOptions(",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 200,
-          "preview": "updateAttentionSelectOptions(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "syncHackerOneAttentionFilterOptions": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 193,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 264,
-          "preview": "assert \"syncHackerOneAttentionFilterOptions\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 194,
-          "preview": "function syncHackerOneAttentionFilterOptions(items){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 674,
-          "preview": "syncHackerOneAttentionFilterOptions(items);",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "currentHackerOneAttentionFilters": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 206,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 290,
-          "preview": "assert \"currentHackerOneAttentionFilters\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 207,
-          "preview": "function currentHackerOneAttentionFilters(){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 232,
-          "preview": "const state=currentHackerOneAttentionFilters();",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 296,
-          "preview": "const current=currentHackerOneAttentionFilters();",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 417,
-          "preview": "const filters=sanitizeAttentionCustomViewFilters(currentHackerOneAttentionFilters());",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 599,
-          "preview": "filters:currentHackerOneAttentionFilters(),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "loadHackerOneAttentionFilters": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 220,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 291,
-          "preview": "assert \"loadHackerOneAttentionFilters\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 221,
-          "preview": "function loadHackerOneAttentionFilters(){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 263,
-          "preview": "const saved=loadHackerOneAttentionFilters();",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "saveHackerOneAttentionFilters": {
-      "definition": {
-        "file": "frontend/hackerone.js",
-        "line": 230,
-        "kind": "function",
-        "language": "javascript"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_frontend_policy_launcher.py",
-          "line": 292,
-          "preview": "assert \"saveHackerOneAttentionFilters\" in launcher",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 231,
-          "preview": "function saveHackerOneAttentionFilters(){",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 257,
-          "preview": "if(persist)saveHackerOneAttentionFilters();",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2806,
-          "preview": "saveHackerOneAttentionFilters();",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2820,
-          "preview": "saveHackerOneAttentionFilters();",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 5
     }
   }
 }

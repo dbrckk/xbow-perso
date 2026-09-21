@@ -22,16 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T09:35:46Z
+Generated: 2026-09-21T09:42:48Z
 
 ### Git
 - Branch: `main`
-- Head: `4e533e30e6ef`
-- Commit date: 2026-09-21T11:35:34+02:00
-- Commit: feat: optimize bounty queue by value efficiency and diversification
+- Head: `1ad6d444abed`
+- Commit date: 2026-09-21T11:42:37+02:00
+- Commit: feat: detect diminishing scan returns and rotate surfaces
 - Tracked files: 546
 
 ### Recently changed files
+- `backend/app/coverage.py`
+- `backend/app/orchestrator.py`
+- `backend/tests/test_coverage.py`
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_discovery.py`
 - `backend/app/local_outcome_intelligence.py`
@@ -49,7 +52,6 @@ Generated: 2026-09-21T09:35:46Z
 - `backend/app/worker_service.py`
 - `backend/tests/test_identity_access.py`
 - `backend/app/hackerone_review_draft.py`
-- `backend/tests/test_hackerone_review_draft.py`
 
 ### Project signals
 - `pyproject.toml`
