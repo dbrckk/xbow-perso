@@ -67,6 +67,7 @@ Seulement après la revue précédente, appliquer côté serveur :
 
 ```bash
 XBOW_ENABLE_ACTIVE_SCANS=true
+XBOW_ENABLE_RECON=true
 DRY_RUN=false
 XBOW_ENABLE_NUCLEI=true
 XBOW_NUCLEI_ALLOWED_VERSION=3.11.1
@@ -84,7 +85,18 @@ Retourner dans **Pré-vol bug bounty réel** puis cliquer **Revérifier**.
 
 Le statut doit être **PRÊT SCAN RÉEL** avant toute exécution réelle.
 
-## 6. Preview finale
+Le pré-vol vérifie désormais aussi :
+- le worker général actif via heartbeat ;
+- le worker scanner actif via heartbeat ;
+- la disponibilité de la reconnaissance bornée ;
+- la cohérence du runtime Nuclei/sandbox.
+
+Un heartbeat manquant, invalide ou périmé bloque le lancement réel.
+
+## 6. Préflight du lot et preview finale
+
+Pour un lot Auto Queue, xbow effectue d'abord une sélection serveur des programmes `READY`, puis un préflight en lecture seule. Aucun programme n'est lancé si son fingerprint, son profil revu ou son état HackerOne ne correspond plus.
+
 
 Avant le lancement :
 
