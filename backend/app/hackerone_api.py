@@ -755,6 +755,42 @@ def _reviewed_campaign_input(
         ) from exc
 
 
+@router.post("/api/imports/hackerone/batches/go-no-go")
+def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):
+    """Return a single prelaunch verdict without creating campaigns."""
+    from .main import dependency_readiness
+
+    runtime = build_hackerone_live_readiness(dependency_readiness())
+    batch = preflight_reviewed_hackerone_batch(payload)
+    runtime_ready = runtime.get("live_scan_ready") is True
+    batch_ready = batch.get("ready") is True
+    blockers = []
+    if not runtime_ready:
+        blockers.extend(
+            str(item.get("id") or "runtime_check")
+            for item in list(runtime.get("checks") or [])
+            if item.get("required") is True and item.get("ok") is not True
+        )
+    blockers.extend(
+        str(item.get("handle") or "program") + ":" + str(item.get("reason") or "blocked")
+        for item in list(batch.get("members") or [])
+        if item.get("status") == "blocked"
+    )
+    return {
+        "provider": "hackerone",
+        "go": bool(runtime_ready and batch_ready),
+        "runtime_ready": runtime_ready,
+        "batch_ready": batch_ready,
+        "blockers": blockers,
+        "runtime": runtime,
+        "batch": batch,
+        "read_only": True,
+        "campaigns_created": False,
+        "automatic_launch": False,
+        "scope_expansion": False,
+    }
+
+
 @router.post("/api/imports/hackerone/batches/preflight-reviewed")
 def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
     """Validate every selected reviewed program without creating campaigns."""
