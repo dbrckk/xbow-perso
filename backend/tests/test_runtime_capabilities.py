@@ -4,7 +4,9 @@ from app import main
 from app.runtime_capabilities import (
     CapabilityConfigError,
     pentagi_runtime_capability,
+    recon_runtime_capability,
     safe_pentagi_runtime_capability,
+    safe_recon_runtime_capability,
     scanner_runtime_capability,
 )
 
@@ -183,3 +185,82 @@ def test_scanner_runtime_capability_rejects_unsupported_engine(monkeypatch):
 
     assert result["dispatch_ready"] is False
     assert "unsupported_scanner_engine" in result["dispatch_block_reasons"]
+
+
+
+def test_recon_runtime_capability_defaults_fail_closed(monkeypatch):
+    monkeypatch.delenv("XBOW_ENABLE_RECON", raising=False)
+    monkeypatch.delenv("XBOW_ENABLE_EXTERNAL_RECON", raising=False)
+
+    result = recon_runtime_capability()
+
+    assert result["mode"] == "disabled"
+    assert result["dispatch_ready"] is False
+    assert "recon_disabled" in result["dispatch_block_reasons"]
+    assert result["scope_revalidation"] is True
+    assert result["read_only_default"] is True
+
+
+def test_external_recon_preflight_reports_missing_tools(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "true")
+    monkeypatch.setenv("XBOW_ENABLE_EXTERNAL_RECON", "true")
+    monkeypatch.setattr(
+        "app.runtime_capabilities.shutil.which",
+        lambda name: "/usr/local/bin/katana" if name == "katana" else None,
+    )
+
+    result = recon_runtime_capability()
+
+    assert result["mode"] == "external_gated"
+    assert result["dispatch_ready"] is False
+    assert result["tools"] == {
+        "katana": True,
+        "httpx": False,
+        "subfinder": False,
+    }
+    assert "httpx_unavailable" in result["dispatch_block_reasons"]
+    assert "subfinder_unavailable" in result["dispatch_block_reasons"]
+
+
+def test_external_recon_preflight_ready_when_every_tool_exists(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "true")
+    monkeypatch.setenv("XBOW_ENABLE_EXTERNAL_RECON", "true")
+    monkeypatch.setattr(
+        "app.runtime_capabilities.shutil.which",
+        lambda name: f"/usr/local/bin/{name}",
+    )
+
+    result = recon_runtime_capability()
+
+    assert result["dispatch_ready"] is True
+    assert all(result["tools"].values())
+
+
+def test_recon_capability_invalid_configuration_fails_closed(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "invalid")
+
+    result = safe_recon_runtime_capability()
+
+    assert result["mode"] == "configuration_error"
+    assert result["dispatch_ready"] is False
+    assert result["configuration_error"] is True
+
+
+def test_capabilities_api_exposes_recon_preflight(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "true")
+    monkeypatch.setenv("XBOW_ENABLE_EXTERNAL_RECON", "true")
+    monkeypatch.setattr(
+        "app.runtime_capabilities.shutil.which",
+        lambda name: f"/usr/local/bin/{name}",
+    )
+
+    result = main.system_capabilities()
+
+    recon = result["execution"]["recon_detail"]
+    assert result["execution"]["recon"] == "external_gated"
+    assert recon["dispatch_ready"] is True
+    assert recon["tools"] == {
+        "katana": True,
+        "httpx": True,
+        "subfinder": True,
+    }
