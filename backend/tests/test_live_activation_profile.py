@@ -36,3 +36,16 @@ def test_safe_production_update_keeps_recon_and_browser_disabled():
     assert "export XBOW_ENABLE_RECON=false" in script
     assert "export XBOW_ENABLE_EXTERNAL_RECON=false" in script
     assert "export XBOW_ENABLE_BROWSER_AUTOMATION=false" in script
+
+
+
+def test_all_safe_production_scripts_require_recon_browser_baseline_off():
+    for name in (
+        "mobile-production-preflight.sh",
+        "mobile-production-cutover.sh",
+        "mobile-production-rollback.sh",
+    ):
+        script = _text(name)
+        assert 'require_gate "XBOW_ENABLE_RECON" "false"' in script
+        assert 'require_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"' in script
+        assert 'require_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"' in script
