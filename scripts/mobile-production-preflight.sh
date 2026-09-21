@@ -51,6 +51,9 @@ require_gate() {
 require_gate "DRY_RUN" "true"
 require_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_gate "XBOW_ENABLE_NUCLEI" "false"
+require_gate "XBOW_ENABLE_RECON" "false"
+require_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+require_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
 require_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 if [ ! -f "$SECRETS_FILE" ]; then
