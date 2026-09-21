@@ -700,9 +700,11 @@
     },
     "backend/app/hackerone_batch.py": {
       "dependencies": [
+        "backend/app/hackerone_client.py",
         "backend/app/main.py",
         "backend/app/storage.py",
-        "backend/app/storage_core.py"
+        "backend/app/storage_core.py",
+        "backend/tests/test_hackerone_prelaunch.py"
       ],
       "dependents": [
         "backend/app/hackerone_api.py",
@@ -710,7 +712,7 @@
         "backend/tests/test_hackerone_batch.py"
       ],
       "in_degree": 3,
-      "out_degree": 3
+      "out_degree": 5
     },
     "backend/app/hackerone_binding.py": {
       "dependencies": [
@@ -746,10 +748,12 @@
       ],
       "dependents": [
         "backend/app/hackerone_api.py",
+        "backend/app/hackerone_batch.py",
         "backend/app/hackerone_catalog.py",
         "backend/app/hackerone_intelligence.py",
         "backend/app/hackerone_live_readiness.py",
         "backend/app/hackerone_report_sync_worker.py",
+        "backend/tests/test_hackerone_batch.py",
         "backend/tests/test_hackerone_batch_api.py",
         "backend/tests/test_hackerone_client.py",
         "backend/tests/test_hackerone_control_center_api.py",
@@ -760,7 +764,7 @@
         "backend/tests/test_hackerone_report_tracking.py",
         "backend/tests/test_hackerone_reviewed_batch_api.py"
       ],
-      "in_degree": 14,
+      "in_degree": 16,
       "out_degree": 3
     },
     "backend/app/hackerone_discovery.py": {
@@ -3491,12 +3495,13 @@
     "backend/tests/test_hackerone_batch.py": {
       "dependencies": [
         "backend/app/hackerone_batch.py",
+        "backend/app/hackerone_client.py",
         "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 4
     },
     "backend/tests/test_hackerone_batch_api.py": {
       "dependencies": [
@@ -3645,6 +3650,7 @@
         "backend/app/domain_incident_lifecycle.py",
         "backend/app/dr_cli.py",
         "backend/app/hackerone_api.py",
+        "backend/app/hackerone_batch.py",
         "backend/app/hackerone_binding.py",
         "backend/app/hackerone_review_draft.py",
         "backend/app/hackerone_scope_import.py",
@@ -3683,7 +3689,7 @@
         "frontend/app.js",
         "frontend/hackerone.js"
       ],
-      "in_degree": 40,
+      "in_degree": 41,
       "out_degree": 2
     },
     "backend/tests/test_hackerone_remote_binding.py": {

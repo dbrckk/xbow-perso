@@ -2907,6 +2907,17 @@ program_name = str(snapshot.program.get("name") or "").strip()
 program_name = f"H1 {snapshot.handle}"
 program_name = program_name[:120]
 ⋮----
+@router.post("/api/imports/hackerone/batches/go-no-go")
+def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput)
+⋮----
+"""Return one read-only prelaunch verdict without creating campaigns."""
+⋮----
+runtime = build_hackerone_live_readiness(dependency_readiness())
+batch = preflight_reviewed_hackerone_batch(payload)
+runtime_ready = runtime.get("live_scan_ready") is True
+batch_ready = batch.get("ready") is True
+blockers = []
+⋮----
 @router.post("/api/imports/hackerone/batches/preflight-reviewed")
 def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
 ⋮----
@@ -2927,6 +2938,8 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
 prepared: list[HackerOneCampaignAdmissionInput] = []
 missing: list[str] = []
 ⋮----
+verdict = hackerone_batch_go_no_go(payload)
+⋮----
 @router.post("/api/imports/hackerone/batches/launch")
 def launch_hackerone_batch(payload: HackerOneBatchLaunchInput)
 ⋮----
@@ -2937,12 +2950,6 @@ admitted = admit_hackerone_campaign(campaign_payload)
 campaign_id = str(admitted["campaign"]["id"])
 ⋮----
 batch = {
-⋮----
-record = storage().get_hackerone_batch_record(batch_id)
-⋮----
-changed = False
-⋮----
-changed = True
 ⋮----
 latest = storage().get_hackerone_batch(batch_id)
 ⋮----
@@ -3087,6 +3094,36 @@ bucket = str(item["bucket"])
 ## File: app/hackerone_batch.py
 ```python
 _TERMINAL_MEMBER_STATES = {"done", "review", "blocked", "cancelled"}
+_REMOTE_REVALIDATION_MAX_ATTEMPTS = 8
+_REMOTE_REVALIDATION_BASE_SECONDS = 15
+_REMOTE_REVALIDATION_MAX_SECONDS = 300
+⋮----
+def _utc_now() -> datetime
+⋮----
+def _retry_due(member: dict[str, Any]) -> bool
+⋮----
+raw = str(member.get("remote_revalidation_retry_at") or "").strip()
+⋮----
+retry_at = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+⋮----
+def _clear_retry_state(member: dict[str, Any]) -> None
+⋮----
+def _schedule_retry(member: dict[str, Any]) -> tuple[str, str]
+⋮----
+previous_attempts = max(0, int(member.get("remote_revalidation_attempts") or 0))
+⋮----
+previous_attempts = 0
+attempts = previous_attempts + 1
+⋮----
+delay = min(
+⋮----
+handle = str(member.get("handle") or "").strip()
+expected_sha = str(member.get("snapshot_sha256") or "").strip()
+⋮----
+snapshot = fetch_hackerone_program_snapshot(handle)
+⋮----
+submission_state = str(snapshot.program.get("submission_state") or "").strip().lower()
+program_state = str(snapshot.program.get("state") or "").strip().lower()
 ⋮----
 def _active_job_counts(queue, campaign_id: str) -> dict[str, int]
 ⋮----
@@ -3103,7 +3140,7 @@ counts = _active_job_counts(queue, campaign_id)
 ⋮----
 total_terminal = sum(
 ⋮----
-def _start_member(member: dict[str, Any]) -> tuple[str, str | None]
+def _start_member(store, member: dict[str, Any]) -> tuple[str, str | None]
 ⋮----
 def _summarize_members(members: list[dict[str, Any]]) -> dict[str, int]
 ⋮----
@@ -3135,7 +3172,7 @@ next_state = _batch_state(members)
 ⋮----
 def reconcile_hackerone_batches(queue, store, *, limit: int = 20) -> int
 ⋮----
-batches = store.list_hackerone_batches(limit=limit)
+batches = store.list_active_hackerone_batches(limit=limit)
 reconciled = 0
 ```
 
@@ -4860,7 +4897,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: app/main.py
 ```python
-app = FastAPI(title="xbow-perso", version="0.5.0")
+app = FastAPI(title="xbow-perso", version="0.5.1")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -8783,6 +8820,8 @@ def get_hackerone_catalog_state(self, catalog_id: str = "current"): ...
 def save_hackerone_review_profile(self, document: dict, *, expected_version: int | None = None) -> int: ...
 def get_hackerone_review_profile(self, profile_id: str): ...
 def list_hackerone_review_profiles(self, *, limit: int = 500) -> list[dict]: ...
+def list_hackerone_batches(self, *, limit: int = 100) -> list[dict]: ...
+def list_active_hackerone_batches(self, *, limit: int = 100) -> list[dict]: ...
 def save_hackerone_intelligence_state(self, document: dict, *, expected_version: int | None = None) -> int: ...
 def get_hackerone_intelligence_state_record(self, intelligence_id: str = "current"): ...
 def get_hackerone_intelligence_state(self, intelligence_id: str = "current"): ...
@@ -12367,6 +12406,10 @@ def _campaign(campaign_id, state="running")
 ⋮----
 def _batch(mode, members)
 ⋮----
+normalized = [
+⋮----
+def _remote_ok(monkeypatch)
+⋮----
 store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
 ⋮----
 queue = FakeQueue({"c1": {"completed": 2}})
@@ -12385,6 +12428,30 @@ def test_batch_waits_while_member_has_active_jobs(tmp_path)
 original = _batch(
 ⋮----
 queue = FakeQueue({"c1": {"queued": 1, "completed": 1}})
+⋮----
+result = reconcile_hackerone_batch(FakeQueue({}), store, "batch-1")
+⋮----
+def test_sequential_batch_retries_transient_remote_failure(tmp_path, monkeypatch)
+⋮----
+calls = {"count": 0}
+⋮----
+def fetch(handle)
+⋮----
+moments = iter([
+⋮----
+first = reconcile_hackerone_batch(FakeQueue({}), store, "batch-1")
+⋮----
+waiting = reconcile_hackerone_batch(FakeQueue({}), store, "batch-1")
+⋮----
+second = reconcile_hackerone_batch(FakeQueue({}), store, "batch-1")
+⋮----
+def test_parallel_batch_recovers_ready_members_after_restart(tmp_path, monkeypatch)
+⋮----
+def test_active_batch_reconcile_is_not_starved_by_completed_batches(tmp_path, monkeypatch)
+⋮----
+reconciled = reconcile_hackerone_batches(FakeQueue({}), store, limit=20)
+⋮----
+updated = store.get_hackerone_batch("active-old")
 ```
 
 ## File: tests/test_hackerone_binding.py
@@ -12874,6 +12941,14 @@ payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
 result = hackerone_api.preflight_reviewed_hackerone_batch(payload)
 ⋮----
 blocked = next(item for item in result["members"] if item["handle"] == "closed")
+⋮----
+def test_go_no_go_requires_runtime_and_batch_ready(monkeypatch)
+⋮----
+result = hackerone_api.hackerone_batch_go_no_go(payload)
+⋮----
+def test_go_no_go_returns_go_only_when_runtime_and_batch_are_ready(monkeypatch)
+⋮----
+def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch)
 ```
 
 ## File: tests/test_hackerone_remote_binding.py
@@ -14039,6 +14114,8 @@ def test_safe_production_update_keeps_recon_and_browser_disabled()
 def test_all_safe_production_scripts_require_recon_browser_baseline_off()
 ⋮----
 script = _text(name)
+⋮----
+def test_live_production_update_requires_backend_go_no_go_readiness()
 ```
 
 ## File: tests/test_local_outcome_intelligence.py

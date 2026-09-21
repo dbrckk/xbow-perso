@@ -1,18 +1,29 @@
 # Change impact
 
-Base: 23a3705116531c740a587ad5e0561d29b703e134
-Head: 8c9192dcf5e2a1a547ae8685c6d60cdcc1c728bc
+Base: e333ff6b40fcca27eaf9fb7c1beef54cf44d3720
+Head: 34203501338b332e0519cb7606146470d93d7e39
 
 ## Changed files
-- M .env.example
-- M FIRST_REAL_HACKERONE_RUN.md
+- M backend/app/hackerone_api.py
+- M backend/app/hackerone_batch.py
 - M backend/app/main.py
-- A docs/RELEASE_0.5.0.md
+- M backend/app/storage_backend.py
+- M backend/app/storage_core.py
+- M backend/tests/test_hackerone_batch.py
+- M backend/tests/test_hackerone_batch_api.py
+- M backend/tests/test_hackerone_prelaunch.py
+- M backend/tests/test_hackerone_reviewed_batch_api.py
+- M backend/tests/test_live_activation_profile.py
+- A docs/RELEASE_0.5.1.md
+- M frontend/hackerone.js
+- M frontend/sw.js
+- M scripts/mobile-production-update.sh
 
 ## Affected areas
-- (root)
 - backend
 - docs
+- frontend
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

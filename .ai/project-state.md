@@ -22,36 +22,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T11:34:44Z
+Generated: 2026-09-21T11:46:36Z
 
 ### Git
 - Branch: `main`
-- Head: `8c9192dcf5e2`
-- Commit date: 2026-09-21T13:34:34+02:00
-- Commit: release: freeze stable prelaunch baseline 0.5.0 (#318)
-- Tracked files: 551
+- Head: `34203501338b`
+- Commit date: 2026-09-21T13:46:23+02:00
+- Commit: release: final stability patch 0.5.1 (#319)
+- Tracked files: 552
 
 ### Recently changed files
+- `backend/app/hackerone_api.py`
+- `backend/app/hackerone_batch.py`
+- `backend/app/main.py`
+- `backend/app/storage_backend.py`
+- `backend/app/storage_core.py`
+- `backend/tests/test_hackerone_batch.py`
+- `backend/tests/test_hackerone_batch_api.py`
+- `backend/tests/test_hackerone_prelaunch.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
+- `backend/tests/test_live_activation_profile.py`
+- `docs/RELEASE_0.5.1.md`
+- `frontend/hackerone.js`
+- `frontend/sw.js`
+- `scripts/mobile-production-update.sh`
 - `.env.example`
 - `FIRST_REAL_HACKERONE_RUN.md`
-- `backend/app/main.py`
 - `docs/RELEASE_0.5.0.md`
 - `backend/app/hackerone_live_readiness.py`
 - `backend/app/worker_liveness.py`
 - `backend/app/worker_service.py`
-- `backend/tests/test_hackerone_live_readiness.py`
-- `backend/tests/test_worker_liveness.py`
-- `backend/tests/test_live_activation_profile.py`
-- `scripts/mobile-enable-hackerone-nuclei.sh`
-- `scripts/mobile-production-cutover.sh`
-- `scripts/mobile-production-preflight.sh`
-- `scripts/mobile-production-rollback.sh`
-- `scripts/mobile-production-update.sh`
-- `backend/app/hackerone_intelligence.py`
-- `backend/app/runtime_capabilities.py`
-- `docker-compose.yml`
-- `backend/app/hackerone_api.py`
-- `backend/tests/test_hackerone_prelaunch.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 364
-- Files reparsed this run: 1
-- Symbols: 3217
-- Internal import edges: 1210
-- Impacted files: 150
-- Selected tests: 95
+- Files reparsed this run: 12
+- Symbols: 3237
+- Internal import edges: 1212
+- Impacted files: 169
+- Selected tests: 119
 
 ## Languages
 - python: 361 files
@@ -15,13 +15,13 @@
 ## Highest-density symbol files
 - frontend/hackerone.js: 126 symbols
 - backend/app/main.py: 89 symbols
-- backend/app/hackerone_api.py: 49 symbols
-- backend/app/storage_core.py: 43 symbols
+- backend/app/hackerone_api.py: 50 symbols
+- backend/app/storage_core.py: 44 symbols
 - backend/tests/test_storage.py: 38 symbols
 - backend/tests/test_recon_worker.py: 36 symbols
+- backend/app/storage_backend.py: 32 symbols
 - backend/tests/test_browser.py: 32 symbols
 - backend/tests/test_jobqueue.py: 32 symbols
-- backend/app/storage_backend.py: 30 symbols
 - backend/app/recon_worker.py: 29 symbols
 - backend/app/redis_jobqueue.py: 27 symbols
 - backend/tests/test_pentagi_worker_service.py: 27 symbols
@@ -43,10 +43,10 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 1
+- AST files reparsed this run: 12
 - outline files retained: 363
-- top-level items retained: 4521
-- direct members retained: 1037
+- top-level items retained: 4543
+- direct members retained: 1040
 - symbol shards: 25
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
 

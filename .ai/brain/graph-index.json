@@ -743,6 +743,7 @@
         "backend/app/domain_incident_lifecycle.py",
         "backend/app/dr_cli.py",
         "backend/app/hackerone_api.py",
+        "backend/app/hackerone_batch.py",
         "backend/app/hackerone_binding.py",
         "backend/app/hackerone_review_draft.py",
         "backend/app/hackerone_scope_import.py",
@@ -781,7 +782,7 @@
         "frontend/app.js",
         "frontend/hackerone.js"
       ],
-      "in_degree": 40,
+      "in_degree": 41,
       "out_degree": 2,
       "path": "backend/tests/test_hackerone_prelaunch.py"
     },
@@ -1098,6 +1099,34 @@
     },
     {
       "dependencies": [
+        "backend/app/hackerone_scope_import.py",
+        "backend/app/secret_vault.py",
+        "backend/tests/test_alert_delivery.py"
+      ],
+      "dependents": [
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_batch.py",
+        "backend/app/hackerone_catalog.py",
+        "backend/app/hackerone_intelligence.py",
+        "backend/app/hackerone_live_readiness.py",
+        "backend/app/hackerone_report_sync_worker.py",
+        "backend/tests/test_hackerone_batch.py",
+        "backend/tests/test_hackerone_batch_api.py",
+        "backend/tests/test_hackerone_client.py",
+        "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_live_readiness.py",
+        "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_remote_snapshot.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_hackerone_reviewed_batch_api.py"
+      ],
+      "in_degree": 16,
+      "out_degree": 3,
+      "path": "backend/app/hackerone_client.py"
+    },
+    {
+      "dependencies": [
         "backend/app/attack_surface.py",
         "backend/app/differential_intelligence.py",
         "backend/app/evidence_chain.py",
@@ -1123,32 +1152,6 @@
       "in_degree": 9,
       "out_degree": 10,
       "path": "backend/app/red_team_decision.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/hackerone_scope_import.py",
-        "backend/app/secret_vault.py",
-        "backend/tests/test_alert_delivery.py"
-      ],
-      "dependents": [
-        "backend/app/hackerone_api.py",
-        "backend/app/hackerone_catalog.py",
-        "backend/app/hackerone_intelligence.py",
-        "backend/app/hackerone_live_readiness.py",
-        "backend/app/hackerone_report_sync_worker.py",
-        "backend/tests/test_hackerone_batch_api.py",
-        "backend/tests/test_hackerone_client.py",
-        "backend/tests/test_hackerone_control_center_api.py",
-        "backend/tests/test_hackerone_live_readiness.py",
-        "backend/tests/test_hackerone_needs_info.py",
-        "backend/tests/test_hackerone_outbound_submission.py",
-        "backend/tests/test_hackerone_remote_snapshot.py",
-        "backend/tests/test_hackerone_report_tracking.py",
-        "backend/tests/test_hackerone_reviewed_batch_api.py"
-      ],
-      "in_degree": 14,
-      "out_degree": 3,
-      "path": "backend/app/hackerone_client.py"
     },
     {
       "dependencies": [
@@ -2112,7 +2115,7 @@
       "path": "backend/app/finding_cluster_consensus.py"
     }
   ],
-  "edge_count": 1754,
+  "edge_count": 1759,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 360,
   "schema_version": 1
