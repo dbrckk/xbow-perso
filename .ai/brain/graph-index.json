@@ -76,6 +76,7 @@
         "backend/app/campaign_risk.py",
         "backend/app/campaign_runtime.py",
         "backend/app/chain_detector.py",
+        "backend/app/chain_intelligence.py",
         "backend/app/coverage.py",
         "backend/app/decision_consensus.py",
         "backend/app/decision_timeline.py",
@@ -242,7 +243,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 177,
+      "in_degree": 178,
       "out_degree": 56,
       "path": "backend/app/main.py"
     },
@@ -272,6 +273,7 @@
         "backend/tests/test_campaign_risk.py",
         "backend/tests/test_campaign_runtime.py",
         "backend/tests/test_chain_detector.py",
+        "backend/tests/test_chain_intelligence.py",
         "backend/tests/test_control_views.py",
         "backend/tests/test_coverage.py",
         "backend/tests/test_decision_audit.py",
@@ -442,7 +444,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 188,
+      "in_degree": 189,
       "out_degree": 3,
       "path": "frontend/app.js"
     },
@@ -1843,6 +1845,24 @@
     },
     {
       "dependencies": [
+        "backend/app/chain_intelligence.py",
+        "backend/app/hackerone_client.py",
+        "backend/app/observation_graph.py",
+        "backend/app/storage.py",
+        "backend/app/storage_core.py",
+        "backend/tests/test_alert_delivery.py"
+      ],
+      "dependents": [
+        "backend/app/hackerone_api.py",
+        "backend/app/worker_service.py",
+        "backend/tests/test_hackerone_intelligence.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 6,
+      "path": "backend/app/hackerone_intelligence.py"
+    },
+    {
+      "dependencies": [
         "backend/app/api_outbox.py",
         "backend/app/browser.py",
         "backend/app/campaign_audit.py",
@@ -1996,23 +2016,6 @@
     },
     {
       "dependencies": [
-        "backend/app/hackerone_client.py",
-        "backend/app/observation_graph.py",
-        "backend/app/storage.py",
-        "backend/app/storage_core.py",
-        "backend/tests/test_alert_delivery.py"
-      ],
-      "dependents": [
-        "backend/app/hackerone_api.py",
-        "backend/app/worker_service.py",
-        "backend/tests/test_hackerone_intelligence.py"
-      ],
-      "in_degree": 3,
-      "out_degree": 5,
-      "path": "backend/app/hackerone_intelligence.py"
-    },
-    {
-      "dependencies": [
         "backend/app/observation_graph.py",
         "backend/app/observer_heartbeat.py",
         "backend/app/observer_lease.py",
@@ -2029,8 +2032,8 @@
       "path": "backend/app/observer_scheduler.py"
     }
   ],
-  "edge_count": 1654,
+  "edge_count": 1658,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 332,
+  "node_count": 334,
   "schema_version": 1
 }

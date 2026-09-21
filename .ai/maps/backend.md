@@ -55,6 +55,7 @@ app/
   campaign_risk.py
   campaign_runtime.py
   chain_detector.py
+  chain_intelligence.py
   circuit_breaker.py
   coverage.py
   decision_audit.py
@@ -201,6 +202,7 @@ tests/
   test_campaign_risk.py
   test_campaign_runtime.py
   test_chain_detector.py
+  test_chain_intelligence.py
   test_control_views.py
   test_coverage.py
   test_decision_audit.py
@@ -1335,6 +1337,33 @@ current = path[-1]
 next_nodes = [node_id for node_id in children.get(current, ()) if node_id not in path]
 ⋮----
 kinds = tuple(items[node_id].kind for node_id in path)
+```
+
+## File: app/chain_intelligence.py
+```python
+# Advisory-only composition rules learned from recurring public bug-bounty patterns.
+# They never authorize a target, execute a request, or raise scanner permissions.
+_CHAIN_RULES: tuple[dict[str, Any], ...] = (
+⋮----
+def build_chain_intelligence(categories: list[dict[str, Any]]) -> dict[str, Any]
+⋮----
+"""Rank plausible vulnerability compositions without performing exploitation."""
+by_name = {
+candidates: list[dict[str, Any]] = []
+⋮----
+present = [name for name in rule["requires"] if name in by_name]
+⋮----
+evidence = sum(float(by_name[name].get("evidence_score") or 0) for name in present)
+high_critical = sum(int(by_name[name].get("high_critical_count") or 0) for name in present)
+usd_max = max(float(by_name[name].get("usd_awarded_max") or 0) for name in present)
+completeness = len(present) / len(rule["requires"])
+score = round((evidence + 2 * high_critical) * completeness * float(rule["weight"]), 3)
+⋮----
+# Also surface strong two-family compositions not covered by a named rule.
+strongest = sorted(
+covered_pairs = {
+⋮----
+score = round(
 ```
 
 ## File: app/circuit_breaker.py
@@ -10603,6 +10632,24 @@ def test_max_depth_truncates_long_provenance_path()
 chains = detect_chains(graph, max_depth=2)
 ⋮----
 def test_invalid_bounds_fail_closed()
+```
+
+## File: tests/test_chain_intelligence.py
+```python
+def _category(name: str, evidence: float, high: int = 0, award: float = 0) -> dict
+⋮----
+def test_named_chain_is_ranked_without_execution()
+⋮----
+result = build_chain_intelligence(
+candidate = next(item for item in result["candidates"] if item["chain_id"] == "ssrf-disclosure-cloud")
+⋮----
+def test_partial_chain_remains_hypothesis()
+⋮----
+candidate = next(item for item in result["candidates"] if item["chain_id"] == "ai-agent-access")
+⋮----
+def test_single_family_does_not_invent_chain()
+⋮----
+result = build_chain_intelligence([_category("business_logic", 50, 10)])
 ```
 
 ## File: tests/test_control_views.py

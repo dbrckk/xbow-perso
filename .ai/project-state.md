@@ -22,35 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T07:00:54Z
+Generated: 2026-09-21T07:26:17Z
 
 ### Git
 - Branch: `main`
-- Head: `21b3f073b740`
-- Commit date: 2026-09-21T09:00:42+02:00
-- Commit: Merge pull request #281 from dbrckk/feat/hackerone-hacktivity-learning
-- Tracked files: 521
+- Head: `c5c68ba5d405`
+- Commit date: 2026-09-21T09:26:05+02:00
+- Commit: Merge pull request #283 from dbrckk/feat/chain-aware-intelligence
+- Tracked files: 523
 
 ### Recently changed files
-- `frontend/hackerone.js`
-- `.env.example`
-- `backend/Dockerfile`
-- `backend/app/browser.py`
-- `backend/app/high_value_intelligence.py`
-- `backend/app/identity_access.py`
-- `backend/app/main.py`
-- `backend/app/orchestrator.py`
-- `backend/app/recon_worker.py`
-- `backend/app/runtime_capabilities.py`
-- `backend/app/worker_service.py`
-- `backend/tests/test_browser.py`
-- `backend/tests/test_high_value_intelligence.py`
-- `backend/tests/test_identity_access.py`
-- `backend/tests/test_recon_worker.py`
-- `backend/tests/test_runtime_capabilities.py`
-- `backend/tests/test_scanner_runtime_contract.py`
-- `docker-compose.yml`
+- `backend/tests/test_chain_intelligence.py`
 - `backend/app/hackerone_intelligence.py`
+- `backend/app/chain_intelligence.py`
+- `frontend/hackerone.js`
 
 ### Project signals
 - `pyproject.toml`

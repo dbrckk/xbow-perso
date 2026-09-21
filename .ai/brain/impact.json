@@ -1,989 +1,42 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "53e059b524937bf85cabb459d50917192ef9716e",
-  "head": "21b3f073b74011255c44411ecce7c380e5fb413b",
+  "base": "21b3f073b74011255c44411ecce7c380e5fb413b",
+  "head": "c5c68ba5d405cef83c7cf8f68270df505c05253d",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".env.example",
-      "status": "M"
-    },
-    {
-      "path": "README.md",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/hackerone_api.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/hackerone_client.py",
-      "status": "M"
+      "path": "backend/app/chain_intelligence.py",
+      "status": "A"
     },
     {
       "path": "backend/app/hackerone_intelligence.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_chain_intelligence.py",
       "status": "A"
-    },
-    {
-      "path": "backend/app/main.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/postgres_storage.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/production_migration.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/storage_backend.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/storage_core.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/worker_service.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_hackerone_intelligence.py",
-      "status": "A"
-    },
-    {
-      "path": "docker-compose.yml",
-      "status": "M"
-    },
-    {
-      "path": "frontend/app.css",
-      "status": "M"
-    },
-    {
-      "path": "frontend/index.html",
-      "status": "M"
-    },
-    {
-      "path": "frontend/sw.js",
-      "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/hackerone_api.py",
-    "backend/app/hackerone_client.py",
+    "backend/app/chain_intelligence.py",
     "backend/app/hackerone_intelligence.py",
-    "backend/app/main.py",
-    "backend/app/postgres_storage.py",
-    "backend/app/production_migration.py",
-    "backend/app/storage_backend.py",
-    "backend/app/storage_core.py",
-    "backend/app/worker_service.py",
-    "backend/tests/test_hackerone_intelligence.py",
-    "frontend/sw.js"
+    "backend/tests/test_chain_intelligence.py"
   ],
   "impacted_files": [
-    "backend/app/adaptive_cycle.py",
-    "backend/app/attack_surface.py",
-    "backend/app/autonomy_gate.py",
-    "backend/app/browser.py",
-    "backend/app/campaign_control.py",
-    "backend/app/campaign_overview.py",
-    "backend/app/campaign_review_state.py",
-    "backend/app/campaign_risk.py",
-    "backend/app/coverage.py",
-    "backend/app/decision_consensus.py",
-    "backend/app/decision_timeline.py",
-    "backend/app/evidence_chain.py",
-    "backend/app/evidence_quality.py",
-    "backend/app/finding_cluster_consensus.py",
-    "backend/app/finding_cluster_saturation.py",
-    "backend/app/finding_consensus.py",
-    "backend/app/finding_correlation.py",
-    "backend/app/finding_intelligence.py",
-    "backend/app/finding_lifecycle.py",
-    "backend/app/finding_readiness.py",
-    "backend/app/finding_triage.py",
+    "backend/app/chain_intelligence.py",
     "backend/app/hackerone_api.py",
-    "backend/app/hackerone_batch.py",
-    "backend/app/hackerone_catalog.py",
-    "backend/app/hackerone_client.py",
     "backend/app/hackerone_intelligence.py",
-    "backend/app/hackerone_live_readiness.py",
-    "backend/app/hackerone_report_sync_worker.py",
-    "backend/app/hackerone_scope_import.py",
-    "backend/app/high_value_intelligence.py",
-    "backend/app/hypothesis_engine.py",
-    "backend/app/identity_access.py",
-    "backend/app/learning_memory.py",
-    "backend/app/main.py",
-    "backend/app/metrics.py",
-    "backend/app/nuclei_parser.py",
-    "backend/app/observation_writer.py",
-    "backend/app/operational_alerts.py",
-    "backend/app/orchestrator.py",
-    "backend/app/pentagi_action_gateway.py",
-    "backend/app/pentagi_adapter.py",
-    "backend/app/pentagi_admission.py",
-    "backend/app/pentagi_control.py",
-    "backend/app/pentagi_dispatch.py",
-    "backend/app/pentagi_execution_guard.py",
-    "backend/app/pentagi_status_worker_service.py",
-    "backend/app/pentagi_worker_service.py",
-    "backend/app/postgres_storage.py",
-    "backend/app/production_migration.py",
-    "backend/app/readiness.py",
-    "backend/app/recon_swarm.py",
-    "backend/app/recon_worker.py",
-    "backend/app/red_team_coverage.py",
-    "backend/app/red_team_decision.py",
-    "backend/app/report.py",
-    "backend/app/report_approval_api.py",
-    "backend/app/report_readiness.py",
-    "backend/app/review_queue.py",
-    "backend/app/scanner_ingestion.py",
-    "backend/app/scanner_normalization.py",
-    "backend/app/scanner_registry.py",
-    "backend/app/scanner_worker.py",
-    "backend/app/storage_backend.py",
-    "backend/app/storage_core.py",
-    "backend/app/strix_parser.py",
-    "backend/app/submission_api.py",
-    "backend/app/validator.py",
-    "backend/app/worker.py",
     "backend/app/worker_service.py",
-    "backend/tests/test_adaptive_cycle.py",
-    "backend/tests/test_api_idempotency.py",
-    "backend/tests/test_api_outbox.py",
-    "backend/tests/test_attack_surface.py",
-    "backend/tests/test_attack_surface_scope.py",
-    "backend/tests/test_auth.py",
-    "backend/tests/test_autonomy_gate.py",
-    "backend/tests/test_browser.py",
-    "backend/tests/test_campaign_cancel.py",
-    "backend/tests/test_campaign_circuit_breaker.py",
-    "backend/tests/test_campaign_overview.py",
-    "backend/tests/test_campaign_review_state.py",
-    "backend/tests/test_campaign_risk.py",
-    "backend/tests/test_control_views.py",
-    "backend/tests/test_coverage.py",
-    "backend/tests/test_decision_timeline.py",
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_distributed_concurrency.py",
-    "backend/tests/test_evidence_chain.py",
-    "backend/tests/test_evidence_quality.py",
-    "backend/tests/test_finding_cluster_consensus.py",
-    "backend/tests/test_finding_cluster_saturation.py",
-    "backend/tests/test_finding_consensus.py",
-    "backend/tests/test_finding_correlation.py",
-    "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_finding_lifecycle.py",
-    "backend/tests/test_finding_readiness.py",
-    "backend/tests/test_finding_review_metadata.py",
-    "backend/tests/test_finding_triage.py",
-    "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_hackerone_attention.py",
-    "backend/tests/test_hackerone_batch_api.py",
-    "backend/tests/test_hackerone_binding.py",
-    "backend/tests/test_hackerone_client.py",
-    "backend/tests/test_hackerone_control_center_api.py",
-    "backend/tests/test_hackerone_intelligence.py",
-    "backend/tests/test_hackerone_launch_api.py",
-    "backend/tests/test_hackerone_needs_info.py",
-    "backend/tests/test_hackerone_nuclei_e2e.py",
-    "backend/tests/test_hackerone_outbound_submission.py",
-    "backend/tests/test_hackerone_remote_binding.py",
-    "backend/tests/test_hackerone_remote_snapshot.py",
-    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-    "backend/tests/test_hackerone_report_sync_worker.py",
-    "backend/tests/test_hackerone_report_tracking.py",
-    "backend/tests/test_hackerone_review_profiles.py",
-    "backend/tests/test_hackerone_reviewed_batch_api.py",
-    "backend/tests/test_hackerone_scope_preview_api.py",
-    "backend/tests/test_health.py",
-    "backend/tests/test_high_value_intelligence.py",
-    "backend/tests/test_hypothesis_engine.py",
-    "backend/tests/test_identity_access.py",
-    "backend/tests/test_job_provenance.py",
-    "backend/tests/test_job_provenance_api_integration.py",
-    "backend/tests/test_job_provenance_integration.py",
-    "backend/tests/test_learning_memory.py",
-    "backend/tests/test_metrics.py",
-    "backend/tests/test_nuclei_queue_lifecycle.py",
-    "backend/tests/test_nuclei_worker_plan.py",
-    "backend/tests/test_observation_writer_provenance.py",
-    "backend/tests/test_openapi_integrity.py",
-    "backend/tests/test_operational_alerts.py",
-    "backend/tests/test_orchestrator.py",
-    "backend/tests/test_orchestrator_validation_alignment.py",
-    "backend/tests/test_outbox_chaos.py",
-    "backend/tests/test_overview_reasoning.py",
-    "backend/tests/test_pentagi_action_gateway.py",
-    "backend/tests/test_pentagi_adapter.py",
-    "backend/tests/test_pentagi_admission.py",
-    "backend/tests/test_pentagi_control.py",
-    "backend/tests/test_pentagi_control_api.py",
-    "backend/tests/test_pentagi_dispatch.py",
-    "backend/tests/test_pentagi_execution_guard.py",
-    "backend/tests/test_pentagi_transport.py",
-    "backend/tests/test_pentagi_worker_service.py",
-    "backend/tests/test_plan_evidence_quality.py",
-    "backend/tests/test_policy_integrity.py",
-    "backend/tests/test_policy_invariants.py",
-    "backend/tests/test_postgres_integration.py",
-    "backend/tests/test_postgres_storage.py",
-    "backend/tests/test_production_migration.py",
-    "backend/tests/test_recon_swarm.py",
-    "backend/tests/test_recon_worker.py",
-    "backend/tests/test_red_team_coverage.py",
-    "backend/tests/test_red_team_decision.py",
-    "backend/tests/test_report.py",
-    "backend/tests/test_report_approval.py",
-    "backend/tests/test_report_approval_api.py",
-    "backend/tests/test_report_readiness.py",
-    "backend/tests/test_review_queue.py",
-    "backend/tests/test_runtime_budget_config.py",
-    "backend/tests/test_scan_payload_idempotency.py",
-    "backend/tests/test_scanner_ingestion.py",
-    "backend/tests/test_scanner_normalization.py",
-    "backend/tests/test_scanner_observation_chain.py",
-    "backend/tests/test_scanner_worker.py",
-    "backend/tests/test_scope.py",
-    "backend/tests/test_storage_backend.py",
-    "backend/tests/test_submission_api.py",
-    "backend/tests/test_submission_state.py",
-    "backend/tests/test_totp_auth.py",
-    "backend/tests/test_validator.py",
-    "backend/tests/test_worker_concurrency.py",
-    "backend/tests/test_worker_job_provenance.py",
-    "backend/tests/test_worker_observations.py",
-    "backend/tests/test_worker_outcome_memory.py",
-    "backend/tests/test_worker_parser.py",
-    "backend/tests/test_worker_roles.py",
-    "backend/tests/test_worker_state.py",
-    "frontend/sw.js"
+    "backend/tests/test_chain_intelligence.py",
+    "backend/tests/test_hackerone_intelligence.py"
   ],
   "impacted_symbols": [
     {
-      "name": "AdaptiveCycle",
-      "kind": "class",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 23
-    },
-    {
-      "name": "to_dict",
+      "name": "build_chain_intelligence",
       "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 32
-    },
-    {
-      "name": "_suppressed_techniques",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 39
-    },
-    {
-      "name": "_unstable_job_kinds",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 49
-    },
-    {
-      "name": "build_adaptive_cycle",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 66
-    },
-    {
-      "name": "campaign_adaptive_cycle",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 141
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 149
-    },
-    {
-      "name": "canonical_host",
-      "kind": "function",
-      "file": "backend/app/attack_surface.py",
-      "line": 16
-    },
-    {
-      "name": "canonical_endpoint",
-      "kind": "function",
-      "file": "backend/app/attack_surface.py",
-      "line": 21
-    },
-    {
-      "name": "_safe_form",
-      "kind": "function",
-      "file": "backend/app/attack_surface.py",
-      "line": 53
-    },
-    {
-      "name": "build_attack_surface",
-      "kind": "function",
-      "file": "backend/app/attack_surface.py",
-      "line": 73
-    },
-    {
-      "name": "campaign_attack_surface",
-      "kind": "function",
-      "file": "backend/app/attack_surface.py",
-      "line": 205
-    },
-    {
-      "name": "AutonomyGate",
-      "kind": "class",
-      "file": "backend/app/autonomy_gate.py",
-      "line": 19
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/autonomy_gate.py",
-      "line": 26
-    },
-    {
-      "name": "build_autonomy_gate",
-      "kind": "function",
-      "file": "backend/app/autonomy_gate.py",
-      "line": 33
-    },
-    {
-      "name": "campaign_autonomy_gate",
-      "kind": "function",
-      "file": "backend/app/autonomy_gate.py",
-      "line": 100
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/autonomy_gate.py",
-      "line": 107
-    },
-    {
-      "name": "BrowserPolicyError",
-      "kind": "class",
-      "file": "backend/app/browser.py",
-      "line": 27
-    },
-    {
-      "name": "BrowserStep",
-      "kind": "class",
-      "file": "backend/app/browser.py",
-      "line": 31
-    },
-    {
-      "name": "validate_shape",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 39
-    },
-    {
-      "name": "BrowserFlowInput",
-      "kind": "class",
-      "file": "backend/app/browser.py",
-      "line": 51
-    },
-    {
-      "name": "BrowserExecutionResult",
-      "kind": "class",
-      "file": "backend/app/browser.py",
-      "line": 66
-    },
-    {
-      "name": "_bool_env",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 73
-    },
-    {
-      "name": "_browser_secret",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 85
-    },
-    {
-      "name": "_utcnow",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 110
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 114
-    },
-    {
-      "name": "_flow_fingerprint",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 125
-    },
-    {
-      "name": "_flow_dedupe_key",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 135
-    },
-    {
-      "name": "_save_campaign",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 141
-    },
-    {
-      "name": "_reconcile_browser_flow_queued",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 154
-    },
-    {
-      "name": "_allowed_url",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 200
-    },
-    {
-      "name": "_browser_storage_state",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 214
-    },
-    {
-      "name": "_assert_read_only_browser_method",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 280
-    },
-    {
-      "name": "_assert_browser_policy",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 286
-    },
-    {
-      "name": "validate_flow",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 301
-    },
-    {
-      "name": "queue_browser_flow",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 311
-    },
-    {
-      "name": "execute_browser_flow",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 384
-    },
-    {
-      "name": "route_guard",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 413
-    },
-    {
-      "name": "persist_browser_result",
-      "kind": "function",
-      "file": "backend/app/browser.py",
-      "line": 563
-    },
-    {
-      "name": "_recon_telemetry",
-      "kind": "function",
-      "file": "backend/app/campaign_control.py",
-      "line": 18
-    },
-    {
-      "name": "_autonomy_block_reasons",
-      "kind": "function",
-      "file": "backend/app/campaign_control.py",
-      "line": 56
-    },
-    {
-      "name": "campaign_control_status",
-      "kind": "function",
-      "file": "backend/app/campaign_control.py",
-      "line": 68
-    },
-    {
-      "name": "reset_campaign_circuit_breaker",
-      "kind": "function",
-      "file": "backend/app/campaign_control.py",
-      "line": 111
-    },
-    {
-      "name": "campaign_overview",
-      "kind": "function",
-      "file": "backend/app/campaign_overview.py",
-      "line": 45
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/campaign_overview.py",
-      "line": 54
-    },
-    {
-      "name": "build_campaign_review_state",
-      "kind": "function",
-      "file": "backend/app/campaign_review_state.py",
-      "line": 15
-    },
-    {
-      "name": "campaign_review_state",
-      "kind": "function",
-      "file": "backend/app/campaign_review_state.py",
-      "line": 82
-    },
-    {
-      "name": "CampaignRisk",
-      "kind": "class",
-      "file": "backend/app/campaign_risk.py",
-      "line": 21
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/campaign_risk.py",
-      "line": 29
-    },
-    {
-      "name": "build_campaign_risk",
-      "kind": "function",
-      "file": "backend/app/campaign_risk.py",
-      "line": 35
-    },
-    {
-      "name": "campaign_risk",
-      "kind": "function",
-      "file": "backend/app/campaign_risk.py",
-      "line": 130
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/campaign_risk.py",
-      "line": 137
-    },
-    {
-      "name": "build_evidence_coverage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 14
-    },
-    {
-      "name": "campaign_coverage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 71
-    },
-    {
-      "name": "build_coverage_guidance",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 88
-    },
-    {
-      "name": "DecisionConsensus",
-      "kind": "class",
-      "file": "backend/app/decision_consensus.py",
-      "line": 23
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/decision_consensus.py",
-      "line": 31
-    },
-    {
-      "name": "build_decision_consensus",
-      "kind": "function",
-      "file": "backend/app/decision_consensus.py",
-      "line": 38
-    },
-    {
-      "name": "campaign_decision_consensus",
-      "kind": "function",
-      "file": "backend/app/decision_consensus.py",
-      "line": 90
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/decision_consensus.py",
-      "line": 97
-    },
-    {
-      "name": "_flatten_explanation",
-      "kind": "function",
-      "file": "backend/app/decision_timeline.py",
-      "line": 14
-    },
-    {
-      "name": "_signal_diff",
-      "kind": "function",
-      "file": "backend/app/decision_timeline.py",
-      "line": 28
-    },
-    {
-      "name": "_causal_summary",
-      "kind": "function",
-      "file": "backend/app/decision_timeline.py",
-      "line": 47
-    },
-    {
-      "name": "planner_stability",
-      "kind": "function",
-      "file": "backend/app/decision_timeline.py",
-      "line": 115
-    },
-    {
-      "name": "planner_stability_from_graph",
-      "kind": "function",
-      "file": "backend/app/decision_timeline.py",
-      "line": 190
-    },
-    {
-      "name": "planner_stability_breaker_reason",
-      "kind": "function",
-      "file": "backend/app/decision_timeline.py",
-      "line": 210
-    },
-    {
-      "name": "build_decision_timeline",
-      "kind": "function",
-      "file": "backend/app/decision_timeline.py",
-      "line": 221
-    },
-    {
-      "name": "campaign_decision_timeline",
-      "kind": "function",
-      "file": "backend/app/decision_timeline.py",
-      "line": 318
-    },
-    {
-      "name": "EvidenceChain",
-      "kind": "class",
-      "file": "backend/app/evidence_chain.py",
-      "line": 17
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/evidence_chain.py",
-      "line": 29
-    },
-    {
-      "name": "_ancestry_integrity",
-      "kind": "function",
-      "file": "backend/app/evidence_chain.py",
-      "line": 39
-    },
-    {
-      "name": "visit",
-      "kind": "function",
-      "file": "backend/app/evidence_chain.py",
+      "file": "backend/app/chain_intelligence.py",
       "line": 48
-    },
-    {
-      "name": "build_evidence_chains",
-      "kind": "function",
-      "file": "backend/app/evidence_chain.py",
-      "line": 67
-    },
-    {
-      "name": "campaign_evidence_chains",
-      "kind": "function",
-      "file": "backend/app/evidence_chain.py",
-      "line": 133
-    },
-    {
-      "name": "EvidenceQuality",
-      "kind": "class",
-      "file": "backend/app/evidence_quality.py",
-      "line": 16
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/evidence_quality.py",
-      "line": 29
-    },
-    {
-      "name": "_grade",
-      "kind": "function",
-      "file": "backend/app/evidence_quality.py",
-      "line": 35
-    },
-    {
-      "name": "build_evidence_quality",
-      "kind": "function",
-      "file": "backend/app/evidence_quality.py",
-      "line": 43
-    },
-    {
-      "name": "campaign_evidence_quality",
-      "kind": "function",
-      "file": "backend/app/evidence_quality.py",
-      "line": 132
-    },
-    {
-      "name": "ClusterConsensus",
-      "kind": "class",
-      "file": "backend/app/finding_cluster_consensus.py",
-      "line": 16
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_cluster_consensus.py",
-      "line": 30
-    },
-    {
-      "name": "build_cluster_consensus",
-      "kind": "function",
-      "file": "backend/app/finding_cluster_consensus.py",
-      "line": 37
-    },
-    {
-      "name": "campaign_finding_cluster_consensus",
-      "kind": "function",
-      "file": "backend/app/finding_cluster_consensus.py",
-      "line": 119
-    },
-    {
-      "name": "ClusterSaturation",
-      "kind": "class",
-      "file": "backend/app/finding_cluster_saturation.py",
-      "line": 17
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_cluster_saturation.py",
-      "line": 27
-    },
-    {
-      "name": "build_cluster_saturation",
-      "kind": "function",
-      "file": "backend/app/finding_cluster_saturation.py",
-      "line": 33
-    },
-    {
-      "name": "campaign_finding_cluster_saturation",
-      "kind": "function",
-      "file": "backend/app/finding_cluster_saturation.py",
-      "line": 103
-    },
-    {
-      "name": "FindingConsensus",
-      "kind": "class",
-      "file": "backend/app/finding_consensus.py",
-      "line": 14
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_consensus.py",
-      "line": 25
-    },
-    {
-      "name": "_children",
-      "kind": "function",
-      "file": "backend/app/finding_consensus.py",
-      "line": 31
-    },
-    {
-      "name": "build_finding_consensus",
-      "kind": "function",
-      "file": "backend/app/finding_consensus.py",
-      "line": 39
-    },
-    {
-      "name": "campaign_finding_consensus",
-      "kind": "function",
-      "file": "backend/app/finding_consensus.py",
-      "line": 116
-    },
-    {
-      "name": "_canonical_url",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 21
-    },
-    {
-      "name": "FindingCorrelation",
-      "kind": "class",
-      "file": "backend/app/finding_correlation.py",
-      "line": 43
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 52
-    },
-    {
-      "name": "correlate_findings",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 58
-    },
-    {
-      "name": "campaign_finding_correlations",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 101
-    },
-    {
-      "name": "_title_tokens",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 122
-    },
-    {
-      "name": "_jaccard",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 133
-    },
-    {
-      "name": "FindingSimilarity",
-      "kind": "class",
-      "file": "backend/app/finding_correlation.py",
-      "line": 140
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 150
-    },
-    {
-      "name": "FindingCluster",
-      "kind": "class",
-      "file": "backend/app/finding_correlation.py",
-      "line": 157
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 164
-    },
-    {
-      "name": "score_finding_similarity",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 171
-    },
-    {
-      "name": "cluster_findings",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 216
-    },
-    {
-      "name": "campaign_finding_clusters",
-      "kind": "function",
-      "file": "backend/app/finding_correlation.py",
-      "line": 285
-    },
-    {
-      "name": "build_finding_intelligence",
-      "kind": "function",
-      "file": "backend/app/finding_intelligence.py",
-      "line": 18
-    },
-    {
-      "name": "campaign_finding_intelligence",
-      "kind": "function",
-      "file": "backend/app/finding_intelligence.py",
-      "line": 148
-    },
-    {
-      "name": "FindingLifecycleAdvice",
-      "kind": "class",
-      "file": "backend/app/finding_lifecycle.py",
-      "line": 17
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_lifecycle.py",
-      "line": 27
-    },
-    {
-      "name": "build_finding_lifecycle",
-      "kind": "function",
-      "file": "backend/app/finding_lifecycle.py",
-      "line": 33
-    },
-    {
-      "name": "campaign_finding_lifecycle",
-      "kind": "function",
-      "file": "backend/app/finding_lifecycle.py",
-      "line": 116
-    },
-    {
-      "name": "FindingReadiness",
-      "kind": "class",
-      "file": "backend/app/finding_readiness.py",
-      "line": 18
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_readiness.py",
-      "line": 31
-    },
-    {
-      "name": "build_finding_readiness",
-      "kind": "function",
-      "file": "backend/app/finding_readiness.py",
-      "line": 37
-    },
-    {
-      "name": "campaign_finding_readiness",
-      "kind": "function",
-      "file": "backend/app/finding_readiness.py",
-      "line": 131
-    },
-    {
-      "name": "FindingTriage",
-      "kind": "class",
-      "file": "backend/app/finding_triage.py",
-      "line": 28
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/finding_triage.py",
-      "line": 42
-    },
-    {
-      "name": "build_finding_triage",
-      "kind": "function",
-      "file": "backend/app/finding_triage.py",
-      "line": 46
-    },
-    {
-      "name": "campaign_finding_triage",
-      "kind": "function",
-      "file": "backend/app/finding_triage.py",
-      "line": 143
     },
     {
       "name": "HackerOneProgramPolicyInput",
@@ -1250,922 +303,332 @@
       "line": 987
     },
     {
-      "name": "_active_job_counts",
-      "kind": "function",
-      "file": "backend/app/hackerone_batch.py",
-      "line": 12
-    },
-    {
-      "name": "_campaign_state",
-      "kind": "function",
-      "file": "backend/app/hackerone_batch.py",
-      "line": 16
-    },
-    {
-      "name": "_member_finished",
-      "kind": "function",
-      "file": "backend/app/hackerone_batch.py",
-      "line": 23
-    },
-    {
-      "name": "_start_member",
-      "kind": "function",
-      "file": "backend/app/hackerone_batch.py",
-      "line": 50
-    },
-    {
-      "name": "_summarize_members",
-      "kind": "function",
-      "file": "backend/app/hackerone_batch.py",
-      "line": 65
-    },
-    {
-      "name": "_batch_state",
-      "kind": "function",
-      "file": "backend/app/hackerone_batch.py",
-      "line": 81
-    },
-    {
-      "name": "reconcile_hackerone_batch",
-      "kind": "function",
-      "file": "backend/app/hackerone_batch.py",
-      "line": 90
-    },
-    {
-      "name": "reconcile_hackerone_batches",
-      "kind": "function",
-      "file": "backend/app/hackerone_batch.py",
-      "line": 155
-    },
-    {
-      "name": "_utcnow",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 18
-    },
-    {
-      "name": "normalize_program_resource",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 22
-    },
-    {
-      "name": "fetch_hackerone_program_catalog",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 42
-    },
-    {
-      "name": "_fingerprint",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 53
-    },
-    {
-      "name": "_diff_programs",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 63
-    },
-    {
-      "name": "refresh_hackerone_catalog",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 83
-    },
-    {
-      "name": "_strict_bool_env",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 161
-    },
-    {
-      "name": "catalog_poll_seconds",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 173
-    },
-    {
-      "name": "maybe_refresh_hackerone_catalog",
-      "kind": "function",
-      "file": "backend/app/hackerone_catalog.py",
-      "line": 188
-    },
-    {
-      "name": "HackerOneClientError",
-      "kind": "class",
-      "file": "backend/app/hackerone_client.py",
-      "line": 24
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 25
-    },
-    {
-      "name": "_NoRedirect",
-      "kind": "class",
-      "file": "backend/app/hackerone_client.py",
-      "line": 30
-    },
-    {
-      "name": "redirect_request",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 31
-    },
-    {
-      "name": "HackerOneCredentials",
-      "kind": "class",
-      "file": "backend/app/hackerone_client.py",
-      "line": 36
-    },
-    {
-      "name": "__post_init__",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 40
-    },
-    {
-      "name": "headers",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 44
-    },
-    {
-      "name": "_validate_credential",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 54
-    },
-    {
-      "name": "load_hackerone_credentials",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 69
-    },
-    {
-      "name": "_timeout_seconds",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 78
-    },
-    {
-      "name": "_max_response_bytes",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 89
-    },
-    {
-      "name": "_validate_path",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 100
-    },
-    {
-      "name": "_read_bounded",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 116
-    },
-    {
-      "name": "HackerOneClient",
-      "kind": "class",
-      "file": "backend/app/hackerone_client.py",
-      "line": 123
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 124
-    },
-    {
-      "name": "get_json",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 127
-    },
-    {
-      "name": "post_json",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 180
-    },
-    {
-      "name": "get_all_pages",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 255
-    },
-    {
-      "name": "HackerOneProgramSnapshot",
-      "kind": "class",
-      "file": "backend/app/hackerone_client.py",
-      "line": 305
-    },
-    {
-      "name": "_validate_handle",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 314
-    },
-    {
-      "name": "_canonical_resource",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 324
-    },
-    {
-      "name": "_sorted_resources",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 328
-    },
-    {
-      "name": "_program_projection",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 332
-    },
-    {
-      "name": "_preview_dict",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 350
-    },
-    {
-      "name": "fetch_hackerone_program_snapshot",
-      "kind": "function",
-      "file": "backend/app/hackerone_client.py",
-      "line": 365
-    },
-    {
       "name": "_utcnow",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 253
+      "line": 254
     },
     {
       "name": "_bounded_text",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 257
+      "line": 258
     },
     {
       "name": "_amount",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 264
+      "line": 265
     },
     {
       "name": "_bounded_int",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 276
+      "line": 277
     },
     {
       "name": "_relationship_attributes",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 286
+      "line": 287
     },
     {
       "name": "normalize_hacktivity_item",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 300
+      "line": 301
     },
     {
       "name": "classify_report",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 338
+      "line": 339
     },
     {
       "name": "_max_pages",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 352
+      "line": 353
     },
     {
       "name": "intelligence_poll_seconds",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 363
+      "line": 364
     },
     {
       "name": "_enabled",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 376
+      "line": 377
     },
     {
       "name": "fetch_disclosed_hacktivity",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 385
+      "line": 386
     },
     {
       "name": "_category_statistics",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 414
+      "line": 415
     },
     {
       "name": "_program_signals",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 472
+      "line": 473
     },
     {
       "name": "_capability_gaps",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 517
+      "line": 518
     },
     {
       "name": "build_hackerone_intelligence",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 535
+      "line": 536
     },
     {
       "name": "refresh_hackerone_intelligence",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 579
+      "line": 581
     },
     {
       "name": "maybe_refresh_hackerone_intelligence",
       "kind": "function",
       "file": "backend/app/hackerone_intelligence.py",
-      "line": 605
+      "line": 607
     },
     {
-      "name": "_strict_bool",
-      "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 11
-    },
-    {
-      "name": "_configured",
-      "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 23
-    },
-    {
-      "name": "build_hackerone_live_readiness",
-      "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 27
-    },
-    {
-      "name": "HackerOneReportSyncError",
+      "name": "CampaignCancelledError",
       "kind": "class",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 24
-    },
-    {
-      "name": "_strict_bool_env",
-      "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 28
-    },
-    {
-      "name": "_require_enabled",
-      "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 40
-    },
-    {
-      "name": "_max_campaigns",
-      "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
+      "file": "backend/app/worker_service.py",
       "line": 45
     },
     {
-      "name": "_interval_seconds",
-      "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 60
+      "name": "StaleValidationJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 49
     },
     {
-      "name": "_submissions",
-      "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 75
+      "name": "StaleBrowserJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 53
     },
     {
-      "name": "_last_synced",
+      "name": "_save",
       "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 98
+      "file": "backend/app/worker_service.py",
+      "line": 61
     },
     {
-      "name": "_last_needs_more_info",
+      "name": "_campaign",
       "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 112
+      "file": "backend/app/worker_service.py",
+      "line": 66
     },
     {
-      "name": "_observed_public_activity_ids",
+      "name": "_append_event_once",
       "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
+      "file": "backend/app/worker_service.py",
+      "line": 77
+    },
+    {
+      "name": "_lease_heartbeat",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 94
+    },
+    {
+      "name": "renew",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 101
+    },
+    {
+      "name": "_process_scanner_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 122
+    },
+    {
+      "name": "process_strix_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
       "line": 129
     },
     {
-      "name": "_changed",
+      "name": "process_nuclei_scan",
       "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 146
+      "file": "backend/app/worker_service.py",
+      "line": 133
     },
     {
-      "name": "_sync_submission",
+      "name": "process_validation",
       "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 152
+      "file": "backend/app/worker_service.py",
+      "line": 137
     },
     {
-      "name": "sync_once",
+      "name": "process_browser_flow",
       "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 263
+      "file": "backend/app/worker_service.py",
+      "line": 210
+    },
+    {
+      "name": "process_recon_task",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 312
+    },
+    {
+      "name": "process_report",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 406
+    },
+    {
+      "name": "_record_worker_outcome",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 448
+    },
+    {
+      "name": "_worker_bool",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 478
+    },
+    {
+      "name": "_legacy_unprovenanced_jobs_allowed",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 490
+    },
+    {
+      "name": "_verify_policy_bound_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 494
+    },
+    {
+      "name": "_active_scanner_execution_requested",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 514
+    },
+    {
+      "name": "_claim_for_role",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 521
+    },
+    {
+      "name": "process_one",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 535
+    },
+    {
+      "name": "_worker_poll_seconds",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 592
     },
     {
       "name": "main",
       "kind": "function",
-      "file": "backend/app/hackerone_report_sync_worker.py",
-      "line": 293
+      "file": "backend/app/worker_service.py",
+      "line": 603
     },
     {
-      "name": "HackerOneScopeImportError",
-      "kind": "class",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 21
-    },
-    {
-      "name": "_explicit_text",
+      "name": "_category",
       "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 25
+      "file": "backend/tests/test_chain_intelligence.py",
+      "line": 4
     },
     {
-      "name": "_reviewed_at",
+      "name": "test_named_chain_is_ranked_without_execution",
       "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 46
+      "file": "backend/tests/test_chain_intelligence.py",
+      "line": 13
     },
     {
-      "name": "_restrictions",
+      "name": "test_partial_chain_remains_hypothesis",
       "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 58
-    },
-    {
-      "name": "HackerOneProgramPolicy",
-      "kind": "class",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 78
-    },
-    {
-      "name": "__post_init__",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 99
-    },
-    {
-      "name": "to_snapshot",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 171
-    },
-    {
-      "name": "HackerOneScopeAsset",
-      "kind": "class",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 188
-    },
-    {
-      "name": "HackerOneScopePreview",
-      "kind": "class",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 198
-    },
-    {
-      "name": "to_program_rules",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 206
-    },
-    {
-      "name": "_clean_identifier",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 243
-    },
-    {
-      "name": "_canonical_asset_type",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 254
-    },
-    {
-      "name": "_ascii_domain",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 283
-    },
-    {
-      "name": "_compatible_host_pattern",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 314
-    },
-    {
-      "name": "_resource_attributes",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 356
-    },
-    {
-      "name": "import_hackerone_structured_scope",
-      "kind": "function",
-      "file": "backend/app/hackerone_scope_import.py",
-      "line": 369
-    },
-    {
-      "name": "PublicCaseLesson",
-      "kind": "class",
-      "file": "backend/app/high_value_intelligence.py",
-      "line": 14
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/high_value_intelligence.py",
-      "line": 24
-    },
-    {
-      "name": "HighValueFocus",
-      "kind": "class",
-      "file": "backend/app/high_value_intelligence.py",
-      "line": 32
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/high_value_intelligence.py",
-      "line": 39
-    },
-    {
-      "name": "public_case_lessons",
-      "kind": "function",
-      "file": "backend/app/high_value_intelligence.py",
-      "line": 148
-    },
-    {
-      "name": "_surface_tokens",
-      "kind": "function",
-      "file": "backend/app/high_value_intelligence.py",
-      "line": 152
-    },
-    {
-      "name": "build_high_value_intelligence",
-      "kind": "function",
-      "file": "backend/app/high_value_intelligence.py",
-      "line": 168
-    },
-    {
-      "name": "campaign_high_value_intelligence",
-      "kind": "function",
-      "file": "backend/app/high_value_intelligence.py",
-      "line": 232
-    },
-    {
-      "name": "Hypothesis",
-      "kind": "class",
-      "file": "backend/app/hypothesis_engine.py",
-      "line": 28
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/hypothesis_engine.py",
-      "line": 39
-    },
-    {
-      "name": "_safe_endpoint",
-      "kind": "function",
-      "file": "backend/app/hypothesis_engine.py",
-      "line": 46
-    },
-    {
-      "name": "_lineage_hosts",
-      "kind": "function",
-      "file": "backend/app/hypothesis_engine.py",
-      "line": 66
-    },
-    {
-      "name": "_scope_allows",
-      "kind": "function",
-      "file": "backend/app/hypothesis_engine.py",
-      "line": 93
-    },
-    {
-      "name": "build_hypotheses",
-      "kind": "function",
-      "file": "backend/app/hypothesis_engine.py",
-      "line": 104
-    },
-    {
-      "name": "campaign_hypotheses",
-      "kind": "function",
-      "file": "backend/app/hypothesis_engine.py",
-      "line": 236
-    },
-    {
-      "name": "IdentityAccessDifferential",
-      "kind": "class",
-      "file": "backend/app/identity_access.py",
-      "line": 14
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/identity_access.py",
-      "line": 22
-    },
-    {
-      "name": "build_identity_access_differentials",
-      "kind": "function",
-      "file": "backend/app/identity_access.py",
-      "line": 28
-    },
-    {
-      "name": "summarize_identity_access_differentials",
-      "kind": "function",
-      "file": "backend/app/identity_access.py",
-      "line": 102
-    },
-    {
-      "name": "campaign_identity_access_differentials",
-      "kind": "function",
-      "file": "backend/app/identity_access.py",
-      "line": 125
-    },
-    {
-      "name": "TechniqueMemory",
-      "kind": "class",
-      "file": "backend/app/learning_memory.py",
-      "line": 15
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 25
-    },
-    {
-      "name": "build_learning_memory",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
+      "file": "backend/tests/test_chain_intelligence.py",
       "line": 29
     },
     {
-      "name": "campaign_learning_memory",
+      "name": "test_single_family_does_not_invent_chain",
       "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 91
+      "file": "backend/tests/test_chain_intelligence.py",
+      "line": 41
     },
     {
-      "name": "worker_outcome_event",
+      "name": "_item",
       "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 123
+      "file": "backend/tests/test_hackerone_intelligence.py",
+      "line": 11
     },
     {
-      "name": "summarize_worker_outcomes",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 143
-    },
-    {
-      "name": "authenticate_control_api",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 36
-    },
-    {
-      "name": "utcnow",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 50
-    },
-    {
-      "name": "storage",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 54
-    },
-    {
-      "name": "queue",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 58
-    },
-    {
-      "name": "incident_store",
-      "kind": "function",
-      "file": "backend/app/main.py",
+      "name": "FakeClient",
+      "kind": "class",
+      "file": "backend/tests/test_hackerone_intelligence.py",
       "line": 62
     },
     {
-      "name": "_stable_key",
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 70
+      "file": "backend/tests/test_hackerone_intelligence.py",
+      "line": 63
     },
     {
-      "name": "CampaignState",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 75
-    },
-    {
-      "name": "ProgramRules",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 85
-    },
-    {
-      "name": "TargetInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 98
-    },
-    {
-      "name": "primary_target_must_be_allowed",
+      "name": "get_all_pages",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 105
+      "file": "backend/tests/test_hackerone_intelligence.py",
+      "line": 68
     },
     {
-      "name": "Finding",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 119
-    },
-    {
-      "name": "FindingReviewMetadataInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 137
-    },
-    {
-      "name": "normalize_review_metadata",
+      "name": "test_normalize_disclosed_hacktivity_is_redacted_and_bounded",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 147
+      "file": "backend/tests/test_hackerone_intelligence.py",
+      "line": 84
     },
     {
-      "name": "Campaign",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 162
-    },
-    {
-      "name": "EvidenceInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 172
-    },
-    {
-      "name": "HackerOneScopePreviewInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 179
-    },
-    {
-      "name": "IncidentAcknowledgeInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 183
-    },
-    {
-      "name": "normalize_pattern",
+      "name": "test_undisclosed_hacktivity_is_not_learned",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 188
+      "file": "backend/tests/test_hackerone_intelligence.py",
+      "line": 107
     },
     {
-      "name": "is_host_allowed",
+      "name": "test_fetch_combines_high_value_and_recent_views",
       "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 195
+      "file": "backend/tests/test_hackerone_intelligence.py",
+      "line": 121
+    },
+    {
+      "name": "test_intelligence_prioritizes_patterns_and_historical_value",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_intelligence.py",
+      "line": 155
+    },
+    {
+      "name": "test_refresh_persists_hacktivity_learning",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_intelligence.py",
+      "line": 207
     }
   ],
   "selected_tests": [
-    "backend/tests/test_adaptive_cycle.py",
-    "backend/tests/test_api_idempotency.py",
-    "backend/tests/test_api_outbox.py",
-    "backend/tests/test_attack_surface.py",
-    "backend/tests/test_attack_surface_scope.py",
-    "backend/tests/test_auth.py",
-    "backend/tests/test_autonomy_gate.py",
-    "backend/tests/test_browser.py",
-    "backend/tests/test_campaign_cancel.py",
-    "backend/tests/test_campaign_circuit_breaker.py",
-    "backend/tests/test_campaign_overview.py",
-    "backend/tests/test_campaign_review_state.py",
-    "backend/tests/test_campaign_risk.py",
-    "backend/tests/test_control_views.py",
-    "backend/tests/test_coverage.py",
-    "backend/tests/test_decision_timeline.py",
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_distributed_concurrency.py",
-    "backend/tests/test_domain_incident_lifecycle.py",
-    "backend/tests/test_domain_lifecycle_integration.py",
-    "backend/tests/test_evidence_chain.py",
-    "backend/tests/test_evidence_quality.py",
-    "backend/tests/test_finding_cluster_consensus.py",
-    "backend/tests/test_finding_cluster_saturation.py",
-    "backend/tests/test_finding_consensus.py",
-    "backend/tests/test_finding_correlation.py",
-    "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_finding_lifecycle.py",
-    "backend/tests/test_finding_readiness.py",
-    "backend/tests/test_finding_review_metadata.py",
-    "backend/tests/test_finding_triage.py",
-    "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_hackerone_attention.py",
-    "backend/tests/test_hackerone_batch_api.py",
-    "backend/tests/test_hackerone_binding.py",
-    "backend/tests/test_hackerone_client.py",
-    "backend/tests/test_hackerone_control_center_api.py",
-    "backend/tests/test_hackerone_intelligence.py",
-    "backend/tests/test_hackerone_launch_api.py",
-    "backend/tests/test_hackerone_needs_info.py",
-    "backend/tests/test_hackerone_nuclei_e2e.py",
-    "backend/tests/test_hackerone_outbound_submission.py",
-    "backend/tests/test_hackerone_remote_binding.py",
-    "backend/tests/test_hackerone_remote_snapshot.py",
-    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-    "backend/tests/test_hackerone_report_sync_worker.py",
-    "backend/tests/test_hackerone_report_tracking.py",
-    "backend/tests/test_hackerone_review_profiles.py",
-    "backend/tests/test_hackerone_reviewed_batch_api.py",
-    "backend/tests/test_hackerone_scope_preview_api.py",
-    "backend/tests/test_health.py",
-    "backend/tests/test_high_value_intelligence.py",
-    "backend/tests/test_hypothesis_engine.py",
-    "backend/tests/test_identity_access.py",
-    "backend/tests/test_incident_domains.py",
-    "backend/tests/test_job_provenance.py",
-    "backend/tests/test_job_provenance_api_integration.py",
-    "backend/tests/test_job_provenance_integration.py",
-    "backend/tests/test_learning_memory.py",
-    "backend/tests/test_metrics.py",
-    "backend/tests/test_nuclei_queue_lifecycle.py",
-    "backend/tests/test_nuclei_worker_plan.py",
-    "backend/tests/test_observation_writer_provenance.py",
-    "backend/tests/test_openapi_integrity.py",
-    "backend/tests/test_operational_alerts.py",
-    "backend/tests/test_orchestrator.py",
-    "backend/tests/test_orchestrator_validation_alignment.py",
-    "backend/tests/test_outbox_chaos.py",
-    "backend/tests/test_overview_reasoning.py",
-    "backend/tests/test_pentagi_action_gateway.py",
-    "backend/tests/test_pentagi_adapter.py",
-    "backend/tests/test_pentagi_admission.py",
-    "backend/tests/test_pentagi_control.py",
-    "backend/tests/test_pentagi_control_api.py",
-    "backend/tests/test_pentagi_dispatch.py",
-    "backend/tests/test_pentagi_execution_guard.py",
-    "backend/tests/test_pentagi_status_worker_service.py",
-    "backend/tests/test_pentagi_transport.py",
-    "backend/tests/test_pentagi_worker_service.py",
-    "backend/tests/test_pipeline_swarm.py",
-    "backend/tests/test_plan_evidence_quality.py",
-    "backend/tests/test_policy_integrity.py",
-    "backend/tests/test_policy_invariants.py",
-    "backend/tests/test_postgres_integration.py",
-    "backend/tests/test_postgres_storage.py",
-    "backend/tests/test_production_migration.py",
-    "backend/tests/test_recon_swarm.py",
-    "backend/tests/test_recon_worker.py",
-    "backend/tests/test_red_team_coverage.py",
-    "backend/tests/test_red_team_decision.py",
-    "backend/tests/test_report.py",
-    "backend/tests/test_report_approval.py",
-    "backend/tests/test_report_approval_api.py",
-    "backend/tests/test_report_readiness.py",
-    "backend/tests/test_review_queue.py",
-    "backend/tests/test_runtime_budget_config.py",
-    "backend/tests/test_scan_payload_idempotency.py",
-    "backend/tests/test_scanner_ingestion.py",
-    "backend/tests/test_scanner_normalization.py",
-    "backend/tests/test_scanner_observation_chain.py"
+    "backend/tests/test_chain_intelligence.py",
+    "backend/tests/test_hackerone_intelligence.py"
   ]
 }

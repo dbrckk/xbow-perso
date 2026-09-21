@@ -1,30 +1,15 @@
 # Change impact
 
-Base: bbbd4e32e76e672abfa7491d6f78276d8397eb93
-Head: 21b3f073b74011255c44411ecce7c380e5fb413b
+Base: 35aaa371a7108babb8d5ae3f638dddc5d8e492a1
+Head: c5c68ba5d405cef83c7cf8f68270df505c05253d
 
 ## Changed files
-- M .env.example
-- M README.md
-- M backend/app/hackerone_api.py
-- M backend/app/hackerone_client.py
-- A backend/app/hackerone_intelligence.py
-- M backend/app/main.py
-- M backend/app/postgres_storage.py
-- M backend/app/production_migration.py
-- M backend/app/storage_backend.py
-- M backend/app/storage_core.py
-- M backend/app/worker_service.py
-- A backend/tests/test_hackerone_intelligence.py
-- M docker-compose.yml
-- M frontend/app.css
-- M frontend/index.html
-- M frontend/sw.js
+- A backend/app/chain_intelligence.py
+- M backend/app/hackerone_intelligence.py
+- A backend/tests/test_chain_intelligence.py
 
 ## Affected areas
-- (root)
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
