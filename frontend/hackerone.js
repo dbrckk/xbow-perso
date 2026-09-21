@@ -1762,11 +1762,31 @@
   function batchCatalogPrograms(){
     const query=String(el('h1BatchSearch')?.value||'').trim().toLowerCase();
     const bountyOnly=Boolean(el('h1BatchBountyOnly')?.checked);
-    return hackerOnePrograms.filter(program=>{
+    const readiness=String(el('h1BatchReadiness')?.value||'all');
+    const sort=String(el('h1BatchSort')?.value||'priority');
+    const programs=hackerOnePrograms.filter(program=>{
       if(bountyOnly&&program?.offers_bounties!==true)return false;
+      if(readiness!=='all'&&String(program?.status||'REVIEW')!==readiness)return false;
       const haystack=(String(program?.name||'')+' '+String(program?.handle||'')).toLowerCase();
       return !query||haystack.includes(query);
     });
+    programs.sort((left,right)=>{
+      if(sort==='name'){
+        return String(left?.name||left?.handle||'').localeCompare(
+          String(right?.name||right?.handle||''),undefined,{sensitivity:'base'}
+        );
+      }
+      if(sort==='historical_value'){
+        return Number(right?.historical_value_score||0)-Number(left?.historical_value_score||0);
+      }
+      const order={READY:0,REVIEW:1,BLOCKED:2};
+      return (
+        (order[String(left?.status||'REVIEW')]??3)-(order[String(right?.status||'REVIEW')]??3)
+        || Number(right?.priority_score||0)-Number(left?.priority_score||0)
+        || String(left?.name||left?.handle||'').localeCompare(String(right?.name||right?.handle||''))
+      );
+    });
+    return programs;
   }
 
   function renderBatchCatalog(){
@@ -1782,7 +1802,9 @@
         row.className='h1-batch-program';
         const checkbox=document.createElement('input');
         checkbox.type='checkbox';
-        checkbox.checked=batchSelectedHandles.has(String(program.handle||''));
+        const readiness=String(program.status||'REVIEW');
+        checkbox.disabled=readiness!=='READY';
+        checkbox.checked=readiness==='READY'&&batchSelectedHandles.has(String(program.handle||''));
         checkbox.addEventListener('change',()=>{
           const handle=String(program.handle||'');
           if(checkbox.checked)batchSelectedHandles.add(handle);
@@ -1795,6 +1817,10 @@
         const title=document.createElement('strong');
         title.textContent=String(program.name||program.handle||'Programme');
         titleRow.appendChild(title);
+        const readinessBadge=document.createElement('span');
+        readinessBadge.className='pill '+(readiness==='READY'?'ok':readiness==='BLOCKED'?'err':'warn');
+        readinessBadge.textContent=readiness;
+        titleRow.appendChild(readinessBadge);
         const changes=hackerOneCatalogMeta?.changes||{};
         const handle=String(program.handle||'');
         if(Array.isArray(changes.added)&&changes.added.includes(handle)){
@@ -1812,14 +1838,18 @@
         meta.className='muted compact';
         const parts=[
           String(program.handle||''),
+          'priorité '+String(program.priority_score??0)+'/100',
           program.offers_bounties===true?'bounty':'sans bounty',
           program.gold_standard_safe_harbor===true?'safe harbor':'safe harbor à vérifier',
-          serverProgramHasSavedProfile(program.handle)
-            ?'profil serveur — revérifié au lancement'
-            :(localProgramHasSavedProfile(program.handle)
-              ?'profil local — à resauvegarder'
-              :'1re revue requise')
-        ];
+          readiness==='READY'
+            ?'profil exact vérifié'
+            :(readiness==='REVIEW'
+              ?'revue nécessaire'
+              :'non lançable'),
+          Number(program.historical_usd_awarded_max||0)>0
+            ?'max public historique USD '+Number(program.historical_usd_awarded_max).toLocaleString()
+            :null
+        ].filter(Boolean);
         meta.textContent=parts.join(' · ');
         info.append(titleRow,meta);
         row.append(checkbox,info);
@@ -1839,27 +1869,42 @@
     if(el('h1BatchLaunch'))el('h1BatchLaunch').disabled=count===0;
   }
 
+  function applyDiscoveryResult(result){
+    hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
+    const summary=result?.summary||{};
+    if(el('h1DiscoveryReady'))el('h1DiscoveryReady').textContent=String(summary.ready||0);
+    if(el('h1DiscoveryReview'))el('h1DiscoveryReview').textContent=String(summary.review||0);
+    if(el('h1DiscoveryBlocked'))el('h1DiscoveryBlocked').textContent=String(summary.blocked||0);
+    const readyHandles=new Set(
+      hackerOnePrograms
+        .filter(program=>String(program?.status||'')==='READY')
+        .map(program=>String(program?.handle||''))
+    );
+    batchSelectedHandles=new Set(
+      [...batchSelectedHandles].filter(handle=>readyHandles.has(handle))
+    );
+  }
+
   async function refreshBatchCatalog(){
     const button=el('h1BatchRefresh');
     if(button)button.disabled=true;
     try{
-      const [result]=await Promise.all([
-        api('/imports/hackerone/programs?refresh=true'),
+      const catalog=await api('/imports/hackerone/programs?refresh=true');
+      hackerOneCatalogMeta=catalog?.catalog||{};
+      const [discovery]=await Promise.all([
+        api('/hackerone/discovery?verify_limit=50'),
         loadServerReviewProfiles()
       ]);
-      hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
-      hackerOneCatalogMeta=result?.catalog||{};
+      applyDiscoveryResult(discovery);
       renderProgramOptions();
       renderBatchCatalog();
-      const changes=hackerOneCatalogMeta?.changes||{};
-      const changedCount=
-        (Array.isArray(changes.added)?changes.added.length:0)+
-        (Array.isArray(changes.changed)?changes.changed.length:0)+
-        (Array.isArray(changes.removed)?changes.removed.length:0);
+      const summary=discovery?.summary||{};
       el('h1BatchSummary').textContent=
-        hackerOnePrograms.length+' programme(s) · catalogue vérifié'+
-        (hackerOneCatalogMeta.checked_at?' '+new Date(hackerOneCatalogMeta.checked_at).toLocaleString():'')+
-        (changedCount?' · '+changedCount+' changement(s) détecté(s)':' · aucun changement récent');
+        String(summary.total||0)+' programme(s) · '+
+        String(summary.ready||0)+' READY · '+
+        String(summary.review||0)+' REVIEW · '+
+        String(summary.blocked||0)+' BLOCKED'+
+        (discovery?.catalog_checked_at?' · vérifié '+new Date(discovery.catalog_checked_at).toLocaleString():'');
     }catch(error){
       el('h1BatchSummary').textContent='Catalogue indisponible : '+error.message;
     }finally{
@@ -1870,7 +1915,7 @@
   function selectReadyBatchProfiles(){
     batchSelectedHandles=new Set(
       batchCatalogPrograms()
-        .filter(program=>serverProgramHasSavedProfile(program.handle))
+        .filter(program=>String(program?.status||'')==='READY')
         .slice(0,20)
         .map(program=>String(program.handle||''))
     );
@@ -2310,12 +2355,13 @@
       setConnectionState('connecté','ok');
       el('h1ProgramSearch').disabled=false;
       el('h1ProgramSelect').disabled=false;
-      const [result]=await Promise.all([
+      const [result,discovery]=await Promise.all([
         api('/imports/hackerone/programs'),
+        api('/hackerone/discovery?verify_limit=50'),
         loadServerReviewProfiles()
       ]);
-      hackerOnePrograms=Array.isArray(result?.programs)?result.programs:[];
       hackerOneCatalogMeta=result?.catalog||{};
+      applyDiscoveryResult(discovery);
       const prefs=applyQuickPrefs();
       renderProgramOptions();
       renderBatchCatalog();
@@ -2626,6 +2672,8 @@
   }
   el('h1BatchSearch').addEventListener('input',renderBatchCatalog);
   el('h1BatchBountyOnly').addEventListener('change',renderBatchCatalog);
+  el('h1BatchReadiness').addEventListener('change',renderBatchCatalog);
+  el('h1BatchSort').addEventListener('change',renderBatchCatalog);
   el('h1BatchRefresh').addEventListener('click',()=>void refreshBatchCatalog());
   el('h1BatchSelectReady').addEventListener('click',selectReadyBatchProfiles);
   el('h1BatchLaunch').addEventListener('click',()=>void launchSelectedBatch());

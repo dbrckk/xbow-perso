@@ -181,10 +181,24 @@
         </div>
         <span id="h1BatchState" class="pill">0 sélectionné</span>
       </div>
+      <div class="stats h1-intel-stats">
+        <div class="stat"><h3>Prêts</h3><strong id="h1DiscoveryReady">0</strong></div>
+        <div class="stat"><h3>À revoir</h3><strong id="h1DiscoveryReview">0</strong></div>
+        <div class="stat"><h3>Bloqués</h3><strong id="h1DiscoveryBlocked">0</strong></div>
+      </div>
       <div class="grid h1-batch-controls">
         <div>
           <label>Filtrer le catalogue</label>
           <input id="h1BatchSearch" type="search" autocomplete="off" placeholder="Nom ou handle" />
+        </div>
+        <div>
+          <label>État de préparation</label>
+          <select id="h1BatchReadiness">
+            <option value="all">Tous</option>
+            <option value="READY">READY</option>
+            <option value="REVIEW">REVIEW</option>
+            <option value="BLOCKED">BLOCKED</option>
+          </select>
         </div>
         <div>
           <label>Ordonnancement</label>
@@ -196,6 +210,7 @@
         <div>
           <label>Tri du catalogue</label>
           <select id="h1BatchSort">
+            <option value="priority">Priorité automatique</option>
             <option value="name">Nom</option>
             <option value="historical_value">Signal historique de valeur</option>
           </select>
@@ -204,7 +219,7 @@
       <div class="button-row">
         <label class="check-row compact"><input id="h1BatchBountyOnly" type="checkbox" checked /> <span>Programmes avec bounty uniquement</span></label>
         <button id="h1BatchRefresh" type="button" class="secondary">Actualiser le catalogue</button>
-        <button id="h1BatchSelectReady" type="button" class="secondary">Sélectionner les profils serveur</button>
+        <button id="h1BatchSelectReady" type="button" class="secondary">Sélectionner les READY</button>
       </div>
       <div id="h1BatchCatalog" class="h1-batch-catalog muted">Catalogue en attente.</div>
       <div class="button-row">
