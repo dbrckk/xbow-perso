@@ -2073,9 +2073,13 @@
       cancel.classList.toggle('hidden',terminal||!activeBatchId);
       cancel.disabled=terminal||!activeBatchId;
     }
-    if(terminal&&batchTimer!==null){
-      clearInterval(batchTimer);
-      batchTimer=null;
+    if(terminal){
+      if(batchTimer!==null){
+        clearInterval(batchTimer);
+        batchTimer=null;
+      }
+      activeBatchId='';
+      try{localStorage.removeItem(H1_ACTIVE_BATCH_STORAGE_KEY);}catch(_error){}
     }
   }
 
@@ -2100,11 +2104,41 @@
     batchTimer=setInterval(()=>void refreshActiveBatch(),10000);
   }
 
+  function latestActiveBatch(batches){
+    const active=(Array.isArray(batches)?batches:[])
+      .filter(batch=>!['completed','cancelled'].includes(String(batch?.state||'')))
+      .sort((left,right)=>
+        String(right?.updated_at||right?.created_at||'')
+          .localeCompare(String(left?.updated_at||left?.created_at||''))
+      );
+    return active[0]||null;
+  }
+
   async function restoreActiveBatch(){
     if(activeBatchId)return;
-    try{activeBatchId=String(localStorage.getItem(H1_ACTIVE_BATCH_STORAGE_KEY)||'');}
-    catch(_error){activeBatchId='';}
-    if(activeBatchId)startBatchMonitor(activeBatchId);
+    let localId='';
+    try{localId=String(localStorage.getItem(H1_ACTIVE_BATCH_STORAGE_KEY)||'');}
+    catch(_error){localId='';}
+
+    if(localId){
+      try{
+        const batch=await api('/imports/hackerone/batches/'+encodeURIComponent(localId));
+        if(!['completed','cancelled'].includes(String(batch?.state||''))){
+          startBatchMonitor(batch.id);
+          return;
+        }
+      }catch(_error){}
+      try{localStorage.removeItem(H1_ACTIVE_BATCH_STORAGE_KEY);}catch(_error){}
+    }
+
+    try{
+      const result=await api('/imports/hackerone/batches?limit=20');
+      const batch=latestActiveBatch(result?.batches);
+      if(batch?.id){
+        startBatchMonitor(batch.id);
+        setLauncherStatus('Lot HackerOne actif retrouvé côté serveur et repris automatiquement.','ok');
+      }
+    }catch(_error){}
   }
 
   async function launchSelectedBatch(){
