@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T08:48:36Z
+Generated: 2026-09-21T08:53:06Z
 
 ### Git
 - Branch: `main`
-- Head: `d36c54d3311f`
-- Commit date: 2026-09-21T10:48:26+02:00
-- Commit: feat: add one-click Auto-select for ready bounty queue
+- Head: `15f446808597`
+- Commit date: 2026-09-21T10:52:52+02:00
+- Commit: feat: persist Auto Queue preferences and launch in one click
 - Tracked files: 538
 
 ### Recently changed files
@@ -40,9 +40,6 @@ Generated: 2026-09-21T08:48:36Z
 - `backend/tests/test_hackerone_discovery.py`
 - `backend/app/passive_api_intelligence.py`
 - `backend/tests/test_passive_api_intelligence.py`
-- `backend/app/high_value_intelligence.py`
-- `backend/app/orchestrator.py`
-- `backend/tests/test_passive_high_value_ranking.py`
 
 ### Project signals
 - `pyproject.toml`

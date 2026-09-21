@@ -289,6 +289,8 @@ function selectReadyBatchProfiles()
 ⋮----
 function autoSelectBatchProfiles()
 ⋮----
+async function autoQueueBatch()
+⋮----
 async function batchPayloadForHandle(handle)
 ⋮----
 function renderBatchProgress(batch)
