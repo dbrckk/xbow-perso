@@ -2081,6 +2081,9 @@
     const labels={
       remote_snapshot_binding_missing:'binding HackerOne incomplet · revue requise',
       remote_revalidation_unavailable:'HackerOne temporairement indisponible · nouvelle tentative automatique',
+      remote_revalidation_retry_exhausted:'revalidation HackerOne impossible après plusieurs tentatives · revue requise',
+      remote_hackerone_authorization_failed:'accès API HackerOne refusé · vérifier les credentials avant reprise',
+      remote_program_unavailable:'programme HackerOne devenu inaccessible · revue requise',
       remote_snapshot_changed_since_batch_admission:'scope/policy modifié depuis la mise en file · revue requise',
       remote_submissions_no_longer_open:'soumissions HackerOne désormais pausées/fermées · revue requise',
       remote_program_no_longer_open:'programme HackerOne désormais fermé · revue requise'
@@ -2105,8 +2108,17 @@
       title.textContent=String(member.handle||member.campaign_id||'Programme');
       const detail=document.createElement('div');
       detail.className='muted compact';
+      const retryAt=String(member.remote_revalidation_retry_at||'');
+      let retryLabel='';
+      if(retryAt){
+        const retryDate=new Date(retryAt);
+        if(!Number.isNaN(retryDate.getTime())){
+          retryLabel=' · prochain essai '+retryDate.toLocaleTimeString();
+        }
+      }
       detail.textContent='campagne '+String(member.campaign_id||'—')+
-        (member.reason?' · '+hackerOneBatchMemberReason(member.reason):'');
+        (member.reason?' · '+hackerOneBatchMemberReason(member.reason):'')+
+        retryLabel;
       info.append(title,detail);
       const badge=document.createElement('span');
       const status=String(member.status||'ready');
