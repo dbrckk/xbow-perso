@@ -28,7 +28,7 @@ from .storage import ArtifactIntegrityError, CampaignConflictError
 from .storage_backend import StorageBackend, create_storage
 from .validation_state import has_evidence_backed_independent_validation
 
-app = FastAPI(title="xbow-perso", version="0.6.0")
+app = FastAPI(title="xbow-perso", version="0.6.1")
 
 
 @app.middleware("http")

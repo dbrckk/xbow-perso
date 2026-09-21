@@ -12,6 +12,7 @@ from .evidence_quality import build_evidence_quality
 from .hackerone_batch import reconcile_hackerone_batches
 from .hackerone_catalog import maybe_refresh_hackerone_catalog
 from .hackerone_intelligence import maybe_refresh_hackerone_intelligence
+from .github_learning_sync import sync_completed_learning_batches
 from .job_provenance import (
     JobProvenanceError,
     provenance_required_for_job_kind,
@@ -632,6 +633,11 @@ def main() -> None:
                 reconcile_hackerone_batches(queue, store, limit=20)
             except Exception:
                 # Batch scheduling must fail closed without taking down the worker.
+                pass
+            try:
+                sync_completed_learning_batches(store, limit=20)
+            except Exception:
+                # Learning sync is advisory and must never stop campaign execution.
                 pass
         worked = process_one(queue, store, worker_id)
         if not worked:

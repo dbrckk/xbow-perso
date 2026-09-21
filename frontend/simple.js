@@ -1,170 +1,256 @@
 (()=>{
-  const $=id=>document.getElementById(id);
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   let selection=[];
-  let activeBatch='';
   let timer=null;
 
+  const $=id=>document.getElementById(id);
+
   function token(){
-    return String($('token').value||'').trim();
+    return String($('token')?.value||'').trim();
   }
+
   function saveToken(){
-    try{localStorage.setItem(TOKEN_KEY,$('token').value||'');}catch(_error){}
+    try{localStorage.setItem(TOKEN_KEY,$('token')?.value||'');}catch(_error){}
   }
+
+  function setStatus(message,kind=''){
+    const node=$('status');
+    if(!node)return;
+    node.textContent=message;
+    node.className='simple-status '+kind;
+  }
+
+  function requireToken(){
+    if(token())return true;
+    setStatus('Entre le jeton API une seule fois. Il restera enregistré sur cet appareil.','err');
+    $('token')?.focus();
+    return false;
+  }
+
   async function api(path,options={}){
+    if(!requireToken())throw new Error('Jeton API requis');
     const headers={'content-type':'application/json',...(options.headers||{})};
-    if(token())headers.authorization='Bearer '+token();
-    const response=await fetch('/api'+path,{...options,headers,cache:'no-store'});
+    headers.authorization='Bearer '+token();
+    let response;
+    try{
+      response=await fetch('/api'+path,{...options,headers,cache:'no-store'});
+    }catch(_error){
+      throw new Error('Serveur inaccessible');
+    }
     let data={};
     try{data=await response.json();}catch(_error){}
     if(!response.ok){
       const detail=data?.detail;
-      throw new Error(typeof detail==='string'?detail:JSON.stringify(detail||data||{status:response.status}));
+      if(typeof detail==='string')throw new Error(detail);
+      if(detail?.message){
+        const reason=detail?.reason?' · '+String(detail.reason):'';
+        throw new Error(String(detail.message)+reason);
+      }
+      throw new Error('HTTP '+response.status);
     }
     return data;
   }
-  function status(message,kind=''){
-    $('status').textContent=message;
-    $('status').className='simple-status '+kind;
+
+  function money(value){
+    const amount=Number(value||0);
+    return amount>0?' · historique max $'+amount.toLocaleString():'';
   }
-  function label(item,group){
-    const value=Number(item?.historical_usd_awarded_max||0);
-    const extra=group==='high_value'&&value>0?' · historique max $'+value.toLocaleString():'';
-    return String(item?.name||item?.handle||'Programme')+' · '+String(item?.handle||'')+extra;
-  }
+
   function renderSelection(result){
     const groups=result?.groups||{};
-    const rows=[
-      ['Facile',groups.easy||[],'easy'],
-      ['Moyen',groups.medium||[],'medium'],
-      ['Fort potentiel',groups.high_value||[],'high_value']
-    ];
     const root=$('selection');
     root.replaceChildren();
-    for(const [title,items,key] of rows){
+    const rows=[
+      ['2 faciles',groups.easy||[],false],
+      ['2 moyens',groups.medium||[],false],
+      ['2 fort potentiel',groups.high_value||[],true]
+    ];
+    for(const [title,items,showValue] of rows){
       const section=document.createElement('div');
       section.className='simple-group';
-      const h=document.createElement('strong');
-      h.textContent=title;
-      section.appendChild(h);
+      const head=document.createElement('strong');
+      head.textContent=title;
+      section.appendChild(head);
       for(const item of items){
-        const p=document.createElement('div');
-        p.className='simple-program';
-        p.textContent=label(item,key);
-        section.appendChild(p);
+        const row=document.createElement('div');
+        row.className='simple-program';
+        row.textContent=String(item?.name||item?.handle||'Programme')+
+          ' · '+String(item?.handle||'')+
+          (showValue?money(item?.historical_usd_awarded_max):'');
+        section.appendChild(row);
       }
       root.appendChild(section);
     }
   }
+
   async function prepare(){
-    $('prepare').disabled=true;
+    if(!requireToken())return;
+    const button=$('prepare');
+    button.disabled=true;
     $('start').disabled=true;
-    status('Sélection des programmes READY et vérification du catalogue…');
+    setStatus('Sélection automatique de 6 programmes READY déjà revus…');
     try{
       const result=await api('/hackerone/simple-selection');
-      selection=Array.isArray(result?.handles)?result.handles:[];
+      selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
       renderSelection(result);
-      if(!result?.complete||selection.length!==6){
-        throw new Error('Il faut 6 programmes READY déjà revus. '+selection.length+' seulement sont disponibles.');
+      if(result?.complete!==true||selection.length!==6){
+        throw new Error(
+          '6 programmes READY déjà revus sont nécessaires. Disponibles : '+selection.length+'.'
+        );
       }
       $('start').disabled=false;
-      status('6 programmes prêts : 2 faciles, 2 moyens, 2 à fort potentiel.','ok');
+      setStatus('Sélection prête : 2 faciles + 2 moyens + 2 fort potentiel.','ok');
     }catch(error){
       selection=[];
-      status('Sélection impossible : '+error.message,'err');
+      $('selection').textContent='Aucune sélection exploitable.';
+      setStatus('Sélection impossible : '+error.message,'err');
     }finally{
-      $('prepare').disabled=false;
+      button.disabled=false;
     }
   }
+
   async function start(){
-    if(selection.length!==6)return;
-    $('start').disabled=true;
-    status('Pré-vol final puis lancement du lot…');
+    if(!requireToken())return;
+    if(selection.length!==6){
+      setStatus('Sélectionne d’abord les 6 campagnes.','err');
+      return;
+    }
+    const button=$('start');
+    button.disabled=true;
+    const mode=$('mode').value==='parallel'?'parallel':'sequential';
+    setStatus('Pré-vol serveur : scope, profils, runtime et fingerprints…');
     try{
-      const mode=$('mode').value==='parallel'?'parallel':'sequential';
+      const preflight=await api('/imports/hackerone/batches/go-no-go',{
+        method:'POST',
+        body:JSON.stringify({mode,handles:selection})
+      });
+      if(preflight?.go!==true){
+        const blockers=(Array.isArray(preflight?.blockers)?preflight.blockers:[])
+          .map(value=>String(value||'')).filter(Boolean);
+        throw new Error('Pré-vol bloqué'+(blockers.length?' · '+blockers.join(' · '):''));
+      }
+      setStatus('GO confirmé. Création du lot côté serveur…');
       const batch=await api('/imports/hackerone/batches/launch-reviewed',{
         method:'POST',
         body:JSON.stringify({mode,handles:selection})
       });
-      activeBatch=String(batch?.id||'');
-      if(activeBatch){
-        try{localStorage.setItem(ACTIVE_KEY,activeBatch);}catch(_error){}
+      const id=String(batch?.id||'');
+      if(id){
+        try{localStorage.setItem(ACTIVE_KEY,id);}catch(_error){}
       }
-      status('Lot lancé côté serveur. Tu peux fermer cette page.','ok');
-      await refreshJournal();
+      setStatus(
+        mode==='parallel'
+          ?'6 campagnes lancées en parallèle. Tu peux fermer la page.'
+          :'6 campagnes mises en file. Elles seront exécutées une après l’autre.',
+        'ok'
+      );
+      await refreshJournal({quiet:true});
     }catch(error){
-      status('Lancement bloqué : '+error.message,'err');
-      $('start').disabled=false;
+      setStatus('Lancement bloqué : '+error.message,'err');
+      button.disabled=false;
     }
   }
-  function memberText(member){
-    const findings=Number(member?.finding_count||0);
-    const confirmed=Number(member?.confirmed_findings||0);
-    const reason=member?.reason?' · '+String(member.reason):'';
-    return String(member?.handle||'campagne')+' — '+String(member?.status||member?.campaign_state||'—')+
-      ' · '+findings+' finding(s), '+confirmed+' confirmé(s)'+reason;
+
+  function repoSyncLabel(entry){
+    const sync=entry?.repository_sync||{};
+    if(sync.status==='synced'){
+      return ' · apprentissage GitHub synchronisé'+
+        (sync.issue_number?' #'+String(sync.issue_number):'');
+    }
+    if(sync.status==='error')return ' · apprentissage GitHub à réessayer';
+    return '';
   }
+
   function renderJournal(payload){
     const entries=Array.isArray(payload?.journal)?payload.journal:[];
     const root=$('journal');
     root.replaceChildren();
+
     if(!entries.length){
       root.textContent='Aucune campagne enregistrée.';
+    }else{
+      for(const entry of entries.slice(0,30)){
+        const card=document.createElement('article');
+        card.className='simple-log';
+        const head=document.createElement('strong');
+        const when=entry?.created_at?new Date(entry.created_at).toLocaleString():'';
+        head.textContent=(when?when+' · ':'')+
+          String(entry?.mode||'')+' · '+String(entry?.state||'')+repoSyncLabel(entry);
+        card.appendChild(head);
+
+        for(const member of (entry?.members||[])){
+          const line=document.createElement('div');
+          const reason=member?.reason?' · '+String(member.reason):'';
+          line.textContent=String(member?.handle||'campagne')+
+            ' — '+String(member?.status||member?.campaign_state||'—')+
+            ' · '+String(member?.brief||'aucun brief')+reason;
+          card.appendChild(line);
+
+          for(const finding of (member?.finding_brief||[]).slice(0,5)){
+            const f=document.createElement('div');
+            f.className='simple-finding';
+            f.textContent='↳ '+String(finding.severity||'')+
+              ' · '+String(finding.title||'')+
+              ' · '+String(finding.status||'');
+            card.appendChild(f);
+          }
+        }
+        root.appendChild(card);
+      }
+    }
+
+    const digest=payload?.learning_digest||{};
+    const sync=payload?.repository_sync||{};
+    let syncText='sync repo désactivée';
+    if(sync.enabled&&sync.configured)syncText='sync repo automatique active vers '+String(sync.repository||'GitHub');
+    else if(sync.enabled&&!sync.configured)syncText='sync repo en attente du credential GitHub';
+    $('learning').textContent=
+      'Mémoire : '+String(digest.campaign_count||0)+' campagne(s), '+
+      String(digest.confirmed_findings||0)+' finding(s) confirmé(s) · '+syncText+'.';
+  }
+
+  async function refreshJournal({quiet=false}={}){
+    if(!token()){
+      if(!quiet)setStatus('Entre ton jeton API pour charger le journal.','err');
       return;
     }
-    for(const entry of entries.slice(0,30)){
-      const card=document.createElement('article');
-      card.className='simple-log';
-      const head=document.createElement('strong');
-      const when=entry?.created_at?new Date(entry.created_at).toLocaleString():'';
-      head.textContent=(when?when+' · ':'')+String(entry?.mode||'')+' · '+String(entry?.state||'');
-      card.appendChild(head);
-      for(const member of (entry?.members||[])){
-        const line=document.createElement('div');
-        line.textContent=memberText(member);
-        card.appendChild(line);
-        for(const finding of (member?.finding_brief||[]).slice(0,5)){
-          const f=document.createElement('div');
-          f.className='simple-finding';
-          f.textContent='↳ '+String(finding.severity||'')+' · '+String(finding.title||'')+' · '+String(finding.status||'');
-          card.appendChild(f);
-        }
-      }
-      root.appendChild(card);
-    }
-    const digest=payload?.learning_digest||{};
-    $('learning').textContent=
-      'Mémoire locale : '+String(digest.campaign_count||0)+' campagne(s), '+
-      String(digest.confirmed_findings||0)+' finding(s) confirmé(s). '+
-      'Digest détaillé prêt pour synchronisation repo.';
-  }
-  async function refreshJournal(){
     try{
       const payload=await api('/hackerone/journal?limit=50');
       renderJournal(payload);
       const entries=Array.isArray(payload?.journal)?payload.journal:[];
       const active=entries.find(item=>!['completed','cancelled'].includes(String(item?.state||'')));
       if(active){
-        activeBatch=String(active.batch_id||'');
-        status('Campagnes en cours côté serveur. Tu peux revenir plus tard.','ok');
-      }else if(entries.length){
-        status('Aucune campagne en cours. Derniers résultats chargés.','ok');
+        if(!quiet)setStatus('Campagnes en cours côté serveur. Tu peux revenir plus tard.','ok');
+      }else if(entries.length&&!quiet){
+        setStatus('Derniers résultats chargés.','ok');
       }
     }catch(error){
-      status('Journal indisponible : '+error.message,'err');
+      setStatus('Journal indisponible : '+error.message,'err');
     }
   }
-  async function init(){
+
+  function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     $('token').addEventListener('input',saveToken);
     $('prepare').addEventListener('click',()=>void prepare());
     $('start').addEventListener('click',()=>void start());
     $('refresh').addEventListener('click',()=>void refreshJournal());
-    try{activeBatch=localStorage.getItem(ACTIVE_KEY)||'';}catch(_error){}
-    await refreshJournal();
-    timer=setInterval(()=>void refreshJournal(),15000);
+    window.addEventListener('unhandledrejection',event=>{
+      const message=event?.reason?.message||String(event?.reason||'Erreur JavaScript');
+      setStatus('Erreur interface : '+message,'err');
+    });
+    window.addEventListener('error',event=>{
+      if(event?.message)setStatus('Erreur interface : '+event.message,'err');
+    });
+    void refreshJournal({quiet:true});
+    timer=setInterval(()=>void refreshJournal({quiet:true}),15000);
   }
+
   window.addEventListener('beforeunload',()=>{if(timer)clearInterval(timer);});
-  void init();
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bind,{once:true});
+  }else{
+    bind();
+  }
 })();
