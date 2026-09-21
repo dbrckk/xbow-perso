@@ -431,6 +431,108 @@ def hackerone_discovery_selection(
     }
 
 
+@router.get("/api/hackerone/simple-selection")
+def hackerone_simple_selection():
+    """Select exactly 2 easy + 2 medium + 2 high-value reviewed READY programs."""
+    from .simple_portfolio import select_simple_six
+
+    discovery = hackerone_program_discovery(verify_limit=50)
+    result = select_simple_six(list(discovery.get("programs") or []))
+    return {
+        "provider": "hackerone",
+        **result,
+        "catalog_checked_at": discovery.get("catalog_checked_at"),
+        "read_only": True,
+        "automatic_launch": False,
+        "requires_launch_revalidation": True,
+    }
+
+
+@router.get("/api/hackerone/journal")
+def hackerone_campaign_journal(
+    limit: int = Query(default=50, ge=1, le=200),
+):
+    """Return a durable, read-only operator journal and learning digest."""
+    from .main import storage
+
+    store = storage()
+    batches = store.list_hackerone_batches(limit=limit)
+    entries: list[dict[str, Any]] = []
+    for batch in batches:
+        members_out: list[dict[str, Any]] = []
+        for member in list(batch.get("members") or []):
+            campaign_id = str(member.get("campaign_id") or "")
+            campaign = store.get_campaign(campaign_id) if campaign_id else None
+            findings = list((campaign or {}).get("findings") or [])
+            events = list((campaign or {}).get("events") or [])
+            confirmed = [
+                item for item in findings
+                if str(item.get("status") or "") == "confirmed"
+            ]
+            members_out.append({
+                "handle": str(member.get("handle") or ""),
+                "campaign_id": campaign_id,
+                "status": str(member.get("status") or ""),
+                "reason": member.get("reason"),
+                "campaign_state": str((campaign or {}).get("state") or ""),
+                "finding_count": len(findings),
+                "confirmed_findings": len(confirmed),
+                "finding_brief": [
+                    {
+                        "title": str(item.get("title") or ""),
+                        "severity": str(item.get("severity") or ""),
+                        "status": str(item.get("status") or ""),
+                        "asset": str(item.get("asset") or ""),
+                    }
+                    for item in findings[:20]
+                ],
+                "event_count": len(events),
+                "last_events": [
+                    {
+                        "type": str(item.get("type") or ""),
+                        "at": item.get("at"),
+                    }
+                    for item in events[-12:]
+                ],
+            })
+        entries.append({
+            "batch_id": str(batch.get("id") or ""),
+            "mode": str(batch.get("mode") or ""),
+            "state": str(batch.get("state") or ""),
+            "created_at": batch.get("created_at"),
+            "updated_at": batch.get("updated_at"),
+            "summary": dict(batch.get("summary") or {}),
+            "members": members_out,
+        })
+
+    digest = {
+        "schema": "xbow-learning-journal-v1",
+        "generated_from": "confirmed local campaign outcomes",
+        "batch_count": len(entries),
+        "campaign_count": sum(len(item["members"]) for item in entries),
+        "confirmed_findings": sum(
+            member["confirmed_findings"]
+            for item in entries
+            for member in item["members"]
+        ),
+        "entries": entries,
+        "safety": {
+            "authorization_source": "reviewed HackerOne program profiles only",
+            "historical_awards_authorize_targets": False,
+            "automatic_code_mutation": False,
+        },
+    }
+    return {
+        "provider": "hackerone",
+        "journal": entries,
+        "learning_digest": digest,
+        "local_outcome_learning": True,
+        "repository_sync": "digest_ready",
+        "contains_secrets": False,
+        "read_only": True,
+    }
+
+
 @router.get("/api/hackerone/intelligence")
 def hackerone_learning_intelligence(
     refresh: bool = Query(default=False),
