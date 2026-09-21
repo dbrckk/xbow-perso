@@ -18,7 +18,6 @@ _STATIC_MAPPINGS: tuple[tuple[str, str], ...] = (
     ("llm_api_key", "LLM_API_KEY"),
     ("perplexity_api_key", "PERPLEXITY_API_KEY"),
     ("audit_hmac_key", "XBOW_AUDIT_HMAC_KEY"),
-    ("totp_secret", "XBOW_TOTP_SECRET"),
     ("alert_webhook_hmac_key", "XBOW_ALERT_WEBHOOK_HMAC_KEY"),
 )
 _BROWSER_PREFIX = "XBOW_BROWSER_SECRET_"

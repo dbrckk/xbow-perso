@@ -13,7 +13,6 @@ The migration utility recognizes:
 - `LLM_API_KEY` → `llm_api_key`
 - `PERPLEXITY_API_KEY` → `perplexity_api_key`
 - `XBOW_AUDIT_HMAC_KEY` → `audit_hmac_key`
-- `XBOW_TOTP_SECRET` → `totp_secret`
 - `XBOW_ALERT_WEBHOOK_HMAC_KEY` → `alert_webhook_hmac_key`
 - every `XBOW_BROWSER_SECRET_<NAME>` → `browser.<name-lowercase>`
 

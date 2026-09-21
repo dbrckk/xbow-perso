@@ -1,4 +1,3 @@
-import base64
 import os
 import threading
 from contextlib import contextmanager
@@ -12,7 +11,6 @@ from app.postgres_storage import PostgresStorage, _PostgresCompatConnection
 from app.redis_jobqueue import RedisJobQueue
 from app.planner_lock import campaign_planner_lock
 from app.storage import CampaignConflictError, Storage
-from app.totp_auth import _totp, configured_totp_secret, consume_totp_code
 
 
 def _postgres_url():
@@ -207,35 +205,6 @@ def test_redis_planner_lock_rejects_invalid_lease(monkeypatch):
     with pytest.raises(ValueError, match="XBOW_PLANNER_LOCK_SECONDS"):
         with campaign_planner_lock(queue, "campaign-invalid"):
             pass
-
-
-@pytest.mark.skipif(not _redis_url(), reason="Redis integration URL unavailable")
-def test_redis_totp_replay_is_atomic_across_concurrent_consumers(monkeypatch):
-    secret = base64.b32encode(uuid4().bytes).decode("ascii")
-    monkeypatch.setenv("XBOW_TOTP_SECRET", secret)
-    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
-    monkeypatch.setenv("XBOW_TOTP_REPLAY_BACKEND", "redis")
-    monkeypatch.setenv("XBOW_TOTP_REPLAY_REDIS_URL", _redis_url())
-    code = _totp(configured_totp_secret(), 1)
-    barrier = threading.Barrier(8)
-    results = []
-    lock = threading.Lock()
-
-    def consume():
-        barrier.wait(timeout=5)
-        accepted = consume_totp_code(code, now=30.0)
-        with lock:
-            results.append(accepted)
-
-    threads = [threading.Thread(target=consume) for _ in range(8)]
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join(timeout=10)
-        assert not thread.is_alive()
-
-    assert results.count(True) == 1
-    assert results.count(False) == 7
 
 
 @pytest.mark.skipif(not _postgres_url(), reason="PostgreSQL integration URL unavailable")
