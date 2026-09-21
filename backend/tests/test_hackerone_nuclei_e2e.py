@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app import scanner_worker, worker_service
+from app import hackerone_api, scanner_worker, worker_service
 from app.hackerone_api import router as hackerone_router
 from app.jobqueue import JobQueue
 from app.storage import Storage
@@ -61,6 +61,11 @@ def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(
     monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
     monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
     monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0")
+    monkeypatch.setattr(
+        hackerone_api,
+        "_assert_hackerone_live_scan_ready",
+        lambda: None,
+    )
 
     def fake_execute(plan):
         run_dir = Path(plan.output_dir)
