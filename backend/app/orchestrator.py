@@ -14,7 +14,7 @@ from .campaign_risk import build_campaign_risk
 from .campaign_runtime import CampaignRuntimeLimit, campaign_runtime_limit_from_env, runtime_status
 from .campaign_chain_priority import build_campaign_chain_context, prioritize_with_chain_context
 from .circuit_breaker import circuit_breaker_state, record_circuit_open
-from .coverage import build_coverage_guidance, build_evidence_coverage
+from .coverage import build_coverage_guidance, build_evidence_coverage, prioritize_action_with_coverage
 from .decision_audit import next_audit_link, seal_decision_metadata
 from .decision_consensus import build_decision_consensus
 from .decision_timeline import planner_stability_breaker_reason, planner_stability_from_graph
@@ -607,6 +607,7 @@ def _result(
             "swarm_coordination": intelligence["swarm"].to_dict(),
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
+            "coverage_priority": dict(intelligence.get("coverage_priority") or {}),
             "high_value_intelligence": dict(intelligence["high_value_intelligence"]),
             "passive_response_intelligence": dict(intelligence["passive_response_intelligence"]),
             "campaign_chain_intelligence": dict(intelligence["campaign_chain_intelligence"]),
@@ -728,6 +729,11 @@ def advance_campaign(
             intelligence["campaign_chain_intelligence"],
         )
         intelligence["chain_planner_intelligence"] = chain_planner_intelligence
+        action, coverage_priority = prioritize_action_with_coverage(
+            action,
+            intelligence["coverage_guidance"],
+        )
+        intelligence["coverage_priority"] = coverage_priority
         cycle = intelligence["cycle"]
 
         if cycle.next_action == "stop" or not cycle.safe_to_progress:
