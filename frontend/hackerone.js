@@ -1818,7 +1818,6 @@
         title.textContent=String(program.name||program.handle||'Programme');
         titleRow.appendChild(title);
         const readinessBadge=document.createElement('span');
-        const readiness=String(program.status||'REVIEW');
         readinessBadge.className='pill '+(readiness==='READY'?'ok':readiness==='BLOCKED'?'err':'warn');
         readinessBadge.textContent=readiness;
         titleRow.appendChild(readinessBadge);
