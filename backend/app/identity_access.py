@@ -3,7 +3,11 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from .observation_graph import ObservationGraph
+from fastapi import APIRouter
+
+from .observation_graph import ObservationGraph, load_observation_graph
+
+router = APIRouter()
 
 
 @dataclass(frozen=True)
@@ -113,4 +117,18 @@ def summarize_identity_access_differentials(
         },
         "advisory_only": True,
         "automatic_vulnerability_claim": False,
+    }
+
+
+
+@router.get("/api/campaigns/{campaign_id}/identity-access-differentials")
+def campaign_identity_access_differentials(campaign_id: str, limit: int = 50):
+    from .main import assert_campaign_exists, storage
+
+    campaign = assert_campaign_exists(campaign_id)
+    graph = load_observation_graph(storage(), campaign.id)
+    result = summarize_identity_access_differentials(graph, limit=limit)
+    return {
+        "campaign_id": campaign.id,
+        **result,
     }
