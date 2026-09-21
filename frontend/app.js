@@ -61,20 +61,13 @@ void refreshAuthSourceStatus();
 async function api(path,opts={}){
   const token=$('token').value.trim();
   const method=(opts.method||'GET').toUpperCase();
-  const mutation=['POST','PUT','PATCH','DELETE'].includes(method);
   const headers={'content-type':'application/json',...(opts.headers||{})};
   if(token)headers.authorization='Bearer '+token;
-  const totp=$('totp').value.trim();
-  if(mutation&&totp)headers['x-totp-code']=totp;
-  try{
-    const r=await fetch('/api'+path,{...opts,method,headers});
-    let data;
-    try{data=await r.json()}catch{data={detail:'Invalid server response'}}
-    if(!r.ok)throw new Error(data.detail?(typeof data.detail==='string'?data.detail:JSON.stringify(data.detail)):JSON.stringify(data));
-    return data;
-  }finally{
-    if(mutation)$('totp').value='';
-  }
+  const r=await fetch('/api'+path,{...opts,method,headers});
+  let data;
+  try{data=await r.json()}catch{data={detail:'Invalid server response'}}
+  if(!r.ok)throw new Error(data.detail?(typeof data.detail==='string'?data.detail:JSON.stringify(data.detail)):JSON.stringify(data));
+  return data;
 }
 
 function setStatus(message,type='muted'){
