@@ -193,6 +193,11 @@ if [ "$LIVE_MODE" = "true" ]; then
   echo "=== NUCLEI VERSION ==="
   "${COMPOSE[@]}" exec -T scanner-worker sh -c \
     'nuclei -version 2>&1 | grep -F "$XBOW_NUCLEI_ALLOWED_VERSION"'
+
+
+  echo "=== HACKERONE LIVE GO/NO-GO ==="
+  "${COMPOSE[@]}" exec -T backend python -c \
+    'from app.hackerone_live_readiness import build_hackerone_live_readiness; from app.main import dependency_readiness; r=build_hackerone_live_readiness(dependency_readiness()); assert r["live_scan_ready"], {"status": r["status"], "failed": [x["id"] for x in r["checks"] if x["required"] and not x["ok"]]}; print({"status": r["status"], "live_scan_ready": r["live_scan_ready"]})'
 fi
 
 echo "=== SERVICES ==="
