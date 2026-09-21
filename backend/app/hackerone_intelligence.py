@@ -7,6 +7,7 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from typing import Any
 
+from .chain_intelligence import build_chain_intelligence
 from .hackerone_client import HackerOneClient, HackerOneClientError
 from .storage import CampaignConflictError
 
@@ -561,6 +562,7 @@ def build_hackerone_intelligence(reports: list[dict[str, Any]]) -> dict[str, Any
         "categories": categories,
         "program_signals": programs,
         "capability_gaps": _capability_gaps(categories),
+        "chain_intelligence": build_chain_intelligence(categories),
         "high_value_reports": high_value_reports,
         "recent_reports": recent_reports,
         "checked_at": now,
