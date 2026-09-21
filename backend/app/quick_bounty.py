@@ -194,6 +194,37 @@ def learning_digest(
         totals["findings_confirmed"] += int(campaign.get("findings_confirmed") or 0)
         for key, value in dict(campaign.get("activity") or {}).items():
             event_totals[key] += int(value or 0)
+    sanitized_campaigns = []
+    for member in journal["members"]:
+        campaign = dict(member.get("campaign") or {})
+        confirmed = [
+            {
+                "severity": item.get("severity"),
+                "cwe": item.get("cwe"),
+                "discovered_by": item.get("discovered_by"),
+                "validated_by": item.get("validated_by"),
+            }
+            for item in list(campaign.get("confirmed_findings") or [])
+            if isinstance(item, dict)
+        ]
+        sanitized_campaigns.append({
+            "handle": member.get("handle"),
+            "status": member.get("status"),
+            "campaign": {
+                "campaign_id": campaign.get("campaign_id"),
+                "state": campaign.get("state"),
+                "duration_seconds": campaign.get("duration_seconds"),
+                "findings_total": campaign.get("findings_total"),
+                "findings_confirmed": campaign.get("findings_confirmed"),
+                "confirmed_by_severity": campaign.get("confirmed_by_severity"),
+                "confirmed_findings": confirmed,
+                "events_total": campaign.get("events_total"),
+                "event_type_counts": campaign.get("event_type_counts"),
+                "activity": campaign.get("activity"),
+                "terminal": campaign.get("terminal"),
+            },
+        })
+
     return {
         "schema_version": 1,
         "kind": "xbow_runtime_learning_digest",
@@ -204,7 +235,7 @@ def learning_digest(
         "updated_at": journal["updated_at"],
         "totals": dict(totals),
         "activity_totals": dict(event_totals),
-        "campaigns": journal["members"],
+        "campaigns": sanitized_campaigns,
         "sanitized": True,
         "contains_secrets": False,
         "contains_evidence_bodies": False,
