@@ -77,5 +77,19 @@ def test_production_update_attests_frontend_diagnostic_proxy():
     assert "=== FRONTEND DIAGNOSTIC PROXY ===" in script
     assert "http://127.0.0.1:8080/live" in script
     assert "http://127.0.0.1:8080/auth-status" in script
-    assert "0.5.3" in script
+    assert "0.5.4" in script
     assert "contains_secrets" in script
+
+
+
+def test_production_update_self_heals_stale_baseline_flags():
+    script = _text("mobile-production-update.sh")
+
+    assert "normalize_baseline_gate()" in script
+    assert 'normalize_baseline_gate "DRY_RUN" "true"' in script
+    assert 'normalize_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"' in script
+    assert 'normalize_baseline_gate "XBOW_ENABLE_NUCLEI" "false"' in script
+    assert 'normalize_baseline_gate "XBOW_ENABLE_RECON" "false"' in script
+    assert 'normalize_baseline_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"' in script
+    assert 'normalize_baseline_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"' in script
+    assert 'normalize_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"' in script
