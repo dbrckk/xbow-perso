@@ -63,28 +63,19 @@ L'interface ne déduit jamais automatiquement l'autorisation de scanner.
 
 ## 5. Ouvrir les verrous de scan réel
 
-Seulement après la revue précédente, appliquer côté serveur :
+Seulement après la revue précédente, utiliser le script d'activation persistant :
 
 ```bash
-XBOW_ENABLE_ACTIVE_SCANS=true
-DRY_RUN=false
-XBOW_ENABLE_NUCLEI=true
-XBOW_NUCLEI_ALLOWED_VERSION=3.11.1
-XBOW_SCANNER_ALLOWED_ENGINES=nuclei
-XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
+sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh
 ```
 
-Puis démarrer le worker scanner :
-
-```bash
-docker compose --profile scanner up -d --build
-```
+Ce script conserve le baseline sûr dans `.env`, crée le profil scanner réel séparé, vérifie que la file est idle, arme Nuclei 3.11.1 dans le sandbox `restricted-v1` et laisse la soumission HackerOne désactivée.
 
 Retourner dans **Pré-vol bug bounty réel** puis cliquer **Revérifier**.
 
-Le statut doit être **PRÊT SCAN RÉEL** avant toute exécution réelle.
+Le statut doit être **PRÊT SCAN RÉEL** avant toute exécution réelle. Le serveur refusera aussi le lancement si ce pré-vol n'est plus valide au moment exact du clic.
 
-## 6. Preview finale
+## 6. Preview finale et READY
 
 Avant le lancement :
 
@@ -92,20 +83,27 @@ Avant le lancement :
 2. relire les cibles autorisées et refusées ;
 3. vérifier le plafond de requêtes ;
 4. confirmer manuellement la preview ;
-5. lancer uniquement si le snapshot HackerOne n'a pas changé.
+5. enregistrer le profil de revue lié au fingerprint courant ;
+6. vérifier que le programme apparaît `READY` dans le catalogue.
 
-Un changement distant du programme doit provoquer un blocage `stale_hackerone_snapshot` et une nouvelle revue.
+Le serveur refait une vérification distante juste avant le lancement. Un changement de fingerprint, de scope ou d'état du programme force une nouvelle revue au lieu de démarrer avec une autorisation périmée.
 
 ## 7. Premier run recommandé
 
 Pour le premier run réel :
 
+- commencer avec 1 à 3 programmes `READY`, avec bounty ;
+- garder le mode **À la suite** pour simplifier la première observation ;
+- utiliser **Auto-select** ou **Auto Queue** après avoir vérifié les choix ;
 - conserver uniquement Nuclei dans l'allowlist scanner ;
 - garder le sandbox `restricted-v1` ;
 - ne pas activer PentAGI ;
 - ne pas activer la soumission HackerOne automatique ;
-- garder un plafond de requêtes conservateur égal ou inférieur à la limite du programme ;
-- surveiller le moniteur de campagne et les findings dans la PWA.
+- garder un plafond de requêtes conservateur égal ou inférieur à la limite du programme.
+
+Une fois le lot enregistré côté serveur, il continue sans que le dashboard reste ouvert. Pour un lot séquentiel, chaque membre est à nouveau vérifié auprès de HackerOne juste avant son démarrage. Si HackerOne est temporairement indisponible, le membre reste en attente et sera retenté ; si le programme ou son fingerprint a réellement changé, il passe en `review`.
+
+À la réouverture de la PWA, le lot actif est repris automatiquement. Un lot terminé avec des membres à revoir ou bloqués reste visible avec sa raison.
 
 ## 8. Après un finding
 
@@ -136,5 +134,9 @@ XBOW_ENABLE_ACTIVE_SCANS=false
 DRY_RUN=true
 ```
 
-Puis arrêter le profil scanner si nécessaire.
+Puis désarmer proprement le profil scanner :
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh
+```
 
