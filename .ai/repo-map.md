@@ -12876,6 +12876,12 @@ script = _text("frontend/simple.js")
 html = _text("frontend/index.html")
 ⋮----
 def test_frontend_has_no_totp_control()
+⋮----
+def test_simple_dashboard_runtime_is_shipped_in_frontend_image()
+⋮----
+dockerfile = _text("frontend/Dockerfile")
+⋮----
+def test_service_worker_matches_precache_assets_by_path()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
