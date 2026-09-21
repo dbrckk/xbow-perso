@@ -15,8 +15,14 @@ $('token').addEventListener('input',()=>sessionStorage.setItem('xbowApiToken',$(
 async function refreshAuthSourceStatus(){
   const target=$('authSourceStatus');
   if(!target)return null;
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),5000);
   try{
-    const response=await fetch('/auth-status',{cache:'no-store'});
+    const response=await fetch('/auth-status',{
+      cache:'no-store',
+      signal:controller.signal
+    });
+    if(!response.ok)throw new Error('auth-status unavailable');
     const data=await response.json();
     const source=String(data?.source||'unknown');
     const configured=data?.configured===true;
@@ -30,8 +36,12 @@ async function refreshAuthSourceStatus(){
     target.textContent='Source d’authentification serveur : indisponible';
     target.className='muted compact err';
     return null;
+  }finally{
+    clearTimeout(timeout);
   }
 }
+
+void refreshAuthSourceStatus();
 
 async function api(path,opts={}){
   const token=$('token').value.trim();
@@ -704,4 +714,3 @@ $('resetBreaker').onclick=async()=>{if(!campaign)return;try{
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
-void refreshAuthSourceStatus();
