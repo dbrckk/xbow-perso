@@ -19,6 +19,7 @@ from .hackerone_client import (
 from .hackerone_catalog import refresh_hackerone_catalog
 from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_intelligence import refresh_hackerone_intelligence
+from .hackerone_discovery import build_program_discovery
 from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_report_tracking import (
     latest_remote_submission,
@@ -332,6 +333,58 @@ def hackerone_program_catalog():
         "read_only": True,
         "contains_secrets": False,
         **state,
+    }
+
+
+@router.get("/api/hackerone/discovery")
+def hackerone_program_discovery(
+    verify_limit: int = Query(default=20, ge=0, le=50),
+):
+    """Return a low-friction READY/REVIEW/BLOCKED program selection view."""
+    from .main import storage
+
+    store = storage()
+    catalog = store.get_hackerone_catalog_state()
+    if catalog is None:
+        try:
+            catalog = refresh_hackerone_catalog(store, client=HackerOneClient())
+        except HackerOneClientError as exc:
+            raise _upstream_error(exc) from exc
+
+    intelligence = store.get_hackerone_intelligence_state() or {}
+    profiles = store.list_hackerone_review_profiles(limit=1000)
+
+    verified: dict[str, str] = {}
+    handles = []
+    for profile in profiles:
+        handle = str(profile.get("handle") or "")
+        if handle and handle not in handles:
+            handles.append(handle)
+        if len(handles) >= verify_limit:
+            break
+
+    for handle in handles:
+        try:
+            snapshot = fetch_hackerone_program_snapshot(handle)
+        except HackerOneClientError:
+            continue
+        verified[handle] = snapshot.snapshot_sha256
+
+    runtime = dict(intelligence.get("runtime_capability_snapshot") or {})
+    result = build_program_discovery(
+        programs=list(catalog.get("programs") or []),
+        review_profiles=profiles,
+        intelligence=intelligence,
+        verified_snapshots=verified,
+        runtime=runtime,
+        catalog_changes=dict(catalog.get("changes") or {}),
+    )
+    return {
+        "provider": "hackerone",
+        "verified_profile_handles": len(verified),
+        "verification_limit": verify_limit,
+        "catalog_checked_at": catalog.get("checked_at"),
+        **result,
     }
 
 
