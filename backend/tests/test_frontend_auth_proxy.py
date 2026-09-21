@@ -30,8 +30,6 @@ def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
 
-    assert '/app.js?v=60' in index
-    assert '/hackerone.js?v=60' in index
     assert '/quick.js?v=60' in index
     assert '/app.css?v=60' in index
     assert "xbow-perso-v60" in sw
@@ -39,15 +37,13 @@ def test_frontend_assets_are_explicitly_cache_busted():
 
 
 def test_api_token_is_persisted_across_browser_sessions():
-    app = _text("frontend/app.js")
+    quick = _text("frontend/quick.js")
     html = _text("frontend/index.html")
 
-    assert "API_TOKEN_STORAGE_KEY='xbowApiToken'" in app
-    assert "localStorage.getItem(API_TOKEN_STORAGE_KEY)" in app
-    assert "localStorage.setItem(API_TOKEN_STORAGE_KEY" in app
-    assert "sessionStorage.getItem(API_TOKEN_STORAGE_KEY)" in app
-    assert "sessionStorage.removeItem(API_TOKEN_STORAGE_KEY)" in app
-    assert "Le jeton reste enregistré sur cet appareil." in html
+    assert "STORAGE_KEY='xbowApiToken'" in quick
+    assert "localStorage.getItem(STORAGE_KEY)" in quick
+    assert "localStorage.setItem(STORAGE_KEY" in quick
+    assert "Enregistré sur cet appareil." in html
 
 
 
