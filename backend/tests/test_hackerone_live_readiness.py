@@ -238,3 +238,24 @@ def test_live_readiness_blocks_when_scanner_heartbeat_is_stale(monkeypatch):
     assert by_id["scanner_worker_live"]["ok"] is False
     assert result["worker_liveness"]["scanner"]["reason"] == "heartbeat_stale"
     assert result["contains_secrets"] is False
+
+
+
+def test_live_readiness_accepts_vault_backed_api_token(monkeypatch):
+    _clear(monkeypatch)
+    _credentials_ok(monkeypatch)
+    monkeypatch.setattr(readiness, "configured_api_token", lambda: "vault-token")
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "true")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei")
+    monkeypatch.setenv("XBOW_NUCLEI_ALLOWED_VERSION", "3.11.1")
+    monkeypatch.setenv("DRY_RUN", "false")
+
+    result = readiness.build_hackerone_live_readiness({"ok": True})
+    by_id = {item["id"]: item for item in result["checks"]}
+
+    assert by_id["api_token"]["ok"] is True
+    assert result["operator_steps"][0]["done"] is True

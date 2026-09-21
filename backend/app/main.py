@@ -29,7 +29,7 @@ from .storage_backend import StorageBackend, create_storage
 from .totp_auth import require_totp_for_mutation
 from .validation_state import has_evidence_backed_independent_validation
 
-app = FastAPI(title="xbow-perso", version="0.5.3")
+app = FastAPI(title="xbow-perso", version="0.5.4")
 
 
 @app.middleware("http")

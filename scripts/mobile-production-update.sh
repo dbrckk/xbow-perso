@@ -41,6 +41,16 @@ read_env_value() {
   grep -E "^[[:space:]]*${key}=" .env | tail -n1 | cut -d= -f2- || true
 }
 
+normalize_baseline_gate() {
+  local key="$1"
+  local value="$2"
+  if grep -Eq "^[[:space:]]*${key}=" .env; then
+    sed -i -E "s|^[[:space:]]*${key}=.*|${key}=${value}|" .env
+  else
+    printf '%s=%s\n' "$key" "$value" >> .env
+  fi
+}
+
 require_baseline_gate() {
   local key="$1"
   local expected="$2"
@@ -63,6 +73,16 @@ require_live_value() {
 }
 
 # The repository .env remains fail-safe even when the root-only live overlay is armed.
+# Normalize stale/manual live flags back to the fail-safe repository baseline.
+# Real-mode values are supplied only by the root-only live overlay below.
+normalize_baseline_gate "DRY_RUN" "true"
+normalize_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
+normalize_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
+normalize_baseline_gate "XBOW_ENABLE_RECON" "false"
+normalize_baseline_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+normalize_baseline_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
+normalize_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
+
 require_baseline_gate "DRY_RUN" "true"
 require_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
@@ -197,7 +217,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.3\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.4\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 
