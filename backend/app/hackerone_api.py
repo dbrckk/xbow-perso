@@ -566,10 +566,28 @@ def hackerone_quick_journal(
         brief = batch.get("learning_brief")
         if str(batch.get("state") or "") == "completed" and not isinstance(brief, dict):
             brief = build_batch_learning_brief(store, batch)
+            delivery = {
+                "queued": False,
+                "delivered": False,
+                "issue_url": None,
+                "reason": "local_outbox_failed",
+            }
             try:
-                persist_learning_brief(brief)
+                delivery = persist_learning_brief(brief)
             except Exception:
                 pass
+
+            record = store.get_hackerone_batch_record(batch_id)
+            if record is not None:
+                latest, version = record
+                if not isinstance(latest.get("learning_brief"), dict):
+                    latest["learning_brief"] = brief
+                    latest["learning_delivery"] = delivery
+                    try:
+                        store.save_hackerone_batch(latest, expected_version=version)
+                        batch = latest
+                    except Exception:
+                        pass
 
         journal.append(
             {
