@@ -22,18 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T09:42:48Z
+Generated: 2026-09-21T09:58:05Z
 
 ### Git
 - Branch: `main`
-- Head: `1ad6d444abed`
-- Commit date: 2026-09-21T11:42:37+02:00
-- Commit: feat: detect diminishing scan returns and rotate surfaces
+- Head: `10241873eb97`
+- Commit date: 2026-09-21T11:57:55+02:00
+- Commit: feat: prioritize high-value undercovered recon surfaces
 - Tracked files: 546
 
 ### Recently changed files
-- `backend/app/coverage.py`
 - `backend/app/orchestrator.py`
+- `backend/app/recon_priority.py`
+- `backend/tests/test_recon_priority.py`
+- `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_discovery.py`
@@ -50,8 +52,6 @@ Generated: 2026-09-21T09:42:48Z
 - `backend/app/browser.py`
 - `backend/app/identity_access.py`
 - `backend/app/worker_service.py`
-- `backend/tests/test_identity_access.py`
-- `backend/app/hackerone_review_draft.py`
 
 ### Project signals
 - `pyproject.toml`

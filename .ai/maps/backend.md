@@ -5793,12 +5793,12 @@ target_memory = build_target_memory(store, campaign_doc)
 surface_diff = build_surface_diff_intelligence(target_memory)
 surface_temporal = build_temporal_surface_profile(store, campaign_doc)
 surface_confidence = build_surface_confidence(target_memory, surface_temporal)
+passive_response_intelligence = build_passive_response_context(
+high_value_intelligence = build_high_value_intelligence(
 recon_priority = prioritize_recon_tasks(
 swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
-passive_response_intelligence = build_passive_response_context(
-high_value_intelligence = build_high_value_intelligence(
 campaign_chain_intelligence = build_campaign_chain_context(graph, high_value_intelligence)
 planner_action = planned_actions[0] if planned_actions else None
 planner_intelligence = None
@@ -7174,6 +7174,18 @@ result = readiness()
 ```python
 _TASK_SIGNALS: dict[str, tuple[str, ...]] = {
 ⋮----
+_HIGH_VALUE_TASKS: dict[str, tuple[str, ...]] = {
+⋮----
+matched: list[tuple[str, int]] = []
+⋮----
+family = str(raw.get("family") or "")
+⋮----
+score = int(raw.get("score") or 0)
+⋮----
+score = 0
+⋮----
+boost = min(10, 3 + 2 * len(matched))
+⋮----
 @dataclass(frozen=True)
 class ReconPriorityAdjustment
 ⋮----
@@ -7185,6 +7197,8 @@ diff_boost: int
 history_boost: int
 temporal_boost: int
 confidence_factor: float
+high_value_boost: int
+high_value_families: tuple[str, ...]
 signals: tuple[str, ...]
 historical_signals: tuple[str, ...]
 temporal_signals: tuple[str, ...]
@@ -7280,8 +7294,10 @@ temporal_strength = sum(temporal_scores.get(kind, 0.0) for kind in signals)
 temporal_boost = min(5, int(round(temporal_strength))) if baseline_available else 0
 confidence_values = [
 confidence_factor = (
-raw_boost = min(20, diff_boost + history_boost + temporal_boost)
-boost = min(20, int(round(raw_boost * confidence_factor)))
+⋮----
+baseline_boost = min(
+raw_boost = min(
+boost = min(25, int(round(raw_boost * confidence_factor)))
 effective = min(100, int(task.priority) + boost)
 reason = task.reason
 active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
@@ -15583,6 +15599,20 @@ def test_high_confidence_preserves_full_bounded_boost()
 def test_missing_confidence_is_neutral_and_never_increases_cap()
 ⋮----
 result = prioritize_recon_tasks(original, diff, None, None, None)
+⋮----
+def test_high_value_focus_boosts_matching_existing_task_only()
+⋮----
+high_value = {
+⋮----
+result = prioritize_recon_tasks(
+⋮----
+adjustments = {item.kind: item for item in result.adjustments}
+⋮----
+def test_high_value_boost_preserves_recon_authority_fields()
+⋮----
+source = task("browser_observe", 65)
+⋮----
+updated = result.tasks[0]
 ```
 
 ## File: tests/test_recon_swarm.py

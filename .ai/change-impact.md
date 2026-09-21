@@ -1,12 +1,12 @@
 # Change impact
 
-Base: ece32788efe656db082a6e649fe35c3ac3fce543
-Head: 1ad6d444abedf9644695510588ddf93b0f5ed094
+Base: e724fca24cfb2800ae23c9dbb0143fcc419fd713
+Head: 10241873eb9756c22391dfbdbc0e717799362da5
 
 ## Changed files
-- M backend/app/coverage.py
 - M backend/app/orchestrator.py
-- M backend/tests/test_coverage.py
+- M backend/app/recon_priority.py
+- M backend/tests/test_recon_priority.py
 
 ## Affected areas
 - backend

@@ -1,600 +1,42 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "4e533e30e6efbdaad2ad5e569033c6b84019eed7",
-  "head": "1ad6d444abedf9644695510588ddf93b0f5ed094",
+  "base": "1ad6d444abedf9644695510588ddf93b0f5ed094",
+  "head": "10241873eb9756c22391dfbdbc0e717799362da5",
   "index_mode": "incremental",
   "changed_files": [
-    {
-      "path": "backend/app/coverage.py",
-      "status": "M"
-    },
     {
       "path": "backend/app/orchestrator.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_coverage.py",
+      "path": "backend/app/recon_priority.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_recon_priority.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/coverage.py",
     "backend/app/orchestrator.py",
-    "backend/tests/test_coverage.py"
+    "backend/app/recon_priority.py",
+    "backend/tests/test_recon_priority.py"
   ],
   "impacted_files": [
-    "backend/app/coverage.py",
-    "backend/app/main.py",
     "backend/app/orchestrator.py",
+    "backend/app/recon_priority.py",
+    "backend/app/recon_swarm.py",
     "backend/app/worker_service.py",
     "backend/tests/test_campaign_circuit_breaker.py",
-    "backend/tests/test_coverage.py",
     "backend/tests/test_job_provenance_integration.py",
     "backend/tests/test_nuclei_queue_lifecycle.py",
     "backend/tests/test_orchestrator.py",
     "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_recon_priority.py",
     "backend/tests/test_runtime_budget_config.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "build_evidence_coverage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 14
-    },
-    {
-      "name": "campaign_coverage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 91
-    },
-    {
-      "name": "build_coverage_guidance",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 108
-    },
-    {
-      "name": "prioritize_action_with_coverage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 150
-    },
-    {
-      "name": "authenticate_control_api",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 36
-    },
-    {
-      "name": "utcnow",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 50
-    },
-    {
-      "name": "storage",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 54
-    },
-    {
-      "name": "queue",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 58
-    },
-    {
-      "name": "incident_store",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 62
-    },
-    {
-      "name": "_stable_key",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 70
-    },
-    {
-      "name": "CampaignState",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 75
-    },
-    {
-      "name": "ProgramRules",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 85
-    },
-    {
-      "name": "TargetInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 98
-    },
-    {
-      "name": "primary_target_must_be_allowed",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 105
-    },
-    {
-      "name": "Finding",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 119
-    },
-    {
-      "name": "FindingReviewMetadataInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 137
-    },
-    {
-      "name": "normalize_review_metadata",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 147
-    },
-    {
-      "name": "Campaign",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 162
-    },
-    {
-      "name": "EvidenceInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 172
-    },
-    {
-      "name": "HackerOneScopePreviewInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 179
-    },
-    {
-      "name": "IncidentAcknowledgeInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 183
-    },
-    {
-      "name": "normalize_pattern",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 188
-    },
-    {
-      "name": "is_host_allowed",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 195
-    },
-    {
-      "name": "save_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 204
-    },
-    {
-      "name": "assert_campaign_record",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 211
-    },
-    {
-      "name": "assert_campaign_exists",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 219
-    },
-    {
-      "name": "_reject_cancelled_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 223
-    },
-    {
-      "name": "_reject_new_findings_for_closed_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 228
-    },
-    {
-      "name": "_campaign_graph",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 236
-    },
-    {
-      "name": "_has_evidence_backed_independent_validation",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 243
-    },
-    {
-      "name": "policy_receipt",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 248
-    },
-    {
-      "name": "sanitized_scan_payload",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 274
-    },
-    {
-      "name": "live",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 311
-    },
-    {
-      "name": "ready",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 316
-    },
-    {
-      "name": "health",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 329
-    },
-    {
-      "name": "deployment_preflight",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 345
-    },
-    {
-      "name": "system_capabilities",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 352
-    },
-    {
-      "name": "get_observer_health",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 436
-    },
-    {
-      "name": "get_incidents",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 441
-    },
-    {
-      "name": "acknowledge_incident",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 446
-    },
-    {
-      "name": "list_agents",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 461
-    },
-    {
-      "name": "preview_hackerone_scope",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 467
-    },
-    {
-      "name": "create_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 503
-    },
-    {
-      "name": "list_campaigns",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 511
-    },
-    {
-      "name": "get_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 516
-    },
-    {
-      "name": "get_campaign_target_memory",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 521
-    },
-    {
-      "name": "get_campaign_surface_diff",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 533
-    },
-    {
-      "name": "get_campaign_surface_temporal",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 547
-    },
-    {
-      "name": "get_campaign_surface_confidence",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 559
-    },
-    {
-      "name": "campaign_outbox_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 576
-    },
-    {
-      "name": "campaign_outbox_recovery",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 590
-    },
-    {
-      "name": "_apply_local_outbox_repairs",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 611
-    },
-    {
-      "name": "reconcile_campaign_outbox_local",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 650
-    },
-    {
-      "name": "preview_pentagi_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 708
-    },
-    {
-      "name": "_pentagi_dispatch_fingerprint",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 739
-    },
-    {
-      "name": "_record_pentagi_dispatch_intent",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 743
-    },
-    {
-      "name": "_reconcile_pentagi_queued_event",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 769
-    },
-    {
-      "name": "dispatch_pentagi_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 816
-    },
-    {
-      "name": "pentagi_campaign_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 890
-    },
-    {
-      "name": "list_campaign_observations",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 920
-    },
-    {
-      "name": "campaign_decision_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 926
-    },
-    {
-      "name": "campaign_event_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 938
-    },
-    {
-      "name": "campaign_worker_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 948
-    },
-    {
-      "name": "campaign_knowledge",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 960
-    },
-    {
-      "name": "campaign_finding_ranking",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 975
-    },
-    {
-      "name": "campaign_advisory_history",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1002
-    },
-    {
-      "name": "campaign_advisory_delta",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1011
-    },
-    {
-      "name": "campaign_advisory_journal",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1022
-    },
-    {
-      "name": "campaign_hypothesis_history",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1034
-    },
-    {
-      "name": "campaign_hypothesis_delta",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1043
-    },
-    {
-      "name": "campaign_hypothesis_stability",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1054
-    },
-    {
-      "name": "campaign_plan",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1066
-    },
-    {
-      "name": "check_policy",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1116
-    },
-    {
-      "name": "verify_campaign_policy_receipt",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1126
-    },
-    {
-      "name": "_pending_campaign_start_request",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1131
-    },
-    {
-      "name": "_record_campaign_start_intent",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1139
-    },
-    {
-      "name": "_reconcile_campaign_started",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1165
-    },
-    {
-      "name": "start_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1217
-    },
-    {
-      "name": "cancel_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1266
-    },
-    {
-      "name": "get_job",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1299
-    },
-    {
-      "name": "get_job_provenance_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1307
-    },
-    {
-      "name": "_validation_request_id",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1324
-    },
-    {
-      "name": "_reconcile_validation_queued",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1328
-    },
-    {
-      "name": "add_finding",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1377
-    },
-    {
-      "name": "_record_report_request",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1462
-    },
-    {
-      "name": "_reconcile_report_job",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1489
-    },
-    {
-      "name": "_ensure_completion_report",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1535
-    },
-    {
-      "name": "update_finding_review_metadata",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1603
-    },
-    {
-      "name": "validate_finding",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1654
-    },
-    {
-      "name": "queue_report",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1720
-    },
-    {
-      "name": "add_text_artifact",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1763
-    },
-    {
-      "name": "list_artifacts",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1794
-    },
-    {
-      "name": "download_artifact",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1800
-    },
     {
       "name": "_stable_id",
       "kind": "function",
@@ -647,55 +89,181 @@
       "name": "_validation_saturated_cluster_ids",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 240
+      "line": 241
     },
     {
       "name": "_pending_findings",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 280
+      "line": 281
     },
     {
       "name": "_enqueue_recon_tasks",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 326
+      "line": 327
     },
     {
       "name": "_scan_engines",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 388
+      "line": 389
     },
     {
       "name": "_enqueue_action",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 399
+      "line": 400
     },
     {
       "name": "_decision_explanation",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 477
+      "line": 478
     },
     {
       "name": "_record_decision",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 524
+      "line": 525
     },
     {
       "name": "_result",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 567
+      "line": 568
     },
     {
       "name": "advance_campaign",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
-      "line": 638
+      "line": 639
+    },
+    {
+      "name": "_high_value_task_boost",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 28
+    },
+    {
+      "name": "ReconPriorityAdjustment",
+      "kind": "class",
+      "file": "backend/app/recon_priority.py",
+      "line": 53
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 68
+    },
+    {
+      "name": "ReconPriorityResult",
+      "kind": "class",
+      "file": "backend/app/recon_priority.py",
+      "line": 78
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 84
+    },
+    {
+      "name": "_signal_counts",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 98
+    },
+    {
+      "name": "_historical_kind_scores",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 114
+    },
+    {
+      "name": "_temporal_kind_scores",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 151
+    },
+    {
+      "name": "_confidence_kind_scores",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 177
+    },
+    {
+      "name": "prioritize_recon_tasks",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 199
+    },
+    {
+      "name": "ReconCapability",
+      "kind": "class",
+      "file": "backend/app/recon_swarm.py",
+      "line": 27
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 38
+    },
+    {
+      "name": "ReconTask",
+      "kind": "class",
+      "file": "backend/app/recon_swarm.py",
+      "line": 46
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 57
+    },
+    {
+      "name": "recon_capabilities",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 72
+    },
+    {
+      "name": "_asset_host",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 76
+    },
+    {
+      "name": "_safe_target",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 81
+    },
+    {
+      "name": "build_recon_plan",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 98
+    },
+    {
+      "name": "recon_swarm_capabilities",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 161
+    },
+    {
+      "name": "campaign_recon_plan",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 170
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/recon_swarm.py",
+      "line": 177
     },
     {
       "name": "CampaignCancelledError",
@@ -876,60 +444,6 @@
       "kind": "function",
       "file": "backend/tests/test_campaign_circuit_breaker.py",
       "line": 129
-    },
-    {
-      "name": "test_coverage_is_read_only_and_does_not_claim_unknown_completeness",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 6
-    },
-    {
-      "name": "test_coverage_counts_scan_and_independent_validation",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 28
-    },
-    {
-      "name": "test_coverage_route_is_exposed",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 76
-    },
-    {
-      "name": "test_coverage_guidance_is_advisory_only",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 80
-    },
-    {
-      "name": "test_coverage_guidance_prioritizes_validation_after_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 98
-    },
-    {
-      "name": "test_coverage_detects_diminishing_scan_returns_without_findings",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 114
-    },
-    {
-      "name": "test_diminishing_returns_does_not_override_needed_validation",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 168
-    },
-    {
-      "name": "test_low_yield_scan_deprioritization_preserves_kind_and_target",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 186
-    },
-    {
-      "name": "test_coverage_priority_never_changes_non_scan_action",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 210
     },
     {
       "name": "_campaign",
@@ -1190,6 +704,96 @@
       "line": 56
     },
     {
+      "name": "task",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 7
+    },
+    {
+      "name": "test_diff_priority_only_reorders_existing_authorized_tasks",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 25
+    },
+    {
+      "name": "test_diff_priority_does_nothing_without_baseline",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 69
+    },
+    {
+      "name": "test_diff_priority_is_bounded_to_fifteen_points",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 91
+    },
+    {
+      "name": "test_historical_novelty_adds_small_bounded_boost",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 110
+    },
+    {
+      "name": "test_reappearing_surface_has_less_history_weight_than_novel_surface",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 145
+    },
+    {
+      "name": "test_total_priority_boost_is_bounded_to_twenty_points",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 188
+    },
+    {
+      "name": "test_temporal_novelty_favors_never_seen_surface_over_returning_churn",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 233
+    },
+    {
+      "name": "test_intermittent_surface_has_low_temporal_weight",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 285
+    },
+    {
+      "name": "test_temporal_scoring_never_breaks_total_boost_cap",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 314
+    },
+    {
+      "name": "test_low_confidence_dampens_recon_boost_without_changing_authority",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 361
+    },
+    {
+      "name": "test_high_confidence_preserves_full_bounded_boost",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 398
+    },
+    {
+      "name": "test_missing_confidence_is_neutral_and_never_increases_cap",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 432
+    },
+    {
+      "name": "test_high_value_focus_boosts_matching_existing_task_only",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 453
+    },
+    {
+      "name": "test_high_value_boost_preserves_recon_authority_fields",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 490
+    },
+    {
       "name": "_clear_planner_env",
       "kind": "function",
       "file": "backend/tests/test_runtime_budget_config.py",
@@ -1246,12 +850,11 @@
   ],
   "selected_tests": [
     "backend/tests/test_campaign_circuit_breaker.py",
-    "backend/tests/test_coverage.py",
     "backend/tests/test_job_provenance_integration.py",
     "backend/tests/test_nuclei_queue_lifecycle.py",
     "backend/tests/test_orchestrator.py",
     "backend/tests/test_orchestrator_validation_alignment.py",
-    "backend/tests/test_red_team_coverage.py",
+    "backend/tests/test_recon_priority.py",
     "backend/tests/test_runtime_budget_config.py"
   ]
 }
