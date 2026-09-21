@@ -1,0 +1,64 @@
+name: Runtime learning ingest
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: runtime-learning-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: >-
+      github.event.issue.user.login == github.repository_owner &&
+      startsWith(github.event.issue.title, '[runtime-learning]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Store sanitized runtime brief
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          number = os.environ["ISSUE_NUMBER"]
+          title = os.environ["ISSUE_TITLE"]
+          body = os.environ.get("ISSUE_BODY", "")
+          root = Path(".ai/runtime-learning")
+          root.mkdir(parents=True, exist_ok=True)
+          path = root / f"issue-{number}.md"
+          path.write_text(
+              "# " + title + "\n\n" + body + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Commit runtime learning brief
+        run: |
+          if git diff --quiet -- .ai/runtime-learning; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .ai/runtime-learning
+          git commit -m "chore(ai): ingest runtime learning #${{ github.event.issue.number }}"
+          git push origin HEAD:main
+
+  semantic:
+    needs: ingest
+    if: needs.ingest.result == 'success'
+    uses: dbrckk/repo-brain/.github/workflows/reusable-semantic.yml@main
+    with:
+      commit_changes: true
