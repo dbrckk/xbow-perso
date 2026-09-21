@@ -76,6 +76,11 @@ def test_sequential_batch_persists_and_starts_only_first_member(tmp_path, monkey
     monkeypatch.setenv("XBOW_DB_PATH", db)
     monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
     monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+    monkeypatch.setattr(
+        hackerone_api,
+        "_assert_hackerone_live_scan_ready",
+        lambda: None,
+    )
 
     snapshots = {
         "program-one": _snapshot("program-one", "one.example.com", "a" * 64),
