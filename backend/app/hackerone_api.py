@@ -155,6 +155,17 @@ class HackerOneQuickRunInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     mode: Literal["sequential", "parallel"] = "sequential"
+    handles: list[str] = Field(min_length=6, max_length=6)
+
+    @field_validator("handles")
+    @classmethod
+    def quick_handles_must_be_unique(cls, value: list[str]) -> list[str]:
+        normalized = [str(item).strip() for item in value]
+        if any(not item or item != item.lower() or len(item) > 128 for item in normalized):
+            raise ValueError("quick-run handle is invalid")
+        if len(set(normalized)) != 6:
+            raise ValueError("quick-run requires six unique handles")
+        return normalized
 
 
 class HackerOneReportSubmissionInput(BaseModel):
@@ -470,7 +481,19 @@ def hackerone_quick_run(payload: HackerOneQuickRunInput):
             },
         )
 
-    handles = [str(item) for item in list(plan.get("handles") or []) if str(item)]
+    current_handles = [
+        str(item) for item in list(plan.get("handles") or []) if str(item)
+    ]
+    handles = list(payload.handles)
+    if handles != current_handles:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Quick selection changed; select six programs again",
+                "reason": "quick_selection_stale",
+            },
+        )
+
     launched = launch_reviewed_hackerone_batch(
         HackerOneReviewedBatchLaunchInput(mode=payload.mode, handles=handles)
     )
