@@ -5,7 +5,11 @@ from typing import Any
 
 from .deployment_preflight import build_deployment_preflight
 from .hackerone_client import HackerOneClientError, load_hackerone_credentials
-from .runtime_capabilities import safe_scanner_runtime_capability
+from .runtime_capabilities import (
+    safe_browser_runtime_capability,
+    safe_recon_runtime_capability,
+    safe_scanner_runtime_capability,
+)
 
 
 def _strict_bool(name: str, default: bool = False) -> tuple[bool, bool]:
@@ -31,6 +35,8 @@ def build_hackerone_live_readiness(
 
     deployment = build_deployment_preflight(dependencies)
     scanner = safe_scanner_runtime_capability()
+    recon = safe_recon_runtime_capability()
+    browser = safe_browser_runtime_capability()
 
     try:
         load_hackerone_credentials()
@@ -64,6 +70,20 @@ def build_hackerone_live_readiness(
             "required": True,
             "ok": bool(deployment.get("dependencies_ready")),
             "action": "Corriger /api/ready avant tout test réel.",
+        },
+        {
+            "id": "recon_dispatch",
+            "label": "Reconnaissance bornée disponible",
+            "required": True,
+            "ok": bool(recon.get("dispatch_ready")),
+            "action": "Définir XBOW_ENABLE_RECON=true et résoudre les recon dispatch_block_reasons.",
+        },
+        {
+            "id": "browser_automation",
+            "label": "Observation navigateur",
+            "required": False,
+            "ok": bool(browser.get("dispatch_ready")),
+            "action": "Optionnel mais recommandé : XBOW_ENABLE_BROWSER_AUTOMATION=true.",
         },
         {
             "id": "active_scans",
@@ -247,6 +267,8 @@ def build_hackerone_live_readiness(
         "live_scan_ready": required_ok,
         "checks": checks,
         "scanner_block_reasons": list(scanner.get("dispatch_block_reasons") or []),
+        "recon_block_reasons": list(recon.get("dispatch_block_reasons") or []),
+        "browser_block_reasons": list(browser.get("dispatch_block_reasons") or []),
         "deployment_status": deployment.get("status"),
         "submission_enabled": submission_enabled if submission_valid else False,
         "report_sync_enabled": report_sync_enabled if report_sync_valid else False,
