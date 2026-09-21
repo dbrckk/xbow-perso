@@ -136,6 +136,7 @@ backend/
     operational_slo.py
     orchestrator.py
     outbox_recovery.py
+    passive_response_context.py
     passive_response_intelligence.py
     pentagi_action_gateway.py
     pentagi_adapter.py
@@ -317,6 +318,7 @@ backend/
     test_orchestrator.py
     test_outbox_chaos.py
     test_overview_reasoning.py
+    test_passive_response_context.py
     test_passive_response_intelligence.py
     test_pentagi_action_gateway.py
     test_pentagi_adapter.py
@@ -6163,6 +6165,7 @@ swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
 high_value_intelligence = build_high_value_intelligence(graph)
+passive_response_intelligence = build_passive_response_context(
 campaign_chain_intelligence = build_campaign_chain_context(graph, high_value_intelligence)
 planner_action = planned_actions[0] if planned_actions else None
 planner_intelligence = None
@@ -6340,6 +6343,19 @@ completion_type = intent.get("completion_type")
 ⋮----
 event: dict[str, Any] = {
 kind = intent.get("kind")
+````
+
+## File: backend/app/passive_response_context.py
+````python
+"""Analyze already-observed public text bodies without making new requests."""
+analyses: list[dict[str, Any]] = []
+seen: set[str] = set()
+⋮----
+metadata = item.metadata if isinstance(item.metadata, dict) else {}
+body = metadata.get("response_body")
+url = str(metadata.get("url") or item.value or "")
+⋮----
+host = (urlparse(url).hostname or "").lower()
 ````
 
 ## File: backend/app/passive_response_intelligence.py
@@ -14733,6 +14749,15 @@ result = campaign_overview(campaign.id)
 def test_overview_chain_becomes_complete_after_independent_evidence(tmp_path, monkeypatch)
 ⋮----
 def test_overview_counts_duplicate_candidate_groups(tmp_path, monkeypatch)
+````
+
+## File: backend/tests/test_passive_response_context.py
+````python
+def test_context_uses_only_existing_in_scope_response_bodies()
+⋮----
+graph = ObservationGraph()
+⋮----
+result = build_passive_response_context(
 ````
 
 ## File: backend/tests/test_passive_response_intelligence.py

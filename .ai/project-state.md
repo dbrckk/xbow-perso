@@ -22,23 +22,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T08:10:02Z
+Generated: 2026-09-21T08:13:42Z
 
 ### Git
 - Branch: `main`
-- Head: `022354311e42`
-- Commit date: 2026-09-21T10:09:51+02:00
-- Commit: feat: add passive public-response intelligence
-- Tracked files: 531
+- Head: `cf6cc0509018`
+- Commit date: 2026-09-21T10:13:26+02:00
+- Commit: feat: expose passive response signals to campaign intelligence
+- Tracked files: 533
 
 ### Recently changed files
+- `backend/app/orchestrator.py`
+- `backend/app/passive_response_context.py`
+- `backend/tests/test_passive_response_context.py`
 - `backend/app/passive_response_intelligence.py`
 - `backend/tests/test_passive_response_intelligence.py`
 - `backend/app/hackerone_intelligence.py`
 - `backend/app/runtime_gap_analysis.py`
 - `backend/tests/test_runtime_gap_analysis.py`
 - `backend/app/campaign_chain_priority.py`
-- `backend/app/orchestrator.py`
 - `backend/tests/test_campaign_chain_priority.py`
 - `backend/tests/test_planner_intelligence.py`
 

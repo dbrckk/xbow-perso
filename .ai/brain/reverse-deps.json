@@ -1400,6 +1400,7 @@
         "backend/app/observer_scheduler.py",
         "backend/app/observer_slo.py",
         "backend/app/orchestrator.py",
+        "backend/app/passive_response_context.py",
         "backend/app/planner_advisory.py",
         "backend/app/planner_budget.py",
         "backend/app/planner_intelligence.py",
@@ -1456,6 +1457,7 @@
         "backend/tests/test_orchestrator.py",
         "backend/tests/test_orchestrator_validation_alignment.py",
         "backend/tests/test_overview_reasoning.py",
+        "backend/tests/test_passive_response_context.py",
         "backend/tests/test_planner_advisory.py",
         "backend/tests/test_planner_budget.py",
         "backend/tests/test_planner_intelligence.py",
@@ -1466,13 +1468,12 @@
         "backend/tests/test_report_readiness.py",
         "backend/tests/test_review_queue.py",
         "backend/tests/test_scanner_ingestion.py",
-        "backend/tests/test_storage.py",
         "backend/tests/test_submission_api.py",
         "backend/tests/test_swarm_coordinator.py",
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 108,
+      "in_degree": 109,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -1626,6 +1627,7 @@
         "backend/app/learning_memory.py",
         "backend/app/main.py",
         "backend/app/observation_graph.py",
+        "backend/app/passive_response_context.py",
         "backend/app/pipeline_swarm.py",
         "backend/app/planner_budget.py",
         "backend/app/planner_intelligence.py",
@@ -1651,7 +1653,7 @@
         "backend/tests/test_runtime_budget_config.py"
       ],
       "in_degree": 7,
-      "out_degree": 37
+      "out_degree": 38
     },
     "backend/app/outbox_recovery.py": {
       "dependencies": [
@@ -1664,15 +1666,28 @@
       "in_degree": 1,
       "out_degree": 2
     },
+    "backend/app/passive_response_context.py": {
+      "dependencies": [
+        "backend/app/observation_graph.py",
+        "backend/app/passive_response_intelligence.py"
+      ],
+      "dependents": [
+        "backend/app/orchestrator.py",
+        "backend/tests/test_passive_response_context.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 2
+    },
     "backend/app/passive_response_intelligence.py": {
       "dependencies": [
         "backend/app/main.py",
         "backend/tests/test_alert_delivery.py"
       ],
       "dependents": [
+        "backend/app/passive_response_context.py",
         "backend/tests/test_passive_response_intelligence.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 2
     },
     "backend/app/pentagi_action_gateway.py": {
@@ -4025,6 +4040,16 @@
       "in_degree": 0,
       "out_degree": 5
     },
+    "backend/tests/test_passive_response_context.py": {
+      "dependencies": [
+        "backend/app/observation_graph.py",
+        "backend/app/passive_response_context.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "backend/tests/test_passive_response_intelligence.py": {
       "dependencies": [
         "backend/app/passive_response_intelligence.py",
@@ -4631,14 +4656,13 @@
     },
     "backend/tests/test_storage.py": {
       "dependencies": [
-        "backend/app/observation_graph.py",
         "backend/app/storage.py",
         "backend/app/storage_core.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 3
     },
     "backend/tests/test_storage_backend.py": {
       "dependencies": [
@@ -4994,6 +5018,7 @@
         "backend/tests/test_orchestrator_validation_alignment.py",
         "backend/tests/test_outbox_chaos.py",
         "backend/tests/test_overview_reasoning.py",
+        "backend/tests/test_passive_response_context.py",
         "backend/tests/test_passive_response_intelligence.py",
         "backend/tests/test_pentagi_action_gateway.py",
         "backend/tests/test_pentagi_adapter.py",
@@ -5075,7 +5100,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 193,
+      "in_degree": 194,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

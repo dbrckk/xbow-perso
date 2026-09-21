@@ -1,11 +1,12 @@
 # Change impact
 
-Base: beb6646c3d4da3cd2bb7305f789452d8ad259975
-Head: 022354311e429ea691043d00dd85e6d753875080
+Base: 25a4f935113569fa671eedb9a0502006c3eef272
+Head: cf6cc05090186f4f0e4bea382372331d39de330c
 
 ## Changed files
-- A backend/app/passive_response_intelligence.py
-- A backend/tests/test_passive_response_intelligence.py
+- M backend/app/orchestrator.py
+- A backend/app/passive_response_context.py
+- A backend/tests/test_passive_response_context.py
 
 ## Affected areas
 - backend
