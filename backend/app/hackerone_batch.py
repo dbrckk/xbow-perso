@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .storage import CampaignConflictError
+from .quick_bounty import persist_learning_digest
 
 
 _TERMINAL_MEMBER_STATES = {"done", "review", "blocked", "cancelled"}
@@ -272,6 +273,20 @@ def reconcile_hackerone_batch(queue, store, batch_id: str) -> dict[str, Any] | N
         batch["updated_at"] = utcnow()
         try:
             store.save_hackerone_batch(batch, expected_version=version)
+            if str(batch.get("state") or "") == "completed":
+                try:
+                    campaigns_by_id = {}
+                    for member in members:
+                        campaign_id = str(member.get("campaign_id") or "")
+                        if not campaign_id:
+                            continue
+                        campaign = store.get_campaign(campaign_id)
+                        if isinstance(campaign, dict):
+                            campaigns_by_id[campaign_id] = campaign
+                    persist_learning_digest(batch, campaigns_by_id)
+                except (OSError, ValueError, TypeError):
+                    # Learning export is advisory and must never break scheduling.
+                    pass
             return batch
         except CampaignConflictError:
             continue
