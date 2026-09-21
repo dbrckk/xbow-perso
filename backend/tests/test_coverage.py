@@ -1,6 +1,6 @@
-from app.coverage import build_coverage_guidance, build_evidence_coverage
+from app.coverage import build_coverage_guidance, build_evidence_coverage, prioritize_action_with_coverage
 from app.main import app
-from app.observation_graph import Observation, ObservationGraph
+from app.observation_graph import Observation, ObservationGraph, PlannedAction
 
 
 def test_coverage_is_read_only_and_does_not_claim_unknown_completeness():
@@ -180,3 +180,48 @@ def test_diminishing_returns_does_not_override_needed_validation():
     guidance = build_coverage_guidance(coverage)
 
     assert guidance["focus"] == "independent_validation"
+
+
+
+def test_low_yield_scan_deprioritization_preserves_kind_and_target():
+    action = PlannedAction(
+        kind="scan",
+        target="https://example.test/",
+        reason="scan selected",
+        priority=80,
+    )
+    adjusted, signal = prioritize_action_with_coverage(
+        action,
+        {
+            "focus": "surface_rotation",
+            "diminishing_returns": 0.8,
+        },
+    )
+
+    assert adjusted.kind == action.kind
+    assert adjusted.target == action.target
+    assert adjusted.priority < action.priority
+    assert signal["applied"] is True
+    assert signal["priority_delta"] < 0
+    assert signal["action_kind_unchanged"] is True
+    assert signal["target_unchanged"] is True
+
+
+def test_coverage_priority_never_changes_non_scan_action():
+    action = PlannedAction(
+        kind="crawl",
+        target="https://example.test/",
+        reason="crawl selected",
+        priority=50,
+    )
+
+    adjusted, signal = prioritize_action_with_coverage(
+        action,
+        {
+            "focus": "surface_rotation",
+            "diminishing_returns": 1.0,
+        },
+    )
+
+    assert adjusted == action
+    assert signal["applied"] is False
