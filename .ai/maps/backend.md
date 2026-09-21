@@ -106,6 +106,7 @@ app/
   jobqueue.py
   knowledge_memory.py
   learning_memory.py
+  local_outcome_intelligence.py
   main.py
   metrics.py
   nuclei_parser.py
@@ -185,6 +186,7 @@ app/
   totp_auth.py
   validation_state.py
   validator.py
+  value_efficiency.py
   vault_cli.py
   vault_migration.py
   worker_audit.py
@@ -286,6 +288,7 @@ tests/
   test_jobqueue.py
   test_knowledge_memory.py
   test_learning_memory.py
+  test_local_outcome_intelligence.py
   test_metrics.py
   test_nuclei_preflight.py
   test_nuclei_queue_lifecycle.py
@@ -382,6 +385,7 @@ tests/
   test_totp_auth.py
   test_validation_state.py
   test_validator.py
+  test_value_efficiency.py
   test_vault_migration.py
   test_watchdog_observability.py
   test_worker_concurrency.py
@@ -2789,6 +2793,7 @@ handle = str(profile.get("handle") or "")
 snapshot = fetch_hackerone_program_snapshot(handle)
 ⋮----
 runtime = dict(intelligence.get("runtime_capability_snapshot") or {})
+local_outcomes = build_local_outcome_signals(
 result = build_program_discovery(
 ⋮----
 state = store.get_hackerone_intelligence_state()
@@ -3335,6 +3340,7 @@ digest = hashlib.sha256(
 verified = verified_snapshots or {}
 runtime = runtime or {}
 changes = catalog_changes or {}
+local_outcomes = local_outcomes or {}
 added = set(changes.get("added") or [])
 changed = set(changes.get("changed") or [])
 profiles_by_handle: dict[str, list[dict[str, Any]]] = {}
@@ -3361,11 +3367,20 @@ status = "READY"
 status = "REVIEW"
 ⋮----
 signal = dict(program_signals.get(handle) or {})
+local_signal = dict(local_outcomes.get(handle) or {})
 score = 0
 ⋮----
 historical = float(signal.get("historical_value_score") or 0.0)
 ⋮----
 opportunity = build_opportunity_signal(
+local_bonus = min(10, int(local_signal.get("local_outcome_score") or 0))
+⋮----
+opportunity = {
+⋮----
+efficiency = build_value_efficiency_signal(
+local_cost_bonus = min(
+⋮----
+efficiency = {
 ⋮----
 summary = {
 ```
@@ -4720,6 +4735,55 @@ kind = str(event.get("job_kind") or "")
 status = str(event.get("status") or "")
 ⋮----
 bucket = "requeued" if status == "queued" else status
+```
+
+## File: app/local_outcome_intelligence.py
+```python
+_TERMINAL_STATES = {"completed", "failed", "cancelled"}
+⋮----
+def _duration_hours(campaign: dict[str, Any]) -> float | None
+⋮----
+created = datetime.fromisoformat(str(campaign.get("created_at") or "").replace("Z", "+00:00"))
+updated = datetime.fromisoformat(str(campaign.get("updated_at") or "").replace("Z", "+00:00"))
+⋮----
+seconds = (updated - created).total_seconds()
+⋮----
+def _verified_hackerone_handle(campaign: dict[str, Any]) -> str | None
+⋮----
+binding = event.get("remote_binding")
+⋮----
+"""Learn bounded advisory signals from this repo's own HackerOne outcomes."""
+raw: dict[str, dict[str, Any]] = {}
+⋮----
+handle = _verified_hackerone_handle(campaign)
+⋮----
+record = raw.setdefault(
+⋮----
+findings = [
+confirmed_count = len(findings)
+high_critical = sum(
+submitted = sum(
+⋮----
+duration = _duration_hours(campaign)
+⋮----
+result: dict[str, dict[str, Any]] = {}
+⋮----
+terminal = int(record["terminal_campaign_count"])
+successes = int(record["successful_campaign_count"])
+# Beta(1,3) prior keeps tiny samples from dominating ranking.
+smoothed_success_rate = (successes + 1.0) / (terminal + 4.0)
+evidence_points = (
+confidence = min(1.0, terminal / 5.0)
+local_score = int(round(evidence_points * confidence))
+timed = int(record["timed_terminal_campaign_count"])
+avg_duration = (
+avg_events = (
+confirmed = int(record["confirmed_finding_count"])
+# Cost efficiency is deliberately capped and confidence-weighted.
+# It uses only local campaign metadata; no expected payout is inferred.
+productivity = 0.0
+⋮----
+cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 ```
 
 ## File: app/main.py
@@ -9649,6 +9713,43 @@ marker_bytes = marker.encode("utf-8")
 preview = _preview_body(baseline.body, baseline.content_type)
 ```
 
+## File: app/value_efficiency.py
+```python
+"""Estimate researcher-time efficiency without treating history as expected payout."""
+effort = 1.0
+reasons: list[str] = []
+⋮----
+focus = [str(item) for item in research_focus if str(item)]
+ready = set(str(item) for item in runtime_ready_categories)
+partial = set(str(item) for item in runtime_partial_categories)
+⋮----
+ready_count = sum(1 for item in focus if item in ready)
+partial_count = sum(1 for item in focus if item in partial)
+⋮----
+score = max(0, min(100, int(round(float(opportunity_score) / effort))))
+⋮----
+"""Select READY bounty programs with diversification and bounded exploration."""
+safe_limit = max(1, min(20, int(limit)))
+safe_min = max(0, min(100, int(min_score)))
+⋮----
+candidates = [
+⋮----
+selected: list[dict[str, Any]] = []
+focus_counts: dict[str, int] = {}
+⋮----
+ranked: list[tuple[int, int, str, dict[str, Any], str]] = []
+⋮----
+focus = [str(value) for value in list(item.get("research_focus") or []) if str(value)]
+primary = focus[0] if focus else "other"
+concentration_penalty = min(30, 12 * focus_counts.get(primary, 0))
+adjusted = max(
+⋮----
+selected_handles = {str(item.get("handle") or "") for item in selected}
+exploration = [
+⋮----
+candidate = exploration[0]
+```
+
 ## File: app/vault_cli.py
 ```python
 def main() -> int
@@ -13689,6 +13790,23 @@ summary = summarize_worker_outcomes([{**event, "at": "t1"}])
 def test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits()
 ```
 
+## File: tests/test_local_outcome_intelligence.py
+```python
+events = [
+⋮----
+def test_local_outcome_signal_counts_confirmed_and_submitted_reports()
+⋮----
+campaigns = [
+⋮----
+signal = build_local_outcome_signals(campaigns)["alpha"]
+⋮----
+def test_unverified_binding_is_ignored()
+⋮----
+def test_running_campaign_does_not_inflate_terminal_success_rate()
+⋮----
+def test_local_cost_efficiency_uses_terminal_duration_and_events()
+```
+
 ## File: tests/test_metrics.py
 ```python
 class Queue
@@ -17130,6 +17248,34 @@ def test_differential_validation_does_not_invent_query_parameters(monkeypatch)
 result = safe_http_probe(campaign(), finding(endpoint="/account"))
 ⋮----
 def test_invalid_differential_validation_gate_fails_closed_before_network(monkeypatch)
+```
+
+## File: tests/test_value_efficiency.py
+```python
+def test_ready_runtime_match_has_better_efficiency_than_review_gap()
+⋮----
+ready = build_value_efficiency_signal(
+review = build_value_efficiency_signal(
+⋮----
+def test_blocked_efficiency_is_zero()
+⋮----
+result = build_value_efficiency_signal(
+⋮----
+def test_portfolio_only_selects_ready_bounty_above_threshold()
+⋮----
+programs = [
+⋮----
+result = select_diversified_portfolio(programs, limit=5, min_score=50)
+⋮----
+def test_portfolio_diversifies_primary_focus()
+⋮----
+result = select_diversified_portfolio(programs, limit=2, min_score=50)
+⋮----
+def test_portfolio_reserves_bounded_exploration_slot_for_fresh_ready_program()
+⋮----
+result = select_diversified_portfolio(programs, limit=4, min_score=50)
+⋮----
+fresh = next(item for item in result if item["handle"] == "fresh")
 ```
 
 ## File: tests/test_vault_migration.py

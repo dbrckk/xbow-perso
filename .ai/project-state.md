@@ -22,28 +22,32 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T09:14:10Z
+Generated: 2026-09-21T09:35:46Z
 
 ### Git
 - Branch: `main`
-- Head: `6f78cdcb7f48`
-- Commit date: 2026-09-21T11:13:57+02:00
-- Commit: feat: rank READY bounty programs by opportunity yield
-- Tracked files: 542
+- Head: `4e533e30e6ef`
+- Commit date: 2026-09-21T11:35:34+02:00
+- Commit: feat: optimize bounty queue by value efficiency and diversification
+- Tracked files: 546
 
 ### Recently changed files
+- `backend/app/hackerone_api.py`
 - `backend/app/hackerone_discovery.py`
-- `backend/app/opportunity_ranking.py`
-- `backend/tests/test_hackerone_discovery.py`
-- `backend/tests/test_opportunity_ranking.py`
+- `backend/app/local_outcome_intelligence.py`
+- `backend/app/value_efficiency.py`
+- `backend/tests/test_local_outcome_intelligence.py`
+- `backend/tests/test_value_efficiency.py`
 - `frontend/hackerone.js`
 - `frontend/index.html`
 - `frontend/sw.js`
+- `backend/app/opportunity_ranking.py`
+- `backend/tests/test_hackerone_discovery.py`
+- `backend/tests/test_opportunity_ranking.py`
 - `backend/app/browser.py`
 - `backend/app/identity_access.py`
 - `backend/app/worker_service.py`
 - `backend/tests/test_identity_access.py`
-- `backend/app/hackerone_api.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/tests/test_hackerone_review_draft.py`
 

@@ -654,6 +654,7 @@
         "backend/app/hackerone_review_draft.py",
         "backend/app/hackerone_scope_import.py",
         "backend/app/job_provenance.py",
+        "backend/app/local_outcome_intelligence.py",
         "backend/app/main.py",
         "backend/app/report_approval.py",
         "backend/app/storage.py",
@@ -678,7 +679,7 @@
         "backend/tests/test_hackerone_scope_preview_api.py"
       ],
       "in_degree": 14,
-      "out_degree": 19
+      "out_degree": 20
     },
     "backend/app/hackerone_attention.py": {
       "dependencies": [
@@ -757,14 +758,15 @@
     },
     "backend/app/hackerone_discovery.py": {
       "dependencies": [
-        "backend/app/opportunity_ranking.py"
+        "backend/app/opportunity_ranking.py",
+        "backend/app/value_efficiency.py"
       ],
       "dependents": [
         "backend/app/hackerone_api.py",
         "backend/tests/test_hackerone_discovery.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/app/hackerone_intelligence.py": {
       "dependencies": [
@@ -1106,6 +1108,17 @@
       "in_degree": 8,
       "out_degree": 2
     },
+    "backend/app/local_outcome_intelligence.py": {
+      "dependencies": [
+        "backend/app/main.py"
+      ],
+      "dependents": [
+        "backend/app/hackerone_api.py",
+        "backend/tests/test_local_outcome_intelligence.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
+    },
     "backend/app/main.py": {
       "dependencies": [
         "backend/app/agent_registry.py",
@@ -1209,6 +1222,7 @@
         "backend/app/jobqueue.py",
         "backend/app/knowledge_memory.py",
         "backend/app/learning_memory.py",
+        "backend/app/local_outcome_intelligence.py",
         "backend/app/metrics.py",
         "backend/app/nuclei_parser.py",
         "backend/app/observation_graph.py",
@@ -1347,7 +1361,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 180,
+      "in_degree": 181,
       "out_degree": 56
     },
     "backend/app/metrics.py": {
@@ -2709,6 +2723,15 @@
       "in_degree": 5,
       "out_degree": 2
     },
+    "backend/app/value_efficiency.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/app/hackerone_discovery.py",
+        "backend/tests/test_value_efficiency.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 0
+    },
     "backend/app/vault_cli.py": {
       "dependencies": [
         "backend/app/secret_vault.py"
@@ -3867,6 +3890,15 @@
       "in_degree": 0,
       "out_degree": 5
     },
+    "backend/tests/test_local_outcome_intelligence.py": {
+      "dependencies": [
+        "backend/app/local_outcome_intelligence.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_metrics.py": {
       "dependencies": [
         "backend/app/main.py",
@@ -4866,6 +4898,15 @@
       "in_degree": 0,
       "out_degree": 4
     },
+    "backend/tests/test_value_efficiency.py": {
+      "dependencies": [
+        "backend/app/value_efficiency.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_vault_migration.py": {
       "dependencies": [
         "backend/app/secret_vault.py",
@@ -5085,6 +5126,7 @@
         "backend/tests/test_jobqueue.py",
         "backend/tests/test_knowledge_memory.py",
         "backend/tests/test_learning_memory.py",
+        "backend/tests/test_local_outcome_intelligence.py",
         "backend/tests/test_metrics.py",
         "backend/tests/test_nuclei_preflight.py",
         "backend/tests/test_nuclei_queue_lifecycle.py",
@@ -5180,6 +5222,7 @@
         "backend/tests/test_totp_auth.py",
         "backend/tests/test_validation_state.py",
         "backend/tests/test_validator.py",
+        "backend/tests/test_value_efficiency.py",
         "backend/tests/test_vault_migration.py",
         "backend/tests/test_watchdog_observability.py",
         "backend/tests/test_worker_concurrency.py",
@@ -5192,7 +5235,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 199,
+      "in_degree": 201,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

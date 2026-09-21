@@ -1,13 +1,15 @@
 # Change impact
 
-Base: 3a74c591494fbb9c7c91250147cffb7eb0ed1d2f
-Head: 6f78cdcb7f486f69dda134f56f651698055c79eb
+Base: 2b4b526b92306660c48069c9c7b6b700b3c93c95
+Head: 4e533e30e6efbdaad2ad5e569033c6b84019eed7
 
 ## Changed files
+- M backend/app/hackerone_api.py
 - M backend/app/hackerone_discovery.py
-- A backend/app/opportunity_ranking.py
-- M backend/tests/test_hackerone_discovery.py
-- A backend/tests/test_opportunity_ranking.py
+- A backend/app/local_outcome_intelligence.py
+- A backend/app/value_efficiency.py
+- A backend/tests/test_local_outcome_intelligence.py
+- A backend/tests/test_value_efficiency.py
 - M frontend/hackerone.js
 - M frontend/index.html
 - M frontend/sw.js
