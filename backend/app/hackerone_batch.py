@@ -36,7 +36,14 @@ def _clear_retry_state(member: dict[str, Any]) -> None:
 
 
 def _schedule_retry(member: dict[str, Any]) -> tuple[str, str]:
-    attempts = max(0, int(member.get("remote_revalidation_attempts") or 0)) + 1
+    try:
+        previous_attempts = max(
+            0,
+            int(member.get("remote_revalidation_attempts") or 0),
+        )
+    except (TypeError, ValueError):
+        previous_attempts = 0
+    attempts = previous_attempts + 1
     if attempts >= _REMOTE_REVALIDATION_MAX_ATTEMPTS:
         _clear_retry_state(member)
         return "review", "remote_revalidation_retry_exhausted"
@@ -69,7 +76,13 @@ def _remote_member_revalidation(
             return "review", "remote_hackerone_authorization_failed"
         if exc.status_code == 404:
             return "review", "remote_program_unavailable"
-        # Rate limits, server errors and transport failures use bounded retry.
+        if (
+            exc.status_code is not None
+            and 400 <= exc.status_code < 500
+            and exc.status_code not in {408, 429}
+        ):
+            return "review", "remote_revalidation_rejected"
+        # Rate limits, timeouts, server errors and transport failures use bounded retry.
         return "ready", "remote_revalidation_unavailable"
 
     if snapshot.snapshot_sha256 != expected_sha:
