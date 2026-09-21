@@ -71,8 +71,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check frontend/app.js
-      - run: node --check frontend/hackerone.js
+      - run: node --check frontend/simple.js
       - run: node --check frontend/sw.js
       - run: bash -n scripts/mobile-production-preflight.sh
       - run: bash -n scripts/mobile-production-cutover.sh
@@ -122,8 +121,7 @@ jobs:
           docker compose ps
           curl -fsSI http://127.0.0.1:8080/
           curl -fsSI http://127.0.0.1:8080/app.css
-          curl -fsSI http://127.0.0.1:8080/app.js
-          curl -fsSI http://127.0.0.1:8080/hackerone.js
-          curl -fsS http://127.0.0.1:8080/ | grep -q 'class="topbar"'
+          curl -fsSI http://127.0.0.1:8080/simple.js
+          curl -fsS http://127.0.0.1:8080/ | grep -q 'class="app-shell simple-shell"'
           docker compose down -v
       - run: docker compose --profile scanner build --pull scanner-worker
