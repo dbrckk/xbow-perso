@@ -41,7 +41,7 @@ def test_minimal_frontend_preserves_safety_and_server_persistence():
 
     assert "déjà revus" in html
     assert "revalidé juste avant son démarrage" in html
-    assert "continuer sur le serveur" in html
+    assert "continue sur le serveur" in html
     assert "localStorage.setItem(TOKEN_KEY" in script
     assert "x-totp-code" not in script
     assert "hackerone.js" not in html
