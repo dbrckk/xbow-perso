@@ -169,6 +169,7 @@ def build_high_value_intelligence(
     graph: ObservationGraph,
     *,
     limit: int = 6,
+    passive_response_intelligence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Rank public-case lessons against observed, already-authorized surface data.
 
@@ -179,6 +180,16 @@ def build_high_value_intelligence(
         raise ValueError("high-value intelligence limit must be between 1 and 20")
 
     surface = _surface_tokens(graph)
+    passive = passive_response_intelligence or {}
+    passive_hints = {
+        str(item).lower()
+        for item in [
+            *(passive.get("source_map_hints") or []),
+            *(passive.get("endpoint_path_hints") or []),
+        ]
+        if item
+    }
+    surface.update(passive_hints)
     joined = "\n".join(sorted(surface))
     grouped: dict[str, dict[str, Any]] = {}
 
@@ -221,6 +232,7 @@ def build_high_value_intelligence(
         "focuses": [item.to_dict() for item in focuses[:limit]],
         "cases": [item.to_dict() for item in _CASES],
         "surface_signal_count": len(surface),
+        "passive_response_signal_count": len(passive_hints),
         "advisory_only": True,
         "scope_expansion": False,
         "automatic_exploitation": False,
