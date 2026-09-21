@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+import app.hackerone_api as hackerone_api
 from app.hackerone_api import router as hackerone_router
 from app.storage import Storage
 
@@ -45,6 +46,11 @@ def test_hackerone_launch_creates_bound_running_campaign(tmp_path, monkeypatch):
     monkeypatch.setenv("XBOW_DB_PATH", db)
     monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
     monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+    monkeypatch.setattr(
+        hackerone_api,
+        "_assert_hackerone_live_scan_ready",
+        lambda: None,
+    )
 
     api = FastAPI()
     api.include_router(hackerone_router)
