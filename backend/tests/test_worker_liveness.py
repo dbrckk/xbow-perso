@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta, timezone
 import time
+from datetime import datetime, timedelta, timezone
 
 from app import worker_liveness
 
@@ -55,8 +55,6 @@ def test_invalid_heartbeat_configuration_fails_closed(tmp_path, monkeypatch):
     assert result["scanner"]["live"] is False
     assert result["general"]["reason"] == "heartbeat_configuration_invalid"
     assert result["contains_secrets"] is False
-
-
 
 def test_background_heartbeat_stays_independent_from_job_loop(tmp_path, monkeypatch):
     monkeypatch.setenv("XBOW_WORKER_HEARTBEAT_ROOT", str(tmp_path))
