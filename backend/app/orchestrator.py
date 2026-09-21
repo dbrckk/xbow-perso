@@ -29,6 +29,7 @@ from .learning_memory import build_learning_memory, summarize_worker_outcomes
 from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payload, utcnow
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .planner_budget import PlannerBudget, apply_budget, budget_usage, planner_budget_from_env
+from .planner_intelligence import prioritize_action_with_intelligence
 from .pipeline_swarm import coordinate_pipeline_action
 from .recon_priority import prioritize_recon_tasks
 from .recon_swarm import build_recon_plan
@@ -187,6 +188,14 @@ def _intelligence_context(
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)
     high_value_intelligence = build_high_value_intelligence(graph)
+    planner_action = planned_actions[0] if planned_actions else None
+    planner_intelligence = None
+    if planner_action is not None:
+        prioritized_action, planner_intelligence = prioritize_action_with_intelligence(
+            planner_action,
+            high_value_intelligence,
+        )
+        planned_actions[:] = [prioritized_action, *planned_actions[1:]]
     identity_access = summarize_identity_access_differentials(graph)
     scanner_adaptation = adapt_scanner_engines(
         _scan_engines(),
@@ -210,6 +219,7 @@ def _intelligence_context(
         "coverage": coverage,
         "coverage_guidance": coverage_guidance,
         "high_value_intelligence": high_value_intelligence,
+        "planner_intelligence": planner_intelligence,
         "identity_access": identity_access,
         "scanner_adaptation": scanner_adaptation,
         "surface_enrichment": _surface_enrichment(campaign, graph),
@@ -587,6 +597,7 @@ def _result(
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
             "high_value_intelligence": dict(intelligence["high_value_intelligence"]),
+            "planner_intelligence": dict(intelligence["planner_intelligence"] or {}),
             "identity_access": dict(intelligence["identity_access"]),
             "scanner_adaptation": intelligence["scanner_adaptation"].to_dict(),
             "pipeline_coordination": (
@@ -691,6 +702,11 @@ def advance_campaign(
             runtime,
             [action],
         )
+        # Intelligence may raise metadata priority/reason only. Re-apply the
+        # resulting action while preserving kind, target, policy and budgets.
+        prioritized = intelligence.get("planner_intelligence") or {}
+        if prioritized.get("applied"):
+            action = intelligence["cycle"].planned_actions[0] if hasattr(intelligence["cycle"], "planned_actions") else prioritize_action_with_intelligence(action, intelligence["high_value_intelligence"])[0]
         cycle = intelligence["cycle"]
 
         if cycle.next_action == "stop" or not cycle.safe_to_progress:
