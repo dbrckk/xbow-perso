@@ -1,18 +1,19 @@
 # Change impact
 
-Base: daa68434c75fa8dfc485a92724d633631bbaaaf1
-Head: 8d82b8ab3ca91993bda1866d02bfe738b843590c
+Base: 0ae6e0f23b0250face518da9a23d3202e1550cfa
+Head: 5c14cae792675a3993a5f056f537fb9b38f42da7
 
 ## Changed files
-- M backend/app/hackerone_intelligence.py
-- M backend/app/hackerone_live_readiness.py
-- M backend/app/runtime_capabilities.py
-- M backend/tests/test_hackerone_live_readiness.py
-- M docker-compose.yml
+- A backend/tests/test_live_activation_profile.py
+- M scripts/mobile-enable-hackerone-nuclei.sh
+- M scripts/mobile-production-cutover.sh
+- M scripts/mobile-production-preflight.sh
+- M scripts/mobile-production-rollback.sh
+- M scripts/mobile-production-update.sh
 
 ## Affected areas
 - backend
-- (root)
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

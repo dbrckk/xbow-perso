@@ -289,6 +289,7 @@ tests/
   test_jobqueue.py
   test_knowledge_memory.py
   test_learning_memory.py
+  test_live_activation_profile.py
   test_local_outcome_intelligence.py
   test_metrics.py
   test_nuclei_preflight.py
@@ -13943,6 +13944,27 @@ event = worker_outcome_event(
 summary = summarize_worker_outcomes([{**event, "at": "t1"}])
 ⋮----
 def test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits()
+```
+
+## File: tests/test_live_activation_profile.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def _text(name: str) -> str
+⋮----
+def test_live_hackerone_profile_enables_bounded_recon_only()
+⋮----
+script = _text("mobile-enable-hackerone-nuclei.sh")
+⋮----
+def test_production_update_propagates_and_attests_bounded_recon()
+⋮----
+script = _text("mobile-production-update.sh")
+⋮----
+def test_safe_production_update_keeps_recon_and_browser_disabled()
+⋮----
+def test_all_safe_production_scripts_require_recon_browser_baseline_off()
+⋮----
+script = _text(name)
 ```
 
 ## File: tests/test_local_outcome_intelligence.py

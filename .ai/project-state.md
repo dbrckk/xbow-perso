@@ -22,16 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T10:48:37Z
+Generated: 2026-09-21T11:01:55Z
 
 ### Git
 - Branch: `main`
-- Head: `8d82b8ab3ca9`
-- Commit date: 2026-09-21T12:48:25+02:00
-- Commit: feat: make live readiness reflect recon and browser runtime
-- Tracked files: 547
+- Head: `5c14cae79267`
+- Commit date: 2026-09-21T13:01:32+02:00
+- Commit: feat: align live activation with factual recon runtime
+- Tracked files: 548
 
 ### Recently changed files
+- `backend/tests/test_live_activation_profile.py`
+- `scripts/mobile-enable-hackerone-nuclei.sh`
+- `scripts/mobile-production-cutover.sh`
+- `scripts/mobile-production-preflight.sh`
+- `scripts/mobile-production-rollback.sh`
+- `scripts/mobile-production-update.sh`
 - `backend/app/hackerone_intelligence.py`
 - `backend/app/hackerone_live_readiness.py`
 - `backend/app/runtime_capabilities.py`
@@ -46,8 +52,6 @@ Generated: 2026-09-21T10:48:37Z
 - `backend/tests/test_high_value_intelligence.py`
 - `backend/tests/test_recon_priority.py`
 - `backend/app/orchestrator.py`
-- `backend/app/coverage.py`
-- `backend/tests/test_coverage.py`
 
 ### Project signals
 - `pyproject.toml`

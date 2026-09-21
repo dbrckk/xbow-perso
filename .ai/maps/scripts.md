@@ -213,6 +213,9 @@ require_baseline_gate() {
 require_baseline_gate "DRY_RUN" "true"
 require_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
+require_baseline_gate "XBOW_ENABLE_RECON" "false"
+require_baseline_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+require_baseline_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
 require_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
@@ -252,6 +255,9 @@ DRY_RUN=false
 XBOW_ENABLE_ACTIVE_SCANS=true
 XBOW_ENABLE_SCANNER_WORKER=true
 XBOW_ENABLE_NUCLEI=true
+XBOW_ENABLE_RECON=true
+XBOW_ENABLE_EXTERNAL_RECON=false
+XBOW_ENABLE_BROWSER_AUTOMATION=false
 XBOW_SCAN_ENGINES=nuclei
 XBOW_SCANNER_ALLOWED_ENGINES=nuclei
 XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
@@ -280,6 +286,7 @@ trap - ERR
 echo
 echo "PERSISTENT HACKERONE NUCLEI PROFILE ARMED"
 echo "The root-only profile survives normal production updates."
+echo "Bounded builtin recon is enabled; external recon and browser automation remain disabled."
 echo "Every campaign still requires verified HackerOne scope/policy/fingerprint admission."
 echo "HackerOne report submission remains disabled."
 ```
@@ -345,6 +352,9 @@ require_gate() {
 require_gate "DRY_RUN" "true"
 require_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_gate "XBOW_ENABLE_NUCLEI" "false"
+require_gate "XBOW_ENABLE_RECON" "false"
+require_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+require_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
 require_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
@@ -532,6 +542,9 @@ require_gate() {
 require_gate "DRY_RUN" "true"
 require_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_gate "XBOW_ENABLE_NUCLEI" "false"
+require_gate "XBOW_ENABLE_RECON" "false"
+require_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+require_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
 require_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 if [ ! -f "$SECRETS_FILE" ]; then
@@ -637,6 +650,9 @@ require_gate() {
 require_gate "DRY_RUN" "true"
 require_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_gate "XBOW_ENABLE_NUCLEI" "false"
+require_gate "XBOW_ENABLE_RECON" "false"
+require_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+require_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
 require_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 if [ -f "$SECRETS_FILE" ]; then
@@ -832,6 +848,9 @@ require_live_value() {
 require_baseline_gate "DRY_RUN" "true"
 require_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
+require_baseline_gate "XBOW_ENABLE_RECON" "false"
+require_baseline_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+require_baseline_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
 require_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
 # shellcheck disable=SC1090
@@ -855,6 +874,9 @@ if [ -f "$LIVE_PROFILE_FILE" ]; then
   require_live_value "XBOW_ENABLE_ACTIVE_SCANS" "true"
   require_live_value "XBOW_ENABLE_SCANNER_WORKER" "true"
   require_live_value "XBOW_ENABLE_NUCLEI" "true"
+  require_live_value "XBOW_ENABLE_RECON" "true"
+  require_live_value "XBOW_ENABLE_EXTERNAL_RECON" "false"
+  require_live_value "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
   require_live_value "XBOW_SCAN_ENGINES" "nuclei"
   require_live_value "XBOW_SCANNER_ALLOWED_ENGINES" "nuclei"
   require_live_value "XBOW_SCANNER_SANDBOX_PROFILE" "restricted-v1"
@@ -862,7 +884,8 @@ if [ -f "$LIVE_PROFILE_FILE" ]; then
   require_live_value "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
 
   export DRY_RUN XBOW_ENABLE_ACTIVE_SCANS XBOW_ENABLE_SCANNER_WORKER
-  export XBOW_ENABLE_NUCLEI XBOW_SCAN_ENGINES XBOW_SCANNER_ALLOWED_ENGINES
+  export XBOW_ENABLE_NUCLEI XBOW_ENABLE_RECON XBOW_ENABLE_EXTERNAL_RECON
+  export XBOW_ENABLE_BROWSER_AUTOMATION XBOW_SCAN_ENGINES XBOW_SCANNER_ALLOWED_ENGINES
   export XBOW_SCANNER_SANDBOX_PROFILE XBOW_NUCLEI_ALLOWED_VERSION
   export XBOW_ENABLE_HACKERONE_SUBMISSION
   export XBOW_MAX_AUTONOMOUS_RPS="${XBOW_MAX_AUTONOMOUS_RPS:-2.0}"
@@ -872,6 +895,9 @@ else
   export XBOW_ENABLE_ACTIVE_SCANS=false
   export XBOW_ENABLE_SCANNER_WORKER=false
   export XBOW_ENABLE_NUCLEI=false
+  export XBOW_ENABLE_RECON=false
+  export XBOW_ENABLE_EXTERNAL_RECON=false
+  export XBOW_ENABLE_BROWSER_AUTOMATION=false
   export XBOW_SCAN_ENGINES=nuclei
   export XBOW_SCANNER_ALLOWED_ENGINES=nuclei
   export XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
@@ -937,6 +963,10 @@ if [ "$LIVE_MODE" = "true" ]; then
   echo "=== SCANNER CAPABILITY ==="
   "${COMPOSE[@]}" exec -T backend python -c \
     'from app.runtime_capabilities import scanner_runtime_capability; c=scanner_runtime_capability(); assert c["dispatch_ready"] and c["nuclei_enabled"] and c["nuclei_execution_intent"], c; print(c)'
+
+  echo "=== RECON CAPABILITY ==="
+  "${COMPOSE[@]}" exec -T backend python -c \
+    'from app.runtime_capabilities import recon_runtime_capability; c=recon_runtime_capability(); assert c["dispatch_ready"] and c["recon_enabled"] and not c["external_recon_enabled"], c; print(c)'
 
   echo "=== SCANNER SANDBOX ATTESTATION ==="
   "${COMPOSE[@]}" exec -T scanner-worker python -c \

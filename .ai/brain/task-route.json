@@ -4,51 +4,17 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 2,
+    "score_margin": 0,
     "tier": "bounded",
-    "top_score": 23
+    "top_score": 21
   },
   "cache": {
-    "fingerprint": "44f14223ad4ea4526a05d181b5ad36f6678ffb71e0e280a77d0aad3167e57af7",
+    "fingerprint": "5a03537d8db1e37d0b636dfc6dac454ed0a5253bb6f743e5a562c4de5fdc811f",
     "hit": false
   },
-  "candidate_count": 40,
+  "candidate_count": 35,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/worker_service.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "CampaignCancelledError",
-        "StaleBrowserJobError",
-        "StaleValidationJobError",
-        "_active_scanner_execution_requested",
-        "_append_event_once",
-        "_campaign",
-        "_claim_for_role",
-        "_lease_heartbeat",
-        "_legacy_unprovenanced_jobs_allowed",
-        "_process_scanner_job",
-        "_record_worker_outcome",
-        "_save",
-        "_verify_policy_bound_job",
-        "_worker_bool",
-        "_worker_poll_seconds",
-        "main",
-        "process_browser_flow",
-        "process_nuclei_scan",
-        "process_one",
-        "process_recon_task"
-      ]
-    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -154,6 +120,33 @@
         "test_adaptation_ranks_successful_memory_first",
         "test_adaptation_rejects_unknown_or_duplicate_configuration",
         "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_normalization.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "test_normalized_ids_are_engine_scoped_and_stable",
+        "test_normalizers_fail_closed_outside_scope",
+        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
+        "test_nuclei_jsonl_parser_rejects_invalid_line",
+        "test_nuclei_jsonl_parser_rejects_oversized_file",
+        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
+        "test_scanner_registry_dispatches_nuclei_parser",
+        "test_scanner_registry_dispatches_strix_parser",
+        "test_scanner_registry_exposes_supported_engines",
+        "test_scanner_registry_missing_run_directory_is_empty",
+        "test_scanner_registry_rejects_symlinked_artifacts",
+        "test_scanner_registry_rejects_unknown_engine",
+        "test_scanner_registry_selects_latest_artifact",
+        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
       ]
     }
   ],
