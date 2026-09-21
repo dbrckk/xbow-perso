@@ -19,8 +19,10 @@ COMPOSE=(
 TOKEN="$(openssl rand -hex 32)"
 printf '%s' "$TOKEN" | "${COMPOSE[@]}" exec -T backend python -c '
 import sys
-from app.secret_vault import set_secret
+from app.secret_vault import set_secret, vault_enabled
 from app.auth import configured_api_token
+if not vault_enabled():
+    raise SystemExit("vault is not enabled")
 token = sys.stdin.read().strip()
 if len(token) < 32:
     raise SystemExit("generated token is unexpectedly short")
