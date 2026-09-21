@@ -184,6 +184,32 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
 
 
 
+def browser_runtime_capability() -> dict[str, Any]:
+    """Return redacted readiness for bounded browser observation."""
+    enabled = _strict_bool("XBOW_ENABLE_BROWSER_AUTOMATION", False)
+    return {
+        "mode": "enabled" if enabled else "disabled",
+        "browser_automation_enabled": enabled,
+        "dispatch_ready": enabled,
+        "dispatch_block_reasons": [] if enabled else ["browser_automation_disabled"],
+        "contains_secrets": False,
+    }
+
+
+def safe_browser_runtime_capability() -> dict[str, Any]:
+    try:
+        return browser_runtime_capability()
+    except CapabilityConfigError:
+        return {
+            "mode": "configuration_error",
+            "browser_automation_enabled": False,
+            "dispatch_ready": False,
+            "dispatch_block_reasons": ["invalid_boolean_configuration"],
+            "contains_secrets": False,
+            "configuration_error": True,
+        }
+
+
 def recon_runtime_capability() -> dict[str, Any]:
     """Return a redacted preflight for the bounded recon execution path."""
     recon_enabled = _strict_bool("XBOW_ENABLE_RECON", False)
