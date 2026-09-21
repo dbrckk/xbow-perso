@@ -24,7 +24,15 @@ async function api(path,opts={}){
     const r=await fetch('/api'+path,{...opts,method,headers});
     let data;
     try{data=await r.json()}catch{data={detail:'Invalid server response'}}
-    if(!r.ok)throw new Error(data.detail?(typeof data.detail==='string'?data.detail:JSON.stringify(data.detail)):JSON.stringify(data));
+    if(!r.ok){
+      const detail=data.detail??data;
+      const error=new Error(
+        typeof detail==='string'?detail:JSON.stringify(detail)
+      );
+      error.status=r.status;
+      error.detail=detail;
+      throw error;
+    }
     return data;
   }finally{
     if(mutation)$('totp').value='';
