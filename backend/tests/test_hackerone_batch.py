@@ -1,4 +1,4 @@
-from app.hackerone_batch import reconcile_hackerone_batch
+from app.hackerone_batch import reconcile_hackerone_batch, reconcile_hackerone_batches
 from app.storage import Storage
 
 
@@ -207,3 +207,97 @@ def test_parallel_start_conflict_on_ready_campaign_is_retried_not_blocked(
     assert result["members"][0]["status"] == "ready"
     assert result["members"][0]["reason"] == "start_conflict_retry"
     assert result["state"] == "queued"
+
+
+
+def test_active_batch_reconcile_is_not_starved_by_newer_completed_batches(
+    tmp_path, monkeypatch
+):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign(_campaign("active-campaign", state="ready"))
+    active = {
+        "id": "active-old",
+        "provider": "hackerone",
+        "mode": "sequential",
+        "state": "queued",
+        "members": [
+            {
+                "index": 0,
+                "campaign_id": "active-campaign",
+                "handle": "active",
+                "status": "ready",
+            }
+        ],
+        "created_at": "2026-09-01T00:00:00+00:00",
+        "updated_at": "2026-09-01T00:00:00+00:00",
+    }
+    store.save_hackerone_batch(active, expected_version=0)
+
+    for index in range(25):
+        finished = {
+            "id": f"done-{index}",
+            "provider": "hackerone",
+            "mode": "sequential",
+            "state": "completed",
+            "members": [
+                {
+                    "index": 0,
+                    "campaign_id": f"done-campaign-{index}",
+                    "handle": f"done-{index}",
+                    "status": "done",
+                }
+            ],
+            "created_at": f"2026-09-20T{index % 24:02d}:00:00+00:00",
+            "updated_at": f"2026-09-20T{index % 24:02d}:30:00+00:00",
+        }
+        store.save_hackerone_batch(finished, expected_version=0)
+
+    started = []
+
+    def fake_start(campaign_id):
+        started.append(campaign_id)
+        raw, version = store.get_campaign_record(campaign_id)
+        raw["state"] = "running"
+        store.save_campaign(raw, expected_version=version)
+        return {"campaign_id": campaign_id}
+
+    monkeypatch.setattr("app.main.start_campaign", fake_start)
+
+    reconciled = reconcile_hackerone_batches(FakeQueue({}), store, limit=20)
+
+    assert reconciled == 1
+    assert started == ["active-campaign"]
+    updated = store.get_hackerone_batch("active-old")
+    assert updated["members"][0]["status"] == "running"
+    assert updated["state"] == "running"
+
+
+def test_active_batch_listing_prefers_oldest_active_work(tmp_path):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    for batch_id, updated_at in (
+        ("newer", "2026-09-20T12:00:00+00:00"),
+        ("older", "2026-09-19T12:00:00+00:00"),
+    ):
+        store.save_hackerone_batch(
+            {
+                "id": batch_id,
+                "provider": "hackerone",
+                "mode": "sequential",
+                "state": "queued",
+                "members": [
+                    {
+                        "index": 0,
+                        "campaign_id": batch_id + "-campaign",
+                        "handle": batch_id,
+                        "status": "ready",
+                    }
+                ],
+                "created_at": updated_at,
+                "updated_at": updated_at,
+            },
+            expected_version=0,
+        )
+
+    active = store.list_active_hackerone_batches(limit=2)
+
+    assert [item["id"] for item in active] == ["older", "newer"]
