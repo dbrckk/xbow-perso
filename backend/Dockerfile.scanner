@@ -4,9 +4,6 @@ ARG TARGETARCH
 ARG NUCLEI_VERSION=3.11.1
 ARG NUCLEI_TEMPLATES_VERSION=10.4.8
 ARG NUCLEI_TEMPLATES_COMMIT=e5f19e6144135e107962bb943231413796fd7fe7
-ARG KATANA_VERSION=1.7.0
-ARG HTTPX_VERSION=1.12.0
-ARG SUBFINDER_VERSION=2.16.0
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl git unzip \
@@ -23,24 +20,6 @@ RUN apt-get update \
     && unzip -q "/tmp/${NUCLEI_ARCHIVE}" nuclei -d /usr/local/bin \
     && chmod 0755 /usr/local/bin/nuclei \
     && nuclei -version \
-    && for spec in \
-         "katana:${KATANA_VERSION}:katana-${KATANA_VERSION}-checksums.txt" \
-         "httpx:${HTTPX_VERSION}:httpx_${HTTPX_VERSION}_checksums.txt" \
-         "subfinder:${SUBFINDER_VERSION}:subfinder_${SUBFINDER_VERSION}_checksums.txt"; do \
-         tool="$(printf '%s' "$spec" | cut -d: -f1)"; \
-         version="$(printf '%s' "$spec" | cut -d: -f2)"; \
-         checksum_file="$(printf '%s' "$spec" | cut -d: -f3)"; \
-         archive="${tool}_${version}_linux_${TARGETARCH}.zip"; \
-         release="https://github.com/projectdiscovery/${tool}/releases/download/v${version}"; \
-         curl --fail --location --proto '=https' --tlsv1.2 "$release/$archive" -o "/tmp/$archive"; \
-         curl --fail --location --proto '=https' --tlsv1.2 "$release/$checksum_file" -o "/tmp/$checksum_file"; \
-         expected="$(grep -E "[[:space:]]${archive}$" "/tmp/$checksum_file" | head -n 1)"; \
-         test -n "$expected"; \
-         printf '%s\n' "$expected" | (cd /tmp && sha256sum -c -); \
-         unzip -q "/tmp/$archive" "$tool" -d /usr/local/bin; \
-         chmod 0755 "/usr/local/bin/$tool"; \
-         "/usr/local/bin/$tool" -version; \
-       done \
     && git init /opt/nuclei-templates \
     && cd /opt/nuclei-templates \
     && git remote add origin https://github.com/projectdiscovery/nuclei-templates.git \
@@ -48,7 +27,7 @@ RUN apt-get update \
     && git checkout --detach FETCH_HEAD \
     && test "$(git rev-parse HEAD)" = "$NUCLEI_TEMPLATES_COMMIT" \
     && test -f templates-checksum.txt \
-    && printf 'nuclei-templates-v%s\n' "$NUCLEI_TEMPLATES_VERSION" > .xbow-version \
+    && printf 'nuclei-templates-v10.4.8\n' > .xbow-version \
     && rm -rf .git /tmp/* /var/lib/apt/lists/*
 
 WORKDIR /app
