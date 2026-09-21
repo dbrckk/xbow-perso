@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 2,
+    "score_margin": 1,
     "tier": "bounded",
-    "top_score": 23
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "e5fed19317209bbaeaf3ff45a7ef0314a45cd91cf72326a70c8dc3d0089fb9d1",
+    "fingerprint": "9ad5c52bdb46f3b8d039439e129b2f75fecb9ea8d287069e54aca9e1f6cc3b46",
     "hit": false
   },
-  "candidate_count": 47,
+  "candidate_count": 42,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -20,29 +20,12 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "path": "backend/app/orchestrator.py",
       "reasons": [
         "impact",
         "search-index"
       ],
-      "score": 23,
-      "symbols": [
-        "_launch_payload",
-        "_resource",
-        "fake_execute",
-        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/orchestrator.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -61,6 +44,41 @@
         "_validation_saturated_cluster_ids",
         "advance_campaign",
         "scope_checker"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/worker_service.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 26,
+      "symbols": [
+        "CampaignCancelledError",
+        "StaleBrowserJobError",
+        "StaleValidationJobError",
+        "_active_scanner_execution_requested",
+        "_append_event_once",
+        "_campaign",
+        "_claim_for_role",
+        "_lease_heartbeat",
+        "_legacy_unprovenanced_jobs_allowed",
+        "_process_scanner_job",
+        "_record_worker_outcome",
+        "_save",
+        "_verify_policy_bound_job",
+        "_worker_bool",
+        "_worker_poll_seconds",
+        "main",
+        "process_browser_flow",
+        "process_nuclei_scan",
+        "process_one",
+        "process_recon_task"
       ]
     },
     {

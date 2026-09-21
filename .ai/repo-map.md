@@ -1615,6 +1615,9 @@ target = _allowed_url(campaign, step.url or "", page.url if page.url != "about:b
 response = page.goto(target, wait_until="domcontentloaded", timeout=step.timeout_ms)
 final_url = _allowed_url(campaign, page.url, target)
 rendered = page.content().encode("utf-8", errors="replace")
+structure_metrics = page.evaluate(
+bounded_structure = {
+structure_sha256 = hashlib.sha256(
 navigation = {
 ⋮----
 links = []
@@ -4719,17 +4722,29 @@ endpoint: str
 identities: tuple[str, ...]
 http_status_by_identity: dict[str, int | None]
 content_sha256_by_identity: dict[str, str]
+structure_sha256_by_identity: dict[str, str]
+structure_metrics_by_identity: dict[str, dict[str, int]]
 signal: str
+priority_score: int
 requires_human_review: bool = True
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
 payload = asdict(self)
 ⋮----
+def _bounded_structure_metrics(value: Any) -> dict[str, int]
+⋮----
+result: dict[str, int] = {}
+⋮----
+name = str(key)[:80]
+⋮----
+number = int(raw)
+⋮----
 """Compare bounded browser observations from explicitly named test identities.
 
     A differential is evidence of different behavior, not proof of broken access
-    control. No requests are issued here.
+    control. No requests are issued here. Structure signatures contain only DOM
+    element counts, never page text or secret values.
     """
 ⋮----
 grouped: dict[str, dict[str, dict[str, Any]]] = {}
@@ -4744,20 +4759,30 @@ status = int(status_raw) if status_raw is not None else None
 ⋮----
 status = None
 digest = str(metadata.get("content_sha256") or "").strip()
+structure_digest = str(metadata.get("structure_sha256") or "").strip()
 ⋮----
 results: list[IdentityAccessDifferential] = []
 ⋮----
 identities = tuple(sorted(observations))
 statuses = {
 digests = {
+structure_digests = {
+structure_metrics = {
 status_values = {value for value in statuses.values() if value is not None}
 digest_values = set(digests.values())
+structure_values = set(structure_digests.values())
 ⋮----
 signal = "status_divergence"
+priority_score = 90
+⋮----
+signal = "structure_divergence"
+priority_score = 75
 ⋮----
 signal = "content_divergence"
+priority_score = 45
 ⋮----
 signal = "no_observed_divergence"
+priority_score = 0
 ⋮----
 rank = {
 ⋮----
@@ -13642,7 +13667,9 @@ def test_stability_detects_confidence_reversal_as_contradictory()
 
 ## File: backend/tests/test_identity_access.py
 ````python
-def _access(identity, endpoint, status, digest)
+def _access(identity, endpoint, status, digest, structure=None, metrics=None)
+⋮----
+metadata = {
 ⋮----
 def test_identity_access_detects_status_divergence_without_claiming_vulnerability()
 ⋮----
@@ -13657,6 +13684,12 @@ def test_identity_access_detects_content_divergence_at_same_status()
 def test_identity_access_requires_two_explicit_test_identities()
 ⋮----
 def test_identity_access_differential_route_is_exposed()
+⋮----
+def test_identity_access_prioritizes_structure_divergence_over_content_noise()
+⋮----
+item = build_identity_access_differentials(graph)[0]
+⋮----
+def test_identity_access_keeps_hash_only_difference_lower_priority()
 ````
 
 ## File: backend/tests/test_incident_api.py

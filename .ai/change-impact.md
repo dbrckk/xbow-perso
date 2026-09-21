@@ -1,18 +1,16 @@
 # Change impact
 
-Base: 40f05aa354a1b6ec32b0a47098a62dc4a902e4e8
-Head: 504fc7280cd04b7934b301f7a199133150bcc352
+Base: d450ef62c99e823402222131044c0e2b8548f181
+Head: fd9b5d666c4b599269794d29d5d09c332a7498bc
 
 ## Changed files
-- M backend/app/hackerone_api.py
-- A backend/app/hackerone_review_draft.py
-- A backend/tests/test_hackerone_review_draft.py
-- M frontend/hackerone.js
-- M frontend/sw.js
+- M backend/app/browser.py
+- M backend/app/identity_access.py
+- M backend/app/worker_service.py
+- M backend/tests/test_identity_access.py
 
 ## Affected areas
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
