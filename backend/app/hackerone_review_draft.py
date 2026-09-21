@@ -36,6 +36,7 @@ def build_hackerone_review_draft(snapshot) -> dict[str, Any]:
             "authorization_reference": f"https://hackerone.com/{handle}",
             "policy_version": f"snapshot:{snapshot_sha[:16]}",
         },
+        "policy_text": str(program.get("policy") or "")[:20000],
         "evidence": {
             "gold_standard_safe_harbor": program.get("gold_standard_safe_harbor"),
             "offers_bounties": program.get("offers_bounties"),
