@@ -498,6 +498,7 @@
         "backend/app/finding_readiness.py",
         "backend/app/finding_triage.py",
         "backend/app/hackerone_intelligence.py",
+        "backend/app/hackerone_live_readiness.py",
         "backend/app/high_value_intelligence.py",
         "backend/app/hypothesis_engine.py",
         "backend/app/hypothesis_memory.py",
@@ -520,6 +521,7 @@
         "backend/app/red_team_decision.py",
         "backend/app/report_readiness.py",
         "backend/app/review_queue.py",
+        "backend/app/runtime_capabilities.py",
         "backend/app/scanner_worker.py",
         "backend/app/storage_backend.py",
         "backend/app/storage_core.py",
@@ -584,7 +586,7 @@
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 110,
+      "in_degree": 112,
       "out_degree": 3,
       "path": "backend/app/observation_graph.py"
     },
@@ -2041,6 +2043,23 @@
     },
     {
       "dependencies": [
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/campaign_control.py",
+        "backend/app/deployment_preflight.py",
+        "backend/app/hackerone_intelligence.py",
+        "backend/app/hackerone_live_readiness.py",
+        "backend/app/main.py",
+        "backend/tests/test_nuclei_preflight.py",
+        "backend/tests/test_runtime_capabilities.py"
+      ],
+      "in_degree": 7,
+      "out_degree": 1,
+      "path": "backend/app/runtime_capabilities.py"
+    },
+    {
+      "dependencies": [
         "backend/app/main.py",
         "backend/app/observation_graph.py",
         "backend/tests/test_hackerone_prelaunch.py"
@@ -2089,23 +2108,6 @@
       "in_degree": 4,
       "out_degree": 4,
       "path": "backend/app/finding_cluster_consensus.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/differential_intelligence.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/storage.py"
-      ],
-      "dependents": [
-        "backend/app/scanner_ingestion.py",
-        "backend/app/scanner_worker.py",
-        "backend/app/worker_service.py",
-        "backend/tests/test_observation_writer_provenance.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 4,
-      "path": "backend/app/observation_writer.py"
     }
   ],
   "edge_count": 1751,

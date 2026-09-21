@@ -22,16 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T10:46:22Z
+Generated: 2026-09-21T10:48:37Z
 
 ### Git
 - Branch: `main`
-- Head: `417f94be5989`
-- Commit date: 2026-09-21T12:46:11+02:00
-- Commit: feat: harden prelaunch selection and final HackerOne gate
+- Head: `8d82b8ab3ca9`
+- Commit date: 2026-09-21T12:48:25+02:00
+- Commit: feat: make live readiness reflect recon and browser runtime
 - Tracked files: 547
 
 ### Recently changed files
+- `backend/app/hackerone_intelligence.py`
+- `backend/app/hackerone_live_readiness.py`
+- `backend/app/runtime_capabilities.py`
+- `backend/tests/test_hackerone_live_readiness.py`
+- `docker-compose.yml`
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_hackerone_prelaunch.py`
 - `frontend/hackerone.js`
@@ -43,12 +48,6 @@ Generated: 2026-09-21T10:46:22Z
 - `backend/app/orchestrator.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
-- `backend/app/hackerone_discovery.py`
-- `backend/app/local_outcome_intelligence.py`
-- `backend/app/value_efficiency.py`
-- `backend/tests/test_local_outcome_intelligence.py`
-- `backend/tests/test_value_efficiency.py`
-- `frontend/index.html`
 
 ### Project signals
 - `pyproject.toml`

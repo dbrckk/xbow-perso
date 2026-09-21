@@ -798,13 +798,14 @@
       "dependencies": [
         "backend/app/deployment_preflight.py",
         "backend/app/hackerone_client.py",
+        "backend/app/observation_graph.py",
         "backend/app/runtime_capabilities.py"
       ],
       "dependents": [
         "backend/app/hackerone_api.py"
       ],
       "in_degree": 1,
-      "out_degree": 3
+      "out_degree": 4
     },
     "backend/app/hackerone_needs_info.py": {
       "dependencies": [
@@ -1444,6 +1445,7 @@
         "backend/app/finding_readiness.py",
         "backend/app/finding_triage.py",
         "backend/app/hackerone_intelligence.py",
+        "backend/app/hackerone_live_readiness.py",
         "backend/app/high_value_intelligence.py",
         "backend/app/hypothesis_engine.py",
         "backend/app/hypothesis_memory.py",
@@ -1466,6 +1468,7 @@
         "backend/app/red_team_decision.py",
         "backend/app/report_readiness.py",
         "backend/app/review_queue.py",
+        "backend/app/runtime_capabilities.py",
         "backend/app/scanner_worker.py",
         "backend/app/storage_backend.py",
         "backend/app/storage_core.py",
@@ -1530,7 +1533,7 @@
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 110,
+      "in_degree": 112,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -2327,7 +2330,9 @@
       "out_degree": 0
     },
     "backend/app/runtime_capabilities.py": {
-      "dependencies": [],
+      "dependencies": [
+        "backend/app/observation_graph.py"
+      ],
       "dependents": [
         "backend/app/campaign_control.py",
         "backend/app/deployment_preflight.py",
@@ -2338,7 +2343,7 @@
         "backend/tests/test_runtime_capabilities.py"
       ],
       "in_degree": 7,
-      "out_degree": 0
+      "out_degree": 1
     },
     "backend/app/runtime_gap_analysis.py": {
       "dependencies": [],

@@ -4145,6 +4145,7 @@ def build_hackerone_intelligence(reports: list[dict[str, Any]]) -> dict[str, Any
 categories = _category_statistics(reports)
 programs = _program_signals(reports)
 capability_gaps = _capability_gaps(categories)
+browser = safe_browser_runtime_capability()
 runtime = runtime_capability_snapshot(
 runtime_capability_gaps = rank_runtime_capability_gaps(capability_gaps, runtime)
 ⋮----
@@ -4184,6 +4185,8 @@ def _configured(name: str) -> bool
 ⋮----
 deployment = build_deployment_preflight(dependencies)
 scanner = safe_scanner_runtime_capability()
+recon = safe_recon_runtime_capability()
+browser = safe_browser_runtime_capability()
 ⋮----
 credentials_configured = True
 ⋮----
@@ -8934,6 +8937,13 @@ reasons: list[str] = []
 ⋮----
 def safe_scanner_runtime_capability() -> dict[str, Any]
 ⋮----
+def browser_runtime_capability() -> dict[str, Any]
+⋮----
+"""Return redacted readiness for bounded browser observation."""
+enabled = _strict_bool("XBOW_ENABLE_BROWSER_AUTOMATION", False)
+⋮----
+def safe_browser_runtime_capability() -> dict[str, Any]
+⋮----
 def recon_runtime_capability() -> dict[str, Any]
 ⋮----
 """Return a redacted preflight for the bounded recon execution path."""
@@ -13218,6 +13228,10 @@ def test_submission_and_sync_are_optional(monkeypatch)
 def test_invalid_optional_boolean_fails_closed(monkeypatch)
 ⋮----
 def test_live_readiness_exposes_redacted_first_run_operator_guide(monkeypatch)
+⋮----
+def test_browser_automation_is_optional_but_reported(monkeypatch)
+⋮----
+def test_live_readiness_blocks_when_recon_is_disabled(monkeypatch)
 ````
 
 ## File: backend/tests/test_hackerone_needs_info.py
@@ -20255,6 +20269,9 @@ services:
       XBOW_VAULT_MASTER_KEY: ${XBOW_VAULT_MASTER_KEY:-}
       XBOW_VAULT_MASTER_KEY_FILE: ${XBOW_VAULT_MASTER_KEY_FILE:-}
       XBOW_ENABLE_ACTIVE_SCANS: ${XBOW_ENABLE_ACTIVE_SCANS:-false}
+      XBOW_ENABLE_RECON: ${XBOW_ENABLE_RECON:-false}
+      XBOW_ENABLE_EXTERNAL_RECON: ${XBOW_ENABLE_EXTERNAL_RECON:-false}
+      XBOW_ENABLE_BROWSER_AUTOMATION: ${XBOW_ENABLE_BROWSER_AUTOMATION:-false}
       XBOW_SCAN_ENGINES: ${XBOW_SCAN_ENGINES:-nuclei}
       XBOW_ENABLE_SCANNER_WORKER: ${XBOW_ENABLE_SCANNER_WORKER:-false}
       XBOW_ENABLE_NUCLEI: ${XBOW_ENABLE_NUCLEI:-false}

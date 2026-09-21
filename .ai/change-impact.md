@@ -1,17 +1,18 @@
 # Change impact
 
-Base: ede81c5ade9d5476344fb085ca2af33f058a728b
-Head: 417f94be5989f7d7072fdc6cf2d42c931a300a23
+Base: daa68434c75fa8dfc485a92724d633631bbaaaf1
+Head: 8d82b8ab3ca91993bda1866d02bfe738b843590c
 
 ## Changed files
-- M backend/app/hackerone_api.py
-- A backend/tests/test_hackerone_prelaunch.py
-- M frontend/hackerone.js
-- M frontend/sw.js
+- M backend/app/hackerone_intelligence.py
+- M backend/app/hackerone_live_readiness.py
+- M backend/app/runtime_capabilities.py
+- M backend/tests/test_hackerone_live_readiness.py
+- M docker-compose.yml
 
 ## Affected areas
 - backend
-- frontend
+- (root)
 
 ## Related test candidates
 - No direct filename-based test match detected.
