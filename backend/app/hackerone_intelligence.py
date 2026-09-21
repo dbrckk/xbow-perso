@@ -9,6 +9,8 @@ from typing import Any
 
 from .chain_intelligence import build_chain_intelligence
 from .hackerone_client import HackerOneClient, HackerOneClientError
+from .runtime_capabilities import safe_recon_runtime_capability, safe_scanner_runtime_capability
+from .runtime_gap_analysis import rank_runtime_capability_gaps, runtime_capability_snapshot
 from .storage import CampaignConflictError
 
 
@@ -536,6 +538,12 @@ def _capability_gaps(categories: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def build_hackerone_intelligence(reports: list[dict[str, Any]]) -> dict[str, Any]:
     categories = _category_statistics(reports)
     programs = _program_signals(reports)
+    capability_gaps = _capability_gaps(categories)
+    runtime = runtime_capability_snapshot(
+        scanner=safe_scanner_runtime_capability(),
+        recon=safe_recon_runtime_capability(),
+    )
+    runtime_capability_gaps = rank_runtime_capability_gaps(capability_gaps, runtime)
 
     high_value_reports = sorted(
         reports,
@@ -561,7 +569,9 @@ def build_hackerone_intelligence(reports: list[dict[str, Any]]) -> dict[str, Any
         "report_count": len(reports),
         "categories": categories,
         "program_signals": programs,
-        "capability_gaps": _capability_gaps(categories),
+        "capability_gaps": capability_gaps,
+        "runtime_capability_gaps": runtime_capability_gaps,
+        "runtime_capability_snapshot": runtime,
         "chain_intelligence": build_chain_intelligence(categories),
         "high_value_reports": high_value_reports,
         "recent_reports": recent_reports,
