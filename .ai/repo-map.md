@@ -18180,6 +18180,8 @@ function renderBatchCatalog()
 ⋮----
 function renderBatchSelectionState()
 ⋮----
+function applyDiscoveryResult(result)
+⋮----
 async function refreshBatchCatalog()
 ⋮----
 function selectReadyBatchProfiles()

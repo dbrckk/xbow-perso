@@ -1,15 +1,15 @@
 # Change impact
 
-Base: 0bb868c556a546abf825e7d655d14daf64b96b6a
-Head: 41a751fab0b2529b7a0a3d01ce4842ea5d4472fc
+Base: 93058eff177ddae7614aeb85cb074eeb0a988123
+Head: 30f594ba4de4151b28dfbaf80cd8dd5e13d755be
 
 ## Changed files
-- M backend/app/hackerone_api.py
-- A backend/app/hackerone_discovery.py
-- A backend/tests/test_hackerone_discovery.py
+- M frontend/hackerone.js
+- M frontend/index.html
+- M frontend/sw.js
 
 ## Affected areas
-- backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

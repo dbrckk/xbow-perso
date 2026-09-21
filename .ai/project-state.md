@@ -22,16 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T08:32:31Z
+Generated: 2026-09-21T08:45:40Z
 
 ### Git
 - Branch: `main`
-- Head: `41a751fab0b2`
-- Commit date: 2026-09-21T10:31:45+02:00
-- Commit: feat: add low-friction HackerOne program discovery
+- Head: `30f594ba4de4`
+- Commit date: 2026-09-21T10:45:29+02:00
+- Commit: feat: add READY REVIEW BLOCKED discovery dashboard
 - Tracked files: 538
 
 ### Recently changed files
+- `frontend/hackerone.js`
+- `frontend/index.html`
+- `frontend/sw.js`
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_discovery.py`
 - `backend/tests/test_hackerone_discovery.py`
@@ -42,8 +45,6 @@ Generated: 2026-09-21T08:32:31Z
 - `backend/tests/test_passive_high_value_ranking.py`
 - `backend/app/passive_response_context.py`
 - `backend/tests/test_passive_response_context.py`
-- `backend/app/passive_response_intelligence.py`
-- `backend/tests/test_passive_response_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`
