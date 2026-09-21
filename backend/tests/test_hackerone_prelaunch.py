@@ -134,3 +134,97 @@ def test_reviewed_batch_preflight_reports_blocked_members(monkeypatch):
     assert result["campaigns_created"] is False
     assert result["automatic_launch"] is False
     assert result["scope_expansion"] is False
+
+
+
+def test_go_no_go_requires_runtime_and_batch_ready(monkeypatch):
+    monkeypatch.setattr(
+        hackerone_api,
+        "build_hackerone_live_readiness",
+        lambda _deps: {
+            "live_scan_ready": False,
+            "checks": [{"id": "scanner_worker_live", "required": True, "ok": False}],
+        },
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "preflight_reviewed_hackerone_batch",
+        lambda _payload: {
+            "ready": False,
+            "members": [{
+                "handle": "alpha",
+                "status": "blocked",
+                "reason": "review_profile_required",
+            }],
+        },
+    )
+    monkeypatch.setattr("app.main.dependency_readiness", lambda: {"ok": True})
+
+    payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+        mode="sequential",
+        handles=["alpha"],
+    )
+    result = hackerone_api.hackerone_batch_go_no_go(payload)
+
+    assert result["go"] is False
+    assert result["runtime_ready"] is False
+    assert result["batch_ready"] is False
+    assert "scanner_worker_live" in result["blockers"]
+    assert "alpha:review_profile_required" in result["blockers"]
+    assert result["campaigns_created"] is False
+    assert result["automatic_launch"] is False
+    assert result["scope_expansion"] is False
+
+
+def test_go_no_go_returns_go_only_when_runtime_and_batch_are_ready(monkeypatch):
+    monkeypatch.setattr(
+        hackerone_api,
+        "build_hackerone_live_readiness",
+        lambda _deps: {"live_scan_ready": True, "checks": []},
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "preflight_reviewed_hackerone_batch",
+        lambda _payload: {
+            "ready": True,
+            "members": [{"handle": "alpha", "status": "ready"}],
+        },
+    )
+    monkeypatch.setattr("app.main.dependency_readiness", lambda: {"ok": True})
+
+    payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+        mode="parallel",
+        handles=["alpha"],
+    )
+    result = hackerone_api.hackerone_batch_go_no_go(payload)
+
+    assert result["go"] is True
+    assert result["blockers"] == []
+    assert result["read_only"] is True
+
+
+def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch):
+    monkeypatch.setattr("app.main.storage", lambda: object())
+    monkeypatch.setattr(
+        hackerone_api,
+        "_reviewed_campaign_input",
+        lambda _handle, _store: object(),
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "hackerone_batch_go_no_go",
+        lambda _payload: {"go": False, "blockers": ["scanner_worker_live"]},
+    )
+
+    payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+        mode="sequential",
+        handles=["alpha"],
+    )
+    try:
+        hackerone_api.launch_reviewed_hackerone_batch(payload)
+    except HTTPException as exc:
+        assert exc.status_code == 409
+        assert exc.detail["reason"] == "batch_go_no_go_blocked"
+        assert exc.detail["blockers"] == ["scanner_worker_live"]
+    else:
+        raise AssertionError("reviewed launch should fail closed on no-go")
