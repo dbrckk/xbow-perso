@@ -2017,10 +2017,31 @@
     const button=el('h1BatchAutoQueue');
     if(button)button.disabled=true;
     try{
-      saveQuickPrefs();
-      autoSelectBatchProfiles();
-      if(!batchSelectedHandles.size)return;
+      const prefs=saveQuickPrefs();
+      el('h1BatchSummary').textContent='Sélection serveur des programmes READY à meilleur rendement…';
+      const result=await api(
+        '/hackerone/discovery/selection?limit='+
+        encodeURIComponent(String(prefs.batch_auto_limit))+
+        '&min_score='+
+        encodeURIComponent(String(prefs.batch_auto_min_score))
+      );
+      const handles=Array.isArray(result?.handles)
+        ?result.handles.map(value=>String(value||'')).filter(Boolean).slice(0,20)
+        :[];
+      batchSelectedHandles=new Set(handles);
+      renderBatchCatalog();
+      if(!batchSelectedHandles.size){
+        el('h1BatchSummary').textContent=
+          'Aucun programme READY ne correspond aux critères côté serveur.';
+        return;
+      }
+      el('h1BatchSummary').textContent=
+        handles.length+
+        ' programme(s) sélectionné(s) côté serveur · revalidation finale au lancement…';
       await launchSelectedBatch();
+    }catch(error){
+      el('h1BatchSummary').textContent='Auto Queue bloquée : '+error.message;
+      setLauncherStatus(error.message,'err');
     }finally{
       if(button)button.disabled=false;
     }
@@ -2199,14 +2220,26 @@
     if(!handles.length)return;
     button.disabled=true;
     try{
+      const mode=String(el('h1BatchMode').value||'sequential');
       el('h1BatchSummary').textContent=
-        'Vérification serveur des fingerprints et profils mémorisés…';
+        'Préflight serveur des programmes, fingerprints et profils mémorisés…';
+      const preflight=await api('/imports/hackerone/batches/preflight-reviewed',{
+        method:'POST',
+        body:JSON.stringify({mode,handles})
+      });
+      if(preflight?.ready!==true){
+        const blocked=(Array.isArray(preflight?.members)?preflight.members:[])
+          .filter(member=>String(member?.status||'')==='blocked')
+          .map(member=>String(member?.handle||'programme')+': '+String(member?.reason||'bloqué'));
+        throw new Error(
+          'Préflight du lot bloqué'+(blocked.length?' · '+blocked.join(' · '):'')
+        );
+      }
+      el('h1BatchSummary').textContent=
+        'Préflight OK · revalidation finale et création du lot…';
       const batch=await api('/imports/hackerone/batches/launch-reviewed',{
         method:'POST',
-        body:JSON.stringify({
-          mode:String(el('h1BatchMode').value||'sequential'),
-          handles
-        })
+        body:JSON.stringify({mode,handles})
       });
       renderBatchStatus(batch);
       startBatchMonitor(batch.id);
