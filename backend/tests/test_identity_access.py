@@ -1,3 +1,4 @@
+from app.main import app
 from app.identity_access import (
     build_identity_access_differentials,
     summarize_identity_access_differentials,
@@ -48,3 +49,11 @@ def test_identity_access_requires_two_explicit_test_identities():
     graph.add(_access("user-a", "https://example.test/account", 200, "a" * 64))
 
     assert build_identity_access_differentials(graph) == []
+
+
+
+def test_identity_access_differential_route_is_exposed():
+    assert (
+        "/api/campaigns/{campaign_id}/identity-access-differentials"
+        in app.openapi()["paths"]
+    )
