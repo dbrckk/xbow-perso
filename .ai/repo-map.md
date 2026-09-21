@@ -136,6 +136,7 @@ backend/
     operational_slo.py
     orchestrator.py
     outbox_recovery.py
+    passive_response_intelligence.py
     pentagi_action_gateway.py
     pentagi_adapter.py
     pentagi_admission.py
@@ -316,6 +317,7 @@ backend/
     test_orchestrator.py
     test_outbox_chaos.py
     test_overview_reasoning.py
+    test_passive_response_intelligence.py
     test_pentagi_action_gateway.py
     test_pentagi_adapter.py
     test_pentagi_admission.py
@@ -6338,6 +6340,34 @@ completion_type = intent.get("completion_type")
 ⋮----
 event: dict[str, Any] = {
 kind = intent.get("kind")
+````
+
+## File: backend/app/passive_response_intelligence.py
+````python
+_SOURCE_MAP_RE = re.compile(r"(?://[#@]\s*sourceMappingURL\s*=\s*([^\s*]+))")
+_ABSOLUTE_URL_RE = re.compile(r"https?://[^\s\"'<>]+", re.IGNORECASE)
+_PATH_RE = re.compile(r"(?<![A-Za-z0-9])(/(?:api|graphql|v[0-9]+|admin|internal)/[A-Za-z0-9_./?=&%-]*)")
+_SECRET_SHAPE_RE = re.compile(
+⋮----
+"""Extract passive public-response signals without fetching anything.
+
+    The function operates only on response text already collected by an authorized
+    campaign. Potential secret values are never returned; only a boolean/count is
+    retained.
+    """
+text = str(body or "")[:max_body_chars]
+base = str(url)
+origin = urlparse(base)
+⋮----
+source_maps: list[str] = []
+⋮----
+candidate = urljoin(base, match.strip())
+parsed = urlparse(candidate)
+⋮----
+urls = []
+⋮----
+paths = _PATH_RE.findall(text)
+secret_shape_count = len(_SECRET_SHAPE_RE.findall(text))
 ````
 
 ## File: backend/app/pentagi_action_gateway.py
@@ -14703,6 +14733,17 @@ result = campaign_overview(campaign.id)
 def test_overview_chain_becomes_complete_after_independent_evidence(tmp_path, monkeypatch)
 ⋮----
 def test_overview_counts_duplicate_candidate_groups(tmp_path, monkeypatch)
+````
+
+## File: backend/tests/test_passive_response_intelligence.py
+````python
+def test_extracts_same_origin_source_map_and_endpoint_hints()
+⋮----
+result = analyze_public_text_response(
+⋮----
+def test_does_not_return_potential_secret_values()
+⋮----
+def test_cross_origin_source_map_hint_is_not_promoted()
 ````
 
 ## File: backend/tests/test_pentagi_action_gateway.py

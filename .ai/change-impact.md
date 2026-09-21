@@ -1,12 +1,11 @@
 # Change impact
 
-Base: e5dc5205eb9d84c133145cfe34048aeea18c6a1d
-Head: c1dc0e3c2c4703d42f1e16288c85e2a8cdb67a34
+Base: beb6646c3d4da3cd2bb7305f789452d8ad259975
+Head: 022354311e429ea691043d00dd85e6d753875080
 
 ## Changed files
-- M backend/app/hackerone_intelligence.py
-- A backend/app/runtime_gap_analysis.py
-- A backend/tests/test_runtime_gap_analysis.py
+- A backend/app/passive_response_intelligence.py
+- A backend/tests/test_passive_response_intelligence.py
 
 ## Affected areas
 - backend

@@ -1192,6 +1192,7 @@
         "backend/app/observation_writer.py",
         "backend/app/operational_alerts.py",
         "backend/app/orchestrator.py",
+        "backend/app/passive_response_intelligence.py",
         "backend/app/pentagi_action_gateway.py",
         "backend/app/pentagi_adapter.py",
         "backend/app/pentagi_admission.py",
@@ -1213,7 +1214,6 @@
         "backend/app/report_approval_api.py",
         "backend/app/report_readiness.py",
         "backend/app/review_queue.py",
-        "backend/app/runtime_gap_analysis.py",
         "backend/app/scanner_ingestion.py",
         "backend/app/scanner_normalization.py",
         "backend/app/scanner_registry.py",
@@ -1660,6 +1660,17 @@
       ],
       "dependents": [
         "backend/app/main.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 2
+    },
+    "backend/app/passive_response_intelligence.py": {
+      "dependencies": [
+        "backend/app/main.py",
+        "backend/tests/test_alert_delivery.py"
+      ],
+      "dependents": [
+        "backend/tests/test_passive_response_intelligence.py"
       ],
       "in_degree": 1,
       "out_degree": 2
@@ -2234,15 +2245,13 @@
       "out_degree": 0
     },
     "backend/app/runtime_gap_analysis.py": {
-      "dependencies": [
-        "backend/app/main.py"
-      ],
+      "dependencies": [],
       "dependents": [
         "backend/app/hackerone_intelligence.py",
         "backend/tests/test_runtime_gap_analysis.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 0
     },
     "backend/app/scanner_adaptation.py": {
       "dependencies": [
@@ -2781,6 +2790,7 @@
         "backend/app/high_value_intelligence.py",
         "backend/app/knowledge_memory.py",
         "backend/app/main.py",
+        "backend/app/passive_response_intelligence.py",
         "backend/app/pentagi_flow_status.py",
         "backend/app/pentagi_transport.py",
         "backend/app/pentagi_worker_service.py",
@@ -2809,7 +2819,7 @@
         "frontend/app.js",
         "frontend/hackerone.js"
       ],
-      "in_degree": 38,
+      "in_degree": 39,
       "out_degree": 2
     },
     "backend/tests/test_api_idempotency.py": {
@@ -4015,6 +4025,15 @@
       "in_degree": 0,
       "out_degree": 5
     },
+    "backend/tests/test_passive_response_intelligence.py": {
+      "dependencies": [
+        "backend/app/passive_response_intelligence.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_pentagi_action_gateway.py": {
       "dependencies": [
         "backend/app/main.py",
@@ -4975,6 +4994,7 @@
         "backend/tests/test_orchestrator_validation_alignment.py",
         "backend/tests/test_outbox_chaos.py",
         "backend/tests/test_overview_reasoning.py",
+        "backend/tests/test_passive_response_intelligence.py",
         "backend/tests/test_pentagi_action_gateway.py",
         "backend/tests/test_pentagi_adapter.py",
         "backend/tests/test_pentagi_admission.py",
@@ -5055,7 +5075,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 192,
+      "in_degree": 193,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

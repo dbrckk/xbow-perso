@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T08:04:37Z
+Generated: 2026-09-21T08:10:02Z
 
 ### Git
 - Branch: `main`
-- Head: `c1dc0e3c2c47`
-- Commit date: 2026-09-21T10:04:26+02:00
-- Commit: feat: rank bounty capability gaps against runtime readiness
-- Tracked files: 529
+- Head: `022354311e42`
+- Commit date: 2026-09-21T10:09:51+02:00
+- Commit: feat: add passive public-response intelligence
+- Tracked files: 531
 
 ### Recently changed files
+- `backend/app/passive_response_intelligence.py`
+- `backend/tests/test_passive_response_intelligence.py`
 - `backend/app/hackerone_intelligence.py`
 - `backend/app/runtime_gap_analysis.py`
 - `backend/tests/test_runtime_gap_analysis.py`

@@ -5,855 +5,93 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "_utcnow": {
+    "analyze_public_text_response": {
       "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 256,
+        "file": "backend/app/passive_response_intelligence.py",
+        "line": 16,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/browser.py",
-          "line": 110,
-          "preview": "def _utcnow() -> str:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 182,
-          "preview": "\"at\": _utcnow(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 185,
-          "preview": "campaign.updated_at = _utcnow()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 344,
-          "preview": "\"at\": _utcnow(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 347,
-          "preview": "campaign.updated_at = _utcnow()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_catalog.py",
-          "line": 18,
-          "preview": "def _utcnow() -> str:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_catalog.py",
-          "line": 90,
-          "preview": "checked_at = _utcnow()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 256,
-          "preview": "def _utcnow() -> str:",
+          "file": "backend/app/passive_response_intelligence.py",
+          "line": 16,
+          "preview": "def analyze_public_text_response(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 563,
-          "preview": "now = _utcnow()",
+          "file": "backend/tests/test_passive_response_intelligence.py",
+          "line": 1,
+          "preview": "from app.passive_response_intelligence import analyze_public_text_response",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_browser.py",
-          "line": 366,
-          "preview": "\"at\": browser._utcnow(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 369,
-          "preview": "interrupted.updated_at = browser._utcnow()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 421,
-          "preview": "\"at\": browser._utcnow(),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 12
-    },
-    "_bounded_text": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 260,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 260,
-          "preview": "def _bounded_text(value: Any, limit: int) -> str:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 310,
-          "preview": "report_id = _bounded_text(resource.get(\"id\"), 64)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 314,
-          "preview": "severity = _bounded_text(attributes.get(\"severity_rating\"), 32).lower()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 320,
-          "preview": "currency = _bounded_text(program.get(\"currency\"), 12).upper()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 326,
-          "preview": "\"title\": _bounded_text(attributes.get(\"title\"), 300),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 327,
-          "preview": "\"url\": _bounded_text(attributes.get(\"url\"), 1024),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 328,
-          "preview": "\"disclosed_at\": _bounded_text(attributes.get(\"disclosed_at\"), 64),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 329,
-          "preview": "\"submitted_at\": _bounded_text(attributes.get(\"submitted_at\"), 64),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 330,
-          "preview": "\"cwe\": _bounded_text(attributes.get(\"cwe\"), 160),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 335,
-          "preview": "\"program_handle\": _bounded_text(program.get(\"handle\"), 128),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 336,
-          "preview": "\"program_name\": _bounded_text(program.get(\"name\"), 200),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 337,
-          "preview": "\"summary\": _bounded_text(generated.get(\"hacktivity_summary\"), 800),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 12
-    },
-    "_amount": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 267,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 267,
-          "preview": "def _amount(value: Any) -> float:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 333,
-          "preview": "\"award_amount\": _amount(attributes.get(\"total_awarded_amount\")),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_bounded_int": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 279,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/api_rate_limit.py",
-          "line": 40,
-          "preview": "def _bounded_int(name: str, default: int, low: int, high: int) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/api_rate_limit.py",
-          "line": 57,
-          "preview": "requests=_bounded_int(\"XBOW_API_RATE_LIMIT_REQUESTS\", 120, 1, 10_000),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/api_rate_limit.py",
-          "line": 58,
-          "preview": "window_seconds=_bounded_int(\"XBOW_API_RATE_LIMIT_WINDOW_SECONDS\", 60, 1, 3600),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/api_rate_limit.py",
-          "line": 59,
-          "preview": "max_keys=_bounded_int(\"XBOW_API_RATE_LIMIT_MAX_KEYS\", 10_000, 100, 100_000),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 279,
-          "preview": "def _bounded_int(value: Any, *, minimum: int = 0, maximum: int = 10_000_000) -> int:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 332,
-          "preview": "\"votes\": _bounded_int(attributes.get(\"votes\")),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "_relationship_attributes": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 289,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 289,
-          "preview": "def _relationship_attributes(resource: dict[str, Any], name: str) -> dict[str, Any]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 318,
-          "preview": "program = _relationship_attributes(resource, \"program\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 319,
-          "preview": "generated = _relationship_attributes(resource, \"report_generated_content\")",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "normalize_hacktivity_item": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 303,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 303,
-          "preview": "def normalize_hacktivity_item(resource: Any) -> dict[str, Any] | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 411,
-          "preview": "item = normalize_hacktivity_item(resource)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
+          "file": "backend/tests/test_passive_response_intelligence.py",
           "line": 5,
-          "preview": "normalize_hacktivity_item,",
+          "preview": "result = analyze_public_text_response(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 95,
-          "preview": "item = normalize_hacktivity_item(raw)",
+          "file": "backend/tests/test_passive_response_intelligence.py",
+          "line": 16,
+          "preview": "result = analyze_public_text_response(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 118,
-          "preview": "assert normalize_hacktivity_item(raw) is None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 157,
-          "preview": "normalize_hacktivity_item(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 167,
-          "preview": "normalize_hacktivity_item(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 177,
-          "preview": "normalize_hacktivity_item(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "classify_report": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 341,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 341,
-          "preview": "def classify_report(report: dict[str, Any]) -> str:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 420,
-          "preview": "category = classify_report(report)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 501,
-          "preview": "categories[handle][classify_report(report)] += 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 3,
-          "preview": "classify_report,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 104,
-          "preview": "assert classify_report(item) == \"access_control\"",
+          "file": "backend/tests/test_passive_response_intelligence.py",
+          "line": 26,
+          "preview": "result = analyze_public_text_response(",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 5
     },
-    "_max_pages": {
+    "test_extracts_same_origin_source_map_and_endpoint_hints": {
       "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 355,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 355,
-          "preview": "def _max_pages() -> int:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 393,
-          "preview": "pages = _max_pages()",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "intelligence_poll_seconds": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 366,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 366,
-          "preview": "def intelligence_poll_seconds() -> int:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 627,
-          "preview": "_next_attempt_monotonic = now + intelligence_poll_seconds()",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_enabled": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 379,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 379,
-          "preview": "def _enabled() -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 620,
-          "preview": "if not _enabled():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_status_worker_service.py",
-          "line": 23,
-          "preview": "def _enabled(name: str) -> bool:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_status_worker_service.py",
-          "line": 28,
-          "preview": "if not _enabled(\"XBOW_ENABLE_PENTAGI\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_status_worker_service.py",
-          "line": 30,
-          "preview": "if not _enabled(\"XBOW_ENABLE_PENTAGI_STATUS_WORKER\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_worker_service.py",
-          "line": 35,
-          "preview": "def _enabled(name: str) -> bool:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_worker_service.py",
-          "line": 42,
-          "preview": "return _enabled(\"XBOW_ENABLE_PENTAGI_TRANSPORT\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_worker_service.py",
-          "line": 46,
-          "preview": "if not _enabled(\"XBOW_ENABLE_PENTAGI\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_worker_service.py",
-          "line": 48,
-          "preview": "if not _enabled(\"XBOW_ENABLE_ACTIVE_SCANS\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_worker_service.py",
-          "line": 52,
-          "preview": "if not _enabled(\"XBOW_ENABLE_PENTAGI_WORKER\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/recon_worker.py",
-          "line": 166,
-          "preview": "def _enabled() -> bool:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/recon_worker.py",
-          "line": 453,
-          "preview": "if not _enabled():",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 12
-    },
-    "fetch_disclosed_hacktivity": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 388,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 388,
-          "preview": "def fetch_disclosed_hacktivity(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 596,
-          "preview": "reports = fetch_disclosed_hacktivity(client=client)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 4,
-          "preview": "fetch_disclosed_hacktivity,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 146,
-          "preview": "reports = fetch_disclosed_hacktivity(client=client)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "_category_statistics": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 417,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 417,
-          "preview": "def _category_statistics(reports: list[dict[str, Any]]) -> list[dict[str, Any]]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 539,
-          "preview": "categories = _category_statistics(reports)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_program_signals": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 475,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 475,
-          "preview": "def _program_signals(reports: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 540,
-          "preview": "programs = _program_signals(reports)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_capability_gaps": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 520,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 520,
-          "preview": "def _capability_gaps(categories: list[dict[str, Any]]) -> list[dict[str, Any]]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 541,
-          "preview": "capability_gaps = _capability_gaps(categories)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "build_hackerone_intelligence": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 538,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 538,
-          "preview": "def build_hackerone_intelligence(reports: list[dict[str, Any]]) -> dict[str, Any]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 597,
-          "preview": "state = build_hackerone_intelligence(reports)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 2,
-          "preview": "build_hackerone_intelligence,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 190,
-          "preview": "state = build_hackerone_intelligence(reports)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "refresh_hackerone_intelligence": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 591,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 21,
-          "preview": "from .hackerone_intelligence import refresh_hackerone_intelligence",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 348,
-          "preview": "state = refresh_hackerone_intelligence(store, client=HackerOneClient())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 591,
-          "preview": "def refresh_hackerone_intelligence(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 629,
-          "preview": "state = refresh_hackerone_intelligence(store)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 6,
-          "preview": "refresh_hackerone_intelligence,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 224,
-          "preview": "state = refresh_hackerone_intelligence(store, client=client)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "maybe_refresh_hackerone_intelligence": {
-      "definition": {
-        "file": "backend/app/hackerone_intelligence.py",
-        "line": 617,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 617,
-          "preview": "def maybe_refresh_hackerone_intelligence(store) -> dict[str, Any]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 14,
-          "preview": "from .hackerone_intelligence import maybe_refresh_hackerone_intelligence",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 618,
-          "preview": "maybe_refresh_hackerone_intelligence(store)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "runtime_capability_snapshot": {
-      "definition": {
-        "file": "backend/app/runtime_gap_analysis.py",
-        "line": 25,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 13,
-          "preview": "from .runtime_gap_analysis import rank_runtime_capability_gaps, runtime_capability_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 542,
-          "preview": "runtime = runtime_capability_snapshot(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 574,
-          "preview": "\"runtime_capability_snapshot\": runtime,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/runtime_gap_analysis.py",
-          "line": 25,
-          "preview": "def runtime_capability_snapshot(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_runtime_gap_analysis.py",
-          "line": 1,
-          "preview": "from app.runtime_gap_analysis import rank_runtime_capability_gaps, runtime_capability_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_gap_analysis.py",
-          "line": 5,
-          "preview": "snapshot = runtime_capability_snapshot(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "rank_runtime_capability_gaps": {
-      "definition": {
-        "file": "backend/app/runtime_gap_analysis.py",
-        "line": 42,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 13,
-          "preview": "from .runtime_gap_analysis import rank_runtime_capability_gaps, runtime_capability_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 546,
-          "preview": "runtime_capability_gaps = rank_runtime_capability_gaps(capability_gaps, runtime)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/runtime_gap_analysis.py",
-          "line": 42,
-          "preview": "def rank_runtime_capability_gaps(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_runtime_gap_analysis.py",
-          "line": 1,
-          "preview": "from app.runtime_gap_analysis import rank_runtime_capability_gaps, runtime_capability_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_gap_analysis.py",
-          "line": 35,
-          "preview": "ranked = rank_runtime_capability_gaps(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_gap_analysis.py",
-          "line": 44,
-          "preview": "ranked = rank_runtime_capability_gaps(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "test_runtime_snapshot_is_redacted_and_readiness_only": {
-      "definition": {
-        "file": "backend/tests/test_runtime_gap_analysis.py",
+        "file": "backend/tests/test_passive_response_intelligence.py",
         "line": 4,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_runtime_gap_analysis.py",
+          "file": "backend/tests/test_passive_response_intelligence.py",
           "line": 4,
-          "preview": "def test_runtime_snapshot_is_redacted_and_readiness_only():",
+          "preview": "def test_extracts_same_origin_source_map_and_endpoint_hints():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_missing_high_evidence_gap_ranks_above_partial_gap": {
+    "test_does_not_return_potential_secret_values": {
       "definition": {
-        "file": "backend/tests/test_runtime_gap_analysis.py",
-        "line": 20,
+        "file": "backend/tests/test_passive_response_intelligence.py",
+        "line": 15,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_runtime_gap_analysis.py",
-          "line": 20,
-          "preview": "def test_missing_high_evidence_gap_ranks_above_partial_gap():",
+          "file": "backend/tests/test_passive_response_intelligence.py",
+          "line": 15,
+          "preview": "def test_does_not_return_potential_secret_values():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_runtime_readiness_never_enables_tools_or_scope": {
+    "test_cross_origin_source_map_hint_is_not_promoted": {
       "definition": {
-        "file": "backend/tests/test_runtime_gap_analysis.py",
-        "line": 43,
+        "file": "backend/tests/test_passive_response_intelligence.py",
+        "line": 25,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_runtime_gap_analysis.py",
-          "line": 43,
-          "preview": "def test_runtime_readiness_never_enables_tools_or_scope():",
+          "file": "backend/tests/test_passive_response_intelligence.py",
+          "line": 25,
+          "preview": "def test_cross_origin_source_map_hint_is_not_promoted():",
           "definition_candidate": true
         }
       ],
