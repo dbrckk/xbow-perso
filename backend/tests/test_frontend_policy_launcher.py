@@ -43,7 +43,7 @@ def test_frontend_requires_authorization_and_scope_review_before_launch():
     for element_id in required_ids:
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/hackerone.js?v=59" defer></script>' in html
+    assert '<script src="/hackerone.js?v=60" defer></script>' in html
     assert "api('/imports/hackerone/rules-preview'" in launcher
     assert "api('/imports/hackerone/campaigns/launch'" in launcher
     assert '<button id="h1Launch" disabled>' in html
