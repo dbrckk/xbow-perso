@@ -2193,14 +2193,51 @@
     }catch(_error){}
   }
 
+  function hackerOneLaunchErrorMessage(error){
+    const detail=error?.detail&&typeof error.detail==='object'?error.detail:null;
+    const reason=String(detail?.reason||'');
+    if(reason==='hackerone_live_scan_not_ready'){
+      const failed=Array.isArray(detail?.failed_checks)?detail.failed_checks:[];
+      const scanner=Array.isArray(detail?.scanner_block_reasons)?detail.scanner_block_reasons:[];
+      const causes=[...failed,...scanner].filter(Boolean);
+      return 'Pré-vol scanner non prêt'+(causes.length?' : '+causes.join(' · '):'.');
+    }
+    if(reason==='hackerone_submissions_not_open'||reason==='hackerone_program_not_open'){
+      const handle=String(detail?.handle||'programme');
+      return handle+' n’est plus ouvert au lancement. Recharge le catalogue et la revue avant de continuer.';
+    }
+    if(reason==='stale_hackerone_snapshot'||reason==='hackerone_snapshot_document_mismatch'){
+      return 'Le programme HackerOne a changé depuis la revue. Recharge-le puis confirme le nouveau fingerprint.';
+    }
+    return String(error?.message||'Lancement HackerOne impossible.');
+  }
+
   async function launchSelectedBatch(){
     const button=el('h1BatchLaunch');
     const handles=[...batchSelectedHandles].slice(0,20);
     if(!handles.length)return;
     button.disabled=true;
     try{
+      el('h1BatchSummary').textContent='Pré-vol scanner et runtime…';
+      const readiness=await refreshHackerOneLiveReadiness();
+      if(!readiness||readiness.live_scan_ready!==true){
+        const failed=Array.isArray(readiness?.checks)
+          ?readiness.checks
+            .filter(item=>item?.required===true&&item?.ok!==true)
+            .map(item=>String(item?.id||''))
+            .filter(Boolean)
+          :[];
+        const error=new Error('Pré-vol scanner non prêt.');
+        error.detail={
+          reason:'hackerone_live_scan_not_ready',
+          failed_checks:failed,
+          scanner_block_reasons:Array.isArray(readiness?.scanner_block_reasons)
+            ?readiness.scanner_block_reasons:[]
+        };
+        throw error;
+      }
       el('h1BatchSummary').textContent=
-        'Vérification serveur des fingerprints et profils mémorisés…';
+        'Vérification serveur des fingerprints, profils et état courant des programmes…';
       const batch=await api('/imports/hackerone/batches/launch-reviewed',{
         method:'POST',
         body:JSON.stringify({
@@ -2215,8 +2252,9 @@
         'ok'
       );
     }catch(error){
-      el('h1BatchSummary').textContent=error.message;
-      setLauncherStatus(error.message,'err');
+      const message=hackerOneLaunchErrorMessage(error);
+      el('h1BatchSummary').textContent=message;
+      setLauncherStatus(message,'err');
     }finally{
       button.disabled=batchSelectedHandles.size===0;
     }
