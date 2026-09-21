@@ -4250,6 +4250,10 @@ credentials_configured = True
 ⋮----
 credentials_configured = False
 ⋮----
+api_token_configured = True
+⋮----
+api_token_configured = False
+⋮----
 checks = [
 ⋮----
 required = [item for item in checks if item["required"]]
@@ -5513,7 +5517,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.5.3")
+app = FastAPI(title="xbow-perso", version="0.5.4")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -13419,6 +13423,8 @@ def test_browser_automation_is_optional_but_reported(monkeypatch)
 def test_live_readiness_blocks_when_recon_is_disabled(monkeypatch)
 ⋮----
 def test_live_readiness_blocks_when_scanner_heartbeat_is_stale(monkeypatch)
+⋮----
+def test_live_readiness_accepts_vault_backed_api_token(monkeypatch)
 ````
 
 ## File: backend/tests/test_hackerone_needs_info.py
@@ -14766,6 +14772,8 @@ def test_live_production_update_requires_backend_go_no_go_readiness()
 def test_production_update_normalizes_api_token_source()
 ⋮----
 def test_production_update_attests_frontend_diagnostic_proxy()
+⋮----
+def test_production_update_self_heals_stale_baseline_flags()
 ````
 
 ## File: backend/tests/test_local_outcome_intelligence.py
@@ -19758,6 +19766,16 @@ read_env_value() {
   grep -E "^[[:space:]]*${key}=" .env | tail -n1 | cut -d= -f2- || true
 }
 
+normalize_baseline_gate() {
+  local key="$1"
+  local value="$2"
+  if grep -Eq "^[[:space:]]*${key}=" .env; then
+    sed -i -E "s|^[[:space:]]*${key}=.*|${key}=${value}|" .env
+  else
+    printf '%s=%s\n' "$key" "$value" >> .env
+  fi
+}
+
 require_baseline_gate() {
   local key="$1"
   local expected="$2"
@@ -19780,6 +19798,16 @@ require_live_value() {
 }
 
 # The repository .env remains fail-safe even when the root-only live overlay is armed.
+# Normalize stale/manual live flags back to the fail-safe repository baseline.
+# Real-mode values are supplied only by the root-only live overlay below.
+normalize_baseline_gate "DRY_RUN" "true"
+normalize_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
+normalize_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
+normalize_baseline_gate "XBOW_ENABLE_RECON" "false"
+normalize_baseline_gate "XBOW_ENABLE_EXTERNAL_RECON" "false"
+normalize_baseline_gate "XBOW_ENABLE_BROWSER_AUTOMATION" "false"
+normalize_baseline_gate "XBOW_ENABLE_HACKERONE_SUBMISSION" "false"
+
 require_baseline_gate "DRY_RUN" "true"
 require_baseline_gate "XBOW_ENABLE_ACTIVE_SCANS" "false"
 require_baseline_gate "XBOW_ENABLE_NUCLEI" "false"
@@ -19914,7 +19942,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.3\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.5.4\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 

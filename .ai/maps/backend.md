@@ -3645,6 +3645,10 @@ credentials_configured = True
 ⋮----
 credentials_configured = False
 ⋮----
+api_token_configured = True
+⋮----
+api_token_configured = False
+⋮----
 checks = [
 ⋮----
 required = [item for item in checks if item["required"]]
@@ -4908,7 +4912,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: app/main.py
 ```python
-app = FastAPI(title="xbow-perso", version="0.5.3")
+app = FastAPI(title="xbow-perso", version="0.5.4")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -12814,6 +12818,8 @@ def test_browser_automation_is_optional_but_reported(monkeypatch)
 def test_live_readiness_blocks_when_recon_is_disabled(monkeypatch)
 ⋮----
 def test_live_readiness_blocks_when_scanner_heartbeat_is_stale(monkeypatch)
+⋮----
+def test_live_readiness_accepts_vault_backed_api_token(monkeypatch)
 ```
 
 ## File: tests/test_hackerone_needs_info.py
@@ -14161,6 +14167,8 @@ def test_live_production_update_requires_backend_go_no_go_readiness()
 def test_production_update_normalizes_api_token_source()
 ⋮----
 def test_production_update_attests_frontend_diagnostic_proxy()
+⋮----
+def test_production_update_self_heals_stale_baseline_flags()
 ```
 
 ## File: tests/test_local_outcome_intelligence.py

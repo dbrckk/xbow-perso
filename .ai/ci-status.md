@@ -2,14 +2,14 @@
 
 Summary: 4 success / 1 failure / 3 active
 
-- security: in_progress / pending (88e6e7c6)
-- ci: in_progress / pending (88e6e7c6)
-- mobile-vps-deploy: completed / failure (88e6e7c6)
-- supply-chain: queued / pending (88e6e7c6)
-- supply-chain: completed / success (41e8c5de)
-- security: completed / success (41e8c5de)
-- ci: completed / success (41e8c5de)
-- ci: completed / success (41e8c5de)
+- supply-chain: in_progress / pending (e22e0ed6)
+- ci: in_progress / pending (e22e0ed6)
+- security: in_progress / pending (e22e0ed6)
+- mobile-vps-deploy: completed / failure (e22e0ed6)
+- supply-chain: completed / success (c6bf28e7)
+- security: completed / success (c6bf28e7)
+- ci: completed / success (c6bf28e7)
+- security: completed / success (c6bf28e7)
 
 ## Latest failed run structure
 - Job: deploy

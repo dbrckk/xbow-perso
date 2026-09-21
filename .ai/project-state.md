@@ -22,25 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T14:06:27Z
+Generated: 2026-09-21T14:16:12Z
 
 ### Git
 - Branch: `main`
-- Head: `88e6e7c674a2`
-- Commit date: 2026-09-21T16:06:13+02:00
-- Commit: fix: proxy auth diagnostics correctly and defeat stale mobile cache (#323)
+- Head: `e22e0ed67292`
+- Commit date: 2026-09-21T16:16:01+02:00
+- Commit: fix: self-heal production baseline and honor vault API token (#324)
 - Tracked files: 555
 
 ### Recently changed files
 - `.deploy-trigger`
+- `backend/app/hackerone_live_readiness.py`
 - `backend/app/main.py`
+- `backend/tests/test_hackerone_live_readiness.py`
+- `backend/tests/test_live_activation_profile.py`
+- `scripts/mobile-production-update.sh`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_live_activation_profile.py`
 - `frontend/index.html`
 - `frontend/nginx.conf`
 - `frontend/sw.js`
-- `scripts/mobile-production-update.sh`
 - `frontend/app.js`
 - `.github/workflows/mobile-vps-deploy.yml`
 - `backend/app/auth.py`
@@ -48,10 +50,6 @@ Generated: 2026-09-21T14:06:27Z
 - `scripts/mobile-production-cutover.sh`
 - `scripts/mobile-production-preflight.sh`
 - `scripts/mobile-vault-rollback.sh`
-- `backend/app/hackerone_api.py`
-- `backend/app/hackerone_batch.py`
-- `backend/app/storage_backend.py`
-- `backend/app/storage_core.py`
 
 ### Project signals
 - `pyproject.toml`

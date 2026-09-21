@@ -1,23 +1,19 @@
 # Change impact
 
-Base: b1141d241e48b40ab119c3065811d6672f0b31e3
-Head: 88e6e7c674a22385bbea8cdfc21bb2cbaeee808a
+Base: 024db1329a639c98ca120c3de3284b3b44aa1939
+Head: e22e0ed67292cb0bc36c6e9567d4c01fe03d13a6
 
 ## Changed files
 - M .deploy-trigger
+- M backend/app/hackerone_live_readiness.py
 - M backend/app/main.py
-- A backend/tests/test_frontend_auth_proxy.py
-- M backend/tests/test_frontend_policy_launcher.py
+- M backend/tests/test_hackerone_live_readiness.py
 - M backend/tests/test_live_activation_profile.py
-- M frontend/index.html
-- M frontend/nginx.conf
-- M frontend/sw.js
 - M scripts/mobile-production-update.sh
 
 ## Affected areas
 - (root)
 - backend
-- frontend
 - scripts
 
 ## Related test candidates

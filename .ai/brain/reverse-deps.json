@@ -94,12 +94,13 @@
         "backend/app/secret_vault.py"
       ],
       "dependents": [
+        "backend/app/hackerone_live_readiness.py",
         "backend/app/main.py",
         "backend/app/totp_auth.py",
         "backend/tests/test_auth.py",
         "backend/tests/test_totp_auth.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 1
     },
     "backend/app/autonomy_gate.py": {
@@ -800,6 +801,7 @@
     },
     "backend/app/hackerone_live_readiness.py": {
       "dependencies": [
+        "backend/app/auth.py",
         "backend/app/deployment_preflight.py",
         "backend/app/hackerone_client.py",
         "backend/app/observation_graph.py",
@@ -810,7 +812,7 @@
         "backend/app/hackerone_api.py"
       ],
       "in_degree": 1,
-      "out_degree": 5
+      "out_degree": 6
     },
     "backend/app/hackerone_needs_info.py": {
       "dependencies": [
