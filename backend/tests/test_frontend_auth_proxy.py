@@ -45,3 +45,16 @@ def test_frontend_has_no_totp_control():
     assert 'id="totp"' not in html
     assert "Code TOTP" not in html
     assert "x-totp-code" not in script
+
+
+
+def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
+    dockerfile = _text("frontend/Dockerfile")
+    index = _text("frontend/index.html")
+    assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
+    assert '<script src="/simple.js?v=60" defer></script>' in index
+
+
+def test_service_worker_matches_precache_assets_by_path():
+    sw = _text("frontend/sw.js")
+    assert "new URL(item,self.location.origin).pathname===url.pathname" in sw
