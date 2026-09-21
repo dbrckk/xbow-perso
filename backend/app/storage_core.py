@@ -761,6 +761,23 @@ class Storage:
             ).fetchall()
         return [json.loads(row["document"]) for row in rows]
 
+
+    def list_active_hackerone_batches(
+        self,
+        *,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        if not 1 <= limit <= 500:
+            raise ValueError("HackerOne active batch list limit must be between 1 and 500")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT document FROM hackerone_batches
+                   WHERE state NOT IN ('completed','cancelled')
+                   ORDER BY updated_at ASC LIMIT ?""",
+                (limit,),
+            ).fetchall()
+        return [json.loads(row["document"]) for row in rows]
+
     def put_observation(self, campaign_id: str, observation: dict[str, Any]) -> dict[str, Any]:
         campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         required = {"id", "kind", "value", "source"}
