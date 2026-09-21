@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T12:53:19Z
+Generated: 2026-09-21T13:28:29Z
 
 ### Git
 - Branch: `main`
-- Head: `7ea734ef6b5a`
-- Commit date: 2026-09-21T14:52:32+02:00
-- Commit: fix: make API token source deterministic and diagnosable (#320)
-- Tracked files: 552
+- Head: `bd95e8ec9bc7`
+- Commit date: 2026-09-21T15:28:18+02:00
+- Commit: ops: trigger safe mobile VPS update (#321)
+- Tracked files: 553
 
 ### Recently changed files
+- `.deploy-trigger`
+- `.github/workflows/mobile-vps-deploy.yml`
 - `backend/app/auth.py`
 - `backend/app/main.py`
 - `backend/tests/test_auth.py`
@@ -50,8 +52,6 @@ Generated: 2026-09-21T12:53:19Z
 - `backend/tests/test_hackerone_batch.py`
 - `backend/tests/test_hackerone_batch_api.py`
 - `backend/tests/test_hackerone_prelaunch.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `docs/RELEASE_0.5.1.md`
 
 ### Project signals
 - `pyproject.toml`

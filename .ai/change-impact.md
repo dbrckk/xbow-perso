@@ -1,25 +1,15 @@
 # Change impact
 
-Base: d2d06f60c77311395bbc0a91f6f011c926f9290c
-Head: 7ea734ef6b5ac430359b82f6257367c7a7e432f9
+Base: bb0c54e21da10d7711895b8ec11d0dae53f8b648
+Head: bd95e8ec9bc7a0fd64649452cd0dc1dfa0bfe4bf
 
 ## Changed files
-- M backend/app/auth.py
-- M backend/app/main.py
-- M backend/tests/test_auth.py
-- M backend/tests/test_live_activation_profile.py
-- M frontend/app.js
-- M frontend/index.html
-- M frontend/sw.js
-- M scripts/mobile-production-cutover.sh
-- M scripts/mobile-production-preflight.sh
-- M scripts/mobile-production-update.sh
-- M scripts/mobile-vault-rollback.sh
+- A .deploy-trigger
+- M .github/workflows/mobile-vps-deploy.yml
 
 ## Affected areas
-- backend
-- frontend
-- scripts
+- (root)
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

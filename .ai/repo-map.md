@@ -535,6 +535,10 @@ on:
         description: Git ref to deploy
         required: true
         default: main
+  push:
+    branches: [main]
+    paths:
+      - '.deploy-trigger'
 
 permissions:
   contents: read

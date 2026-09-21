@@ -6,13 +6,13 @@
     "requested_max_files": 12,
     "score_margin": 0,
     "tier": "bounded",
-    "top_score": 27
+    "top_score": 21
   },
   "cache": {
-    "fingerprint": "64a3866940abbcf4431f69d0b12ab852c4f03bfd4cc5056bc5bd67bad7f1d8c9",
+    "fingerprint": "6fd632b6abbc706396f0688adc6ff571ead0f55336c198c05f39244833053b1a",
     "hit": false
   },
-  "candidate_count": 274,
+  "candidate_count": 31,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -22,10 +22,9 @@
       ],
       "path": "backend/app/orchestrator.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 27,
+      "score": 21,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -51,12 +50,49 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "path": "backend/app/scanner_adaptation.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 27,
+      "score": 21,
+      "symbols": [
+        "ScannerAdaptation",
+        "_engine_memory",
+        "adapt_scanner_engines",
+        "rank_key"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_sandbox.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "ScannerSandboxAdmission",
+        "ScannerSandboxConfigError",
+        "_allowed_engines",
+        "_runtime_hardening_attestation",
+        "_strict_bool",
+        "require_scanner_sandbox",
+        "safe_scanner_sandbox_admission",
+        "scanner_sandbox_admission"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
       "symbols": [
         "_campaign",
         "fake_execute",
@@ -74,10 +110,9 @@
       ],
       "path": "backend/tests/test_scanner_adaptation.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 27,
+      "score": 21,
       "symbols": [
         "_memory",
         "test_adaptation_never_expands_configured_engines",
@@ -94,10 +129,9 @@
       ],
       "path": "backend/tests/test_scanner_normalization.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 27,
+      "score": 21,
       "symbols": [
         "test_normalized_ids_are_engine_scoped_and_stable",
         "test_normalizers_fail_closed_outside_scope",
@@ -113,37 +147,6 @@
         "test_scanner_registry_rejects_unknown_engine",
         "test_scanner_registry_selects_latest_artifact",
         "test_strix_and_nuclei_normalize_to_same_canonical_shape"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/report.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "render_markdown"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_ingestion.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "ScannerIngestionResult",
-        "ingest_scanner_run"
       ]
     }
   ],
