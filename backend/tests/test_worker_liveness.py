@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import time
 
 from app import worker_liveness
 
@@ -54,3 +55,20 @@ def test_invalid_heartbeat_configuration_fails_closed(tmp_path, monkeypatch):
     assert result["scanner"]["live"] is False
     assert result["general"]["reason"] == "heartbeat_configuration_invalid"
     assert result["contains_secrets"] is False
+
+
+
+def test_background_heartbeat_stays_independent_from_job_loop(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_WORKER_HEARTBEAT_ROOT", str(tmp_path))
+    monkeypatch.setenv("XBOW_WORKER_HEARTBEAT_MAX_AGE_SECONDS", "5")
+
+    stop = worker_liveness.start_worker_heartbeat("scanner")
+    try:
+        deadline = time.monotonic() + 1.0
+        while time.monotonic() < deadline and not (tmp_path / "scanner.json").exists():
+            time.sleep(0.01)
+        assert (tmp_path / "scanner.json").exists()
+        result = worker_liveness.worker_liveness("scanner")
+        assert result["live"] is True
+    finally:
+        stop.set()
