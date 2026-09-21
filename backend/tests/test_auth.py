@@ -318,3 +318,22 @@ def test_api_token_source_status_reports_vault_without_secret(monkeypatch, tmp_p
     assert result["source"] == "vault"
     assert result["legacy_inline_present"] is False
     assert result["contains_secrets"] is False
+
+
+
+def test_auth_status_endpoint_bypasses_control_api_auth(monkeypatch):
+    clear_secret_env(monkeypatch)
+    called = False
+    sentinel = object()
+
+    async def call_next(_request):
+        nonlocal called
+        called = True
+        return sentinel
+
+    result = asyncio.run(
+        authenticate_control_api(_request_for_path("/auth-status"), call_next)
+    )
+
+    assert result is sentinel
+    assert called is True
