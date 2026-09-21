@@ -40,6 +40,7 @@ The content is organized as follows:
 ```
 app.js
 hackerone.js
+simple.js
 sw.js
 ```
 
@@ -352,6 +353,24 @@ async function preview()
 async function launch()
 ⋮----
 async function importScopeFile()
+```
+
+## File: simple.js
+```javascript
+const $=id
+⋮----
+function token()
+function saveToken()
+async function api(path,options=
+function status(message,kind='')
+function label(item,group)
+function renderSelection(result)
+async function prepare()
+async function start()
+function memberText(member)
+function renderJournal(payload)
+async function refreshJournal()
+async function init()
 ```
 
 ## File: sw.js

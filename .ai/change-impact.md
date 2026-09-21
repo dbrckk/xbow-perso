@@ -1,29 +1,24 @@
 # Change impact
 
-Base: 384ac7e2b7dbc5e666842ddf27af4d351fbbd791
-Head: 599f8589191d40aebb17d2c3171cadc6ac3ba5b2
+Base: c43d687662dfadcf13cf000ee9695f5a9524f491
+Head: 69ff6b9fec05309982edbd36f9e994a073bb9595
 
 ## Changed files
-- M .env.example
-- M VAULT_MIGRATION.md
+- M .github/workflows/ci.yml
+- M backend/app/hackerone_api.py
 - M backend/app/main.py
-- D backend/app/totp_auth.py
-- M backend/app/vault_migration.py
-- M backend/tests/test_auth.py
-- M backend/tests/test_distributed_concurrency.py
+- A backend/app/simple_portfolio.py
 - M backend/tests/test_frontend_auth_proxy.py
 - M backend/tests/test_frontend_policy_launcher.py
 - M backend/tests/test_live_activation_profile.py
-- D backend/tests/test_totp_auth.py
-- M docker-compose.distributed.yml
-- M docker-compose.yml
-- M frontend/app.js
+- A backend/tests/test_simple_portfolio.py
 - M frontend/index.html
+- A frontend/simple.js
 - M frontend/sw.js
 - M scripts/mobile-production-update.sh
 
 ## Affected areas
-- (root)
+- .github
 - backend
 - frontend
 - scripts

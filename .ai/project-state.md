@@ -22,36 +22,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T15:05:52Z
+Generated: 2026-09-21T18:05:23Z
 
 ### Git
 - Branch: `main`
-- Head: `599f8589191d`
-- Commit date: 2026-09-21T17:05:41+02:00
-- Commit: fix: remove TOTP from dashboard and control API (#328)
-- Tracked files: 555
+- Head: `69ff6b9fec05`
+- Commit date: 2026-09-21T20:05:13+02:00
+- Commit: feat: one-button 2+2+2 bounty console and durable journal (#331)
+- Tracked files: 558
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `backend/app/hackerone_api.py`
+- `backend/app/main.py`
+- `backend/app/simple_portfolio.py`
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_live_activation_profile.py`
+- `backend/tests/test_simple_portfolio.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
+- `scripts/mobile-production-update.sh`
 - `.env.example`
 - `VAULT_MIGRATION.md`
-- `backend/app/main.py`
 - `backend/app/totp_auth.py`
 - `backend/app/vault_migration.py`
 - `backend/tests/test_auth.py`
 - `backend/tests/test_distributed_concurrency.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_live_activation_profile.py`
 - `backend/tests/test_totp_auth.py`
 - `docker-compose.distributed.yml`
-- `docker-compose.yml`
-- `frontend/app.js`
-- `frontend/index.html`
-- `frontend/sw.js`
-- `scripts/mobile-production-update.sh`
-- `backend/tests/test_mobile_reset_api_token.py`
-- `scripts/mobile-reset-api-token.sh`
-- `.deploy-trigger`
 
 ### Project signals
 - `pyproject.toml`

@@ -172,6 +172,7 @@ app/
   scanner_sandbox.py
   scanner_worker.py
   secret_vault.py
+  simple_portfolio.py
   storage_backend.py
   storage_core.py
   storage.py
@@ -377,6 +378,7 @@ tests/
   test_scanner_worker.py
   test_scope.py
   test_secret_vault.py
+  test_simple_portfolio.py
   test_storage_backend.py
   test_storage.py
   test_submission_api.py
@@ -2841,6 +2843,28 @@ result = build_program_discovery(
 discovery = hackerone_program_discovery(verify_limit=50)
 selected = select_diversified_portfolio(
 ⋮----
+@router.get("/api/hackerone/simple-selection")
+def hackerone_simple_selection()
+⋮----
+"""Select exactly 2 easy + 2 medium + 2 high-value reviewed READY programs."""
+⋮----
+result = select_simple_six(list(discovery.get("programs") or []))
+⋮----
+"""Return a durable, read-only operator journal and learning digest."""
+⋮----
+batches = store.list_hackerone_batches(limit=limit)
+entries: list[dict[str, Any]] = []
+⋮----
+members_out: list[dict[str, Any]] = []
+⋮----
+campaign_id = str(member.get("campaign_id") or "")
+campaign = store.get_campaign(campaign_id) if campaign_id else None
+findings = list((campaign or {}).get("findings") or [])
+events = list((campaign or {}).get("events") or [])
+confirmed = [
+⋮----
+digest = {
+⋮----
 state = store.get_hackerone_intelligence_state()
 ⋮----
 state = refresh_hackerone_intelligence(store, client=HackerOneClient())
@@ -4911,7 +4935,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: app/main.py
 ```python
-app = FastAPI(title="xbow-perso", version="0.5.6")
+app = FastAPI(title="xbow-perso", version="0.6.0")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -8819,6 +8843,34 @@ rotated = {"version": 1, "secrets": {}}
 ciphertext = AESGCM(new_key).encrypt(
 ```
 
+## File: app/simple_portfolio.py
+```python
+def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]
+⋮----
+"""Pick a disjoint 2 easy + 2 medium + 2 high-value READY portfolio."""
+pool = [
+⋮----
+def efficiency(item: dict[str, Any]) -> tuple[float, float, str]
+⋮----
+easy_pool = sorted(
+easy = easy_pool[:2]
+used = {str(item.get("handle") or "") for item in easy}
+⋮----
+remaining = [item for item in pool if str(item.get("handle") or "") not in used]
+⋮----
+efforts = sorted(float(item.get("effort_factor") or 0) for item in remaining)
+median = efforts[len(efforts) // 2]
+medium_pool = sorted(
+⋮----
+medium_pool = []
+medium = medium_pool[:2]
+⋮----
+high_value = sorted(
+⋮----
+groups = {"easy": easy, "medium": medium, "high_value": high_value}
+selected = easy + medium + high_value
+```
+
 ## File: app/storage_backend.py
 ```python
 @runtime_checkable
@@ -12213,7 +12265,7 @@ index = _text("frontend/index.html")
 ⋮----
 def test_api_token_is_persisted_across_browser_sessions()
 ⋮----
-app = _text("frontend/app.js")
+script = _text("frontend/simple.js")
 html = _text("frontend/index.html")
 ⋮----
 def test_frontend_has_no_totp_control()
@@ -12223,42 +12275,18 @@ def test_frontend_has_no_totp_control()
 ```python
 ROOT = Path(__file__).resolve().parents[2]
 ⋮----
-def test_hackerone_single_mutation_launch_route_exists()
+def _text(path: str) -> str
+⋮----
+def test_hackerone_reviewed_batch_routes_exist()
 ⋮----
 schema = app.openapi()
 ⋮----
-def test_frontend_requires_authorization_and_scope_review_before_launch()
+def test_minimal_frontend_exposes_only_primary_operator_flow()
 ⋮----
-html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
-launcher = (ROOT / "frontend" / "hackerone.js").read_text(encoding="utf-8")
+html = _text("frontend/index.html")
+script = _text("frontend/simple.js")
 ⋮----
-required_ids = (
-⋮----
-def test_frontend_exposes_remote_hackerone_control_center_contract()
-⋮----
-def test_frontend_exposes_hackerone_live_run_monitor_contract()
-⋮----
-def test_frontend_exposes_hackerone_finding_review_and_report_draft_contract()
-⋮----
-def test_frontend_exposes_hackerone_human_review_controls()
-⋮----
-def test_frontend_needs_info_flow_has_no_remote_send_action()
-⋮----
-def test_frontend_exposes_hackerone_attention_center_contract()
-⋮----
-def test_frontend_tracks_hackerone_attention_seen_state_locally()
-⋮----
-def test_frontend_filters_and_sorts_hackerone_attention_center()
-⋮----
-def test_frontend_persists_hackerone_attention_filters_and_saved_views()
-⋮----
-def test_frontend_bulk_hackerone_attention_actions_and_sanitized_export()
-⋮----
-def test_frontend_supports_named_custom_hackerone_attention_views()
-⋮----
-def test_frontend_exposes_hackerone_live_readiness_preflight()
-⋮----
-def test_frontend_exposes_first_live_run_operator_guide()
+def test_minimal_frontend_preserves_safety_and_server_persistence()
 ```
 
 ## File: tests/test_hackerone_activity_summary.py
@@ -17001,6 +17029,18 @@ def test_vault_rekey_rejects_same_key(monkeypatch, tmp_path)
 def test_vault_rekey_supports_private_new_key_file(monkeypatch, tmp_path)
 ⋮----
 key_file = tmp_path / "new-master.key"
+```
+
+## File: tests/test_simple_portfolio.py
+```python
+def _program(handle, *, effort, efficiency, award)
+⋮----
+def test_simple_six_is_disjoint_and_complete()
+⋮----
+programs = [
+result = select_simple_six(programs)
+⋮----
+def test_simple_six_never_selects_unreviewed_or_non_bounty_programs()
 ```
 
 ## File: tests/test_storage_backend.py
