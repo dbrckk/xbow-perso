@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -58,6 +59,30 @@ def write_worker_heartbeat(role: str) -> None:
     if os.name == "posix":
         temporary.chmod(0o600)
     os.replace(temporary, target)
+
+
+def start_worker_heartbeat(role: str) -> threading.Event:
+    safe_role = _role(role)
+    max_age = _max_age_seconds()
+    interval = max(1.0, min(10.0, max_age / 3.0))
+    stop = threading.Event()
+
+    def emit() -> None:
+        while not stop.is_set():
+            try:
+                write_worker_heartbeat(safe_role)
+            except OSError:
+                pass
+            if stop.wait(interval):
+                return
+
+    thread = threading.Thread(
+        target=emit,
+        name=f"worker-heartbeat-{safe_role}",
+        daemon=True,
+    )
+    thread.start()
+    return stop
 
 
 def worker_liveness(role: str, *, now: datetime | None = None) -> dict[str, Any]:
