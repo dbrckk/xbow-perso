@@ -453,6 +453,7 @@ def hackerone_campaign_journal(
     limit: int = Query(default=50, ge=1, le=200),
 ):
     """Return a durable, read-only operator journal and learning digest."""
+    from .github_learning_sync import learning_sync_configuration
     from .main import storage
 
     store = storage()
@@ -465,6 +466,10 @@ def hackerone_campaign_journal(
             campaign = store.get_campaign(campaign_id) if campaign_id else None
             findings = list((campaign or {}).get("findings") or [])
             events = list((campaign or {}).get("events") or [])
+            event_types: dict[str, int] = {}
+            for event in events:
+                kind = str(event.get("type") or "unknown")
+                event_types[kind] = event_types.get(kind, 0) + 1
             confirmed = [
                 item for item in findings
                 if str(item.get("status") or "") == "confirmed"
@@ -487,6 +492,11 @@ def hackerone_campaign_journal(
                     for item in findings[:20]
                 ],
                 "event_count": len(events),
+                "event_types": event_types,
+                "brief": (
+                    f"{len(events)} action(s) journalisée(s), "
+                    f"{len(findings)} finding(s), {len(confirmed)} confirmé(s)"
+                ),
                 "last_events": [
                     {
                         "type": str(item.get("type") or ""),
@@ -502,6 +512,7 @@ def hackerone_campaign_journal(
             "created_at": batch.get("created_at"),
             "updated_at": batch.get("updated_at"),
             "summary": dict(batch.get("summary") or {}),
+            "repository_sync": dict(batch.get("learning_repo_sync") or {}),
             "members": members_out,
         })
 
@@ -522,12 +533,13 @@ def hackerone_campaign_journal(
             "automatic_code_mutation": False,
         },
     }
+    sync_config = learning_sync_configuration()
     return {
         "provider": "hackerone",
         "journal": entries,
         "learning_digest": digest,
         "local_outcome_learning": True,
-        "repository_sync": "digest_ready",
+        "repository_sync": sync_config,
         "contains_secrets": False,
         "read_only": True,
     }
