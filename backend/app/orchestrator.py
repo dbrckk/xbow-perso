@@ -189,9 +189,12 @@ def _intelligence_context(
     swarm = coordinate_recon_swarm(list(recon_priority.tasks))
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)
-    high_value_intelligence = build_high_value_intelligence(graph)
     passive_response_intelligence = build_passive_response_context(
         graph, scope_checker=scope_checker
+    )
+    high_value_intelligence = build_high_value_intelligence(
+        graph,
+        passive_response_intelligence=passive_response_intelligence,
     )
     campaign_chain_intelligence = build_campaign_chain_context(graph, high_value_intelligence)
     planner_action = planned_actions[0] if planned_actions else None
