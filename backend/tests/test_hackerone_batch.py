@@ -114,3 +114,96 @@ def test_batch_waits_while_member_has_active_jobs(tmp_path):
     assert result is not None
     assert result["members"][0]["status"] == "running"
     assert result["state"] == "running"
+
+
+
+def test_parallel_batch_recovers_ready_members_after_restart(tmp_path, monkeypatch):
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign(_campaign("c1", state="ready"))
+    store.save_campaign(_campaign("c2", state="ready"))
+    store.save_hackerone_batch(
+        _batch(
+            "parallel",
+            [
+                {"index": 0, "campaign_id": "c1", "handle": "one", "status": "ready"},
+                {"index": 1, "campaign_id": "c2", "handle": "two", "status": "ready"},
+            ],
+        ),
+        expected_version=0,
+    )
+    queue = FakeQueue({})
+    started = []
+
+    def fake_start(campaign_id):
+        started.append(campaign_id)
+        raw, version = store.get_campaign_record(campaign_id)
+        raw["state"] = "running"
+        store.save_campaign(raw, expected_version=version)
+        return {"campaign_id": campaign_id}
+
+    monkeypatch.setattr("app.main.start_campaign", fake_start)
+
+    result = reconcile_hackerone_batch(queue, store, "batch-1")
+
+    assert result is not None
+    assert started == ["c1", "c2"]
+    assert [member["status"] for member in result["members"]] == ["running", "running"]
+    assert result["state"] == "running"
+
+
+def test_parallel_start_conflict_reconciles_existing_running_campaign(
+    tmp_path, monkeypatch
+):
+    from fastapi import HTTPException
+
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign(_campaign("c1", state="running"))
+    store.save_hackerone_batch(
+        _batch(
+            "parallel",
+            [{"index": 0, "campaign_id": "c1", "handle": "one", "status": "ready"}],
+        ),
+        expected_version=0,
+    )
+    queue = FakeQueue({})
+
+    def fake_start(_campaign_id):
+        raise HTTPException(status_code=409, detail="Cannot start from running")
+
+    monkeypatch.setattr("app.main.start_campaign", fake_start)
+
+    result = reconcile_hackerone_batch(queue, store, "batch-1")
+
+    assert result is not None
+    assert result["members"][0]["status"] == "running"
+    assert result["members"][0].get("reason") is None
+    assert result["state"] == "running"
+
+
+def test_parallel_start_conflict_on_ready_campaign_is_retried_not_blocked(
+    tmp_path, monkeypatch
+):
+    from fastapi import HTTPException
+
+    store = Storage(str(tmp_path / "db.sqlite3"), str(tmp_path / "artifacts"))
+    store.save_campaign(_campaign("c1", state="ready"))
+    store.save_hackerone_batch(
+        _batch(
+            "parallel",
+            [{"index": 0, "campaign_id": "c1", "handle": "one", "status": "ready"}],
+        ),
+        expected_version=0,
+    )
+    queue = FakeQueue({})
+
+    def fake_start(_campaign_id):
+        raise HTTPException(status_code=409, detail="conflict")
+
+    monkeypatch.setattr("app.main.start_campaign", fake_start)
+
+    result = reconcile_hackerone_batch(queue, store, "batch-1")
+
+    assert result is not None
+    assert result["members"][0]["status"] == "ready"
+    assert result["members"][0]["reason"] == "start_conflict_retry"
+    assert result["state"] == "queued"
