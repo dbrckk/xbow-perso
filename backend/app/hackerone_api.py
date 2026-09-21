@@ -840,6 +840,17 @@ def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInpu
 def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
     from .main import storage
 
+    verdict = hackerone_batch_go_no_go(payload)
+    if verdict.get("go") is not True:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed batch go/no-go blocked",
+                "reason": "batch_go_no_go_blocked",
+                "blockers": list(verdict.get("blockers") or []),
+            },
+        )
+
     store = storage()
     prepared: list[HackerOneCampaignAdmissionInput] = []
     missing: list[str] = []
