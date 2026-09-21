@@ -84,6 +84,7 @@ app/
   hackerone_binding.py
   hackerone_catalog.py
   hackerone_client.py
+  hackerone_discovery.py
   hackerone_intelligence.py
   hackerone_live_readiness.py
   hackerone_needs_info.py
@@ -247,6 +248,7 @@ tests/
   test_hackerone_catalog.py
   test_hackerone_client.py
   test_hackerone_control_center_api.py
+  test_hackerone_discovery.py
   test_hackerone_intelligence.py
   test_hackerone_launch_api.py
   test_hackerone_live_readiness.py
@@ -2763,14 +2765,31 @@ state = storage().get_hackerone_catalog_state()
 ⋮----
 state = refresh_hackerone_catalog(storage(), client=HackerOneClient())
 ⋮----
+"""Return a low-friction READY/REVIEW/BLOCKED program selection view."""
+⋮----
+catalog = store.get_hackerone_catalog_state()
+⋮----
+catalog = refresh_hackerone_catalog(store, client=HackerOneClient())
+⋮----
+intelligence = store.get_hackerone_intelligence_state() or {}
+profiles = store.list_hackerone_review_profiles(limit=1000)
+⋮----
+verified: dict[str, str] = {}
+handles = []
+⋮----
+handle = str(profile.get("handle") or "")
+⋮----
+snapshot = fetch_hackerone_program_snapshot(handle)
+⋮----
+runtime = dict(intelligence.get("runtime_capability_snapshot") or {})
+result = build_program_discovery(
+⋮----
 state = store.get_hackerone_intelligence_state()
 ⋮----
 state = refresh_hackerone_intelligence(store, client=HackerOneClient())
 ⋮----
 @router.get("/api/imports/hackerone/programs/{handle}/snapshot")
 def get_hackerone_program_snapshot(handle: str)
-⋮----
-snapshot = fetch_hackerone_program_snapshot(handle)
 ⋮----
 @router.post("/api/imports/hackerone/rules-preview")
 def preview_hackerone_rules(payload: HackerOneRulesPreviewInput)
@@ -3298,6 +3317,45 @@ preview = _preview_dict(document)
 ⋮----
 canonical = {
 digest = hashlib.sha256(
+```
+
+## File: app/hackerone_discovery.py
+```python
+"""Build a read-only discovery view for low-friction program selection."""
+verified = verified_snapshots or {}
+runtime = runtime or {}
+changes = catalog_changes or {}
+added = set(changes.get("added") or [])
+changed = set(changes.get("changed") or [])
+profiles_by_handle: dict[str, list[dict[str, Any]]] = {}
+⋮----
+handle = str(profile.get("handle") or "")
+⋮----
+program_signals = dict((intelligence or {}).get("program_signals") or {})
+items: list[dict[str, Any]] = []
+⋮----
+handle = str(program.get("handle") or "")
+profile_candidates = profiles_by_handle.get(handle, [])
+current_sha = str(verified.get(handle) or "")
+exact_profile = next(
+⋮----
+submission_open = str(program.get("submission_state") or "").lower() not in {
+state_open = str(program.get("state") or "").lower() not in {
+⋮----
+reasons: list[str] = []
+⋮----
+status = "BLOCKED"
+⋮----
+status = "READY"
+⋮----
+status = "REVIEW"
+⋮----
+signal = dict(program_signals.get(handle) or {})
+score = 0
+⋮----
+historical = float(signal.get("historical_value_score") or 0.0)
+⋮----
+summary = {
 ```
 
 ## File: app/hackerone_intelligence.py
@@ -12170,6 +12228,24 @@ def test_upstream_auth_error_is_mapped_without_leaking_detail(tmp_path, monkeypa
 class FailingClient
 ⋮----
 def test_upstream_rate_limit_is_service_unavailable(tmp_path, monkeypatch)
+```
+
+## File: tests/test_hackerone_discovery.py
+```python
+def _program(handle="alpha", **overrides)
+⋮----
+value = {
+⋮----
+def test_exact_profile_and_snapshot_is_ready()
+⋮----
+result = build_program_discovery(
+item = result["programs"][0]
+⋮----
+def test_saved_profile_with_changed_snapshot_requires_review()
+⋮----
+def test_closed_program_is_blocked_even_with_matching_profile()
+⋮----
+def test_ready_items_sort_before_review_and_blocked()
 ```
 
 ## File: tests/test_hackerone_intelligence.py

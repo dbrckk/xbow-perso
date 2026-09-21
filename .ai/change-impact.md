@@ -1,11 +1,12 @@
 # Change impact
 
-Base: 56b63790180d67ea497233a024974d223afbf644
-Head: 7944a2119241c60ed1cb885d8d6c82d4046f14b3
+Base: 0bb868c556a546abf825e7d655d14daf64b96b6a
+Head: 41a751fab0b2529b7a0a3d01ce4842ea5d4472fc
 
 ## Changed files
-- A backend/app/passive_api_intelligence.py
-- A backend/tests/test_passive_api_intelligence.py
+- M backend/app/hackerone_api.py
+- A backend/app/hackerone_discovery.py
+- A backend/tests/test_hackerone_discovery.py
 
 ## Affected areas
 - backend

@@ -4,17 +4,35 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 2,
     "tier": "bounded",
-    "top_score": 21
+    "top_score": 23
   },
   "cache": {
-    "fingerprint": "de5aaa37c7e7d2b5c80de27e85826aa9432a2d29d39b3f9a0d7c064514b6d82f",
+    "fingerprint": "02b8522caec0e948f81c99c5012689cab2ab03cb35cffba3bf267762a6d843b9",
     "hit": false
   },
-  "candidate_count": 31,
+  "candidate_count": 45,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "_launch_payload",
+        "_resource",
+        "fake_execute",
+        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue"
+      ]
+    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -120,33 +138,6 @@
         "test_adaptation_ranks_successful_memory_first",
         "test_adaptation_rejects_unknown_or_duplicate_configuration",
         "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_normalization.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "test_normalized_ids_are_engine_scoped_and_stable",
-        "test_normalizers_fail_closed_outside_scope",
-        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
-        "test_nuclei_jsonl_parser_rejects_invalid_line",
-        "test_nuclei_jsonl_parser_rejects_oversized_file",
-        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
-        "test_scanner_registry_dispatches_nuclei_parser",
-        "test_scanner_registry_dispatches_strix_parser",
-        "test_scanner_registry_exposes_supported_engines",
-        "test_scanner_registry_missing_run_directory_is_empty",
-        "test_scanner_registry_rejects_symlinked_artifacts",
-        "test_scanner_registry_rejects_unknown_engine",
-        "test_scanner_registry_selects_latest_artifact",
-        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
       ]
     }
   ],

@@ -646,6 +646,7 @@
         "backend/app/hackerone_batch.py",
         "backend/app/hackerone_catalog.py",
         "backend/app/hackerone_client.py",
+        "backend/app/hackerone_discovery.py",
         "backend/app/hackerone_intelligence.py",
         "backend/app/hackerone_live_readiness.py",
         "backend/app/hackerone_needs_info.py",
@@ -676,7 +677,7 @@
         "backend/tests/test_hackerone_scope_preview_api.py"
       ],
       "in_degree": 14,
-      "out_degree": 17
+      "out_degree": 18
     },
     "backend/app/hackerone_attention.py": {
       "dependencies": [
@@ -752,6 +753,15 @@
       ],
       "in_degree": 14,
       "out_degree": 3
+    },
+    "backend/app/hackerone_discovery.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/app/hackerone_api.py",
+        "backend/tests/test_hackerone_discovery.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 0
     },
     "backend/app/hackerone_intelligence.py": {
       "dependencies": [
@@ -3450,6 +3460,15 @@
       "in_degree": 0,
       "out_degree": 4
     },
+    "backend/tests/test_hackerone_discovery.py": {
+      "dependencies": [
+        "backend/app/hackerone_discovery.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_hackerone_intelligence.py": {
       "dependencies": [
         "backend/app/hackerone_intelligence.py",
@@ -4991,6 +5010,7 @@
         "backend/tests/test_hackerone_catalog.py",
         "backend/tests/test_hackerone_client.py",
         "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_discovery.py",
         "backend/tests/test_hackerone_intelligence.py",
         "backend/tests/test_hackerone_launch_api.py",
         "backend/tests/test_hackerone_live_readiness.py",
@@ -5131,7 +5151,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 196,
+      "in_degree": 197,
       "out_degree": 3
     },
     "frontend/hackerone.js": {

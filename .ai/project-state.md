@@ -22,16 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T08:24:41Z
+Generated: 2026-09-21T08:32:31Z
 
 ### Git
 - Branch: `main`
-- Head: `7944a2119241`
-- Commit date: 2026-09-21T10:24:30+02:00
-- Commit: feat: add passive API and GraphQL schema intelligence
-- Tracked files: 536
+- Head: `41a751fab0b2`
+- Commit date: 2026-09-21T10:31:45+02:00
+- Commit: feat: add low-friction HackerOne program discovery
+- Tracked files: 538
 
 ### Recently changed files
+- `backend/app/hackerone_api.py`
+- `backend/app/hackerone_discovery.py`
+- `backend/tests/test_hackerone_discovery.py`
 - `backend/app/passive_api_intelligence.py`
 - `backend/tests/test_passive_api_intelligence.py`
 - `backend/app/high_value_intelligence.py`
@@ -41,9 +44,6 @@ Generated: 2026-09-21T08:24:41Z
 - `backend/tests/test_passive_response_context.py`
 - `backend/app/passive_response_intelligence.py`
 - `backend/tests/test_passive_response_intelligence.py`
-- `backend/app/hackerone_intelligence.py`
-- `backend/app/runtime_gap_analysis.py`
-- `backend/tests/test_runtime_gap_analysis.py`
 
 ### Project signals
 - `pyproject.toml`
