@@ -110,6 +110,20 @@ def build_program_discovery(
             runtime_partial_categories=list(opportunity["runtime_partial_categories"]),
             gold_standard_safe_harbor=program.get("gold_standard_safe_harbor"),
         )
+        local_cost_bonus = min(
+            10,
+            int(local_signal.get("local_cost_efficiency_score") or 0),
+        )
+        if status == "READY" and local_cost_bonus:
+            efficiency = {
+                **efficiency,
+                "value_efficiency_score": min(
+                    100,
+                    int(efficiency["value_efficiency_score"]) + local_cost_bonus,
+                ),
+                "efficiency_reasons": list(efficiency["efficiency_reasons"])
+                + ["local_campaign_cost_efficiency"],
+            }
 
         items.append({
             "handle": handle,
@@ -131,6 +145,9 @@ def build_program_discovery(
             "effort_factor": efficiency["effort_factor"],
             "efficiency_reasons": efficiency["efficiency_reasons"],
             "local_outcome_score": int(local_signal.get("local_outcome_score") or 0),
+            "local_cost_efficiency_score": int(local_signal.get("local_cost_efficiency_score") or 0),
+            "local_average_duration_hours": float(local_signal.get("average_terminal_duration_hours") or 0.0),
+            "local_average_event_count": float(local_signal.get("average_terminal_event_count") or 0.0),
             "local_confirmed_findings": int(local_signal.get("confirmed_finding_count") or 0),
             "local_high_critical_confirmed": int(local_signal.get("high_critical_confirmed_count") or 0),
             "local_submitted_reports": int(local_signal.get("submitted_report_count") or 0),
