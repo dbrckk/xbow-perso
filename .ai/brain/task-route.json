@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 3,
     "tier": "bounded",
-    "top_score": 27
+    "top_score": 30
   },
   "cache": {
-    "fingerprint": "177d009d58ab1ebb8dfc75c04a6b8a91fe7c291424a49253fce50f1a481e2db4",
+    "fingerprint": "a47770a42241c13f8678126708cfec1257b25828c1851c3b4d80bf1c483d8d0c",
     "hit": false
   },
-  "candidate_count": 167,
+  "candidate_count": 169,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -23,9 +23,10 @@
       "path": "backend/app/orchestrator.py",
       "reasons": [
         "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 27,
+      "score": 30,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -100,6 +101,41 @@
       "matched_terms": [
         "engine"
       ],
+      "path": "backend/app/worker_service.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 26,
+      "symbols": [
+        "CampaignCancelledError",
+        "StaleBrowserJobError",
+        "StaleValidationJobError",
+        "_active_scanner_execution_requested",
+        "_append_event_once",
+        "_campaign",
+        "_claim_for_role",
+        "_lease_heartbeat",
+        "_legacy_unprovenanced_jobs_allowed",
+        "_process_scanner_job",
+        "_record_worker_outcome",
+        "_save",
+        "_verify_policy_bound_job",
+        "_worker_bool",
+        "_worker_poll_seconds",
+        "main",
+        "process_browser_flow",
+        "process_nuclei_scan",
+        "process_one",
+        "process_recon_task"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
       "path": "backend/app/report.py",
       "reasons": [
         "impact",
@@ -124,30 +160,6 @@
       "symbols": [
         "ScannerIngestionResult",
         "ingest_scanner_run"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_normalization.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "NormalizedScannerFinding",
-        "_optional_cvss",
-        "_optional_str",
-        "_severity",
-        "_string_list",
-        "dedupe_normalized",
-        "normalize_nuclei_item",
-        "normalize_strix_item",
-        "normalized_finding_id",
-        "to_campaign_finding"
       ]
     }
   ],

@@ -22,36 +22,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T16:32:36Z
+Generated: 2026-09-21T06:16:06Z
 
 ### Git
 - Branch: `main`
-- Head: `fad8e2d636cc`
-- Commit date: 2026-09-20T18:32:26+02:00
-- Commit: feat: launch multi-bounty batches from server-reviewed profiles
-- Tracked files: 515
+- Head: `53e059b52493`
+- Commit date: 2026-09-21T08:15:53+02:00
+- Commit: feat: high-value bounty recon and public-case intelligence (#282)
+- Tracked files: 519
 
 ### Recently changed files
+- `.env.example`
+- `backend/Dockerfile`
+- `backend/app/browser.py`
+- `backend/app/high_value_intelligence.py`
+- `backend/app/identity_access.py`
+- `backend/app/main.py`
+- `backend/app/orchestrator.py`
+- `backend/app/recon_worker.py`
+- `backend/app/runtime_capabilities.py`
+- `backend/app/worker_service.py`
+- `backend/tests/test_browser.py`
+- `backend/tests/test_high_value_intelligence.py`
+- `backend/tests/test_identity_access.py`
+- `backend/tests/test_recon_worker.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_scanner_runtime_contract.py`
+- `docker-compose.yml`
 - `README.md`
 - `backend/app/hackerone_api.py`
-- `backend/app/main.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `frontend/hackerone.js`
-- `frontend/index.html`
-- `frontend/sw.js`
-- `backend/app/postgres_storage.py`
-- `backend/app/storage_backend.py`
-- `backend/app/storage_core.py`
-- `backend/tests/test_hackerone_review_profiles.py`
-- `.env.example`
-- `backend/app/hackerone_catalog.py`
-- `backend/app/worker_service.py`
-- `backend/tests/test_hackerone_catalog.py`
-- `backend/tests/test_hackerone_control_center_api.py`
-- `docker-compose.yml`
-- `frontend/app.css`
-- `.github/workflows/ci.yml`
-- `backend/app/hackerone_live_readiness.py`
 
 ### Project signals
 - `pyproject.toml`

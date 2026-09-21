@@ -1,21 +1,30 @@
 # Change impact
 
-Base: a42086bad746bd3d3d45a65a68d83156878faf1b
-Head: fad8e2d636cc03c1713d8d472e2cc6cce1b7082f
+Base: 906fe961e6e1dc3d41f008da586ee54da77fa762
+Head: 53e059b524937bf85cabb459d50917192ef9716e
 
 ## Changed files
-- M README.md
-- M backend/app/hackerone_api.py
+- M .env.example
+- M backend/Dockerfile
+- M backend/app/browser.py
+- A backend/app/high_value_intelligence.py
+- A backend/app/identity_access.py
 - M backend/app/main.py
-- A backend/tests/test_hackerone_reviewed_batch_api.py
-- M frontend/hackerone.js
-- M frontend/index.html
-- M frontend/sw.js
+- M backend/app/orchestrator.py
+- M backend/app/recon_worker.py
+- M backend/app/runtime_capabilities.py
+- M backend/app/worker_service.py
+- M backend/tests/test_browser.py
+- A backend/tests/test_high_value_intelligence.py
+- A backend/tests/test_identity_access.py
+- M backend/tests/test_recon_worker.py
+- M backend/tests/test_runtime_capabilities.py
+- M backend/tests/test_scanner_runtime_contract.py
+- M docker-compose.yml
 
 ## Affected areas
 - (root)
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

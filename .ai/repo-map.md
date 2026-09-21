@@ -103,8 +103,10 @@ backend/
     hackerone_report_sync_worker.py
     hackerone_report_tracking.py
     hackerone_scope_import.py
+    high_value_intelligence.py
     hypothesis_engine.py
     hypothesis_memory.py
+    identity_access.py
     incident_api.py
     incident_domains.py
     incident_engine.py
@@ -266,8 +268,10 @@ backend/
     test_hackerone_scope_import.py
     test_hackerone_scope_preview_api.py
     test_health.py
+    test_high_value_intelligence.py
     test_hypothesis_engine.py
     test_hypothesis_memory.py
+    test_identity_access.py
     test_incident_api.py
     test_incident_domains.py
     test_incident_engine.py
@@ -1470,6 +1474,8 @@ timeout_ms: int = Field(default=10_000, ge=100, le=30_000)
 class BrowserFlowInput(BaseModel)
 ⋮----
 steps: list[BrowserStep] = Field(min_length=1, max_length=25)
+identity_label: str | None = Field(
+storage_state_secret_env: str | None = Field(
 ⋮----
 @dataclass(frozen=True)
 class BrowserExecutionResult
@@ -1477,6 +1483,7 @@ class BrowserExecutionResult
 status: str
 observations: list[dict]
 screenshots: list[tuple[str, bytes]]
+identity_label: str | None = None
 ⋮----
 def _bool_env(name: str, default: bool = False) -> bool
 ⋮----
@@ -1515,13 +1522,36 @@ def _allowed_url(campaign, candidate: str, base: str | None = None) -> str
 resolved = urljoin(base or str(campaign.target.primary_url), candidate)
 parsed = urlparse(resolved)
 ⋮----
+def _browser_storage_state(campaign, secret_env: str | None) -> dict | None
+⋮----
+"""Load a Playwright storage-state secret and reject any out-of-scope state."""
+⋮----
+raw = _browser_secret(secret_env)
+encoded = raw.encode("utf-8")
+⋮----
+document = json.loads(raw)
+⋮----
+cookies = document.get("cookies", [])
+origins = document.get("origins", [])
+⋮----
+rules = campaign.target.rules
+primary_host = (urlparse(str(campaign.target.primary_url)).hostname or "").lower().rstrip(".")
+⋮----
+domain = str(cookie.get("domain") or "").lower().lstrip(".").rstrip(".")
+name = cookie.get("name")
+value = cookie.get("value")
+⋮----
+domain_covers_primary = bool(
+⋮----
+origin_url = str(origin.get("origin") or "")
+⋮----
+local_storage = origin.get("localStorage", [])
+⋮----
 def _assert_read_only_browser_method(method: str) -> None
 ⋮----
 normalized = method.strip().upper()
 ⋮----
 def _assert_browser_policy(campaign) -> None
-⋮----
-rules = campaign.target.rules
 ⋮----
 def validate_flow(campaign, flow: BrowserFlowInput) -> BrowserFlowInput
 ⋮----
@@ -1538,17 +1568,24 @@ jobs: QueueBackend = create_queue()
 flow_fingerprint = _flow_fingerprint(flow)
 request_id = pending_request_id(
 ⋮----
+job_payload = {
+⋮----
 job = jobs.enqueue(
 ⋮----
 def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult
 ⋮----
-flow = validate_flow(campaign, BrowserFlowInput.model_validate({"steps": payload.get("steps", [])}))
+flow = validate_flow(campaign, BrowserFlowInput.model_validate(payload))
+⋮----
+preview = {"steps": len(flow.steps)}
 ⋮----
 observations: list[dict] = []
 screenshots: list[tuple[str, bytes]] = []
 ⋮----
 browser = p.chromium.launch(headless=True, args=["--disable-dev-shm-usage", "--no-sandbox"])
-context = browser.new_context(ignore_https_errors=False)
+storage_state = _browser_storage_state(campaign, flow.storage_state_secret_env)
+context_options = {"ignore_https_errors": False}
+⋮----
+context = browser.new_context(**context_options)
 page = context.new_page()
 ⋮----
 def route_guard(route)
@@ -1556,6 +1593,8 @@ def route_guard(route)
 target = _allowed_url(campaign, step.url or "", page.url if page.url != "about:blank" else None)
 response = page.goto(target, wait_until="domcontentloaded", timeout=step.timeout_ms)
 final_url = _allowed_url(campaign, page.url, target)
+rendered = page.content().encode("utf-8", errors="replace")
+navigation = {
 ⋮----
 links = []
 ⋮----
@@ -4110,6 +4149,73 @@ unsupported = tuple(sorted(unsupported_labels))
 complete = not conflicts and not unsupported
 ````
 
+## File: backend/app/high_value_intelligence.py
+````python
+router = APIRouter()
+⋮----
+@dataclass(frozen=True)
+class PublicCaseLesson
+⋮----
+case_id: str
+family: str
+title: str
+source_url: str
+published_at: str
+documented_reward_usd: int | None
+signals: tuple[str, ...]
+observation_goals: tuple[str, ...]
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+@dataclass(frozen=True)
+class HighValueFocus
+⋮----
+score: int
+reasons: tuple[str, ...]
+matched_case_ids: tuple[str, ...]
+⋮----
+_CASES = (
+⋮----
+def public_case_lessons() -> tuple[PublicCaseLesson, ...]
+⋮----
+def _surface_tokens(graph: ObservationGraph) -> set[str]
+⋮----
+tokens: set[str] = set()
+⋮----
+value = str(item.value).lower()
+⋮----
+metadata = item.metadata if isinstance(item.metadata, dict) else {}
+⋮----
+raw = metadata.get(key)
+⋮----
+"""Rank public-case lessons against observed, already-authorized surface data.
+
+    This is advisory only. It does not create payloads, execute requests, expand
+    scope, or assert that a vulnerability exists.
+    """
+⋮----
+surface = _surface_tokens(graph)
+joined = "\n".join(sorted(surface))
+grouped: dict[str, dict[str, Any]] = {}
+⋮----
+matched = tuple(signal for signal in case.signals if signal in joined)
+score = 35 + min(45, len(matched) * 15)
+reasons = ["public resolved-case lesson"]
+⋮----
+current = grouped.setdefault(
+⋮----
+focuses = [
+⋮----
+@router.get("/api/campaigns/{campaign_id}/high-value-intelligence")
+def campaign_high_value_intelligence(campaign_id: str, limit: int = 6)
+⋮----
+campaign = assert_campaign_exists(campaign_id)
+graph = load_observation_graph(storage(), campaign.id)
+result = build_high_value_intelligence(graph, limit=limit)
+````
+
 ## File: backend/app/hypothesis_engine.py
 ````python
 HypothesisKind = Literal[
@@ -4300,6 +4406,69 @@ stability = "evolving"
 score = 0.40
 ⋮----
 score = round(max(0.0, min(1.0, score)), 2)
+````
+
+## File: backend/app/identity_access.py
+````python
+router = APIRouter()
+⋮----
+@dataclass(frozen=True)
+class IdentityAccessDifferential
+⋮----
+endpoint: str
+identities: tuple[str, ...]
+http_status_by_identity: dict[str, int | None]
+content_sha256_by_identity: dict[str, str]
+signal: str
+requires_human_review: bool = True
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+"""Compare bounded browser observations from explicitly named test identities.
+
+    A differential is evidence of different behavior, not proof of broken access
+    control. No requests are issued here.
+    """
+⋮----
+grouped: dict[str, dict[str, dict[str, Any]]] = {}
+⋮----
+metadata = item.metadata if isinstance(item.metadata, dict) else {}
+identity = str(metadata.get("identity_label") or "").strip()
+endpoint = str(item.value or "").strip()
+⋮----
+status_raw = metadata.get("http_status")
+⋮----
+status = int(status_raw) if status_raw is not None else None
+⋮----
+status = None
+digest = str(metadata.get("content_sha256") or "").strip()
+⋮----
+results: list[IdentityAccessDifferential] = []
+⋮----
+identities = tuple(sorted(observations))
+statuses = {
+digests = {
+status_values = {value for value in statuses.values() if value is not None}
+digest_values = set(digests.values())
+⋮----
+signal = "status_divergence"
+⋮----
+signal = "content_divergence"
+⋮----
+signal = "no_observed_divergence"
+⋮----
+rank = {
+⋮----
+items = build_identity_access_differentials(graph, limit=limit)
+⋮----
+@router.get("/api/campaigns/{campaign_id}/identity-access-differentials")
+def campaign_identity_access_differentials(campaign_id: str, limit: int = 50)
+⋮----
+campaign = assert_campaign_exists(campaign_id)
+graph = load_observation_graph(storage(), campaign.id)
+result = summarize_identity_access_differentials(graph, limit=limit)
 ````
 
 ## File: backend/app/incident_api.py
@@ -5012,6 +5181,7 @@ def system_capabilities()
 ⋮----
 pentagi = safe_pentagi_runtime_capability()
 scanners = safe_scanner_runtime_capability()
+recon = safe_recon_runtime_capability()
 ⋮----
 @app.get("/api/observer/health")
 def get_observer_health()
@@ -5296,6 +5466,8 @@ from .evidence_quality import router as evidence_quality_router  # noqa: E402
 from .finding_cluster_consensus import router as finding_cluster_consensus_router  # noqa: E402
 from .finding_cluster_saturation import router as finding_cluster_saturation_router  # noqa: E402
 from .finding_intelligence import router as finding_intelligence_router  # noqa: E402
+from .high_value_intelligence import router as high_value_intelligence_router  # noqa: E402
+from .identity_access import router as identity_access_router  # noqa: E402
 from .finding_correlation import router as finding_correlation_router  # noqa: E402
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
@@ -5779,6 +5951,8 @@ recon_priority = prioritize_recon_tasks(
 swarm = coordinate_recon_swarm(list(recon_priority.tasks))
 coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
 coverage_guidance = build_coverage_guidance(coverage)
+high_value_intelligence = build_high_value_intelligence(graph)
+identity_access = summarize_identity_access_differentials(graph)
 scanner_adaptation = adapt_scanner_engines(
 ⋮----
 """Return clusters whose validated representative has strong independent evidence.
@@ -7279,6 +7453,7 @@ class ReconResult
 ⋮----
 status: str
 target: str
+assets: tuple[str, ...] = ()
 endpoints: tuple[str, ...] = ()
 forms: tuple[dict, ...] = ()
 technologies: tuple[str, ...] = ()
@@ -7371,6 +7546,88 @@ def _fetch_page(opener, target: str, max_bytes: int, timeout_seconds: float)
 ⋮----
 request = Request(
 ⋮----
+def _external_recon_enabled() -> bool
+⋮----
+raw = os.getenv("XBOW_ENABLE_EXTERNAL_RECON", "0").strip().lower()
+⋮----
+def _external_output_limit() -> int
+⋮----
+raw = os.getenv("XBOW_EXTERNAL_RECON_MAX_OUTPUT_BYTES", "1048576")
+⋮----
+def _external_tool_env() -> dict[str, str]
+⋮----
+allowed = {"PATH", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}
+environment = {key: value for key, value in os.environ.items() if key in allowed}
+home = "/tmp/xbow-recon-home"
+⋮----
+def _run_external_tool(command: list[str], *, timeout: float) -> str
+⋮----
+result = subprocess.run(
+⋮----
+limit = _external_output_limit()
+stdout = bytes(result.stdout or b"")
+⋮----
+stdout = stdout[:limit]
+⋮----
+def _scope_regex(target: str) -> str
+⋮----
+parsed = urlparse(target)
+host = re.escape((parsed.hostname or "").lower().rstrip("."))
+⋮----
+def _external_rate(campaign) -> int | None
+⋮----
+rps = _recon_rps(campaign)
+⋮----
+def _katana_surface(campaign, target: str) -> set[str]
+⋮----
+rate = _external_rate(campaign)
+⋮----
+timeout = min(30, max(5, int(math.ceil(_timeout_seconds()))))
+command = [
+output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 180.0))
+endpoints: set[str] = set()
+⋮----
+candidate = raw.strip()
+⋮----
+safe = _safe_url(campaign, candidate)
+⋮----
+def _httpx_context(campaign, target: str) -> tuple[set[str], set[str]]
+⋮----
+output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 60.0))
+technologies: set[str] = set()
+waf: set[str] = set()
+⋮----
+item = json.loads(raw)
+⋮----
+observed_url = str(item.get("url") or target)
+⋮----
+safe = _safe_url(campaign, observed_url)
+⋮----
+tech = item.get("tech")
+⋮----
+server = item.get("webserver") or item.get("server")
+⋮----
+cdn_name = item.get("cdn_name")
+⋮----
+def _passive_domain(campaign, target: str) -> str
+⋮----
+host = (urlparse(target).hostname or "").lower().rstrip(".")
+⋮----
+candidates: list[str] = []
+⋮----
+value = str(raw).strip().lower().rstrip(".")
+⋮----
+suffix = value[2:]
+⋮----
+def _passive_subdomains(campaign, target: str) -> set[str]
+⋮----
+domain = _passive_domain(campaign, target)
+⋮----
+output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 75.0))
+assets: set[str] = set()
+⋮----
+host = raw.strip().lower().rstrip(".")
+⋮----
 def execute_recon_task(campaign, payload: dict) -> ReconResult
 ⋮----
 kind = str(payload.get("kind") or "")
@@ -7392,10 +7649,9 @@ opener = build_opener(_NoRedirect())
 ⋮----
 pending: list[tuple[str, int]] = [(target, 0)]
 visited: set[str] = set()
-endpoints: set[str] = set()
+⋮----
 forms: list[dict] = []
-technologies: set[str] = set()
-waf: set[str] = set()
+⋮----
 first_status: int | None = None
 first_error: str | None = None
 last_request_at: float | None = None
@@ -7425,8 +7681,6 @@ first_error = first_error or error
 content_type = (headers.get("Content-Type") or "").lower() if headers else ""
 text = body.decode("utf-8", errors="replace") if "html" in content_type else ""
 parser = _SurfaceParser(current)
-⋮----
-safe = _safe_url(campaign, candidate)
 ⋮----
 action = _safe_url(campaign, form["action"])
 ⋮----
@@ -8076,6 +8330,18 @@ nuclei_execution_intent = bool(
 reasons: list[str] = []
 ⋮----
 def safe_scanner_runtime_capability() -> dict[str, Any]
+⋮----
+def recon_runtime_capability() -> dict[str, Any]
+⋮----
+"""Return a redacted preflight for the bounded recon execution path."""
+recon_enabled = _strict_bool("XBOW_ENABLE_RECON", False)
+external_enabled = _strict_bool("XBOW_ENABLE_EXTERNAL_RECON", False)
+required_tools = ("katana", "httpx", "subfinder")
+available_tools = {
+⋮----
+missing = [
+⋮----
+def safe_recon_runtime_capability() -> dict[str, Any]
 ````
 
 ## File: backend/app/scanner_adaptation.py
@@ -9747,6 +10013,8 @@ artifacts = persist_browser_result(store, campaign.id, result, idempotency_prefi
 ⋮----
 operation = observation.get("operation")
 ⋮----
+endpoint_url = str(observation["url"])
+⋮----
 action = str(form.get("action") or "")
 ⋮----
 def process_recon_task(job: dict, store: Storage) -> None
@@ -10536,6 +10804,18 @@ def test_browser_pending_intent_is_visible_in_outbox(tmp_path, monkeypatch)
 pending = Campaign.model_validate(document)
 ⋮----
 snapshot = outbox_snapshot(store.get_campaign(campaign.id)["events"])
+⋮----
+def test_browser_storage_state_accepts_only_in_scope_session_state(monkeypatch)
+⋮----
+state = {
+⋮----
+loaded = _browser_storage_state(
+⋮----
+def test_browser_storage_state_rejects_out_of_scope_cookie(monkeypatch)
+⋮----
+def test_browser_storage_state_rejects_out_of_scope_origin(monkeypatch)
+⋮----
+def test_browser_dry_run_keeps_identity_label_but_not_session_secret(monkeypatch)
 ````
 
 ## File: backend/tests/test_campaign_audit.py
@@ -12680,6 +12960,33 @@ def test_health_returns_503_when_database_unhealthy(monkeypatch)
 def test_health_returns_503_when_database_probe_raises(monkeypatch)
 ````
 
+## File: backend/tests/test_high_value_intelligence.py
+````python
+def _focuses(graph)
+⋮----
+def test_public_case_lessons_are_bounded_and_evidence_oriented()
+⋮----
+cases = public_case_lessons()
+⋮----
+def test_graphql_surface_prioritizes_graphql_authorization_lessons()
+⋮----
+graph = ObservationGraph()
+⋮----
+focuses = _focuses(graph)
+⋮----
+def test_auth_and_server_side_fetch_signals_raise_matching_families()
+⋮----
+def test_high_value_intelligence_is_advisory_only()
+⋮----
+result = build_high_value_intelligence(ObservationGraph())
+⋮----
+def test_transaction_reconciliation_signals_raise_business_invariant_focus()
+⋮----
+goals = " ".join(
+⋮----
+def test_high_value_intelligence_route_is_exposed()
+````
+
 ## File: backend/tests/test_hypothesis_engine.py
 ````python
 def test_hypotheses_are_bounded_and_deterministic()
@@ -12777,6 +13084,25 @@ item = summarize_hypothesis_stability(snapshots)[0]
 def test_stability_marks_three_identical_snapshots_as_stable()
 ⋮----
 def test_stability_detects_confidence_reversal_as_contradictory()
+````
+
+## File: backend/tests/test_identity_access.py
+````python
+def _access(identity, endpoint, status, digest)
+⋮----
+def test_identity_access_detects_status_divergence_without_claiming_vulnerability()
+⋮----
+graph = ObservationGraph()
+⋮----
+items = build_identity_access_differentials(graph)
+⋮----
+summary = summarize_identity_access_differentials(graph)
+⋮----
+def test_identity_access_detects_content_divergence_at_same_status()
+⋮----
+def test_identity_access_requires_two_explicit_test_identities()
+⋮----
+def test_identity_access_differential_route_is_exposed()
 ````
 
 ## File: backend/tests/test_incident_api.py
@@ -15117,6 +15443,30 @@ def test_recon_worker_marks_request_budget_saturation_as_incomplete(monkeypatch)
 opener = _RoutingOpener({"https://example.test/": root})
 ⋮----
 def test_recon_worker_reports_incomplete_frontier_when_budget_prevents_followup(monkeypatch)
+⋮----
+class _CompletedTool
+⋮----
+def __init__(self, stdout: bytes, returncode: int = 0)
+⋮----
+def _wildcard_campaign()
+⋮----
+def test_external_recon_enriches_crawl_and_filters_every_result_to_scope(monkeypatch)
+⋮----
+response = _Response(b"<html></html>", {"Content-Type": "text/html"})
+⋮----
+commands = []
+⋮----
+def fake_run(command, **_kwargs)
+⋮----
+katana = commands[0]
+⋮----
+def test_external_httpx_context_is_bounded_and_scope_checked(monkeypatch)
+⋮----
+response = _Response(b"", {"Content-Type": "text/plain"})
+⋮----
+payload = (
+⋮----
+def test_external_recon_is_disabled_unless_explicitly_enabled(monkeypatch)
 ````
 
 ## File: backend/tests/test_red_team_coverage.py
@@ -15739,6 +16089,22 @@ def test_capabilities_api_exposes_scanner_worker_admission(monkeypatch)
 scanner = result["execution"]["scanner_worker_detail"]
 ⋮----
 def test_scanner_runtime_capability_rejects_unsupported_engine(monkeypatch)
+⋮----
+def test_recon_runtime_capability_defaults_fail_closed(monkeypatch)
+⋮----
+result = recon_runtime_capability()
+⋮----
+def test_external_recon_preflight_reports_missing_tools(monkeypatch)
+⋮----
+def test_external_recon_preflight_ready_when_every_tool_exists(monkeypatch)
+⋮----
+def test_recon_capability_invalid_configuration_fails_closed(monkeypatch)
+⋮----
+result = safe_recon_runtime_capability()
+⋮----
+def test_capabilities_api_exposes_recon_preflight(monkeypatch)
+⋮----
+recon = result["execution"]["recon_detail"]
 ````
 
 ## File: backend/tests/test_scan_payload_idempotency.py
@@ -15930,6 +16296,14 @@ dockerfile = (ROOT / "backend" / "Dockerfile.scanner").read_text()
 def test_ci_builds_the_scanner_profile_image()
 ⋮----
 workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+⋮----
+def test_general_worker_image_verifies_pinned_recon_toolchain()
+⋮----
+dockerfile = (ROOT / "backend" / "Dockerfile").read_text()
+⋮----
+def test_compose_wires_recon_flags_to_general_worker()
+⋮----
+worker = compose.split("  worker:", 1)[1].split("\n  scanner-worker:", 1)[0]
 ````
 
 ## File: backend/tests/test_scanner_sandbox.py
@@ -18894,6 +19268,13 @@ services:
       XBOW_ENABLE_HTTP_VALIDATION: ${XBOW_ENABLE_HTTP_VALIDATION:-false}
       XBOW_ENABLE_DIFFERENTIAL_VALIDATION: ${XBOW_ENABLE_DIFFERENTIAL_VALIDATION:-false}
       XBOW_ENABLE_BROWSER_AUTOMATION: ${XBOW_ENABLE_BROWSER_AUTOMATION:-false}
+      XBOW_ENABLE_RECON: ${XBOW_ENABLE_RECON:-false}
+      XBOW_ENABLE_EXTERNAL_RECON: ${XBOW_ENABLE_EXTERNAL_RECON:-false}
+      XBOW_RECON_MAX_REQUESTS: ${XBOW_RECON_MAX_REQUESTS:-40}
+      XBOW_RECON_MAX_DEPTH: ${XBOW_RECON_MAX_DEPTH:-2}
+      XBOW_RECON_MAX_RPS: ${XBOW_RECON_MAX_RPS:-2.0}
+      XBOW_RECON_MAX_WALL_SECONDS: ${XBOW_RECON_MAX_WALL_SECONDS:-120}
+      XBOW_EXTERNAL_RECON_MAX_OUTPUT_BYTES: ${XBOW_EXTERNAL_RECON_MAX_OUTPUT_BYTES:-1048576}
       XBOW_VALIDATION_PREVIEW_CHARS: ${XBOW_VALIDATION_PREVIEW_CHARS:-4096}
       WORKER_TIMEOUT_SECONDS: ${WORKER_TIMEOUT_SECONDS:-7200}
       XBOW_JOB_LEASE_SECONDS: ${XBOW_JOB_LEASE_SECONDS:-21600}
