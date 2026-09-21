@@ -175,7 +175,7 @@ def reconcile_hackerone_batch(queue, store, batch_id: str) -> dict[str, Any] | N
 
 
 def reconcile_hackerone_batches(queue, store, *, limit: int = 20) -> int:
-    batches = store.list_hackerone_batches(limit=limit)
+    batches = store.list_active_hackerone_batches(limit=limit)
     reconciled = 0
     for batch in reversed(batches):
         if str(batch.get("state")) in {"completed", "cancelled"}:
