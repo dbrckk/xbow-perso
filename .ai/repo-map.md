@@ -94,6 +94,7 @@ backend/
     finding_lifecycle.py
     finding_readiness.py
     finding_triage.py
+    github_learning_sync.py
     hackerone_api.py
     hackerone_attention.py
     hackerone_batch.py
@@ -262,6 +263,7 @@ backend/
     test_form_waf_reasoning.py
     test_frontend_auth_proxy.py
     test_frontend_policy_launcher.py
+    test_github_learning_sync.py
     test_hackerone_activity_summary.py
     test_hackerone_attention.py
     test_hackerone_batch_api.py
@@ -3298,6 +3300,121 @@ graph = load_observation_graph(storage(), campaign.id)
 triage = build_finding_triage(campaign.findings, graph)
 ````
 
+## File: backend/app/github_learning_sync.py
+````python
+_MARKER_PREFIX = "xbow-runtime-learning-batch:"
+_DEFAULT_REPO = "dbrckk/xbow-perso"
+_REPO_PATTERN = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+⋮----
+class LearningSyncError(RuntimeError)
+⋮----
+def _bool_env(name: str, default: bool) -> bool
+⋮----
+raw = os.getenv(name)
+⋮----
+value = raw.strip().lower()
+⋮----
+def _repo() -> str
+⋮----
+value = (os.getenv("XBOW_GITHUB_LEARNING_REPO") or _DEFAULT_REPO).strip()
+⋮----
+def _token() -> str | None
+⋮----
+value = get_secret("github_learning_token")
+⋮----
+value = (os.getenv("XBOW_GITHUB_LEARNING_TOKEN") or "").strip()
+⋮----
+def learning_sync_configuration() -> dict[str, Any]
+⋮----
+enabled = _bool_env("XBOW_ENABLE_GITHUB_LEARNING_SYNC", True)
+repo = _repo()
+configured = bool(_token()) if enabled else False
+⋮----
+def _safe_text(value: Any, limit: int = 180) -> str
+⋮----
+text = " ".join(str(value or "").replace(chr(0), "").split())
+⋮----
+def _campaign_digest(store, campaign_id: str) -> dict[str, Any]
+⋮----
+campaign = store.get_campaign(campaign_id) if campaign_id else None
+⋮----
+findings = list(campaign.get("findings") or [])
+events = list(campaign.get("events") or [])
+severity_counts = Counter(_safe_text(item.get("severity"), 32) or "unknown" for item in findings)
+status_counts = Counter(_safe_text(item.get("status"), 32) or "unknown" for item in findings)
+event_counts = Counter(_safe_text(item.get("type"), 80) or "unknown" for item in events)
+confirmed = [item for item in findings if str(item.get("status") or "") == "confirmed"]
+⋮----
+finding_brief = []
+⋮----
+def build_learning_digest(store, batch: dict[str, Any]) -> dict[str, Any]
+⋮----
+members = []
+⋮----
+campaign_id = str(member.get("campaign_id") or "")
+⋮----
+def _render_issue_body(digest: dict[str, Any]) -> str
+⋮----
+lines = [
+⋮----
+campaign = member.get("campaign") or {}
+⋮----
+briefs = campaign.get("finding_brief") or []
+⋮----
+def _github_json(method: str, url: str, token: str, payload: dict[str, Any] | None = None) -> Any
+⋮----
+data = None
+⋮----
+data = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+request = urllib.request.Request(
+timeout = float(os.getenv("XBOW_GITHUB_LEARNING_TIMEOUT_SECONDS", "10"))
+⋮----
+raw = response.read(2_000_000)
+⋮----
+def _existing_issue(repo: str, batch_id: str, token: str) -> dict[str, Any] | None
+⋮----
+marker = f"{_MARKER_PREFIX}{batch_id}"
+query = urllib.parse.urlencode({"q": f'repo:{repo} is:issue "{marker}"', "per_page": 5})
+result = _github_json("GET", f"https://api.github.com/search/issues?{query}", token)
+⋮----
+def sync_batch_learning_issue(store, batch: dict[str, Any]) -> dict[str, Any]
+⋮----
+config = learning_sync_configuration()
+⋮----
+token = _token()
+⋮----
+batch_id = str(batch.get("id") or "")
+⋮----
+issue = _existing_issue(config["repository"], batch_id, token)
+⋮----
+digest = build_learning_digest(store, batch)
+issue = _github_json(
+⋮----
+number = int(issue.get("number") or 0)
+⋮----
+def _retry_due(record: dict[str, Any]) -> bool
+⋮----
+attempted = str(record.get("attempted_at") or "")
+⋮----
+then = datetime.fromisoformat(attempted.replace("Z", "+00:00"))
+⋮----
+then = then.replace(tzinfo=timezone.utc)
+⋮----
+def sync_completed_learning_batches(store, *, limit: int = 20) -> int
+⋮----
+updated = 0
+⋮----
+current_sync = dict(batch.get("learning_repo_sync") or {})
+⋮----
+record = store.get_hackerone_batch_record(str(batch.get("id") or ""))
+⋮----
+sync_record = sync_batch_learning_issue(store, current)
+⋮----
+sync_record = {
+⋮----
+next_batch = dict(current)
+````
+
 ## File: backend/app/hackerone_api.py
 ````python
 router = APIRouter()
@@ -3468,9 +3585,14 @@ campaign_id = str(member.get("campaign_id") or "")
 campaign = store.get_campaign(campaign_id) if campaign_id else None
 findings = list((campaign or {}).get("findings") or [])
 events = list((campaign or {}).get("events") or [])
+event_types: dict[str, int] = {}
+⋮----
+kind = str(event.get("type") or "unknown")
+⋮----
 confirmed = [
 ⋮----
 digest = {
+sync_config = learning_sync_configuration()
 ⋮----
 state = store.get_hackerone_intelligence_state()
 ⋮----
@@ -5542,7 +5664,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.6.0")
+app = FastAPI(title="xbow-perso", version="0.6.1")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -10906,6 +11028,8 @@ coordinator = heartbeat_role == "general"
 ⋮----
 # Batch scheduling must fail closed without taking down the worker.
 ⋮----
+# Learning sync is advisory and must never stop campaign execution.
+⋮----
 worked = process_one(queue, store, worker_id)
 ````
 
@@ -12900,6 +13024,41 @@ html = _text("frontend/index.html")
 script = _text("frontend/simple.js")
 ⋮----
 def test_minimal_frontend_preserves_safety_and_server_persistence()
+````
+
+## File: backend/tests/test_github_learning_sync.py
+````python
+class FakeStore
+⋮----
+def __init__(self)
+⋮----
+def get_campaign(self, campaign_id)
+⋮----
+def list_hackerone_batches(self, *, limit)
+⋮----
+def get_hackerone_batch_record(self, batch_id)
+⋮----
+def save_hackerone_batch(self, document, *, expected_version=None)
+⋮----
+def test_learning_digest_is_detailed_but_excludes_raw_evidence_and_payloads()
+⋮----
+store = FakeStore()
+digest = learning.build_learning_digest(store, store.batch)
+encoded = str(digest)
+⋮----
+campaign = digest["members"][0]["campaign"]
+⋮----
+def test_learning_sync_creates_idempotent_github_issue(monkeypatch)
+⋮----
+calls = []
+⋮----
+def fake_github(method, url, token, payload=None)
+⋮----
+result = learning.sync_batch_learning_issue(store, store.batch)
+⋮----
+post = next(payload for method, _url, payload in calls if method == "POST")
+⋮----
+def test_completed_batch_sync_is_persisted_for_journal(monkeypatch)
 ````
 
 ## File: backend/tests/test_hackerone_activity_summary.py
@@ -18899,17 +19058,30 @@ async function importScopeFile()
 const $=id
 ⋮----
 function token()
+⋮----
 function saveToken()
+⋮----
+function setStatus(message,kind='')
+⋮----
+function requireToken()
+⋮----
 async function api(path,options=
-function status(message,kind='')
-function label(item,group)
+⋮----
+function money(value)
+⋮----
 function renderSelection(result)
+⋮----
 async function prepare()
+⋮----
 async function start()
-function memberText(member)
+⋮----
+function repoSyncLabel(entry)
+⋮----
 function renderJournal(payload)
-async function refreshJournal()
-async function init()
+⋮----
+async function refreshJournal(
+⋮----
+function bind()
 ````
 
 ## File: frontend/sw.js
@@ -19900,7 +20072,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.0\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.1\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 
@@ -20679,6 +20851,10 @@ services:
       XBOW_ALERT_WEBHOOK_HMAC_KEY: ${XBOW_ALERT_WEBHOOK_HMAC_KEY:-}
       XBOW_HACKERONE_API_USERNAME: ${XBOW_HACKERONE_API_USERNAME:-}
       XBOW_HACKERONE_API_TOKEN: ${XBOW_HACKERONE_API_TOKEN:-}
+      XBOW_ENABLE_GITHUB_LEARNING_SYNC: ${XBOW_ENABLE_GITHUB_LEARNING_SYNC:-true}
+      XBOW_GITHUB_LEARNING_REPO: ${XBOW_GITHUB_LEARNING_REPO:-dbrckk/xbow-perso}
+      XBOW_GITHUB_LEARNING_TOKEN: ${XBOW_GITHUB_LEARNING_TOKEN:-}
+      XBOW_GITHUB_LEARNING_TIMEOUT_SECONDS: ${XBOW_GITHUB_LEARNING_TIMEOUT_SECONDS:-10}
       XBOW_AUDIT_HMAC_KEY: ${XBOW_AUDIT_HMAC_KEY:-}
       XBOW_VAULT_ENABLED: ${XBOW_VAULT_ENABLED:-false}
       XBOW_VAULT_PATH: ${XBOW_VAULT_PATH:-/data/secrets.vault.json}
@@ -20759,6 +20935,10 @@ services:
       XBOW_ENABLE_HACKERONE_INTELLIGENCE: ${XBOW_ENABLE_HACKERONE_INTELLIGENCE:-true}
       XBOW_HACKERONE_INTEL_POLL_SECONDS: ${XBOW_HACKERONE_INTEL_POLL_SECONDS:-21600}
       XBOW_HACKERONE_INTEL_MAX_PAGES: ${XBOW_HACKERONE_INTEL_MAX_PAGES:-2}
+      XBOW_ENABLE_GITHUB_LEARNING_SYNC: ${XBOW_ENABLE_GITHUB_LEARNING_SYNC:-true}
+      XBOW_GITHUB_LEARNING_REPO: ${XBOW_GITHUB_LEARNING_REPO:-dbrckk/xbow-perso}
+      XBOW_GITHUB_LEARNING_TOKEN: ${XBOW_GITHUB_LEARNING_TOKEN:-}
+      XBOW_GITHUB_LEARNING_TIMEOUT_SECONDS: ${XBOW_GITHUB_LEARNING_TIMEOUT_SECONDS:-10}
       XBOW_SCAN_ENGINES: ${XBOW_SCAN_ENGINES:-nuclei}
       XBOW_PLANNER_MAX_OBSERVATIONS: ${XBOW_PLANNER_MAX_OBSERVATIONS:-5000}
       XBOW_PLANNER_MAX_ENDPOINTS: ${XBOW_PLANNER_MAX_ENDPOINTS:-1500}

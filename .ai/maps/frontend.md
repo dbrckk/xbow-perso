@@ -360,17 +360,30 @@ async function importScopeFile()
 const $=id
 ⋮----
 function token()
+⋮----
 function saveToken()
+⋮----
+function setStatus(message,kind='')
+⋮----
+function requireToken()
+⋮----
 async function api(path,options=
-function status(message,kind='')
-function label(item,group)
+⋮----
+function money(value)
+⋮----
 function renderSelection(result)
+⋮----
 async function prepare()
+⋮----
 async function start()
-function memberText(member)
+⋮----
+function repoSyncLabel(entry)
+⋮----
 function renderJournal(payload)
-async function refreshJournal()
-async function init()
+⋮----
+async function refreshJournal(
+⋮----
+function bind()
 ```
 
 ## File: sw.js
