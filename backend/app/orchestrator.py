@@ -31,6 +31,7 @@ from .main import Campaign, is_host_allowed, policy_receipt, sanitized_scan_payl
 from .observation_graph import AdaptivePlanner, Observation, ObservationGraph, PlannedAction
 from .planner_budget import PlannerBudget, apply_budget, budget_usage, planner_budget_from_env
 from .planner_intelligence import prioritize_action_with_intelligence
+from .passive_response_context import build_passive_response_context
 from .pipeline_swarm import coordinate_pipeline_action
 from .recon_priority import prioritize_recon_tasks
 from .recon_swarm import build_recon_plan
@@ -189,6 +190,9 @@ def _intelligence_context(
     coverage = build_evidence_coverage(graph, scope_checker=scope_checker)
     coverage_guidance = build_coverage_guidance(coverage)
     high_value_intelligence = build_high_value_intelligence(graph)
+    passive_response_intelligence = build_passive_response_context(
+        graph, scope_checker=scope_checker
+    )
     campaign_chain_intelligence = build_campaign_chain_context(graph, high_value_intelligence)
     planner_action = planned_actions[0] if planned_actions else None
     planner_intelligence = None
@@ -221,6 +225,7 @@ def _intelligence_context(
         "coverage": coverage,
         "coverage_guidance": coverage_guidance,
         "high_value_intelligence": high_value_intelligence,
+        "passive_response_intelligence": passive_response_intelligence,
         "campaign_chain_intelligence": campaign_chain_intelligence,
         "planner_intelligence": planner_intelligence,
         "identity_access": identity_access,
@@ -600,6 +605,7 @@ def _result(
             "coverage": dict(intelligence["coverage"]),
             "coverage_guidance": dict(intelligence["coverage_guidance"]),
             "high_value_intelligence": dict(intelligence["high_value_intelligence"]),
+            "passive_response_intelligence": dict(intelligence["passive_response_intelligence"]),
             "campaign_chain_intelligence": dict(intelligence["campaign_chain_intelligence"]),
             "chain_planner_intelligence": dict(intelligence.get("chain_planner_intelligence") or {}),
             "planner_intelligence": dict(intelligence["planner_intelligence"] or {}),
