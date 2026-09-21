@@ -287,6 +287,8 @@ async function refreshBatchCatalog()
 ⋮----
 function selectReadyBatchProfiles()
 ⋮----
+function autoSelectBatchProfiles()
+⋮----
 async function batchPayloadForHandle(handle)
 ⋮----
 function renderBatchProgress(batch)

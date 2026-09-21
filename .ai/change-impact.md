@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 93058eff177ddae7614aeb85cb074eeb0a988123
-Head: 30f594ba4de4151b28dfbaf80cd8dd5e13d755be
+Base: d0c83806b4b7e8285cc8a58f38f4aaeb2e2d50eb
+Head: d36c54d3311f70223e5f0551738bb2bf9326a78d
 
 ## Changed files
 - M frontend/hackerone.js

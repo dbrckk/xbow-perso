@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-21T08:45:40Z
+Generated: 2026-09-21T08:48:36Z
 
 ### Git
 - Branch: `main`
-- Head: `30f594ba4de4`
-- Commit date: 2026-09-21T10:45:29+02:00
-- Commit: feat: add READY REVIEW BLOCKED discovery dashboard
+- Head: `d36c54d3311f`
+- Commit date: 2026-09-21T10:48:26+02:00
+- Commit: feat: add one-click Auto-select for ready bounty queue
 - Tracked files: 538
 
 ### Recently changed files
@@ -43,8 +43,6 @@ Generated: 2026-09-21T08:45:40Z
 - `backend/app/high_value_intelligence.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_passive_high_value_ranking.py`
-- `backend/app/passive_response_context.py`
-- `backend/tests/test_passive_response_context.py`
 
 ### Project signals
 - `pyproject.toml`
