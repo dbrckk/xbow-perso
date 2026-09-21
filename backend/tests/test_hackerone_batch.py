@@ -274,6 +274,7 @@ def test_sequential_batch_retries_after_transient_remote_revalidation_failure(
     moments = iter(
         [
             datetime(2026, 9, 21, 10, 0, tzinfo=timezone.utc),
+            datetime(2026, 9, 21, 10, 0, 5, tzinfo=timezone.utc),
             datetime(2026, 9, 21, 10, 1, tzinfo=timezone.utc),
         ]
     )
@@ -290,9 +291,16 @@ def test_sequential_batch_retries_after_transient_remote_revalidation_failure(
     assert first["members"][0]["remote_revalidation_retry_at"]
     assert started == []
 
+    waiting = reconcile_hackerone_batch(queue, store, "batch-1")
+    assert waiting is not None
+    assert waiting["members"][0]["status"] == "ready"
+    assert calls["count"] == 1
+    assert started == []
+
     second = reconcile_hackerone_batch(queue, store, "batch-1")
     assert second is not None
     assert second["members"][0]["status"] == "running"
+    assert calls["count"] == 2
     assert started == ["c1"]
 
 
