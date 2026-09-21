@@ -431,6 +431,29 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
                     response = page.goto(target, wait_until="domcontentloaded", timeout=step.timeout_ms)
                     final_url = _allowed_url(campaign, page.url, target)
                     rendered = page.content().encode("utf-8", errors="replace")
+                    structure_metrics = page.evaluate(
+                        """() => ({
+                          links: document.querySelectorAll('a[href]').length,
+                          forms: document.querySelectorAll('form').length,
+                          inputs: document.querySelectorAll('input, textarea, select').length,
+                          buttons: document.querySelectorAll('button, input[type="button"], input[type="submit"]').length,
+                          headings: document.querySelectorAll('h1, h2, h3, h4, h5, h6').length,
+                          tables: document.querySelectorAll('table').length,
+                          dialogs: document.querySelectorAll('[role="dialog"], dialog').length,
+                          navs: document.querySelectorAll('nav, [role="navigation"]').length
+                        })"""
+                    )
+                    bounded_structure = {
+                        str(key): max(0, min(int(value or 0), 100000))
+                        for key, value in dict(structure_metrics or {}).items()
+                    }
+                    structure_sha256 = hashlib.sha256(
+                        json.dumps(
+                            bounded_structure,
+                            sort_keys=True,
+                            separators=(",", ":"),
+                        ).encode("utf-8")
+                    ).hexdigest()
                     navigation = {
                         "step": index,
                         "operation": "navigate",
@@ -438,6 +461,8 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
                         "status": response.status if response else None,
                         "content_sha256": hashlib.sha256(rendered).hexdigest(),
                         "content_bytes": len(rendered),
+                        "structure_sha256": structure_sha256,
+                        "structure_metrics": bounded_structure,
                     }
                     if flow.identity_label:
                         navigation["identity_label"] = flow.identity_label
