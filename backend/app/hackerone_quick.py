@@ -38,8 +38,14 @@ def select_quick_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     candidates = _ready_candidates(programs)
     remaining = list(candidates)
 
+    high_candidates = [
+        item
+        for item in remaining
+        if float(item.get("historical_usd_awarded_max") or 0.0) > 0.0
+        or float(item.get("historical_value_score") or 0.0) > 0.0
+    ]
     high_ranked = sorted(
-        remaining,
+        high_candidates,
         key=lambda item: (
             -float(item.get("historical_usd_awarded_max") or 0.0),
             -float(item.get("historical_value_score") or 0.0),
