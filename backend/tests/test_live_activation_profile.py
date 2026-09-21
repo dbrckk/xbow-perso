@@ -77,7 +77,7 @@ def test_production_update_attests_frontend_diagnostic_proxy():
     assert "=== FRONTEND DIAGNOSTIC PROXY ===" in script
     assert "http://127.0.0.1:8080/live" in script
     assert "http://127.0.0.1:8080/auth-status" in script
-    assert "0.5.4" in script
+    assert "0.5.5" in script
     assert "contains_secrets" in script
 
 
