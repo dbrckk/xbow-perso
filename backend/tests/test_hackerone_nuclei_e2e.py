@@ -7,6 +7,9 @@ from fastapi.testclient import TestClient
 from app import scanner_worker, worker_service
 from app.hackerone_api import router as hackerone_router
 from app.jobqueue import JobQueue
+from app.main import Campaign
+from app.observation_graph import Observation
+from app.orchestrator import advance_campaign
 from app.storage import Storage
 
 
@@ -60,6 +63,7 @@ def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(
     monkeypatch.setenv("DRY_RUN", "false")
     monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
     monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
+    monkeypatch.setenv("XBOW_SCAN_ENGINES", "nuclei")
     monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0")
 
     def fake_execute(plan):
@@ -102,12 +106,49 @@ def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(
     assert launch.status_code == 200
     launched = launch.json()
     campaign_id = launched["campaign"]["id"]
-    scan_job = launched["start"]["job"]
-    assert scan_job["kind"] == "nuclei_scan"
+    assert launched["start"]["job"]["kind"] == "recon_task"
+    assert launched["start"]["planner"]["action"]["kind"] == "crawl"
     assert launched["campaign"]["state"] == "running"
 
     queue = JobQueue(db)
     store = Storage(db, artifacts)
+
+    for _ in launched["start"]["planner"]["job_ids"]:
+        recon_job = queue.claim_allowed("e2e-recon-fixture", ("recon_task",))
+        assert recon_job is not None
+        queue.finish(recon_job["id"], "e2e-recon-fixture", True)
+
+    asset = next(
+        item for item in store.list_observations(campaign_id)
+        if item["kind"] == "asset"
+    )
+    store.put_observation(
+        campaign_id,
+        Observation(
+            "e2e-endpoint",
+            "endpoint",
+            "https://example.com/",
+            "recon:crawl",
+            parent_ids=(asset["id"],),
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign_id,
+        Observation(
+            "e2e-tech",
+            "technology",
+            "Server:fixture",
+            "recon:detect_technology",
+            parent_ids=(asset["id"],),
+        ).to_dict(),
+    )
+    campaign = Campaign.model_validate(store.get_campaign(campaign_id))
+    scan_plan = advance_campaign(campaign, queue, store)
+    assert scan_plan["action"]["kind"] == "scan"
+    assert len(scan_plan["job_ids"]) == 1
+    scan_job = queue.get(scan_plan["job_ids"][0])
+    assert scan_job is not None
+    assert scan_job["kind"] == "nuclei_scan"
 
     assert worker_service.process_one(queue, store, "e2e-scanner") is True
 
