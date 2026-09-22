@@ -174,7 +174,7 @@ def test_simple_dashboard_can_cancel_active_hackerone_batch():
 
 def test_simple_dashboard_keeps_valid_review_drafts_across_replacement_rounds():
     script = _text("frontend/simple.js")
-    assert "loadReviewDrafts(result,draftCache)" in script
+    assert "loadReviewDrafts(currentResult,draftCache)" in script
     assert "const draftCache=new Map();" in script
     assert "const cached=draftCache.get(handle);" in script
     assert "draftCache.set(handle,draft);" in script
