@@ -332,6 +332,15 @@ def process_recon_task(job: dict, store: Storage) -> None:
             f"{source}:passive",
         )
 
+    if result.status == "observed" and result.http_status is not None:
+        record_endpoint(
+            store,
+            campaign,
+            result.target,
+            source=source,
+            parent_id=asset_id,
+        )
+
     for endpoint in result.endpoints:
         record_endpoint(
             store,
