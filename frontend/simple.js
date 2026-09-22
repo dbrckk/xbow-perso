@@ -271,6 +271,33 @@
     return {failedHandles:[]};
   }
 
+  async function refreshRuntimeReadiness({quiet=true}={}){
+    const node=$('runtimeStatus');
+    if(!node||!token())return null;
+    try{
+      const readiness=await api('/hackerone/live-readiness');
+      const failed=(Array.isArray(readiness?.checks)?readiness.checks:[])
+        .filter(item=>item?.required===true&&item?.ok!==true);
+      if(readiness?.live_scan_ready===true){
+        node.textContent='Scanner : prêt pour les programmes autorisés.';
+        node.className='muted compact state-ready';
+      }else{
+        const labels=failed.slice(0,3)
+          .map(item=>String(item?.label||item?.id||'contrôle'))
+          .filter(Boolean);
+        node.textContent='Scanner : non prêt'+(labels.length?' · '+labels.join(' · '):'')+'.';
+        node.className='muted compact state-review';
+        if(!quiet)setStatus('Le scanner doit être prêt avant le lancement.','warn');
+      }
+      return readiness;
+    }catch(error){
+      node.textContent='Scanner : état indisponible.';
+      node.className='muted compact state-review';
+      if(!quiet)setStatus('État scanner indisponible : '+error.message,'warn');
+      return null;
+    }
+  }
+
   async function loadSimpleSelection(excludedHandles=[]){
     try{
       const query=excludedHandles.length
@@ -341,6 +368,7 @@
           return;
         }
         $('start').disabled=false;
+        await refreshRuntimeReadiness({quiet:true});
         const revalidationCount=Number(result?.revalidation_count||0);
         setStatus(
           revalidationCount
@@ -613,6 +641,7 @@
   function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     $('token').addEventListener('input',saveToken);
+    $('token').addEventListener('change',()=>void refreshRuntimeReadiness({quiet:true}));
     $('prepare').addEventListener('click',()=>void prepare());
     $('saveReviews').addEventListener('click',()=>void saveReviews());
     $('start').addEventListener('click',()=>void start());
@@ -624,8 +653,12 @@
     window.addEventListener('error',event=>{
       if(event?.message)setStatus('Erreur interface : '+event.message,'err');
     });
+    void refreshRuntimeReadiness({quiet:true});
     void refreshJournal({quiet:true});
-    timer=setInterval(()=>void refreshJournal({quiet:true}),15000);
+    timer=setInterval(()=>{
+      void refreshRuntimeReadiness({quiet:true});
+      void refreshJournal({quiet:true});
+    },15000);
   }
 
   window.addEventListener('beforeunload',()=>{if(timer)clearInterval(timer);});
