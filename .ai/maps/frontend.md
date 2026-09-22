@@ -387,7 +387,7 @@ async function loadReviewDraft(handle)
 ⋮----
 async function loadReviewDrafts(result)
 ⋮----
-async function loadSimpleSelection()
+async function loadSimpleSelection(excludedHandles=[])
 ⋮----
 async function prepare()
 ⋮----

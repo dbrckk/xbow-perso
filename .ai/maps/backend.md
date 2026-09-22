@@ -2961,9 +2961,6 @@ result = build_program_discovery(
 discovery = hackerone_program_discovery(verify_limit=50)
 selected = select_diversified_portfolio(
 ⋮----
-@router.get("/api/hackerone/simple-selection")
-def hackerone_simple_selection()
-⋮----
 """Select 2 easy + 2 medium + 2 high-value candidates from local cache.
 
     Selection itself never requires a live HackerOne request. Programs with a
@@ -2973,7 +2970,8 @@ def hackerone_simple_selection()
 ⋮----
 local_outcomes = build_local_outcome_signals(store.list_campaigns(limit=1000))
 discovery = build_program_discovery(
-candidates = mark_cached_review_profiles(list(discovery.get("programs") or []))
+excluded_handles = {
+candidates = [
 result = select_simple_six(candidates)
 ⋮----
 """Return a durable, read-only operator journal and learning digest."""
@@ -5069,7 +5067,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: app/main.py
 ```python
-app = FastAPI(title="xbow-perso", version="0.6.5")
+app = FastAPI(title="xbow-perso", version="0.6.6")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -14378,6 +14376,10 @@ def test_mobile_api_token_reset_is_vault_only_and_verifies_round_trip()
 script = (ROOT / "scripts" / "mobile-reset-api-token.sh").read_text(encoding="utf-8")
 ⋮----
 def test_mobile_api_token_reset_loads_distributed_compose_secrets()
+⋮----
+def test_mobile_github_learning_token_setup_is_vault_only_and_non_echoing()
+⋮----
+script = (ROOT / "scripts" / "mobile-set-github-learning-token.sh").read_text(encoding="utf-8")
 ```
 
 ## File: tests/test_nuclei_preflight.py
@@ -17268,6 +17270,10 @@ def test_simple_dashboard_initializes_catalog_once_then_retries_selection()
 script = _text("frontend/simple.js")
 ⋮----
 def test_simple_dashboard_surfaces_actionable_hackerone_errors()
+⋮----
+def test_simple_selection_supports_excluding_unavailable_review_candidates()
+⋮----
+def test_simple_dashboard_replaces_individually_unavailable_review_programs()
 ```
 
 ## File: tests/test_simple_selection_cached.py

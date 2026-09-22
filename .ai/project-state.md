@@ -22,14 +22,14 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T06:28:34Z
+Generated: 2026-09-22T06:47:18Z
 
 ### Git
 - Branch: `main`
-- Head: `f47242493041`
-- Commit date: 2026-09-22T08:28:21+02:00
-- Commit: fix: make minimal bounty dashboard first run reliable (#338)
-- Tracked files: 562
+- Head: `e4e4156ec498`
+- Commit date: 2026-09-22T08:47:06+02:00
+- Commit: fix: make simple bounty selection resilient and learning setup one-time (#339)
+- Tracked files: 563
 
 ### Recently changed files
 - `backend/app/hackerone_api.py`
@@ -37,21 +37,19 @@ Generated: 2026-09-22T06:28:34Z
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_live_activation_profile.py`
+- `backend/tests/test_mobile_reset_api_token.py`
+- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
 - `scripts/mobile-production-update.sh`
-- `backend/tests/test_simple_selection_cache_only.py`
+- `scripts/mobile-set-github-learning-token.sh`
 - `backend/app/simple_portfolio.py`
 - `backend/tests/test_simple_portfolio.py`
 - `backend/tests/test_simple_selection_cached.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/tests/test_hackerone_review_draft.py`
 - `frontend/app.css`
-- `.env.example`
-- `backend/app/github_learning_sync.py`
-- `backend/app/worker_service.py`
-- `backend/tests/test_github_learning_sync.py`
 
 ### Project signals
 - `pyproject.toml`

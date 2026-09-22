@@ -438,6 +438,7 @@ scripts/
   mobile-production-status.sh
   mobile-production-update.sh
   mobile-reset-api-token.sh
+  mobile-set-github-learning-token.sh
   mobile-vault-cutover.sh
   mobile-vault-rollback.sh
 .repo-standards.yml
@@ -3568,9 +3569,6 @@ result = build_program_discovery(
 discovery = hackerone_program_discovery(verify_limit=50)
 selected = select_diversified_portfolio(
 ⋮----
-@router.get("/api/hackerone/simple-selection")
-def hackerone_simple_selection()
-⋮----
 """Select 2 easy + 2 medium + 2 high-value candidates from local cache.
 
     Selection itself never requires a live HackerOne request. Programs with a
@@ -3580,7 +3578,8 @@ def hackerone_simple_selection()
 ⋮----
 local_outcomes = build_local_outcome_signals(store.list_campaigns(limit=1000))
 discovery = build_program_discovery(
-candidates = mark_cached_review_profiles(list(discovery.get("programs") or []))
+excluded_handles = {
+candidates = [
 result = select_simple_six(candidates)
 ⋮----
 """Return a durable, read-only operator journal and learning digest."""
@@ -5676,7 +5675,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.6.5")
+app = FastAPI(title="xbow-perso", version="0.6.6")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -14985,6 +14984,10 @@ def test_mobile_api_token_reset_is_vault_only_and_verifies_round_trip()
 script = (ROOT / "scripts" / "mobile-reset-api-token.sh").read_text(encoding="utf-8")
 ⋮----
 def test_mobile_api_token_reset_loads_distributed_compose_secrets()
+⋮----
+def test_mobile_github_learning_token_setup_is_vault_only_and_non_echoing()
+⋮----
+script = (ROOT / "scripts" / "mobile-set-github-learning-token.sh").read_text(encoding="utf-8")
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
@@ -17875,6 +17878,10 @@ def test_simple_dashboard_initializes_catalog_once_then_retries_selection()
 script = _text("frontend/simple.js")
 ⋮----
 def test_simple_dashboard_surfaces_actionable_hackerone_errors()
+⋮----
+def test_simple_selection_supports_excluding_unavailable_review_candidates()
+⋮----
+def test_simple_dashboard_replaces_individually_unavailable_review_programs()
 ````
 
 ## File: backend/tests/test_simple_selection_cached.py
@@ -19168,7 +19175,7 @@ async function loadReviewDraft(handle)
 ⋮----
 async function loadReviewDrafts(result)
 ⋮----
-async function loadSimpleSelection()
+async function loadSimpleSelection(excludedHandles=[])
 ⋮----
 async function prepare()
 ⋮----
@@ -20173,7 +20180,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.5\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.6\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 
@@ -20288,6 +20295,72 @@ printf '%s\n' "$TOKEN"
 echo
 echo "Saved root-only at /root/xbow-api-token.txt"
 echo "Paste this exact token into the dashboard Jeton API field."
+````
+
+## File: scripts/mobile-set-github-learning-token.sh
+````bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+INSTALL_DIR="${XBOW_INSTALL_DIR:-/opt/xbow-perso}"
+SECRETS_FILE="${XBOW_PRODUCTION_SECRETS_FILE:-/root/xbow-production-secrets.env}"
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Run with sudo: sudo bash $0" >&2
+  exit 1
+fi
+if [ ! -f "$SECRETS_FILE" ]; then
+  echo "Production secrets file not found: $SECRETS_FILE" >&2
+  exit 1
+fi
+
+cd "$INSTALL_DIR"
+chmod 600 "$SECRETS_FILE"
+# shellcheck disable=SC1090
+. "$SECRETS_FILE"
+
+: "${XBOW_POSTGRES_PASSWORD:?missing XBOW_POSTGRES_PASSWORD}"
+: "${XBOW_REDIS_PASSWORD:?missing XBOW_REDIS_PASSWORD}"
+export XBOW_POSTGRES_PASSWORD XBOW_REDIS_PASSWORD
+export XBOW_POSTGRES_DB="${XBOW_POSTGRES_DB:-xbow}"
+export XBOW_POSTGRES_USER="${XBOW_POSTGRES_USER:-xbow}"
+export XBOW_DATABASE_URL="postgresql://${XBOW_POSTGRES_USER}:${XBOW_POSTGRES_PASSWORD}@postgres:5432/${XBOW_POSTGRES_DB}"
+export XBOW_REDIS_URL="redis://:${XBOW_REDIS_PASSWORD}@redis:6379/0"
+
+COMPOSE=(
+  docker compose
+  -f docker-compose.yml
+  -f docker-compose.distributed.yml
+  -f docker-compose.tls.yml
+)
+"${COMPOSE[@]}" config --quiet
+
+printf 'GitHub fine-grained token (repo Issues: Read and write): ' >&2
+IFS= read -r -s TOKEN
+printf '\n' >&2
+if [ "${#TOKEN}" -lt 20 ]; then
+  echo "Token too short; nothing changed." >&2
+  exit 1
+fi
+
+printf '%s' "$TOKEN" | "${COMPOSE[@]}" exec -T backend python -c '
+import sys
+from app.secret_vault import set_secret, vault_enabled
+from app.github_learning_sync import learning_sync_configuration
+if not vault_enabled():
+    raise SystemExit("vault is not enabled")
+token = sys.stdin.read().strip()
+if len(token) < 20:
+    raise SystemExit("GitHub token is unexpectedly short")
+set_secret("github_learning_token", token)
+cfg = learning_sync_configuration()
+if not cfg.get("configured"):
+    raise SystemExit("GitHub learning token verification failed")
+print("GitHub learning sync credential stored in vault")
+print("repository:", cfg.get("repository"))
+'
+unset TOKEN
+echo "Done. Completed batches will be summarized to GitHub automatically."
 ````
 
 ## File: scripts/mobile-vault-cutover.sh

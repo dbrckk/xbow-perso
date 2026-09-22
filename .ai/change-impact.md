@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 415c029d9bb6316815bd20ebfedf47b22d911db7
-Head: f472424930415c685f8ed876f02ed2c9c272efd9
+Base: 256ca269f7c932b1499e3da0c8ce14b516cd9855
+Head: e4e4156ec498a2d872df1697232a3ed4f8366688
 
 ## Changed files
 - M backend/app/hackerone_api.py
@@ -9,10 +9,13 @@ Head: f472424930415c685f8ed876f02ed2c9c272efd9
 - M backend/tests/test_frontend_auth_proxy.py
 - M backend/tests/test_frontend_policy_launcher.py
 - M backend/tests/test_live_activation_profile.py
+- M backend/tests/test_mobile_reset_api_token.py
+- M backend/tests/test_simple_selection_cache_only.py
 - M frontend/index.html
 - M frontend/simple.js
 - M frontend/sw.js
 - M scripts/mobile-production-update.sh
+- A scripts/mobile-set-github-learning-token.sh
 
 ## Affected areas
 - backend
