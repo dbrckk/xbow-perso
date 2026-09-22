@@ -23,7 +23,7 @@ def test_simple_selection_never_refreshes_hackerone_inline():
 def test_simple_dashboard_initializes_catalog_once_then_retries_selection():
     script = _text("frontend/simple.js")
 
-    assert "async function loadSimpleSelection()" in script
+    assert "async function loadSimpleSelection(excludedHandles=[])" in script
     assert "hackerone_catalog_not_initialized" in script
     assert "/imports/hackerone/connection" in script
     assert "/imports/hackerone/programs?refresh=true" in script
@@ -45,7 +45,7 @@ def test_simple_selection_supports_excluding_unavailable_review_candidates():
     block = source.split('@router.get("/api/hackerone/simple-selection")', 1)[1]
     block = block.split('@router.get("/api/hackerone/journal")', 1)[0]
 
-    assert 'exclude: str = Query(default="", max_length=4096)' in block
+    assert 'exclude: str = ""' in block
     assert "excluded_handles" in block
     assert '"excluded_handles": sorted(excluded_handles)' in block
 
