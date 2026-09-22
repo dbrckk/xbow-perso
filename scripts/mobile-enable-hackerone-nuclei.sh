@@ -80,13 +80,14 @@ active_batches = [
     for batch in storage().list_hackerone_batches(limit=50)
     if str(batch.get("state") or "") not in {"completed", "cancelled"}
 ]
-print("QUEUE_IDLE=" + ("true" if active_jobs == 0 else "false"))
+queue_idle = active_jobs == 0 and not active_batches
+print("QUEUE_IDLE=" + ("true" if queue_idle else "false"))
 print(f"QUEUE_QUEUED={queued}")
 print(f"QUEUE_RUNNING={running}")
 if active_batches:
     print("ACTIVE_BATCH_ID=" + str(active_batches[0].get("id") or ""))
     print("ACTIVE_BATCH_STATE=" + str(active_batches[0].get("state") or ""))
-if active_jobs:
+if not queue_idle:
     print("NEXT_STEP=Let the active batch finish or cancel it from the dashboard before arming the scanner.")
     raise SystemExit(1)
 PY
