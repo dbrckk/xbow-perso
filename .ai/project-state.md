@@ -22,16 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T15:59:55Z
+Generated: 2026-09-22T17:32:16Z
 
 ### Git
 - Branch: `main`
-- Head: `41a954304339`
-- Commit date: 2026-09-22T17:59:32+02:00
-- Commit: perf: make reviewed bug-bounty launch a single final validation (#367)
+- Head: `a67a7c3df59a`
+- Commit date: 2026-09-22T19:32:04+02:00
+- Commit: feat: require live HackerOne API health in launch-ready verdict (#369)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/tests/test_mobile_production_update_script.py`
+- `scripts/mobile-enable-hackerone-nuclei.sh`
+- `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
@@ -43,9 +46,6 @@ Generated: 2026-09-22T15:59:55Z
 - `backend/tests/test_hackerone_nuclei_e2e.py`
 - `backend/tests/test_hackerone_batch_api.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/tests/test_mobile_production_update_script.py`
-- `scripts/mobile-enable-hackerone-nuclei.sh`
-- `scripts/mobile-production-status.sh`
 
 ### Project signals
 - `pyproject.toml`

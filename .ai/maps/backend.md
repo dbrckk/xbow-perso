@@ -14577,6 +14577,22 @@ def test_mobile_status_prints_explicit_launch_verdict_and_blockers()
 def test_enable_script_requires_final_live_launch_verdict()
 ⋮----
 script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+⋮----
+def test_mobile_status_requires_live_hackerone_api_probe_for_ready_verdict()
+⋮----
+def test_enable_script_probes_hackerone_before_declaring_profile_armed()
+⋮----
+probe = script.index("=== HACKERONE API PROBE ===")
+armed = script.index("PERSISTENT HACKERONE NUCLEI PROFILE ARMED")
+⋮----
+def test_enable_script_reports_actionable_non_idle_queue_blocker()
+⋮----
+def test_enable_script_keeps_rollback_active_through_final_launch_verification()
+⋮----
+arm = script.index("=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ===")
+⋮----
+verdict = script.index("=== FINAL BUG BOUNTY LAUNCH VERDICT ===")
+clear_trap = script.index("trap - ERR", arm)
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

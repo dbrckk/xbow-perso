@@ -15185,6 +15185,22 @@ def test_mobile_status_prints_explicit_launch_verdict_and_blockers()
 def test_enable_script_requires_final_live_launch_verdict()
 ⋮----
 script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+⋮----
+def test_mobile_status_requires_live_hackerone_api_probe_for_ready_verdict()
+⋮----
+def test_enable_script_probes_hackerone_before_declaring_profile_armed()
+⋮----
+probe = script.index("=== HACKERONE API PROBE ===")
+armed = script.index("PERSISTENT HACKERONE NUCLEI PROFILE ARMED")
+⋮----
+def test_enable_script_reports_actionable_non_idle_queue_blocker()
+⋮----
+def test_enable_script_keeps_rollback_active_through_final_launch_verification()
+⋮----
+arm = script.index("=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ===")
+⋮----
+verdict = script.index("=== FINAL BUG BOUNTY LAUNCH VERDICT ===")
+clear_trap = script.index("trap - ERR", arm)
 ````
 
 ## File: backend/tests/test_mobile_reset_api_token.py
@@ -19640,8 +19656,29 @@ echo "=== BACKEND READINESS ==="
 "${COMPOSE[@]}" exec -T backend python -m app.readiness
 
 echo "=== QUEUE MUST BE IDLE BEFORE ARMING ==="
-"${COMPOSE[@]}" exec -T backend python -c \
-  'from app.main import queue; s=queue().stats(); active=int(s["by_status"].get("queued",0))+int(s["by_status"].get("running",0)); assert active==0, s; print(s)'
+"${COMPOSE[@]}" exec -T backend python - <<'PY'
+from app.main import queue, storage
+
+stats = queue().stats()
+queued = int(stats["by_status"].get("queued", 0))
+running = int(stats["by_status"].get("running", 0))
+active_jobs = queued + running
+active_batches = [
+    batch
+    for batch in storage().list_hackerone_batches(limit=50)
+    if str(batch.get("state") or "") not in {"completed", "cancelled"}
+]
+queue_idle = active_jobs == 0 and not active_batches
+print("QUEUE_IDLE=" + ("true" if queue_idle else "false"))
+print(f"QUEUE_QUEUED={queued}")
+print(f"QUEUE_RUNNING={running}")
+if active_batches:
+    print("ACTIVE_BATCH_ID=" + str(active_batches[0].get("id") or ""))
+    print("ACTIVE_BATCH_STATE=" + str(active_batches[0].get("state") or ""))
+if not queue_idle:
+    print("NEXT_STEP=Let the active batch finish or cancel it from the dashboard before arming the scanner.")
+    raise SystemExit(1)
+PY
 
 TMP_PROFILE="$(mktemp)"
 cleanup_tmp() {
@@ -19681,7 +19718,23 @@ install -m 600 "$TMP_PROFILE" "$LIVE_PROFILE_FILE"
 echo "=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ==="
 bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
 
-trap - ERR
+echo
+echo "=== HACKERONE API PROBE ==="
+"${COMPOSE[@]}" --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_client import HackerOneClient, HackerOneClientError, load_hackerone_credentials
+
+try:
+    credentials = load_hackerone_credentials()
+    HackerOneClient(credentials).get_json(
+        "hackers/programs",
+        {"page[number]": 1, "page[size]": 1},
+    )
+except HackerOneClientError as exc:
+    print("HACKERONE_API_READY=false")
+    print("HACKERONE_API_ERROR=" + exc.__class__.__name__)
+    raise SystemExit(1)
+print("HACKERONE_API_READY=true")
+PY
 echo
 echo "PERSISTENT HACKERONE NUCLEI PROFILE ARMED"
 echo "The root-only profile survives normal production updates."
@@ -19707,6 +19760,13 @@ if failed:
 print("BUG_BOUNTY_LAUNCH_READY=true")
 print("NEXT_STEP=Open the dashboard, review any first-run policies, then press Commencer.")
 PY
+
+trap - ERR
+
+PUBLIC_HOST="$(read_env_value XBOW_PUBLIC_HOST)"
+if [ -n "$PUBLIC_HOST" ]; then
+  echo "DASHBOARD_URL=https://$PUBLIC_HOST/"
+fi
 ````
 
 ## File: scripts/mobile-production-cutover.sh
@@ -20249,6 +20309,26 @@ if [ -n "$PUBLIC_HOST" ]; then
   fi
 fi
 
+echo "=== HACKERONE API PROBE ==="
+HACKERONE_API_READY=false
+if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_client import HackerOneClient, HackerOneClientError, load_hackerone_credentials
+
+try:
+    credentials = load_hackerone_credentials()
+    HackerOneClient(credentials).get_json(
+        "hackers/programs",
+        {"page[number]": 1, "page[size]": 1},
+    )
+except HackerOneClientError:
+    print("HACKERONE_API_READY=false")
+    raise SystemExit(1)
+print("HACKERONE_API_READY=true")
+PY
+then
+  HACKERONE_API_READY=true
+fi
+
 echo "=== BUG BOUNTY LAUNCH VERDICT ==="
 RUNTIME_RESULT="$(
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
@@ -20272,7 +20352,7 @@ PY
 )"
 printf '%s\n' "$RUNTIME_RESULT"
 RUNTIME_READY="$(printf '%s\n' "$RUNTIME_RESULT" | sed -n 's/^RUNTIME_READY=//p' | head -n1)"
-if [ "$RUNTIME_READY" = "true" ] && [ "$PUBLIC_HTTPS_OK" = "true" ]; then
+if [ "$RUNTIME_READY" = "true" ] && [ "$PUBLIC_HTTPS_OK" = "true" ] && [ "$HACKERONE_API_READY" = "true" ]; then
   echo "BUG_BOUNTY_LAUNCH_READY=true"
   echo "VERDICT=READY"
 else
@@ -20280,6 +20360,9 @@ else
   echo "VERDICT=BLOCKED"
   if [ "$PUBLIC_HTTPS_OK" != "true" ]; then
     echo "BLOCKER=public_https | Dashboard HTTPS public inaccessible | Vérifier tls-proxy, DNS/sslip.io et les ports 80/443."
+  fi
+  if [ "$HACKERONE_API_READY" != "true" ]; then
+    echo "BLOCKER=hackerone_api | API HackerOne inaccessible ou authentification refusée | Vérifier le réseau VPS et les credentials HackerOne."
   fi
 fi
 
