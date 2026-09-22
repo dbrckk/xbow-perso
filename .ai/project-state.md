@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T07:48:14Z
+Generated: 2026-09-22T07:58:29Z
 
 ### Git
 - Branch: `main`
-- Head: `ed6fe69faf2d`
-- Commit date: 2026-09-22T09:48:00+02:00
-- Commit: fix: make simple HackerOne selection resilient and diagnosable (#340)
+- Head: `47c8ffb5bd62`
+- Commit date: 2026-09-22T09:58:15+02:00
+- Commit: feat: turn runtime batch summaries into actionable learning signals (#341)
 - Tracked files: 564
 
 ### Recently changed files
+- `backend/app/github_learning_sync.py`
+- `backend/tests/test_github_learning_sync.py`
 - `backend/app/hackerone_api.py`
 - `backend/app/main.py`
 - `backend/tests/test_frontend_auth_proxy.py`
@@ -45,9 +47,6 @@ Generated: 2026-09-22T07:48:14Z
 - `backend/tests/test_mobile_reset_api_token.py`
 - `backend/tests/test_simple_selection_cache_only.py`
 - `scripts/mobile-set-github-learning-token.sh`
-- `backend/app/simple_portfolio.py`
-- `backend/tests/test_simple_portfolio.py`
-- `backend/tests/test_simple_selection_cached.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -2743,6 +2743,27 @@ confirmed = [item for item in findings if str(item.get("status") or "") == "conf
 ⋮----
 finding_brief = []
 ⋮----
+def _learning_signals(members: list[dict[str, Any]]) -> dict[str, Any]
+⋮----
+completed = 0
+blocked = 0
+confirmed_findings = 0
+finding_count = 0
+event_totals: Counter[str] = Counter()
+severity_totals: Counter[str] = Counter()
+status_totals: Counter[str] = Counter()
+cwe_totals: Counter[str] = Counter()
+recommendations: list[str] = []
+⋮----
+campaign = dict(member.get("campaign") or {})
+state = str(campaign.get("state") or member.get("status") or "").lower()
+⋮----
+cwe = _safe_text(finding.get("cwe"), 40)
+⋮----
+total = len(members)
+confirmation_rate = round(confirmed_findings / finding_count, 4) if finding_count else 0.0
+completion_rate = round(completed / total, 4) if total else 0.0
+⋮----
 def build_learning_digest(store, batch: dict[str, Any]) -> dict[str, Any]
 ⋮----
 members = []
@@ -12513,6 +12534,8 @@ digest = learning.build_learning_digest(store, store.batch)
 encoded = str(digest)
 ⋮----
 campaign = digest["members"][0]["campaign"]
+⋮----
+signals = digest["learning_signals"]
 ⋮----
 def test_learning_sync_creates_idempotent_github_issue(monkeypatch)
 ⋮----

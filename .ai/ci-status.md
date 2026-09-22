@@ -1,14 +1,14 @@
 # CI status
 
-Summary: 5 success / 0 failure / 3 active
+Summary: 1 success / 0 failure / 7 active
 
-- ci: queued / pending (ed6fe69f)
-- supply-chain: in_progress / pending (ed6fe69f)
-- security: in_progress / pending (ed6fe69f)
-- supply-chain: completed / success (f94d3dda)
-- security: completed / success (f94d3dda)
-- ci: completed / success (f94d3dda)
-- security: completed / success (f94d3dda)
-- ci: completed / success (f94d3dda)
+- ci: in_progress / pending (47c8ffb5)
+- supply-chain: in_progress / pending (47c8ffb5)
+- security: in_progress / pending (47c8ffb5)
+- security: completed / success (b9d57d47)
+- supply-chain: in_progress / pending (b9d57d47)
+- ci: in_progress / pending (b9d57d47)
+- ci: pending / pending (b9d57d47)
+- security: in_progress / pending (b9d57d47)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

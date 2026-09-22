@@ -1,24 +1,14 @@
 # Change impact
 
-Base: d7e0aa2b15ec09f2f6cdeb643baf918eff8ceefb
-Head: ed6fe69faf2d55caeed1ea6b743394f535485715
+Base: bcd9a2429075005c90139eaca47ea873069ec589
+Head: 47c8ffb5bd625edf0e9db010fc06c319148d9b96
 
 ## Changed files
-- M backend/app/hackerone_api.py
-- M backend/app/main.py
-- M backend/tests/test_frontend_auth_proxy.py
-- M backend/tests/test_frontend_policy_launcher.py
-- A backend/tests/test_hackerone_upstream_diagnostics.py
-- M backend/tests/test_live_activation_profile.py
-- M frontend/index.html
-- M frontend/simple.js
-- M frontend/sw.js
-- M scripts/mobile-production-update.sh
+- M backend/app/github_learning_sync.py
+- M backend/tests/test_github_learning_sync.py
 
 ## Affected areas
 - backend
-- frontend
-- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.
