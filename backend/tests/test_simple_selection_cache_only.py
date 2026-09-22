@@ -86,3 +86,11 @@ def test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts():
     assert "if(reviewableDraft(draft))continue;" in script
     assert "if(handle&&!failedHandles.includes(handle))failedHandles.push(handle);" in script
     assert "if(failedHandles.length)return {failedHandles};" in script
+
+
+def test_simple_dashboard_surfaces_scanner_activation_command_on_preflight_block():
+    script = _text("frontend/simple.js")
+    assert "function preflightBlockerMessage(preflight)" in script
+    assert "runtime?.scanner_start_command" in script
+    assert "À exécuter sur le VPS" in script
+    assert "Scanner non prêt" in script
