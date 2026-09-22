@@ -135,3 +135,43 @@ def test_batch_rejects_unbound_campaigns():
     )
 
     assert response.status_code == 422
+
+
+def test_generic_batch_launch_rejects_when_another_batch_is_active(tmp_path, monkeypatch):
+    db = str(tmp_path / "generic-active.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    store = Storage(db, artifacts)
+    store.save_hackerone_batch(
+        {
+            "id": "already-running",
+            "provider": "hackerone",
+            "mode": "parallel",
+            "state": "running",
+            "members": [],
+            "summary": {},
+            "created_at": "2026-09-22T13:00:00+00:00",
+            "updated_at": "2026-09-22T13:00:00+00:00",
+        },
+        expected_version=0,
+    )
+
+    api = FastAPI()
+    api.include_router(hackerone_api.router)
+    response = TestClient(api).post(
+        "/api/imports/hackerone/batches/launch",
+        json={
+            "mode": "sequential",
+            "campaigns": [
+                _campaign_payload("program-one", "one.example.com", "a" * 64)
+            ],
+        },
+    )
+
+    assert response.status_code == 409
+    assert response.json()["detail"]["reason"] == "active_batch_exists"
+    assert response.json()["detail"]["batch_id"] == "already-running"
+    assert store.list_campaigns() == []
