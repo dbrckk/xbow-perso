@@ -28,7 +28,7 @@ def test_simple_dashboard_initializes_catalog_once_then_retries_selection():
     assert "/imports/hackerone/connection" in script
     assert "/imports/hackerone/programs?refresh=true" in script
     assert "return await api('/hackerone/simple-selection'+query)" in script
-    assert "Remplacement automatique de " in script
+    assert "Remplacement ciblé de " in script
 
 
 def test_simple_dashboard_surfaces_actionable_hackerone_errors():
@@ -56,7 +56,7 @@ def test_simple_dashboard_replaces_individually_unavailable_review_programs():
     assert "const REVIEW_CONCURRENCY=2;" in script
     assert "reviewWorker" in script
     assert "hackerone_program_review_unavailable" in script
-    assert "Remplacement automatique de " in script
+    assert "Remplacement ciblé de " in script
     assert "loadSimpleSelection(replacementExclude)" in script
 
 
