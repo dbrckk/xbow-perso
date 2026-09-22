@@ -180,13 +180,13 @@
 
   async function loadReviewDraft(handle){
     let lastError=null;
-    for(let attempt=0;attempt<3;attempt+=1){
+    for(let attempt=0;attempt<2;attempt+=1){
       try{
         return await api('/imports/hackerone/programs/'+encodeURIComponent(handle)+'/review-draft');
       }catch(error){
         lastError=error;
-        if(!retryableReviewError(error)||attempt>=2)break;
-        await sleep(900*(2**attempt));
+        if(!retryableReviewError(error)||attempt>=1)break;
+        await sleep(1200);
       }
     }
     throw lastError||new Error('Revue HackerOne indisponible');
@@ -202,7 +202,13 @@
       return {failedHandles:[]};
     }
 
-    setStatus('Première utilisation : chargement contrôlé des politiques à valider…');
+    let completed=0;
+    const updateProgress=()=>{
+      setStatus(
+        'Première utilisation : chargement des politiques '+completed+'/'+candidates.length+'…'
+      );
+    };
+    updateProgress();
     const settled=new Array(candidates.length);
     let cursor=0;
     async function reviewWorker(){
@@ -219,6 +225,9 @@
         }catch(error){
           error.handle=handle;
           settled[index]={status:'rejected',reason:error};
+        }finally{
+          completed+=1;
+          updateProgress();
         }
       }
     }
