@@ -10,6 +10,7 @@ from app.jobqueue import JobQueue
 from app.main import Campaign
 from app.observation_graph import Observation
 from app.orchestrator import advance_campaign
+from app.recon_worker import ReconResult
 from app.storage import Storage
 
 
@@ -207,3 +208,59 @@ def test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue(
         and item["metadata"].get("phase") == "scan"
         for item in observations
     )
+
+def test_hackerone_worker_automatically_advances_from_recon_to_nuclei(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "auto-recon.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+    monkeypatch.setenv("XBOW_WORKER_ROLE", "general")
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "true")
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
+    monkeypatch.setenv("XBOW_ENABLE_NUCLEI", "true")
+    monkeypatch.setenv("XBOW_SCAN_ENGINES", "nuclei")
+    monkeypatch.setenv("XBOW_MAX_AUTONOMOUS_RPS", "2.0")
+
+    def fake_recon(campaign, payload):
+        return ReconResult(
+            status="observed",
+            target=str(campaign.target.primary_url),
+            endpoints=(str(campaign.target.primary_url),),
+            technologies=("Server:fixture",),
+            http_status=200,
+            requests_made=1,
+            request_budget=1,
+            coverage_complete=True,
+        )
+
+    monkeypatch.setattr(worker_service, "execute_recon_task", fake_recon)
+
+    api = FastAPI()
+    api.include_router(hackerone_router)
+    launch = TestClient(api).post(
+        "/api/imports/hackerone/campaigns/launch",
+        json=_launch_payload(),
+    )
+
+    assert launch.status_code == 200, launch.text
+    launched = launch.json()
+    campaign_id = launched["campaign"]["id"]
+    assert launched["start"]["job"]["kind"] == "recon_task"
+
+    queue = JobQueue(db)
+    store = Storage(db, artifacts)
+
+    for _ in range(len(launched["start"]["planner"]["job_ids"])):
+        assert worker_service.process_one(queue, store, "auto-general") is True
+
+    counts = queue.campaign_job_counts(campaign_id)
+    assert counts["nuclei_scan"] >= 1
+    scan_status = queue.campaign_job_status_counts(campaign_id)
+    assert scan_status["queued"] >= 1
+    assert scan_status["failed"] == 0
