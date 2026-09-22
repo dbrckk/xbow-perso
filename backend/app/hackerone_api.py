@@ -596,45 +596,69 @@ def hackerone_simple_selection(
 def hackerone_simple_review_package(
     exclude: str = "",
 ):
-    """Return one stable six-program package plus any first-review drafts.
+    """Return one or two currently usable HackerOne programmes.
 
-    Candidate replacement happens entirely on the server. The mobile client gets
-    one final selection instead of cycling 0/6 -> 6/6 across replacement rounds.
+    The operator asked for the lowest-friction path: any authorized programme is
+    acceptable. Existing reviewed profiles are preferred, while REVIEW candidates
+    are checked live until one or two usable programmes are found.
     """
     rejected = {
         value.strip().lower()
         for value in exclude.split(",")
         if value.strip()
     }
+    accepted: dict[str, dict[str, Any]] = {}
     draft_cache: dict[str, dict[str, Any]] = {}
     rejection_reasons: dict[str, list[str]] = {}
     checked_handles: set[str] = set()
+    last_selection: dict[str, Any] = {}
 
     for _round in range(16):
-        selection = hackerone_simple_selection(exclude=",".join(sorted(rejected)))
-        if selection.get("complete") is not True or len(selection.get("handles") or []) != 6:
-            raise HTTPException(
-                status_code=409,
-                detail={
-                    "message": "Pas assez de programmes HackerOne compatibles pour préparer six campagnes",
-                    "reason": "simple_review_package_incomplete",
-                    "rejected_count": len(rejected),
-                    "contains_secrets": False,
-                },
+        local_exclude = sorted(rejected | set(accepted))
+        try:
+            candidate_selection = hackerone_simple_selection(
+                exclude=",".join(local_exclude)
             )
+        except HTTPException as exc:
+            detail = exc.detail if isinstance(exc.detail, dict) else {}
+            if accepted and detail.get("reason") in {
+                "simple_review_package_incomplete",
+                "hackerone_catalog_not_initialized",
+            }:
+                break
+            raise
+        last_selection = candidate_selection
 
-        review_handles = [
-            str(item.get("handle") or "")
-            for item in list(selection.get("selection") or [])
+        items = [
+            dict(item)
+            for item in list(candidate_selection.get("selection") or [])
+            if str(item.get("handle") or "")
+        ]
+        if not items:
+            break
+
+        immediate = [
+            item for item in items
+            if str(item.get("status") or "") in {"READY", "REVALIDATE"}
+        ]
+        for item in immediate:
+            handle = str(item.get("handle") or "").strip().lower()
+            if handle and handle not in rejected and handle not in accepted:
+                accepted[handle] = item
+                if len(accepted) >= 2:
+                    break
+        if len(accepted) >= 2:
+            break
+
+        review_items = [
+            item for item in items
             if str(item.get("status") or "") == "REVIEW"
-            and str(item.get("handle") or "")
-        ]
-        pending = [
-            handle for handle in review_handles
-            if handle not in draft_cache and handle not in rejected
+            and str(item.get("handle") or "").strip().lower() not in accepted
+            and str(item.get("handle") or "").strip().lower() not in rejected
         ]
 
-        def _load(handle: str) -> tuple[str, dict[str, Any] | None, list[str]]:
+        def _load(item: dict[str, Any]) -> tuple[str, dict[str, Any] | None, list[str]]:
+            handle = str(item.get("handle") or "").strip().lower()
             try:
                 snapshot = fetch_hackerone_program_snapshot(handle)
                 draft = build_hackerone_review_draft(snapshot)
@@ -657,64 +681,79 @@ def hackerone_simple_review_package(
             blockers = review_draft_blockers(draft)
             return handle, draft, blockers
 
-        if pending:
-            with ThreadPoolExecutor(max_workers=min(2, len(pending))) as executor:
-                futures = {executor.submit(_load, handle): handle for handle in pending}
+        if review_items:
+            with ThreadPoolExecutor(max_workers=min(2, len(review_items))) as executor:
+                futures = {executor.submit(_load, item): item for item in review_items}
                 for future in as_completed(futures):
                     handle, draft, blockers = future.result()
                     checked_handles.add(handle)
                     if draft is not None and review_draft_is_usable(draft):
                         draft_cache[handle] = draft
+                        accepted[handle] = futures[future]
                     else:
                         rejected.add(handle)
                         rejection_reasons[handle] = blockers or ["review_unavailable"]
+                    if len(accepted) >= 2:
+                        break
 
-        failed_selected = [handle for handle in review_handles if handle in rejected]
-        if failed_selected:
-            continue
+        if len(accepted) >= 2:
+            break
 
-        drafts = [
-            draft_cache[handle]
-            for handle in review_handles
-            if handle in draft_cache
-        ]
-        if len(drafts) != len(review_handles):
-            missing = [handle for handle in review_handles if handle not in draft_cache]
-            rejected.update(missing)
-            for handle in missing:
-                rejection_reasons.setdefault(handle, ["review_unavailable"])
-            continue
+        progressed = bool(immediate or review_items)
+        if not progressed:
+            break
 
-        return {
-            **selection,
-            "review_drafts": drafts,
-            "review_package": True,
-            "review_package_rounds": _round + 1,
-            "review_package_checked": len(checked_handles),
-            "review_package_rejected": len(rejected),
-            "review_rejections": [
-                {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
-                for handle in sorted(rejection_reasons)
-            ],
-            "selection_requires_live_hackerone": bool(review_handles),
-            "automatic_launch": False,
-            "requires_launch_revalidation": True,
-            "contains_secrets": False,
-        }
+    selected = list(accepted.values())[:2]
+    if not selected:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Aucun programme HackerOne exploitable n’a été trouvé",
+                "reason": "simple_review_package_exhausted",
+                "rejected_count": len(rejected),
+                "review_rejections": [
+                    {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
+                    for handle in sorted(rejection_reasons)
+                ][:50],
+                "contains_secrets": False,
+            },
+        )
 
-    raise HTTPException(
-        status_code=409,
-        detail={
-            "message": "Impossible de constituer six programmes dont la politique et le scope sont exploitables",
-            "reason": "simple_review_package_exhausted",
-            "rejected_count": len(rejected),
-            "review_rejections": [
-                {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
-                for handle in sorted(rejection_reasons)
-            ][:50],
-            "contains_secrets": False,
-        },
+    handles = [str(item.get("handle") or "") for item in selected]
+    drafts = [draft_cache[handle] for handle in handles if handle in draft_cache]
+    review_count = sum(1 for item in selected if str(item.get("status") or "") == "REVIEW")
+    ready_count = sum(1 for item in selected if str(item.get("status") or "") == "READY")
+    revalidation_count = sum(
+        1 for item in selected if str(item.get("status") or "") == "REVALIDATE"
     )
+    return {
+        "provider": "hackerone",
+        "groups": {"accessible": selected},
+        "selection": selected,
+        "handles": handles,
+        "complete": True,
+        "selection_count": len(selected),
+        "ready_count": ready_count,
+        "review_count": review_count,
+        "revalidation_count": revalidation_count,
+        "launch_ready": review_count == 0,
+        "review_drafts": drafts,
+        "review_package": True,
+        "review_package_target": 2,
+        "review_package_minimum": 1,
+        "review_package_rounds": _round + 1,
+        "review_package_checked": len(checked_handles),
+        "review_package_rejected": len(rejected),
+        "review_rejections": [
+            {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
+            for handle in sorted(rejection_reasons)
+        ],
+        "catalog_checked_at": last_selection.get("catalog_checked_at"),
+        "selection_requires_live_hackerone": bool(review_count),
+        "automatic_launch": False,
+        "requires_launch_revalidation": True,
+        "contains_secrets": False,
+    }
 
 
 @router.get("/api/hackerone/journal")
