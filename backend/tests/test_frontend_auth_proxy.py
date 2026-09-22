@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=64' in index
-    assert '/app.css?v=64' in index
-    assert "xbow-perso-v64" in sw
+    assert '/simple.js?v=65' in index
+    assert '/app.css?v=65' in index
+    assert "xbow-perso-v65" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=64" defer></script>' in index
+    assert '<script src="/simple.js?v=65" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -72,3 +72,13 @@ def test_simple_dashboard_exposes_first_run_review_flow():
     assert "/review-draft" in script
     assert "/rules-preview" in script
     assert "review_profile_persisted" in script
+
+
+def test_simple_dashboard_grouped_review_and_quiet_journal():
+    script = _text("frontend/simple.js")
+    html = _text("frontend/index.html")
+    assert 'id="reviewAllConfirm"' in html
+    assert "Valider les 6 programmes" in html
+    assert "async function loadReviewDraft(handle)" in script
+    assert "for(let attempt=0;attempt<3;attempt+=1)" in script
+    assert "if(!quiet)setStatus('Journal indisponible : '+error.message,'err');" in script
