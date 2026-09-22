@@ -22,34 +22,32 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T06:47:18Z
+Generated: 2026-09-22T07:48:14Z
 
 ### Git
 - Branch: `main`
-- Head: `e4e4156ec498`
-- Commit date: 2026-09-22T08:47:06+02:00
-- Commit: fix: make simple bounty selection resilient and learning setup one-time (#339)
-- Tracked files: 563
+- Head: `ed6fe69faf2d`
+- Commit date: 2026-09-22T09:48:00+02:00
+- Commit: fix: make simple HackerOne selection resilient and diagnosable (#340)
+- Tracked files: 564
 
 ### Recently changed files
 - `backend/app/hackerone_api.py`
 - `backend/app/main.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_hackerone_upstream_diagnostics.py`
 - `backend/tests/test_live_activation_profile.py`
-- `backend/tests/test_mobile_reset_api_token.py`
-- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
 - `scripts/mobile-production-update.sh`
+- `backend/tests/test_mobile_reset_api_token.py`
+- `backend/tests/test_simple_selection_cache_only.py`
 - `scripts/mobile-set-github-learning-token.sh`
 - `backend/app/simple_portfolio.py`
 - `backend/tests/test_simple_portfolio.py`
 - `backend/tests/test_simple_selection_cached.py`
-- `backend/app/hackerone_review_draft.py`
-- `backend/tests/test_hackerone_review_draft.py`
-- `frontend/app.css`
 
 ### Project signals
 - `pyproject.toml`

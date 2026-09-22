@@ -290,6 +290,7 @@ backend/
     test_hackerone_reviewed_batch_api.py
     test_hackerone_scope_import.py
     test_hackerone_scope_preview_api.py
+    test_hackerone_upstream_diagnostics.py
     test_health.py
     test_high_value_intelligence.py
     test_hypothesis_engine.py
@@ -3517,6 +3518,43 @@ state = str(program.get("state") or "").strip().lower()
 ⋮----
 def _conservative_admission_reason(policy: Any) -> str | None
 ⋮----
+def _hackerone_error_detail(exc: HackerOneClientError) -> dict[str, Any]
+⋮----
+message = str(exc)
+status = exc.status_code
+⋮----
+reason = "hackerone_authentication_failed"
+public_message = "HackerOne authentication failed"
+retryable = False
+⋮----
+reason = "hackerone_forbidden"
+public_message = "HackerOne denied access to this resource"
+⋮----
+reason = "hackerone_not_found"
+public_message = "HackerOne resource was not found"
+⋮----
+reason = "hackerone_rate_limited"
+public_message = "HackerOne rate limit reached"
+retryable = True
+⋮----
+reason = "hackerone_upstream_unavailable"
+public_message = "HackerOne is temporarily unavailable"
+⋮----
+reason = "hackerone_timeout"
+public_message = "HackerOne request timed out"
+⋮----
+reason = "hackerone_connection_failed"
+public_message = "HackerOne connection failed"
+⋮----
+reason = "hackerone_io_failed"
+public_message = "HackerOne transport failed"
+⋮----
+reason = "hackerone_redirect_refused"
+public_message = "HackerOne returned an unexpected redirect"
+⋮----
+reason = "hackerone_upstream_request_failed"
+public_message = "HackerOne upstream request failed"
+⋮----
 def _upstream_error(exc: HackerOneClientError) -> HTTPException
 def _program_list_item(resource: Any) -> dict[str, Any]
 ⋮----
@@ -3530,8 +3568,9 @@ campaigns = storage().list_campaigns(limit=limit)
 @router.get("/api/hackerone/live-readiness")
 def hackerone_live_readiness()
 ⋮----
-@router.get("/api/imports/hackerone/connection")
-def hackerone_connection()
+credentials = load_hackerone_credentials()
+⋮----
+detail = _hackerone_error_detail(exc)
 ⋮----
 store = storage()
 state = store.get_hackerone_catalog_state()
@@ -5675,7 +5714,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.6.6")
+app = FastAPI(title="xbow-perso", version="0.6.7")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -14158,6 +14197,17 @@ db = str(tmp_path / "blocked.sqlite3")
 admission_policy = {
 ````
 
+## File: backend/tests/test_hackerone_upstream_diagnostics.py
+````python
+def test_hackerone_error_detail_classifies_auth_without_secrets()
+⋮----
+detail = _hackerone_error_detail(
+⋮----
+def test_hackerone_error_detail_classifies_retryable_transport()
+⋮----
+def test_hackerone_error_detail_classifies_rate_limit()
+````
+
 ## File: backend/tests/test_health.py
 ````python
 class HealthyQueue
@@ -20180,7 +20230,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.6\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.7\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 

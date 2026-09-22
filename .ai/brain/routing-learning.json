@@ -2,26 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "feat: add recon surface diff intelligence",
-      "terms": [
-        "add",
-        "diff",
-        "feat",
-        "intelligence",
-        "recon",
-        "surface"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/app/main.py",
-        "backend/app/surface_diff.py",
-        "backend/tests/test_surface_diff.py",
-        "frontend/app.js",
-        "frontend/sw.js"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "feat: prioritize recon from bounded surface diff",
       "terms": [
         "bounded",
@@ -1334,6 +1314,30 @@
         "frontend/simple.js",
         "frontend/sw.js"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "fix: make simple HackerOne selection resilient and diagnosable (#340)",
+      "terms": [
+        "340",
+        "diagnosable",
+        "hackerone",
+        "make",
+        "resilient",
+        "selection",
+        "simple"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/hackerone_api.py",
+        "backend/app/main.py",
+        "backend/tests/test_frontend_auth_proxy.py",
+        "backend/tests/test_frontend_policy_launcher.py",
+        "backend/tests/test_hackerone_upstream_diagnostics.py",
+        "backend/tests/test_live_activation_profile.py",
+        "frontend/simple.js",
+        "frontend/sw.js"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1582,6 +1586,16 @@
       "backend/tests/test_live_activation_profile.py": 4,
       "backend/tests/test_mobile_reset_api_token.py": 4,
       "backend/tests/test_simple_selection_cache_only.py": 4,
+      "frontend/simple.js": 4,
+      "frontend/sw.js": 4
+    },
+    "340": {
+      "backend/app/hackerone_api.py": 4,
+      "backend/app/main.py": 4,
+      "backend/tests/test_frontend_auth_proxy.py": 4,
+      "backend/tests/test_frontend_policy_launcher.py": 4,
+      "backend/tests/test_hackerone_upstream_diagnostics.py": 4,
+      "backend/tests/test_live_activation_profile.py": 4,
       "frontend/simple.js": 4,
       "frontend/sw.js": 4
     },
@@ -2107,11 +2121,16 @@
     },
     "diagnosable": {
       "backend/app/auth.py": 4,
-      "backend/app/main.py": 4,
+      "backend/app/hackerone_api.py": 4,
+      "backend/app/main.py": 8,
       "backend/tests/test_auth.py": 4,
-      "backend/tests/test_live_activation_profile.py": 4,
+      "backend/tests/test_frontend_auth_proxy.py": 4,
+      "backend/tests/test_frontend_policy_launcher.py": 4,
+      "backend/tests/test_hackerone_upstream_diagnostics.py": 4,
+      "backend/tests/test_live_activation_profile.py": 8,
       "frontend/app.js": 4,
-      "frontend/sw.js": 4
+      "frontend/simple.js": 4,
+      "frontend/sw.js": 8
     },
     "diagnostics": {
       "backend/app/main.py": 4,
@@ -2408,21 +2427,21 @@
       "backend/tests/test_passive_api_intelligence.py": 4
     },
     "hackerone": {
-      "backend/app/hackerone_api.py": 32,
+      "backend/app/hackerone_api.py": 36,
       "backend/app/hackerone_batch.py": 4,
       "backend/app/hackerone_catalog.py": 4,
       "backend/app/hackerone_discovery.py": 4,
       "backend/app/hackerone_live_readiness.py": 4,
       "backend/app/hackerone_review_draft.py": 4,
       "backend/app/hackerone_scope_import.py": 4,
-      "backend/app/main.py": 16,
+      "backend/app/main.py": 20,
       "backend/app/postgres_storage.py": 12,
       "backend/app/simple_portfolio.py": 4,
       "backend/app/storage_backend.py": 8,
       "backend/app/storage_core.py": 12,
       "backend/app/worker_service.py": 8,
-      "backend/tests/test_frontend_auth_proxy.py": 8,
-      "backend/tests/test_frontend_policy_launcher.py": 8,
+      "backend/tests/test_frontend_auth_proxy.py": 12,
+      "backend/tests/test_frontend_policy_launcher.py": 12,
       "backend/tests/test_hackerone_batch.py": 4,
       "backend/tests/test_hackerone_batch_api.py": 4,
       "backend/tests/test_hackerone_catalog.py": 4,
@@ -2433,13 +2452,14 @@
       "backend/tests/test_hackerone_prelaunch.py": 4,
       "backend/tests/test_hackerone_review_draft.py": 4,
       "backend/tests/test_hackerone_review_profiles.py": 4,
-      "backend/tests/test_live_activation_profile.py": 8,
+      "backend/tests/test_hackerone_upstream_diagnostics.py": 4,
+      "backend/tests/test_live_activation_profile.py": 12,
       "backend/tests/test_simple_portfolio.py": 4,
       "backend/tests/test_simple_selection_cache_only.py": 4,
       "backend/tests/test_simple_selection_cached.py": 4,
       "backend/tests/test_storage.py": 4,
       "frontend/hackerone.js": 32,
-      "frontend/simple.js": 8,
+      "frontend/simple.js": 12,
       "frontend/sw.js": 40
     },
     "harden": {
@@ -2633,29 +2653,30 @@
     },
     "make": {
       "backend/app/auth.py": 4,
-      "backend/app/hackerone_api.py": 12,
+      "backend/app/hackerone_api.py": 16,
       "backend/app/hackerone_intelligence.py": 4,
       "backend/app/hackerone_live_readiness.py": 4,
       "backend/app/hackerone_review_draft.py": 4,
-      "backend/app/main.py": 20,
+      "backend/app/main.py": 24,
       "backend/app/production_migration.py": 4,
       "backend/app/runtime_capabilities.py": 4,
       "backend/app/simple_portfolio.py": 4,
       "backend/app/vault_migration.py": 8,
       "backend/tests/test_auth.py": 4,
-      "backend/tests/test_frontend_auth_proxy.py": 20,
-      "backend/tests/test_frontend_policy_launcher.py": 16,
+      "backend/tests/test_frontend_auth_proxy.py": 24,
+      "backend/tests/test_frontend_policy_launcher.py": 20,
       "backend/tests/test_hackerone_live_readiness.py": 4,
       "backend/tests/test_hackerone_review_draft.py": 4,
-      "backend/tests/test_live_activation_profile.py": 20,
+      "backend/tests/test_hackerone_upstream_diagnostics.py": 4,
+      "backend/tests/test_live_activation_profile.py": 24,
       "backend/tests/test_mobile_reset_api_token.py": 4,
       "backend/tests/test_production_migration.py": 4,
       "backend/tests/test_simple_portfolio.py": 4,
       "backend/tests/test_simple_selection_cache_only.py": 8,
       "backend/tests/test_vault_migration.py": 8,
       "frontend/app.js": 4,
-      "frontend/simple.js": 16,
-      "frontend/sw.js": 24
+      "frontend/simple.js": 20,
+      "frontend/sw.js": 28
     },
     "memory": {
       "backend/app/main.py": 4,
@@ -3223,15 +3244,16 @@
       "backend/tests/test_mobile_reset_api_token.py": 8
     },
     "resilient": {
-      "backend/app/hackerone_api.py": 8,
-      "backend/app/main.py": 8,
-      "backend/tests/test_frontend_auth_proxy.py": 8,
-      "backend/tests/test_frontend_policy_launcher.py": 8,
-      "backend/tests/test_live_activation_profile.py": 8,
+      "backend/app/hackerone_api.py": 12,
+      "backend/app/main.py": 12,
+      "backend/tests/test_frontend_auth_proxy.py": 12,
+      "backend/tests/test_frontend_policy_launcher.py": 12,
+      "backend/tests/test_hackerone_upstream_diagnostics.py": 4,
+      "backend/tests/test_live_activation_profile.py": 12,
       "backend/tests/test_mobile_reset_api_token.py": 4,
       "backend/tests/test_simple_selection_cache_only.py": 8,
-      "frontend/simple.js": 8,
-      "frontend/sw.js": 8
+      "frontend/simple.js": 12,
+      "frontend/sw.js": 12
     },
     "response": {
       "backend/app/high_value_intelligence.py": 4,
@@ -3327,20 +3349,21 @@
       "backend/tests/test_mobile_reset_api_token.py": 4
     },
     "selection": {
-      "backend/app/hackerone_api.py": 16,
-      "backend/app/main.py": 12,
+      "backend/app/hackerone_api.py": 20,
+      "backend/app/main.py": 16,
       "backend/app/simple_portfolio.py": 4,
-      "backend/tests/test_frontend_auth_proxy.py": 12,
-      "backend/tests/test_frontend_policy_launcher.py": 12,
+      "backend/tests/test_frontend_auth_proxy.py": 16,
+      "backend/tests/test_frontend_policy_launcher.py": 16,
       "backend/tests/test_hackerone_prelaunch.py": 4,
-      "backend/tests/test_live_activation_profile.py": 12,
+      "backend/tests/test_hackerone_upstream_diagnostics.py": 4,
+      "backend/tests/test_live_activation_profile.py": 16,
       "backend/tests/test_mobile_reset_api_token.py": 4,
       "backend/tests/test_simple_portfolio.py": 4,
       "backend/tests/test_simple_selection_cache_only.py": 8,
       "backend/tests/test_simple_selection_cached.py": 4,
       "frontend/hackerone.js": 4,
-      "frontend/simple.js": 12,
-      "frontend/sw.js": 16
+      "frontend/simple.js": 16,
+      "frontend/sw.js": 20
     },
     "self-heal": {
       "backend/app/hackerone_live_readiness.py": 4,
@@ -3400,20 +3423,21 @@
       "backend/tests/test_passive_response_context.py": 4
     },
     "simple": {
-      "backend/app/hackerone_api.py": 8,
+      "backend/app/hackerone_api.py": 12,
       "backend/app/hackerone_review_draft.py": 4,
-      "backend/app/main.py": 12,
+      "backend/app/main.py": 16,
       "backend/app/simple_portfolio.py": 8,
-      "backend/tests/test_frontend_auth_proxy.py": 12,
-      "backend/tests/test_frontend_policy_launcher.py": 12,
+      "backend/tests/test_frontend_auth_proxy.py": 16,
+      "backend/tests/test_frontend_policy_launcher.py": 16,
       "backend/tests/test_hackerone_review_draft.py": 4,
-      "backend/tests/test_live_activation_profile.py": 12,
+      "backend/tests/test_hackerone_upstream_diagnostics.py": 4,
+      "backend/tests/test_live_activation_profile.py": 16,
       "backend/tests/test_mobile_reset_api_token.py": 4,
       "backend/tests/test_simple_portfolio.py": 8,
       "backend/tests/test_simple_selection_cache_only.py": 4,
       "backend/tests/test_simple_selection_cached.py": 4,
-      "frontend/simple.js": 12,
-      "frontend/sw.js": 12
+      "frontend/simple.js": 16,
+      "frontend/sw.js": 16
     },
     "simplified": {
       "backend/tests/test_frontend_auth_proxy.py": 4,
