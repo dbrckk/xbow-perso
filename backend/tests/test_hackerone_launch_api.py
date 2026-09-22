@@ -59,7 +59,9 @@ def test_hackerone_launch_creates_bound_running_campaign(tmp_path, monkeypatch):
     assert result["campaign_created"] is True
     assert result["campaign"]["state"] == "running"
     assert result["start"]["state"] == "running"
-    assert result["start"]["job"]["kind"] == "nuclei_scan"
+    assert result["start"]["job"]["kind"] == "recon_task"
+    assert result["start"]["planner"]["action"]["kind"] == "crawl"
+    assert len(result["start"]["planner"]["job_ids"]) == 2
 
     persisted = Storage(db, artifacts).get_campaign(result["campaign"]["id"])
     assert persisted is not None
