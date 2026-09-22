@@ -94,3 +94,22 @@ def test_enable_script_keeps_rollback_active_through_final_launch_verification()
     verdict = script.index("=== FINAL BUG BOUNTY LAUNCH VERDICT ===")
     clear_trap = script.index("trap - ERR", arm)
     assert arm < probe < verdict < clear_trap
+
+
+def test_enable_script_refreshes_safe_production_before_readiness_and_queue_checks():
+    script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+
+    refresh = script.index("=== SAFE PRODUCTION REFRESH ===")
+    readiness = script.index("=== BACKEND READINESS ===")
+    queue_check = script.index("=== QUEUE MUST BE IDLE BEFORE ARMING ===")
+    arm = script.index("=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ===")
+    assert refresh < readiness < queue_check < arm
+    assert 'bash "$INSTALL_DIR/scripts/mobile-production-update.sh"' in script
+
+
+def test_enable_script_documents_stale_checkout_and_stopped_stack_recovery():
+    script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+
+    assert "containers are stopped" in script
+    assert "checkout is stale" in script
+    assert "repository .env remains fail-safe" in script
