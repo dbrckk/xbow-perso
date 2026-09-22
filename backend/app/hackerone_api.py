@@ -566,7 +566,18 @@ def hackerone_campaign_journal(
             "automatic_code_mutation": False,
         },
     }
-    sync_config = learning_sync_configuration()
+    try:
+        sync_config = learning_sync_configuration()
+    except Exception:
+        sync_config = {
+            "enabled": False,
+            "configured": False,
+            "repository": "dbrckk/xbow-perso",
+            "transport": "github_issue",
+            "contains_secrets": False,
+            "automatic_code_mutation": False,
+            "status": "configuration_error",
+        }
     return {
         "provider": "hackerone",
         "journal": entries,
