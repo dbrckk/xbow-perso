@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=71' in index
-    assert '/app.css?v=71' in index
-    assert "xbow-perso-v71" in sw
+    assert '/simple.js?v=72' in index
+    assert '/app.css?v=72' in index
+    assert "xbow-perso-v72" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=71" defer></script>' in index
+    assert '<script src="/simple.js?v=72" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -118,3 +118,14 @@ def test_simple_dashboard_bounds_review_profile_persistence():
     assert "await Promise.all(Array.from({length:workers},()=>persistWorker()))" in script
     assert "Lis les politiques affichées puis coche la confirmation groupée." in script
     assert "La politique de '+replaceable.length+' programme(s) a changé. Nouvelle sélection" in script
+
+
+def test_start_button_requires_live_runtime_readiness():
+    script = _text("frontend/simple.js")
+    assert "let runtimeReady=false;" in script
+    assert "function updateStartAvailability()" in script
+    assert "selection.length===6" in script
+    assert "runtimeReady===true" in script
+    assert "runtimeReady=readiness?.live_scan_ready===true;" in script
+    assert "runtimeReady=false;" in script
+    assert "updateStartAvailability();" in script
