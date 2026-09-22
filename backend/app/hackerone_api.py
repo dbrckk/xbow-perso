@@ -611,6 +611,7 @@ def hackerone_simple_review_package(
     draft_cache: dict[str, dict[str, Any]] = {}
     rejection_reasons: dict[str, list[str]] = {}
     checked_handles: set[str] = set()
+    candidate_order: dict[str, int] = {}
     last_selection: dict[str, Any] = {}
 
     for _round in range(16):
@@ -634,6 +635,10 @@ def hackerone_simple_review_package(
             for item in list(candidate_selection.get("selection") or [])
             if str(item.get("handle") or "")
         ]
+        for item in items:
+            handle = str(item.get("handle") or "").strip().lower()
+            if handle and handle not in candidate_order:
+                candidate_order[handle] = len(candidate_order)
         if not items:
             break
 
@@ -703,7 +708,13 @@ def hackerone_simple_review_package(
         if not progressed:
             break
 
-    selected = list(accepted.values())[:2]
+    selected = sorted(
+        accepted.values(),
+        key=lambda item: candidate_order.get(
+            str(item.get("handle") or "").strip().lower(),
+            10**9,
+        ),
+    )[:2]
     if not selected:
         raise HTTPException(
             status_code=409,
