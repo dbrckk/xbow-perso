@@ -78,8 +78,9 @@ PUBLIC_HOST="$(grep -E '^[[:space:]]*XBOW_PUBLIC_HOST=' .env | tail -n1 | cut -d
 PUBLIC_HTTPS_OK=false
 if [ -n "$PUBLIC_HOST" ]; then
   echo "=== PUBLIC HTTPS ==="
-  if curl -fsSI "https://$PUBLIC_HOST/health" | sed -n '1,12p'; then
+  if curl -fsS -D - -o /dev/null "https://$PUBLIC_HOST/health" | sed -n '1,12p'; then
     PUBLIC_HTTPS_OK=true
+    echo "PUBLIC_HTTPS_OK=true"
   else
     echo "PUBLIC_HTTPS_OK=false"
   fi
