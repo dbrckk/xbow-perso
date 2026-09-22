@@ -145,7 +145,7 @@ def test_reviewed_batch_launch_needs_only_handles(tmp_path, monkeypatch):
         jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])[
             "queued"
         ]
-        >= 1
+        == 2
     )
     assert (
         jobs.campaign_job_status_counts(batch["members"][1]["campaign_id"])[
