@@ -22,29 +22,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T20:35:53Z
+Generated: 2026-09-22T20:40:08Z
 
 ### Git
 - Branch: `main`
-- Head: `390b626aa201`
-- Commit date: 2026-09-22T22:35:42+02:00
-- Commit: fix: find one or two accessible HackerOne bounties (#378)
+- Head: `3c2454bedc96`
+- Commit date: 2026-09-22T22:39:58+02:00
+- Commit: hardening: fail closed on unenforced HackerOne scope exclusions (#379)
 - Tracked files: 566
 
 ### Recently changed files
 - `backend/app/hackerone_api.py`
+- `backend/app/hackerone_review_draft.py`
+- `backend/tests/test_hackerone_review_draft.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
+- `backend/tests/test_simple_selection_cache_only.py`
+- `frontend/simple.js`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_hackerone_simple_review_package.py`
 - `frontend/index.html`
-- `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/hackerone_review_draft.py`
-- `backend/tests/test_hackerone_review_draft.py`
-- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/nginx.conf`
-- `backend/tests/test_mobile_production_update_script.py`
-- `scripts/mobile-production-status.sh`
 
 ### Project signals
 - `pyproject.toml`

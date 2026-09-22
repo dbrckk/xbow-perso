@@ -14253,7 +14253,7 @@ snapshot = _snapshot()
 ⋮----
 draft = build_hackerone_review_draft(snapshot)
 ⋮----
-def test_review_draft_exposes_scope_exclusions_for_human_review()
+def test_review_draft_exposes_scope_exclusions_and_blocks_automation()
 ⋮----
 def test_review_draft_blockers_fail_closed_for_incomplete_scope_or_missing_policy()
 ⋮----
@@ -14302,7 +14302,7 @@ def test_non_admissible_preview_is_not_remembered(tmp_path, monkeypatch)
 ````python
 def _resource(identifier: str)
 ⋮----
-def _snapshot(handle: str, domain: str, fingerprint: str)
+def _snapshot(handle: str, domain: str, fingerprint: str, *, scope_exclusions=())
 ⋮----
 document = {"data": [_resource(domain)], "links": {}}
 ⋮----
@@ -14342,6 +14342,13 @@ db = str(tmp_path / "binding-mismatch.sqlite3")
 payload = hackerone_api.HackerOneCampaignAdmissionInput(
 ⋮----
 db = str(tmp_path / "active-batch.sqlite3")
+⋮----
+db = str(tmp_path / "scope-exclusion.sqlite3")
+⋮----
+fingerprint = "a" * 64
+snapshot = _snapshot(
+⋮----
+detail = response.json()["detail"]
 ````
 
 ## File: backend/tests/test_hackerone_scope_preview_api.py
