@@ -431,7 +431,9 @@ def hackerone_discovery_selection(
 
 
 @router.get("/api/hackerone/simple-selection")
-def hackerone_simple_selection():
+def hackerone_simple_selection(
+    exclude: str = "",
+):
     """Select 2 easy + 2 medium + 2 high-value candidates from local cache.
 
     Selection itself never requires a live HackerOne request. Programs with a
@@ -466,7 +468,16 @@ def hackerone_simple_selection():
         catalog_changes=dict(catalog.get("changes") or {}),
         local_outcomes=local_outcomes,
     )
-    candidates = mark_cached_review_profiles(list(discovery.get("programs") or []))
+    excluded_handles = {
+        value.strip().lower()
+        for value in exclude.split(",")
+        if value.strip()
+    }
+    candidates = [
+        item
+        for item in mark_cached_review_profiles(list(discovery.get("programs") or []))
+        if str(item.get("handle") or "").lower() not in excluded_handles
+    ]
     result = select_simple_six(candidates)
     return {
         "provider": "hackerone",
@@ -475,6 +486,7 @@ def hackerone_simple_selection():
         "catalog_program_count": len(list(catalog.get("programs") or [])),
         "catalog_source": "local-cache",
         "selection_requires_live_hackerone": False,
+        "excluded_handles": sorted(excluded_handles),
         "read_only": True,
         "automatic_launch": False,
         "requires_launch_revalidation": True,
@@ -615,6 +627,15 @@ def get_hackerone_program_review_draft(handle: str):
     try:
         snapshot = fetch_hackerone_program_snapshot(handle)
     except HackerOneClientError as exc:
+        if exc.status_code == 404:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "Programme HackerOne indisponible pour la revue initiale",
+                    "reason": "hackerone_program_review_unavailable",
+                    "handle": handle,
+                },
+            ) from exc
         raise _upstream_error(exc) from exc
     return build_hackerone_review_draft(snapshot)
 
