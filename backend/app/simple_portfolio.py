@@ -3,6 +3,28 @@ from __future__ import annotations
 from typing import Any
 
 
+def mark_cached_review_profiles(programs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Mark already-reviewed programs for launch-time revalidation.
+
+    This is intentionally not equivalent to READY: the current HackerOne snapshot
+    is still re-fetched and compared immediately before launch.
+    """
+    result: list[dict[str, Any]] = []
+    for item in programs:
+        value = dict(item)
+        if (
+            str(value.get("status") or "") == "REVIEW"
+            and value.get("review_profile_available") is True
+        ):
+            value["status"] = "REVALIDATE"
+            value["revalidation_deferred"] = True
+            value["reasons"] = list(value.get("reasons") or []) + [
+                "saved_profile_will_be_revalidated_at_launch"
+            ]
+        result.append(value)
+    return result
+
+
 def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     """Pick 2 easy + 2 medium + 2 high-value bounty candidates.
 
@@ -13,10 +35,10 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     pool = [
         dict(item)
         for item in programs
-        if str(item.get("status") or "") in {"READY", "REVIEW"}
+        if str(item.get("status") or "") in {"READY", "REVALIDATE", "REVIEW"}
         and item.get("offers_bounties") is True
         and (
-            str(item.get("status") or "") == "READY"
+            str(item.get("status") or "") in {"READY", "REVALIDATE"}
             or item.get("gold_standard_safe_harbor") is True
         )
     ]
@@ -31,7 +53,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     easy_pool = sorted(
         pool,
         key=lambda item: (
-            0 if str(item.get("status") or "") == "READY" else 1,
+            {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
             float(item.get("effort_factor") or 99),
             -float(item.get("value_efficiency_score") or 0),
             -float(item.get("opportunity_score") or 0),
@@ -48,7 +70,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
         medium_pool = sorted(
             remaining,
             key=lambda item: (
-                0 if str(item.get("status") or "") == "READY" else 1,
+                {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
                 abs(float(item.get("effort_factor") or 0) - median),
                 *efficiency(item),
             ),
@@ -62,7 +84,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     high_value = sorted(
         remaining,
         key=lambda item: (
-            0 if str(item.get("status") or "") == "READY" else 1,
+            {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
             -float(item.get("historical_usd_awarded_max") or 0),
             -float(item.get("historical_value_score") or 0),
             -float(item.get("opportunity_score") or 0),
@@ -74,6 +96,9 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     selected = easy + medium + high_value
     ready_count = sum(
         1 for item in selected if str(item.get("status") or "") == "READY"
+    )
+    revalidation_count = sum(
+        1 for item in selected if str(item.get("status") or "") == "REVALIDATE"
     )
     review_count = sum(
         1 for item in selected if str(item.get("status") or "") == "REVIEW"
@@ -87,6 +112,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
         "selection_count": len(selected),
         "ready_count": ready_count,
         "review_count": review_count,
+        "revalidation_count": revalidation_count,
         "launch_ready": complete and review_count == 0,
         "selection_policy": {
             "easy": "lowest effort bounty candidates, preferring reviewed READY profiles",
