@@ -220,7 +220,10 @@ def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch)
         "_runtime_prelaunch_verdict",
         lambda: {
             "runtime_ready": False,
-            "runtime": {},
+            "runtime": {
+                "live_scan_ready": False,
+                "scanner_start_command": "sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh",
+            },
             "blockers": ["scanner_worker_live"],
         },
     )
@@ -235,6 +238,8 @@ def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch)
         assert exc.status_code == 409
         assert exc.detail["reason"] == "batch_go_no_go_blocked"
         assert exc.detail["blockers"] == ["scanner_worker_live"]
+        assert exc.detail["runtime"]["live_scan_ready"] is False
+        assert "mobile-enable-hackerone-nuclei.sh" in exc.detail["runtime"]["scanner_start_command"]
     else:
         raise AssertionError("reviewed launch should fail closed on no-go")
 
