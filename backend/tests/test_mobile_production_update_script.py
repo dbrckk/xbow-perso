@@ -46,3 +46,15 @@ def test_enable_script_requires_final_live_launch_verdict():
     assert "BUG_BOUNTY_LAUNCH_READY=true" in script
     assert "raise SystemExit(1)" in script
     assert "NEXT_STEP=Open the dashboard" in script
+
+
+def test_enable_script_reports_actionable_non_idle_queue_blocker():
+    script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+
+    assert "QUEUE_IDLE=" in script
+    assert "QUEUE_QUEUED=" in script
+    assert "QUEUE_RUNNING=" in script
+    assert "ACTIVE_BATCH_ID=" in script
+    assert "ACTIVE_BATCH_STATE=" in script
+    assert "Let the active batch finish or cancel it from the dashboard before arming the scanner." in script
+    assert "assert active==0" not in script
