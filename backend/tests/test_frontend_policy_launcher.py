@@ -22,10 +22,10 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     html = _text("frontend/index.html")
     script = _text("frontend/simple.js")
 
-    for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "status", "journal", "refresh"):
+    for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "runtimeAction", "status", "journal", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=72" defer></script>' in html
+    assert '<script src="/simple.js?v=73" defer></script>' in html
     assert "2 faciles + 2 moyens + 2 fort potentiel" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html
