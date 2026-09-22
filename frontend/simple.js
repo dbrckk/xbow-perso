@@ -207,7 +207,7 @@
     throw lastError||new Error('Revue HackerOne indisponible');
   }
 
-  async function loadReviewDrafts(result){
+  async function loadReviewDrafts(result,draftCache=new Map()){
     const candidates=(result?.selection||[])
       .filter(item=>String(item?.status||'')==='REVIEW')
       .map(item=>String(item?.handle||''))
@@ -217,21 +217,35 @@
       return {failedHandles:[]};
     }
 
-    let completed=0;
+    const draftsByHandle=new Map();
+    const pending=[];
+    for(const handle of candidates){
+      const cached=draftCache.get(handle);
+      if(cached&&reviewableDraft(cached)){
+        draftsByHandle.set(handle,cached);
+      }else{
+        pending.push(handle);
+      }
+    }
+
+    let completed=draftsByHandle.size;
+    const total=candidates.length;
     const updateProgress=()=>{
       setStatus(
-        'Première utilisation : chargement des politiques '+completed+'/'+candidates.length+'…'
+        'Première utilisation : politiques vérifiées '+completed+'/'+total+
+        (pending.length?' · chargement des remplacements…':'…')
       );
     };
     updateProgress();
-    const settled=new Array(candidates.length);
+
+    const settled=new Array(pending.length);
     let cursor=0;
     async function reviewWorker(){
       while(true){
         const index=cursor;
         cursor+=1;
-        if(index>=candidates.length)return;
-        const handle=candidates[index];
+        if(index>=pending.length)return;
+        const handle=pending[index];
         try{
           settled[index]={
             status:'fulfilled',
@@ -246,24 +260,36 @@
         }
       }
     }
-    const workers=Math.min(REVIEW_CONCURRENCY,candidates.length);
-    await Promise.all(Array.from({length:workers},()=>reviewWorker()));
-    const drafts=[];
+    const workers=Math.min(REVIEW_CONCURRENCY,pending.length);
+    if(workers>0){
+      await Promise.all(Array.from({length:workers},()=>reviewWorker()));
+    }
+
     const failedHandles=[];
     const upstreamErrors=[];
     for(const item of settled){
-      if(item.status==='fulfilled'){
-        drafts.push(item.value.draft);
+      if(item?.status==='fulfilled'){
+        const handle=String(item.value.handle||'');
+        const draft=item.value.draft;
+        if(reviewableDraft(draft)){
+          draftsByHandle.set(handle,draft);
+          draftCache.set(handle,draft);
+        }else{
+          const normalized=String(handle||draft?.handle||'').trim().toLowerCase();
+          if(normalized&&!failedHandles.includes(normalized))failedHandles.push(normalized);
+        }
         continue;
       }
+      if(!item)continue;
       const error=item.reason;
       if(error?.reason==='hackerone_program_review_unavailable'){
-        const handle=String(error?.detail?.handle||'').trim();
-        if(handle)failedHandles.push(handle);
+        const handle=String(error?.detail?.handle||error?.handle||'').trim().toLowerCase();
+        if(handle&&!failedHandles.includes(handle))failedHandles.push(handle);
         continue;
       }
       upstreamErrors.push({handle:String(error?.handle||''),error});
     }
+
     if(upstreamErrors.length){
       let probe=null;
       try{
@@ -271,7 +297,8 @@
       }catch(_error){}
       if(probe?.reachable===true&&probe?.authenticated===true){
         for(const item of upstreamErrors){
-          if(item.handle&&!failedHandles.includes(item.handle))failedHandles.push(item.handle);
+          const handle=String(item.handle||'').trim().toLowerCase();
+          if(handle&&!failedHandles.includes(handle))failedHandles.push(handle);
         }
       }else{
         const first=upstreamErrors[0].error;
@@ -280,12 +307,10 @@
         throw first;
       }
     }
-    for(const draft of drafts){
-      if(reviewableDraft(draft))continue;
-      const handle=String(draft?.handle||'').trim().toLowerCase();
-      if(handle&&!failedHandles.includes(handle))failedHandles.push(handle);
-    }
-    reviewDrafts=drafts;
+
+    reviewDrafts=candidates
+      .map(handle=>draftsByHandle.get(handle))
+      .filter(Boolean);
     if(failedHandles.length)return {failedHandles};
     renderReviewDrafts();
     return {failedHandles:[]};
@@ -369,6 +394,7 @@
           .map(value=>String(value||'').trim().toLowerCase())
           .filter(Boolean)
       )];
+      const draftCache=new Map();
       for(let round=0;round<4;round+=1){
         const result=await loadSimpleSelection(excluded);
         selectionResult=result;
@@ -382,14 +408,15 @@
         const reviewCount=Number(result?.review_count||0);
         if(reviewCount>0){
           $('start').disabled=true;
-          const reviewResult=await loadReviewDrafts(result);
+          const reviewResult=await loadReviewDrafts(result,draftCache);
           const failed=Array.isArray(reviewResult?.failedHandles)?reviewResult.failedHandles:[];
           if(failed.length){
             for(const handle of failed){
               if(!excluded.includes(handle))excluded.push(handle);
             }
             setStatus(
-              'Remplacement automatique de '+failed.length+' programme(s) indisponible(s)…',
+              'Remplacement automatique de '+failed.length+
+              ' programme(s) incompatible(s) · politiques valides conservées en cache…',
               'warn'
             );
             clearReviewPanel();
