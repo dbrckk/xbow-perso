@@ -149,3 +149,12 @@ def test_simple_dashboard_prevents_duplicate_active_batches():
     assert "localStorage.removeItem(ACTIVE_KEY)" in script
     assert "error?.reason===\'active_batch_exists\'" in script
     assert "Aucun doublon n’a été créé." in script
+
+
+def test_simple_dashboard_reconciles_ambiguous_mobile_launch_response():
+    script = _text("frontend/simple.js")
+    start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
+    assert "Serveur inaccessible" in start_block
+    assert "await refreshJournal({quiet:true});" in start_block
+    assert "if(batchActive)" in start_block
+    assert "le lot est bien actif côté serveur" in start_block
