@@ -467,22 +467,20 @@
       const reviewedHandles=new Set(
         drafts.map(draft=>String(draft?.handle||'').trim().toLowerCase()).filter(Boolean)
       );
-      const nextGroups={};
-      for(const key of ['easy','medium','high_value']){
-        nextGroups[key]=(Array.isArray(selectionResult?.groups?.[key])?selectionResult.groups[key]:[])
-          .map(item=>{
-            const handle=String(item?.handle||'').trim().toLowerCase();
-            if(!reviewedHandles.has(handle))return item;
-            return {...item,status:'REVALIDATE',revalidation_deferred:true};
-          });
-      }
+      const nextSelection=(Array.isArray(selectionResult?.selection)?selectionResult.selection:[])
+        .map(item=>{
+          const handle=String(item?.handle||'').trim().toLowerCase();
+          if(!reviewedHandles.has(handle))return item;
+          return {...item,status:'REVALIDATE',revalidation_deferred:true};
+        });
       selectionResult={
         ...(selectionResult||{}),
-        groups:nextGroups,
-        selection:[...nextGroups.easy,...nextGroups.medium,...nextGroups.high_value],
+        groups:{accessible:nextSelection},
+        selection:nextSelection,
+        handles:nextSelection.map(item=>String(item?.handle||'')).filter(Boolean),
         review_count:0,
-        revalidation_count:Number(selectionResult?.revalidation_count||0)+reviewedHandles.size,
-        launch_ready:true
+        revalidation_count:nextSelection.filter(item=>String(item?.status||'')==='REVALIDATE').length,
+        launch_ready:nextSelection.length>=1
       };
       renderSelection(selectionResult);
       clearReviewPanel();
