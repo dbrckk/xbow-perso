@@ -12548,6 +12548,10 @@ def test_start_button_requires_live_runtime_readiness()
 def test_simple_dashboard_surfaces_runtime_remediation()
 ⋮----
 def test_simple_dashboard_prevents_duplicate_active_batches()
+⋮----
+def test_simple_dashboard_reconciles_ambiguous_mobile_launch_response()
+⋮----
+start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -12568,6 +12572,10 @@ script = _text("frontend/simple.js")
 def test_minimal_frontend_preserves_safety_and_server_persistence()
 ⋮----
 def test_minimal_launcher_rechecks_runtime_without_reselection()
+⋮----
+def test_minimal_launcher_uses_single_final_reviewed_launch_request()
+⋮----
+start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
 ```
 
 ## File: tests/test_github_learning_sync.py
@@ -17483,7 +17491,9 @@ def test_simple_selection_supports_excluding_unavailable_review_candidates()
 ⋮----
 def test_simple_dashboard_replaces_individually_unavailable_review_programs()
 ⋮----
-def test_simple_dashboard_auto_replaces_preflight_stale_programmes()
+def test_simple_dashboard_uses_launch_time_replacement_instead_of_duplicate_preflight()
+⋮----
+start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
 ⋮----
 def test_simple_dashboard_recovers_launch_time_programme_state_races()
 ⋮----

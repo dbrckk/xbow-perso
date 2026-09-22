@@ -22,27 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T15:50:57Z
+Generated: 2026-09-22T15:59:55Z
 
 ### Git
 - Branch: `main`
-- Head: `1c467e4f515c`
-- Commit date: 2026-09-22T17:50:45+02:00
-- Commit: test: prove recon automatically reaches queued nuclei work (#366)
+- Head: `41a954304339`
+- Commit date: 2026-09-22T17:59:32+02:00
+- Commit: perf: make reviewed bug-bounty launch a single final validation (#367)
 - Tracked files: 565
 
 ### Recently changed files
-- `backend/tests/test_hackerone_nuclei_e2e.py`
-- `backend/tests/test_simple_selection_cache_only.py`
-- `frontend/simple.js`
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_hackerone_batch_api.py`
 - `backend/tests/test_hackerone_prelaunch.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
+- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
+- `frontend/simple.js`
 - `frontend/sw.js`
+- `backend/tests/test_hackerone_nuclei_e2e.py`
+- `backend/tests/test_hackerone_batch_api.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-enable-hackerone-nuclei.sh`
 - `scripts/mobile-production-status.sh`
