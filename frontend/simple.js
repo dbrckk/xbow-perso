@@ -294,7 +294,7 @@
           missing.reason='hackerone_credentials_missing';
           throw missing;
         }
-        await api('/imports/hackerone/programs?refresh=true');
+        await api('/imports/hackerone/programs?refresh=true',{timeoutMs:130000});
         result=await api('/hackerone/simple-review-package'+query,{timeoutMs:130000});
       }
 
