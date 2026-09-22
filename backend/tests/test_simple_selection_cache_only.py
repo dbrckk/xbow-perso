@@ -28,7 +28,7 @@ def test_simple_dashboard_initializes_catalog_once_then_retries_selection():
     assert "/imports/hackerone/connection" in script
     assert "/imports/hackerone/programs?refresh=true" in script
     assert "return await api('/hackerone/simple-selection'+query)" in script
-    assert "Les 6 programmes restent sélectionnés" in script
+    assert "Remplacement automatique de " in script
 
 
 def test_simple_dashboard_surfaces_actionable_hackerone_errors():
