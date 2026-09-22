@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=76' in index
-    assert '/app.css?v=76' in index
-    assert "xbow-perso-v76" in sw
+    assert '/simple.js?v=77' in index
+    assert '/app.css?v=77' in index
+    assert "xbow-perso-v77" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=76" defer></script>' in index
+    assert '<script src="/simple.js?v=77" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -169,3 +169,13 @@ def test_simple_dashboard_can_cancel_active_hackerone_batch():
     assert "+'/cancel'" in script
     assert "activeBatchId=active?String(active?.id||''):'';" in script
     assert "Annuler le lot en cours" in html
+
+
+def test_simple_dashboard_keeps_valid_review_drafts_across_replacement_rounds():
+    script = _text("frontend/simple.js")
+    assert "loadReviewDrafts(result,draftCache)" in script
+    assert "const draftCache=new Map();" in script
+    assert "const cached=draftCache.get(handle);" in script
+    assert "draftCache.set(handle,draft);" in script
+    assert "politiques valides conservées en cache" in script
+    assert "politiques vérifiées '+completed+'/'+total" in script
