@@ -34,6 +34,8 @@ def test_mobile_status_prints_explicit_launch_verdict_and_blockers():
     assert "VERDICT=BLOCKED" in script
     assert "BLOCKER=" in script
     assert "=== DASHBOARD ASSET VERSION ===" in script
+    assert "PUBLIC_HTTPS_OK=false" in script
+    assert "BLOCKER=public_https" in script
 
 
 def test_enable_script_requires_final_live_launch_verdict():
