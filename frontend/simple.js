@@ -296,15 +296,24 @@
       const failed=(Array.isArray(readiness?.checks)?readiness.checks:[])
         .filter(item=>item?.required===true&&item?.ok!==true);
       runtimeReady=readiness?.live_scan_ready===true;
+      const actionNode=$('runtimeAction');
       if(runtimeReady){
         node.textContent='Scanner : prêt pour les programmes autorisés.';
         node.className='muted compact state-ready';
+        if(actionNode)actionNode.textContent='Tout est prêt côté runtime. Après validation des politiques, le bouton Commencer devient disponible.';
       }else{
         const labels=failed.slice(0,3)
           .map(item=>String(item?.label||item?.id||'contrôle'))
           .filter(Boolean);
         node.textContent='Scanner : non prêt'+(labels.length?' · '+labels.join(' · '):'')+'.';
         node.className='muted compact state-review';
+        const firstAction=String(failed[0]?.action||'').trim();
+        const activation=String(readiness?.scanner_start_command||'').trim();
+        if(actionNode){
+          actionNode.textContent=firstAction
+            ?'À faire : '+firstAction+(activation?' · Commande : '+activation:'')
+            :(activation?'Commande : '+activation:'');
+        }
         if(!quiet)setStatus('Le scanner doit être prêt avant le lancement.','warn');
       }
       updateStartAvailability();
@@ -314,6 +323,8 @@
       updateStartAvailability();
       node.textContent='Scanner : état indisponible.';
       node.className='muted compact state-review';
+      const actionNode=$('runtimeAction');
+      if(actionNode)actionNode.textContent='Vérifie la stack de production puis relance le diagnostic.';
       if(!quiet)setStatus('État scanner indisponible : '+error.message,'warn');
       return null;
     }
