@@ -1181,22 +1181,27 @@ def _active_hackerone_batch(store):
     return None
 
 
+def _raise_if_active_hackerone_batch(store) -> None:
+    active = _active_hackerone_batch(store)
+    if active is None:
+        return
+    raise HTTPException(
+        status_code=409,
+        detail={
+            "message": "A HackerOne batch is already active",
+            "reason": "active_batch_exists",
+            "batch_id": str(active.get("id") or ""),
+        },
+    )
+
+
 @router.post("/api/imports/hackerone/batches/launch-reviewed")
 def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
     from .main import storage
 
     with _HACKERONE_BATCH_LAUNCH_LOCK:
         store = storage()
-        active = _active_hackerone_batch(store)
-        if active is not None:
-            raise HTTPException(
-                status_code=409,
-                detail={
-                    "message": "A HackerOne batch is already active",
-                    "reason": "active_batch_exists",
-                    "batch_id": str(active.get("id") or ""),
-                },
-            )
+        _raise_if_active_hackerone_batch(store)
         prepared: list[HackerOneCampaignAdmissionInput] = []
         missing: list[str] = []
 
@@ -1343,7 +1348,11 @@ def _launch_hackerone_batch_impl(
 
 @router.post("/api/imports/hackerone/batches/launch")
 def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
-    return _launch_hackerone_batch_impl(payload)
+    from .main import storage
+
+    with _HACKERONE_BATCH_LAUNCH_LOCK:
+        _raise_if_active_hackerone_batch(storage())
+        return _launch_hackerone_batch_impl(payload)
 
 
 @router.get("/api/imports/hackerone/batches")
