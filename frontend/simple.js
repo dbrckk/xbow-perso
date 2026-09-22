@@ -60,7 +60,10 @@
   }
 
   function stateLabel(item){
-    return String(item?.status||'')==='READY'?'prêt':'revue initiale';
+    const status=String(item?.status||'');
+    if(status==='READY')return 'prêt';
+    if(status==='REVALIDATE')return 'revalidation au démarrage';
+    return 'revue initiale';
   }
 
   function renderSelection(result){
@@ -86,7 +89,7 @@
           ' · '+String(item?.handle||'')+
           (showValue?money(item?.historical_usd_awarded_max):'');
         const state=document.createElement('span');
-        state.className=String(item?.status||'')==='READY'?'state-ready':'state-review';
+        state.className=['READY','REVALIDATE'].includes(String(item?.status||''))?'state-ready':'state-review';
         state.textContent=' · '+stateLabel(item);
         row.append(text,state);
         section.appendChild(row);
@@ -207,7 +210,13 @@
         return;
       }
       $('start').disabled=false;
-      setStatus('Sélection prête : les 6 programmes sont READY.','ok');
+      const revalidationCount=Number(result?.revalidation_count||0);
+      setStatus(
+        revalidationCount
+          ?'Sélection prête : '+revalidationCount+' programme(s) déjà revu(s) seront revalidés automatiquement au démarrage.'
+          :'Sélection prête : les 6 programmes sont READY.',
+        'ok'
+      );
     }catch(error){
       selection=[];
       selectionResult=null;
