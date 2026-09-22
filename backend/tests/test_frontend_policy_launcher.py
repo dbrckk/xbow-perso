@@ -15,6 +15,7 @@ def test_hackerone_reviewed_batch_routes_exist():
     assert "/api/imports/hackerone/batches/launch-reviewed" in schema["paths"]
     assert "/api/imports/hackerone/batches/go-no-go" in schema["paths"]
     assert "/api/hackerone/simple-selection" in schema["paths"]
+    assert "/api/hackerone/simple-review-package" in schema["paths"]
     assert "/api/hackerone/journal" in schema["paths"]
 
 
@@ -25,11 +26,11 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "runtimeAction", "status", "journal", "cancelActive", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=78" defer></script>' in html
+    assert '<script src="/simple.js?v=79" defer></script>' in html
     assert "2 faciles + 2 moyens + 2 fort potentiel" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html
-    assert "/hackerone/simple-selection" in script
+    assert "/hackerone/simple-review-package" in script
     assert "/imports/hackerone/batches/launch-reviewed" in script
     assert "/imports/hackerone/batches/go-no-go" not in script
     assert "/hackerone/journal?limit=50" in script
