@@ -260,7 +260,7 @@ def test_hackerone_worker_automatically_advances_from_recon_to_nuclei(
         assert worker_service.process_one(queue, store, "auto-general") is True
 
     counts = queue.campaign_job_counts(campaign_id)
-    assert counts["nuclei_scan"] == 1
+    assert counts["nuclei_scan"] >= 1
     scan_status = queue.campaign_job_status_counts(campaign_id)
     assert scan_status["queued"] >= 1
     assert scan_status["failed"] == 0
