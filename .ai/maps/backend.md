@@ -14540,6 +14540,12 @@ script = (ROOT / "scripts/mobile-production-update.sh").read_text(encoding="utf-
 def test_mobile_status_reports_hackerone_launch_readiness()
 ⋮----
 script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+⋮----
+def test_mobile_status_prints_explicit_launch_verdict_and_blockers()
+⋮----
+def test_enable_script_requires_final_live_launch_verdict()
+⋮----
+script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

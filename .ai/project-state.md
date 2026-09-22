@@ -22,16 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T13:59:54Z
+Generated: 2026-09-22T14:04:15Z
 
 ### Git
 - Branch: `main`
-- Head: `ce486ce9eb88`
-- Commit date: 2026-09-22T15:59:41+02:00
-- Commit: feat: show exact runtime remediation in the launch dashboard (#359)
+- Head: `20eca89425cb`
+- Commit date: 2026-09-22T16:04:03+02:00
+- Commit: feat: print explicit bug bounty launch verdict on mobile (#358)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/tests/test_mobile_production_update_script.py`
+- `scripts/mobile-enable-hackerone-nuclei.sh`
+- `scripts/mobile-production-status.sh`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
@@ -46,9 +49,6 @@ Generated: 2026-09-22T13:59:54Z
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/app/worker_service.py`
 - `backend/tests/test_worker_observations.py`
-- `backend/app/orchestrator.py`
-- `backend/tests/test_job_provenance_integration.py`
-- `backend/tests/test_orchestrator.py`
 
 ### Project signals
 - `pyproject.toml`

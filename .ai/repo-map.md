@@ -15148,6 +15148,12 @@ script = (ROOT / "scripts/mobile-production-update.sh").read_text(encoding="utf-
 def test_mobile_status_reports_hackerone_launch_readiness()
 ⋮----
 script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+⋮----
+def test_mobile_status_prints_explicit_launch_verdict_and_blockers()
+⋮----
+def test_enable_script_requires_final_live_launch_verdict()
+⋮----
+script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
 ````
 
 ## File: backend/tests/test_mobile_reset_api_token.py
@@ -19645,6 +19651,25 @@ echo "The root-only profile survives normal production updates."
 echo "Bounded builtin recon is enabled; external recon and browser automation remain disabled."
 echo "Every campaign still requires verified HackerOne scope/policy/fingerprint admission."
 echo "HackerOne report submission remains disabled."
+echo
+echo "=== FINAL BUG BOUNTY LAUNCH VERDICT ==="
+"${COMPOSE[@]}" --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_live_readiness import build_hackerone_live_readiness
+from app.main import dependency_readiness
+
+result = build_hackerone_live_readiness(dependency_readiness())
+failed = [
+    item for item in result.get("checks", [])
+    if item.get("required") is True and item.get("ok") is not True
+]
+if failed:
+    print("BUG_BOUNTY_LAUNCH_READY=false")
+    for item in failed:
+        print("BLOCKER=" + str(item.get("id") or "unknown") + " | " + str(item.get("label") or ""))
+    raise SystemExit(1)
+print("BUG_BOUNTY_LAUNCH_READY=true")
+print("NEXT_STEP=Open the dashboard, review any first-run policies, then press Commencer.")
+PY
 ````
 
 ## File: scripts/mobile-production-cutover.sh
@@ -20177,9 +20202,56 @@ else
 fi
 
 PUBLIC_HOST="$(grep -E '^[[:space:]]*XBOW_PUBLIC_HOST=' .env | tail -n1 | cut -d= -f2- || true)"
+PUBLIC_HTTPS_OK=false
 if [ -n "$PUBLIC_HOST" ]; then
   echo "=== PUBLIC HTTPS ==="
-  curl -fsSI "https://$PUBLIC_HOST/health" | sed -n '1,12p'
+  if curl -fsSI "https://$PUBLIC_HOST/health" | sed -n '1,12p'; then
+    PUBLIC_HTTPS_OK=true
+  else
+    echo "PUBLIC_HTTPS_OK=false"
+  fi
+fi
+
+echo "=== BUG BOUNTY LAUNCH VERDICT ==="
+RUNTIME_RESULT="$(
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_live_readiness import build_hackerone_live_readiness
+from app.main import dependency_readiness
+
+result = build_hackerone_live_readiness(dependency_readiness())
+failed = [
+    {
+        "id": item.get("id"),
+        "label": item.get("label"),
+        "action": item.get("action"),
+    }
+    for item in result.get("checks", [])
+    if item.get("required") is True and item.get("ok") is not True
+]
+print("RUNTIME_READY=" + ("true" if result.get("live_scan_ready") is True else "false"))
+for item in failed:
+    print(f"BLOCKER={item['id']} | {item['label']} | {item['action']}")
+PY
+)"
+printf '%s\n' "$RUNTIME_RESULT"
+RUNTIME_READY="$(printf '%s\n' "$RUNTIME_RESULT" | sed -n 's/^RUNTIME_READY=//p' | head -n1)"
+if [ "$RUNTIME_READY" = "true" ] && [ "$PUBLIC_HTTPS_OK" = "true" ]; then
+  echo "BUG_BOUNTY_LAUNCH_READY=true"
+  echo "VERDICT=READY"
+else
+  echo "BUG_BOUNTY_LAUNCH_READY=false"
+  echo "VERDICT=BLOCKED"
+  if [ "$PUBLIC_HTTPS_OK" != "true" ]; then
+    echo "BLOCKER=public_https | Dashboard HTTPS public inaccessible | Vérifier tls-proxy, DNS/sslip.io et les ports 80/443."
+  fi
+fi
+
+if [ -n "$PUBLIC_HOST" ]; then
+  echo "=== DASHBOARD ASSET VERSION ==="
+  curl -fsS "https://$PUBLIC_HOST/" \
+    | grep -o 'simple.js?v=[0-9][0-9]*' \
+    | head -n1 \
+    || true
 fi
 ````
 

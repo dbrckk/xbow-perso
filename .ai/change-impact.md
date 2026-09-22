@@ -1,18 +1,16 @@
 # Change impact
 
-Base: be0dc0b914769430c9b12a4021974debf1210f6e
-Head: ce486ce9eb88906f6c90a9260e6f358e9cfa92f9
+Base: bb4c24333536a33ad290a08e01ab100affadbcff
+Head: 20eca89425cbb11d2e8e30f384bd6fd443733f2a
 
 ## Changed files
-- M backend/tests/test_frontend_auth_proxy.py
-- M backend/tests/test_frontend_policy_launcher.py
-- M frontend/index.html
-- M frontend/simple.js
-- M frontend/sw.js
+- M backend/tests/test_mobile_production_update_script.py
+- M scripts/mobile-enable-hackerone-nuclei.sh
+- M scripts/mobile-production-status.sh
 
 ## Affected areas
 - backend
-- frontend
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.
