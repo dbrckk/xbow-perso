@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T18:46:56Z
+Generated: 2026-09-22T19:26:59Z
 
 ### Git
 - Branch: `main`
-- Head: `0c52bd3362cf`
-- Commit date: 2026-09-22T20:46:44+02:00
-- Commit: fix: stop first-run policy loading from restarting at 0/6 (#375)
+- Head: `187c75b5080b`
+- Commit date: 2026-09-22T21:26:48+02:00
+- Commit: fix: preserve valid programmes during first-run replacement (#376)
 - Tracked files: 565
 
 ### Recently changed files

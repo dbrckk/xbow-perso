@@ -1,7 +1,7 @@
 # Change impact
 
-Base: ada5c8cd306341ab2b2e02f6d66847f0a69f8b22
-Head: 0c52bd3362cfd71d701793d2c9351404ba4fdf65
+Base: 53c3bb54e9f4a0862fa52bf9238114f51f84bc51
+Head: 187c75b5080bf7634d5380e2ea7809460d2ab9e4
 
 ## Changed files
 - M backend/tests/test_frontend_auth_proxy.py

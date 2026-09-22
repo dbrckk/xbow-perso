@@ -3,7 +3,7 @@
 - Index mode: incremental
 - Files indexed: 373
 - Files reparsed this run: 5
-- Symbols: 3358
+- Symbols: 3362
 - Internal import edges: 1226
 - Impacted files: 5
 - Selected tests: 9
@@ -19,7 +19,7 @@
 - backend/app/storage_core.py: 44 symbols
 - backend/tests/test_storage.py: 38 symbols
 - backend/tests/test_recon_worker.py: 36 symbols
-- frontend/simple.js: 33 symbols
+- frontend/simple.js: 35 symbols
 - backend/app/storage_backend.py: 32 symbols
 - backend/tests/test_auth.py: 32 symbols
 - backend/tests/test_browser.py: 32 symbols
@@ -45,7 +45,7 @@
 - AST index mode: incremental
 - AST files reparsed this run: 5
 - outline files retained: 371
-- top-level items retained: 4634
+- top-level items retained: 4636
 - direct members retained: 1049
 - symbol shards: 25
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard

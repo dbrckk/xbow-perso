@@ -399,6 +399,12 @@ async function refreshRuntimeReadiness(
 ⋮----
 async function loadSimpleSelection(excludedHandles=[])
 ⋮----
+function rebuildSimpleSelection(base,groups)
+⋮----
+const count=status
+⋮----
+function replaceFailedSelection(current,replacements,failedHandles)
+⋮----
 async function prepare(initialExcluded=[])
 ⋮----
 function reviewProfilePayload(draft)

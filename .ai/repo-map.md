@@ -13164,6 +13164,8 @@ start_block = script.split("async function start()", 1)[1].split("function repoS
 def test_simple_dashboard_can_cancel_active_hackerone_batch()
 ⋮----
 def test_simple_dashboard_keeps_valid_review_drafts_across_replacement_rounds()
+⋮----
+def test_simple_dashboard_preserves_valid_programmes_when_replacing_failures()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -18144,6 +18146,8 @@ def test_simple_dashboard_recovers_launch_time_programme_state_races()
 def test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts()
 ⋮----
 def test_simple_dashboard_surfaces_scanner_activation_command_on_preflight_block()
+⋮----
+def test_simple_dashboard_does_not_rerank_all_six_when_one_programme_fails()
 ````
 
 ## File: backend/tests/test_simple_selection_cached.py
@@ -19456,6 +19460,12 @@ async function reviewWorker()
 async function refreshRuntimeReadiness(
 ⋮----
 async function loadSimpleSelection(excludedHandles=[])
+⋮----
+function rebuildSimpleSelection(base,groups)
+⋮----
+const count=status
+⋮----
+function replaceFailedSelection(current,replacements,failedHandles)
 ⋮----
 async function prepare(initialExcluded=[])
 ⋮----
