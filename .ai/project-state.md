@@ -22,23 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T07:58:29Z
+Generated: 2026-09-22T08:42:26Z
 
 ### Git
 - Branch: `main`
-- Head: `47c8ffb5bd62`
-- Commit date: 2026-09-22T09:58:15+02:00
-- Commit: feat: turn runtime batch summaries into actionable learning signals (#341)
+- Head: `81388d1cf672`
+- Commit date: 2026-09-22T10:42:14+02:00
+- Commit: fix: recover one-click review from generic HackerOne upstream failures (#342)
 - Tracked files: 564
 
 ### Recently changed files
+- `backend/app/hackerone_api.py`
+- `backend/tests/test_hackerone_upstream_diagnostics.py`
 - `backend/app/github_learning_sync.py`
 - `backend/tests/test_github_learning_sync.py`
-- `backend/app/hackerone_api.py`
 - `backend/app/main.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_hackerone_upstream_diagnostics.py`
 - `backend/tests/test_live_activation_profile.py`
 - `frontend/index.html`
 - `frontend/simple.js`

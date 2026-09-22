@@ -1,11 +1,11 @@
 # Change impact
 
-Base: bcd9a2429075005c90139eaca47ea873069ec589
-Head: 47c8ffb5bd625edf0e9db010fc06c319148d9b96
+Base: 60469bfb6d63f51b80b77bad5884250cbeb271c4
+Head: 81388d1cf672e222531bafef8a7edab07c62a97a
 
 ## Changed files
-- M backend/app/github_learning_sync.py
-- M backend/tests/test_github_learning_sync.py
+- M backend/app/hackerone_api.py
+- M backend/tests/test_hackerone_upstream_diagnostics.py
 
 ## Affected areas
 - backend

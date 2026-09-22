@@ -13621,6 +13621,10 @@ detail = _hackerone_error_detail(
 def test_hackerone_error_detail_classifies_retryable_transport()
 ⋮----
 def test_hackerone_error_detail_classifies_rate_limit()
+⋮----
+def test_program_specific_422_is_replaceable_review_candidate(monkeypatch)
+⋮----
+def fail(_handle)
 ```
 
 ## File: tests/test_health.py
