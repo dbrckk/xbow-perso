@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 372
-- Files reparsed this run: 3
-- Symbols: 3302
+- Files reparsed this run: 5
+- Symbols: 3305
 - Internal import edges: 1217
-- Impacted files: 17
-- Selected tests: 15
+- Impacted files: 5
+- Selected tests: 9
 
 ## Languages
 - python: 368 files
@@ -32,7 +32,7 @@
 - backend/tests/test_orchestrator.py: 25 symbols
 - backend/app/worker_service.py: 24 symbols
 - backend/tests/test_validator.py: 24 symbols
-- backend/app/browser.py: 22 symbols
+- frontend/simple.js: 23 symbols
 
 ## Agent routing
 - Read impact.json first after project/change context.
@@ -43,9 +43,9 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 3
+- AST files reparsed this run: 5
 - outline files retained: 370
-- top-level items retained: 4581
+- top-level items retained: 4582
 - direct members retained: 1049
 - symbol shards: 25
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard

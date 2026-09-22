@@ -22,16 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T08:47:31Z
+Generated: 2026-09-22T08:51:37Z
 
 ### Git
 - Branch: `main`
-- Head: `1ac197f05a76`
-- Commit date: 2026-09-22T10:47:19+02:00
-- Commit: perf: avoid duplicate HackerOne preflight during reviewed launch (#344)
+- Head: `2cfcdbebfa42`
+- Commit date: 2026-09-22T10:51:26+02:00
+- Commit: fix: throttle first-run HackerOne review loading (#345)
 - Tracked files: 564
 
 ### Recently changed files
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_simple_selection_cache_only.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_hackerone_prelaunch.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
@@ -39,16 +45,8 @@ Generated: 2026-09-22T08:47:31Z
 - `backend/app/github_learning_sync.py`
 - `backend/tests/test_github_learning_sync.py`
 - `backend/app/main.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_live_activation_profile.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 - `scripts/mobile-production-update.sh`
-- `backend/tests/test_mobile_reset_api_token.py`
-- `backend/tests/test_simple_selection_cache_only.py`
-- `scripts/mobile-set-github-learning-token.sh`
 
 ### Project signals
 - `pyproject.toml`

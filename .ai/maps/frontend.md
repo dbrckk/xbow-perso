@@ -383,9 +383,13 @@ function renderReviewDrafts()
 ⋮----
 const sleep=ms
 ⋮----
+function retryableReviewError(error)
+⋮----
 async function loadReviewDraft(handle)
 ⋮----
 async function loadReviewDrafts(result)
+⋮----
+async function reviewWorker()
 ⋮----
 async function loadSimpleSelection(excludedHandles=[])
 ⋮----
