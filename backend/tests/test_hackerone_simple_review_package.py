@@ -64,46 +64,72 @@ def _snapshot(handle: str, *, complete: bool = True):
     )
 
 
-def test_atomic_review_package_caches_valid_drafts_across_server_replacement(monkeypatch):
+def test_review_package_stops_after_two_usable_programmes(monkeypatch):
     calls=[]
-
-    def fake_selection(exclude=""):
-        excluded={value for value in exclude.split(",") if value}
-        return _selection(
-            ["a","b","c","d","e","g"]
-            if "f" in excluded
-            else ["a","b","c","d","e","f"]
-        )
 
     def fake_fetch(handle):
         calls.append(handle)
-        return _snapshot(handle, complete=handle!="f")
+        return _snapshot(handle, complete=handle in {"a","b"})
 
-    monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
+    monkeypatch.setattr(
+        hackerone_api,
+        "hackerone_simple_selection",
+        lambda exclude="": _selection(["a","b","c","d","e","f"]),
+    )
     monkeypatch.setattr(hackerone_api, "fetch_hackerone_program_snapshot", fake_fetch)
 
     result=hackerone_api.hackerone_simple_review_package()
 
-    assert result["handles"] == ["a","b","c","d","e","g"]
-    assert [draft["handle"] for draft in result["review_drafts"]] == ["a","b","c","d","e","g"]
-    assert result["review_package_rounds"] == 2
-    assert result["review_package_rejected"] == 1
-    assert calls.count("a") == 1
-    assert calls.count("b") == 1
-    assert calls.count("c") == 1
-    assert calls.count("d") == 1
-    assert calls.count("e") == 1
-    assert calls.count("f") == 1
-    assert calls.count("g") == 1
+    assert result["handles"] == ["a","b"]
+    assert len(result["review_drafts"]) == 2
+    assert result["review_package_target"] == 2
+    assert result["review_package_minimum"] == 1
+    assert set(calls).issuperset({"a","b"})
 
 
-def test_atomic_review_package_reports_bounded_failure(monkeypatch):
+def test_review_package_returns_one_when_only_one_usable_programme_exists(monkeypatch):
     counter={"n":0}
 
     def fake_selection(exclude=""):
         counter["n"] += 1
-        base=counter["n"] * 10
-        return _selection([f"x{base+i}" for i in range(6)])
+        if counter["n"] == 1:
+            return _selection(["a","b","c","d","e","f"])
+        raise hackerone_api.HTTPException(
+            status_code=409,
+            detail={
+                "reason":"simple_review_package_incomplete",
+                "message":"done",
+            },
+        )
+
+    monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: _snapshot(handle, complete=handle=="a"),
+    )
+
+    result=hackerone_api.hackerone_simple_review_package()
+
+    assert result["handles"] == ["a"]
+    assert len(result["review_drafts"]) == 1
+    assert result["complete"] is True
+
+
+def test_review_package_reports_failure_when_none_are_usable(monkeypatch):
+    counter={"n":0}
+
+    def fake_selection(exclude=""):
+        counter["n"] += 1
+        if counter["n"] == 1:
+            return _selection(["a","b","c","d","e","f"])
+        raise hackerone_api.HTTPException(
+            status_code=409,
+            detail={
+                "reason":"simple_review_package_incomplete",
+                "message":"done",
+            },
+        )
 
     monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
     monkeypatch.setattr(
@@ -117,13 +143,12 @@ def test_atomic_review_package_reports_bounded_failure(monkeypatch):
     except Exception as exc:
         assert getattr(exc, "status_code", None) == 409
         detail=getattr(exc, "detail", {})
-        assert detail["reason"] == "simple_review_package_exhausted"
-        assert detail["contains_secrets"] is False
+        assert detail["reason"] == "simple_review_package_incomplete"
     else:
-        raise AssertionError("exhausted review package must fail closed")
+        raise AssertionError("zero usable programmes must fail closed")
 
 
-def test_atomic_review_package_stops_on_global_hackerone_outage(monkeypatch):
+def test_review_package_stops_on_global_hackerone_outage(monkeypatch):
     monkeypatch.setattr(
         hackerone_api,
         "hackerone_simple_selection",
@@ -147,3 +172,55 @@ def test_atomic_review_package_stops_on_global_hackerone_outage(monkeypatch):
         assert detail["contains_secrets"] is False
     else:
         raise AssertionError("global HackerOne outage must stop preparation")
+
+
+def test_review_package_returns_one_or_two_usable_programmes(monkeypatch):
+    def fake_selection(exclude=""):
+        excluded={value for value in exclude.split(",") if value}
+        handles=[h for h in ["a","b","c","d","e","f"] if h not in excluded]
+        while len(handles)<6:
+            handles.append("z"+str(len(handles)))
+        return _selection(handles[:6])
+
+    monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: _snapshot(handle, complete=handle in {"a","b"}),
+    )
+
+    result=hackerone_api.hackerone_simple_review_package()
+
+    assert 1 <= len(result["handles"]) <= 2
+    assert result["review_package_target"] == 2
+    assert result["review_package_minimum"] == 1
+    assert result["complete"] is True
+
+
+def test_review_package_limits_live_checks_to_two_per_round(monkeypatch):
+    seen=[]
+    round_no={"n":0}
+
+    def fake_selection(exclude=""):
+        round_no["n"] += 1
+        base=(round_no["n"]-1)*10
+        return _selection([f"x{base+i}" for i in range(6)])
+
+    def fake_fetch(handle):
+        seen.append(handle)
+        return _snapshot(handle, complete=False)
+
+    monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
+    monkeypatch.setattr(hackerone_api, "fetch_hackerone_program_snapshot", fake_fetch)
+
+    try:
+        hackerone_api.hackerone_simple_review_package()
+    except Exception as exc:
+        detail=getattr(exc, "detail", {})
+        assert detail["reason"] == "simple_review_package_exhausted"
+        assert detail["checked_count"] <= 8
+        assert detail["max_checked"] == 8
+    else:
+        raise AssertionError("all-incompatible candidates must fail closed")
+
+    assert len(seen) <= 8

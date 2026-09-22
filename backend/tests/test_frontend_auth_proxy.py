@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=79' in index
-    assert '/app.css?v=79' in index
-    assert "xbow-perso-v79" in sw
+    assert '/simple.js?v=80' in index
+    assert '/app.css?v=80' in index
+    assert "xbow-perso-v80" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=79" defer></script>' in index
+    assert '<script src="/simple.js?v=80" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -77,7 +77,7 @@ def test_simple_dashboard_grouped_review_and_quiet_journal():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     assert 'id="reviewAllConfirm"' in html
-    assert "Valider les 6 programmes" in html
+    assert "Valider la sélection" in html
     assert "async function persistReviewDraft(draft)" in script
     assert "for(let attempt=0;attempt<2;attempt+=1)" in script
     assert "if(!quiet)setStatus('Journal indisponible : '+error.message,'err');" in script
@@ -93,7 +93,7 @@ def test_simple_dashboard_bounds_review_profile_persistence_concurrency():
 
 def test_simple_dashboard_uses_atomic_server_review_package():
     script = _text("frontend/simple.js")
-    assert "Préparation serveur des 6 programmes et de leurs politiques" in script
+    assert "Recherche de 1 ou 2 programmes HackerOne accessibles" in script
     assert "/hackerone/simple-review-package" in script
     assert "review_drafts" in script
     prepare_block = script.split("async function prepare(", 1)[1].split("function reviewProfilePayload", 1)[0]
@@ -126,7 +126,7 @@ def test_start_button_requires_live_runtime_readiness():
     script = _text("frontend/simple.js")
     assert "let runtimeReady=false;" in script
     assert "function updateStartAvailability()" in script
-    assert "selection.length===6" in script
+    assert "selection.length>=1" in script
     assert "runtimeReady===true" in script
     assert "runtimeReady=readiness?.live_scan_ready===true;" in script
     assert "runtimeReady=false;" in script
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v79';" in script
-    assert "serviceWorker.register('/sw.js?v=79',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v80';" in script
+    assert "serviceWorker.register('/sw.js?v=80',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v79" in html
+    assert "Interface v80" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -192,3 +192,20 @@ def test_review_panel_displays_hackerone_scope_exclusions():
     script = _text("frontend/simple.js")
     assert "draft?.scope_exclusions" in script
     assert "Exclusions HackerOne" in script
+
+
+def test_one_or_two_selection_is_preserved_after_profile_validation():
+    script = _text("frontend/simple.js")
+    assert "groups:{accessible:nextSelection}" in script
+    assert "selection:nextSelection" in script
+    assert "handles:nextSelection.map" in script
+    assert "launch_ready:nextSelection.length>=1" in script
+
+
+def test_mobile_dashboard_bounds_api_waits_and_shows_search_elapsed_time():
+    script = _text("frontend/simple.js")
+    assert "const timeoutMs=Math.max(1000,Number(options.timeoutMs||45000));" in script
+    assert "controller.abort()" in script
+    assert "Délai serveur dépassé" in script
+    assert "timeoutMs:130000" in script
+    assert "Recherche de programmes accessibles… '+seconds+' s" in script

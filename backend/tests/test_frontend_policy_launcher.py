@@ -26,8 +26,8 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "runtimeAction", "status", "journal", "cancelActive", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=79" defer></script>' in html
-    assert "2 faciles + 2 moyens + 2 fort potentiel" in html
+    assert '<script src="/simple.js?v=80" defer></script>' in html
+    assert "Trouver 1 ou 2 bug bounties accessibles" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html
     assert "/hackerone/simple-review-package" in script
@@ -43,7 +43,7 @@ def test_minimal_frontend_preserves_safety_and_server_persistence():
     html = _text("frontend/index.html")
     script = _text("frontend/simple.js")
 
-    assert "déjà revus" in html
+    assert "valide leur politique si nécessaire" in html
     assert "revalidé juste avant son démarrage" in html
     assert "continue sur le serveur" in html
     assert "localStorage.setItem(TOKEN_KEY" in script
