@@ -7,6 +7,7 @@
   let reviewDrafts=[];
   let runtimeReady=false;
   let batchActive=false;
+  let activeBatchId='';
   let timer=null;
 
   const $=id=>document.getElementById(id);
@@ -630,6 +631,7 @@
         body:JSON.stringify({mode,handles:selection})
       });
       const id=String(batch?.id||'');
+      activeBatchId=id;
       if(id){
         try{localStorage.setItem(ACTIVE_KEY,id);}catch(_error){}
       }
@@ -670,6 +672,7 @@
       if(error?.reason==='active_batch_exists'){
         batchActive=true;
         const activeId=String(error?.detail?.batch_id||'');
+        activeBatchId=activeId;
         if(activeId){
           try{localStorage.setItem(ACTIVE_KEY,activeId);}catch(_error){}
         }
@@ -765,8 +768,13 @@
       const entries=Array.isArray(payload?.journal)?payload.journal:[];
       const active=entries.find(item=>!['completed','cancelled'].includes(String(item?.state||'')));
       batchActive=Boolean(active);
+      activeBatchId=active?String(active?.id||''):'';
+      const cancelButton=$('cancelActive');
+      if(cancelButton)cancelButton.classList.toggle('hidden',!batchActive||!activeBatchId);
       if(!batchActive){
         try{localStorage.removeItem(ACTIVE_KEY);}catch(_error){}
+      }else if(activeBatchId){
+        try{localStorage.setItem(ACTIVE_KEY,activeBatchId);}catch(_error){}
       }
       updateStartAvailability();
       if(active){
@@ -781,6 +789,35 @@
     }
   }
 
+  async function cancelActiveBatch(){
+    if(!requireToken())return;
+    if(!activeBatchId){
+      setStatus('Aucun lot HackerOne actif à annuler.','warn');
+      await refreshJournal({quiet:true});
+      return;
+    }
+    const button=$('cancelActive');
+    if(button)button.disabled=true;
+    try{
+      await api('/imports/hackerone/batches/'+encodeURIComponent(activeBatchId)+'/cancel',{
+        method:'POST',
+        body:'{}'
+      });
+      batchActive=false;
+      activeBatchId='';
+      try{localStorage.removeItem(ACTIVE_KEY);}catch(_error){}
+      if(button)button.classList.add('hidden');
+      setStatus('Lot HackerOne annulé. Tu peux préparer un nouveau lancement.','ok');
+      await refreshJournal({quiet:true});
+      await refreshRuntimeReadiness({quiet:true});
+      updateStartAvailability();
+    }catch(error){
+      setStatus('Annulation impossible : '+error.message,'err');
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
   function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     $('token').addEventListener('input',saveToken);
@@ -789,6 +826,7 @@
     $('saveReviews').addEventListener('click',()=>void saveReviews());
     $('start').addEventListener('click',()=>void start());
     $('refresh').addEventListener('click',()=>void refreshJournal());
+    $('cancelActive').addEventListener('click',()=>void cancelActiveBatch());
     window.addEventListener('unhandledrejection',event=>{
       const message=event?.reason?.message||String(event?.reason||'Erreur JavaScript');
       setStatus('Erreur interface : '+message,'err');
