@@ -77,7 +77,7 @@ def test_simple_dashboard_grouped_review_and_quiet_journal():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     assert 'id="reviewAllConfirm"' in html
-    assert "Valider les 6 programmes" in html
+    assert "Valider la sélection" in html
     assert "async function persistReviewDraft(draft)" in script
     assert "for(let attempt=0;attempt<2;attempt+=1)" in script
     assert "if(!quiet)setStatus('Journal indisponible : '+error.message,'err');" in script
