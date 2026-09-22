@@ -22,27 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T19:48:33Z
+Generated: 2026-09-22T20:35:53Z
 
 ### Git
 - Branch: `main`
-- Head: `7067cac1fde5`
-- Commit date: 2026-09-22T21:48:22+02:00
-- Commit: fix: make first-run HackerOne review atomic and cache-safe (#377)
+- Head: `390b626aa201`
+- Commit date: 2026-09-22T22:35:42+02:00
+- Commit: fix: find one or two accessible HackerOne bounties (#378)
 - Tracked files: 566
 
 ### Recently changed files
 - `backend/app/hackerone_api.py`
-- `backend/app/hackerone_review_draft.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_hackerone_review_draft.py`
 - `backend/tests/test_hackerone_simple_review_package.py`
-- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
-- `frontend/nginx.conf`
 - `frontend/simple.js`
 - `frontend/sw.js`
+- `backend/app/hackerone_review_draft.py`
+- `backend/tests/test_hackerone_review_draft.py`
+- `backend/tests/test_simple_selection_cache_only.py`
+- `frontend/nginx.conf`
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-production-status.sh`
 

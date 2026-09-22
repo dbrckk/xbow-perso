@@ -3645,22 +3645,37 @@ excluded_handles = {
 candidates = [
 result = select_simple_six(candidates)
 ⋮----
-"""Return one stable six-program package plus any first-review drafts.
+"""Return one or two currently usable HackerOne programmes.
 
-    Candidate replacement happens entirely on the server. The mobile client gets
-    one final selection instead of cycling 0/6 -> 6/6 across replacement rounds.
+    The operator asked for the lowest-friction path: any authorized programme is
+    acceptable. Existing reviewed profiles are preferred, while REVIEW candidates
+    are checked live until one or two usable programmes are found.
     """
 rejected = {
+accepted: dict[str, dict[str, Any]] = {}
 draft_cache: dict[str, dict[str, Any]] = {}
 rejection_reasons: dict[str, list[str]] = {}
 checked_handles: set[str] = set()
+candidate_order: dict[str, int] = {}
+last_selection: dict[str, Any] = {}
 ⋮----
-selection = hackerone_simple_selection(exclude=",".join(sorted(rejected)))
+local_exclude = sorted(rejected | set(accepted))
 ⋮----
-review_handles = [
-pending = [
+candidate_selection = hackerone_simple_selection(
 ⋮----
-def _load(handle: str) -> tuple[str, dict[str, Any] | None, list[str]]
+detail = exc.detail if isinstance(exc.detail, dict) else {}
+⋮----
+last_selection = candidate_selection
+⋮----
+items = [
+⋮----
+handle = str(item.get("handle") or "").strip().lower()
+⋮----
+immediate = [
+⋮----
+review_items = [
+⋮----
+def _load(item: dict[str, Any]) -> tuple[str, dict[str, Any] | None, list[str]]
 ⋮----
 draft = build_hackerone_review_draft(snapshot)
 ⋮----
@@ -3668,13 +3683,17 @@ reason = str(detail.get("reason") or "review_unavailable")
 ⋮----
 blockers = review_draft_blockers(draft)
 ⋮----
-futures = {executor.submit(_load, handle): handle for handle in pending}
+futures = {executor.submit(_load, item): item for item in review_items}
 ⋮----
-failed_selected = [handle for handle in review_handles if handle in rejected]
+progressed = bool(immediate or review_items)
 ⋮----
-drafts = [
+selected = sorted(
 ⋮----
-missing = [handle for handle in review_handles if handle not in draft_cache]
+handles = [str(item.get("handle") or "") for item in selected]
+drafts = [draft_cache[handle] for handle in handles if handle in draft_cache]
+review_count = sum(1 for item in selected if str(item.get("status") or "") == "REVIEW")
+ready_count = sum(1 for item in selected if str(item.get("status") or "") == "READY")
+revalidation_count = sum(
 ⋮----
 """Return a durable, read-only operator journal and learning digest."""
 ⋮----
@@ -3809,7 +3828,6 @@ members: list[dict[str, Any]] = []
 ⋮----
 prepared = _reviewed_campaign_input(handle, store)
 ⋮----
-detail = exc.detail if isinstance(exc.detail, dict) else {}
 reason = str(detail.get("reason") or "reviewed_preflight_blocked")
 ⋮----
 ready = [item for item in members if item["status"] == "ready"]
@@ -13208,6 +13226,10 @@ def test_simple_dashboard_can_cancel_active_hackerone_batch()
 def test_dashboard_forces_fresh_mobile_shell_and_exposes_version()
 ⋮----
 def test_review_panel_displays_hackerone_scope_exclusions()
+⋮----
+def test_one_or_two_selection_is_preserved_after_profile_validation()
+⋮----
+def test_mobile_dashboard_bounds_api_waits_and_shows_search_elapsed_time()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -14402,29 +14424,39 @@ def _snapshot(handle: str, *, complete: bool = True)
 ⋮----
 domain=f"{handle}.example.com"
 ⋮----
-def test_atomic_review_package_caches_valid_drafts_across_server_replacement(monkeypatch)
+def test_review_package_stops_after_two_usable_programmes(monkeypatch)
 ⋮----
 calls=[]
-⋮----
-def fake_selection(exclude="")
-⋮----
-excluded={value for value in exclude.split(",") if value}
 ⋮----
 def fake_fetch(handle)
 ⋮----
 result=hackerone_api.hackerone_simple_review_package()
 ⋮----
-def test_atomic_review_package_reports_bounded_failure(monkeypatch)
+def test_review_package_returns_one_when_only_one_usable_programme_exists(monkeypatch)
 ⋮----
 counter={"n":0}
 ⋮----
-base=counter["n"] * 10
+def fake_selection(exclude="")
+⋮----
+def test_review_package_reports_failure_when_none_are_usable(monkeypatch)
 ⋮----
 detail=getattr(exc, "detail", {})
 ⋮----
-def test_atomic_review_package_stops_on_global_hackerone_outage(monkeypatch)
+def test_review_package_stops_on_global_hackerone_outage(monkeypatch)
 ⋮----
 def fail_fetch(_handle)
+⋮----
+def test_review_package_returns_one_or_two_usable_programmes(monkeypatch)
+⋮----
+excluded={value for value in exclude.split(",") if value}
+handles=[h for h in ["a","b","c","d","e","f"] if h not in excluded]
+⋮----
+def test_review_package_limits_live_checks_to_two_per_round(monkeypatch)
+⋮----
+seen=[]
+round_no={"n":0}
+⋮----
+base=(round_no["n"]-1)*10
 ````
 
 ## File: backend/tests/test_hackerone_upstream_diagnostics.py
