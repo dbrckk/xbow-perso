@@ -65,7 +65,8 @@ def test_orchestrator_scan_jobs_bind_each_engine_kind(tmp_path):
     _assert_bound(by_kind["nuclei_scan"], campaign, "nuclei_scan")
 
 
-def test_orchestrator_recon_and_browser_jobs_are_policy_bound(tmp_path):
+def test_orchestrator_recon_and_browser_jobs_are_policy_bound(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "true")
     queue = JobQueue(str(tmp_path / "queue.sqlite3"))
     campaign = _campaign()
     graph = ObservationGraph()
