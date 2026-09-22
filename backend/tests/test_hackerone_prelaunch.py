@@ -131,6 +131,9 @@ def test_reviewed_batch_preflight_reports_blocked_members(monkeypatch):
     assert result["summary"] == {"total": 2, "ready": 1, "blocked": 1}
     blocked = next(item for item in result["members"] if item["handle"] == "closed")
     assert blocked["reason"] == "program_submissions_not_open"
+    assert blocked["replaceable"] is True
+    assert result["blocked_handles"] == ["closed"]
+    assert result["replaceable_handles"] == ["closed"]
     assert result["campaigns_created"] is False
     assert result["automatic_launch"] is False
     assert result["scope_expansion"] is False
@@ -297,3 +300,57 @@ def test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflig
     assert calls == ["alpha", "beta"]
     assert len(prepared) == 2
     assert result == {"mode": "parallel", "campaign_count": 2}
+
+
+def test_reviewed_batch_preflight_does_not_mark_global_upstream_failure_replaceable(monkeypatch):
+    def fake_reviewed(_handle, _store):
+        raise HTTPException(status_code=503, detail="HackerOne upstream temporarily unavailable")
+
+    monkeypatch.setattr(hackerone_api, "_reviewed_campaign_input", fake_reviewed)
+    monkeypatch.setattr("app.main.storage", lambda: object())
+
+    payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+        mode="parallel",
+        handles=["alpha"],
+    )
+    result = hackerone_api.preflight_reviewed_hackerone_batch(payload)
+
+    assert result["ready"] is False
+    assert result["blocked_handles"] == ["alpha"]
+    assert result["replaceable_handles"] == []
+    assert result["members"][0]["replaceable"] is False
+    assert result["members"][0]["reason"] == "reviewed_preflight_blocked"
+
+
+def test_go_no_go_exposes_replaceable_handles(monkeypatch):
+    monkeypatch.setattr(
+        hackerone_api,
+        "_runtime_prelaunch_verdict",
+        lambda: {"runtime_ready": True, "runtime": {}, "blockers": []},
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "preflight_reviewed_hackerone_batch",
+        lambda _payload: {
+            "ready": False,
+            "members": [
+                {
+                    "handle": "closed",
+                    "status": "blocked",
+                    "reason": "program_submissions_not_open",
+                    "replaceable": True,
+                }
+            ],
+            "replaceable_handles": ["closed"],
+        },
+    )
+
+    payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+        mode="parallel",
+        handles=["closed"],
+    )
+    result = hackerone_api.hackerone_batch_go_no_go(payload)
+
+    assert result["go"] is False
+    assert result["replaceable_handles"] == ["closed"]
+    assert "closed:program_submissions_not_open" in result["blockers"]

@@ -1026,6 +1026,16 @@ def _reviewed_campaign_input(
         ) from exc
 
 
+_REPLACEABLE_PREFLIGHT_REASONS = {
+    "program_submissions_not_open",
+    "program_not_currently_open",
+    "review_profile_required",
+    "review_profile_binding_mismatch",
+    "review_profile_incomplete",
+    "review_profile_invalid",
+}
+
+
 def _runtime_prelaunch_verdict() -> dict[str, Any]:
     """Return live runtime readiness without touching HackerOne program state."""
     from .main import dependency_readiness
@@ -1071,6 +1081,7 @@ def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):
         "blockers": blockers,
         "runtime": runtime_verdict["runtime"],
         "batch": batch,
+        "replaceable_handles": list(batch.get("replaceable_handles") or []),
         "read_only": True,
         "campaigns_created": False,
         "automatic_launch": False,
@@ -1090,17 +1101,20 @@ def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInpu
             prepared = _reviewed_campaign_input(handle, store)
         except HTTPException as exc:
             detail = exc.detail if isinstance(exc.detail, dict) else {}
+            reason = str(detail.get("reason") or "reviewed_preflight_blocked")
             members.append({
                 "handle": handle,
                 "status": "blocked",
-                "reason": str(detail.get("reason") or "reviewed_preflight_blocked"),
+                "reason": reason,
                 "message": str(detail.get("message") or exc.detail),
+                "replaceable": reason in _REPLACEABLE_PREFLIGHT_REASONS,
             })
             continue
         members.append({
             "handle": handle,
             "status": "ready",
             "snapshot_sha256": str(prepared.remote_snapshot_sha256 or ""),
+            "replaceable": False,
         })
 
     ready = [item for item in members if item["status"] == "ready"]
@@ -1110,6 +1124,16 @@ def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInpu
         "mode": payload.mode,
         "ready": len(blocked) == 0 and len(ready) == len(members),
         "members": members,
+        "blocked_handles": [
+            str(item.get("handle") or "")
+            for item in blocked
+            if str(item.get("handle") or "")
+        ],
+        "replaceable_handles": [
+            str(item.get("handle") or "")
+            for item in blocked
+            if item.get("replaceable") is True and str(item.get("handle") or "")
+        ],
         "summary": {
             "total": len(members),
             "ready": len(ready),
