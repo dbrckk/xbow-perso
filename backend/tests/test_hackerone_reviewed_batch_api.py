@@ -18,7 +18,7 @@ def _resource(identifier: str):
     }
 
 
-def _snapshot(handle: str, domain: str, fingerprint: str):
+def _snapshot(handle: str, domain: str, fingerprint: str, *, scope_exclusions=()):
     document = {"data": [_resource(domain)], "links": {}}
     return HackerOneProgramSnapshot(
         handle=handle,
@@ -32,7 +32,7 @@ def _snapshot(handle: str, domain: str, fingerprint: str):
             "gold_standard_safe_harbor": True,
         },
         document=document,
-        scope_exclusions=(),
+        scope_exclusions=tuple(scope_exclusions),
         preview={
             "complete": True,
             "allowed_targets": [domain],
@@ -332,3 +332,54 @@ def test_reviewed_batch_rejects_new_launch_when_another_batch_is_active(
         "batch_id": "active-batch",
     }
     assert store.list_campaigns() == []
+
+
+def test_reviewed_batch_rejects_unenforced_scope_exclusions_before_campaign_creation(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "scope-exclusion.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    fingerprint = "a" * 64
+    snapshot = _snapshot(
+        "program-one",
+        "one.example.com",
+        fingerprint,
+        scope_exclusions=(
+            {
+                "id": "exclude-1",
+                "type": "scope-exclusion",
+                "attributes": {
+                    "category": "other",
+                    "details": "Do not test status.example.com",
+                },
+            },
+        ),
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: snapshot,
+    )
+
+    store = Storage(db, artifacts)
+    store.save_hackerone_review_profile(
+        _profile("program-one", "one.example.com", fingerprint),
+        expected_version=0,
+    )
+
+    response = _app().post(
+        "/api/imports/hackerone/batches/launch-reviewed",
+        json={"mode": "sequential", "handles": ["program-one"]},
+    )
+
+    assert response.status_code == 409
+    detail = response.json()["detail"]
+    assert detail["reason"] == "scope_exclusions_require_manual_enforcement"
+    assert detail["handles"] == ["program-one"]
+    assert store.list_campaigns() == []
+    assert store.list_hackerone_batches(limit=10) == []
