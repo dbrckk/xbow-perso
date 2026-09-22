@@ -4,70 +4,17 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 3,
+    "score_margin": 5,
     "tier": "bounded",
-    "top_score": 30
+    "top_score": 26
   },
   "cache": {
-    "fingerprint": "6d1043593cfffdfce50a4278f6591e59c7e0968202cf7e51af7a7437886955af",
+    "fingerprint": "4c65c21c9dc92c8258b0f12c289f574416760bf39f7e88aba60d0b07fb771842",
     "hit": false
   },
-  "candidate_count": 32,
+  "candidate_count": 37,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/orchestrator.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 30,
-      "symbols": [
-        "_decision_explanation",
-        "_enqueue_action",
-        "_enqueue_recon_tasks",
-        "_graph_fingerprint",
-        "_intelligence_context",
-        "_load_graph",
-        "_minimum_enrichment_score",
-        "_pending_findings",
-        "_record_decision",
-        "_result",
-        "_scan_engines",
-        "_seed_primary_target",
-        "_stable_id",
-        "_surface_enrichment",
-        "_validation_saturated_cluster_ids",
-        "advance_campaign",
-        "scope_checker"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 27,
-      "symbols": [
-        "_campaign",
-        "fake_execute",
-        "test_nuclei_worker_dry_run_preserves_safe_default",
-        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
-        "test_scan_engines_default_preserves_strix",
-        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
-        "test_sqlite_queue_accepts_nuclei_scan"
-      ]
-    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -76,9 +23,10 @@
       "path": "backend/app/worker_service.py",
       "reasons": [
         "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 23,
+      "score": 26,
       "symbols": [
         "CampaignCancelledError",
         "StaleBrowserJobError",
@@ -100,6 +48,36 @@
         "process_nuclei_scan",
         "process_one",
         "process_recon_task"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/orchestrator.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "_decision_explanation",
+        "_enqueue_action",
+        "_enqueue_recon_tasks",
+        "_graph_fingerprint",
+        "_intelligence_context",
+        "_load_graph",
+        "_minimum_enrichment_score",
+        "_pending_findings",
+        "_record_decision",
+        "_result",
+        "_scan_engines",
+        "_seed_primary_target",
+        "_stable_id",
+        "_surface_enrichment",
+        "_validation_saturated_cluster_ids",
+        "advance_campaign",
+        "scope_checker"
       ]
     },
     {
@@ -138,6 +116,26 @@
         "require_scanner_sandbox",
         "safe_scanner_sandbox_admission",
         "scanner_sandbox_admission"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "_campaign",
+        "fake_execute",
+        "test_nuclei_worker_dry_run_preserves_safe_default",
+        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+        "test_scan_engines_default_preserves_strix",
+        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+        "test_sqlite_queue_accepts_nuclei_scan"
       ]
     },
     {

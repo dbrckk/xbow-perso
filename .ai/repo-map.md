@@ -18821,6 +18821,14 @@ graph = load_observation_graph(store, "c1")
 ⋮----
 endpoint_id = graph.by_kind("endpoint")[0].id
 asset_id = graph.by_kind("asset")[0].id
+⋮----
+def test_recon_observed_primary_target_is_recorded_as_endpoint(tmp_path, monkeypatch)
+⋮----
+store = Storage(str(tmp_path / "recon.sqlite3"), str(tmp_path / "artifacts"))
+campaign = Campaign(
+⋮----
+graph = load_observation_graph(store, campaign.id)
+endpoints = graph.by_kind("endpoint")
 ````
 
 ## File: backend/tests/test_worker_outcome_memory.py

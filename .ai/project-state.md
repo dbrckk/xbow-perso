@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T12:06:54Z
+Generated: 2026-09-22T12:51:30Z
 
 ### Git
 - Branch: `main`
-- Head: `7966cc4c0fbe`
-- Commit date: 2026-09-22T14:06:42+02:00
-- Commit: fix: skip optional browser recon when browser runtime is disabled (#352)
+- Head: `a1d6bd2c4832`
+- Commit date: 2026-09-22T14:51:18+02:00
+- Commit: fix: treat an observed recon target as a discovered endpoint (#353)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/app/worker_service.py`
+- `backend/tests/test_worker_observations.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_job_provenance_integration.py`
 - `backend/tests/test_orchestrator.py`
@@ -47,7 +49,6 @@ Generated: 2026-09-22T12:06:54Z
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_hackerone_prelaunch.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/tests/test_hackerone_remote_binding.py`
 
 ### Project signals
 - `pyproject.toml`

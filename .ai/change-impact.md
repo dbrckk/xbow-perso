@@ -1,12 +1,11 @@
 # Change impact
 
-Base: fe45d6f9d920669a705da546493bcc91b7153a49
-Head: 7966cc4c0fbe1db3be42767ed3339941954652e2
+Base: b32a65f29ba914f6d67aa8d253c3f887c1872eca
+Head: a1d6bd2c48327dff72cdb76dff54168b2bc8f9cc
 
 ## Changed files
-- M backend/app/orchestrator.py
-- M backend/tests/test_job_provenance_integration.py
-- M backend/tests/test_orchestrator.py
+- M backend/app/worker_service.py
+- M backend/tests/test_worker_observations.py
 
 ## Affected areas
 - backend

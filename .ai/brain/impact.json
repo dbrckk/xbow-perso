@@ -1,141 +1,35 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "924c58ccbf9172d0a725288c446cbaba377ad8df",
-  "head": "7966cc4c0fbe1db3be42767ed3339941954652e2",
+  "base": "7966cc4c0fbe1db3be42767ed3339941954652e2",
+  "head": "a1d6bd2c48327dff72cdb76dff54168b2bc8f9cc",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/orchestrator.py",
+      "path": "backend/app/worker_service.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_job_provenance_integration.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_orchestrator.py",
+      "path": "backend/tests/test_worker_observations.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/orchestrator.py",
-    "backend/tests/test_job_provenance_integration.py",
-    "backend/tests/test_orchestrator.py"
+    "backend/app/worker_service.py",
+    "backend/tests/test_worker_observations.py"
   ],
   "impacted_files": [
-    "backend/app/orchestrator.py",
     "backend/app/worker_service.py",
-    "backend/tests/test_campaign_circuit_breaker.py",
-    "backend/tests/test_job_provenance_integration.py",
-    "backend/tests/test_nuclei_queue_lifecycle.py",
-    "backend/tests/test_orchestrator.py",
-    "backend/tests/test_orchestrator_validation_alignment.py",
-    "backend/tests/test_runtime_budget_config.py"
+    "backend/tests/test_campaign_cancel.py",
+    "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_scanner_observation_chain.py",
+    "backend/tests/test_worker_concurrency.py",
+    "backend/tests/test_worker_observations.py",
+    "backend/tests/test_worker_outcome_memory.py",
+    "backend/tests/test_worker_roles.py",
+    "backend/tests/test_worker_state.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "_stable_id",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 50
-    },
-    {
-      "name": "_graph_fingerprint",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 55
-    },
-    {
-      "name": "_load_graph",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 72
-    },
-    {
-      "name": "_seed_primary_target",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 76
-    },
-    {
-      "name": "_minimum_enrichment_score",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 93
-    },
-    {
-      "name": "_surface_enrichment",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 104
-    },
-    {
-      "name": "_intelligence_context",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 128
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 139
-    },
-    {
-      "name": "_validation_saturated_cluster_ids",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 242
-    },
-    {
-      "name": "_pending_findings",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 282
-    },
-    {
-      "name": "_enqueue_recon_tasks",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 328
-    },
-    {
-      "name": "_scan_engines",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 393
-    },
-    {
-      "name": "_enqueue_action",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 404
-    },
-    {
-      "name": "_decision_explanation",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 482
-    },
-    {
-      "name": "_record_decision",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 529
-    },
-    {
-      "name": "_result",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 572
-    },
-    {
-      "name": "advance_campaign",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 643
-    },
     {
       "name": "CampaignCancelledError",
       "kind": "class",
@@ -224,424 +118,331 @@
       "name": "process_report",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 410
+      "line": 419
     },
     {
       "name": "_record_worker_outcome",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 452
+      "line": 461
     },
     {
       "name": "_worker_bool",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 482
+      "line": 491
     },
     {
       "name": "_legacy_unprovenanced_jobs_allowed",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 494
+      "line": 503
     },
     {
       "name": "_verify_policy_bound_job",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 498
+      "line": 507
     },
     {
       "name": "_active_scanner_execution_requested",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 518
+      "line": 527
     },
     {
       "name": "_claim_for_role",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 525
+      "line": 534
     },
     {
       "name": "process_one",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 539
+      "line": 548
     },
     {
       "name": "_worker_poll_seconds",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 596
+      "line": 605
     },
     {
       "name": "main",
       "kind": "function",
       "file": "backend/app/worker_service.py",
-      "line": 607
+      "line": 616
     },
     {
-      "name": "_campaign",
+      "name": "_setup",
       "kind": "function",
-      "file": "backend/tests/test_campaign_circuit_breaker.py",
-      "line": 13
-    },
-    {
-      "name": "test_circuit_breaker_persists_and_resets",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_circuit_breaker.py",
-      "line": 26
-    },
-    {
-      "name": "test_runtime_exhaustion_opens_breaker_and_future_advance_stays_blocked",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_circuit_breaker.py",
-      "line": 54
-    },
-    {
-      "name": "test_control_routes_are_exposed",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_circuit_breaker.py",
-      "line": 89
-    },
-    {
-      "name": "test_control_status_reports_budget_blocker_consistently",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_circuit_breaker.py",
-      "line": 97
-    },
-    {
-      "name": "test_control_status_exposes_scanner_stability_and_recon_telemetry",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_circuit_breaker.py",
-      "line": 129
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_job_provenance_integration.py",
+      "file": "backend/tests/test_campaign_cancel.py",
       "line": 10
     },
     {
-      "name": "_assert_bound",
+      "name": "test_cancel_campaign_cancels_queued_jobs_but_preserves_running_lease",
       "kind": "function",
-      "file": "backend/tests/test_job_provenance_integration.py",
-      "line": 28
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 33
     },
     {
-      "name": "test_sanitized_scan_payload_is_policy_bound",
+      "name": "test_cancel_campaign_is_idempotent",
       "kind": "function",
-      "file": "backend/tests/test_job_provenance_integration.py",
-      "line": 36
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 60
     },
     {
-      "name": "test_orchestrator_scan_jobs_bind_each_engine_kind",
+      "name": "test_worker_refuses_cancelled_campaign",
       "kind": "function",
-      "file": "backend/tests/test_job_provenance_integration.py",
-      "line": 48
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 76
     },
     {
-      "name": "test_orchestrator_recon_and_browser_jobs_are_policy_bound",
+      "name": "test_completed_campaign_cannot_be_cancelled",
       "kind": "function",
-      "file": "backend/tests/test_job_provenance_integration.py",
-      "line": 68
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 84
     },
     {
-      "name": "test_orchestrator_validation_and_report_jobs_are_policy_bound",
+      "name": "test_running_job_becomes_cancelled_when_worker_observes_cancelled_campaign",
       "kind": "function",
-      "file": "backend/tests/test_job_provenance_integration.py",
-      "line": 99
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 98
+    },
+    {
+      "name": "test_cancelled_campaign_rejects_new_mutations",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 134
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 10
     },
     {
       "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 13
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 23
     },
     {
-      "name": "test_scan_engines_default_preserves_strix",
+      "name": "test_validation_worker_persists_sanitized_differential_signal_without_confirming",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 27
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 40
     },
     {
-      "name": "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+      "name": "test_finding_intelligence_surfaces_differential_signal_and_summary",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 32
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 91
     },
     {
-      "name": "test_sqlite_queue_accepts_nuclei_scan",
+      "name": "test_red_team_decision_prioritizes_strong_signal_inside_existing_review_work",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 41
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 133
     },
     {
-      "name": "test_nuclei_worker_dry_run_preserves_safe_default",
+      "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 52
+      "file": "backend/tests/test_scanner_observation_chain.py",
+      "line": 6
     },
     {
-      "name": "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+      "name": "test_scanner_finding_persists_canonical_asset_endpoint_finding_evidence_chain",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 78
+      "file": "backend/tests/test_scanner_observation_chain.py",
+      "line": 20
     },
     {
-      "name": "fake_execute",
+      "name": "test_scanner_finding_without_endpoint_links_directly_to_asset",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 90
+      "file": "backend/tests/test_scanner_observation_chain.py",
+      "line": 65
     },
     {
       "name": "make_campaign",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 13
+      "file": "backend/tests/test_worker_concurrency.py",
+      "line": 17
     },
     {
-      "name": "test_advance_bootstraps_asset_and_queues_bounded_recon",
+      "name": "test_worker_save_rejects_stale_campaign_snapshot",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 29
+      "file": "backend/tests/test_worker_concurrency.py",
+      "line": 32
     },
     {
-      "name": "test_advance_stops_when_automation_disabled",
+      "name": "test_worker_poll_interval_is_bounded",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 54
+      "file": "backend/tests/test_worker_concurrency.py",
+      "line": 53
     },
     {
-      "name": "test_advance_stops_when_runtime_budget_is_exhausted",
+      "name": "test_validation_worker_rejects_resolved_finding_before_probe",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 70
+      "file": "backend/tests/test_worker_concurrency.py",
+      "line": 66
     },
     {
-      "name": "test_advance_queues_only_unvalidated_findings_then_waits_for_resolution_and_reports",
+      "name": "test_validation_worker_rejects_completed_campaign_before_probe",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 92
+      "file": "backend/tests/test_worker_concurrency.py",
+      "line": 93
     },
     {
-      "name": "test_validation_jobs_are_ordered_by_adaptive_priority",
+      "name": "test_stale_validation_job_is_cancelled_without_retry",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 171
+      "file": "backend/tests/test_worker_concurrency.py",
+      "line": 120
     },
     {
-      "name": "test_validation_priority_prefers_less_supported_hypothesis_on_tie",
+      "name": "test_completed_campaign_validation_job_is_cancelled_without_retry",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 214
+      "file": "backend/tests/test_worker_concurrency.py",
+      "line": 165
     },
     {
-      "name": "test_orchestrator_exposes_integrated_intelligence_context",
+      "name": "test_completed_campaign_browser_job_is_cancelled_without_retry",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 272
+      "file": "backend/tests/test_worker_concurrency.py",
+      "line": 209
     },
     {
-      "name": "test_orchestrator_gate_blocks_progress_after_failed_job",
+      "name": "test_worker_observation_lineage_roundtrips",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 291
+      "file": "backend/tests/test_worker_observations.py",
+      "line": 14
     },
     {
-      "name": "test_orchestrator_learning_memory_reaches_adaptive_cycle",
+      "name": "test_recon_observed_primary_target_is_recorded_as_endpoint",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 317
-    },
-    {
-      "name": "test_orchestrator_blocks_scan_below_surface_enrichment_threshold",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 354
-    },
-    {
-      "name": "test_orchestrator_includes_browser_recon_only_when_enabled",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 382
-    },
-    {
-      "name": "test_orchestrator_allows_scan_after_surface_enrichment_threshold",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 407
-    },
-    {
-      "name": "test_orchestrator_rejects_invalid_surface_enrichment_threshold",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 448
-    },
-    {
-      "name": "test_orchestrator_halts_after_repeated_requeues_without_success",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 464
-    },
-    {
-      "name": "test_orchestrator_exposes_advisory_only_coverage_guidance",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 502
-    },
-    {
-      "name": "test_orchestrator_scanner_memory_can_only_reduce_configured_engines",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 518
-    },
-    {
-      "name": "test_orchestrator_caps_multi_engine_scan_fanout_to_remaining_budget",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 578
-    },
-    {
-      "name": "test_validation_scheduler_selects_one_representative_per_cluster",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 630
-    },
-    {
-      "name": "test_validation_scheduler_re_evaluates_cluster_after_representative_validation",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 694
-    },
-    {
-      "name": "test_validation_scheduler_stops_cluster_fanout_after_strong_representative_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 759
-    },
-    {
-      "name": "test_validation_scheduler_does_not_early_stop_on_observed_validation_without_quality_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 837
-    },
-    {
-      "name": "_seed_planner_decisions",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 898
-    },
-    {
-      "name": "test_critical_planner_oscillation_opens_circuit_breaker_before_new_work",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 924
-    },
-    {
-      "name": "test_action_after_stop_opens_circuit_breaker_before_new_work",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 950
-    },
-    {
-      "name": "test_single_planner_reversal_does_not_trip_breaker",
-      "kind": "function",
-      "file": "backend/tests/test_orchestrator.py",
-      "line": 972
+      "file": "backend/tests/test_worker_observations.py",
+      "line": 69
     },
     {
       "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator_validation_alignment.py",
-      "line": 6
+      "file": "backend/tests/test_worker_outcome_memory.py",
+      "line": 8
     },
     {
-      "name": "_graph",
+      "name": "test_record_worker_outcome_is_idempotent_and_payload_free",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "file": "backend/tests/test_worker_outcome_memory.py",
+      "line": 22
+    },
+    {
+      "name": "test_worker_outcome_audit_detects_tampering",
+      "kind": "function",
+      "file": "backend/tests/test_worker_outcome_memory.py",
+      "line": 55
+    },
+    {
+      "name": "test_worker_outcome_audit_links_multiple_events",
+      "kind": "function",
+      "file": "backend/tests/test_worker_outcome_memory.py",
+      "line": 76
+    },
+    {
+      "name": "test_worker_outcome_extends_existing_campaign_audit_chain",
+      "kind": "function",
+      "file": "backend/tests/test_worker_outcome_memory.py",
+      "line": 100
+    },
+    {
+      "name": "test_worker_event_helper_seals_and_deduplicates_campaign_event",
+      "kind": "function",
+      "file": "backend/tests/test_worker_outcome_memory.py",
+      "line": 136
+    },
+    {
+      "name": "FakeQueue",
+      "kind": "class",
+      "file": "backend/tests/test_worker_roles.py",
+      "line": 4
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_worker_roles.py",
+      "line": 5
+    },
+    {
+      "name": "claim",
+      "kind": "function",
+      "file": "backend/tests/test_worker_roles.py",
+      "line": 9
+    },
+    {
+      "name": "claim_allowed",
+      "kind": "function",
+      "file": "backend/tests/test_worker_roles.py",
+      "line": 13
+    },
+    {
+      "name": "test_general_worker_keeps_scanner_preview_jobs_in_safe_mode",
+      "kind": "function",
+      "file": "backend/tests/test_worker_roles.py",
+      "line": 18
+    },
+    {
+      "name": "test_general_worker_excludes_scanner_jobs_for_active_execution",
+      "kind": "function",
+      "file": "backend/tests/test_worker_roles.py",
       "line": 30
     },
     {
-      "name": "test_dry_run_validation_does_not_remove_pending_finding",
+      "name": "test_scanner_worker_claims_only_scanner_jobs",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "file": "backend/tests/test_worker_roles.py",
       "line": 46
     },
     {
-      "name": "test_self_validation_does_not_remove_pending_finding",
+      "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator_validation_alignment.py",
-      "line": 51
+      "file": "backend/tests/test_worker_state.py",
+      "line": 5
     },
     {
-      "name": "test_independent_observed_validation_removes_pending_finding",
+      "name": "_finding",
       "kind": "function",
-      "file": "backend/tests/test_orchestrator_validation_alignment.py",
-      "line": 56
+      "file": "backend/tests/test_worker_state.py",
+      "line": 20
     },
     {
-      "name": "_clear_planner_env",
+      "name": "test_post_scan_state_stays_validating_for_known_unresolved_finding",
       "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 24
+      "file": "backend/tests/test_worker_state.py",
+      "line": 32
     },
     {
-      "name": "test_planner_budget_from_env_uses_safe_defaults",
+      "name": "test_post_scan_state_completes_only_when_all_findings_are_resolved",
       "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 29
+      "file": "backend/tests/test_worker_state.py",
+      "line": 38
     },
     {
-      "name": "test_planner_budget_from_env_accepts_explicit_limits",
+      "name": "test_post_scan_state_completes_when_scan_has_no_findings",
       "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 43
-    },
-    {
-      "name": "test_planner_budget_from_env_rejects_invalid_values",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 74
-    },
-    {
-      "name": "test_planner_budget_from_env_rejects_batch_above_total",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 82
-    },
-    {
-      "name": "test_campaign_runtime_limit_from_env_uses_default",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 91
-    },
-    {
-      "name": "test_campaign_runtime_limit_from_env_accepts_explicit_value",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 99
-    },
-    {
-      "name": "test_campaign_runtime_limit_from_env_rejects_invalid_values",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 108
-    },
-    {
-      "name": "test_orchestrator_uses_runtime_limit_from_environment",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_budget_config.py",
-      "line": 116
+      "file": "backend/tests/test_worker_state.py",
+      "line": 44
     }
   ],
   "selected_tests": [
-    "backend/tests/test_campaign_circuit_breaker.py",
-    "backend/tests/test_job_provenance.py",
-    "backend/tests/test_job_provenance_integration.py",
-    "backend/tests/test_nuclei_queue_lifecycle.py",
-    "backend/tests/test_orchestrator.py",
-    "backend/tests/test_orchestrator_validation_alignment.py",
-    "backend/tests/test_runtime_budget_config.py"
+    "backend/tests/test_campaign_cancel.py",
+    "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_pentagi_status_worker_service.py",
+    "backend/tests/test_pentagi_worker_service.py",
+    "backend/tests/test_scanner_observation_chain.py",
+    "backend/tests/test_worker_concurrency.py",
+    "backend/tests/test_worker_observations.py",
+    "backend/tests/test_worker_outcome_memory.py",
+    "backend/tests/test_worker_roles.py",
+    "backend/tests/test_worker_state.py"
   ]
 }
