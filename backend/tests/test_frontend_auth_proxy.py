@@ -178,7 +178,7 @@ def test_simple_dashboard_keeps_valid_review_drafts_across_replacement_rounds():
     assert "const draftCache=new Map();" in script
     assert "const cached=draftCache.get(handle);" in script
     assert "draftCache.set(handle,draft);" in script
-    assert "politiques valides conservées en cache" in script
+    assert "les autres politiques restent validées" in script
     assert "politiques vérifiées '+completed+'/'+total" in script
 
 
