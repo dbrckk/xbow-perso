@@ -14609,6 +14609,8 @@ def test_enable_script_reexecs_from_refreshed_checkout_exactly_once()
 def test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate()
 ⋮----
 reconcile = script.index("=== RECONCILE HACKERONE BATCH STATE ===")
+⋮----
+def test_mobile_status_public_https_probe_uses_get_not_head()
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

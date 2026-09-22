@@ -22,27 +22,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T17:44:52Z
+Generated: 2026-09-22T18:12:31Z
 
 ### Git
 - Branch: `main`
-- Head: `fbf2163f3900`
-- Commit date: 2026-09-22T19:44:36+02:00
-- Commit: feat: cancel the active HackerOne batch from the simple dashboard (#373)
+- Head: `1ae0a59cf6c3`
+- Commit date: 2026-09-22T20:12:19+02:00
+- Commit: fix: validate public HTTPS with GET health probe (#374)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/tests/test_mobile_production_update_script.py`
+- `scripts/mobile-production-status.sh`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-enable-hackerone-nuclei.sh`
-- `scripts/mobile-production-status.sh`
-- `backend/app/hackerone_api.py`
-- `backend/tests/test_hackerone_prelaunch.py`
-- `backend/tests/test_simple_selection_cache_only.py`
 
 ### Project signals
 - `pyproject.toml`
