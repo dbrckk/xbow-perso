@@ -147,24 +147,33 @@
       policy.textContent=String(draft?.policy_text||'Aucun texte de politique fourni par HackerOne.');
       body.appendChild(policy);
 
-      const label=document.createElement('label');
-      label.className='simple-review-confirm';
-      const check=document.createElement('input');
-      check.type='checkbox';
-      check.dataset.handle=String(draft?.handle||'');
-      check.disabled=!reviewableDraft(draft);
-      const copy=document.createElement('span');
-      copy.textContent=reviewableDraft(draft)
-        ?'J’ai relu cette politique et son scope. Je confirme le safe harbor, l’autorisation du scan automatisé, l’absence de compte de test obligatoire et l’absence de restriction incompatible avec un profil conservateur à 1 requête/s.'
-        :'Ce programme ne peut pas être validé automatiquement depuis cette vue : cible ou scope incompatible/incomplet.';
-      label.append(check,copy);
-      body.appendChild(label);
+      const reviewState=document.createElement('p');
+      reviewState.className='muted compact';
+      reviewState.textContent=reviewableDraft(draft)
+        ?'Compatible avec une validation groupée conservatrice à 1 requête/s.'
+        :'Ce programme ne peut pas être validé depuis cette vue : cible ou scope incompatible/incomplet.';
+      body.appendChild(reviewState);
 
       details.appendChild(body);
       list.appendChild(details);
     }
 
     panel.classList.remove('hidden');
+  }
+
+  const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+
+  async function loadReviewDraft(handle){
+    let lastError=null;
+    for(let attempt=0;attempt<3;attempt+=1){
+      try{
+        return await api('/imports/hackerone/programs/'+encodeURIComponent(handle)+'/review-draft');
+      }catch(error){
+        lastError=error;
+        if(attempt<2)await sleep(700*(attempt+1));
+      }
+    }
+    throw lastError||new Error('Revue HackerOne indisponible');
   }
 
   async function loadReviewDrafts(result){
@@ -179,7 +188,7 @@
 
     setStatus('Première utilisation : chargement des politiques à valider…');
     reviewDrafts=await Promise.all(
-      candidates.map(handle=>api('/imports/hackerone/programs/'+encodeURIComponent(handle)+'/review-draft'))
+      candidates.map(handle=>loadReviewDraft(handle))
     );
     renderReviewDrafts();
   }
@@ -223,6 +232,7 @@
         $('start').disabled=true;
         try{
           await loadReviewDrafts(result);
+          if($('reviewAllConfirm'))$('reviewAllConfirm').checked=false;
           setStatus(
             reviewCount+' programme(s) doivent être validés une seule fois. Ouvre chaque politique, coche la confirmation puis valide.',
             'warn'
@@ -271,10 +281,13 @@
       setStatus('Aucune revue initiale à enregistrer.','err');
       return;
     }
-    const checks=[...document.querySelectorAll('#reviewList input[type="checkbox"]')];
-    const required=checks.filter(item=>!item.disabled);
-    if(required.length!==reviewDrafts.length||required.some(item=>!item.checked)){
-      setStatus('Lis puis confirme chaque programme avant de valider.','err');
+    if(reviewDrafts.some(draft=>!reviewableDraft(draft))){
+      setStatus('Au moins un programme a un scope incompatible ou incomplet. Relance la sélection.','err');
+      return;
+    }
+    const confirmation=$('reviewAllConfirm');
+    if(!confirmation?.checked){
+      setStatus('Lis les 6 politiques puis coche la confirmation groupée.','err');
       return;
     }
 
@@ -444,7 +457,9 @@
         setStatus('Derniers résultats chargés.','ok');
       }
     }catch(error){
-      setStatus('Journal indisponible : '+error.message,'err');
+      const root=$('journal');
+      if(root&&!root.textContent.trim())root.textContent='Journal momentanément indisponible.';
+      if(!quiet)setStatus('Journal indisponible : '+error.message,'err');
     }
   }
 
