@@ -69,3 +69,15 @@ def test_enable_script_probes_hackerone_before_declaring_profile_armed():
     assert "HACKERONE_API_READY=true" in script
     assert "HACKERONE_API_READY=false" in script
     assert 'HackerOneClient(credentials).get_json(' in script
+
+
+def test_enable_script_reports_actionable_non_idle_queue_blocker():
+    script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+
+    assert "QUEUE_IDLE=" in script
+    assert "QUEUE_QUEUED=" in script
+    assert "QUEUE_RUNNING=" in script
+    assert "ACTIVE_BATCH_ID=" in script
+    assert "ACTIVE_BATCH_STATE=" in script
+    assert "Let the active batch finish or cancel it from the dashboard before arming the scanner." in script
+    assert "assert active==0" not in script
