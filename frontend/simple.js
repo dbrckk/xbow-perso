@@ -5,6 +5,7 @@
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
+  let runtimeReady=false;
   let timer=null;
 
   const $=id=>document.getElementById(id);
@@ -22,6 +23,17 @@
     if(!node)return;
     node.textContent=message;
     node.className='simple-status '+kind;
+  }
+
+  function updateStartAvailability(){
+    const button=$('start');
+    if(!button)return;
+    const reviewsPending=Number(selectionResult?.review_count||0)>0;
+    button.disabled=!(
+      selection.length===6
+      && !reviewsPending
+      && runtimeReady===true
+    );
   }
 
   function requireToken(){
@@ -283,7 +295,8 @@
       const readiness=await api('/hackerone/live-readiness');
       const failed=(Array.isArray(readiness?.checks)?readiness.checks:[])
         .filter(item=>item?.required===true&&item?.ok!==true);
-      if(readiness?.live_scan_ready===true){
+      runtimeReady=readiness?.live_scan_ready===true;
+      if(runtimeReady){
         node.textContent='Scanner : prêt pour les programmes autorisés.';
         node.className='muted compact state-ready';
       }else{
@@ -294,8 +307,11 @@
         node.className='muted compact state-review';
         if(!quiet)setStatus('Le scanner doit être prêt avant le lancement.','warn');
       }
+      updateStartAvailability();
       return readiness;
     }catch(error){
+      runtimeReady=false;
+      updateStartAvailability();
       node.textContent='Scanner : état indisponible.';
       node.className='muted compact state-review';
       if(!quiet)setStatus('État scanner indisponible : '+error.message,'warn');
@@ -372,8 +388,8 @@
           );
           return;
         }
-        $('start').disabled=false;
         await refreshRuntimeReadiness({quiet:true});
+        updateStartAvailability();
         const revalidationCount=Number(result?.revalidation_count||0);
         setStatus(
           revalidationCount
@@ -387,6 +403,8 @@
     }catch(error){
       selection=[];
       selectionResult=null;
+      runtimeReady=false;
+      updateStartAvailability();
       $('selection').textContent='Aucune sélection exploitable.';
       clearReviewPanel();
       let message=error.message;
@@ -614,6 +632,7 @@
           :'6 campagnes mises en file. Elles seront exécutées une après l’autre.',
         'ok'
       );
+      updateStartAvailability();
       await refreshJournal({quiet:true});
     }catch(error){
       const handles=(Array.isArray(error?.detail?.handles)?error.detail.handles:[])
@@ -629,7 +648,8 @@
         return;
       }
       setStatus('Lancement bloqué : '+error.message,'err');
-      button.disabled=false;
+      await refreshRuntimeReadiness({quiet:true});
+      updateStartAvailability();
     }
   }
 
