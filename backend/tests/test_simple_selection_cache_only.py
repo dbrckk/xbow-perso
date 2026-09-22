@@ -37,3 +37,23 @@ def test_simple_dashboard_surfaces_actionable_hackerone_errors():
     assert "Connexion HackerOne absente sur le serveur" in script
     assert "Identifiants HackerOne refusés par HackerOne" in script
     assert "HackerOne est momentanément inaccessible" in script
+
+
+
+def test_simple_selection_supports_excluding_unavailable_review_candidates():
+    source = _text("backend/app/hackerone_api.py")
+    block = source.split('@router.get("/api/hackerone/simple-selection")', 1)[1]
+    block = block.split('@router.get("/api/hackerone/journal")', 1)[0]
+
+    assert 'exclude: str = Query(default="", max_length=4096)' in block
+    assert "excluded_handles" in block
+    assert '"excluded_handles": sorted(excluded_handles)' in block
+
+
+def test_simple_dashboard_replaces_individually_unavailable_review_programs():
+    script = _text("frontend/simple.js")
+
+    assert "Promise.allSettled" in script
+    assert "hackerone_program_review_unavailable" in script
+    assert "Remplacement automatique de " in script
+    assert "loadSimpleSelection(excluded)" in script
