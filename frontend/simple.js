@@ -332,7 +332,7 @@
       }else if(reason==='hackerone_forbidden'){
         message='HackerOne refuse l’accès à la ressource demandée.';
       }else if(reason==='hackerone_upstream_unavailable'){
-        message='HackerOne est temporairement indisponible.';
+        message='HackerOne est momentanément inaccessible.';
       }else if(reason==='hackerone_redirect_refused'){
         message='HackerOne a renvoyé une redirection inattendue.';
       }else if(reason==='hackerone_upstream_request_failed'){
