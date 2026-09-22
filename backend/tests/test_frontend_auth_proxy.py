@@ -78,18 +78,17 @@ def test_simple_dashboard_grouped_review_and_quiet_journal():
     html = _text("frontend/index.html")
     assert 'id="reviewAllConfirm"' in html
     assert "Valider les 6 programmes" in html
-    assert "async function loadReviewDraft(handle)" in script
+    assert "async function persistReviewDraft(draft)" in script
     assert "for(let attempt=0;attempt<2;attempt+=1)" in script
     assert "if(!quiet)setStatus('Journal indisponible : '+error.message,'err');" in script
 
 
-def test_simple_dashboard_bounds_hackerone_review_concurrency():
+def test_simple_dashboard_bounds_review_profile_persistence_concurrency():
     script = _text("frontend/simple.js")
     assert "const REVIEW_CONCURRENCY=2;" in script
     assert "retryableReviewError" in script
     assert "await sleep(1200);" in script
-    assert "Promise.all(Array.from({length:workers},()=>reviewWorker()))" in script
-    assert "Promise.allSettled(\n      candidates.map" not in script
+    assert "await Promise.all(Array.from({length:workers},()=>persistWorker()))" in script
 
 
 def test_simple_dashboard_uses_atomic_server_review_package():
