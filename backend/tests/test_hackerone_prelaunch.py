@@ -212,8 +212,12 @@ def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch)
     )
     monkeypatch.setattr(
         hackerone_api,
-        "hackerone_batch_go_no_go",
-        lambda _payload: {"go": False, "blockers": ["scanner_worker_live"]},
+        "_runtime_prelaunch_verdict",
+        lambda: {
+            "runtime_ready": False,
+            "runtime": {},
+            "blockers": ["scanner_worker_live"],
+        },
     )
 
     payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
@@ -228,3 +232,68 @@ def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch)
         assert exc.detail["blockers"] == ["scanner_worker_live"]
     else:
         raise AssertionError("reviewed launch should fail closed on no-go")
+
+
+def test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflight(monkeypatch):
+    calls = []
+    prepared = []
+
+    def fake_reviewed(handle, _store):
+        calls.append(handle)
+        item = hackerone_api.HackerOneCampaignAdmissionInput(
+            document={"data": []},
+            policy=hackerone_api.HackerOneProgramPolicyInput(
+                authorization_reference=f"https://hackerone.com/{handle}",
+                policy_version="fixture",
+                reviewed_at="2026-09-22T08:00:00+00:00",
+                reviewed_by="test",
+                safe_harbor_confirmed=True,
+                automated_scanning=True,
+                max_requests_per_second=1.0,
+                test_account_required=False,
+                test_account_constraints="",
+                additional_restrictions=[],
+                program_notes="fixture",
+            ),
+            target=hackerone_api.HackerOneCampaignTargetInput(
+                name=handle,
+                primary_url=f"https://{handle}.example.com",
+            ),
+            remote_handle=handle,
+            remote_snapshot_sha256="a" * 64,
+        )
+        prepared.append(item)
+        return item
+
+    monkeypatch.setattr("app.main.storage", lambda: object())
+    monkeypatch.setattr(hackerone_api, "_reviewed_campaign_input", fake_reviewed)
+    monkeypatch.setattr(
+        hackerone_api,
+        "_runtime_prelaunch_verdict",
+        lambda: {"runtime_ready": True, "runtime": {}, "blockers": []},
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "hackerone_batch_go_no_go",
+        lambda _payload: (_ for _ in ()).throw(
+            AssertionError("full batch preflight must not run twice during launch")
+        ),
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "launch_hackerone_batch",
+        lambda payload: {
+            "mode": payload.mode,
+            "campaign_count": len(payload.campaigns),
+        },
+    )
+
+    payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
+        mode="parallel",
+        handles=["alpha", "beta"],
+    )
+    result = hackerone_api.launch_reviewed_hackerone_batch(payload)
+
+    assert calls == ["alpha", "beta"]
+    assert len(prepared) == 2
+    assert result == {"mode": "parallel", "campaign_count": 2}
