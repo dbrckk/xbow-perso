@@ -100,8 +100,8 @@ def test_reviewed_batch_launch_needs_only_handles(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(
         hackerone_api,
-        "hackerone_batch_go_no_go",
-        lambda _payload: {"go": True, "blockers": []},
+        "_runtime_prelaunch_verdict",
+        lambda: {"runtime_ready": True, "runtime": {}, "blockers": []},
     )
 
     store = Storage(db, artifacts)
