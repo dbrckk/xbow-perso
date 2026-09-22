@@ -302,9 +302,11 @@ def _hackerone_error_detail(exc: HackerOneClientError) -> dict[str, Any]:
 
 
 def _upstream_error(exc: HackerOneClientError) -> HTTPException:
-    detail = _hackerone_error_detail(exc)
-    status_code = 503 if detail["retryable"] else 502
-    return HTTPException(status_code=status_code, detail=detail)
+    if exc.status_code in {401, 403}:
+        return HTTPException(status_code=502, detail="HackerOne upstream authentication failed")
+    if exc.status_code == 429 or (exc.status_code is not None and exc.status_code >= 500):
+        return HTTPException(status_code=503, detail="HackerOne upstream temporarily unavailable")
+    return HTTPException(status_code=502, detail="HackerOne upstream request failed")
 def _program_list_item(resource: Any) -> dict[str, Any]:
     if not isinstance(resource, dict):
         raise HackerOneClientError("HackerOne program list contains an invalid resource")
