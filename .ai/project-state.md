@@ -22,17 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T08:42:26Z
+Generated: 2026-09-22T08:47:31Z
 
 ### Git
 - Branch: `main`
-- Head: `81388d1cf672`
-- Commit date: 2026-09-22T10:42:14+02:00
-- Commit: fix: recover one-click review from generic HackerOne upstream failures (#342)
+- Head: `1ac197f05a76`
+- Commit date: 2026-09-22T10:47:19+02:00
+- Commit: perf: avoid duplicate HackerOne preflight during reviewed launch (#344)
 - Tracked files: 564
 
 ### Recently changed files
 - `backend/app/hackerone_api.py`
+- `backend/tests/test_hackerone_prelaunch.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_hackerone_upstream_diagnostics.py`
 - `backend/app/github_learning_sync.py`
 - `backend/tests/test_github_learning_sync.py`

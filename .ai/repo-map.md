@@ -3741,16 +3741,23 @@ program_name = str(snapshot.program.get("name") or "").strip()
 program_name = f"H1 {snapshot.handle}"
 program_name = program_name[:120]
 ⋮----
+def _runtime_prelaunch_verdict() -> dict[str, Any]
+⋮----
+"""Return live runtime readiness without touching HackerOne program state."""
+⋮----
+runtime = build_hackerone_live_readiness(dependency_readiness())
+runtime_ready = runtime.get("live_scan_ready") is True
+blockers = []
+⋮----
 @router.post("/api/imports/hackerone/batches/go-no-go")
 def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput)
 ⋮----
 """Return one read-only prelaunch verdict without creating campaigns."""
-⋮----
-runtime = build_hackerone_live_readiness(dependency_readiness())
+runtime_verdict = _runtime_prelaunch_verdict()
 batch = preflight_reviewed_hackerone_batch(payload)
-runtime_ready = runtime.get("live_scan_ready") is True
+runtime_ready = runtime_verdict["runtime_ready"]
 batch_ready = batch.get("ready") is True
-blockers = []
+blockers = list(runtime_verdict["blockers"])
 ⋮----
 @router.post("/api/imports/hackerone/batches/preflight-reviewed")
 def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
@@ -3771,8 +3778,6 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
 ⋮----
 prepared: list[HackerOneCampaignAdmissionInput] = []
 missing: list[str] = []
-⋮----
-verdict = hackerone_batch_go_no_go(payload)
 ⋮----
 @router.post("/api/imports/hackerone/batches/launch")
 def launch_hackerone_batch(payload: HackerOneBatchLaunchInput)
@@ -13826,6 +13831,15 @@ result = hackerone_api.hackerone_batch_go_no_go(payload)
 def test_go_no_go_returns_go_only_when_runtime_and_batch_are_ready(monkeypatch)
 ⋮----
 def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch)
+⋮----
+def test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflight(monkeypatch)
+⋮----
+calls = []
+prepared = []
+⋮----
+item = hackerone_api.HackerOneCampaignAdmissionInput(
+⋮----
+result = hackerone_api.launch_reviewed_hackerone_batch(payload)
 ````
 
 ## File: backend/tests/test_hackerone_remote_binding.py

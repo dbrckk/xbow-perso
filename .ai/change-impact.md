@@ -1,11 +1,12 @@
 # Change impact
 
-Base: 60469bfb6d63f51b80b77bad5884250cbeb271c4
-Head: 81388d1cf672e222531bafef8a7edab07c62a97a
+Base: f499930e494f53054e17cfb943ad54abcd1996b8
+Head: 1ac197f05a76f4d1da7e6f78cf3a6c7f36daaaeb
 
 ## Changed files
 - M backend/app/hackerone_api.py
-- M backend/tests/test_hackerone_upstream_diagnostics.py
+- M backend/tests/test_hackerone_prelaunch.py
+- M backend/tests/test_hackerone_reviewed_batch_api.py
 
 ## Affected areas
 - backend

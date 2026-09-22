@@ -38,6 +38,12 @@
           "definition_candidate": false
         },
         {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 245,
+          "preview": "policy=hackerone_api.HackerOneProgramPolicyInput(",
+          "definition_candidate": false
+        },
+        {
           "file": "backend/tests/test_hackerone_scope_preview_api.py",
           "line": 7,
           "preview": "HackerOneProgramPolicyInput,",
@@ -56,7 +62,7 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 8
     },
     "reviewed_at_must_be_timezone_aware": {
       "definition": {
@@ -193,9 +199,15 @@
           "line": 1011,
           "preview": "target=HackerOneCampaignTargetInput(",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 258,
+          "preview": "target=hackerone_api.HackerOneCampaignTargetInput(",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 4
     },
     "HackerOneCampaignAdmissionInput": {
       "definition": {
@@ -237,13 +249,13 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1119,
+          "line": 1131,
           "preview": "prepared: list[HackerOneCampaignAdmissionInput] = []",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1296,
+          "line": 1308,
           "preview": "def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):",
           "definition_candidate": false
         },
@@ -258,9 +270,15 @@
           "line": 12,
           "preview": "return HackerOneCampaignAdmissionInput(",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 243,
+          "preview": "item = hackerone_api.HackerOneCampaignAdmissionInput(",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 9
+      "occurrence_count": 10
     },
     "HackerOneBatchLaunchInput": {
       "definition": {
@@ -278,13 +296,13 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1158,
+          "line": 1170,
           "preview": "HackerOneBatchLaunchInput(",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1166,
+          "line": 1178,
           "preview": "def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):",
           "definition_candidate": false
         }
@@ -324,19 +342,19 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1030,
+          "line": 1052,
           "preview": "def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1070,
+          "line": 1082,
           "preview": "def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1115,
+          "line": 1127,
           "preview": "def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):",
           "definition_candidate": false
         },
@@ -360,12 +378,18 @@
         },
         {
           "file": "backend/tests/test_hackerone_prelaunch.py",
-          "line": 219,
+          "line": 223,
+          "preview": "payload = hackerone_api.HackerOneReviewedBatchLaunchInput(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 291,
           "preview": "payload = hackerone_api.HackerOneReviewedBatchLaunchInput(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 8
+      "occurrence_count": 9
     },
     "reviewed_handles_must_be_unique": {
       "definition": {
@@ -400,7 +424,7 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1441,
+          "line": 1453,
           "preview": "payload: HackerOneReportSubmissionInput,",
           "definition_candidate": false
         },
@@ -710,13 +734,13 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1382,
+          "line": 1394,
           "preview": "raise _upstream_error(exc) from exc",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1408,
+          "line": 1420,
           "preview": "raise _upstream_error(exc) from exc",
           "definition_candidate": false
         }
@@ -1108,13 +1132,13 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1183,
+          "line": 1195,
           "preview": "admitted = admit_hackerone_campaign(campaign_payload)",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1301,
+          "line": 1313,
           "preview": "admitted = admit_hackerone_campaign(payload)",
           "definition_candidate": false
         },
@@ -1161,13 +1185,13 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1221,
+          "line": 1233,
           "preview": "\"summary\": _batch_summary(members),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1289,
+          "line": 1301,
           "preview": "batch[\"summary\"] = _batch_summary(batch.get(\"members\", []))",
           "definition_candidate": false
         }
@@ -1190,7 +1214,7 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1230,
+          "line": 1242,
           "preview": "_rollback_admitted_batch_campaigns(admitted_ids)",
           "definition_candidate": false
         }
@@ -1213,13 +1237,13 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1078,
+          "line": 1090,
           "preview": "prepared = _reviewed_campaign_input(handle, store)",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1124,
+          "line": 1136,
           "preview": "prepared.append(_reviewed_campaign_input(handle, store))",
           "definition_candidate": false
         },
@@ -1240,6 +1264,59 @@
           "line": 210,
           "preview": "\"_reviewed_campaign_input\",",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 269,
+          "preview": "monkeypatch.setattr(hackerone_api, \"_reviewed_campaign_input\", fake_reviewed)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "_runtime_prelaunch_verdict": {
+      "definition": {
+        "file": "backend/app/hackerone_api.py",
+        "line": 1029,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 1029,
+          "preview": "def _runtime_prelaunch_verdict() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 1054,
+          "preview": "runtime_verdict = _runtime_prelaunch_verdict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 1158,
+          "preview": "runtime_verdict = _runtime_prelaunch_verdict()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 215,
+          "preview": "\"_runtime_prelaunch_verdict\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 272,
+          "preview": "\"_runtime_prelaunch_verdict\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 103,
+          "preview": "\"_runtime_prelaunch_verdict\",",
+          "definition_candidate": false
         }
       ],
       "occurrence_count": 6
@@ -1247,22 +1324,16 @@
     "hackerone_batch_go_no_go": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1030,
+        "line": 1052,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1030,
+          "line": 1052,
           "preview": "def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):",
           "definition_candidate": true
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 1146,
-          "preview": "verdict = hackerone_batch_go_no_go(payload)",
-          "definition_candidate": false
         },
         {
           "file": "backend/tests/test_hackerone_prelaunch.py",
@@ -1278,36 +1349,30 @@
         },
         {
           "file": "backend/tests/test_hackerone_prelaunch.py",
-          "line": 215,
-          "preview": "\"hackerone_batch_go_no_go\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
-          "line": 103,
+          "line": 277,
           "preview": "\"hackerone_batch_go_no_go\",",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 6
+      "occurrence_count": 4
     },
     "preflight_reviewed_hackerone_batch": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1070,
+        "line": 1082,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1035,
+          "line": 1055,
           "preview": "batch = preflight_reviewed_hackerone_batch(payload)",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1070,
+          "line": 1082,
           "preview": "def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):",
           "definition_candidate": true
         },
@@ -1335,53 +1400,65 @@
     "launch_reviewed_hackerone_batch": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1115,
+        "line": 1127,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1115,
+          "line": 1127,
           "preview": "def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):",
           "definition_candidate": true
         },
         {
           "file": "backend/tests/test_hackerone_prelaunch.py",
-          "line": 224,
+          "line": 228,
           "preview": "hackerone_api.launch_reviewed_hackerone_batch(payload)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 295,
+          "preview": "result = hackerone_api.launch_reviewed_hackerone_batch(payload)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 3
     },
     "launch_hackerone_batch": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1166,
+        "line": 1178,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1157,
+          "line": 1169,
           "preview": "return launch_hackerone_batch(",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1166,
+          "line": 1178,
           "preview": "def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):",
           "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 284,
+          "preview": "\"launch_hackerone_batch\",",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 3
     },
     "list_hackerone_batches": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1242,
+        "line": 1254,
         "kind": "function",
         "language": "python"
       },
@@ -1400,13 +1477,13 @@
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1242,
+          "line": 1254,
           "preview": "def list_hackerone_batches(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1249,
+          "line": 1261,
           "preview": "\"batches\": storage().list_hackerone_batches(limit=limit),",
           "definition_candidate": false
         },
@@ -1446,20 +1523,20 @@
     "get_hackerone_batch": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1255,
+        "line": 1267,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1235,
+          "line": 1247,
           "preview": "latest = storage().get_hackerone_batch(batch_id)",
           "definition_candidate": false
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1255,
+          "line": 1267,
           "preview": "def get_hackerone_batch(batch_id: str):",
           "definition_candidate": true
         },
@@ -1493,14 +1570,14 @@
     "cancel_hackerone_batch": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1266,
+        "line": 1278,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1266,
+          "line": 1278,
           "preview": "def cancel_hackerone_batch(batch_id: str):",
           "definition_candidate": true
         }
@@ -1510,14 +1587,14 @@
     "launch_hackerone_campaign": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1296,
+        "line": 1308,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1296,
+          "line": 1308,
           "preview": "def launch_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):",
           "definition_candidate": true
         }
@@ -1527,20 +1604,20 @@
     "_hackerone_submission_enabled": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1312,
+        "line": 1324,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1312,
+          "line": 1324,
           "preview": "def _hackerone_submission_enabled() -> bool:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1456,
+          "line": 1468,
           "preview": "if not _hackerone_submission_enabled():",
           "definition_candidate": false
         }
@@ -1550,20 +1627,20 @@
     "_verified_remote_team_handle": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1326,
+        "line": 1338,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1326,
+          "line": 1338,
           "preview": "def _verified_remote_team_handle(campaign) -> str:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1521,
+          "line": 1533,
           "preview": "team_handle = _verified_remote_team_handle(campaign)",
           "definition_candidate": false
         }
@@ -1573,20 +1650,20 @@
     "_unresolved_hackerone_attempt": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1345,
+        "line": 1357,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1345,
+          "line": 1357,
           "preview": "def _unresolved_hackerone_attempt(campaign, artifact_id: str) -> dict[str, Any] | None:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1489,
+          "line": 1501,
           "preview": "if _unresolved_hackerone_attempt(campaign, artifact_id) is not None:",
           "definition_candidate": false
         }
@@ -1596,14 +1673,14 @@
     "get_hackerone_remote_report_status": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1368,
+        "line": 1380,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1368,
+          "line": 1380,
           "preview": "def get_hackerone_remote_report_status(",
           "definition_candidate": true
         },
@@ -1643,14 +1720,14 @@
     "get_hackerone_needs_more_info_draft": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1394,
+        "line": 1406,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1394,
+          "line": 1406,
           "preview": "def get_hackerone_needs_more_info_draft(",
           "definition_candidate": true
         },
@@ -1672,14 +1749,14 @@
     "submit_hackerone_report": {
       "definition": {
         "file": "backend/app/hackerone_api.py",
-        "line": 1438,
+        "line": 1450,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/hackerone_api.py",
-          "line": 1438,
+          "line": 1450,
           "preview": "def submit_hackerone_report(",
           "definition_candidate": true
         },
@@ -1728,426 +1805,1075 @@
       ],
       "occurrence_count": 8
     },
-    "test_hackerone_error_detail_classifies_auth_without_secrets": {
+    "test_remote_program_launch_gate_blocks_closed_states": {
       "definition": {
-        "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-        "line": 8,
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 6,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-          "line": 8,
-          "preview": "def test_hackerone_error_detail_classifies_auth_without_secrets():",
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 6,
+          "preview": "def test_remote_program_launch_gate_blocks_closed_states():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_hackerone_error_detail_classifies_retryable_transport": {
+    "test_remote_program_launch_gate_allows_open_program": {
       "definition": {
-        "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 15,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 15,
+          "preview": "def test_remote_program_launch_gate_allows_open_program():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_server_discovery_selection_is_read_only_and_bounded": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
         "line": 21,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
+          "file": "backend/tests/test_hackerone_prelaunch.py",
           "line": 21,
-          "preview": "def test_hackerone_error_detail_classifies_retryable_transport():",
+          "preview": "def test_server_discovery_selection_is_read_only_and_bounded(monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_hackerone_error_detail_classifies_rate_limit": {
+    "test_reviewed_campaign_input_blocks_program_that_closed_after_review": {
       "definition": {
-        "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-        "line": 30,
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 73,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-          "line": 30,
-          "preview": "def test_hackerone_error_detail_classifies_rate_limit():",
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 73,
+          "preview": "def test_reviewed_campaign_input_blocks_program_that_closed_after_review(monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_program_specific_422_is_replaceable_review_candidate": {
+    "Snapshot": {
       "definition": {
-        "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-        "line": 39,
-        "kind": "function",
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 74,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-          "line": 39,
-          "preview": "def test_program_specific_422_is_replaceable_review_candidate(monkeypatch):",
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 74,
+          "preview": "class Snapshot:",
           "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 91,
+          "preview": "lambda _handle: Snapshot(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "frontend/hackerone.js",
+          "line": 2281,
+          "preview": "el('h1ProgramMeta').textContent='Snapshot distant d\u00e9tach\u00e9. Le formulaire reste utilisable en mode manuel.';",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 3
     },
-    "fail": {
+    "Store": {
       "definition": {
-        "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-        "line": 40,
-        "kind": "function",
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 84,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/auth.py",
-          "line": 29,
-          "preview": "\"\"\"Return the server API token or fail closed when it is unsafe/missing.",
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 162,
+          "preview": "class Store:",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/knowledge_memory.py",
-          "line": 88,
-          "preview": "Unknown outcomes fail closed and receive no validation credit.",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 652,
-          "preview": "total planner decisions, and wall-clock runtime so autonomous campaigns fail",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/pentagi_adapter.py",
-          "line": 130,
-          "preview": "\"\"\"Build a fail-closed preview plan for PentAGI's GraphQL createFlow API.",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/planner_limits.py",
-          "line": 47,
-          "preview": "\"\"\"Return a non-secret fail-closed reason when autonomous planner bounds are exceeded.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/runtime_capabilities.py",
-          "line": 25,
-          "preview": "\"\"\"Return a redacted, fail-closed summary of PentAGI runtime capability.",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/runtime_capabilities.py",
-          "line": 78,
-          "preview": "\"\"\"Return a fail-closed public capability document on configuration errors.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/scanner_sandbox.py",
-          "line": 49,
-          "preview": "\"\"\"Verify Linux sandbox properties from the running process, fail-closed.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/validator.py",
-          "line": 202,
-          "preview": "\"\"\"Resolve one read-only validation URL and fail closed on scope ambiguity.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 635,
-          "preview": "# Batch scheduling must fail closed without taking down the worker.",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_chain_detector.py",
-          "line": 62,
-          "preview": "raise AssertionError(\"invalid chain bounds should fail\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 144,
-          "preview": "raise AssertionError(\"invalid cluster threshold should fail\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_catalog.py",
-          "line": 133,
-          "preview": "raise AssertionError(\"expected invalid interval to fail closed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_control_center_api.py",
-          "line": 45,
-          "preview": "def fail():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_control_center_api.py",
-          "line": 48,
-          "preview": "monkeypatch.setattr(hackerone_api, \"load_hackerone_credentials\", fail, raising=False)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 193,
-          "preview": "def fail(self, path, payload):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_outbound_submission.py",
-          "line": 198,
-          "preview": "monkeypatch.setattr(hackerone_api.HackerOneClient, \"post_json\", fail)",
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 167,
+          "preview": "monkeypatch.setattr(main_app, \"storage\", lambda: Store())",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_hackerone_prelaunch.py",
-          "line": 230,
-          "preview": "raise AssertionError(\"reviewed launch should fail closed on no-go\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-          "line": 40,
-          "preview": "def fail(_handle):",
+          "line": 84,
+          "preview": "class Store:",
           "definition_candidate": true
         },
         {
-          "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
-          "line": 43,
-          "preview": "monkeypatch.setattr(hackerone_api, \"fetch_hackerone_program_snapshot\", fail)",
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 95,
+          "preview": "hackerone_api._reviewed_campaign_input(\"alpha\", Store())",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hypothesis_engine.py",
-          "line": 189,
-          "preview": "raise AssertionError(\"invalid limit should fail\")",
+          "file": "backend/tests/test_incident_http_api.py",
+          "line": 15,
+          "preview": "class Store:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 90,
-          "preview": "raise AssertionError(\"unsafe lease configuration must fail closed\")",
+          "file": "backend/tests/test_incident_http_api.py",
+          "line": 19,
+          "preview": "monkeypatch.setattr(main, \"storage\", lambda: Store())",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 100,
-          "preview": "raise AssertionError(\"arbitrary job kinds must fail closed\")",
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 19,
+          "preview": "class Store:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 223,
-          "preview": "raise AssertionError(\"dedupe key payload mismatch must fail closed\")",
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 37,
+          "preview": "result = build_operational_metrics(Queue(), Store())",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 253,
-          "preview": "raise AssertionError(\"oversized job payload must fail closed\")",
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 47,
+          "preview": "result = build_operational_metrics(Queue(), Store())",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 266,
-          "preview": "raise AssertionError(\"invalid job payload limit must fail closed\")",
+          "file": "backend/tests/test_watchdog_observability.py",
+          "line": 57,
+          "preview": "store = Store()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 10
+    },
+    "get_hackerone_review_profile": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 85,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/hackerone_api.py",
+          "line": 954,
+          "preview": "profile = store.get_hackerone_review_profile(profile_id)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 278,
-          "preview": "raise AssertionError(\"invalid campaign_id must fail closed\")",
+          "file": "backend/app/storage_backend.py",
+          "line": 22,
+          "preview": "def get_hackerone_review_profile(self, profile_id: str): ...",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 287,
-          "preview": "raise AssertionError(\"invalid worker_id must fail closed\")",
+          "file": "backend/app/storage_core.py",
+          "line": 437,
+          "preview": "def get_hackerone_review_profile(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 300,
-          "preview": "raise AssertionError(\"non-integer lease configuration must fail closed\")",
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 85,
+          "preview": "def get_hackerone_review_profile(self, _profile_id):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 86,
+          "preview": "profile = Storage(db, artifacts).get_hackerone_review_profile(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "test_reviewed_batch_preflight_reports_blocked_members": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 104,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 104,
+          "preview": "def test_reviewed_batch_preflight_reports_blocked_members(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "fake_reviewed": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 105,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 105,
+          "preview": "def fake_reviewed(handle, _store):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 121,
+          "preview": "monkeypatch.setattr(hackerone_api, \"_reviewed_campaign_input\", fake_reviewed)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 312,
-          "preview": "raise AssertionError(\"unsafe dedupe_key must fail closed\")",
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 241,
+          "preview": "def fake_reviewed(handle, _store):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 325,
-          "preview": "raise AssertionError(\"invalid campaign_id must fail closed\")",
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 269,
+          "preview": "monkeypatch.setattr(hackerone_api, \"_reviewed_campaign_input\", fake_reviewed)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "Prepared": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 116,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 116,
+          "preview": "class Prepared:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 119,
+          "preview": "return Prepared()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "test_go_no_go_requires_runtime_and_batch_ready": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 140,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 140,
+          "preview": "def test_go_no_go_requires_runtime_and_batch_ready(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_go_no_go_returns_go_only_when_runtime_and_batch_are_ready": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 179,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 179,
+          "preview": "def test_go_no_go_returns_go_only_when_runtime_and_batch_are_ready(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_reviewed_launch_enforces_go_no_go_before_campaign_creation": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 206,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 206,
+          "preview": "def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflight": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_prelaunch.py",
+        "line": 237,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_prelaunch.py",
+          "line": 237,
+          "preview": "def test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflight(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "_resource": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "line": 10,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_batch_api.py",
+          "line": 10,
+          "preview": "def _resource(identifier: str):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 336,
-          "preview": "raise AssertionError(\"invalid job_id must fail closed\")",
+          "file": "backend/tests/test_hackerone_batch_api.py",
+          "line": 22,
+          "preview": "document = {\"data\": [_resource(domain)], \"links\": {}}",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 343,
-          "preview": "raise AssertionError(\"invalid cancellation reason must fail closed\")",
+          "file": "backend/tests/test_hackerone_batch_api.py",
+          "line": 50,
+          "preview": "\"document\": {\"data\": [_resource(domain)], \"links\": {}},",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 363,
-          "preview": "raise AssertionError(\"invalid job_id must fail closed\")",
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 14,
+          "preview": "def _resource(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 379,
-          "preview": "raise AssertionError(\"invalid campaign_id must fail closed\")",
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 41,
+          "preview": "client=FakeClient([_resource(\"acme\", \"Acme\")]),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 433,
-          "preview": "raise AssertionError(\"unknown kind must fail closed\")",
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 66,
+          "preview": "_resource(\"one\", \"One\", bounty=True),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_learning_memory.py",
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 67,
+          "preview": "_resource(\"two\", \"Two\", bounty=False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 76,
+          "preview": "_resource(\"one\", \"One\", bounty=False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 77,
+          "preview": "_resource(\"three\", \"Three\", bounty=True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 95,
+          "preview": "client=FakeClient([_resource(\"one\", \"One\")]),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 101,
+          "preview": "_resource(\"one\", \"One\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 102,
+          "preview": "_resource(\"two\", \"Two\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_catalog.py",
+          "line": 110,
+          "preview": "_resource(\"one\", \"One\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_catalog.py",
           "line": 111,
-          "preview": "raise AssertionError(\"invalid learning memory limit should fail\")",
+          "preview": "_resource(\"two\", \"Two\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_learning_memory.py",
+          "file": "backend/tests/test_hackerone_launch_api.py",
+          "line": 8,
+          "preview": "def _resource(identifier: str, eligible: bool = True):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_launch_api.py",
+          "line": 21,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\")]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 13,
+          "preview": "def _resource(identifier: str, eligible: bool = True):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+          "line": 26,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\")]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 10,
+          "preview": "def _resource(identifier: str):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 55,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 81,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 96,
+          "preview": "remote_document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 97,
+          "preview": "local_document = {\"data\": [_resource(\"other.example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 119,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
           "line": 151,
-          "preview": "raise AssertionError(\"unknown worker outcome kinds must fail closed\")",
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_learning_memory.py",
-          "line": 158,
-          "preview": "raise AssertionError(\"unbounded outcome history must fail closed\")",
+          "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+          "line": 16,
+          "preview": "def _resource(identifier: str):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_orchestrator.py",
-          "line": 436,
-          "preview": "raise AssertionError(\"invalid enrichment threshold must fail closed\")",
+          "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+          "line": 29,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\")]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 10,
+          "preview": "def _resource(identifier: str, eligible: bool = True):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 62,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 139,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 168,
+          "preview": "document = {\"data\": [_resource(\"example.com\")], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 10,
+          "preview": "def _resource(identifier: str):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 22,
+          "preview": "document = {\"data\": [_resource(domain)], \"links\": {}}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 10,
+          "preview": "def _resource(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 51,
+          "preview": "_resource(\"Example.COM.\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 52,
+          "preview": "_resource(\"*.api.example.com\", \"Wildcard\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 53,
+          "preview": "_resource(\"192.0.2.10\", \"IpAddress\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 54,
+          "preview": "_resource(\"blocked.example.com\", \"Domain\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 74,
+          "preview": "{\"data\": [_resource(\"example.com\", \"Domain\", True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 116,
+          "preview": "{\"data\": [_resource(\"example.com\", \"Domain\", True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 168,
+          "preview": "{\"data\": [_resource(identifier, asset_type, True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 183,
+          "preview": "_resource(\"*.example.com\", \"Wildcard\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 184,
+          "preview": "_resource(\"https://example.com/private\", \"Url\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 199,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 200,
+          "preview": "_resource(\"EXAMPLE.COM\", \"domain\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 217,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 218,
+          "preview": "_resource(\"EXAMPLE.COM.\", \"domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 264,
+          "preview": "{\"data\": [_resource(identifier, asset_type, True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 282,
+          "preview": "{\"data\": [_resource(identifier, \"Url\", True)]}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 295,
+          "preview": "_resource(f\"host-{index}.example.com\", \"Domain\", True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 306,
+          "preview": "\"data\": [_resource(\"example.com\", \"Domain\", True)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 320,
+          "preview": "\"data\": [_resource(\"example.com\", \"Domain\", True)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_import.py",
+          "line": 333,
+          "preview": "\"data\": [_resource(\"example.com\", \"Domain\", True)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 16,
+          "preview": "def _resource(identifier: str, asset_type: str, eligible: bool):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 54,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 55,
+          "preview": "_resource(\"blocked.example.com\", \"Domain\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 77,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 78,
+          "preview": "_resource(\"https://example.com/admin\", \"Url\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 95,
+          "preview": "\"data\": [_resource(\"example.com\", \"Domain\", True)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 121,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 122,
+          "preview": "_resource(\"blocked.example.com\", \"Domain\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 173,
+          "preview": "document={\"data\": [_resource(\"example.com\", \"Domain\", True)]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 213,
+          "preview": "_resource(\"example.com\", \"Domain\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 214,
+          "preview": "_resource(\"https://example.com/admin\", \"Url\", True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 253,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\", \"Domain\", True)]},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_scope_preview_api.py",
+          "line": 327,
+          "preview": "\"document\": {\"data\": [_resource(\"example.com\", \"Domain\", True)]},",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 66
+    },
+    "_snapshot": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "line": 21,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_batch_api.py",
+          "line": 21,
+          "preview": "def _snapshot(handle: str, domain: str, fingerprint: str):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch_api.py",
+          "line": 81,
+          "preview": "\"program-one\": _snapshot(\"program-one\", \"one.example.com\", \"a\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch_api.py",
+          "line": 82,
+          "preview": "\"program-two\": _snapshot(\"program-two\", \"two.example.com\", \"b\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 43,
+          "preview": "def _snapshot(document, sha=\"a\" * 64):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 59,
+          "preview": "lambda handle: _snapshot(document),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 101,
+          "preview": "lambda handle: _snapshot(remote_document),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_remote_binding.py",
+          "line": 126,
+          "preview": "lambda handle: _snapshot(document, sha=\"b\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_draft.py",
+          "line": 6,
+          "preview": "def _snapshot():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_draft.py",
+          "line": 40,
+          "preview": "draft = build_hackerone_review_draft(_snapshot())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_draft.py",
+          "line": 55,
+          "preview": "snapshot = _snapshot()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 39,
+          "preview": "def _snapshot(document, fingerprint=\"a\" * 64):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 66,
+          "preview": "lambda handle: _snapshot(document),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 143,
+          "preview": "lambda handle: _snapshot(document),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_review_profiles.py",
+          "line": 172,
+          "preview": "lambda handle: _snapshot(document),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 21,
+          "preview": "def _snapshot(handle: str, domain: str, fingerprint: str):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 89,
+          "preview": "\"program-one\": _snapshot(\"program-one\", \"one.example.com\", \"a\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 90,
+          "preview": "\"program-two\": _snapshot(\"program-two\", \"two.example.com\", \"b\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 171,
+          "preview": "lambda handle: _snapshot(handle, \"one.example.com\", \"b\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 200,
+          "preview": "\"program-one\": _snapshot(\"program-one\", \"one.example.com\", \"a\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 201,
+          "preview": "\"program-two\": _snapshot(\"program-two\", \"two.example.com\", \"b\" * 64),",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_pentagi_status_poller.py",
-          "line": 115,
-          "preview": "raise AssertionError(\"invalid interval must fail closed\")",
+          "line": 22,
+          "preview": "def _snapshot(status):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_pentagi_transport.py",
-          "line": 148,
-          "preview": "def fail():",
+          "file": "backend/tests/test_pentagi_status_poller.py",
+          "line": 35,
+          "preview": "lambda *args, **kwargs: _snapshot(next(statuses)),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_pentagi_transport.py",
-          "line": 152,
-          "preview": "monkeypatch.setattr(\"app.pentagi_transport.load_pentagi_auth\", fail)",
+          "file": "backend/tests/test_pentagi_status_poller.py",
+          "line": 62,
+          "preview": "lambda *args, **kwargs: _snapshot(\"failed\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_pentagi_worker_service.py",
-          "line": 193,
-          "preview": "def fail(plan, permit):",
+          "file": "backend/tests/test_pentagi_status_poller.py",
+          "line": 83,
+          "preview": "lambda *args, **kwargs: _snapshot(\"running\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_pentagi_worker_service.py",
-          "line": 196,
-          "preview": "monkeypatch.setattr(\"app.pentagi_worker_service.submit_pentagi_flow\", fail)",
+          "file": "backend/tests/test_pentagi_status_poller.py",
+          "line": 122,
+          "preview": "lambda *args, **kwargs: _snapshot(next(statuses)),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_planner_advisory.py",
-          "line": 98,
-          "preview": "raise AssertionError(\"invalid top_n must fail closed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_planner_advisory.py",
-          "line": 267,
-          "preview": "raise AssertionError(\"invalid journal limit must fail closed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_recon_swarm.py",
-          "line": 88,
-          "preview": "raise AssertionError(\"invalid recon plan limit should fail\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_recon_worker.py",
-          "line": 138,
-          "preview": "raise AssertionError(\"out-of-scope recon must fail closed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_recon_worker.py",
-          "line": 324,
-          "preview": "raise AssertionError(\"invalid crawl budget must fail closed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_recon_worker.py",
-          "line": 343,
-          "preview": "raise AssertionError(\"invalid crawl depth must fail closed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_recon_worker.py",
-          "line": 449,
-          "preview": "raise AssertionError(\"invalid recon wall-clock budget must fail closed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_red_team_decision.py",
-          "line": 111,
-          "preview": "raise AssertionError(\"invalid decision limit should fail\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_approval.py",
-          "line": 178,
-          "preview": "raise AssertionError(\"tampered report bytes must fail integrity verification\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_review_queue.py",
-          "line": 129,
-          "preview": "raise AssertionError(\"invalid review queue limit should fail\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_worker_parser.py",
-          "line": 95,
-          "preview": "raise AssertionError(\"oversized Strix artifact must fail closed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_worker_parser.py",
-          "line": 107,
-          "preview": "raise AssertionError(\"unsafe artifact limit configuration must fail closed\")",
+          "file": "backend/tests/test_pentagi_status_poller.py",
+          "line": 146,
+          "preview": "return _snapshot(\"running\")",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 57
+      "occurrence_count": 26
+    },
+    "_profile": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "line": 48,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 48,
+          "preview": "def _profile(handle: str, domain: str, fingerprint: str):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 109,
+          "preview": "_profile(\"program-one\", \"one.example.com\", \"a\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 113,
+          "preview": "_profile(\"program-two\", \"two.example.com\", \"b\" * 64),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 164,
+          "preview": "_profile(\"program-one\", \"one.example.com\", \"a\" * 64),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "_app": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "line": 75,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 75,
+          "preview": "def _app():",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 117,
+          "preview": "response = _app().post(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 174,
+          "preview": "response = _app().post(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 210,
+          "preview": "response = _app().post(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 228,
+          "preview": "response = _app().post(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "test_reviewed_batch_launch_needs_only_handles": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "line": 81,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 81,
+          "preview": "def test_reviewed_batch_launch_needs_only_handles(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_reviewed_batch_rejects_changed_fingerprint_before_creating_campaigns": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "line": 152,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 152,
+          "preview": "def test_reviewed_batch_rejects_changed_fingerprint_before_creating_campaigns(",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_reviewed_batch_collects_all_missing_profiles_before_admission": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "line": 189,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 189,
+          "preview": "def test_reviewed_batch_collects_all_missing_profiles_before_admission(",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_reviewed_batch_rejects_duplicate_handles": {
+      "definition": {
+        "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "line": 227,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
+          "line": 227,
+          "preview": "def test_reviewed_batch_rejects_duplicate_handles():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
     }
   }
 }
