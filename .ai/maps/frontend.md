@@ -393,11 +393,19 @@ const updateProgress=()=>
 ⋮----
 async function reviewWorker()
 ⋮----
+async function refreshRuntimeReadiness(
+⋮----
 async function loadSimpleSelection(excludedHandles=[])
 ⋮----
 async function prepare(initialExcluded=[])
 ⋮----
+function reviewProfilePayload(draft)
+⋮----
+async function persistReviewDraft(draft)
+⋮----
 async function saveReviews()
+⋮----
+async function persistWorker()
 ⋮----
 function replaceableLaunchReason(reason)
 ⋮----

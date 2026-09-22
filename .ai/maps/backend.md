@@ -297,6 +297,7 @@ tests/
   test_live_activation_profile.py
   test_local_outcome_intelligence.py
   test_metrics.py
+  test_mobile_production_update_script.py
   test_mobile_reset_api_token.py
   test_nuclei_preflight.py
   test_nuclei_queue_lifecycle.py
@@ -12514,6 +12515,10 @@ def test_simple_dashboard_grouped_review_and_quiet_journal()
 def test_simple_dashboard_bounds_hackerone_review_concurrency()
 ⋮----
 def test_simple_dashboard_shows_review_loading_progress()
+⋮----
+def test_simple_dashboard_surfaces_live_scanner_readiness()
+⋮----
+def test_simple_dashboard_bounds_review_profile_persistence()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -14486,6 +14491,19 @@ result = build_operational_metrics(Queue(), Storage())
 rendered = str(result)
 ⋮----
 def test_metrics_route_is_exposed_under_authenticated_api()
+```
+
+## File: tests/test_mobile_production_update_script.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def test_live_production_update_waits_for_worker_heartbeats()
+⋮----
+script = (ROOT / "scripts/mobile-production-update.sh").read_text(encoding="utf-8")
+⋮----
+def test_mobile_status_reports_hackerone_launch_readiness()
+⋮----
+script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
 ```
 
 ## File: tests/test_mobile_reset_api_token.py
@@ -17399,6 +17417,8 @@ def test_simple_dashboard_replaces_individually_unavailable_review_programs()
 def test_simple_dashboard_auto_replaces_preflight_stale_programmes()
 ⋮----
 def test_simple_dashboard_recovers_launch_time_programme_state_races()
+⋮----
+def test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts()
 ```
 
 ## File: tests/test_simple_selection_cached.py

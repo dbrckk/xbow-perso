@@ -313,6 +313,7 @@ backend/
     test_live_activation_profile.py
     test_local_outcome_intelligence.py
     test_metrics.py
+    test_mobile_production_update_script.py
     test_mobile_reset_api_token.py
     test_nuclei_preflight.py
     test_nuclei_queue_lifecycle.py
@@ -13122,6 +13123,10 @@ def test_simple_dashboard_grouped_review_and_quiet_journal()
 def test_simple_dashboard_bounds_hackerone_review_concurrency()
 ⋮----
 def test_simple_dashboard_shows_review_loading_progress()
+⋮----
+def test_simple_dashboard_surfaces_live_scanner_readiness()
+⋮----
+def test_simple_dashboard_bounds_review_profile_persistence()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -15094,6 +15099,19 @@ result = build_operational_metrics(Queue(), Storage())
 rendered = str(result)
 ⋮----
 def test_metrics_route_is_exposed_under_authenticated_api()
+````
+
+## File: backend/tests/test_mobile_production_update_script.py
+````python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def test_live_production_update_waits_for_worker_heartbeats()
+⋮----
+script = (ROOT / "scripts/mobile-production-update.sh").read_text(encoding="utf-8")
+⋮----
+def test_mobile_status_reports_hackerone_launch_readiness()
+⋮----
+script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
 ````
 
 ## File: backend/tests/test_mobile_reset_api_token.py
@@ -18007,6 +18025,8 @@ def test_simple_dashboard_replaces_individually_unavailable_review_programs()
 def test_simple_dashboard_auto_replaces_preflight_stale_programmes()
 ⋮----
 def test_simple_dashboard_recovers_launch_time_programme_state_races()
+⋮----
+def test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts()
 ````
 
 ## File: backend/tests/test_simple_selection_cached.py
@@ -19306,11 +19326,19 @@ const updateProgress=()=>
 ⋮----
 async function reviewWorker()
 ⋮----
+async function refreshRuntimeReadiness(
+⋮----
 async function loadSimpleSelection(excludedHandles=[])
 ⋮----
 async function prepare(initialExcluded=[])
 ⋮----
+function reviewProfilePayload(draft)
+⋮----
+async function persistReviewDraft(draft)
+⋮----
 async function saveReviews()
+⋮----
+async function persistWorker()
 ⋮----
 function replaceableLaunchReason(reason)
 ⋮----
@@ -20087,8 +20115,21 @@ if [ "$LIVE_MODE" = "true" ]; then
   echo "=== SCANNER CAPABILITY ==="
   docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python -c \
     'from app.runtime_capabilities import scanner_runtime_capability; print(scanner_runtime_capability())'
+  echo "=== WORKER LIVENESS ==="
+  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python -c \
+    'from app.worker_liveness import worker_liveness_snapshot; print(worker_liveness_snapshot())'
+  echo "=== HACKERONE LIVE READINESS ==="
+  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python -c \
+    'from app.hackerone_live_readiness import build_hackerone_live_readiness; from app.main import dependency_readiness; r=build_hackerone_live_readiness(dependency_readiness()); print({"status": r["status"], "live_scan_ready": r["live_scan_ready"], "failed": [x["id"] for x in r["checks"] if x["required"] and not x["ok"]]})'
 else
   echo "armed=false"
+  echo "HACKERONE_LIVE_READY=false"
+fi
+
+PUBLIC_HOST="$(grep -E '^[[:space:]]*XBOW_PUBLIC_HOST=' .env | tail -n1 | cut -d= -f2- || true)"
+if [ -n "$PUBLIC_HOST" ]; then
+  echo "=== PUBLIC HTTPS ==="
+  curl -fsSI "https://$PUBLIC_HOST/health" | sed -n '1,12p'
 fi
 ````
 
@@ -20318,6 +20359,23 @@ echo "=== FRONTEND DIAGNOSTIC PROXY ==="
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 
 if [ "$LIVE_MODE" = "true" ]; then
+  echo "=== WAIT FOR WORKER HEARTBEATS ==="
+  workers_live=false
+  for _ in $(seq 1 30); do
+    if "${COMPOSE[@]}" exec -T backend python -c 'from app.worker_liveness import worker_liveness_snapshot; s=worker_liveness_snapshot(); raise SystemExit(0 if s["general"]["live"] and s["scanner"]["live"] else 1)' >/dev/null 2>&1; then
+      workers_live=true
+      break
+    fi
+    sleep 2
+  done
+  if [ "$workers_live" != "true" ]; then
+    echo "Worker heartbeat validation failed." >&2
+    "${COMPOSE[@]}" exec -T backend python -c 'from app.worker_liveness import worker_liveness_snapshot; print(worker_liveness_snapshot())' >&2 || true
+    "${COMPOSE[@]}" ps worker scanner-worker >&2 || true
+    exit 1
+  fi
+  "${COMPOSE[@]}" exec -T backend python -c 'from app.worker_liveness import worker_liveness_snapshot; print(worker_liveness_snapshot())'
+
   echo "=== SCANNER CAPABILITY ==="
   "${COMPOSE[@]}" exec -T backend python -c \
     'from app.runtime_capabilities import scanner_runtime_capability; c=scanner_runtime_capability(); assert c["dispatch_ready"] and c["nuclei_enabled"] and c["nuclei_execution_intent"], c; print(c)'

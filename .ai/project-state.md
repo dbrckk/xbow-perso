@@ -22,26 +22,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T11:46:58Z
+Generated: 2026-09-22T11:56:52Z
 
 ### Git
 - Branch: `main`
-- Head: `e92dee317bd0`
-- Commit date: 2026-09-22T13:46:44+02:00
-- Commit: perf: reuse verified HackerOne binding during reviewed launch (#349)
-- Tracked files: 564
+- Head: `924c58ccbf91`
+- Commit date: 2026-09-22T13:56:40+02:00
+- Commit: feat: make launch readiness visible and wait for scanner heartbeats (#350)
+- Tracked files: 565
 
 ### Recently changed files
-- `backend/app/hackerone_api.py`
-- `backend/tests/test_hackerone_prelaunch.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_mobile_production_update_script.py`
+- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
+- `scripts/mobile-production-status.sh`
+- `scripts/mobile-production-update.sh`
+- `backend/app/hackerone_api.py`
+- `backend/tests/test_hackerone_prelaunch.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_hackerone_remote_binding.py`
-- `backend/tests/test_simple_selection_cache_only.py`
 
 ### Project signals
 - `pyproject.toml`
