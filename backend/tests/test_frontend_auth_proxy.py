@@ -95,9 +95,10 @@ def test_simple_dashboard_bounds_hackerone_review_concurrency():
 
 def test_simple_dashboard_shows_review_loading_progress():
     script = _text("frontend/simple.js")
-    assert "chargement des politiques '+completed+'/'+candidates.length" in script
+    assert "politiques vérifiées '+completed+'/'+total" in script
     assert "completed+=1;" in script
     assert "updateProgress();" in script
+    assert "const total=candidates.length;" in script
 
 
 def test_simple_dashboard_surfaces_live_scanner_readiness():
