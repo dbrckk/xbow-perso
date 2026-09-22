@@ -1,3 +1,6 @@
+from fastapi import HTTPException
+
+import app.hackerone_api as hackerone_api
 from app.hackerone_api import _hackerone_error_detail, _upstream_error
 from app.hackerone_client import HackerOneClientError
 
@@ -50,3 +53,19 @@ def test_upstream_retryable_error_returns_503_with_structured_reason():
     assert error.status_code == 503
     assert error.detail["reason"] == "hackerone_timeout"
     assert error.detail["retryable"] is True
+
+
+def test_program_specific_422_is_replaceable_review_candidate(monkeypatch):
+    def fail(_handle):
+        raise HackerOneClientError("HackerOne returned HTTP 422", status_code=422)
+
+    monkeypatch.setattr(hackerone_api, "fetch_hackerone_program_snapshot", fail)
+    try:
+        hackerone_api.get_hackerone_program_review_draft("example")
+    except HTTPException as exc:
+        assert exc.status_code == 409
+        assert exc.detail["reason"] == "hackerone_program_review_unavailable"
+        assert exc.detail["handle"] == "example"
+        assert exc.detail["upstream_status"] == 422
+    else:
+        raise AssertionError("expected HTTPException")
