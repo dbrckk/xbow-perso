@@ -24,11 +24,17 @@ chmod 600 "$SECRETS_FILE"
 # Always converge the VPS onto the current safe production baseline first.
 # This makes the activation command resilient when containers are stopped,
 # the checkout is stale, or .env still contains old manually-edited gates.
-echo "=== SAFE PRODUCTION REFRESH ==="
-bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
+# After the updater refreshes the checkout, restart this script once so the
+# remaining activation uses the newest code instead of the stale shell process.
+if [ "${XBOW_ACTIVATION_REFRESHED:-0}" != "1" ]; then
+  echo "=== SAFE PRODUCTION REFRESH ==="
+  bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
+  echo "=== RESTART ACTIVATION FROM UPDATED CHECKOUT ==="
+  exec env XBOW_ACTIVATION_REFRESHED=1 bash "$INSTALL_DIR/scripts/mobile-enable-hackerone-nuclei.sh"
+fi
 
-# mobile-production-update may have refreshed the checkout. Continue with the
-# now-running stack, while the repository .env remains fail-safe.
+# The refreshed invocation continues with the now-running stack while the
+# repository .env remains fail-safe.
 cd "$INSTALL_DIR"
 
 read_env_value() {
