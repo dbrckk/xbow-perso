@@ -53,7 +53,8 @@ def test_simple_selection_supports_excluding_unavailable_review_candidates():
 def test_simple_dashboard_replaces_individually_unavailable_review_programs():
     script = _text("frontend/simple.js")
 
-    assert "Promise.allSettled" in script
+    assert "const REVIEW_CONCURRENCY=2;" in script
+    assert "reviewWorker" in script
     assert "hackerone_program_review_unavailable" in script
     assert "Remplacement automatique de " in script
     assert "loadSimpleSelection(excluded)" in script
