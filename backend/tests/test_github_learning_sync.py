@@ -77,6 +77,17 @@ def test_learning_digest_is_detailed_but_excludes_raw_evidence_and_payloads():
     assert "do not export this payload" not in encoded
     assert "evidence" not in campaign["finding_brief"][0]
     assert "reproduction_steps" not in campaign["finding_brief"][0]
+    assert digest["schema"] == "xbow-runtime-learning-v2"
+    signals = digest["learning_signals"]
+    assert signals["campaigns"]["total"] == 1
+    assert signals["campaigns"]["completed"] == 1
+    assert signals["campaigns"]["completion_rate"] == 1.0
+    assert signals["findings"]["total"] == 1
+    assert signals["findings"]["confirmed"] == 1
+    assert signals["findings"]["confirmation_rate"] == 1.0
+    assert signals["findings"]["severities"] == {"high": 1}
+    assert signals["events"]["recon_task_completed"] == 1
+    assert any("confirmed severity/CWE" in item for item in signals["recommendations"])
 
 
 def test_learning_sync_creates_idempotent_github_issue(monkeypatch):
@@ -103,6 +114,8 @@ def test_learning_sync_creates_idempotent_github_issue(monkeypatch):
     post = next(payload for method, _url, payload in calls if method == "POST")
     assert "RAW SECRET EVIDENCE" not in post["body"]
     assert "do not export this payload" not in post["body"]
+    assert "## Learning signals" in post["body"]
+    assert '"confirmation_rate": 1.0' in post["body"]
 
 
 def test_completed_batch_sync_is_persisted_for_journal(monkeypatch):
