@@ -22,3 +22,15 @@ def test_mobile_status_reports_hackerone_launch_readiness():
     assert '"live_scan_ready": r["live_scan_ready"]' in script
     assert '"failed": [x["id"] for x in r["checks"] if x["required"] and not x["ok"]]' in script
     assert "=== PUBLIC HTTPS ===" in script
+
+
+def test_mobile_status_prints_explicit_launch_verdict_and_blockers():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    assert "=== BUG BOUNTY LAUNCH VERDICT ===" in script
+    assert "BUG_BOUNTY_LAUNCH_READY=true" in script
+    assert "BUG_BOUNTY_LAUNCH_READY=false" in script
+    assert "VERDICT=READY" in script
+    assert "VERDICT=BLOCKED" in script
+    assert "BLOCKER=" in script
+    assert "=== DASHBOARD ASSET VERSION ===" in script
