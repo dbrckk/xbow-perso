@@ -437,6 +437,17 @@
     }
   }
 
+  function replaceableLaunchReason(reason){
+    return [
+      'program_submissions_not_open',
+      'program_not_currently_open',
+      'review_profile_required',
+      'review_profile_binding_mismatch',
+      'review_profile_incomplete',
+      'review_profile_invalid'
+    ].includes(String(reason||''));
+  }
+
   async function start(){
     if(!requireToken())return;
     if(selection.length!==6){
@@ -491,6 +502,18 @@
       );
       await refreshJournal({quiet:true});
     }catch(error){
+      const handles=(Array.isArray(error?.detail?.handles)?error.detail.handles:[])
+        .map(value=>String(value||'').trim().toLowerCase())
+        .filter(handle=>handle&&selection.includes(handle));
+      if(replaceableLaunchReason(error?.reason)&&handles.length){
+        setStatus(
+          'Lancement : '+handles.length+' programme(s) ont changé après le pré-vol. Remplacement automatique…',
+          'warn'
+        );
+        button.disabled=false;
+        await prepare(handles);
+        return;
+      }
       setStatus('Lancement bloqué : '+error.message,'err');
       button.disabled=false;
     }
