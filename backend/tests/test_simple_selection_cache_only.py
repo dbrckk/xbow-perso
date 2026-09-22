@@ -60,13 +60,12 @@ def test_simple_dashboard_replaces_individually_unavailable_review_programs():
     assert "loadSimpleSelection(excluded)" in script
 
 
-def test_simple_dashboard_auto_replaces_preflight_stale_programmes():
+def test_simple_dashboard_uses_launch_time_replacement_instead_of_duplicate_preflight():
     script = _text("frontend/simple.js")
-    assert "async function prepare(initialExcluded=[])" in script
-    assert "preflight?.replaceable_handles" in script
-    assert "preflight?.runtime_ready===true&&replaceable.length" in script
-    assert "await prepare(replaceable);" in script
-    assert "programme(s) ont changé. Remplacement automatique" in script
+    start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
+    assert "/imports/hackerone/batches/go-no-go" not in start_block
+    assert "replaceableLaunchReason(error?.reason)" in start_block
+    assert "await prepare(handles);" in start_block
 
 
 def test_simple_dashboard_recovers_launch_time_programme_state_races():
