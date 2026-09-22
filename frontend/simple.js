@@ -593,6 +593,23 @@
     ].includes(String(reason||''));
   }
 
+  function preflightBlockerMessage(preflight){
+    const runtime=preflight?.runtime||{};
+    const checks=Array.isArray(runtime?.checks)?runtime.checks:[];
+    const failed=checks.filter(item=>item?.required===true&&item?.ok!==true);
+    if(!failed.length){
+      const blockers=(Array.isArray(preflight?.blockers)?preflight.blockers:[])
+        .map(value=>String(value||'')).filter(Boolean);
+      return blockers.length?'Pré-vol bloqué · '+blockers.join(' · '):'Pré-vol bloqué';
+    }
+    const labels=failed.slice(0,3)
+      .map(item=>String(item?.label||item?.id||'contrôle'))
+      .filter(Boolean);
+    const command=String(runtime?.scanner_start_command||'').trim();
+    return 'Scanner non prêt'+(labels.length?' · '+labels.join(' · '):'')+
+      (command?' · À exécuter sur le VPS : '+command:'');
+  }
+
   async function start(){
     if(!requireToken())return;
     if(selection.length!==6){
@@ -626,9 +643,7 @@
           await prepare(replaceable);
           return;
         }
-        const blockers=(Array.isArray(preflight?.blockers)?preflight.blockers:[])
-          .map(value=>String(value||'')).filter(Boolean);
-        throw new Error('Pré-vol bloqué'+(blockers.length?' · '+blockers.join(' · '):''));
+        throw new Error(preflightBlockerMessage(preflight));
       }
       setStatus('GO confirmé. Création du lot côté serveur…');
       const batch=await api('/imports/hackerone/batches/launch-reviewed',{
