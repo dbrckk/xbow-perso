@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=73' in index
-    assert '/app.css?v=73' in index
-    assert "xbow-perso-v73" in sw
+    assert '/simple.js?v=74' in index
+    assert '/app.css?v=74' in index
+    assert "xbow-perso-v74" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=73" defer></script>' in index
+    assert '<script src="/simple.js?v=74" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -138,3 +138,12 @@ def test_simple_dashboard_surfaces_runtime_remediation():
     assert "scanner_start_command" in script
     assert "À faire : " in script
     assert "Tout est prêt côté runtime." in script
+
+
+def test_simple_dashboard_prevents_duplicate_active_batches():
+    script = _text("frontend/simple.js")
+    assert "let batchActive=false;" in script
+    assert "&& batchActive===false" in script
+    assert "batchActive=true;" in script
+    assert "batchActive=Boolean(active);" in script
+    assert "localStorage.removeItem(ACTIVE_KEY)" in script
