@@ -79,5 +79,7 @@ def test_enable_script_reports_actionable_non_idle_queue_blocker():
     assert "QUEUE_RUNNING=" in script
     assert "ACTIVE_BATCH_ID=" in script
     assert "ACTIVE_BATCH_STATE=" in script
+    assert "queue_idle = active_jobs == 0 and not active_batches" in script
+    assert "if not queue_idle:" in script
     assert "Let the active batch finish or cancel it from the dashboard before arming the scanner." in script
     assert "assert active==0" not in script
