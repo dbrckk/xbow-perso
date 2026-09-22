@@ -265,6 +265,11 @@
         throw first;
       }
     }
+    for(const draft of drafts){
+      if(reviewableDraft(draft))continue;
+      const handle=String(draft?.handle||'').trim().toLowerCase();
+      if(handle&&!failedHandles.includes(handle))failedHandles.push(handle);
+    }
     reviewDrafts=drafts;
     if(failedHandles.length)return {failedHandles};
     renderReviewDrafts();
