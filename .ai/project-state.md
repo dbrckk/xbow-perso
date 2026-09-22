@@ -22,16 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T11:56:52Z
+Generated: 2026-09-22T12:06:54Z
 
 ### Git
 - Branch: `main`
-- Head: `924c58ccbf91`
-- Commit date: 2026-09-22T13:56:40+02:00
-- Commit: feat: make launch readiness visible and wait for scanner heartbeats (#350)
+- Head: `7966cc4c0fbe`
+- Commit date: 2026-09-22T14:06:42+02:00
+- Commit: fix: skip optional browser recon when browser runtime is disabled (#352)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/app/orchestrator.py`
+- `backend/tests/test_job_provenance_integration.py`
+- `backend/tests/test_orchestrator.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_mobile_production_update_script.py`

@@ -1,429 +1,647 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "e92dee317bd04225b43ea4c45092936e7f71ce20",
-  "head": "924c58ccbf9172d0a725288c446cbaba377ad8df",
+  "base": "924c58ccbf9172d0a725288c446cbaba377ad8df",
+  "head": "7966cc4c0fbe1db3be42767ed3339941954652e2",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/tests/test_frontend_auth_proxy.py",
+      "path": "backend/app/orchestrator.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_frontend_policy_launcher.py",
+      "path": "backend/tests/test_job_provenance_integration.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_mobile_production_update_script.py",
-      "status": "A"
-    },
-    {
-      "path": "backend/tests/test_simple_selection_cache_only.py",
-      "status": "M"
-    },
-    {
-      "path": "frontend/index.html",
-      "status": "M"
-    },
-    {
-      "path": "frontend/simple.js",
-      "status": "M"
-    },
-    {
-      "path": "frontend/sw.js",
-      "status": "M"
-    },
-    {
-      "path": "scripts/mobile-production-status.sh",
-      "status": "M"
-    },
-    {
-      "path": "scripts/mobile-production-update.sh",
+      "path": "backend/tests/test_orchestrator.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/tests/test_frontend_auth_proxy.py",
-    "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_mobile_production_update_script.py",
-    "backend/tests/test_simple_selection_cache_only.py",
-    "frontend/simple.js",
-    "frontend/sw.js"
+    "backend/app/orchestrator.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_orchestrator.py"
   ],
   "impacted_files": [
-    "backend/tests/test_frontend_auth_proxy.py",
-    "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_mobile_production_update_script.py",
-    "backend/tests/test_simple_selection_cache_only.py",
-    "frontend/simple.js",
-    "frontend/sw.js"
+    "backend/app/orchestrator.py",
+    "backend/app/worker_service.py",
+    "backend/tests/test_campaign_circuit_breaker.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_orchestrator.py",
+    "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_runtime_budget_config.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_text",
+      "name": "_stable_id",
       "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 7
+      "file": "backend/app/orchestrator.py",
+      "line": 50
     },
     {
-      "name": "test_frontend_proxies_redacted_backend_diagnostics",
+      "name": "_graph_fingerprint",
       "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 11
+      "file": "backend/app/orchestrator.py",
+      "line": 55
     },
     {
-      "name": "test_diagnostic_routes_bypass_service_worker_cache",
+      "name": "_load_graph",
       "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 18
-    },
-    {
-      "name": "test_frontend_assets_are_explicitly_cache_busted",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 25
-    },
-    {
-      "name": "test_api_token_is_persisted_across_browser_sessions",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 33
-    },
-    {
-      "name": "test_frontend_has_no_totp_control",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 42
-    },
-    {
-      "name": "test_simple_dashboard_runtime_is_shipped_in_frontend_image",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 51
-    },
-    {
-      "name": "test_service_worker_matches_precache_assets_by_path",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 58
-    },
-    {
-      "name": "test_simple_dashboard_exposes_first_run_review_flow",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 64
-    },
-    {
-      "name": "test_simple_dashboard_grouped_review_and_quiet_journal",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 77
-    },
-    {
-      "name": "test_simple_dashboard_bounds_hackerone_review_concurrency",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 87
-    },
-    {
-      "name": "test_simple_dashboard_shows_review_loading_progress",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 96
-    },
-    {
-      "name": "test_simple_dashboard_surfaces_live_scanner_readiness",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 103
-    },
-    {
-      "name": "test_simple_dashboard_bounds_review_profile_persistence",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_auth_proxy.py",
-      "line": 113
-    },
-    {
-      "name": "_text",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_policy_launcher.py",
-      "line": 9
-    },
-    {
-      "name": "test_hackerone_reviewed_batch_routes_exist",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_policy_launcher.py",
-      "line": 13
-    },
-    {
-      "name": "test_minimal_frontend_exposes_only_primary_operator_flow",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_policy_launcher.py",
-      "line": 21
-    },
-    {
-      "name": "test_minimal_frontend_preserves_safety_and_server_persistence",
-      "kind": "function",
-      "file": "backend/tests/test_frontend_policy_launcher.py",
-      "line": 41
-    },
-    {
-      "name": "test_live_production_update_waits_for_worker_heartbeats",
-      "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 7
-    },
-    {
-      "name": "test_mobile_status_reports_hackerone_launch_readiness",
-      "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 17
-    },
-    {
-      "name": "_text",
-      "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
-      "line": 7
-    },
-    {
-      "name": "test_simple_selection_never_refreshes_hackerone_inline",
-      "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
-      "line": 11
-    },
-    {
-      "name": "test_simple_dashboard_initializes_catalog_once_then_retries_selection",
-      "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
-      "line": 23
-    },
-    {
-      "name": "test_simple_dashboard_surfaces_actionable_hackerone_errors",
-      "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
-      "line": 34
-    },
-    {
-      "name": "test_simple_selection_supports_excluding_unavailable_review_candidates",
-      "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
-      "line": 43
-    },
-    {
-      "name": "test_simple_dashboard_replaces_individually_unavailable_review_programs",
-      "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
-      "line": 53
-    },
-    {
-      "name": "test_simple_dashboard_auto_replaces_preflight_stale_programmes",
-      "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
-      "line": 63
-    },
-    {
-      "name": "test_simple_dashboard_recovers_launch_time_programme_state_races",
-      "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "file": "backend/app/orchestrator.py",
       "line": 72
     },
     {
-      "name": "test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts",
+      "name": "_seed_primary_target",
       "kind": "function",
-      "file": "backend/tests/test_simple_selection_cache_only.py",
-      "line": 84
+      "file": "backend/app/orchestrator.py",
+      "line": 76
     },
     {
-      "name": "token",
+      "name": "_minimum_enrichment_score",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 11
+      "file": "backend/app/orchestrator.py",
+      "line": 93
     },
     {
-      "name": "saveToken",
+      "name": "_surface_enrichment",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 15
+      "file": "backend/app/orchestrator.py",
+      "line": 104
     },
     {
-      "name": "setStatus",
+      "name": "_intelligence_context",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 19
+      "file": "backend/app/orchestrator.py",
+      "line": 128
     },
     {
-      "name": "requireToken",
+      "name": "scope_checker",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 26
+      "file": "backend/app/orchestrator.py",
+      "line": 139
     },
     {
-      "name": "api",
+      "name": "_validation_saturated_cluster_ids",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 33
+      "file": "backend/app/orchestrator.py",
+      "line": 242
     },
     {
-      "name": "money",
+      "name": "_pending_findings",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 59
+      "file": "backend/app/orchestrator.py",
+      "line": 282
     },
     {
-      "name": "stateLabel",
+      "name": "_enqueue_recon_tasks",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 64
-    },
-    {
-      "name": "renderSelection",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 71
-    },
-    {
-      "name": "clearReviewPanel",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 103
-    },
-    {
-      "name": "reviewableDraft",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 111
-    },
-    {
-      "name": "renderReviewDrafts",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 121
-    },
-    {
-      "name": "retryableReviewError",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 166
-    },
-    {
-      "name": "loadReviewDraft",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 180
-    },
-    {
-      "name": "loadReviewDrafts",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 194
-    },
-    {
-      "name": "updateProgress",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 206
-    },
-    {
-      "name": "reviewWorker",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 214
-    },
-    {
-      "name": "refreshRuntimeReadiness",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 278
-    },
-    {
-      "name": "loadSimpleSelection",
-      "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 305
-    },
-    {
-      "name": "prepare",
-      "kind": "function",
-      "file": "frontend/simple.js",
+      "file": "backend/app/orchestrator.py",
       "line": 328
     },
     {
-      "name": "reviewProfilePayload",
+      "name": "_scan_engines",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 419
+      "file": "backend/app/orchestrator.py",
+      "line": 393
     },
     {
-      "name": "persistReviewDraft",
+      "name": "_enqueue_action",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 443
+      "file": "backend/app/orchestrator.py",
+      "line": 404
     },
     {
-      "name": "saveReviews",
+      "name": "_decision_explanation",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 470
+      "file": "backend/app/orchestrator.py",
+      "line": 482
     },
     {
-      "name": "updateProgress",
+      "name": "_record_decision",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 493
+      "file": "backend/app/orchestrator.py",
+      "line": 529
     },
     {
-      "name": "persistWorker",
+      "name": "_result",
       "kind": "function",
-      "file": "frontend/simple.js",
+      "file": "backend/app/orchestrator.py",
+      "line": 572
+    },
+    {
+      "name": "advance_campaign",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 643
+    },
+    {
+      "name": "CampaignCancelledError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 47
+    },
+    {
+      "name": "StaleValidationJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 51
+    },
+    {
+      "name": "StaleBrowserJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 55
+    },
+    {
+      "name": "_save",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 63
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 68
+    },
+    {
+      "name": "_append_event_once",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 79
+    },
+    {
+      "name": "_lease_heartbeat",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 96
+    },
+    {
+      "name": "renew",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 103
+    },
+    {
+      "name": "_process_scanner_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 124
+    },
+    {
+      "name": "process_strix_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 131
+    },
+    {
+      "name": "process_nuclei_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 135
+    },
+    {
+      "name": "process_validation",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 139
+    },
+    {
+      "name": "process_browser_flow",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 212
+    },
+    {
+      "name": "process_recon_task",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 316
+    },
+    {
+      "name": "process_report",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 410
+    },
+    {
+      "name": "_record_worker_outcome",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 452
+    },
+    {
+      "name": "_worker_bool",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 482
+    },
+    {
+      "name": "_legacy_unprovenanced_jobs_allowed",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 494
+    },
+    {
+      "name": "_verify_policy_bound_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
       "line": 498
     },
     {
-      "name": "replaceableLaunchReason",
+      "name": "_active_scanner_execution_requested",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 551
+      "file": "backend/app/worker_service.py",
+      "line": 518
     },
     {
-      "name": "start",
+      "name": "_claim_for_role",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 564
+      "file": "backend/app/worker_service.py",
+      "line": 525
     },
     {
-      "name": "repoSyncLabel",
+      "name": "process_one",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 635
+      "file": "backend/app/worker_service.py",
+      "line": 539
     },
     {
-      "name": "renderJournal",
+      "name": "_worker_poll_seconds",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 645
+      "file": "backend/app/worker_service.py",
+      "line": 596
     },
     {
-      "name": "refreshJournal",
+      "name": "main",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 693
+      "file": "backend/app/worker_service.py",
+      "line": 607
     },
     {
-      "name": "bind",
+      "name": "_campaign",
       "kind": "function",
-      "file": "frontend/simple.js",
-      "line": 715
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 13
+    },
+    {
+      "name": "test_circuit_breaker_persists_and_resets",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 26
+    },
+    {
+      "name": "test_runtime_exhaustion_opens_breaker_and_future_advance_stays_blocked",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 54
+    },
+    {
+      "name": "test_control_routes_are_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 89
+    },
+    {
+      "name": "test_control_status_reports_budget_blocker_consistently",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 97
+    },
+    {
+      "name": "test_control_status_exposes_scanner_stability_and_recon_telemetry",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 129
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 10
+    },
+    {
+      "name": "_assert_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 28
+    },
+    {
+      "name": "test_sanitized_scan_payload_is_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 36
+    },
+    {
+      "name": "test_orchestrator_scan_jobs_bind_each_engine_kind",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 48
+    },
+    {
+      "name": "test_orchestrator_recon_and_browser_jobs_are_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 68
+    },
+    {
+      "name": "test_orchestrator_validation_and_report_jobs_are_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 99
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 13
+    },
+    {
+      "name": "test_scan_engines_default_preserves_strix",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 27
+    },
+    {
+      "name": "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 32
+    },
+    {
+      "name": "test_sqlite_queue_accepts_nuclei_scan",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 41
+    },
+    {
+      "name": "test_nuclei_worker_dry_run_preserves_safe_default",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 52
+    },
+    {
+      "name": "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 78
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 90
+    },
+    {
+      "name": "make_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 13
+    },
+    {
+      "name": "test_advance_bootstraps_asset_and_queues_bounded_recon",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 29
+    },
+    {
+      "name": "test_advance_stops_when_automation_disabled",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 54
+    },
+    {
+      "name": "test_advance_stops_when_runtime_budget_is_exhausted",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 70
+    },
+    {
+      "name": "test_advance_queues_only_unvalidated_findings_then_waits_for_resolution_and_reports",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 92
+    },
+    {
+      "name": "test_validation_jobs_are_ordered_by_adaptive_priority",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 171
+    },
+    {
+      "name": "test_validation_priority_prefers_less_supported_hypothesis_on_tie",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 214
+    },
+    {
+      "name": "test_orchestrator_exposes_integrated_intelligence_context",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 272
+    },
+    {
+      "name": "test_orchestrator_gate_blocks_progress_after_failed_job",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 291
+    },
+    {
+      "name": "test_orchestrator_learning_memory_reaches_adaptive_cycle",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 317
+    },
+    {
+      "name": "test_orchestrator_blocks_scan_below_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 354
+    },
+    {
+      "name": "test_orchestrator_includes_browser_recon_only_when_enabled",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 382
+    },
+    {
+      "name": "test_orchestrator_allows_scan_after_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 407
+    },
+    {
+      "name": "test_orchestrator_rejects_invalid_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 448
+    },
+    {
+      "name": "test_orchestrator_halts_after_repeated_requeues_without_success",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 464
+    },
+    {
+      "name": "test_orchestrator_exposes_advisory_only_coverage_guidance",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 502
+    },
+    {
+      "name": "test_orchestrator_scanner_memory_can_only_reduce_configured_engines",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 518
+    },
+    {
+      "name": "test_orchestrator_caps_multi_engine_scan_fanout_to_remaining_budget",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 578
+    },
+    {
+      "name": "test_validation_scheduler_selects_one_representative_per_cluster",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 630
+    },
+    {
+      "name": "test_validation_scheduler_re_evaluates_cluster_after_representative_validation",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 694
+    },
+    {
+      "name": "test_validation_scheduler_stops_cluster_fanout_after_strong_representative_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 759
+    },
+    {
+      "name": "test_validation_scheduler_does_not_early_stop_on_observed_validation_without_quality_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 837
+    },
+    {
+      "name": "_seed_planner_decisions",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 898
+    },
+    {
+      "name": "test_critical_planner_oscillation_opens_circuit_breaker_before_new_work",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 924
+    },
+    {
+      "name": "test_action_after_stop_opens_circuit_breaker_before_new_work",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 950
+    },
+    {
+      "name": "test_single_planner_reversal_does_not_trip_breaker",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 972
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 6
+    },
+    {
+      "name": "_graph",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 30
+    },
+    {
+      "name": "test_dry_run_validation_does_not_remove_pending_finding",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 46
+    },
+    {
+      "name": "test_self_validation_does_not_remove_pending_finding",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 51
+    },
+    {
+      "name": "test_independent_observed_validation_removes_pending_finding",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 56
+    },
+    {
+      "name": "_clear_planner_env",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 24
+    },
+    {
+      "name": "test_planner_budget_from_env_uses_safe_defaults",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 29
+    },
+    {
+      "name": "test_planner_budget_from_env_accepts_explicit_limits",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 43
+    },
+    {
+      "name": "test_planner_budget_from_env_rejects_invalid_values",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 74
+    },
+    {
+      "name": "test_planner_budget_from_env_rejects_batch_above_total",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 82
+    },
+    {
+      "name": "test_campaign_runtime_limit_from_env_uses_default",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 91
+    },
+    {
+      "name": "test_campaign_runtime_limit_from_env_accepts_explicit_value",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 99
+    },
+    {
+      "name": "test_campaign_runtime_limit_from_env_rejects_invalid_values",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 108
+    },
+    {
+      "name": "test_orchestrator_uses_runtime_limit_from_environment",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 116
     }
   ],
   "selected_tests": [
-    "backend/tests/test_auth.py",
-    "backend/tests/test_frontend_auth_proxy.py",
-    "backend/tests/test_frontend_policy_launcher.py",
-    "backend/tests/test_mobile_production_update_script.py",
-    "backend/tests/test_pipeline_swarm.py",
-    "backend/tests/test_recon_swarm.py",
-    "backend/tests/test_simple_portfolio.py",
-    "backend/tests/test_simple_selection_cache_only.py",
-    "backend/tests/test_simple_selection_cached.py",
-    "backend/tests/test_swarm_coordinator.py"
+    "backend/tests/test_campaign_circuit_breaker.py",
+    "backend/tests/test_job_provenance.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_orchestrator.py",
+    "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_runtime_budget_config.py"
   ]
 }

@@ -6786,6 +6786,7 @@ cluster_id = cluster_by_member.get(str(finding.id))
 ⋮----
 fingerprint = _graph_fingerprint(graph)
 jobs: list[dict] = []
+browser_ready = safe_browser_runtime_capability().get("dispatch_ready") is True
 ⋮----
 def _scan_engines() -> tuple[str, ...]
 ⋮----
@@ -14719,7 +14720,7 @@ jobs = _enqueue_action(
 ⋮----
 by_kind = {job["kind"]: job for job in jobs}
 ⋮----
-def test_orchestrator_recon_and_browser_jobs_are_policy_bound(tmp_path)
+def test_orchestrator_recon_and_browser_jobs_are_policy_bound(tmp_path, monkeypatch)
 ⋮----
 tasks = [
 ⋮----
@@ -15665,6 +15666,10 @@ asset = Observation("a1", "asset", "example.test", "recon")
 endpoint = Observation(
 ⋮----
 jobs = [queue.get(job_id) for job_id in result["job_ids"]]
+⋮----
+def test_orchestrator_includes_browser_recon_only_when_enabled(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "browser-enabled.sqlite3")
 ⋮----
 def test_orchestrator_allows_scan_after_surface_enrichment_threshold(tmp_path)
 ⋮----

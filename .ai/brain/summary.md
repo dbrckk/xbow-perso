@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 373
-- Files reparsed this run: 6
-- Symbols: 3327
-- Internal import edges: 1217
-- Impacted files: 6
-- Selected tests: 10
+- Files reparsed this run: 3
+- Symbols: 3328
+- Internal import edges: 1218
+- Impacted files: 8
+- Selected tests: 7
 
 ## Languages
 - python: 369 files
@@ -28,9 +28,9 @@
 - backend/app/redis_jobqueue.py: 27 symbols
 - backend/tests/test_pentagi_worker_service.py: 27 symbols
 - backend/app/jobqueue.py: 26 symbols
+- backend/tests/test_orchestrator.py: 26 symbols
 - backend/tests/test_pentagi_transport.py: 26 symbols
 - backend/app/hackerone_client.py: 25 symbols
-- backend/tests/test_orchestrator.py: 25 symbols
 - backend/app/worker_service.py: 24 symbols
 - backend/tests/test_validator.py: 24 symbols
 
@@ -43,9 +43,9 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 6
+- AST files reparsed this run: 3
 - outline files retained: 371
-- top-level items retained: 4598
+- top-level items retained: 4600
 - direct members retained: 1049
 - symbol shards: 25
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
