@@ -18090,6 +18090,8 @@ def test_simple_dashboard_auto_replaces_preflight_stale_programmes()
 def test_simple_dashboard_recovers_launch_time_programme_state_races()
 ⋮----
 def test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts()
+⋮----
+def test_simple_dashboard_surfaces_scanner_activation_command_on_preflight_block()
 ````
 
 ## File: backend/tests/test_simple_selection_cached.py
@@ -19414,6 +19416,8 @@ async function saveReviews()
 async function persistWorker()
 ⋮----
 function replaceableLaunchReason(reason)
+⋮----
+function preflightBlockerMessage(preflight)
 ⋮----
 async function start()
 ⋮----

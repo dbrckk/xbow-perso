@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T15:42:25Z
+Generated: 2026-09-22T15:47:32Z
 
 ### Git
 - Branch: `main`
-- Head: `bee4568211fe`
-- Commit date: 2026-09-22T17:42:14+02:00
-- Commit: fix: prevent duplicate active bug bounty batches (#360)
+- Head: `f9a32468e742`
+- Commit date: 2026-09-22T17:46:59+02:00
+- Commit: fix: surface actionable scanner blockers on current main (#364)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/tests/test_simple_selection_cache_only.py`
+- `frontend/simple.js`
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
@@ -39,7 +41,6 @@ Generated: 2026-09-22T15:42:25Z
 - `backend/tests/test_hackerone_prelaunch.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `frontend/index.html`
-- `frontend/simple.js`
 - `frontend/sw.js`
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-enable-hackerone-nuclei.sh`

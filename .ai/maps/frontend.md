@@ -411,6 +411,8 @@ async function persistWorker()
 ⋮----
 function replaceableLaunchReason(reason)
 ⋮----
+function preflightBlockerMessage(preflight)
+⋮----
 async function start()
 ⋮----
 function repoSyncLabel(entry)
