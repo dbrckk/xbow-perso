@@ -381,6 +381,7 @@ tests/
   test_scope.py
   test_secret_vault.py
   test_simple_portfolio.py
+  test_simple_selection_cached.py
   test_storage_backend.py
   test_storage.py
   test_submission_api.py
@@ -2908,7 +2909,6 @@ state = str(program.get("state") or "").strip().lower()
 def _conservative_admission_reason(policy: Any) -> str | None
 ⋮----
 def _upstream_error(exc: HackerOneClientError) -> HTTPException
-⋮----
 def _program_list_item(resource: Any) -> dict[str, Any]
 ⋮----
 attributes = resource.get("attributes")
@@ -2963,9 +2963,17 @@ selected = select_diversified_portfolio(
 @router.get("/api/hackerone/simple-selection")
 def hackerone_simple_selection()
 ⋮----
-"""Select exactly 2 easy + 2 medium + 2 high-value reviewed READY programs."""
+"""Select 2 easy + 2 medium + 2 high-value candidates from local cache.
+
+    Selection itself never requires a live HackerOne request. Programs with a
+    saved review profile are marked REVALIDATE and are checked remotely only
+    during preflight/launch.
+    """
 ⋮----
-result = select_simple_six(list(discovery.get("programs") or []))
+local_outcomes = build_local_outcome_signals(store.list_campaigns(limit=1000))
+discovery = build_program_discovery(
+candidates = mark_cached_review_profiles(list(discovery.get("programs") or []))
+result = select_simple_six(candidates)
 ⋮----
 """Return a durable, read-only operator journal and learning digest."""
 ⋮----
@@ -5057,7 +5065,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: app/main.py
 ```python
-app = FastAPI(title="xbow-perso", version="0.6.2")
+app = FastAPI(title="xbow-perso", version="0.6.3")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -8967,6 +8975,17 @@ ciphertext = AESGCM(new_key).encrypt(
 
 ## File: app/simple_portfolio.py
 ```python
+def mark_cached_review_profiles(programs: list[dict[str, Any]]) -> list[dict[str, Any]]
+⋮----
+"""Mark already-reviewed programs for launch-time revalidation.
+
+    This is intentionally not equivalent to READY: the current HackerOne snapshot
+    is still re-fetched and compared immediately before launch.
+    """
+result: list[dict[str, Any]] = []
+⋮----
+value = dict(item)
+⋮----
 def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]
 ⋮----
 """Pick 2 easy + 2 medium + 2 high-value bounty candidates.
@@ -8997,6 +9016,7 @@ high_value = sorted(
 groups = {"easy": easy, "medium": medium, "high_value": high_value}
 selected = easy + medium + high_value
 ready_count = sum(
+revalidation_count = sum(
 review_count = sum(
 complete = len(easy) == 2 and len(medium) == 2 and len(high_value) == 2
 ```
@@ -17216,6 +17236,34 @@ programs = [
 result = select_simple_six(programs)
 ⋮----
 def test_simple_six_can_propose_safe_harbor_review_candidates_but_not_launch_them()
+⋮----
+def test_cached_review_profile_is_deferred_for_launch_revalidation()
+⋮----
+programs = [{
+result = mark_cached_review_profiles(programs)
+⋮----
+def test_simple_six_allows_revalidation_without_forcing_first_run_review()
+```
+
+## File: tests/test_simple_selection_cached.py
+```python
+class _Store
+⋮----
+def get_hackerone_catalog_state(self)
+⋮----
+def get_hackerone_intelligence_state(self)
+⋮----
+def list_hackerone_review_profiles(self, *, limit)
+⋮----
+def list_campaigns(self, *, limit)
+⋮----
+def test_simple_selection_uses_local_catalog_without_live_hackerone(monkeypatch)
+⋮----
+store = _Store()
+⋮----
+def should_not_refresh(*args, **kwargs)
+⋮----
+result = hackerone_api.hackerone_simple_selection()
 ```
 
 ## File: tests/test_storage_backend.py
