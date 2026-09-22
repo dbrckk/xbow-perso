@@ -249,6 +249,58 @@ def _conservative_admission_reason(policy: Any) -> str | None:
 
 
 
+def _hackerone_error_detail(exc: HackerOneClientError) -> dict[str, Any]:
+    message = str(exc)
+    status = exc.status_code
+    if status == 401:
+        reason = "hackerone_authentication_failed"
+        public_message = "HackerOne authentication failed"
+        retryable = False
+    elif status == 403:
+        reason = "hackerone_forbidden"
+        public_message = "HackerOne denied access to this resource"
+        retryable = False
+    elif status == 404:
+        reason = "hackerone_not_found"
+        public_message = "HackerOne resource was not found"
+        retryable = False
+    elif status == 429:
+        reason = "hackerone_rate_limited"
+        public_message = "HackerOne rate limit reached"
+        retryable = True
+    elif status is not None and status >= 500:
+        reason = "hackerone_upstream_unavailable"
+        public_message = "HackerOne is temporarily unavailable"
+        retryable = True
+    elif "timed out" in message:
+        reason = "hackerone_timeout"
+        public_message = "HackerOne request timed out"
+        retryable = True
+    elif "connection failed" in message:
+        reason = "hackerone_connection_failed"
+        public_message = "HackerOne connection failed"
+        retryable = True
+    elif "I/O failed" in message:
+        reason = "hackerone_io_failed"
+        public_message = "HackerOne transport failed"
+        retryable = True
+    elif "redirect" in message:
+        reason = "hackerone_redirect_refused"
+        public_message = "HackerOne returned an unexpected redirect"
+        retryable = False
+    else:
+        reason = "hackerone_upstream_request_failed"
+        public_message = "HackerOne upstream request failed"
+        retryable = False
+    return {
+        "message": public_message,
+        "reason": reason,
+        "upstream_status": status,
+        "retryable": retryable,
+        "contains_secrets": False,
+    }
+
+
 def _upstream_error(exc: HackerOneClientError) -> HTTPException:
     if exc.status_code in {401, 403}:
         return HTTPException(status_code=502, detail="HackerOne upstream authentication failed")
@@ -293,12 +345,50 @@ def hackerone_live_readiness():
 
 
 @router.get("/api/imports/hackerone/connection")
-def hackerone_connection():
+def hackerone_connection(
+    probe: bool = Query(default=False),
+):
     try:
-        load_hackerone_credentials()
+        credentials = load_hackerone_credentials()
     except HackerOneClientError:
-        return {"provider": "hackerone", "configured": False}
-    return {"provider": "hackerone", "configured": True}
+        if not probe:
+            return {"provider": "hackerone", "configured": False}
+        return {
+            "provider": "hackerone",
+            "configured": False,
+            "reachable": False,
+            "authenticated": False,
+            "reason": "hackerone_credentials_missing",
+            "contains_secrets": False,
+        }
+    if not probe:
+        return {"provider": "hackerone", "configured": True}
+    try:
+        HackerOneClient(credentials).get_json(
+            "hackers/programs",
+            {"page[number]": 1, "page[size]": 1},
+        )
+    except HackerOneClientError as exc:
+        detail = _hackerone_error_detail(exc)
+        return {
+            "provider": "hackerone",
+            "configured": True,
+            "reachable": detail["reason"]
+            not in {"hackerone_connection_failed", "hackerone_timeout", "hackerone_io_failed"},
+            "authenticated": detail["reason"] != "hackerone_authentication_failed",
+            "reason": detail["reason"],
+            "upstream_status": detail["upstream_status"],
+            "retryable": detail["retryable"],
+            "contains_secrets": False,
+        }
+    return {
+        "provider": "hackerone",
+        "configured": True,
+        "reachable": True,
+        "authenticated": True,
+        "reason": "ok",
+        "contains_secrets": False,
+    }
 
 
 @router.get("/api/imports/hackerone/programs")
@@ -627,13 +717,15 @@ def get_hackerone_program_review_draft(handle: str):
     try:
         snapshot = fetch_hackerone_program_snapshot(handle)
     except HackerOneClientError as exc:
-        if exc.status_code == 404:
+        if exc.status_code in {403, 404, 410}:
             raise HTTPException(
                 status_code=409,
                 detail={
                     "message": "Programme HackerOne indisponible pour la revue initiale",
                     "reason": "hackerone_program_review_unavailable",
                     "handle": handle,
+                    "upstream_status": exc.status_code,
+                    "contains_secrets": False,
                 },
             ) from exc
         raise _upstream_error(exc) from exc
