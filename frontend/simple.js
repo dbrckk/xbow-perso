@@ -322,7 +322,7 @@
       if(reason==='hackerone_credentials_missing'){
         message='Connexion HackerOne absente sur le serveur.';
       }else if(reason==='hackerone_authentication_failed'){
-        message='Identifiants HackerOne refusés. Le token HackerOne doit être régénéré ou corrigé.';
+        message='Identifiants HackerOne refusés par HackerOne. Le token doit être régénéré ou corrigé.';
       }else if(reason==='hackerone_rate_limited'){
         message='Limite HackerOne atteinte. La sélection locale reste conservée ; réessaie dans quelques minutes.';
       }else if(reason==='hackerone_timeout'){
