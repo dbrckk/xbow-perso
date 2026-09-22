@@ -68,8 +68,28 @@ echo "=== BACKEND READINESS ==="
 "${COMPOSE[@]}" exec -T backend python -m app.readiness
 
 echo "=== QUEUE MUST BE IDLE BEFORE ARMING ==="
-"${COMPOSE[@]}" exec -T backend python -c \
-  'from app.main import queue; s=queue().stats(); active=int(s["by_status"].get("queued",0))+int(s["by_status"].get("running",0)); assert active==0, s; print(s)'
+"${COMPOSE[@]}" exec -T backend python - <<'PY'
+from app.main import queue, storage
+
+stats = queue().stats()
+queued = int(stats["by_status"].get("queued", 0))
+running = int(stats["by_status"].get("running", 0))
+active_jobs = queued + running
+active_batches = [
+    batch
+    for batch in storage().list_hackerone_batches(limit=50)
+    if str(batch.get("state") or "") not in {"completed", "cancelled"}
+]
+print("QUEUE_IDLE=" + ("true" if active_jobs == 0 else "false"))
+print(f"QUEUE_QUEUED={queued}")
+print(f"QUEUE_RUNNING={running}")
+if active_batches:
+    print("ACTIVE_BATCH_ID=" + str(active_batches[0].get("id") or ""))
+    print("ACTIVE_BATCH_STATE=" + str(active_batches[0].get("state") or ""))
+if active_jobs:
+    print("NEXT_STEP=Let the active batch finish or cancel it from the dashboard before arming the scanner.")
+    raise SystemExit(1)
+PY
 
 TMP_PROFILE="$(mktemp)"
 cleanup_tmp() {
