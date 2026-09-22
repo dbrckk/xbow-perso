@@ -3601,7 +3601,10 @@ kind = str(event.get("type") or "unknown")
 confirmed = [
 ⋮----
 digest = {
+⋮----
 sync_config = learning_sync_configuration()
+⋮----
+sync_config = {
 ⋮----
 state = store.get_hackerone_intelligence_state()
 ⋮----
@@ -5673,7 +5676,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.6.4")
+app = FastAPI(title="xbow-perso", version="0.6.5")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -13037,6 +13040,8 @@ dockerfile = _text("frontend/Dockerfile")
 def test_service_worker_matches_precache_assets_by_path()
 ⋮----
 def test_simple_dashboard_exposes_first_run_review_flow()
+⋮----
+def test_simple_dashboard_grouped_review_and_quiet_journal()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -19157,6 +19162,10 @@ function reviewableDraft(draft)
 ⋮----
 function renderReviewDrafts()
 ⋮----
+const sleep=ms
+⋮----
+async function loadReviewDraft(handle)
+⋮----
 async function loadReviewDrafts(result)
 ⋮----
 async function loadSimpleSelection()
@@ -20164,7 +20173,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.4\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.5\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 

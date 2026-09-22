@@ -1,7 +1,7 @@
 # Change impact
 
-Base: d47e79d811e4f64877423040530d702d4ec0df91
-Head: aa5112b3f1e88c2eb8bbe93978e205ca5291e016
+Base: 415c029d9bb6316815bd20ebfedf47b22d911db7
+Head: f472424930415c685f8ed876f02ed2c9c272efd9
 
 ## Changed files
 - M backend/app/hackerone_api.py
@@ -9,7 +9,6 @@ Head: aa5112b3f1e88c2eb8bbe93978e205ca5291e016
 - M backend/tests/test_frontend_auth_proxy.py
 - M backend/tests/test_frontend_policy_launcher.py
 - M backend/tests/test_live_activation_profile.py
-- A backend/tests/test_simple_selection_cache_only.py
 - M frontend/index.html
 - M frontend/simple.js
 - M frontend/sw.js

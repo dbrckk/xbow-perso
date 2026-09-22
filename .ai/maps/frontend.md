@@ -381,6 +381,10 @@ function reviewableDraft(draft)
 ⋮----
 function renderReviewDrafts()
 ⋮----
+const sleep=ms
+⋮----
+async function loadReviewDraft(handle)
+⋮----
 async function loadReviewDrafts(result)
 ⋮----
 async function loadSimpleSelection()

@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T06:02:33Z
+Generated: 2026-09-22T06:28:34Z
 
 ### Git
 - Branch: `main`
-- Head: `aa5112b3f1e8`
-- Commit date: 2026-09-22T08:02:20+02:00
-- Commit: fix: make one-click bounty selection resilient to HackerOne outages (#337)
+- Head: `f47242493041`
+- Commit date: 2026-09-22T08:28:21+02:00
+- Commit: fix: make minimal bounty dashboard first run reliable (#338)
 - Tracked files: 562
 
 ### Recently changed files
@@ -37,11 +37,11 @@ Generated: 2026-09-22T06:02:33Z
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_live_activation_profile.py`
-- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
 - `scripts/mobile-production-update.sh`
+- `backend/tests/test_simple_selection_cache_only.py`
 - `backend/app/simple_portfolio.py`
 - `backend/tests/test_simple_portfolio.py`
 - `backend/tests/test_simple_selection_cached.py`
