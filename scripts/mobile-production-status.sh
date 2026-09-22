@@ -85,6 +85,26 @@ if [ -n "$PUBLIC_HOST" ]; then
   fi
 fi
 
+echo "=== HACKERONE API PROBE ==="
+HACKERONE_API_READY=false
+if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_client import HackerOneClient, HackerOneClientError, load_hackerone_credentials
+
+try:
+    credentials = load_hackerone_credentials()
+    HackerOneClient(credentials).get_json(
+        "hackers/programs",
+        {"page[number]": 1, "page[size]": 1},
+    )
+except HackerOneClientError:
+    print("HACKERONE_API_READY=false")
+    raise SystemExit(1)
+print("HACKERONE_API_READY=true")
+PY
+then
+  HACKERONE_API_READY=true
+fi
+
 echo "=== BUG BOUNTY LAUNCH VERDICT ==="
 RUNTIME_RESULT="$(
 docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
@@ -108,7 +128,7 @@ PY
 )"
 printf '%s\n' "$RUNTIME_RESULT"
 RUNTIME_READY="$(printf '%s\n' "$RUNTIME_RESULT" | sed -n 's/^RUNTIME_READY=//p' | head -n1)"
-if [ "$RUNTIME_READY" = "true" ] && [ "$PUBLIC_HTTPS_OK" = "true" ]; then
+if [ "$RUNTIME_READY" = "true" ] && [ "$PUBLIC_HTTPS_OK" = "true" ] && [ "$HACKERONE_API_READY" = "true" ]; then
   echo "BUG_BOUNTY_LAUNCH_READY=true"
   echo "VERDICT=READY"
 else
@@ -116,6 +136,9 @@ else
   echo "VERDICT=BLOCKED"
   if [ "$PUBLIC_HTTPS_OK" != "true" ]; then
     echo "BLOCKER=public_https | Dashboard HTTPS public inaccessible | Vérifier tls-proxy, DNS/sslip.io et les ports 80/443."
+  fi
+  if [ "$HACKERONE_API_READY" != "true" ]; then
+    echo "BLOCKER=hackerone_api | API HackerOne inaccessible ou authentification refusée | Vérifier le réseau VPS et les credentials HackerOne."
   fi
 fi
 
