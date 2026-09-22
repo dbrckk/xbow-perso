@@ -22,6 +22,7 @@ from .hackerone_intelligence import refresh_hackerone_intelligence
 from .local_outcome_intelligence import build_local_outcome_signals
 from .hackerone_discovery import build_program_discovery
 from .value_efficiency import select_diversified_portfolio
+from .simple_portfolio import mark_cached_review_profiles
 from .hackerone_needs_info import render_needs_more_info_draft
 from .hackerone_review_draft import build_hackerone_review_draft
 from .hackerone_report_tracking import (
@@ -254,8 +255,6 @@ def _upstream_error(exc: HackerOneClientError) -> HTTPException:
     if exc.status_code == 429 or (exc.status_code is not None and exc.status_code >= 500):
         return HTTPException(status_code=503, detail="HackerOne upstream temporarily unavailable")
     return HTTPException(status_code=502, detail="HackerOne upstream request failed")
-
-
 def _program_list_item(resource: Any) -> dict[str, Any]:
     if not isinstance(resource, dict):
         raise HackerOneClientError("HackerOne program list contains an invalid resource")
@@ -433,15 +432,50 @@ def hackerone_discovery_selection(
 
 @router.get("/api/hackerone/simple-selection")
 def hackerone_simple_selection():
-    """Select exactly 2 easy + 2 medium + 2 high-value reviewed READY programs."""
-    from .simple_portfolio import select_simple_six
+    """Select 2 easy + 2 medium + 2 high-value candidates from local cache.
 
-    discovery = hackerone_program_discovery(verify_limit=50)
-    result = select_simple_six(list(discovery.get("programs") or []))
+    Selection itself never requires a live HackerOne request. Programs with a
+    saved review profile are marked REVALIDATE and are checked remotely only
+    during preflight/launch.
+    """
+    from .simple_portfolio import select_simple_six
+    from .main import storage
+
+    store = storage()
+    catalog = store.get_hackerone_catalog_state()
+    if catalog is None:
+        try:
+            catalog = refresh_hackerone_catalog(store, client=HackerOneClient())
+        except HackerOneClientError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail={
+                    "message": "Catalogue HackerOne indisponible et aucun cache local n’existe encore",
+                    "reason": "hackerone_catalog_unavailable_no_cache",
+                },
+            ) from exc
+
+    intelligence = store.get_hackerone_intelligence_state() or {}
+    profiles = store.list_hackerone_review_profiles(limit=1000)
+    runtime = dict(intelligence.get("runtime_capability_snapshot") or {})
+    local_outcomes = build_local_outcome_signals(store.list_campaigns(limit=1000))
+    discovery = build_program_discovery(
+        programs=list(catalog.get("programs") or []),
+        review_profiles=profiles,
+        intelligence=intelligence,
+        verified_snapshots={},
+        runtime=runtime,
+        catalog_changes=dict(catalog.get("changes") or {}),
+        local_outcomes=local_outcomes,
+    )
+    candidates = mark_cached_review_profiles(list(discovery.get("programs") or []))
+    result = select_simple_six(candidates)
     return {
         "provider": "hackerone",
         **result,
-        "catalog_checked_at": discovery.get("catalog_checked_at"),
+        "catalog_checked_at": catalog.get("checked_at"),
+        "catalog_source": "local-cache",
+        "selection_requires_live_hackerone": False,
         "read_only": True,
         "automatic_launch": False,
         "requires_launch_revalidation": True,

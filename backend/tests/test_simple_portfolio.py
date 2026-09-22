@@ -1,4 +1,4 @@
-from app.simple_portfolio import select_simple_six
+from app.simple_portfolio import mark_cached_review_profiles, select_simple_six
 
 
 def _program(handle, *, effort, efficiency, award):
@@ -61,3 +61,33 @@ def test_simple_six_can_propose_safe_harbor_review_candidates_but_not_launch_the
     assert result["review_count"] == 1
     assert result["launch_ready"] is False
     assert result["complete"] is False
+
+
+
+def test_cached_review_profile_is_deferred_for_launch_revalidation():
+    programs = [{
+        **_program("reviewed", effort=1.0, efficiency=88, award=5000),
+        "status": "REVIEW",
+        "review_profile_available": True,
+        "reasons": ["saved_profile_requires_snapshot_revalidation"],
+    }]
+    result = mark_cached_review_profiles(programs)
+    assert result[0]["status"] == "REVALIDATE"
+    assert result[0]["revalidation_deferred"] is True
+    assert "saved_profile_will_be_revalidated_at_launch" in result[0]["reasons"]
+
+
+def test_simple_six_allows_revalidation_without_forcing_first_run_review():
+    programs = [
+        {
+            **_program(chr(97 + index), effort=0.5 + index, efficiency=90 - index, award=1000 * (index + 1)),
+            "status": "REVALIDATE",
+            "review_profile_available": True,
+        }
+        for index in range(6)
+    ]
+    result = select_simple_six(programs)
+    assert result["complete"] is True
+    assert result["review_count"] == 0
+    assert result["revalidation_count"] == 6
+    assert result["launch_ready"] is True
