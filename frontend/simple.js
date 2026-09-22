@@ -188,11 +188,18 @@
 
     setStatus('Première utilisation : chargement des politiques à valider…');
     const settled=await Promise.allSettled(
-      candidates.map(async handle=>({handle,draft:await loadReviewDraft(handle)}))
+      candidates.map(async handle=>{
+        try{
+          return {handle,draft:await loadReviewDraft(handle)};
+        }catch(error){
+          error.handle=handle;
+          throw error;
+        }
+      })
     );
     const drafts=[];
     const failedHandles=[];
-    let upstreamError=null;
+    const upstreamErrors=[];
     for(const item of settled){
       if(item.status==='fulfilled'){
         drafts.push(item.value.draft);
@@ -204,9 +211,24 @@
         if(handle)failedHandles.push(handle);
         continue;
       }
-      upstreamError=upstreamError||error;
+      upstreamErrors.push({handle:String(error?.handle||''),error});
     }
-    if(upstreamError)throw upstreamError;
+    if(upstreamErrors.length){
+      let probe=null;
+      try{
+        probe=await api('/imports/hackerone/connection?probe=true');
+      }catch(_error){}
+      if(probe?.reachable===true&&probe?.authenticated===true){
+        for(const item of upstreamErrors){
+          if(item.handle&&!failedHandles.includes(item.handle))failedHandles.push(item.handle);
+        }
+      }else{
+        const first=upstreamErrors[0].error;
+        if(probe?.reason)first.connectionReason=String(probe.reason);
+        if(probe?.upstream_status)first.upstreamStatus=Number(probe.upstream_status);
+        throw first;
+      }
+    }
     reviewDrafts=drafts;
     if(failedHandles.length)return {failedHandles};
     renderReviewDrafts();
@@ -295,15 +317,26 @@
       $('selection').textContent='Aucune sélection exploitable.';
       clearReviewPanel();
       let message=error.message;
-      if(error?.reason==='hackerone_credentials_missing'){
-        message='Connexion HackerOne absente sur le serveur. Le dashboard ne peut pas initialiser le catalogue.';
-      }else if(String(error?.message||'').includes('HackerOne upstream authentication failed')){
-        message='Identifiants HackerOne refusés par HackerOne.';
-      }else if(
-        String(error?.message||'').includes('HackerOne upstream temporarily unavailable')||
-        String(error?.message||'').includes('HackerOne upstream request failed')
-      ){
-        message='HackerOne est momentanément inaccessible. Réessaie plus tard ; un catalogue local existant restera utilisable.';
+      const reason=String(error?.connectionReason||error?.reason||'');
+      const upstreamStatus=Number(error?.upstreamStatus||error?.detail?.upstream_status||0);
+      if(reason==='hackerone_credentials_missing'){
+        message='Connexion HackerOne absente sur le serveur.';
+      }else if(reason==='hackerone_authentication_failed'){
+        message='Identifiants HackerOne refusés. Le token HackerOne doit être régénéré ou corrigé.';
+      }else if(reason==='hackerone_rate_limited'){
+        message='Limite HackerOne atteinte. La sélection locale reste conservée ; réessaie dans quelques minutes.';
+      }else if(reason==='hackerone_timeout'){
+        message='HackerOne ne répond pas avant le délai serveur.';
+      }else if(reason==='hackerone_connection_failed'||reason==='hackerone_io_failed'){
+        message='Le VPS ne parvient pas à joindre HackerOne.';
+      }else if(reason==='hackerone_forbidden'){
+        message='HackerOne refuse l’accès à la ressource demandée.';
+      }else if(reason==='hackerone_upstream_unavailable'){
+        message='HackerOne est temporairement indisponible.';
+      }else if(reason==='hackerone_redirect_refused'){
+        message='HackerOne a renvoyé une redirection inattendue.';
+      }else if(reason==='hackerone_upstream_request_failed'){
+        message='Réponse HackerOne non exploitable'+(upstreamStatus?' (HTTP '+upstreamStatus+')':'')+'.';
       }
       setStatus('Sélection impossible : '+message,'err');
     }finally{
