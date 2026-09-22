@@ -44,12 +44,14 @@
     try{data=await response.json();}catch(_error){}
     if(!response.ok){
       const detail=data?.detail;
-      if(typeof detail==='string')throw new Error(detail);
-      if(detail?.message){
-        const reason=detail?.reason?' · '+String(detail.reason):'';
-        throw new Error(String(detail.message)+reason);
-      }
-      throw new Error('HTTP '+response.status);
+      const message=typeof detail==='string'
+        ?detail
+        :(detail?.message?String(detail.message):'HTTP '+response.status);
+      const error=new Error(message);
+      error.status=response.status;
+      error.reason=String(detail?.reason||'');
+      error.detail=detail;
+      throw error;
     }
     return data;
   }
@@ -182,6 +184,23 @@
     renderReviewDrafts();
   }
 
+  async function loadSimpleSelection(){
+    try{
+      return await api('/hackerone/simple-selection');
+    }catch(error){
+      if(error?.reason!=='hackerone_catalog_not_initialized')throw error;
+      setStatus('Premier démarrage : initialisation du catalogue HackerOne…');
+      const connection=await api('/imports/hackerone/connection');
+      if(connection?.configured!==true){
+        const missing=new Error('Connexion HackerOne non configurée sur le serveur.');
+        missing.reason='hackerone_credentials_missing';
+        throw missing;
+      }
+      await api('/imports/hackerone/programs?refresh=true');
+      return await api('/hackerone/simple-selection');
+    }
+  }
+
   async function prepare(){
     if(!requireToken())return;
     const button=$('prepare');
@@ -190,7 +209,7 @@
     clearReviewPanel();
     setStatus('Sélection automatique : 2 faciles + 2 moyens + 2 fort potentiel…');
     try{
-      const result=await api('/hackerone/simple-selection');
+      const result=await loadSimpleSelection();
       selectionResult=result;
       selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
       renderSelection(result);
@@ -201,12 +220,19 @@
       }
       const reviewCount=Number(result?.review_count||0);
       if(reviewCount>0){
-        await loadReviewDrafts(result);
         $('start').disabled=true;
-        setStatus(
-          reviewCount+' programme(s) doivent être validés une seule fois. Ouvre chaque politique, coche la confirmation puis valide.',
-          'warn'
-        );
+        try{
+          await loadReviewDrafts(result);
+          setStatus(
+            reviewCount+' programme(s) doivent être validés une seule fois. Ouvre chaque politique, coche la confirmation puis valide.',
+            'warn'
+          );
+        }catch(error){
+          setStatus(
+            'Les 6 programmes restent sélectionnés, mais HackerOne est indisponible pour charger la revue initiale : '+error.message,
+            'warn'
+          );
+        }
         return;
       }
       $('start').disabled=false;
@@ -222,7 +248,18 @@
       selectionResult=null;
       $('selection').textContent='Aucune sélection exploitable.';
       clearReviewPanel();
-      setStatus('Sélection impossible : '+error.message,'err');
+      let message=error.message;
+      if(error?.reason==='hackerone_credentials_missing'){
+        message='Connexion HackerOne absente sur le serveur. Le dashboard ne peut pas initialiser le catalogue.';
+      }else if(String(error?.message||'').includes('HackerOne upstream authentication failed')){
+        message='Identifiants HackerOne refusés par HackerOne.';
+      }else if(
+        String(error?.message||'').includes('HackerOne upstream temporarily unavailable')||
+        String(error?.message||'').includes('HackerOne upstream request failed')
+      ){
+        message='HackerOne est momentanément inaccessible. Réessaie plus tard ; un catalogue local existant restera utilisable.';
+      }
+      setStatus('Sélection impossible : '+message,'err');
     }finally{
       button.disabled=false;
     }
