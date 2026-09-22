@@ -250,56 +250,11 @@ def _conservative_admission_reason(policy: Any) -> str | None:
 
 
 def _upstream_error(exc: HackerOneClientError) -> HTTPException:
-    message = str(exc)
     if exc.status_code in {401, 403}:
-        return HTTPException(
-            status_code=502,
-            detail={
-                "message": "Authentification HackerOne refusée",
-                "reason": "hackerone_authentication_failed",
-            },
-        )
-    if "credentials are not configured" in message or "credentials are unavailable" in message:
-        return HTTPException(
-            status_code=503,
-            detail={
-                "message": "Identifiants API HackerOne absents ou indisponibles sur le serveur",
-                "reason": "hackerone_credentials_unavailable",
-            },
-        )
-    if exc.status_code == 429:
-        return HTTPException(
-            status_code=503,
-            detail={
-                "message": "HackerOne limite temporairement les requêtes",
-                "reason": "hackerone_rate_limited",
-            },
-        )
-    if exc.status_code is not None and exc.status_code >= 500:
-        return HTTPException(
-            status_code=503,
-            detail={
-                "message": "HackerOne est temporairement indisponible",
-                "reason": "hackerone_upstream_unavailable",
-            },
-        )
-    if "transport" in message.lower() or "timed out" in message.lower():
-        return HTTPException(
-            status_code=503,
-            detail={
-                "message": "Connexion à HackerOne temporairement impossible",
-                "reason": "hackerone_transport_unavailable",
-            },
-        )
-    return HTTPException(
-        status_code=502,
-        detail={
-            "message": "La requête HackerOne a échoué",
-            "reason": "hackerone_upstream_request_failed",
-        },
-    )
-
-
+        return HTTPException(status_code=502, detail="HackerOne upstream authentication failed")
+    if exc.status_code == 429 or (exc.status_code is not None and exc.status_code >= 500):
+        return HTTPException(status_code=503, detail="HackerOne upstream temporarily unavailable")
+    return HTTPException(status_code=502, detail="HackerOne upstream request failed")
 def _program_list_item(resource: Any) -> dict[str, Any]:
     if not isinstance(resource, dict):
         raise HackerOneClientError("HackerOne program list contains an invalid resource")
