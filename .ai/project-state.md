@@ -22,28 +22,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T05:31:57Z
+Generated: 2026-09-22T06:02:33Z
 
 ### Git
 - Branch: `main`
-- Head: `98f8c8bb18a4`
-- Commit date: 2026-09-22T07:31:46+02:00
-- Commit: fix: keep simple bounty selection usable when HackerOne is temporarily unavailable (#336)
-- Tracked files: 561
+- Head: `aa5112b3f1e8`
+- Commit date: 2026-09-22T08:02:20+02:00
+- Commit: fix: make one-click bounty selection resilient to HackerOne outages (#337)
+- Tracked files: 562
 
 ### Recently changed files
 - `backend/app/hackerone_api.py`
 - `backend/app/main.py`
-- `backend/app/simple_portfolio.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_live_activation_profile.py`
-- `backend/tests/test_simple_portfolio.py`
-- `backend/tests/test_simple_selection_cached.py`
+- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
 - `scripts/mobile-production-update.sh`
+- `backend/app/simple_portfolio.py`
+- `backend/tests/test_simple_portfolio.py`
+- `backend/tests/test_simple_selection_cached.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/tests/test_hackerone_review_draft.py`
 - `frontend/app.css`
@@ -51,7 +52,6 @@ Generated: 2026-09-22T05:31:57Z
 - `backend/app/github_learning_sync.py`
 - `backend/app/worker_service.py`
 - `backend/tests/test_github_learning_sync.py`
-- `docker-compose.yml`
 
 ### Project signals
 - `pyproject.toml`

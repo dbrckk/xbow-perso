@@ -383,6 +383,8 @@ function renderReviewDrafts()
 ⋮----
 async function loadReviewDrafts(result)
 ⋮----
+async function loadSimpleSelection()
+⋮----
 async function prepare()
 ⋮----
 async function saveReviews()

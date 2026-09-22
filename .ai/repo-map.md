@@ -397,6 +397,7 @@ backend/
     test_scope.py
     test_secret_vault.py
     test_simple_portfolio.py
+    test_simple_selection_cache_only.py
     test_simple_selection_cached.py
     test_storage_backend.py
     test_storage.py
@@ -5672,7 +5673,7 @@ cost_efficiency = int(round((productivity / 3.0) * 10.0 * confidence))
 
 ## File: backend/app/main.py
 ````python
-app = FastAPI(title="xbow-perso", version="0.6.3")
+app = FastAPI(title="xbow-perso", version="0.6.4")
 ⋮----
 @app.middleware("http")
 async def authenticate_control_api(request: Request, call_next)
@@ -17852,6 +17853,25 @@ result = mark_cached_review_profiles(programs)
 def test_simple_six_allows_revalidation_without_forcing_first_run_review()
 ````
 
+## File: backend/tests/test_simple_selection_cache_only.py
+````python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def _text(path: str) -> str
+⋮----
+def test_simple_selection_never_refreshes_hackerone_inline()
+⋮----
+source = _text("backend/app/hackerone_api.py")
+block = source.split('@router.get("/api/hackerone/simple-selection")', 1)[1]
+block = block.split('@router.get("/api/hackerone/journal")', 1)[0]
+⋮----
+def test_simple_dashboard_initializes_catalog_once_then_retries_selection()
+⋮----
+script = _text("frontend/simple.js")
+⋮----
+def test_simple_dashboard_surfaces_actionable_hackerone_errors()
+````
+
 ## File: backend/tests/test_simple_selection_cached.py
 ````python
 class _Store
@@ -19139,6 +19159,8 @@ function renderReviewDrafts()
 ⋮----
 async function loadReviewDrafts(result)
 ⋮----
+async function loadSimpleSelection()
+⋮----
 async function prepare()
 ⋮----
 async function saveReviews()
@@ -20142,7 +20164,7 @@ echo "=== READINESS ==="
 
 echo "=== FRONTEND DIAGNOSTIC PROXY ==="
 "${COMPOSE[@]}" exec -T frontend sh -c \
-  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.3\""'
+  'wget -qO- http://127.0.0.1:8080/live | grep -F "\"version\":\"0.6.4\""'
 "${COMPOSE[@]}" exec -T frontend sh -c \
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 
