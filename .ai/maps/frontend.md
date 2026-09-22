@@ -389,6 +389,8 @@ async function loadReviewDraft(handle)
 ⋮----
 async function loadReviewDrafts(result)
 ⋮----
+const updateProgress=()=>
+⋮----
 async function reviewWorker()
 ⋮----
 async function loadSimpleSelection(excludedHandles=[])

@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 372
-- Files reparsed this run: 7
-- Symbols: 3311
+- Files reparsed this run: 4
+- Symbols: 3313
 - Internal import edges: 1217
-- Impacted files: 21
-- Selected tests: 23
+- Impacted files: 4
+- Selected tests: 9
 
 ## Languages
 - python: 368 files
@@ -30,9 +30,9 @@
 - backend/tests/test_pentagi_transport.py: 26 symbols
 - backend/app/hackerone_client.py: 25 symbols
 - backend/tests/test_orchestrator.py: 25 symbols
+- frontend/simple.js: 25 symbols
 - backend/app/worker_service.py: 24 symbols
 - backend/tests/test_validator.py: 24 symbols
-- frontend/simple.js: 24 symbols
 
 ## Agent routing
 - Read impact.json first after project/change context.
@@ -43,9 +43,9 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 7
+- AST files reparsed this run: 4
 - outline files retained: 370
-- top-level items retained: 4587
+- top-level items retained: 4588
 - direct members retained: 1049
 - symbol shards: 25
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard

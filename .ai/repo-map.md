@@ -13111,6 +13111,8 @@ def test_simple_dashboard_exposes_first_run_review_flow()
 def test_simple_dashboard_grouped_review_and_quiet_journal()
 ⋮----
 def test_simple_dashboard_bounds_hackerone_review_concurrency()
+⋮----
+def test_simple_dashboard_shows_review_loading_progress()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -19282,6 +19284,8 @@ function retryableReviewError(error)
 async function loadReviewDraft(handle)
 ⋮----
 async function loadReviewDrafts(result)
+⋮----
+const updateProgress=()=>
 ⋮----
 async function reviewWorker()
 ⋮----

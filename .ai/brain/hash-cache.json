@@ -1,28 +1,44 @@
 {
   "files": {
-    "backend/app/campaign_audit.py": {
-      "sha256": "5a55a7a2de7673177053f01a2c0255606f437de5e27c5a03c8630c3b42e1a8ab",
-      "size": 3697
-    },
-    "backend/app/campaign_control.py": {
-      "sha256": "fb28a0611b90d44366b6f1fe220183a26e6d852134e9f47abbdf88fc645c7f7e",
-      "size": 4887
-    },
-    "backend/app/hackerone_api.py": {
-      "sha256": "c7bcd6dc07046c3f821b82e750d943a031b567749a4415e315cdbf08ee2310de",
-      "size": 59473
-    },
-    "backend/app/hackerone_client.py": {
-      "sha256": "9a1fb859e7492bddc0f6e4bc2fcbc1dacb530734ed9a88d5143c1ee8ff3fdfba",
-      "size": 15627
+    "backend/app/auth.py": {
+      "sha256": "85f6d77fa38ad6eeedb00f4c272999716bd49d7fec4caf883bf688c1725ddf4f",
+      "size": 4117
     },
     "backend/app/main.py": {
       "sha256": "c8fb6f3dab4aa72f75c826d93388ead5e3c89c9adeb1179bbac7c92eba214872",
       "size": 65520
     },
+    "backend/app/observation_graph.py": {
+      "sha256": "d4ec8c8ccee2f7b8edcbccb7df673e6b4a7b5999bb2a71a7dea99f1a5e171c20",
+      "size": 8148
+    },
+    "backend/app/pipeline_swarm.py": {
+      "sha256": "51ebb84506560c048d30591f43fed41d4efa1658cef720d99b969192e3eefd96",
+      "size": 1981
+    },
+    "backend/app/planner_budget.py": {
+      "sha256": "c360020189588f7ff2678a22412a41220ad76c9540c369d1920aeeebfa375f14",
+      "size": 7125
+    },
+    "backend/app/recon_swarm.py": {
+      "sha256": "f45f0ba1e972161513750191f4223f5c2488258878f06bc4a2dc1b351afb0b63",
+      "size": 7052
+    },
+    "backend/app/secret_vault.py": {
+      "sha256": "7fb4931510d017ee3170403ecd8932a9bbf92ddbf473b0330ff43fcbba3a25e9",
+      "size": 7191
+    },
+    "backend/app/simple_portfolio.py": {
+      "sha256": "6dbf363303c158bb97abb85f3bdaf3716183a36ec6bdc3ce25040945016c07de",
+      "size": 4834
+    },
     "backend/app/storage.py": {
       "sha256": "d7f2fb67ba1fc45e52caef22d921e6a35da47dcdf1e746a1d5bcf3c6514af60f",
       "size": 5355
+    },
+    "backend/app/swarm_coordinator.py": {
+      "sha256": "53d006225ca11a89b5d058ced90e277371992f0871285fcc1c2908ecf571b30a",
+      "size": 4398
     },
     "backend/tests/test_alert_delivery.py": {
       "sha256": "6928989d17fc938369052081818c7b5a7e3765fcdfa74270c57adbe9b6e6aafd",
@@ -33,76 +49,24 @@
       "size": 11339
     },
     "backend/tests/test_frontend_auth_proxy.py": {
-      "sha256": "f638de918efd8ddeacb787444b4718f6258e7918fbe8ca1b866a3ed708819935",
-      "size": 3262
+      "sha256": "88a1162911e8ebf77ee726a45390c8397904ed10ef0f51d6e51eb2461231016a",
+      "size": 3513
     },
     "backend/tests/test_frontend_policy_launcher.py": {
-      "sha256": "68e6aa4f101db628fb69a7a2e2277c9b052d15d242f756264e64b33a7f7eee0c",
+      "sha256": "74a68699bd815596b3db150308b3a210720464f611fc91baab50b9530512799c",
       "size": 1765
     },
-    "backend/tests/test_hackerone_attention.py": {
-      "sha256": "d6f6c665e7e3490ce6f4a62e2e2a94381f47b0bd79a51d363e14946613835dec",
-      "size": 7778
-    },
-    "backend/tests/test_hackerone_batch_api.py": {
-      "sha256": "4e70dfb73c6ad1ce11ac636aa9ff96934ff1ebd9fc821a39c8510234e04fc27e",
-      "size": 4630
-    },
-    "backend/tests/test_hackerone_binding.py": {
-      "sha256": "dd416854905b9d2b1385071dcf921a90590e4db89a2718e1cb7f52878f5ca5e7",
-      "size": 7064
-    },
-    "backend/tests/test_hackerone_control_center_api.py": {
-      "sha256": "9a4801483606db80e683cb3c14ca744028b4cdd414f16c6a2f11408fbc7c6c3c",
-      "size": 5879
-    },
-    "backend/tests/test_hackerone_launch_api.py": {
-      "sha256": "a40955e9d61728091a27b0ab4a90efc8aaeff7d3dd4b7052f12d3bdb377c1bd2",
-      "size": 2334
-    },
-    "backend/tests/test_hackerone_needs_info.py": {
-      "sha256": "61fbfed374a061819597d3b47e5a3117930b2be461d345be96b89b5e0b990928",
-      "size": 7227
-    },
-    "backend/tests/test_hackerone_nuclei_e2e.py": {
-      "sha256": "5c863dc2cdbb944c2863720106249ca9c3dab03618c34aedb75510c3bb3ed5be",
-      "size": 5820
-    },
-    "backend/tests/test_hackerone_outbound_submission.py": {
-      "sha256": "21eb525e61f559c90c36aa4dceaed4419b41959b2dce1946280e29c42bd3f335",
-      "size": 7646
-    },
-    "backend/tests/test_hackerone_prelaunch.py": {
-      "sha256": "3e444963eab087a14d974be2c5fc05f2b1bfbaa3c62cf000cbda23ed2a067f7c",
-      "size": 11926
-    },
-    "backend/tests/test_hackerone_remote_binding.py": {
-      "sha256": "19838bc240ad06124cb86b58686e2233392dd0a1eb19c59322c53638a9d2b2f0",
-      "size": 4821
-    },
-    "backend/tests/test_hackerone_report_tracking.py": {
-      "sha256": "0ddbe5822a9879f433e1936729eb37eabf7529e563f5579549fa7d5a39372c66",
-      "size": 5966
-    },
-    "backend/tests/test_hackerone_review_profiles.py": {
-      "sha256": "4dab3b4a3ffc7dc0530673323af037bf462d9ebb2bfb7a182e3dad907b7f484e",
-      "size": 6361
-    },
-    "backend/tests/test_hackerone_reviewed_batch_api.py": {
-      "sha256": "e357ac9b9fc7c58659f4339d560c9f5dff8a902bb3c5f99c4bcf813f0906f7f8",
-      "size": 7206
-    },
-    "backend/tests/test_hackerone_scope_preview_api.py": {
-      "sha256": "bda68d4983187c98545b6e491ea4c8502c013ef5f9a6a704e73cc66559fb824c",
-      "size": 11577
-    },
-    "backend/tests/test_hackerone_upstream_diagnostics.py": {
-      "sha256": "778105a0468b6b8d899e2cbf42beb2ad318c163634cbc4c83d210b45b5759ab4",
-      "size": 1912
+    "backend/tests/test_pipeline_swarm.py": {
+      "sha256": "c3a5a246533e2ca9b264b792418ff1d8c39095643e3ffc3d846a16567983b5dc",
+      "size": 2537
     },
     "backend/tests/test_recon_swarm.py": {
       "sha256": "17a222200173374c7c3c43b54008928a0c9672f205386dd19765b1be8b8a1bf7",
       "size": 4818
+    },
+    "backend/tests/test_simple_portfolio.py": {
+      "sha256": "5efa63c15611a0f68dd4398d1039706711699792c67cb28db4dd8956e941afcf",
+      "size": 3476
     },
     "backend/tests/test_simple_selection_cache_only.py": {
       "sha256": "dd4530e7602fe0878b4fa319752b02a6f1503fa25944be23af569ccb3714a145",
@@ -120,12 +84,16 @@
       "sha256": "ea1f672474f020848dd04abbc740ed0fbea763cd565327893a5ff0e4a1c89abf",
       "size": 30531
     },
+    "frontend/index.html": {
+      "sha256": "0e528737d818bbd6686f6a98ebca9412a9aa4b90497864b57a71e7e2377ffe3c",
+      "size": 3314
+    },
     "frontend/simple.js": {
-      "sha256": "f73e36a24d912d57c30a57893a6f7ba4285a4a102e4868579aa74cd913c128ac",
-      "size": 23823
+      "sha256": "a3f07a012cca3e941848f716101f94a03045903060d0081d5b54b4005fc74d3c",
+      "size": 23994
     },
     "frontend/sw.js": {
-      "sha256": "59d16e0508c47ee935077ff6eafbcca7ec74e5659e52a07098349664b532a920",
+      "sha256": "543794950e92253e6ccff468e49f84a9f359d019c550e7f51ccafb3e18983055",
       "size": 1307
     }
   },

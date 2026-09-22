@@ -22,27 +22,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T09:08:05Z
+Generated: 2026-09-22T11:32:20Z
 
 ### Git
 - Branch: `main`
-- Head: `7ac1c4ac49de`
-- Commit date: 2026-09-22T11:07:54+02:00
-- Commit: fix: auto-replace stale programmes after launch preflight (#347)
+- Head: `96b65c5c706c`
+- Commit date: 2026-09-22T13:32:08+02:00
+- Commit: fix: make first-run HackerOne review loading bounded and visible (#348)
 - Tracked files: 564
 
 ### Recently changed files
-- `backend/app/hackerone_api.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_hackerone_remote_binding.py`
-- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
+- `backend/app/hackerone_api.py`
+- `backend/tests/test_hackerone_remote_binding.py`
+- `backend/tests/test_simple_selection_cache_only.py`
 - `backend/tests/test_hackerone_prelaunch.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/tests/test_hackerone_upstream_diagnostics.py`
 
 ### Project signals
 - `pyproject.toml`
