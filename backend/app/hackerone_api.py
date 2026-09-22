@@ -1026,15 +1026,12 @@ def _reviewed_campaign_input(
         ) from exc
 
 
-@router.post("/api/imports/hackerone/batches/go-no-go")
-def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):
-    """Return one read-only prelaunch verdict without creating campaigns."""
+def _runtime_prelaunch_verdict() -> dict[str, Any]:
+    """Return live runtime readiness without touching HackerOne program state."""
     from .main import dependency_readiness
 
     runtime = build_hackerone_live_readiness(dependency_readiness())
-    batch = preflight_reviewed_hackerone_batch(payload)
     runtime_ready = runtime.get("live_scan_ready") is True
-    batch_ready = batch.get("ready") is True
     blockers = []
     if not runtime_ready:
         blockers.extend(
@@ -1044,6 +1041,21 @@ def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):
             and item.get("required") is True
             and item.get("ok") is not True
         )
+    return {
+        "runtime_ready": runtime_ready,
+        "runtime": runtime,
+        "blockers": blockers,
+    }
+
+
+@router.post("/api/imports/hackerone/batches/go-no-go")
+def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):
+    """Return one read-only prelaunch verdict without creating campaigns."""
+    runtime_verdict = _runtime_prelaunch_verdict()
+    batch = preflight_reviewed_hackerone_batch(payload)
+    runtime_ready = runtime_verdict["runtime_ready"]
+    batch_ready = batch.get("ready") is True
+    blockers = list(runtime_verdict["blockers"])
     blockers.extend(
         str(item.get("handle") or "program")
         + ":"
@@ -1057,7 +1069,7 @@ def hackerone_batch_go_no_go(payload: HackerOneReviewedBatchLaunchInput):
         "runtime_ready": runtime_ready,
         "batch_ready": batch_ready,
         "blockers": blockers,
-        "runtime": runtime,
+        "runtime": runtime_verdict["runtime"],
         "batch": batch,
         "read_only": True,
         "campaigns_created": False,
@@ -1143,14 +1155,14 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
             },
         )
 
-    verdict = hackerone_batch_go_no_go(payload)
-    if verdict.get("go") is not True:
+    runtime_verdict = _runtime_prelaunch_verdict()
+    if runtime_verdict.get("runtime_ready") is not True:
         raise HTTPException(
             status_code=409,
             detail={
                 "message": "HackerOne reviewed batch go/no-go blocked",
                 "reason": "batch_go_no_go_blocked",
-                "blockers": list(verdict.get("blockers") or []),
+                "blockers": list(runtime_verdict.get("blockers") or []),
             },
         )
 
