@@ -15201,6 +15201,16 @@ arm = script.index("=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ===")
 ⋮----
 verdict = script.index("=== FINAL BUG BOUNTY LAUNCH VERDICT ===")
 clear_trap = script.index("trap - ERR", arm)
+⋮----
+def test_enable_script_refreshes_safe_production_before_readiness_and_queue_checks()
+⋮----
+refresh = script.index("=== SAFE PRODUCTION REFRESH ===")
+readiness = script.index("=== BACKEND READINESS ===")
+queue_check = script.index("=== QUEUE MUST BE IDLE BEFORE ARMING ===")
+⋮----
+def test_enable_script_documents_stale_checkout_and_stopped_stack_recovery()
+⋮----
+def test_enable_script_reexecs_from_refreshed_checkout_exactly_once()
 ````
 
 ## File: backend/tests/test_mobile_reset_api_token.py
@@ -19608,6 +19618,22 @@ fi
 
 cd "$INSTALL_DIR"
 chmod 600 "$SECRETS_FILE"
+
+# Always converge the VPS onto the current safe production baseline first.
+# This makes the activation command resilient when containers are stopped,
+# the checkout is stale, or .env still contains old manually-edited gates.
+# After the updater refreshes the checkout, restart this script once so the
+# remaining activation uses the newest code instead of the stale shell process.
+if [ "${XBOW_ACTIVATION_REFRESHED:-0}" != "1" ]; then
+  echo "=== SAFE PRODUCTION REFRESH ==="
+  bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
+  echo "=== RESTART ACTIVATION FROM UPDATED CHECKOUT ==="
+  exec env XBOW_ACTIVATION_REFRESHED=1 bash "$INSTALL_DIR/scripts/mobile-enable-hackerone-nuclei.sh"
+fi
+
+# The refreshed invocation continues with the now-running stack while the
+# repository .env remains fail-safe.
+cd "$INSTALL_DIR"
 
 read_env_value() {
   local key="$1"

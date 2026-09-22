@@ -1,12 +1,11 @@
 # Change impact
 
-Base: e8359f65ed658d2c49baa70e7cd4f62009095a53
-Head: a67a7c3df59aa063cccb29e6dfdf88e9a411e3bc
+Base: 2c7da012fb6fb73b60ce43b12940102d9911389d
+Head: 693fc6da341d88a103612c920274aebb92626cba
 
 ## Changed files
 - M backend/tests/test_mobile_production_update_script.py
 - M scripts/mobile-enable-hackerone-nuclei.sh
-- M scripts/mobile-production-status.sh
 
 ## Affected areas
 - backend

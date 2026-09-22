@@ -14593,6 +14593,16 @@ arm = script.index("=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ===")
 ⋮----
 verdict = script.index("=== FINAL BUG BOUNTY LAUNCH VERDICT ===")
 clear_trap = script.index("trap - ERR", arm)
+⋮----
+def test_enable_script_refreshes_safe_production_before_readiness_and_queue_checks()
+⋮----
+refresh = script.index("=== SAFE PRODUCTION REFRESH ===")
+readiness = script.index("=== BACKEND READINESS ===")
+queue_check = script.index("=== QUEUE MUST BE IDLE BEFORE ARMING ===")
+⋮----
+def test_enable_script_documents_stale_checkout_and_stopped_stack_recovery()
+⋮----
+def test_enable_script_reexecs_from_refreshed_checkout_exactly_once()
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

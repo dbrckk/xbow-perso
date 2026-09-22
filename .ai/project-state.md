@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T17:32:16Z
+Generated: 2026-09-22T17:38:18Z
 
 ### Git
 - Branch: `main`
-- Head: `a67a7c3df59a`
-- Commit date: 2026-09-22T19:32:04+02:00
-- Commit: feat: require live HackerOne API health in launch-ready verdict (#369)
+- Head: `693fc6da341d`
+- Commit date: 2026-09-22T19:38:07+02:00
+- Commit: fix: make bug bounty activation recover stale or stopped production (#371)
 - Tracked files: 565
 
 ### Recently changed files
@@ -44,8 +44,6 @@ Generated: 2026-09-22T17:32:16Z
 - `frontend/simple.js`
 - `frontend/sw.js`
 - `backend/tests/test_hackerone_nuclei_e2e.py`
-- `backend/tests/test_hackerone_batch_api.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
 
 ### Project signals
 - `pyproject.toml`
