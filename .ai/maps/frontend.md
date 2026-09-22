@@ -387,23 +387,7 @@ const sleep=ms
 ⋮----
 function retryableReviewError(error)
 ⋮----
-async function loadReviewDraft(handle)
-⋮----
-async function loadReviewDrafts(result,draftCache=new Map())
-⋮----
-const updateProgress=()=>
-⋮----
-async function reviewWorker()
-⋮----
 async function refreshRuntimeReadiness(
-⋮----
-async function loadSimpleSelection(excludedHandles=[])
-⋮----
-function rebuildSimpleSelection(base,groups)
-⋮----
-const count=status
-⋮----
-function replaceFailedSelection(current,replacements,failedHandles)
 ⋮----
 async function prepare(initialExcluded=[])
 ⋮----
@@ -412,6 +396,10 @@ function reviewProfilePayload(draft)
 async function persistReviewDraft(draft)
 ⋮----
 async function saveReviews()
+⋮----
+const updateProgress=()=>setStatus(
+      'Validation des profils '+completed+'/'+drafts.length+'…'
+    );
 ⋮----
 async function persistWorker()
 ⋮----

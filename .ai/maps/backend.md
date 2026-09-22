@@ -274,6 +274,7 @@ tests/
   test_hackerone_reviewed_batch_api.py
   test_hackerone_scope_import.py
   test_hackerone_scope_preview_api.py
+  test_hackerone_simple_review_package.py
   test_hackerone_upstream_diagnostics.py
   test_health.py
   test_high_value_intelligence.py
@@ -3036,6 +3037,37 @@ excluded_handles = {
 candidates = [
 result = select_simple_six(candidates)
 ⋮----
+"""Return one stable six-program package plus any first-review drafts.
+
+    Candidate replacement happens entirely on the server. The mobile client gets
+    one final selection instead of cycling 0/6 -> 6/6 across replacement rounds.
+    """
+rejected = {
+draft_cache: dict[str, dict[str, Any]] = {}
+rejection_reasons: dict[str, list[str]] = {}
+checked_handles: set[str] = set()
+⋮----
+selection = hackerone_simple_selection(exclude=",".join(sorted(rejected)))
+⋮----
+review_handles = [
+pending = [
+⋮----
+def _load(handle: str) -> tuple[str, dict[str, Any] | None, list[str]]
+⋮----
+draft = build_hackerone_review_draft(snapshot)
+⋮----
+reason = str(detail.get("reason") or "review_unavailable")
+⋮----
+blockers = review_draft_blockers(draft)
+⋮----
+futures = {executor.submit(_load, handle): handle for handle in pending}
+⋮----
+failed_selected = [handle for handle in review_handles if handle in rejected]
+⋮----
+drafts = [
+⋮----
+missing = [handle for handle in review_handles if handle not in draft_cache]
+⋮----
 """Return a durable, read-only operator journal and learning digest."""
 ⋮----
 batches = store.list_hackerone_batches(limit=limit)
@@ -4067,6 +4099,13 @@ def status_fingerprint_fields(status: dict[str, Any]) -> dict[str, Any]
 
 ## File: app/hackerone_review_draft.py
 ```python
+def review_draft_blockers(draft: dict[str, Any]) -> list[str]
+⋮----
+evidence = dict(draft.get("evidence") or {})
+blockers: list[str] = []
+⋮----
+def review_draft_is_usable(draft: dict[str, Any]) -> bool
+⋮----
 def build_hackerone_review_draft(snapshot) -> dict[str, Any]
 ⋮----
 """Build conservative first-review defaults from a verified HackerOne snapshot."""
@@ -4081,6 +4120,7 @@ primary_url = f"https://{identifier}"
 ⋮----
 handle = str(snapshot.handle)
 snapshot_sha = str(snapshot.snapshot_sha256)
+draft = {
 ```
 
 ## File: app/hackerone_scope_import.py
@@ -12535,9 +12575,11 @@ def test_simple_dashboard_exposes_first_run_review_flow()
 ⋮----
 def test_simple_dashboard_grouped_review_and_quiet_journal()
 ⋮----
-def test_simple_dashboard_bounds_hackerone_review_concurrency()
+def test_simple_dashboard_bounds_review_profile_persistence_concurrency()
 ⋮----
-def test_simple_dashboard_shows_review_loading_progress()
+def test_simple_dashboard_uses_atomic_server_review_package()
+⋮----
+prepare_block = script.split("async function prepare(", 1)[1].split("function reviewProfilePayload", 1)[0]
 ⋮----
 def test_simple_dashboard_surfaces_live_scanner_readiness()
 ⋮----
@@ -12555,9 +12597,9 @@ start_block = script.split("async function start()", 1)[1].split("function repoS
 ⋮----
 def test_simple_dashboard_can_cancel_active_hackerone_batch()
 ⋮----
-def test_simple_dashboard_keeps_valid_review_drafts_across_replacement_rounds()
+def test_dashboard_forces_fresh_mobile_shell_and_exposes_version()
 ⋮----
-def test_simple_dashboard_preserves_valid_programmes_when_replacing_failures()
+def test_review_panel_displays_hackerone_scope_exclusions()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -13580,6 +13622,12 @@ def test_review_draft_does_not_invent_primary_url_without_plain_domain()
 snapshot = _snapshot()
 ⋮----
 draft = build_hackerone_review_draft(snapshot)
+⋮----
+def test_review_draft_exposes_scope_exclusions_for_human_review()
+⋮----
+def test_review_draft_blockers_fail_closed_for_incomplete_scope_or_missing_policy()
+⋮----
+blockers = review_draft_blockers(draft)
 ```
 
 ## File: tests/test_hackerone_review_profiles.py
@@ -13732,6 +13780,43 @@ bound = [event for event in persisted["events"] if event.get("type") == "hackero
 db = str(tmp_path / "blocked.sqlite3")
 ⋮----
 admission_policy = {
+```
+
+## File: tests/test_hackerone_simple_review_package.py
+```python
+def _program(handle: str)
+⋮----
+def _selection(handles)
+⋮----
+items=[_program(handle) for handle in handles]
+⋮----
+def _snapshot(handle: str, *, complete: bool = True)
+⋮----
+domain=f"{handle}.example.com"
+⋮----
+def test_atomic_review_package_caches_valid_drafts_across_server_replacement(monkeypatch)
+⋮----
+calls=[]
+⋮----
+def fake_selection(exclude="")
+⋮----
+excluded={value for value in exclude.split(",") if value}
+⋮----
+def fake_fetch(handle)
+⋮----
+result=hackerone_api.hackerone_simple_review_package()
+⋮----
+def test_atomic_review_package_reports_bounded_failure(monkeypatch)
+⋮----
+counter={"n":0}
+⋮----
+base=counter["n"] * 10
+⋮----
+detail=getattr(exc, "detail", {})
+⋮----
+def test_atomic_review_package_stops_on_global_hackerone_outage(monkeypatch)
+⋮----
+def fail_fetch(_handle)
 ```
 
 ## File: tests/test_hackerone_upstream_diagnostics.py
@@ -17519,7 +17604,7 @@ source = _text("backend/app/hackerone_api.py")
 block = source.split('@router.get("/api/hackerone/simple-selection")', 1)[1]
 block = block.split('@router.get("/api/hackerone/journal")', 1)[0]
 ⋮----
-def test_simple_dashboard_initializes_catalog_once_then_retries_selection()
+def test_simple_dashboard_initializes_catalog_once_then_retries_atomic_review_package()
 ⋮----
 script = _text("frontend/simple.js")
 ⋮----
@@ -17527,7 +17612,13 @@ def test_simple_dashboard_surfaces_actionable_hackerone_errors()
 ⋮----
 def test_simple_selection_supports_excluding_unavailable_review_candidates()
 ⋮----
-def test_simple_dashboard_replaces_individually_unavailable_review_programs()
+block = block.split('@router.get("/api/hackerone/simple-review-package")', 1)[0]
+⋮----
+def test_atomic_review_package_replaces_server_side_without_frontend_round_loop()
+⋮----
+block = source.split('@router.get("/api/hackerone/simple-review-package")', 1)[1]
+⋮----
+prepare_block = script.split("async function prepare(", 1)[1].split("function reviewProfilePayload", 1)[0]
 ⋮----
 def test_simple_dashboard_uses_launch_time_replacement_instead_of_duplicate_preflight()
 ⋮----
@@ -17535,11 +17626,7 @@ start_block = script.split("async function start()", 1)[1].split("function repoS
 ⋮----
 def test_simple_dashboard_recovers_launch_time_programme_state_races()
 ⋮----
-def test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts()
-⋮----
 def test_simple_dashboard_surfaces_scanner_activation_command_on_preflight_block()
-⋮----
-def test_simple_dashboard_does_not_rerank_all_six_when_one_programme_fails()
 ```
 
 ## File: tests/test_simple_selection_cached.py
