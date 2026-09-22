@@ -113,3 +113,11 @@ def test_enable_script_documents_stale_checkout_and_stopped_stack_recovery():
     assert "containers are stopped" in script
     assert "checkout is stale" in script
     assert "repository .env remains fail-safe" in script
+
+
+def test_enable_script_reexecs_from_refreshed_checkout_exactly_once():
+    script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+
+    assert 'XBOW_ACTIVATION_REFRESHED:-0' in script
+    assert "=== RESTART ACTIVATION FROM UPDATED CHECKOUT ===" in script
+    assert 'exec env XBOW_ACTIVATION_REFRESHED=1 bash "$INSTALL_DIR/scripts/mobile-enable-hackerone-nuclei.sh"' in script
