@@ -63,6 +63,19 @@ if [ "$LIVE_MODE" = "true" ]; then
   echo "=== SCANNER CAPABILITY ==="
   docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python -c \
     'from app.runtime_capabilities import scanner_runtime_capability; print(scanner_runtime_capability())'
+  echo "=== WORKER LIVENESS ==="
+  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python -c \
+    'from app.worker_liveness import worker_liveness_snapshot; print(worker_liveness_snapshot())'
+  echo "=== HACKERONE LIVE READINESS ==="
+  docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python -c \
+    'from app.hackerone_live_readiness import build_hackerone_live_readiness; from app.main import dependency_readiness; r=build_hackerone_live_readiness(dependency_readiness()); print({"status": r["status"], "live_scan_ready": r["live_scan_ready"], "failed": [x["id"] for x in r["checks"] if x["required"] and not x["ok"]]})'
 else
   echo "armed=false"
+  echo "HACKERONE_LIVE_READY=false"
+fi
+
+PUBLIC_HOST="$(grep -E '^[[:space:]]*XBOW_PUBLIC_HOST=' .env | tail -n1 | cut -d= -f2- || true)"
+if [ -n "$PUBLIC_HOST" ]; then
+  echo "=== PUBLIC HTTPS ==="
+  curl -fsSI "https://$PUBLIC_HOST/health" | sed -n '1,12p'
 fi

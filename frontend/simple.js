@@ -265,10 +265,42 @@
         throw first;
       }
     }
+    for(const draft of drafts){
+      if(reviewableDraft(draft))continue;
+      const handle=String(draft?.handle||'').trim().toLowerCase();
+      if(handle&&!failedHandles.includes(handle))failedHandles.push(handle);
+    }
     reviewDrafts=drafts;
     if(failedHandles.length)return {failedHandles};
     renderReviewDrafts();
     return {failedHandles:[]};
+  }
+
+  async function refreshRuntimeReadiness({quiet=true}={}){
+    const node=$('runtimeStatus');
+    if(!node||!token())return null;
+    try{
+      const readiness=await api('/hackerone/live-readiness');
+      const failed=(Array.isArray(readiness?.checks)?readiness.checks:[])
+        .filter(item=>item?.required===true&&item?.ok!==true);
+      if(readiness?.live_scan_ready===true){
+        node.textContent='Scanner : prêt pour les programmes autorisés.';
+        node.className='muted compact state-ready';
+      }else{
+        const labels=failed.slice(0,3)
+          .map(item=>String(item?.label||item?.id||'contrôle'))
+          .filter(Boolean);
+        node.textContent='Scanner : non prêt'+(labels.length?' · '+labels.join(' · '):'')+'.';
+        node.className='muted compact state-review';
+        if(!quiet)setStatus('Le scanner doit être prêt avant le lancement.','warn');
+      }
+      return readiness;
+    }catch(error){
+      node.textContent='Scanner : état indisponible.';
+      node.className='muted compact state-review';
+      if(!quiet)setStatus('État scanner indisponible : '+error.message,'warn');
+      return null;
+    }
   }
 
   async function loadSimpleSelection(excludedHandles=[]){
@@ -341,6 +373,7 @@
           return;
         }
         $('start').disabled=false;
+        await refreshRuntimeReadiness({quiet:true});
         const revalidationCount=Number(result?.revalidation_count||0);
         setStatus(
           revalidationCount
@@ -384,6 +417,57 @@
     }
   }
 
+  function reviewProfilePayload(draft){
+    const prefill=draft?.prefill||{};
+    return {
+      document:prefill.scope_document,
+      policy:{
+        authorization_reference:String(prefill.authorization_reference||''),
+        policy_version:String(prefill.policy_version||''),
+        reviewed_at:new Date().toISOString(),
+        reviewed_by:'simple-dashboard-operator',
+        safe_harbor_confirmed:true,
+        automated_scanning:true,
+        max_requests_per_second:1,
+        test_account_required:false,
+        test_account_constraints:'',
+        additional_restrictions:[],
+        program_notes:'Revue humaine confirmée depuis le dashboard minimal. Profil conservateur à 1 requête/s.'
+      },
+      remote_handle:String(draft?.handle||''),
+      remote_snapshot_sha256:String(draft?.snapshot_sha256||''),
+      remember_review_profile:true,
+      preferred_primary_url:String(prefill.primary_url||'')
+    };
+  }
+
+  async function persistReviewDraft(draft){
+    let lastError=null;
+    for(let attempt=0;attempt<2;attempt+=1){
+      try{
+        const result=await api('/imports/hackerone/rules-preview',{
+          method:'POST',
+          body:JSON.stringify(reviewProfilePayload(draft))
+        });
+        if(result?.review_profile_persisted!==true){
+          const error=new Error(
+            String(draft?.handle||'programme')+' : '+
+            String(result?.review_profile_persist_reason||'profil non enregistré')
+          );
+          error.handle=String(draft?.handle||'');
+          throw error;
+        }
+        return result;
+      }catch(error){
+        lastError=error;
+        error.handle=String(error?.handle||draft?.handle||'');
+        if(!retryableReviewError(error)||attempt>=1)break;
+        await sleep(1200);
+      }
+    }
+    throw lastError||new Error('Validation du profil HackerOne indisponible');
+  }
+
   async function saveReviews(){
     if(!requireToken())return;
     if(!reviewDrafts.length){
@@ -396,46 +480,65 @@
     }
     const confirmation=$('reviewAllConfirm');
     if(!confirmation?.checked){
-      setStatus('Lis les 6 politiques puis coche la confirmation groupée.','err');
+      setStatus('Lis les politiques affichées puis coche la confirmation groupée.','err');
       return;
     }
 
     const button=$('saveReviews');
     button.disabled=true;
-    setStatus('Enregistrement des profils revus…');
+    const drafts=[...reviewDrafts];
+    let completed=0;
+    let cursor=0;
+    const settled=new Array(drafts.length);
+    const updateProgress=()=>setStatus(
+      'Validation des profils '+completed+'/'+drafts.length+'…'
+    );
+    updateProgress();
     try{
-      for(const draft of reviewDrafts){
-        const prefill=draft?.prefill||{};
-        const payload={
-          document:prefill.scope_document,
-          policy:{
-            authorization_reference:String(prefill.authorization_reference||''),
-            policy_version:String(prefill.policy_version||''),
-            reviewed_at:new Date().toISOString(),
-            reviewed_by:'simple-dashboard-operator',
-            safe_harbor_confirmed:true,
-            automated_scanning:true,
-            max_requests_per_second:1,
-            test_account_required:false,
-            test_account_constraints:'',
-            additional_restrictions:[],
-            program_notes:'Revue humaine confirmée depuis le dashboard minimal. Profil conservateur à 1 requête/s.'
-          },
-          remote_handle:String(draft?.handle||''),
-          remote_snapshot_sha256:String(draft?.snapshot_sha256||''),
-          remember_review_profile:true,
-          preferred_primary_url:String(prefill.primary_url||'')
-        };
-        const result=await api('/imports/hackerone/rules-preview',{
-          method:'POST',
-          body:JSON.stringify(payload)
-        });
-        if(result?.review_profile_persisted!==true){
-          throw new Error(
-            String(draft?.handle||'programme')+' : '+
-            String(result?.review_profile_persist_reason||'profil non enregistré')
-          );
+      async function persistWorker(){
+        while(true){
+          const index=cursor;
+          cursor+=1;
+          if(index>=drafts.length)return;
+          const draft=drafts[index];
+          try{
+            settled[index]={
+              status:'fulfilled',
+              value:await persistReviewDraft(draft)
+            };
+          }catch(error){
+            settled[index]={status:'rejected',reason:error};
+          }finally{
+            completed+=1;
+            updateProgress();
+          }
         }
+      }
+      const workers=Math.min(REVIEW_CONCURRENCY,drafts.length);
+      await Promise.all(Array.from({length:workers},()=>persistWorker()));
+      const failures=settled.filter(item=>item?.status==='rejected');
+      if(failures.length){
+        const replaceable=[];
+        for(const item of failures){
+          const error=item.reason;
+          const handles=(Array.isArray(error?.detail?.handles)?error.detail.handles:[error?.handle])
+            .map(value=>String(value||'').trim().toLowerCase())
+            .filter(Boolean);
+          if(replaceableLaunchReason(error?.reason)){
+            for(const handle of handles){
+              if(!replaceable.includes(handle))replaceable.push(handle);
+            }
+          }
+        }
+        if(replaceable.length){
+          setStatus(
+            'La politique de '+replaceable.length+' programme(s) a changé. Nouvelle sélection…',
+            'warn'
+          );
+          await prepare(replaceable);
+          return;
+        }
+        throw failures[0].reason;
       }
       setStatus('Profils enregistrés. Revalidation de la sélection…','ok');
       await prepare();
@@ -613,6 +716,7 @@
   function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     $('token').addEventListener('input',saveToken);
+    $('token').addEventListener('change',()=>void refreshRuntimeReadiness({quiet:true}));
     $('prepare').addEventListener('click',()=>void prepare());
     $('saveReviews').addEventListener('click',()=>void saveReviews());
     $('start').addEventListener('click',()=>void start());
@@ -624,8 +728,12 @@
     window.addEventListener('error',event=>{
       if(event?.message)setStatus('Erreur interface : '+event.message,'err');
     });
+    void refreshRuntimeReadiness({quiet:true});
     void refreshJournal({quiet:true});
-    timer=setInterval(()=>void refreshJournal({quiet:true}),15000);
+    timer=setInterval(()=>{
+      void refreshRuntimeReadiness({quiet:true});
+      void refreshJournal({quiet:true});
+    },15000);
   }
 
   window.addEventListener('beforeunload',()=>{if(timer)clearInterval(timer);});

@@ -79,3 +79,10 @@ def test_simple_dashboard_recovers_launch_time_programme_state_races():
     assert "Array.isArray(error?.detail?.handles)" in script
     assert "ont changé après le pré-vol. Remplacement automatique" in script
     assert "await prepare(handles);" in script
+
+
+def test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts():
+    script = _text("frontend/simple.js")
+    assert "if(reviewableDraft(draft))continue;" in script
+    assert "if(handle&&!failedHandles.includes(handle))failedHandles.push(handle);" in script
+    assert "if(failedHandles.length)return {failedHandles};" in script
