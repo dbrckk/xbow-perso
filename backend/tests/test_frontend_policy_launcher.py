@@ -25,7 +25,7 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "status", "journal", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=71" defer></script>' in html
+    assert '<script src="/simple.js?v=72" defer></script>' in html
     assert "2 faciles + 2 moyens + 2 fort potentiel" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html
@@ -48,3 +48,10 @@ def test_minimal_frontend_preserves_safety_and_server_persistence():
     assert "localStorage.setItem(TOKEN_KEY" in script
     assert "x-totp-code" not in script
     assert "hackerone.js" not in html
+
+
+def test_minimal_launcher_rechecks_runtime_without_reselection():
+    script = _text("frontend/simple.js")
+    assert "void refreshRuntimeReadiness({quiet:true});" in script
+    assert "updateStartAvailability();" in script
+    assert "timer=setInterval" in script
