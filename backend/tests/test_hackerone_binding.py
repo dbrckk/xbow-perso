@@ -116,7 +116,7 @@ def test_hackerone_provenance_rejects_binding_substitution(tmp_path, monkeypatch
     assert "external_policy_fingerprint_mismatch" in verification["reasons"]
 
 
-def test_hackerone_conservative_dry_run_queues_one_verified_nuclei_job(tmp_path, monkeypatch):
+def test_hackerone_start_queues_verified_bounded_recon_before_scanning(tmp_path, monkeypatch):
     db = str(tmp_path / "campaigns.sqlite3")
     artifacts = str(tmp_path / "artifacts")
     queue_db = str(tmp_path / "jobs.sqlite3")
@@ -133,9 +133,11 @@ def test_hackerone_conservative_dry_run_queues_one_verified_nuclei_job(tmp_path,
     assert start_result["campaign_id"] == campaign_id
     assert start_result["state"] == main.CampaignState.running
     assert start_result["audit_reconciled"] is True
-    assert start_result["job"]["kind"] == "nuclei_scan"
-    assert start_result["job"]["payload"]["_provenance"]["job_kind"] == "nuclei_scan"
-    assert jobs.stats()["total"] == 1
+    assert start_result["planner"]["action"]["kind"] == "crawl"
+    assert len(start_result["planner"]["job_ids"]) == 2
+    assert start_result["job"]["kind"] == "recon_task"
+    assert start_result["job"]["payload"]["_provenance"]["job_kind"] == "recon_task"
+    assert jobs.stats()["total"] == 2
 
     persisted = Storage(db, artifacts).get_campaign(campaign_id)
     assert persisted is not None
@@ -146,17 +148,17 @@ def test_hackerone_conservative_dry_run_queues_one_verified_nuclei_job(tmp_path,
     assert len(started_events) == 1
     assert started_events[0]["job_id"] == start_result["job"]["id"]
 
-    job = jobs.get(started_events[0]["job_id"])
-    assert job is not None
-    assert job["status"] == "queued"
-    assert job["kind"] == "nuclei_scan"
-    verification = verify_job_provenance(job, started)
-    assert verification["valid"] is True
-    assert verification["reasons"] == []
-    assert (
-        job["payload"]["_provenance"]["external_policy_fingerprint"]
-        == admitted["policy_binding"]["binding_fingerprint"]
-    )
+    queued = [jobs.get(job_id) for job_id in start_result["planner"]["job_ids"]]
+    assert all(job is not None for job in queued)
+    assert {job["kind"] for job in queued} == {"recon_task"}
+    for job in queued:
+        verification = verify_job_provenance(job, started)
+        assert verification["valid"] is True
+        assert verification["reasons"] == []
+        assert (
+            job["payload"]["_provenance"]["external_policy_fingerprint"]
+            == admitted["policy_binding"]["binding_fingerprint"]
+        )
 
 
 def test_non_hackerone_start_keeps_strix_routing(tmp_path, monkeypatch):
