@@ -20,15 +20,7 @@ def _snapshot():
             "policy": "Policy text",
         },
         document={"data": []},
-        scope_exclusions=(
-            {
-                "type": "scope-exclusion",
-                "attributes": {
-                    "category": "other",
-                    "details": "Do not test status.example.com",
-                },
-            },
-        ),
+        scope_exclusions=(),
         preview={
             "complete": True,
             "assets": [
@@ -80,8 +72,19 @@ def test_review_draft_does_not_invent_primary_url_without_plain_domain():
     assert draft["prefill"]["primary_url"] is None
 
 
-def test_review_draft_exposes_scope_exclusions_for_human_review():
-    draft = build_hackerone_review_draft(_snapshot())
+def test_review_draft_exposes_scope_exclusions_and_blocks_automation():
+    snapshot = _snapshot()
+    snapshot.scope_exclusions = (
+        {
+            "type": "scope-exclusion",
+            "attributes": {
+                "category": "other",
+                "details": "Do not test status.example.com",
+            },
+        },
+    )
+
+    draft = build_hackerone_review_draft(snapshot)
 
     assert draft["scope_exclusions"] == [
         {
@@ -89,8 +92,8 @@ def test_review_draft_exposes_scope_exclusions_for_human_review():
             "details": "Do not test status.example.com",
         }
     ]
-    assert draft["review_blockers"] == []
-    assert review_draft_is_usable(draft) is True
+    assert "scope_exclusions_require_manual_enforcement" in draft["review_blockers"]
+    assert review_draft_is_usable(draft) is False
 
 
 def test_review_draft_blockers_fail_closed_for_incomplete_scope_or_missing_policy():

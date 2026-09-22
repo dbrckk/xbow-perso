@@ -75,6 +75,7 @@ def test_simple_dashboard_recovers_launch_time_programme_state_races():
     script = _text("frontend/simple.js")
     assert "function replaceableLaunchReason(reason)" in script
     assert "review_profile_required" in script
+    assert "scope_exclusions_require_manual_enforcement" in script
     assert "program_submissions_not_open" in script
     assert "stale_hackerone_snapshot" in script
     assert "hackerone_snapshot_document_mismatch" in script

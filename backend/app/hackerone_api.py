@@ -1159,6 +1159,16 @@ def _reviewed_campaign_input(
             },
         )
 
+    if tuple(snapshot.scope_exclusions or ()):
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne scope exclusions require manual enforcement",
+                "reason": "scope_exclusions_require_manual_enforcement",
+                "handles": [snapshot.handle],
+            },
+        )
+
     profile_id = f"{snapshot.handle}@{snapshot.snapshot_sha256}"
     profile = store.get_hackerone_review_profile(profile_id)
     if profile is None:
@@ -1242,6 +1252,7 @@ _REPLACEABLE_PREFLIGHT_REASONS = {
     "review_profile_binding_mismatch",
     "review_profile_incomplete",
     "review_profile_invalid",
+    "scope_exclusions_require_manual_enforcement",
 }
 
 

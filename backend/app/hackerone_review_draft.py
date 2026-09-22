@@ -14,6 +14,8 @@ def review_draft_blockers(draft: dict[str, Any]) -> list[str]:
         blockers.append("bounties_not_offered")
     if evidence.get("policy_text_available") is not True:
         blockers.append("policy_text_unavailable")
+    if list(draft.get("scope_exclusions") or []):
+        blockers.append("scope_exclusions_require_manual_enforcement")
     if str(evidence.get("submission_state") or "").strip().lower() in {"closed", "paused", "disabled"}:
         blockers.append("submissions_not_open")
     if str(evidence.get("program_state") or "").strip().lower() in {"closed", "disabled", "archived"}:
