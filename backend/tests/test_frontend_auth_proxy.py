@@ -147,3 +147,5 @@ def test_simple_dashboard_prevents_duplicate_active_batches():
     assert "batchActive=true;" in script
     assert "batchActive=Boolean(active);" in script
     assert "localStorage.removeItem(ACTIVE_KEY)" in script
+    assert "error?.reason===\'active_batch_exists\'" in script
+    assert "Aucun doublon n’a été créé." in script
