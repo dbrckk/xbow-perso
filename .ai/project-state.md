@@ -22,33 +22,33 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T14:04:15Z
+Generated: 2026-09-22T15:42:25Z
 
 ### Git
 - Branch: `main`
-- Head: `20eca89425cb`
-- Commit date: 2026-09-22T16:04:03+02:00
-- Commit: feat: print explicit bug bounty launch verdict on mobile (#358)
+- Head: `bee4568211fe`
+- Commit date: 2026-09-22T17:42:14+02:00
+- Commit: fix: prevent duplicate active bug bounty batches (#360)
 - Tracked files: 565
 
 ### Recently changed files
-- `backend/tests/test_mobile_production_update_script.py`
-- `scripts/mobile-enable-hackerone-nuclei.sh`
-- `scripts/mobile-production-status.sh`
+- `backend/app/hackerone_api.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_hackerone_batch_api.py`
+- `backend/tests/test_hackerone_prelaunch.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
+- `backend/tests/test_mobile_production_update_script.py`
+- `scripts/mobile-enable-hackerone-nuclei.sh`
+- `scripts/mobile-production-status.sh`
 - `backend/app/main.py`
-- `backend/tests/test_hackerone_batch_api.py`
 - `backend/tests/test_hackerone_binding.py`
 - `backend/tests/test_hackerone_launch_api.py`
 - `backend/tests/test_hackerone_nuclei_e2e.py`
 - `backend/tests/test_hackerone_report_lifecycle_e2e.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/app/worker_service.py`
-- `backend/tests/test_worker_observations.py`
 
 ### Project signals
 - `pyproject.toml`

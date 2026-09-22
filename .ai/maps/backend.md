@@ -2836,6 +2836,7 @@ next_batch = dict(current)
 ## File: app/hackerone_api.py
 ```python
 router = APIRouter()
+_HACKERONE_BATCH_LAUNCH_LOCK = Lock()
 ⋮----
 class HackerOneProgramPolicyInput(BaseModel)
 ⋮----
@@ -3173,6 +3174,14 @@ reason = str(detail.get("reason") or "reviewed_preflight_blocked")
 ⋮----
 ready = [item for item in members if item["status"] == "ready"]
 blocked = [item for item in members if item["status"] == "blocked"]
+⋮----
+def _active_hackerone_batch(store)
+⋮----
+state = str(batch.get("state") or "")
+⋮----
+def _raise_if_active_hackerone_batch(store) -> None
+⋮----
+active = _active_hackerone_batch(store)
 ⋮----
 @router.post("/api/imports/hackerone/batches/launch-reviewed")
 def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
@@ -12537,6 +12546,8 @@ def test_simple_dashboard_bounds_review_profile_persistence()
 def test_start_button_requires_live_runtime_readiness()
 ⋮----
 def test_simple_dashboard_surfaces_runtime_remediation()
+⋮----
+def test_simple_dashboard_prevents_duplicate_active_batches()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -12705,6 +12716,10 @@ jobs = JobQueue(db)
 def test_batch_rejects_unbound_campaigns()
 ⋮----
 payload = _campaign_payload("program-one", "one.example.com", "a" * 64)
+⋮----
+def test_generic_batch_launch_rejects_when_another_batch_is_active(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "generic-active.sqlite3")
 ```
 
 ## File: tests/test_hackerone_batch.py
@@ -13627,6 +13642,8 @@ def test_preverified_internal_admission_rejects_binding_mismatch(tmp_path, monke
 db = str(tmp_path / "binding-mismatch.sqlite3")
 ⋮----
 payload = hackerone_api.HackerOneCampaignAdmissionInput(
+⋮----
+db = str(tmp_path / "active-batch.sqlite3")
 ```
 
 ## File: tests/test_hackerone_scope_preview_api.py
