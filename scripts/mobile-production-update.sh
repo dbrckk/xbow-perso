@@ -222,6 +222,23 @@ echo "=== FRONTEND DIAGNOSTIC PROXY ==="
   'wget -qO- http://127.0.0.1:8080/auth-status | grep -F "\"contains_secrets\":false"'
 
 if [ "$LIVE_MODE" = "true" ]; then
+  echo "=== WAIT FOR WORKER HEARTBEATS ==="
+  workers_live=false
+  for _ in $(seq 1 30); do
+    if "${COMPOSE[@]}" exec -T backend python -c 'from app.worker_liveness import worker_liveness_snapshot; s=worker_liveness_snapshot(); raise SystemExit(0 if s["general"]["live"] and s["scanner"]["live"] else 1)' >/dev/null 2>&1; then
+      workers_live=true
+      break
+    fi
+    sleep 2
+  done
+  if [ "$workers_live" != "true" ]; then
+    echo "Worker heartbeat validation failed." >&2
+    "${COMPOSE[@]}" exec -T backend python -c 'from app.worker_liveness import worker_liveness_snapshot; print(worker_liveness_snapshot())' >&2 || true
+    "${COMPOSE[@]}" ps worker scanner-worker >&2 || true
+    exit 1
+  fi
+  "${COMPOSE[@]}" exec -T backend python -c 'from app.worker_liveness import worker_liveness_snapshot; print(worker_liveness_snapshot())'
+
   echo "=== SCANNER CAPABILITY ==="
   "${COMPOSE[@]}" exec -T backend python -c \
     'from app.runtime_capabilities import scanner_runtime_capability; c=scanner_runtime_capability(); assert c["dispatch_ready"] and c["nuclei_enabled"] and c["nuclei_execution_intent"], c; print(c)'
