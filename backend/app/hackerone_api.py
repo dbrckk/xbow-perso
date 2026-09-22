@@ -432,7 +432,7 @@ def hackerone_discovery_selection(
 
 @router.get("/api/hackerone/simple-selection")
 def hackerone_simple_selection(
-    exclude: str = Query(default="", max_length=4096),
+    exclude: str = "",
 ):
     """Select 2 easy + 2 medium + 2 high-value candidates from local cache.
 
