@@ -2,7 +2,7 @@
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v79';
+  const UI_VERSION='v80';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -33,7 +33,8 @@
     if(!button)return;
     const reviewsPending=Number(selectionResult?.review_count||0)>0;
     button.disabled=!(
-      selection.length===6
+      selection.length>=1
+      && selection.length<=2
       && !reviewsPending
       && runtimeReady===true
       && batchActive===false
@@ -86,35 +87,28 @@
   }
 
   function renderSelection(result){
-    const groups=result?.groups||{};
+    const items=Array.isArray(result?.selection)?result.selection:[];
     const root=$('selection');
     root.replaceChildren();
-    const rows=[
-      ['2 faciles',groups.easy||[],false],
-      ['2 moyens',groups.medium||[],false],
-      ['2 fort potentiel',groups.high_value||[],true]
-    ];
-    for(const [title,items,showValue] of rows){
-      const section=document.createElement('div');
-      section.className='simple-group';
-      const head=document.createElement('strong');
-      head.textContent=title;
-      section.appendChild(head);
-      for(const item of items){
-        const row=document.createElement('div');
-        row.className='simple-program';
-        const text=document.createElement('span');
-        text.textContent=String(item?.name||item?.handle||'Programme')+
-          ' · '+String(item?.handle||'')+
-          (showValue?money(item?.historical_usd_awarded_max):'');
-        const state=document.createElement('span');
-        state.className=['READY','REVALIDATE'].includes(String(item?.status||''))?'state-ready':'state-review';
-        state.textContent=' · '+stateLabel(item);
-        row.append(text,state);
-        section.appendChild(row);
-      }
-      root.appendChild(section);
+    const section=document.createElement('div');
+    section.className='simple-group';
+    const head=document.createElement('strong');
+    head.textContent=items.length===1?'1 programme accessible':'2 programmes accessibles';
+    section.appendChild(head);
+    for(const item of items){
+      const row=document.createElement('div');
+      row.className='simple-program';
+      const text=document.createElement('span');
+      text.textContent=String(item?.name||item?.handle||'Programme')+
+        ' · '+String(item?.handle||'')+
+        money(item?.historical_usd_awarded_max);
+      const state=document.createElement('span');
+      state.className=['READY','REVALIDATE'].includes(String(item?.status||''))?'state-ready':'state-review';
+      state.textContent=' · '+stateLabel(item);
+      row.append(text,state);
+      section.appendChild(row);
     }
+    root.appendChild(section);
   }
 
   function clearReviewPanel(){
@@ -258,7 +252,7 @@
     button.disabled=true;
     $('start').disabled=true;
     clearReviewPanel();
-    setStatus('Préparation serveur des 6 programmes et de leurs politiques…');
+    setStatus('Recherche de 1 ou 2 programmes HackerOne accessibles…');
     try{
       const excluded=[...new Set(
         (Array.isArray(initialExcluded)?initialExcluded:[])
@@ -287,8 +281,8 @@
       selectionResult=result;
       selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
       renderSelection(result);
-      if(result?.complete!==true||selection.length!==6){
-        throw new Error('Le serveur n’a pas pu constituer les 6 campagnes.');
+      if(result?.complete!==true||selection.length<1||selection.length>2){
+        throw new Error('Le serveur n’a pas trouvé de programme exploitable.');
       }
 
       reviewDrafts=Array.isArray(result?.review_drafts)?result.review_drafts:[];
@@ -300,7 +294,7 @@
         renderReviewDrafts();
         if($('reviewAllConfirm'))$('reviewAllConfirm').checked=false;
         setStatus(
-          reviewCount+' programme(s) nécessitent une validation initiale. Les remplacements incompatibles ont déjà été résolus côté serveur.',
+          reviewCount+' programme(s) nécessitent une validation initiale avant lancement.',
           'warn'
         );
         return;
@@ -313,7 +307,7 @@
       setStatus(
         revalidationCount
           ?'Sélection prête : '+revalidationCount+' programme(s) déjà revu(s) seront revalidés au démarrage.'
-          :'Sélection prête : les 6 programmes sont READY.',
+          :'Sélection prête : '+selection.length+' programme(s) accessible(s).',
         'ok'
       );
     }catch(error){
@@ -327,7 +321,7 @@
       const reason=String(error?.reason||error?.detail?.reason||'');
       if(reason==='simple_review_package_incomplete'||reason==='simple_review_package_exhausted'){
         const rejected=Number(error?.detail?.rejected_count||0);
-        message='Pas assez de programmes compatibles après vérification'+(rejected?' ('+rejected+' rejeté(s))':'')+'.';
+        message='Aucun programme compatible trouvé après vérification'+(rejected?' ('+rejected+' rejeté(s))':'')+'.';
       }else if(reason==='hackerone_credentials_missing'){
         message='Connexion HackerOne absente sur le serveur.';
       }else if(reason==='hackerone_authentication_failed'){
@@ -494,7 +488,7 @@
       clearReviewPanel();
       await refreshRuntimeReadiness({quiet:true});
       updateStartAvailability();
-      setStatus('Profils enregistrés. Les 6 programmes restent sélectionnés et seront revalidés au lancement.','ok');
+      setStatus('Profils enregistrés. La sélection reste en place et sera revalidée au lancement.','ok');
     }catch(error){
       setStatus('Validation interrompue : '+error.message,'err');
     }finally{
@@ -534,8 +528,8 @@
 
   async function start(){
     if(!requireToken())return;
-    if(selection.length!==6){
-      setStatus('Sélectionne d’abord les 6 campagnes.','err');
+    if(selection.length<1||selection.length>2){
+      setStatus('Sélectionne d’abord 1 ou 2 campagnes accessibles.','err');
       return;
     }
     if(Number(selectionResult?.review_count||0)>0){
@@ -559,8 +553,8 @@
       batchActive=true;
       setStatus(
         mode==='parallel'
-          ?'6 campagnes lancées en parallèle. Tu peux fermer la page.'
-          :'6 campagnes mises en file. Elles seront exécutées une après l’autre.',
+          ?selection.length+' campagne(s) lancée(s) en parallèle. Tu peux fermer la page.'
+          :selection.length+' campagne(s) mise(s) en file.',
         'ok'
       );
       updateStartAvailability();
@@ -744,7 +738,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=79',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=80',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
