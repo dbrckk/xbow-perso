@@ -3097,8 +3097,10 @@ profile_persisted = True
 ⋮----
 result = {
 ⋮----
-@router.post("/api/imports/hackerone/campaigns")
-def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput)
+expected_handle = str(payload.remote_handle or "")
+expected_sha = str(payload.remote_snapshot_sha256 or "")
+⋮----
+remote_binding = dict(verified_remote_binding)
 ⋮----
 campaign = Campaign(target=target, state=CampaignState.ready)
 ⋮----
@@ -3111,6 +3113,9 @@ binding_fingerprint = _json_sha256(binding_payload)
 binding_event = {
 ⋮----
 policy_binding = {
+⋮----
+@router.post("/api/imports/hackerone/campaigns")
+def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput)
 ⋮----
 def _batch_summary(members: list[dict[str, Any]]) -> dict[str, int]
 ⋮----
@@ -3174,18 +3179,22 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput)
 prepared: list[HackerOneCampaignAdmissionInput] = []
 missing: list[str] = []
 ⋮----
-@router.post("/api/imports/hackerone/batches/launch")
-def launch_hackerone_batch(payload: HackerOneBatchLaunchInput)
+verified_bindings = {
 ⋮----
 batch_id = str(uuid4())
 admitted_ids: list[str] = []
 ⋮----
-admitted = admit_hackerone_campaign(campaign_payload)
+handle = str(campaign_payload.remote_handle or "")
+verified_binding = (
+admitted = _admit_hackerone_campaign_impl(
 campaign_id = str(admitted["campaign"]["id"])
 ⋮----
 batch = {
 ⋮----
 latest = storage().get_hackerone_batch(batch_id)
+⋮----
+@router.post("/api/imports/hackerone/batches/launch")
+def launch_hackerone_batch(payload: HackerOneBatchLaunchInput)
 ⋮----
 @router.get("/api/imports/hackerone/batches/{batch_id}")
 def get_hackerone_batch(batch_id: str)
@@ -13555,6 +13564,8 @@ db = str(tmp_path / "batch.sqlite3")
 artifacts = str(tmp_path / "artifacts")
 ⋮----
 snapshots = {
+fetch_calls = []
+def fetch_snapshot(handle)
 ⋮----
 store = Storage(db, artifacts)
 ⋮----
@@ -13569,6 +13580,12 @@ db = str(tmp_path / "stale.sqlite3")
 db = str(tmp_path / "missing.sqlite3")
 ⋮----
 def test_reviewed_batch_rejects_duplicate_handles()
+⋮----
+def test_preverified_internal_admission_rejects_binding_mismatch(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "binding-mismatch.sqlite3")
+⋮----
+payload = hackerone_api.HackerOneCampaignAdmissionInput(
 ```
 
 ## File: tests/test_hackerone_scope_preview_api.py

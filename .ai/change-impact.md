@@ -1,18 +1,15 @@
 # Change impact
 
-Base: 1a1c55bfd67da2f79692dc5164c54dab54d36d42
-Head: 96b65c5c706cac52941db6f7b0ada1102972c4a5
+Base: 2257993c24a71c5443ae37f1a4f4456bac7b1753
+Head: e92dee317bd04225b43ea4c45092936e7f71ce20
 
 ## Changed files
-- M backend/tests/test_frontend_auth_proxy.py
-- M backend/tests/test_frontend_policy_launcher.py
-- M frontend/index.html
-- M frontend/simple.js
-- M frontend/sw.js
+- M backend/app/hackerone_api.py
+- M backend/tests/test_hackerone_prelaunch.py
+- M backend/tests/test_hackerone_reviewed_batch_api.py
 
 ## Affected areas
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
