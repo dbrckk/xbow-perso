@@ -120,6 +120,7 @@ def test_reviewed_batch_preflight_reports_blocked_members(monkeypatch):
 
     monkeypatch.setattr(hackerone_api, "_reviewed_campaign_input", fake_reviewed)
     monkeypatch.setattr("app.main.storage", lambda: object())
+    monkeypatch.setattr(hackerone_api, "_raise_if_active_hackerone_batch", lambda _store: None)
 
     payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
         mode="sequential",
@@ -208,6 +209,7 @@ def test_go_no_go_returns_go_only_when_runtime_and_batch_are_ready(monkeypatch):
 
 def test_reviewed_launch_enforces_go_no_go_before_campaign_creation(monkeypatch):
     monkeypatch.setattr("app.main.storage", lambda: object())
+    monkeypatch.setattr(hackerone_api, "_raise_if_active_hackerone_batch", lambda _store: None)
     monkeypatch.setattr(
         hackerone_api,
         "_reviewed_campaign_input",
@@ -269,6 +271,7 @@ def test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflig
         return item
 
     monkeypatch.setattr("app.main.storage", lambda: object())
+    monkeypatch.setattr(hackerone_api, "_raise_if_active_hackerone_batch", lambda _store: None)
     monkeypatch.setattr(hackerone_api, "_reviewed_campaign_input", fake_reviewed)
     monkeypatch.setattr(
         hackerone_api,
@@ -313,6 +316,7 @@ def test_reviewed_batch_preflight_does_not_mark_global_upstream_failure_replacea
 
     monkeypatch.setattr(hackerone_api, "_reviewed_campaign_input", fake_reviewed)
     monkeypatch.setattr("app.main.storage", lambda: object())
+    monkeypatch.setattr(hackerone_api, "_raise_if_active_hackerone_batch", lambda _store: None)
 
     payload = hackerone_api.HackerOneReviewedBatchLaunchInput(
         mode="parallel",

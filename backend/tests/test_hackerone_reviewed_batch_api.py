@@ -284,3 +284,51 @@ def test_preverified_internal_admission_rejects_binding_mismatch(tmp_path, monke
         assert getattr(exc, "status_code", None) == 500
     else:
         raise AssertionError("mismatched internal binding should be rejected")
+
+
+def test_reviewed_batch_rejects_new_launch_when_another_batch_is_active(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "active-batch.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    store = Storage(db, artifacts)
+    store.save_hackerone_batch(
+        {
+            "id": "active-batch",
+            "provider": "hackerone",
+            "mode": "parallel",
+            "state": "running",
+            "members": [
+                {
+                    "index": 0,
+                    "campaign_id": "existing-campaign",
+                    "handle": "existing-program",
+                    "snapshot_sha256": "a" * 64,
+                    "status": "running",
+                    "reason": None,
+                }
+            ],
+            "summary": {"running": 1},
+            "created_at": "2026-09-22T13:00:00+00:00",
+            "updated_at": "2026-09-22T13:00:00+00:00",
+        },
+        expected_version=0,
+    )
+
+    response = _app().post(
+        "/api/imports/hackerone/batches/launch-reviewed",
+        json={"mode": "parallel", "handles": ["program-one"]},
+    )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == {
+        "message": "A HackerOne batch is already active",
+        "reason": "active_batch_exists",
+        "batch_id": "active-batch",
+    }
+    assert store.list_campaigns() == []

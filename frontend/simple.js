@@ -6,6 +6,7 @@
   let selectionResult=null;
   let reviewDrafts=[];
   let runtimeReady=false;
+  let batchActive=false;
   let timer=null;
 
   const $=id=>document.getElementById(id);
@@ -33,6 +34,7 @@
       selection.length===6
       && !reviewsPending
       && runtimeReady===true
+      && batchActive===false
     );
   }
 
@@ -637,6 +639,7 @@
       if(id){
         try{localStorage.setItem(ACTIVE_KEY,id);}catch(_error){}
       }
+      batchActive=true;
       setStatus(
         mode==='parallel'
           ?'6 campagnes lancées en parallèle. Tu peux fermer la page.'
@@ -646,6 +649,17 @@
       updateStartAvailability();
       await refreshJournal({quiet:true});
     }catch(error){
+      if(error?.reason==='active_batch_exists'){
+        batchActive=true;
+        const activeId=String(error?.detail?.batch_id||'');
+        if(activeId){
+          try{localStorage.setItem(ACTIVE_KEY,activeId);}catch(_error){}
+        }
+        setStatus('Un lot HackerOne est déjà en cours côté serveur. Aucun doublon n’a été créé.','warn');
+        await refreshJournal({quiet:true});
+        updateStartAvailability();
+        return;
+      }
       const handles=(Array.isArray(error?.detail?.handles)?error.detail.handles:[])
         .map(value=>String(value||'').trim().toLowerCase())
         .filter(handle=>handle&&selection.includes(handle));
@@ -732,6 +746,11 @@
       renderJournal(payload);
       const entries=Array.isArray(payload?.journal)?payload.journal:[];
       const active=entries.find(item=>!['completed','cancelled'].includes(String(item?.state||'')));
+      batchActive=Boolean(active);
+      if(!batchActive){
+        try{localStorage.removeItem(ACTIVE_KEY);}catch(_error){}
+      }
+      updateStartAvailability();
       if(active){
         if(!quiet)setStatus('Campagnes en cours côté serveur. Tu peux revenir plus tard.','ok');
       }else if(entries.length&&!quiet){
