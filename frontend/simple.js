@@ -444,7 +444,9 @@
       'review_profile_required',
       'review_profile_binding_mismatch',
       'review_profile_incomplete',
-      'review_profile_invalid'
+      'review_profile_invalid',
+      'stale_hackerone_snapshot',
+      'hackerone_snapshot_document_mismatch'
     ].includes(String(reason||''));
   }
 
