@@ -1,6 +1,7 @@
 (()=>{
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
+  const REVIEW_CONCURRENCY=2;
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -163,6 +164,20 @@
 
   const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
+  function retryableReviewError(error){
+    const status=Number(error?.status||0);
+    const reason=String(error?.reason||'');
+    if(reason==='hackerone_program_review_unavailable')return false;
+    if([429,502,503,504].includes(status))return true;
+    return [
+      'hackerone_rate_limited',
+      'hackerone_timeout',
+      'hackerone_connection_failed',
+      'hackerone_io_failed',
+      'hackerone_upstream_unavailable'
+    ].includes(reason);
+  }
+
   async function loadReviewDraft(handle){
     let lastError=null;
     for(let attempt=0;attempt<3;attempt+=1){
@@ -170,7 +185,8 @@
         return await api('/imports/hackerone/programs/'+encodeURIComponent(handle)+'/review-draft');
       }catch(error){
         lastError=error;
-        if(attempt<2)await sleep(700*(attempt+1));
+        if(!retryableReviewError(error)||attempt>=2)break;
+        await sleep(900*(2**attempt));
       }
     }
     throw lastError||new Error('Revue HackerOne indisponible');
@@ -186,17 +202,28 @@
       return {failedHandles:[]};
     }
 
-    setStatus('Première utilisation : chargement des politiques à valider…');
-    const settled=await Promise.allSettled(
-      candidates.map(async handle=>{
+    setStatus('Première utilisation : chargement contrôlé des politiques à valider…');
+    const settled=new Array(candidates.length);
+    let cursor=0;
+    async function reviewWorker(){
+      while(true){
+        const index=cursor;
+        cursor+=1;
+        if(index>=candidates.length)return;
+        const handle=candidates[index];
         try{
-          return {handle,draft:await loadReviewDraft(handle)};
+          settled[index]={
+            status:'fulfilled',
+            value:{handle,draft:await loadReviewDraft(handle)}
+          };
         }catch(error){
           error.handle=handle;
-          throw error;
+          settled[index]={status:'rejected',reason:error};
         }
-      })
-    );
+      }
+    }
+    const workers=Math.min(REVIEW_CONCURRENCY,candidates.length);
+    await Promise.all(Array.from({length:workers},()=>reviewWorker()));
     const drafts=[];
     const failedHandles=[];
     const upstreamErrors=[];
