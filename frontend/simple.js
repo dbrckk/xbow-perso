@@ -183,19 +183,42 @@
       .filter(Boolean);
     if(!candidates.length){
       clearReviewPanel();
-      return;
+      return {failedHandles:[]};
     }
 
     setStatus('Première utilisation : chargement des politiques à valider…');
-    reviewDrafts=await Promise.all(
-      candidates.map(handle=>loadReviewDraft(handle))
+    const settled=await Promise.allSettled(
+      candidates.map(async handle=>({handle,draft:await loadReviewDraft(handle)}))
     );
+    const drafts=[];
+    const failedHandles=[];
+    let upstreamError=null;
+    for(const item of settled){
+      if(item.status==='fulfilled'){
+        drafts.push(item.value.draft);
+        continue;
+      }
+      const error=item.reason;
+      if(error?.reason==='hackerone_program_review_unavailable'){
+        const handle=String(error?.detail?.handle||'').trim();
+        if(handle)failedHandles.push(handle);
+        continue;
+      }
+      upstreamError=upstreamError||error;
+    }
+    if(upstreamError)throw upstreamError;
+    reviewDrafts=drafts;
+    if(failedHandles.length)return {failedHandles};
     renderReviewDrafts();
+    return {failedHandles:[]};
   }
 
-  async function loadSimpleSelection(){
+  async function loadSimpleSelection(excludedHandles=[]){
     try{
-      return await api('/hackerone/simple-selection');
+      const query=excludedHandles.length
+        ?'?exclude='+encodeURIComponent(excludedHandles.join(','))
+        :'';
+      return await api('/hackerone/simple-selection'+query);
     }catch(error){
       if(error?.reason!=='hackerone_catalog_not_initialized')throw error;
       setStatus('Premier démarrage : initialisation du catalogue HackerOne…');
@@ -206,7 +229,10 @@
         throw missing;
       }
       await api('/imports/hackerone/programs?refresh=true');
-      return await api('/hackerone/simple-selection');
+      const query=excludedHandles.length
+        ?'?exclude='+encodeURIComponent(excludedHandles.join(','))
+        :'';
+      return await api('/hackerone/simple-selection'+query);
     }
   }
 
@@ -218,41 +244,51 @@
     clearReviewPanel();
     setStatus('Sélection automatique : 2 faciles + 2 moyens + 2 fort potentiel…');
     try{
-      const result=await loadSimpleSelection();
-      selectionResult=result;
-      selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
-      renderSelection(result);
-      if(result?.complete!==true||selection.length!==6){
-        throw new Error(
-          'Pas assez de programmes bounty compatibles pour constituer les 6 campagnes. Disponibles : '+selection.length+'.'
-        );
-      }
-      const reviewCount=Number(result?.review_count||0);
-      if(reviewCount>0){
-        $('start').disabled=true;
-        try{
-          await loadReviewDrafts(result);
+      const excluded=[];
+      for(let round=0;round<4;round+=1){
+        const result=await loadSimpleSelection(excluded);
+        selectionResult=result;
+        selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
+        renderSelection(result);
+        if(result?.complete!==true||selection.length!==6){
+          throw new Error(
+            'Pas assez de programmes bounty compatibles pour constituer les 6 campagnes. Disponibles : '+selection.length+'.'
+          );
+        }
+        const reviewCount=Number(result?.review_count||0);
+        if(reviewCount>0){
+          $('start').disabled=true;
+          const reviewResult=await loadReviewDrafts(result);
+          const failed=Array.isArray(reviewResult?.failedHandles)?reviewResult.failedHandles:[];
+          if(failed.length){
+            for(const handle of failed){
+              if(!excluded.includes(handle))excluded.push(handle);
+            }
+            setStatus(
+              'Remplacement automatique de '+failed.length+' programme(s) indisponible(s)…',
+              'warn'
+            );
+            clearReviewPanel();
+            continue;
+          }
           if($('reviewAllConfirm'))$('reviewAllConfirm').checked=false;
           setStatus(
             reviewCount+' programme(s) doivent être validés une seule fois. Ouvre chaque politique, coche la confirmation puis valide.',
             'warn'
           );
-        }catch(error){
-          setStatus(
-            'Les 6 programmes restent sélectionnés, mais HackerOne est indisponible pour charger la revue initiale : '+error.message,
-            'warn'
-          );
+          return;
         }
+        $('start').disabled=false;
+        const revalidationCount=Number(result?.revalidation_count||0);
+        setStatus(
+          revalidationCount
+            ?'Sélection prête : '+revalidationCount+' programme(s) déjà revu(s) seront revalidés automatiquement au démarrage.'
+            :'Sélection prête : les 6 programmes sont READY.',
+          'ok'
+        );
         return;
       }
-      $('start').disabled=false;
-      const revalidationCount=Number(result?.revalidation_count||0);
-      setStatus(
-        revalidationCount
-          ?'Sélection prête : '+revalidationCount+' programme(s) déjà revu(s) seront revalidés automatiquement au démarrage.'
-          :'Sélection prête : les 6 programmes sont READY.',
-        'ok'
-      );
+      throw new Error('Impossible de trouver 6 programmes dont la politique est disponible pour revue.');
     }catch(error){
       selection=[];
       selectionResult=null;
