@@ -52,11 +52,26 @@
     if(!requireToken())throw new Error('Jeton API requis');
     const headers={'content-type':'application/json',...(options.headers||{})};
     headers.authorization='Bearer '+token();
+    const timeoutMs=Math.max(1000,Number(options.timeoutMs||45000));
+    const controller=new AbortController();
+    const timerId=setTimeout(()=>controller.abort(),timeoutMs);
+    const fetchOptions={...options};
+    delete fetchOptions.timeoutMs;
     let response;
     try{
-      response=await fetch('/api'+path,{...options,headers,cache:'no-store'});
-    }catch(_error){
+      response=await fetch('/api'+path,{
+        ...fetchOptions,
+        headers,
+        cache:'no-store',
+        signal:controller.signal
+      });
+    }catch(error){
+      if(error?.name==='AbortError'){
+        throw new Error('Délai serveur dépassé');
+      }
       throw new Error('Serveur inaccessible');
+    }finally{
+      clearTimeout(timerId);
     }
     let data={};
     try{data=await response.json();}catch(_error){}
@@ -253,6 +268,11 @@
     $('start').disabled=true;
     clearReviewPanel();
     setStatus('Recherche de 1 ou 2 programmes HackerOne accessibles…');
+    const searchStarted=Date.now();
+    const searchTimer=setInterval(()=>{
+      const seconds=Math.max(1,Math.floor((Date.now()-searchStarted)/1000));
+      setStatus('Recherche de programmes accessibles… '+seconds+' s');
+    },5000);
     try{
       const excluded=[...new Set(
         (Array.isArray(initialExcluded)?initialExcluded:[])
@@ -264,7 +284,7 @@
         :'';
       let result;
       try{
-        result=await api('/hackerone/simple-review-package'+query);
+        result=await api('/hackerone/simple-review-package'+query,{timeoutMs:130000});
       }catch(error){
         if(error?.reason!=='hackerone_catalog_not_initialized')throw error;
         setStatus('Premier démarrage : initialisation du catalogue HackerOne…');
@@ -275,7 +295,7 @@
           throw missing;
         }
         await api('/imports/hackerone/programs?refresh=true');
-        result=await api('/hackerone/simple-review-package'+query);
+        result=await api('/hackerone/simple-review-package'+query,{timeoutMs:130000});
       }
 
       selectionResult=result;
@@ -337,6 +357,7 @@
       }
       setStatus('Sélection impossible : '+message,'err');
     }finally{
+      clearInterval(searchTimer);
       button.disabled=false;
     }
   }
