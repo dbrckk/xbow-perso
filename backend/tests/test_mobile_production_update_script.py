@@ -46,6 +46,7 @@ def test_enable_script_requires_final_live_launch_verdict():
     assert "BUG_BOUNTY_LAUNCH_READY=true" in script
     assert "raise SystemExit(1)" in script
     assert "NEXT_STEP=Open the dashboard" in script
+    assert "DASHBOARD_URL=https://$PUBLIC_HOST/" in script
 
 
 def test_mobile_status_requires_live_hackerone_api_probe_for_ready_verdict():
