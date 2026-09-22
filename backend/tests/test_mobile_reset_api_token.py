@@ -24,3 +24,15 @@ def test_mobile_api_token_reset_loads_distributed_compose_secrets():
     assert 'export XBOW_DATABASE_URL=' in script
     assert 'export XBOW_REDIS_URL=' in script
     assert '"${COMPOSE[@]}" config --quiet' in script
+
+
+
+def test_mobile_github_learning_token_setup_is_vault_only_and_non_echoing():
+    script = (ROOT / "scripts" / "mobile-set-github-learning-token.sh").read_text(encoding="utf-8")
+
+    assert 'set_secret("github_learning_token", token)' in script
+    assert "vault_enabled()" in script
+    assert "learning_sync_configuration()" in script
+    assert "read -r -s TOKEN" in script
+    assert "XBOW_PRODUCTION_SECRETS_FILE" in script
+    assert '"${COMPOSE[@]}" config --quiet' in script
