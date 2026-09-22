@@ -34,3 +34,13 @@ def test_mobile_status_prints_explicit_launch_verdict_and_blockers():
     assert "VERDICT=BLOCKED" in script
     assert "BLOCKER=" in script
     assert "=== DASHBOARD ASSET VERSION ===" in script
+
+
+def test_enable_script_requires_final_live_launch_verdict():
+    script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+
+    assert "=== FINAL BUG BOUNTY LAUNCH VERDICT ===" in script
+    assert "BUG_BOUNTY_LAUNCH_READY=false" in script
+    assert "BUG_BOUNTY_LAUNCH_READY=true" in script
+    assert "raise SystemExit(1)" in script
+    assert "NEXT_STEP=Open the dashboard" in script
