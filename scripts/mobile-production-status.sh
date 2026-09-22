@@ -75,7 +75,54 @@ else
 fi
 
 PUBLIC_HOST="$(grep -E '^[[:space:]]*XBOW_PUBLIC_HOST=' .env | tail -n1 | cut -d= -f2- || true)"
+PUBLIC_HTTPS_OK=false
 if [ -n "$PUBLIC_HOST" ]; then
   echo "=== PUBLIC HTTPS ==="
-  curl -fsSI "https://$PUBLIC_HOST/health" | sed -n '1,12p'
+  if curl -fsSI "https://$PUBLIC_HOST/health" | sed -n '1,12p'; then
+    PUBLIC_HTTPS_OK=true
+  else
+    echo "PUBLIC_HTTPS_OK=false"
+  fi
+fi
+
+echo "=== BUG BOUNTY LAUNCH VERDICT ==="
+RUNTIME_RESULT="$(
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_live_readiness import build_hackerone_live_readiness
+from app.main import dependency_readiness
+
+result = build_hackerone_live_readiness(dependency_readiness())
+failed = [
+    {
+        "id": item.get("id"),
+        "label": item.get("label"),
+        "action": item.get("action"),
+    }
+    for item in result.get("checks", [])
+    if item.get("required") is True and item.get("ok") is not True
+]
+print("RUNTIME_READY=" + ("true" if result.get("live_scan_ready") is True else "false"))
+for item in failed:
+    print(f"BLOCKER={item['id']} | {item['label']} | {item['action']}")
+PY
+)"
+printf '%s\n' "$RUNTIME_RESULT"
+RUNTIME_READY="$(printf '%s\n' "$RUNTIME_RESULT" | sed -n 's/^RUNTIME_READY=//p' | head -n1)"
+if [ "$RUNTIME_READY" = "true" ] && [ "$PUBLIC_HTTPS_OK" = "true" ]; then
+  echo "BUG_BOUNTY_LAUNCH_READY=true"
+  echo "VERDICT=READY"
+else
+  echo "BUG_BOUNTY_LAUNCH_READY=false"
+  echo "VERDICT=BLOCKED"
+  if [ "$PUBLIC_HTTPS_OK" != "true" ]; then
+    echo "BLOCKER=public_https | Dashboard HTTPS public inaccessible | Vérifier tls-proxy, DNS/sslip.io et les ports 80/443."
+  fi
+fi
+
+if [ -n "$PUBLIC_HOST" ]; then
+  echo "=== DASHBOARD ASSET VERSION ==="
+  curl -fsS "https://$PUBLIC_HOST/" \
+    | grep -o 'simple.js?v=[0-9][0-9]*' \
+    | head -n1 \
+    || true
 fi
