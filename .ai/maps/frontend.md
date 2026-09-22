@@ -393,9 +393,11 @@ async function reviewWorker()
 ⋮----
 async function loadSimpleSelection(excludedHandles=[])
 ⋮----
-async function prepare()
+async function prepare(initialExcluded=[])
 ⋮----
 async function saveReviews()
+⋮----
+function replaceableLaunchReason(reason)
 ⋮----
 async function start()
 ⋮----

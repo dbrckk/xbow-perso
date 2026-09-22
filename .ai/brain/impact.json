@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "2cfcdbebfa42fb1a767525c1cc410effd3540606",
-  "head": "eba63c9842f3eae1a4b65a801ef746af2679d3f1",
+  "base": "eba63c9842f3eae1a4b65a801ef746af2679d3f1",
+  "head": "7ac1c4ac49de90167966b108ac7f3ebe324fb085",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -10,17 +10,48 @@
       "status": "M"
     },
     {
-      "path": "backend/tests/test_hackerone_prelaunch.py",
+      "path": "backend/tests/test_frontend_auth_proxy.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_frontend_policy_launcher.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_hackerone_remote_binding.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_simple_selection_cache_only.py",
+      "status": "M"
+    },
+    {
+      "path": "frontend/index.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend/simple.js",
+      "status": "M"
+    },
+    {
+      "path": "frontend/sw.js",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "backend/app/hackerone_api.py",
-    "backend/tests/test_hackerone_prelaunch.py"
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_hackerone_remote_binding.py",
+    "backend/tests/test_simple_selection_cache_only.py",
+    "frontend/simple.js",
+    "frontend/sw.js"
   ],
   "impacted_files": [
     "backend/app/campaign_control.py",
     "backend/app/hackerone_api.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
     "backend/tests/test_hackerone_attention.py",
     "backend/tests/test_hackerone_batch_api.py",
     "backend/tests/test_hackerone_binding.py",
@@ -29,13 +60,15 @@
     "backend/tests/test_hackerone_needs_info.py",
     "backend/tests/test_hackerone_nuclei_e2e.py",
     "backend/tests/test_hackerone_outbound_submission.py",
-    "backend/tests/test_hackerone_prelaunch.py",
     "backend/tests/test_hackerone_remote_binding.py",
     "backend/tests/test_hackerone_report_tracking.py",
     "backend/tests/test_hackerone_review_profiles.py",
     "backend/tests/test_hackerone_reviewed_batch_api.py",
     "backend/tests/test_hackerone_scope_preview_api.py",
-    "backend/tests/test_hackerone_upstream_diagnostics.py"
+    "backend/tests/test_hackerone_upstream_diagnostics.py",
+    "backend/tests/test_simple_selection_cache_only.py",
+    "frontend/simple.js",
+    "frontend/sw.js"
   ],
   "impacted_symbols": [
     {
@@ -162,229 +195,319 @@
       "name": "_remote_program_launch_block_reason",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 227
+      "line": 229
     },
     {
       "name": "_conservative_admission_reason",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 237
+      "line": 239
     },
     {
       "name": "_hackerone_error_detail",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 252
+      "line": 254
     },
     {
       "name": "_upstream_error",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 304
+      "line": 306
     },
     {
       "name": "_program_list_item",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 310
+      "line": 312
     },
     {
       "name": "hackerone_attention_center",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 331
+      "line": 333
     },
     {
       "name": "hackerone_live_readiness",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 341
+      "line": 343
     },
     {
       "name": "hackerone_connection",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 348
+      "line": 350
     },
     {
       "name": "list_hackerone_programs",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 395
+      "line": 397
     },
     {
       "name": "hackerone_program_catalog",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 424
+      "line": 426
     },
     {
       "name": "hackerone_program_discovery",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 442
+      "line": 444
     },
     {
       "name": "hackerone_discovery_selection",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 498
+      "line": 500
     },
     {
       "name": "hackerone_simple_selection",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 524
+      "line": 526
     },
     {
       "name": "hackerone_campaign_journal",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 587
+      "line": 589
     },
     {
       "name": "hackerone_learning_intelligence",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 695
+      "line": 697
     },
     {
       "name": "get_hackerone_program_review_draft",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 716
+      "line": 718
     },
     {
       "name": "get_hackerone_program_snapshot",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 736
+      "line": 738
     },
     {
       "name": "preview_hackerone_rules",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 753
+      "line": 755
     },
     {
       "name": "list_hackerone_review_profiles",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 819
+      "line": 821
     },
     {
       "name": "admit_hackerone_campaign",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 833
+      "line": 835
     },
     {
       "name": "_batch_summary",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 911
+      "line": 913
     },
     {
       "name": "_rollback_admitted_batch_campaigns",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 923
+      "line": 925
     },
     {
       "name": "_reviewed_campaign_input",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 933
+      "line": 935
     },
     {
       "name": "_runtime_prelaunch_verdict",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1039
+      "line": 1041
     },
     {
       "name": "hackerone_batch_go_no_go",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1062
+      "line": 1064
     },
     {
       "name": "preflight_reviewed_hackerone_batch",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1093
+      "line": 1095
     },
     {
       "name": "launch_reviewed_hackerone_batch",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1151
+      "line": 1153
     },
     {
       "name": "launch_hackerone_batch",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1202
+      "line": 1204
     },
     {
       "name": "list_hackerone_batches",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1278
+      "line": 1280
     },
     {
       "name": "get_hackerone_batch",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1291
+      "line": 1293
     },
     {
       "name": "cancel_hackerone_batch",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1302
+      "line": 1304
     },
     {
       "name": "launch_hackerone_campaign",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1332
+      "line": 1334
     },
     {
       "name": "_hackerone_submission_enabled",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1348
+      "line": 1350
     },
     {
       "name": "_verified_remote_team_handle",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1362
+      "line": 1364
     },
     {
       "name": "_unresolved_hackerone_attempt",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1381
+      "line": 1383
     },
     {
       "name": "get_hackerone_remote_report_status",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1404
+      "line": 1406
     },
     {
       "name": "get_hackerone_needs_more_info_draft",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1430
+      "line": 1432
     },
     {
       "name": "submit_hackerone_report",
       "kind": "function",
       "file": "backend/app/hackerone_api.py",
-      "line": 1474
+      "line": 1476
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 7
+    },
+    {
+      "name": "test_frontend_proxies_redacted_backend_diagnostics",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 11
+    },
+    {
+      "name": "test_diagnostic_routes_bypass_service_worker_cache",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 18
+    },
+    {
+      "name": "test_frontend_assets_are_explicitly_cache_busted",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 25
+    },
+    {
+      "name": "test_api_token_is_persisted_across_browser_sessions",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 33
+    },
+    {
+      "name": "test_frontend_has_no_totp_control",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 42
+    },
+    {
+      "name": "test_simple_dashboard_runtime_is_shipped_in_frontend_image",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 51
+    },
+    {
+      "name": "test_service_worker_matches_precache_assets_by_path",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 58
+    },
+    {
+      "name": "test_simple_dashboard_exposes_first_run_review_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 64
+    },
+    {
+      "name": "test_simple_dashboard_grouped_review_and_quiet_journal",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 77
+    },
+    {
+      "name": "test_simple_dashboard_bounds_hackerone_review_concurrency",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 87
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 9
+    },
+    {
+      "name": "test_hackerone_reviewed_batch_routes_exist",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 13
+    },
+    {
+      "name": "test_minimal_frontend_exposes_only_primary_operator_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 21
+    },
+    {
+      "name": "test_minimal_frontend_preserves_safety_and_server_persistence",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 39
     },
     {
       "name": "_campaign",
@@ -759,114 +882,6 @@
       "line": 193
     },
     {
-      "name": "test_remote_program_launch_gate_blocks_closed_states",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 6
-    },
-    {
-      "name": "test_remote_program_launch_gate_allows_open_program",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 15
-    },
-    {
-      "name": "test_server_discovery_selection_is_read_only_and_bounded",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 21
-    },
-    {
-      "name": "test_reviewed_campaign_input_blocks_program_that_closed_after_review",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 73
-    },
-    {
-      "name": "Snapshot",
-      "kind": "class",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 74
-    },
-    {
-      "name": "Store",
-      "kind": "class",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 84
-    },
-    {
-      "name": "get_hackerone_review_profile",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 85
-    },
-    {
-      "name": "test_reviewed_batch_preflight_reports_blocked_members",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 104
-    },
-    {
-      "name": "fake_reviewed",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 105
-    },
-    {
-      "name": "Prepared",
-      "kind": "class",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 116
-    },
-    {
-      "name": "test_go_no_go_requires_runtime_and_batch_ready",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 143
-    },
-    {
-      "name": "test_go_no_go_returns_go_only_when_runtime_and_batch_are_ready",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 182
-    },
-    {
-      "name": "test_reviewed_launch_enforces_go_no_go_before_campaign_creation",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 209
-    },
-    {
-      "name": "test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflight",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 240
-    },
-    {
-      "name": "fake_reviewed",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 244
-    },
-    {
-      "name": "test_reviewed_batch_preflight_does_not_mark_global_upstream_failure_replaceable",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 305
-    },
-    {
-      "name": "fake_reviewed",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 306
-    },
-    {
-      "name": "test_go_no_go_exposes_replaceable_handles",
-      "kind": "function",
-      "file": "backend/tests/test_hackerone_prelaunch.py",
-      "line": 325
-    },
-    {
       "name": "_resource",
       "kind": "function",
       "file": "backend/tests/test_hackerone_remote_binding.py",
@@ -912,13 +927,13 @@
       "name": "test_bound_launch_refetches_and_rejects_snapshot_drift",
       "kind": "function",
       "file": "backend/tests/test_hackerone_remote_binding.py",
-      "line": 118
+      "line": 119
     },
     {
       "name": "test_legacy_manual_preview_still_works_without_remote_binding",
       "kind": "function",
       "file": "backend/tests/test_hackerone_remote_binding.py",
-      "line": 150
+      "line": 152
     },
     {
       "name": "_campaign_with_remote_report",
@@ -1201,9 +1216,204 @@
       "kind": "function",
       "file": "backend/tests/test_hackerone_upstream_diagnostics.py",
       "line": 40
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "line": 7
+    },
+    {
+      "name": "test_simple_selection_never_refreshes_hackerone_inline",
+      "kind": "function",
+      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "line": 11
+    },
+    {
+      "name": "test_simple_dashboard_initializes_catalog_once_then_retries_selection",
+      "kind": "function",
+      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "line": 23
+    },
+    {
+      "name": "test_simple_dashboard_surfaces_actionable_hackerone_errors",
+      "kind": "function",
+      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "line": 34
+    },
+    {
+      "name": "test_simple_selection_supports_excluding_unavailable_review_candidates",
+      "kind": "function",
+      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "line": 43
+    },
+    {
+      "name": "test_simple_dashboard_replaces_individually_unavailable_review_programs",
+      "kind": "function",
+      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "line": 53
+    },
+    {
+      "name": "test_simple_dashboard_auto_replaces_preflight_stale_programmes",
+      "kind": "function",
+      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "line": 63
+    },
+    {
+      "name": "test_simple_dashboard_recovers_launch_time_programme_state_races",
+      "kind": "function",
+      "file": "backend/tests/test_simple_selection_cache_only.py",
+      "line": 72
+    },
+    {
+      "name": "token",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 11
+    },
+    {
+      "name": "saveToken",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 15
+    },
+    {
+      "name": "setStatus",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 19
+    },
+    {
+      "name": "requireToken",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 26
+    },
+    {
+      "name": "api",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 33
+    },
+    {
+      "name": "money",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 59
+    },
+    {
+      "name": "stateLabel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 64
+    },
+    {
+      "name": "renderSelection",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 71
+    },
+    {
+      "name": "clearReviewPanel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 103
+    },
+    {
+      "name": "reviewableDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 111
+    },
+    {
+      "name": "renderReviewDrafts",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 121
+    },
+    {
+      "name": "retryableReviewError",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 166
+    },
+    {
+      "name": "loadReviewDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 180
+    },
+    {
+      "name": "loadReviewDrafts",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 194
+    },
+    {
+      "name": "reviewWorker",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 208
+    },
+    {
+      "name": "loadSimpleSelection",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 264
+    },
+    {
+      "name": "prepare",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 287
+    },
+    {
+      "name": "saveReviews",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 377
+    },
+    {
+      "name": "replaceableLaunchReason",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 439
+    },
+    {
+      "name": "start",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 452
+    },
+    {
+      "name": "repoSyncLabel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 523
+    },
+    {
+      "name": "renderJournal",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 533
+    },
+    {
+      "name": "refreshJournal",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 581
+    },
+    {
+      "name": "bind",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 603
     }
   ],
   "selected_tests": [
+    "backend/tests/test_auth.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
     "backend/tests/test_hackerone_attention.py",
     "backend/tests/test_hackerone_batch_api.py",
     "backend/tests/test_hackerone_binding.py",
@@ -1212,12 +1422,17 @@
     "backend/tests/test_hackerone_needs_info.py",
     "backend/tests/test_hackerone_nuclei_e2e.py",
     "backend/tests/test_hackerone_outbound_submission.py",
-    "backend/tests/test_hackerone_prelaunch.py",
     "backend/tests/test_hackerone_remote_binding.py",
     "backend/tests/test_hackerone_report_tracking.py",
     "backend/tests/test_hackerone_review_profiles.py",
     "backend/tests/test_hackerone_reviewed_batch_api.py",
     "backend/tests/test_hackerone_scope_preview_api.py",
-    "backend/tests/test_hackerone_upstream_diagnostics.py"
+    "backend/tests/test_hackerone_upstream_diagnostics.py",
+    "backend/tests/test_pipeline_swarm.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_simple_portfolio.py",
+    "backend/tests/test_simple_selection_cache_only.py",
+    "backend/tests/test_simple_selection_cached.py",
+    "backend/tests/test_swarm_coordinator.py"
   ]
 }

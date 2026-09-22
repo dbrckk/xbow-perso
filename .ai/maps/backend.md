@@ -17376,6 +17376,10 @@ def test_simple_dashboard_surfaces_actionable_hackerone_errors()
 def test_simple_selection_supports_excluding_unavailable_review_candidates()
 ⋮----
 def test_simple_dashboard_replaces_individually_unavailable_review_programs()
+⋮----
+def test_simple_dashboard_auto_replaces_preflight_stale_programmes()
+⋮----
+def test_simple_dashboard_recovers_launch_time_programme_state_races()
 ```
 
 ## File: tests/test_simple_selection_cached.py
