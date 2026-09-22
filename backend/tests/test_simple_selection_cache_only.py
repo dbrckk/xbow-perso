@@ -67,3 +67,13 @@ def test_simple_dashboard_auto_replaces_preflight_stale_programmes():
     assert "preflight?.runtime_ready===true&&replaceable.length" in script
     assert "await prepare(replaceable);" in script
     assert "programme(s) ont changé. Remplacement automatique" in script
+
+
+def test_simple_dashboard_recovers_launch_time_programme_state_races():
+    script = _text("frontend/simple.js")
+    assert "function replaceableLaunchReason(reason)" in script
+    assert "review_profile_required" in script
+    assert "program_submissions_not_open" in script
+    assert "Array.isArray(error?.detail?.handles)" in script
+    assert "ont changé après le pré-vol. Remplacement automatique" in script
+    assert "await prepare(handles);" in script
