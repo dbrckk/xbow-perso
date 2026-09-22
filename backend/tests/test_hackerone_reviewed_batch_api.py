@@ -89,10 +89,15 @@ def test_reviewed_batch_launch_needs_only_handles(tmp_path, monkeypatch):
         "program-one": _snapshot("program-one", "one.example.com", "a" * 64),
         "program-two": _snapshot("program-two", "two.example.com", "b" * 64),
     }
+    fetch_calls = []
+    def fetch_snapshot(handle):
+        fetch_calls.append(handle)
+        return snapshots[handle]
+
     monkeypatch.setattr(
         hackerone_api,
         "fetch_hackerone_program_snapshot",
-        lambda handle: snapshots[handle],
+        fetch_snapshot,
     )
     monkeypatch.setattr(
         "app.hackerone_client.fetch_hackerone_program_snapshot",
@@ -133,6 +138,7 @@ def test_reviewed_batch_launch_needs_only_handles(tmp_path, monkeypatch):
         "running",
         "ready",
     ]
+    assert fetch_calls == ["program-one", "program-two"]
 
     jobs = JobQueue(db)
     assert (
@@ -234,3 +240,47 @@ def test_reviewed_batch_rejects_duplicate_handles():
     )
 
     assert response.status_code == 422
+
+
+def test_preverified_internal_admission_rejects_binding_mismatch(tmp_path, monkeypatch):
+    db = str(tmp_path / "binding-mismatch.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    payload = hackerone_api.HackerOneCampaignAdmissionInput(
+        document={"data": [_resource("example.com")], "links": {}},
+        policy=hackerone_api.HackerOneProgramPolicyInput(
+            authorization_reference="https://hackerone.com/example",
+            policy_version="fixture",
+            reviewed_at="2026-09-22T12:00:00+00:00",
+            reviewed_by="test",
+            safe_harbor_confirmed=True,
+            automated_scanning=True,
+            max_requests_per_second=1.0,
+            test_account_required=False,
+            test_account_constraints="",
+            additional_restrictions=[],
+            program_notes="fixture",
+        ),
+        target=hackerone_api.HackerOneCampaignTargetInput(
+            name="Example",
+            primary_url="https://example.com",
+        ),
+        remote_handle="example",
+        remote_snapshot_sha256="a" * 64,
+    )
+
+    try:
+        hackerone_api._admit_hackerone_campaign_impl(
+            payload,
+            verified_remote_binding={
+                "handle": "other",
+                "snapshot_sha256": "a" * 64,
+                "verified": True,
+            },
+        )
+    except Exception as exc:
+        assert getattr(exc, "status_code", None) == 500
+    else:
+        raise AssertionError("mismatched internal binding should be rejected")
