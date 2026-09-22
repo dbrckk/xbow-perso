@@ -195,3 +195,32 @@ def test_review_package_returns_one_or_two_usable_programmes(monkeypatch):
     assert result["review_package_target"] == 2
     assert result["review_package_minimum"] == 1
     assert result["complete"] is True
+
+
+def test_review_package_limits_live_checks_to_two_per_round(monkeypatch):
+    seen=[]
+    round_no={"n":0}
+
+    def fake_selection(exclude=""):
+        round_no["n"] += 1
+        base=(round_no["n"]-1)*10
+        return _selection([f"x{base+i}" for i in range(6)])
+
+    def fake_fetch(handle):
+        seen.append(handle)
+        return _snapshot(handle, complete=False)
+
+    monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
+    monkeypatch.setattr(hackerone_api, "fetch_hackerone_program_snapshot", fake_fetch)
+
+    try:
+        hackerone_api.hackerone_simple_review_package()
+    except Exception as exc:
+        detail=getattr(exc, "detail", {})
+        assert detail["reason"] == "simple_review_package_exhausted"
+        assert detail["checked_count"] <= 8
+        assert detail["max_checked"] == 8
+    else:
+        raise AssertionError("all-incompatible candidates must fail closed")
+
+    assert len(seen) <= 8
