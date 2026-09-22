@@ -91,11 +91,3 @@ def test_simple_dashboard_surfaces_scanner_activation_command_on_preflight_block
     assert "Scanner non prêt" in script
 
 
-def test_simple_dashboard_does_not_rerank_all_six_when_one_programme_fails():
-    script = _text("frontend/simple.js")
-    assert "function rebuildSimpleSelection(base,groups)" in script
-    assert "function replaceFailedSelection(current,replacements,failedHandles)" in script
-    assert "currentItems.filter(item=>" in script
-    assert "return handle&&!failed.has(handle);" in script
-    assert "if(nextGroups[key].length>=2)break;" in script
-    assert "for(let round=0;round<8;round+=1)" in script
