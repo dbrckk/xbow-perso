@@ -128,6 +128,7 @@ def _learning_signals(members: list[dict[str, Any]]) -> dict[str, Any]:
     event_totals: Counter[str] = Counter()
     severity_totals: Counter[str] = Counter()
     status_totals: Counter[str] = Counter()
+    cwe_totals: Counter[str] = Counter()
     recommendations: list[str] = []
 
     for member in members:
@@ -146,6 +147,10 @@ def _learning_signals(members: list[dict[str, Any]]) -> dict[str, Any]:
         event_totals.update(dict(campaign.get("event_types") or {}))
         severity_totals.update(dict(campaign.get("severities") or {}))
         status_totals.update(dict(campaign.get("statuses") or {}))
+        for finding in list(campaign.get("finding_brief") or []):
+            cwe = _safe_text(finding.get("cwe"), 40)
+            if cwe:
+                cwe_totals[cwe] += 1
 
     total = len(members)
     confirmation_rate = round(confirmed_findings / finding_count, 4) if finding_count else 0.0
@@ -185,6 +190,7 @@ def _learning_signals(members: list[dict[str, Any]]) -> dict[str, Any]:
             "confirmation_rate": confirmation_rate,
             "severities": dict(sorted(severity_totals.items())),
             "statuses": dict(sorted(status_totals.items())),
+            "cwes": dict(sorted(cwe_totals.items())),
         },
         "events": dict(sorted(event_totals.items())),
         "recommendations": recommendations[:8],
