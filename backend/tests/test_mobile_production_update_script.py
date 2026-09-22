@@ -131,3 +131,11 @@ def test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate():
     assert reconcile < queue_check
     assert "reconcile_hackerone_batches(queue(), storage(), limit=200)" in script
     assert "RECONCILED_BATCHES=" in script
+
+
+def test_mobile_status_public_https_probe_uses_get_not_head():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    assert 'curl -fsS -D - -o /dev/null "https://$PUBLIC_HOST/health"' in script
+    assert 'curl -fsSI "https://$PUBLIC_HOST/health"' not in script
+    assert 'echo "PUBLIC_HTTPS_OK=true"' in script
