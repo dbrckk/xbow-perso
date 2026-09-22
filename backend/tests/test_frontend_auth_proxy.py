@@ -192,3 +192,11 @@ def test_review_panel_displays_hackerone_scope_exclusions():
     script = _text("frontend/simple.js")
     assert "draft?.scope_exclusions" in script
     assert "Exclusions HackerOne" in script
+
+
+def test_one_or_two_selection_is_preserved_after_profile_validation():
+    script = _text("frontend/simple.js")
+    assert "groups:{accessible:nextSelection}" in script
+    assert "selection:nextSelection" in script
+    assert "handles:nextSelection.map" in script
+    assert "launch_ready:nextSelection.length>=1" in script
