@@ -84,3 +84,13 @@ def test_enable_script_reports_actionable_non_idle_queue_blocker():
     assert "if not queue_idle:" in script
     assert "Let the active batch finish or cancel it from the dashboard before arming the scanner." in script
     assert "assert active==0" not in script
+
+
+def test_enable_script_keeps_rollback_active_through_final_launch_verification():
+    script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+
+    arm = script.index("=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ===")
+    probe = script.index("=== HACKERONE API PROBE ===")
+    verdict = script.index("=== FINAL BUG BOUNTY LAUNCH VERDICT ===")
+    clear_trap = script.index("trap - ERR", arm)
+    assert arm < probe < verdict < clear_trap
