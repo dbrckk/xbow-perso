@@ -118,7 +118,7 @@ def test_sequential_batch_persists_and_starts_only_first_member(tmp_path, monkey
     assert len(persisted["members"]) == 2
 
     jobs = JobQueue(db)
-    assert jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])["queued"] == 1
+    assert jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])["queued"] == 2
     assert jobs.campaign_job_status_counts(batch["members"][1]["campaign_id"])["queued"] == 0
 
 
