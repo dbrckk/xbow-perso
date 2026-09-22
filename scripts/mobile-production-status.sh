@@ -79,3 +79,34 @@ if [ -n "$PUBLIC_HOST" ]; then
   echo "=== PUBLIC HTTPS ==="
   curl -fsSI "https://$PUBLIC_HOST/health" | sed -n '1,12p'
 fi
+
+
+echo "=== BUG BOUNTY LAUNCH VERDICT ==="
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_live_readiness import build_hackerone_live_readiness
+from app.main import dependency_readiness
+
+result = build_hackerone_live_readiness(dependency_readiness())
+failed = [
+    {
+        "id": item.get("id"),
+        "label": item.get("label"),
+        "action": item.get("action"),
+    }
+    for item in result.get("checks", [])
+    if item.get("required") is True and item.get("ok") is not True
+]
+if result.get("live_scan_ready") is True:
+    print("BUG_BOUNTY_LAUNCH_READY=true")
+    print("VERDICT=READY")
+else:
+    print("BUG_BOUNTY_LAUNCH_READY=false")
+    print("VERDICT=BLOCKED")
+    for item in failed:
+        print(f"BLOCKER={item['id']} | {item['label']} | {item['action']}")
+PY
+
+if [ -n "$PUBLIC_HOST" ]; then
+  echo "=== DASHBOARD ASSET VERSION ==="
+  curl -fsS "https://$PUBLIC_HOST/"     | grep -o 'simple.js?v=[0-9][0-9]*'     | head -n1     || true
+fi
