@@ -640,7 +640,20 @@ def hackerone_simple_review_package(
                 draft = build_hackerone_review_draft(snapshot)
             except HackerOneClientError as exc:
                 detail = _hackerone_error_detail(exc)
-                return handle, None, [str(detail.get("reason") or "review_unavailable")]
+                reason = str(detail.get("reason") or "review_unavailable")
+                if detail.get("retryable") is True or reason in {
+                    "hackerone_authentication_failed",
+                    "hackerone_connection_failed",
+                    "hackerone_timeout",
+                    "hackerone_io_failed",
+                    "hackerone_upstream_unavailable",
+                    "hackerone_rate_limited",
+                }:
+                    raise HTTPException(
+                        status_code=503 if detail.get("retryable") is True else 502,
+                        detail=detail,
+                    ) from exc
+                return handle, None, [reason]
             blockers = review_draft_blockers(draft)
             return handle, draft, blockers
 
