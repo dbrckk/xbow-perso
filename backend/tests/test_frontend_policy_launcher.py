@@ -25,13 +25,13 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "runtimeAction", "status", "journal", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=74" defer></script>' in html
+    assert '<script src="/simple.js?v=75" defer></script>' in html
     assert "2 faciles + 2 moyens + 2 fort potentiel" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html
     assert "/hackerone/simple-selection" in script
     assert "/imports/hackerone/batches/launch-reviewed" in script
-    assert "/imports/hackerone/batches/go-no-go" in script
+    assert "/imports/hackerone/batches/go-no-go" not in script
     assert "/hackerone/journal?limit=50" in script
     assert "void refreshRuntimeReadiness({quiet:true});" in script
     assert "void refreshJournal({quiet:true});" in script
@@ -55,3 +55,12 @@ def test_minimal_launcher_rechecks_runtime_without_reselection():
     assert "void refreshRuntimeReadiness({quiet:true});" in script
     assert "updateStartAvailability();" in script
     assert "timer=setInterval" in script
+
+
+def test_minimal_launcher_uses_single_final_reviewed_launch_request():
+    script = _text("frontend/simple.js")
+    start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
+    assert "/imports/hackerone/batches/launch-reviewed" in start_block
+    assert "/imports/hackerone/batches/go-no-go" not in start_block
+    assert "Validation finale serveur" in start_block
+    assert "batch_go_no_go_blocked" in start_block

@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=74' in index
-    assert '/app.css?v=74' in index
-    assert "xbow-perso-v74" in sw
+    assert '/simple.js?v=75' in index
+    assert '/app.css?v=75' in index
+    assert "xbow-perso-v75" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=74" defer></script>' in index
+    assert '<script src="/simple.js?v=75" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -149,3 +149,12 @@ def test_simple_dashboard_prevents_duplicate_active_batches():
     assert "localStorage.removeItem(ACTIVE_KEY)" in script
     assert "error?.reason===\'active_batch_exists\'" in script
     assert "Aucun doublon n’a été créé." in script
+
+
+def test_simple_dashboard_reconciles_ambiguous_mobile_launch_response():
+    script = _text("frontend/simple.js")
+    start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
+    assert "Serveur inaccessible" in start_block
+    assert "await refreshJournal({quiet:true});" in start_block
+    assert "if(batchActive)" in start_block
+    assert "le lot est bien actif côté serveur" in start_block

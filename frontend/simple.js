@@ -623,29 +623,8 @@
     const button=$('start');
     button.disabled=true;
     const mode=$('mode').value==='parallel'?'parallel':'sequential';
-    setStatus('Pré-vol serveur : scope, profils, runtime et fingerprints…');
+    setStatus('Validation finale serveur : scope, profils, runtime et fingerprints…');
     try{
-      const preflight=await api('/imports/hackerone/batches/go-no-go',{
-        method:'POST',
-        body:JSON.stringify({mode,handles:selection})
-      });
-      if(preflight?.go!==true){
-        const replaceable=(Array.isArray(preflight?.replaceable_handles)
-          ?preflight.replaceable_handles:[])
-          .map(value=>String(value||'').trim().toLowerCase())
-          .filter(handle=>handle&&selection.includes(handle));
-        if(preflight?.runtime_ready===true&&replaceable.length){
-          setStatus(
-            'Pré-vol : '+replaceable.length+' programme(s) ont changé. Remplacement automatique…',
-            'warn'
-          );
-          button.disabled=false;
-          await prepare(replaceable);
-          return;
-        }
-        throw new Error(preflightBlockerMessage(preflight));
-      }
-      setStatus('GO confirmé. Création du lot côté serveur…');
       const batch=await api('/imports/hackerone/batches/launch-reviewed',{
         method:'POST',
         body:JSON.stringify({mode,handles:selection})
@@ -664,6 +643,30 @@
       updateStartAvailability();
       await refreshJournal({quiet:true});
     }catch(error){
+      if(!Number(error?.status||0)&&String(error?.message||'')==='Serveur inaccessible'){
+        await refreshJournal({quiet:true});
+        if(batchActive){
+          setStatus(
+            'Le téléphone a perdu la réponse, mais le lot est bien actif côté serveur. Aucun doublon ne sera lancé.',
+            'ok'
+          );
+          updateStartAvailability();
+          return;
+        }
+      }
+      if(error?.reason==='batch_go_no_go_blocked'){
+        const detail=error?.detail||{};
+        setStatus(
+          'Lancement bloqué : '+preflightBlockerMessage({
+            runtime:detail?.runtime||{},
+            blockers:detail?.blockers||[]
+          }),
+          'err'
+        );
+        await refreshRuntimeReadiness({quiet:true});
+        updateStartAvailability();
+        return;
+      }
       if(error?.reason==='active_batch_exists'){
         batchActive=true;
         const activeId=String(error?.detail?.batch_id||'');

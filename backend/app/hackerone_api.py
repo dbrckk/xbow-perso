@@ -1237,6 +1237,7 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
                     "message": "HackerOne reviewed batch go/no-go blocked",
                     "reason": "batch_go_no_go_blocked",
                     "blockers": list(runtime_verdict.get("blockers") or []),
+                    "runtime": dict(runtime_verdict.get("runtime") or {}),
                 },
             )
 
