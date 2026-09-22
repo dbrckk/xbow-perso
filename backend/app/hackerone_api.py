@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime
+from threading import Lock
 from typing import Any, Literal
 from uuid import uuid4
 
@@ -32,6 +33,7 @@ from .hackerone_report_tracking import (
 )
 
 router = APIRouter()
+_HACKERONE_BATCH_LAUNCH_LOCK = Lock()
 
 
 class HackerOneProgramPolicyInput(BaseModel):
@@ -1171,64 +1173,84 @@ def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInpu
     }
 
 
+def _active_hackerone_batch(store):
+    for batch in store.list_hackerone_batches(limit=200):
+        state = str(batch.get("state") or "")
+        if state not in {"completed", "cancelled"}:
+            return batch
+    return None
+
+
 @router.post("/api/imports/hackerone/batches/launch-reviewed")
 def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
     from .main import storage
 
-    store = storage()
-    prepared: list[HackerOneCampaignAdmissionInput] = []
-    missing: list[str] = []
+    with _HACKERONE_BATCH_LAUNCH_LOCK:
+        store = storage()
+        active = _active_hackerone_batch(store)
+        if active is not None:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "A HackerOne batch is already active",
+                    "reason": "active_batch_exists",
+                    "batch_id": str(active.get("id") or ""),
+                },
+            )
+        prepared: list[HackerOneCampaignAdmissionInput] = []
+        missing: list[str] = []
 
-    for handle in payload.handles:
-        try:
-            prepared.append(_reviewed_campaign_input(handle, store))
-        except HTTPException as exc:
-            detail = exc.detail if isinstance(exc.detail, dict) else {}
-            if exc.status_code == 409 and detail.get("reason") == "review_profile_required":
-                missing.extend(
-                    str(item)
-                    for item in detail.get("handles", [])
-                    if str(item)
-                )
-                continue
-            raise
+        for handle in payload.handles:
+            try:
+                prepared.append(_reviewed_campaign_input(handle, store))
+            except HTTPException as exc:
+                detail = exc.detail if isinstance(exc.detail, dict) else {}
+                if exc.status_code == 409 and detail.get("reason") == "review_profile_required":
+                    missing.extend(
+                        str(item)
+                        for item in detail.get("handles", [])
+                        if str(item)
+                    )
+                    continue
+                raise
 
-    if missing:
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "message": "HackerOne reviewed profile required",
-                "reason": "review_profile_required",
-                "handles": sorted(set(missing)),
-            },
-        )
+        if missing:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne reviewed profile required",
+                    "reason": "review_profile_required",
+                    "handles": sorted(set(missing)),
+                },
+            )
 
-    runtime_verdict = _runtime_prelaunch_verdict()
-    if runtime_verdict.get("runtime_ready") is not True:
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "message": "HackerOne reviewed batch go/no-go blocked",
-                "reason": "batch_go_no_go_blocked",
-                "blockers": list(runtime_verdict.get("blockers") or []),
-            },
-        )
+        runtime_verdict = _runtime_prelaunch_verdict()
+        if runtime_verdict.get("runtime_ready") is not True:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne reviewed batch go/no-go blocked",
+                    "reason": "batch_go_no_go_blocked",
+                    "blockers": list(runtime_verdict.get("blockers") or []),
+                },
+            )
 
-    verified_bindings = {
-        str(item.remote_handle): {
-            "handle": str(item.remote_handle),
-            "snapshot_sha256": str(item.remote_snapshot_sha256),
-            "verified": True,
+        verified_bindings = {
+            str(item.remote_handle): {
+                "handle": str(item.remote_handle),
+                "snapshot_sha256": str(item.remote_snapshot_sha256),
+                "verified": True,
+            }
+            for item in prepared
         }
-        for item in prepared
-    }
-    return _launch_hackerone_batch_impl(
-        HackerOneBatchLaunchInput(
-            mode=payload.mode,
-            campaigns=prepared,
-        ),
-        verified_remote_bindings=verified_bindings,
-    )
+        return _launch_hackerone_batch_impl(
+            HackerOneBatchLaunchInput(
+                mode=payload.mode,
+                campaigns=prepared,
+            ),
+            verified_remote_bindings=verified_bindings,
+        )
+
 
 
 def _launch_hackerone_batch_impl(
