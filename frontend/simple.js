@@ -671,8 +671,31 @@
         }
         throw failures[0].reason;
       }
-      setStatus('Profils enregistrés. Revalidation de la sélection…','ok');
-      await prepare();
+      const reviewedHandles=new Set(
+        drafts.map(draft=>String(draft?.handle||'').trim().toLowerCase()).filter(Boolean)
+      );
+      const nextGroups={};
+      for(const key of ['easy','medium','high_value']){
+        nextGroups[key]=(Array.isArray(selectionResult?.groups?.[key])?selectionResult.groups[key]:[])
+          .map(item=>{
+            const handle=String(item?.handle||'').trim().toLowerCase();
+            if(!reviewedHandles.has(handle))return item;
+            return {...item,status:'REVALIDATE',revalidation_deferred:true};
+          });
+      }
+      selectionResult={
+        ...(selectionResult||{}),
+        groups:nextGroups,
+        selection:[...nextGroups.easy,...nextGroups.medium,...nextGroups.high_value],
+        review_count:0,
+        revalidation_count:Number(selectionResult?.revalidation_count||0)+reviewedHandles.size,
+        launch_ready:true
+      };
+      renderSelection(selectionResult);
+      clearReviewPanel();
+      await refreshRuntimeReadiness({quiet:true});
+      updateStartAvailability();
+      setStatus('Profils enregistrés. Les 6 programmes restent sélectionnés et seront revalidés au lancement.','ok');
     }catch(error){
       setStatus('Validation interrompue : '+error.message,'err');
     }finally{
