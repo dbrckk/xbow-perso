@@ -112,7 +112,7 @@ bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
 trap - ERR
 echo
 echo "=== HACKERONE API PROBE ==="
-"${COMPOSE[@]}" --profile scanner exec -T backend python - <<\'PY\'
+"${COMPOSE[@]}" --profile scanner exec -T backend python - <<'PY'
 from app.hackerone_client import HackerOneClient, HackerOneClientError, load_hackerone_credentials
 
 try:
