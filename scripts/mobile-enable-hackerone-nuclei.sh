@@ -116,3 +116,22 @@ echo "The root-only profile survives normal production updates."
 echo "Bounded builtin recon is enabled; external recon and browser automation remain disabled."
 echo "Every campaign still requires verified HackerOne scope/policy/fingerprint admission."
 echo "HackerOne report submission remains disabled."
+echo
+echo "=== FINAL BUG BOUNTY LAUNCH VERDICT ==="
+"${COMPOSE[@]}" --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_live_readiness import build_hackerone_live_readiness
+from app.main import dependency_readiness
+
+result = build_hackerone_live_readiness(dependency_readiness())
+failed = [
+    item for item in result.get("checks", [])
+    if item.get("required") is True and item.get("ok") is not True
+]
+if failed:
+    print("BUG_BOUNTY_LAUNCH_READY=false")
+    for item in failed:
+        print("BLOCKER=" + str(item.get("id") or "unknown") + " | " + str(item.get("label") or ""))
+    raise SystemExit(1)
+print("BUG_BOUNTY_LAUNCH_READY=true")
+print("NEXT_STEP=Open the dashboard, review any first-run policies, then press Commencer.")
+PY
