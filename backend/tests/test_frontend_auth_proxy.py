@@ -108,3 +108,13 @@ def test_simple_dashboard_surfaces_live_scanner_readiness():
     assert "Scanner : prêt pour les programmes autorisés." in script
     assert "Scanner : non prêt" in script
     assert "item?.required===true&&item?.ok!==true" in script
+
+
+def test_simple_dashboard_bounds_review_profile_persistence():
+    script = _text("frontend/simple.js")
+    assert "async function persistReviewDraft(draft)" in script
+    assert "Validation des profils '+completed+'/'+drafts.length" in script
+    assert "const workers=Math.min(REVIEW_CONCURRENCY,drafts.length);" in script
+    assert "await Promise.all(Array.from({length:workers},()=>persistWorker()))" in script
+    assert "Lis les politiques affichées puis coche la confirmation groupée." in script
+    assert "La politique de '+replaceable.length+' programme(s) a changé. Nouvelle sélection" in script
