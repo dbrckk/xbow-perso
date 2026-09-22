@@ -1,6 +1,10 @@
 from types import SimpleNamespace
 
-from app.hackerone_review_draft import build_hackerone_review_draft
+from app.hackerone_review_draft import (
+    build_hackerone_review_draft,
+    review_draft_blockers,
+    review_draft_is_usable,
+)
 
 
 def _snapshot():
@@ -16,6 +20,15 @@ def _snapshot():
             "policy": "Policy text",
         },
         document={"data": []},
+        scope_exclusions=(
+            {
+                "type": "scope-exclusion",
+                "attributes": {
+                    "category": "other",
+                    "details": "Do not test status.example.com",
+                },
+            },
+        ),
         preview={
             "complete": True,
             "assets": [
@@ -65,3 +78,29 @@ def test_review_draft_does_not_invent_primary_url_without_plain_domain():
     draft = build_hackerone_review_draft(snapshot)
 
     assert draft["prefill"]["primary_url"] is None
+
+
+def test_review_draft_exposes_scope_exclusions_for_human_review():
+    draft = build_hackerone_review_draft(_snapshot())
+
+    assert draft["scope_exclusions"] == [
+        {
+            "category": "other",
+            "details": "Do not test status.example.com",
+        }
+    ]
+    assert draft["review_blockers"] == []
+    assert review_draft_is_usable(draft) is True
+
+
+def test_review_draft_blockers_fail_closed_for_incomplete_scope_or_missing_policy():
+    snapshot = _snapshot()
+    snapshot.preview["complete"] = False
+    snapshot.program["policy"] = ""
+
+    draft = build_hackerone_review_draft(snapshot)
+
+    blockers = review_draft_blockers(draft)
+    assert "scope_incomplete_for_web_engine" in blockers
+    assert "policy_text_unavailable" in blockers
+    assert review_draft_is_usable(draft) is False

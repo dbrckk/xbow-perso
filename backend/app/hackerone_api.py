@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from threading import Lock
 from typing import Any, Literal
@@ -25,7 +26,11 @@ from .hackerone_discovery import build_program_discovery
 from .value_efficiency import select_diversified_portfolio
 from .simple_portfolio import mark_cached_review_profiles
 from .hackerone_needs_info import render_needs_more_info_draft
-from .hackerone_review_draft import build_hackerone_review_draft
+from .hackerone_review_draft import (
+    build_hackerone_review_draft,
+    review_draft_blockers,
+    review_draft_is_usable,
+)
 from .hackerone_report_tracking import (
     latest_remote_submission,
     project_remote_report_status,
@@ -585,6 +590,131 @@ def hackerone_simple_selection(
         "automatic_launch": False,
         "requires_launch_revalidation": True,
     }
+
+
+@router.get("/api/hackerone/simple-review-package")
+def hackerone_simple_review_package(
+    exclude: str = "",
+):
+    """Return one stable six-program package plus any first-review drafts.
+
+    Candidate replacement happens entirely on the server. The mobile client gets
+    one final selection instead of cycling 0/6 -> 6/6 across replacement rounds.
+    """
+    rejected = {
+        value.strip().lower()
+        for value in exclude.split(",")
+        if value.strip()
+    }
+    draft_cache: dict[str, dict[str, Any]] = {}
+    rejection_reasons: dict[str, list[str]] = {}
+    checked_handles: set[str] = set()
+
+    for _round in range(16):
+        selection = hackerone_simple_selection(exclude=",".join(sorted(rejected)))
+        if selection.get("complete") is not True or len(selection.get("handles") or []) != 6:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "Pas assez de programmes HackerOne compatibles pour préparer six campagnes",
+                    "reason": "simple_review_package_incomplete",
+                    "rejected_count": len(rejected),
+                    "contains_secrets": False,
+                },
+            )
+
+        review_handles = [
+            str(item.get("handle") or "")
+            for item in list(selection.get("selection") or [])
+            if str(item.get("status") or "") == "REVIEW"
+            and str(item.get("handle") or "")
+        ]
+        pending = [
+            handle for handle in review_handles
+            if handle not in draft_cache and handle not in rejected
+        ]
+
+        def _load(handle: str) -> tuple[str, dict[str, Any] | None, list[str]]:
+            try:
+                snapshot = fetch_hackerone_program_snapshot(handle)
+                draft = build_hackerone_review_draft(snapshot)
+            except HackerOneClientError as exc:
+                detail = _hackerone_error_detail(exc)
+                reason = str(detail.get("reason") or "review_unavailable")
+                if detail.get("retryable") is True or reason in {
+                    "hackerone_authentication_failed",
+                    "hackerone_connection_failed",
+                    "hackerone_timeout",
+                    "hackerone_io_failed",
+                    "hackerone_upstream_unavailable",
+                    "hackerone_rate_limited",
+                }:
+                    raise HTTPException(
+                        status_code=503 if detail.get("retryable") is True else 502,
+                        detail=detail,
+                    ) from exc
+                return handle, None, [reason]
+            blockers = review_draft_blockers(draft)
+            return handle, draft, blockers
+
+        if pending:
+            with ThreadPoolExecutor(max_workers=min(2, len(pending))) as executor:
+                futures = {executor.submit(_load, handle): handle for handle in pending}
+                for future in as_completed(futures):
+                    handle, draft, blockers = future.result()
+                    checked_handles.add(handle)
+                    if draft is not None and review_draft_is_usable(draft):
+                        draft_cache[handle] = draft
+                    else:
+                        rejected.add(handle)
+                        rejection_reasons[handle] = blockers or ["review_unavailable"]
+
+        failed_selected = [handle for handle in review_handles if handle in rejected]
+        if failed_selected:
+            continue
+
+        drafts = [
+            draft_cache[handle]
+            for handle in review_handles
+            if handle in draft_cache
+        ]
+        if len(drafts) != len(review_handles):
+            missing = [handle for handle in review_handles if handle not in draft_cache]
+            rejected.update(missing)
+            for handle in missing:
+                rejection_reasons.setdefault(handle, ["review_unavailable"])
+            continue
+
+        return {
+            **selection,
+            "review_drafts": drafts,
+            "review_package": True,
+            "review_package_rounds": _round + 1,
+            "review_package_checked": len(checked_handles),
+            "review_package_rejected": len(rejected),
+            "review_rejections": [
+                {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
+                for handle in sorted(rejection_reasons)
+            ],
+            "selection_requires_live_hackerone": bool(review_handles),
+            "automatic_launch": False,
+            "requires_launch_revalidation": True,
+            "contains_secrets": False,
+        }
+
+    raise HTTPException(
+        status_code=409,
+        detail={
+            "message": "Impossible de constituer six programmes dont la politique et le scope sont exploitables",
+            "reason": "simple_review_package_exhausted",
+            "rejected_count": len(rejected),
+            "review_rejections": [
+                {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
+                for handle in sorted(rejection_reasons)
+            ][:50],
+            "contains_secrets": False,
+        },
+    )
 
 
 @router.get("/api/hackerone/journal")

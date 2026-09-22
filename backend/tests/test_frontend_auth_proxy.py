@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=78' in index
-    assert '/app.css?v=78' in index
-    assert "xbow-perso-v78" in sw
+    assert '/simple.js?v=79' in index
+    assert '/app.css?v=79' in index
+    assert "xbow-perso-v79" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=78" defer></script>' in index
+    assert '<script src="/simple.js?v=79" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -67,9 +67,8 @@ def test_simple_dashboard_exposes_first_run_review_flow():
     assert 'id="reviewPanel"' in html
     assert 'id="reviewList"' in html
     assert 'id="saveReviews"' in html
-    assert "loadReviewDrafts" in script
     assert "saveReviews" in script
-    assert "/review-draft" in script
+    assert "/hackerone/simple-review-package" in script
     assert "/rules-preview" in script
     assert "review_profile_persisted" in script
 
@@ -79,26 +78,27 @@ def test_simple_dashboard_grouped_review_and_quiet_journal():
     html = _text("frontend/index.html")
     assert 'id="reviewAllConfirm"' in html
     assert "Valider les 6 programmes" in html
-    assert "async function loadReviewDraft(handle)" in script
+    assert "async function persistReviewDraft(draft)" in script
     assert "for(let attempt=0;attempt<2;attempt+=1)" in script
     assert "if(!quiet)setStatus('Journal indisponible : '+error.message,'err');" in script
 
 
-def test_simple_dashboard_bounds_hackerone_review_concurrency():
+def test_simple_dashboard_bounds_review_profile_persistence_concurrency():
     script = _text("frontend/simple.js")
     assert "const REVIEW_CONCURRENCY=2;" in script
     assert "retryableReviewError" in script
     assert "await sleep(1200);" in script
-    assert "Promise.all(Array.from({length:workers},()=>reviewWorker()))" in script
-    assert "Promise.allSettled(\n      candidates.map" not in script
+    assert "await Promise.all(Array.from({length:workers},()=>persistWorker()))" in script
 
 
-def test_simple_dashboard_shows_review_loading_progress():
+def test_simple_dashboard_uses_atomic_server_review_package():
     script = _text("frontend/simple.js")
-    assert "politiques vérifiées '+completed+'/'+total" in script
-    assert "completed+=1;" in script
-    assert "updateProgress();" in script
-    assert "const total=candidates.length;" in script
+    assert "Préparation serveur des 6 programmes et de leurs politiques" in script
+    assert "/hackerone/simple-review-package" in script
+    assert "review_drafts" in script
+    prepare_block = script.split("async function prepare(", 1)[1].split("function reviewProfilePayload", 1)[0]
+    assert "for(let round=" not in prepare_block
+    assert "loadReviewDrafts(" not in prepare_block
 
 
 def test_simple_dashboard_surfaces_live_scanner_readiness():
@@ -172,20 +172,23 @@ def test_simple_dashboard_can_cancel_active_hackerone_batch():
     assert "Annuler le lot en cours" in html
 
 
-def test_simple_dashboard_keeps_valid_review_drafts_across_replacement_rounds():
-    script = _text("frontend/simple.js")
-    assert "loadReviewDrafts(currentResult,draftCache)" in script
-    assert "const draftCache=new Map();" in script
-    assert "const cached=draftCache.get(handle);" in script
-    assert "draftCache.set(handle,draft);" in script
-    assert "les autres politiques restent validées" in script
-    assert "politiques vérifiées '+completed+'/'+total" in script
 
 
-def test_simple_dashboard_preserves_valid_programmes_when_replacing_failures():
+def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
-    assert "function replaceFailedSelection(current,replacements,failedHandles)" in script
-    assert "const replacementExclude=[...new Set([...excluded,...currentHandles])];" in script
-    assert "currentResult=replaceFailedSelection(previousResult,replacements,initialFailed);" in script
-    assert "const merged=replaceFailedSelection(currentResult,replacements,failed);" in script
-    assert "Remplacement ciblé de " in script
+    html = _text("frontend/index.html")
+    nginx = _text("frontend/nginx.conf")
+    assert "const UI_VERSION='v79';" in script
+    assert "serviceWorker.register('/sw.js?v=79',{updateViaCache:'none'})" in script
+    assert 'id="buildVersion"' in html
+    assert "Interface v79" in html
+    assert "location = /index.html" in nginx
+    assert "location = /simple.js" in nginx
+    assert "location = /sw.js" in nginx
+    assert 'Cache-Control "no-store, max-age=0"' in nginx
+
+
+def test_review_panel_displays_hackerone_scope_exclusions():
+    script = _text("frontend/simple.js")
+    assert "draft?.scope_exclusions" in script
+    assert "Exclusions HackerOne" in script
