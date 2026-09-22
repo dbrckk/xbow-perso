@@ -82,8 +82,10 @@ def test_simple_dashboard_recovers_launch_time_programme_state_races():
 
 def test_simple_dashboard_auto_replaces_loaded_but_incompatible_review_drafts():
     script = _text("frontend/simple.js")
-    assert "if(reviewableDraft(draft))continue;" in script
-    assert "if(handle&&!failedHandles.includes(handle))failedHandles.push(handle);" in script
+    assert "if(reviewableDraft(draft)){" in script
+    assert "draftsByHandle.set(handle,draft);" in script
+    assert "draftCache.set(handle,draft);" in script
+    assert "if(normalized&&!failedHandles.includes(normalized))failedHandles.push(normalized);" in script
     assert "if(failedHandles.length)return {failedHandles};" in script
 
 
