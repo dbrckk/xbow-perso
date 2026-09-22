@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T17:38:18Z
+Generated: 2026-09-22T17:42:56Z
 
 ### Git
 - Branch: `main`
-- Head: `693fc6da341d`
-- Commit date: 2026-09-22T19:38:07+02:00
-- Commit: fix: make bug bounty activation recover stale or stopped production (#371)
+- Head: `575f67c6e5bc`
+- Commit date: 2026-09-22T19:42:40+02:00
+- Commit: fix: reconcile stale HackerOne batches before scanner activation (#372)
 - Tracked files: 565
 
 ### Recently changed files

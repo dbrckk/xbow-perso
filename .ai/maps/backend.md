@@ -14603,6 +14603,10 @@ queue_check = script.index("=== QUEUE MUST BE IDLE BEFORE ARMING ===")
 def test_enable_script_documents_stale_checkout_and_stopped_stack_recovery()
 ⋮----
 def test_enable_script_reexecs_from_refreshed_checkout_exactly_once()
+⋮----
+def test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate()
+⋮----
+reconcile = script.index("=== RECONCILE HACKERONE BATCH STATE ===")
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

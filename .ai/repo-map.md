@@ -15211,6 +15211,10 @@ queue_check = script.index("=== QUEUE MUST BE IDLE BEFORE ARMING ===")
 def test_enable_script_documents_stale_checkout_and_stopped_stack_recovery()
 ⋮----
 def test_enable_script_reexecs_from_refreshed_checkout_exactly_once()
+⋮----
+def test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate()
+⋮----
+reconcile = script.index("=== RECONCILE HACKERONE BATCH STATE ===")
 ````
 
 ## File: backend/tests/test_mobile_reset_api_token.py
@@ -19680,6 +19684,15 @@ COMPOSE=(
 
 echo "=== BACKEND READINESS ==="
 "${COMPOSE[@]}" exec -T backend python -m app.readiness
+
+echo "=== RECONCILE HACKERONE BATCH STATE ==="
+"${COMPOSE[@]}" exec -T backend python - <<'PY'
+from app.hackerone_batch import reconcile_hackerone_batches
+from app.main import queue, storage
+
+count = reconcile_hackerone_batches(queue(), storage(), limit=200)
+print(f"RECONCILED_BATCHES={count}")
+PY
 
 echo "=== QUEUE MUST BE IDLE BEFORE ARMING ==="
 "${COMPOSE[@]}" exec -T backend python - <<'PY'
