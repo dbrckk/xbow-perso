@@ -376,6 +376,31 @@ def test_orchestrator_blocks_scan_below_surface_enrichment_threshold(tmp_path):
     assert result["intelligence"]["surface_enrichment"]["score"] < 0.40
     assert result["intelligence"]["surface_enrichment"]["ready"] is False
     jobs = [queue.get(job_id) for job_id in result["job_ids"]]
+    assert {job["kind"] for job in jobs} == {"recon_task"}
+
+
+def test_orchestrator_includes_browser_recon_only_when_enabled(tmp_path, monkeypatch):
+    db = str(tmp_path / "browser-enabled.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    store.save_campaign(campaign.model_dump(mode="json"))
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "true")
+
+    asset = Observation("a1", "asset", "example.test", "recon")
+    endpoint = Observation(
+        "e1",
+        "endpoint",
+        "https://example.test/",
+        "recon:crawl",
+        parent_ids=("a1",),
+    )
+    store.put_observation(campaign.id, asset.to_dict())
+    store.put_observation(campaign.id, endpoint.to_dict())
+
+    result = advance_campaign(campaign, queue, store)
+
+    jobs = [queue.get(job_id) for job_id in result["job_ids"]]
     assert {job["kind"] for job in jobs} == {"recon_task", "browser_flow"}
 
 

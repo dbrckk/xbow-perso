@@ -36,6 +36,7 @@ from .pipeline_swarm import coordinate_pipeline_action
 from .recon_priority import prioritize_recon_tasks
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
+from .runtime_capabilities import safe_browser_runtime_capability
 from .surface_confidence import build_surface_confidence
 from .surface_diff import build_surface_diff_intelligence
 from .surface_temporal import build_temporal_surface_profile
@@ -332,8 +333,11 @@ def _enqueue_recon_tasks(
 ) -> list[dict]:
     fingerprint = _graph_fingerprint(graph)
     jobs: list[dict] = []
+    browser_ready = safe_browser_runtime_capability().get("dispatch_ready") is True
     for task in tasks:
         if task.kind == "browser_observe":
+            if not browser_ready:
+                continue
             jobs.append(
                 queue.enqueue(
                     campaign.id,
