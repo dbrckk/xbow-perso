@@ -119,6 +119,83 @@ def _campaign_digest(store, campaign_id: str) -> dict[str, Any]:
     }
 
 
+
+def _learning_signals(members: list[dict[str, Any]]) -> dict[str, Any]:
+    completed = 0
+    blocked = 0
+    confirmed_findings = 0
+    finding_count = 0
+    event_totals: Counter[str] = Counter()
+    severity_totals: Counter[str] = Counter()
+    status_totals: Counter[str] = Counter()
+    cwe_totals: Counter[str] = Counter()
+    recommendations: list[str] = []
+
+    for member in members:
+        campaign = dict(member.get("campaign") or {})
+        state = str(campaign.get("state") or member.get("status") or "").lower()
+        if state == "completed" or str(member.get("status") or "").lower() == "done":
+            completed += 1
+        if state in {"blocked", "failed", "cancelled"} or str(member.get("status") or "").lower() in {
+            "blocked",
+            "failed",
+        }:
+            blocked += 1
+
+        confirmed_findings += int(campaign.get("confirmed_findings") or 0)
+        finding_count += int(campaign.get("finding_count") or 0)
+        event_totals.update(dict(campaign.get("event_types") or {}))
+        severity_totals.update(dict(campaign.get("severities") or {}))
+        status_totals.update(dict(campaign.get("statuses") or {}))
+        for finding in list(campaign.get("finding_brief") or []):
+            cwe = _safe_text(finding.get("cwe"), 40)
+            if cwe:
+                cwe_totals[cwe] += 1
+
+    total = len(members)
+    confirmation_rate = round(confirmed_findings / finding_count, 4) if finding_count else 0.0
+    completion_rate = round(completed / total, 4) if total else 0.0
+
+    if blocked:
+        recommendations.append(
+            "Inspect blocked or failed campaign reasons before increasing automation depth."
+        )
+    if event_totals.get("recon_task_completed", 0) == 0 and total:
+        recommendations.append(
+            "Recon completion is absent from this batch; verify reconnaissance worker coverage."
+        )
+    if finding_count and confirmed_findings == 0:
+        recommendations.append(
+            "Findings were produced without confirmation; prioritize validation quality and deduplication."
+        )
+    if confirmed_findings:
+        recommendations.append(
+            "Feed confirmed severity/CWE distributions into future portfolio and scanner prioritization."
+        )
+    if not recommendations:
+        recommendations.append(
+            "No obvious runtime bottleneck detected from sanitized batch telemetry."
+        )
+
+    return {
+        "campaigns": {
+            "total": total,
+            "completed": completed,
+            "blocked_or_failed": blocked,
+            "completion_rate": completion_rate,
+        },
+        "findings": {
+            "total": finding_count,
+            "confirmed": confirmed_findings,
+            "confirmation_rate": confirmation_rate,
+            "severities": dict(sorted(severity_totals.items())),
+            "statuses": dict(sorted(status_totals.items())),
+            "cwes": dict(sorted(cwe_totals.items())),
+        },
+        "events": dict(sorted(event_totals.items())),
+        "recommendations": recommendations[:8],
+    }
+
 def build_learning_digest(store, batch: dict[str, Any]) -> dict[str, Any]:
     members = []
     for member in list(batch.get("members") or []):
@@ -133,7 +210,7 @@ def build_learning_digest(store, batch: dict[str, Any]) -> dict[str, Any]:
         )
 
     return {
-        "schema": "xbow-runtime-learning-v1",
+        "schema": "xbow-runtime-learning-v2",
         "batch_id": _safe_text(batch.get("id"), 128),
         "mode": _safe_text(batch.get("mode"), 32),
         "state": _safe_text(batch.get("state"), 32),
@@ -141,6 +218,7 @@ def build_learning_digest(store, batch: dict[str, Any]) -> dict[str, Any]:
         "updated_at": batch.get("updated_at"),
         "summary": dict(batch.get("summary") or {}),
         "members": members,
+        "learning_signals": _learning_signals(members),
         "safety": {
             "reviewed_hackerone_profiles_only": True,
             "historical_awards_are_advisory_only": True,
@@ -166,6 +244,10 @@ def _render_issue_body(digest: dict[str, Any]) -> str:
         "## Batch outcome",
         "",
         json.dumps(digest.get("summary") or {}, ensure_ascii=False, sort_keys=True),
+        "",
+        "## Learning signals",
+        "",
+        json.dumps(digest.get("learning_signals") or {}, ensure_ascii=False, sort_keys=True, indent=2),
         "",
     ]
     for member in digest.get("members") or []:
