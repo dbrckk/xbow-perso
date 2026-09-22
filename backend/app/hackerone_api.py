@@ -614,7 +614,7 @@ def hackerone_simple_review_package(
     candidate_order: dict[str, int] = {}
     last_selection: dict[str, Any] = {}
 
-    for _round in range(16):
+    for _round in range(4):
         local_exclude = sorted(rejected | set(accepted))
         try:
             candidate_selection = hackerone_simple_selection(
@@ -660,7 +660,7 @@ def hackerone_simple_review_package(
             if str(item.get("status") or "") == "REVIEW"
             and str(item.get("handle") or "").strip().lower() not in accepted
             and str(item.get("handle") or "").strip().lower() not in rejected
-        ]
+        ][:2]
 
         def _load(item: dict[str, Any]) -> tuple[str, dict[str, Any] | None, list[str]]:
             handle = str(item.get("handle") or "").strip().lower()
@@ -722,6 +722,8 @@ def hackerone_simple_review_package(
                 "message": "Aucun programme HackerOne exploitable n’a été trouvé",
                 "reason": "simple_review_package_exhausted",
                 "rejected_count": len(rejected),
+                "checked_count": len(checked_handles),
+                "max_checked": 8,
                 "review_rejections": [
                     {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
                     for handle in sorted(rejection_reasons)
@@ -754,6 +756,7 @@ def hackerone_simple_review_package(
         "review_package_minimum": 1,
         "review_package_rounds": _round + 1,
         "review_package_checked": len(checked_handles),
+        "review_package_max_checked": 8,
         "review_package_rejected": len(rejected),
         "review_rejections": [
             {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
