@@ -1,15 +1,13 @@
 # Change impact
 
-Base: 5da2b4117a980b090c85d5bca19618f8a6594892
-Head: f9a32468e742a965e798a5ac5184c27b3e584485
+Base: b2597e3c0bcb473a04ab7eefc31b5a91e739a09a
+Head: 1c467e4f515c0a4f736bdc7757ab22ce7133101c
 
 ## Changed files
-- M backend/tests/test_simple_selection_cache_only.py
-- M frontend/simple.js
+- M backend/tests/test_hackerone_nuclei_e2e.py
 
 ## Affected areas
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

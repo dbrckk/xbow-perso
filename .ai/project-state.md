@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T15:47:32Z
+Generated: 2026-09-22T15:50:57Z
 
 ### Git
 - Branch: `main`
-- Head: `f9a32468e742`
-- Commit date: 2026-09-22T17:46:59+02:00
-- Commit: fix: surface actionable scanner blockers on current main (#364)
+- Head: `1c467e4f515c`
+- Commit date: 2026-09-22T17:50:45+02:00
+- Commit: test: prove recon automatically reaches queued nuclei work (#366)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/tests/test_hackerone_nuclei_e2e.py`
 - `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/simple.js`
 - `backend/app/hackerone_api.py`
@@ -45,11 +46,6 @@ Generated: 2026-09-22T15:47:32Z
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-enable-hackerone-nuclei.sh`
 - `scripts/mobile-production-status.sh`
-- `backend/app/main.py`
-- `backend/tests/test_hackerone_binding.py`
-- `backend/tests/test_hackerone_launch_api.py`
-- `backend/tests/test_hackerone_nuclei_e2e.py`
-- `backend/tests/test_hackerone_report_lifecycle_e2e.py`
 
 ### Project signals
 - `pyproject.toml`

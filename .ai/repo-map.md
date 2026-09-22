@@ -13803,6 +13803,12 @@ artifacts_written = store.list_artifacts(campaign_id)
 evidence = [
 ⋮----
 observations = store.list_observations(campaign_id)
+⋮----
+db = str(tmp_path / "auto-recon.sqlite3")
+⋮----
+def fake_recon(campaign, payload)
+⋮----
+scan_status = queue.campaign_job_status_counts(campaign_id)
 ````
 
 ## File: backend/tests/test_hackerone_outbound_submission.py
