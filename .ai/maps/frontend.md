@@ -389,7 +389,7 @@ function retryableReviewError(error)
 ⋮----
 async function loadReviewDraft(handle)
 ⋮----
-async function loadReviewDrafts(result)
+async function loadReviewDrafts(result,draftCache=new Map())
 ⋮----
 const updateProgress=()=>
 ⋮----
