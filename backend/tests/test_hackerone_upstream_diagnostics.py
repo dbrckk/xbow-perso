@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
 import app.hackerone_api as hackerone_api
-from app.hackerone_api import _hackerone_error_detail, _upstream_error
+from app.hackerone_api import _hackerone_error_detail
 from app.hackerone_client import HackerOneClientError
 
 
