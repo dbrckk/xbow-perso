@@ -111,6 +111,23 @@ bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
 
 trap - ERR
 echo
+echo "=== HACKERONE API PROBE ==="
+"${COMPOSE[@]}" --profile scanner exec -T backend python - <<\'PY\'
+from app.hackerone_client import HackerOneClient, HackerOneClientError, load_hackerone_credentials
+
+try:
+    credentials = load_hackerone_credentials()
+    HackerOneClient(credentials).get_json(
+        "hackers/programs",
+        {"page[number]": 1, "page[size]": 1},
+    )
+except HackerOneClientError as exc:
+    print("HACKERONE_API_READY=false")
+    print("HACKERONE_API_ERROR=" + exc.__class__.__name__)
+    raise SystemExit(1)
+print("HACKERONE_API_READY=true")
+PY
+echo
 echo "PERSISTENT HACKERONE NUCLEI PROFILE ARMED"
 echo "The root-only profile survives normal production updates."
 echo "Bounded builtin recon is enabled; external recon and browser automation remain disabled."
