@@ -1,4 +1,4 @@
-from app.hackerone_api import _hackerone_error_detail
+from app.hackerone_api import _hackerone_error_detail, _upstream_error
 from app.hackerone_client import HackerOneClientError
 
 
@@ -31,3 +31,22 @@ def test_hackerone_error_detail_classifies_rate_limit():
     assert detail["reason"] == "hackerone_rate_limited"
     assert detail["retryable"] is True
     assert detail["upstream_status"] == 429
+
+
+def test_upstream_error_preserves_structured_reason_for_frontend_recovery():
+    error = _upstream_error(
+        HackerOneClientError("HackerOne response contains invalid JSON")
+    )
+    assert error.status_code == 502
+    assert error.detail["reason"] == "hackerone_upstream_request_failed"
+    assert error.detail["message"] == "HackerOne upstream request failed"
+    assert error.detail["contains_secrets"] is False
+
+
+def test_upstream_retryable_error_returns_503_with_structured_reason():
+    error = _upstream_error(
+        HackerOneClientError("HackerOne transport timed out")
+    )
+    assert error.status_code == 503
+    assert error.detail["reason"] == "hackerone_timeout"
+    assert error.detail["retryable"] is True
