@@ -22,16 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T13:51:55Z
+Generated: 2026-09-22T13:59:54Z
 
 ### Git
 - Branch: `main`
-- Head: `c799f9e4d83a`
-- Commit date: 2026-09-22T15:51:43+02:00
-- Commit: fix: start HackerOne campaigns with bounded recon before scanning (#357)
+- Head: `ce486ce9eb88`
+- Commit date: 2026-09-22T15:59:41+02:00
+- Commit: feat: show exact runtime remediation in the launch dashboard (#359)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `backend/app/main.py`
 - `backend/tests/test_hackerone_batch_api.py`
 - `backend/tests/test_hackerone_binding.py`
@@ -39,19 +44,11 @@ Generated: 2026-09-22T13:51:55Z
 - `backend/tests/test_hackerone_nuclei_e2e.py`
 - `backend/tests/test_hackerone_report_lifecycle_e2e.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 - `backend/app/worker_service.py`
 - `backend/tests/test_worker_observations.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_job_provenance_integration.py`
 - `backend/tests/test_orchestrator.py`
-- `backend/tests/test_mobile_production_update_script.py`
-- `backend/tests/test_simple_selection_cache_only.py`
-- `scripts/mobile-production-status.sh`
 
 ### Project signals
 - `pyproject.toml`

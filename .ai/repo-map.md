@@ -13143,6 +13143,8 @@ def test_simple_dashboard_surfaces_live_scanner_readiness()
 def test_simple_dashboard_bounds_review_profile_persistence()
 ⋮----
 def test_start_button_requires_live_runtime_readiness()
+⋮----
+def test_simple_dashboard_surfaces_runtime_remediation()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
