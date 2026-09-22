@@ -21,6 +21,16 @@ fi
 cd "$INSTALL_DIR"
 chmod 600 "$SECRETS_FILE"
 
+# Always converge the VPS onto the current safe production baseline first.
+# This makes the activation command resilient when containers are stopped,
+# the checkout is stale, or .env still contains old manually-edited gates.
+echo "=== SAFE PRODUCTION REFRESH ==="
+bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
+
+# mobile-production-update may have refreshed the checkout. Continue with the
+# now-running stack, while the repository .env remains fail-safe.
+cd "$INSTALL_DIR"
+
 read_env_value() {
   local key="$1"
   grep -E "^[[:space:]]*${key}=" .env | tail -n1 | cut -d= -f2- || true
