@@ -444,16 +444,14 @@ def hackerone_simple_selection():
     store = storage()
     catalog = store.get_hackerone_catalog_state()
     if catalog is None:
-        try:
-            catalog = refresh_hackerone_catalog(store, client=HackerOneClient())
-        except HackerOneClientError as exc:
-            raise HTTPException(
-                status_code=503,
-                detail={
-                    "message": "Catalogue HackerOne indisponible et aucun cache local n’existe encore",
-                    "reason": "hackerone_catalog_unavailable_no_cache",
-                },
-            ) from exc
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Le catalogue local HackerOne n’est pas encore initialisé",
+                "reason": "hackerone_catalog_not_initialized",
+                "retry": "refresh_catalog_once",
+            },
+        )
 
     intelligence = store.get_hackerone_intelligence_state() or {}
     profiles = store.list_hackerone_review_profiles(limit=1000)
@@ -474,6 +472,7 @@ def hackerone_simple_selection():
         "provider": "hackerone",
         **result,
         "catalog_checked_at": catalog.get("checked_at"),
+        "catalog_program_count": len(list(catalog.get("programs") or [])),
         "catalog_source": "local-cache",
         "selection_requires_live_hackerone": False,
         "read_only": True,
