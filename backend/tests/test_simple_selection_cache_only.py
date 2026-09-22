@@ -28,7 +28,7 @@ def test_simple_dashboard_initializes_catalog_once_then_retries_selection():
     assert "/imports/hackerone/connection" in script
     assert "/imports/hackerone/programs?refresh=true" in script
     assert "return await api('/hackerone/simple-selection'+query)" in script
-    assert "Remplacement automatique de " in script
+    assert "Remplacement ciblé de " in script
 
 
 def test_simple_dashboard_surfaces_actionable_hackerone_errors():
@@ -56,8 +56,8 @@ def test_simple_dashboard_replaces_individually_unavailable_review_programs():
     assert "const REVIEW_CONCURRENCY=2;" in script
     assert "reviewWorker" in script
     assert "hackerone_program_review_unavailable" in script
-    assert "Remplacement automatique de " in script
-    assert "loadSimpleSelection(excluded)" in script
+    assert "Remplacement ciblé de " in script
+    assert "loadSimpleSelection(replacementExclude)" in script
 
 
 def test_simple_dashboard_uses_launch_time_replacement_instead_of_duplicate_preflight():
@@ -95,3 +95,13 @@ def test_simple_dashboard_surfaces_scanner_activation_command_on_preflight_block
     assert "runtime?.scanner_start_command" in script
     assert "À exécuter sur le VPS" in script
     assert "Scanner non prêt" in script
+
+
+def test_simple_dashboard_does_not_rerank_all_six_when_one_programme_fails():
+    script = _text("frontend/simple.js")
+    assert "function rebuildSimpleSelection(base,groups)" in script
+    assert "function replaceFailedSelection(current,replacements,failedHandles)" in script
+    assert "currentItems.filter(item=>" in script
+    assert "return handle&&!failed.has(handle);" in script
+    assert "if(nextGroups[key].length>=2)break;" in script
+    assert "for(let round=0;round<8;round+=1)" in script
