@@ -303,8 +303,17 @@ def test_reviewed_batch_rejects_new_launch_when_another_batch_is_active(
             "provider": "hackerone",
             "mode": "parallel",
             "state": "running",
-            "members": [],
-            "summary": {},
+            "members": [
+                {
+                    "index": 0,
+                    "campaign_id": "existing-campaign",
+                    "handle": "existing-program",
+                    "snapshot_sha256": "a" * 64,
+                    "status": "running",
+                    "reason": None,
+                }
+            ],
+            "summary": {"running": 1},
             "created_at": "2026-09-22T13:00:00+00:00",
             "updated_at": "2026-09-22T13:00:00+00:00",
         },
