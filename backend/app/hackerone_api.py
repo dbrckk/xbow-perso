@@ -717,7 +717,7 @@ def get_hackerone_program_review_draft(handle: str):
     try:
         snapshot = fetch_hackerone_program_snapshot(handle)
     except HackerOneClientError as exc:
-        if exc.status_code in {403, 404, 410}:
+        if exc.status_code in {400, 403, 404, 406, 410, 422}:
             raise HTTPException(
                 status_code=409,
                 detail={

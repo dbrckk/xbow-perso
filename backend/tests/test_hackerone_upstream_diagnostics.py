@@ -1,3 +1,6 @@
+from fastapi import HTTPException
+
+import app.hackerone_api as hackerone_api
 from app.hackerone_api import _hackerone_error_detail
 from app.hackerone_client import HackerOneClientError
 
@@ -31,3 +34,19 @@ def test_hackerone_error_detail_classifies_rate_limit():
     assert detail["reason"] == "hackerone_rate_limited"
     assert detail["retryable"] is True
     assert detail["upstream_status"] == 429
+
+
+def test_program_specific_422_is_replaceable_review_candidate(monkeypatch):
+    def fail(_handle):
+        raise HackerOneClientError("HackerOne returned HTTP 422", status_code=422)
+
+    monkeypatch.setattr(hackerone_api, "fetch_hackerone_program_snapshot", fail)
+    try:
+        hackerone_api.get_hackerone_program_review_draft("example")
+    except HTTPException as exc:
+        assert exc.status_code == 409
+        assert exc.detail["reason"] == "hackerone_program_review_unavailable"
+        assert exc.detail["handle"] == "example"
+        assert exc.detail["upstream_status"] == 422
+    else:
+        raise AssertionError("expected HTTPException")
