@@ -285,7 +285,7 @@
     }
   }
 
-  async function prepare(){
+  async function prepare(initialExcluded=[]){
     if(!requireToken())return;
     const button=$('prepare');
     button.disabled=true;
@@ -293,7 +293,11 @@
     clearReviewPanel();
     setStatus('Sélection automatique : 2 faciles + 2 moyens + 2 fort potentiel…');
     try{
-      const excluded=[];
+      const excluded=[...new Set(
+        (Array.isArray(initialExcluded)?initialExcluded:[])
+          .map(value=>String(value||'').trim().toLowerCase())
+          .filter(Boolean)
+      )];
       for(let round=0;round<4;round+=1){
         const result=await loadSimpleSelection(excluded);
         selectionResult=result;
@@ -453,6 +457,19 @@
         body:JSON.stringify({mode,handles:selection})
       });
       if(preflight?.go!==true){
+        const replaceable=(Array.isArray(preflight?.replaceable_handles)
+          ?preflight.replaceable_handles:[])
+          .map(value=>String(value||'').trim().toLowerCase())
+          .filter(handle=>handle&&selection.includes(handle));
+        if(preflight?.runtime_ready===true&&replaceable.length){
+          setStatus(
+            'Pré-vol : '+replaceable.length+' programme(s) ont changé. Remplacement automatique…',
+            'warn'
+          );
+          button.disabled=false;
+          await prepare(replaceable);
+          return;
+        }
         const blockers=(Array.isArray(preflight?.blockers)?preflight.blockers:[])
           .map(value=>String(value||'')).filter(Boolean);
         throw new Error('Pré-vol bloqué'+(blockers.length?' · '+blockers.join(' · '):''));
