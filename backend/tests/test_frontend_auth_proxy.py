@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=70' in index
-    assert '/app.css?v=70' in index
-    assert "xbow-perso-v70" in sw
+    assert '/simple.js?v=71' in index
+    assert '/app.css?v=71' in index
+    assert "xbow-perso-v71" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=70" defer></script>' in index
+    assert '<script src="/simple.js?v=71" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -98,3 +98,13 @@ def test_simple_dashboard_shows_review_loading_progress():
     assert "chargement des politiques '+completed+'/'+candidates.length" in script
     assert "completed+=1;" in script
     assert "updateProgress();" in script
+
+
+def test_simple_dashboard_surfaces_live_scanner_readiness():
+    script = _text("frontend/simple.js")
+    html = _text("frontend/index.html")
+    assert 'id="runtimeStatus"' in html
+    assert "/hackerone/live-readiness" in script
+    assert "Scanner : prêt pour les programmes autorisés." in script
+    assert "Scanner : non prêt" in script
+    assert "item?.required===true&&item?.ok!==true" in script
