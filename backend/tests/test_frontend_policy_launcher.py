@@ -43,7 +43,7 @@ def test_minimal_frontend_preserves_safety_and_server_persistence():
     html = _text("frontend/index.html")
     script = _text("frontend/simple.js")
 
-    assert "déjà revus" in html
+    assert "valide leur politique si nécessaire" in html
     assert "revalidé juste avant son démarrage" in html
     assert "continue sur le serveur" in html
     assert "localStorage.setItem(TOKEN_KEY" in script
