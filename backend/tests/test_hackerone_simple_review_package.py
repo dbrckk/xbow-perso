@@ -147,3 +147,26 @@ def test_atomic_review_package_stops_on_global_hackerone_outage(monkeypatch):
         assert detail["contains_secrets"] is False
     else:
         raise AssertionError("global HackerOne outage must stop preparation")
+
+
+def test_review_package_returns_one_or_two_usable_programmes(monkeypatch):
+    def fake_selection(exclude=""):
+        excluded={value for value in exclude.split(",") if value}
+        handles=[h for h in ["a","b","c","d","e","f"] if h not in excluded]
+        while len(handles)<6:
+            handles.append("z"+str(len(handles)))
+        return _selection(handles[:6])
+
+    monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: _snapshot(handle, complete=handle in {"a","b"}),
+    )
+
+    result=hackerone_api.hackerone_simple_review_package()
+
+    assert 1 <= len(result["handles"]) <= 2
+    assert result["review_package_target"] == 2
+    assert result["review_package_minimum"] == 1
+    assert result["complete"] is True
