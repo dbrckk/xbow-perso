@@ -1193,6 +1193,7 @@
         "backend/app/observer_metrics.py",
         "backend/app/observer_runtime.py",
         "backend/app/operational_alerts.py",
+        "backend/app/orchestrator.py",
         "backend/app/outbox_recovery.py",
         "backend/app/pentagi_adapter.py",
         "backend/app/pentagi_admission.py",
@@ -1341,6 +1342,7 @@
         "backend/tests/test_hackerone_attention.py",
         "backend/tests/test_hackerone_binding.py",
         "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_nuclei_e2e.py",
         "backend/tests/test_hackerone_outbound_submission.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
         "backend/tests/test_hackerone_report_sync_worker.py",
@@ -1404,8 +1406,8 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 182,
-      "out_degree": 56
+      "in_degree": 183,
+      "out_degree": 57
     },
     "backend/app/metrics.py": {
       "dependencies": [
@@ -1527,6 +1529,8 @@
         "backend/tests/test_finding_readiness.py",
         "backend/tests/test_finding_triage.py",
         "backend/tests/test_form_waf_reasoning.py",
+        "backend/tests/test_hackerone_nuclei_e2e.py",
+        "backend/tests/test_hackerone_report_lifecycle_e2e.py",
         "backend/tests/test_high_value_intelligence.py",
         "backend/tests/test_hypothesis_engine.py",
         "backend/tests/test_hypothesis_memory.py",
@@ -1557,7 +1561,7 @@
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 112,
+      "in_degree": 114,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -1744,15 +1748,18 @@
         "backend/app/validation_state.py"
       ],
       "dependents": [
+        "backend/app/main.py",
         "backend/app/worker_service.py",
         "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_hackerone_nuclei_e2e.py",
+        "backend/tests/test_hackerone_report_lifecycle_e2e.py",
         "backend/tests/test_job_provenance_integration.py",
         "backend/tests/test_nuclei_queue_lifecycle.py",
         "backend/tests/test_orchestrator.py",
         "backend/tests/test_orchestrator_validation_alignment.py",
         "backend/tests/test_runtime_budget_config.py"
       ],
-      "in_degree": 7,
+      "in_degree": 10,
       "out_degree": 39
     },
     "backend/app/outbox_recovery.py": {
@@ -3650,12 +3657,15 @@
       "dependencies": [
         "backend/app/hackerone_api.py",
         "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/orchestrator.py",
         "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 7
     },
     "backend/tests/test_hackerone_outbound_submission.py": {
       "dependencies": [
@@ -3748,13 +3758,15 @@
       "dependencies": [
         "backend/app/jobqueue.py",
         "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/orchestrator.py",
         "backend/app/storage.py",
         "backend/app/validator.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 5
+      "out_degree": 7
     },
     "backend/tests/test_hackerone_report_sync_worker.py": {
       "dependencies": [

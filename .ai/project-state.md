@@ -22,16 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T12:58:29Z
+Generated: 2026-09-22T13:51:55Z
 
 ### Git
 - Branch: `main`
-- Head: `5a7ed9e8235c`
-- Commit date: 2026-09-22T14:58:17+02:00
-- Commit: fix: only enable launch when HackerOne runtime is live (#356)
+- Head: `c799f9e4d83a`
+- Commit date: 2026-09-22T15:51:43+02:00
+- Commit: fix: start HackerOne campaigns with bounded recon before scanning (#357)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/app/main.py`
+- `backend/tests/test_hackerone_batch_api.py`
+- `backend/tests/test_hackerone_binding.py`
+- `backend/tests/test_hackerone_launch_api.py`
+- `backend/tests/test_hackerone_nuclei_e2e.py`
+- `backend/tests/test_hackerone_report_lifecycle_e2e.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
@@ -45,10 +52,6 @@ Generated: 2026-09-22T12:58:29Z
 - `backend/tests/test_mobile_production_update_script.py`
 - `backend/tests/test_simple_selection_cache_only.py`
 - `scripts/mobile-production-status.sh`
-- `scripts/mobile-production-update.sh`
-- `backend/app/hackerone_api.py`
-- `backend/tests/test_hackerone_prelaunch.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
 
 ### Project signals
 - `pyproject.toml`

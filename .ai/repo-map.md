@@ -6127,12 +6127,23 @@ host = (urlparse(str(campaign.target.primary_url)).hostname or "").lower()
 receipt = policy_receipt(campaign, host, "automated_scan")
 ⋮----
 hackerone_bound = any(
-job_kind = "nuclei_scan" if hackerone_bound else "strix_scan"
-payload = sanitized_scan_payload(campaign, receipt, job_kind=job_kind)
 request_id = _pending_campaign_start_request(campaign) or str(uuid4())
 ⋮----
-job = queue().enqueue(
+planner_result = None
+⋮----
+planner_result = advance_campaign(campaign, jobs, storage())
+job_ids = [
+⋮----
+action = dict(planner_result.get("action") or {})
+⋮----
+job = jobs.get(job_ids[0])
+⋮----
+job_kind = "strix_scan"
+payload = sanitized_scan_payload(campaign, receipt, job_kind=job_kind)
+job = jobs.enqueue(
+⋮----
 campaign = _reconcile_campaign_started(
+result = {
 ⋮----
 @app.post("/api/campaigns/{campaign_id}/cancel")
 def cancel_campaign(campaign_id: str)
@@ -6203,6 +6214,8 @@ def queue_report(campaign_id: str, platform: Literal["generic", "hackerone", "bu
 ⋮----
 purpose = "manual"
 request_id = pending_request_id(
+⋮----
+job = queue().enqueue(
 ⋮----
 @app.post("/api/campaigns/{campaign_id}/artifacts")
 def add_text_artifact(campaign_id: str, evidence: EvidenceInput = Body(...))
@@ -13391,7 +13404,7 @@ job = {
 ⋮----
 verification = verify_job_provenance(job, campaign)
 ⋮----
-def test_hackerone_conservative_dry_run_queues_one_verified_nuclei_job(tmp_path, monkeypatch)
+def test_hackerone_start_queues_verified_bounded_recon_before_scanning(tmp_path, monkeypatch)
 ⋮----
 start_result = main.start_campaign(campaign_id)
 ⋮----
@@ -13401,7 +13414,7 @@ started = main.Campaign.model_validate(persisted)
 ⋮----
 started_events = [event for event in started.events if event.get("type") == "campaign_started"]
 ⋮----
-job = jobs.get(started_events[0]["job_id"])
+queued = [jobs.get(job_id) for job_id in start_result["planner"]["job_ids"]]
 ⋮----
 verification = verify_job_provenance(job, started)
 ⋮----
@@ -13741,10 +13754,18 @@ launch = TestClient(api).post(
 ⋮----
 launched = launch.json()
 campaign_id = launched["campaign"]["id"]
-scan_job = launched["start"]["job"]
 ⋮----
 queue = JobQueue(db)
 store = Storage(db, artifacts)
+⋮----
+recon_job = queue.claim_allowed("e2e-recon-fixture", ("recon_task",))
+⋮----
+asset = next(
+⋮----
+campaign = Campaign.model_validate(store.get_campaign(campaign_id))
+scan_plan = advance_campaign(campaign, queue, store)
+⋮----
+scan_job = queue.get(scan_plan["job_ids"][0])
 ⋮----
 finished_scan = queue.get(scan_job["id"])
 ⋮----
@@ -13973,10 +13994,18 @@ launch = client.post(
 ⋮----
 launched = launch.json()
 campaign_id = launched["campaign"]["id"]
-scan_job = launched["start"]["job"]
 ⋮----
 queue = JobQueue(db)
 store = Storage(db, artifacts)
+⋮----
+recon_job = queue.claim_allowed("e2e-recon-fixture", ("recon_task",))
+⋮----
+asset = next(
+⋮----
+campaign_model = Campaign.model_validate(store.get_campaign(campaign_id))
+scan_plan = advance_campaign(campaign_model, queue, store)
+⋮----
+scan_job = queue.get(scan_plan["job_ids"][0])
 ⋮----
 campaign = store.get_campaign(campaign_id)
 ⋮----
