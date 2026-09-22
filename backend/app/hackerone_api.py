@@ -831,14 +831,31 @@ def list_hackerone_review_profiles(
     }
 
 
-@router.post("/api/imports/hackerone/campaigns")
-def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
+def _admit_hackerone_campaign_impl(
+    payload: HackerOneCampaignAdmissionInput,
+    *,
+    verified_remote_binding: dict[str, Any] | None = None,
+):
     from .campaign_audit import append_campaign_event
     from .hackerone_scope_import import HackerOneScopeImportError, import_hackerone_structured_scope
     from .job_provenance import policy_snapshot_fingerprint
     from .main import Campaign, CampaignState, TargetInput, save_campaign, utcnow
 
-    remote_binding = _verify_remote_binding(payload)
+    if verified_remote_binding is None:
+        remote_binding = _verify_remote_binding(payload)
+    else:
+        expected_handle = str(payload.remote_handle or "")
+        expected_sha = str(payload.remote_snapshot_sha256 or "")
+        if (
+            verified_remote_binding.get("verified") is not True
+            or str(verified_remote_binding.get("handle") or "") != expected_handle
+            or str(verified_remote_binding.get("snapshot_sha256") or "") != expected_sha
+        ):
+            raise HTTPException(
+                status_code=500,
+                detail="Internal HackerOne verified binding mismatch",
+            )
+        remote_binding = dict(verified_remote_binding)
     try:
         preview = import_hackerone_structured_scope(payload.document)
         policy = _policy_from_input(payload.policy)
@@ -908,6 +925,11 @@ def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
         "campaign": campaign.model_dump(mode="json"),
         "policy_binding": policy_binding,
     }
+
+
+@router.post("/api/imports/hackerone/campaigns")
+def admit_hackerone_campaign(payload: HackerOneCampaignAdmissionInput):
+    return _admit_hackerone_campaign_impl(payload)
 
 
 def _batch_summary(members: list[dict[str, Any]]) -> dict[str, int]:
@@ -1192,16 +1214,28 @@ def launch_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInput):
             },
         )
 
-    return launch_hackerone_batch(
+    verified_bindings = {
+        str(item.remote_handle): {
+            "handle": str(item.remote_handle),
+            "snapshot_sha256": str(item.remote_snapshot_sha256),
+            "verified": True,
+        }
+        for item in prepared
+    }
+    return _launch_hackerone_batch_impl(
         HackerOneBatchLaunchInput(
             mode=payload.mode,
             campaigns=prepared,
-        )
+        ),
+        verified_remote_bindings=verified_bindings,
     )
 
 
-@router.post("/api/imports/hackerone/batches/launch")
-def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
+def _launch_hackerone_batch_impl(
+    payload: HackerOneBatchLaunchInput,
+    *,
+    verified_remote_bindings: dict[str, dict[str, Any]] | None = None,
+):
     from .campaign_audit import append_campaign_event
     from .hackerone_batch import reconcile_hackerone_batch
     from .main import (
@@ -1218,7 +1252,16 @@ def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
 
     try:
         for index, campaign_payload in enumerate(payload.campaigns):
-            admitted = admit_hackerone_campaign(campaign_payload)
+            handle = str(campaign_payload.remote_handle or "")
+            verified_binding = (
+                verified_remote_bindings.get(handle)
+                if verified_remote_bindings is not None
+                else None
+            )
+            admitted = _admit_hackerone_campaign_impl(
+                campaign_payload,
+                verified_remote_binding=verified_binding,
+            )
             campaign_id = str(admitted["campaign"]["id"])
             admitted_ids.append(campaign_id)
             members.append(
@@ -1274,6 +1317,11 @@ def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
     if latest is None:
         raise HTTPException(status_code=500, detail="HackerOne batch disappeared")
     return latest
+
+
+@router.post("/api/imports/hackerone/batches/launch")
+def launch_hackerone_batch(payload: HackerOneBatchLaunchInput):
+    return _launch_hackerone_batch_impl(payload)
 
 
 @router.get("/api/imports/hackerone/batches")

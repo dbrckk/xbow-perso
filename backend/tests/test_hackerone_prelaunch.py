@@ -284,10 +284,11 @@ def test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflig
     )
     monkeypatch.setattr(
         hackerone_api,
-        "launch_hackerone_batch",
-        lambda payload: {
+        "_launch_hackerone_batch_impl",
+        lambda payload, verified_remote_bindings=None: {
             "mode": payload.mode,
             "campaign_count": len(payload.campaigns),
+            "verified_count": len(verified_remote_bindings or {}),
         },
     )
 
@@ -299,7 +300,11 @@ def test_reviewed_launch_reuses_handle_preparation_instead_of_full_batch_preflig
 
     assert calls == ["alpha", "beta"]
     assert len(prepared) == 2
-    assert result == {"mode": "parallel", "campaign_count": 2}
+    assert result == {
+        "mode": "parallel",
+        "campaign_count": 2,
+        "verified_count": 2,
+    }
 
 
 def test_reviewed_batch_preflight_does_not_mark_global_upstream_failure_replaceable(monkeypatch):
