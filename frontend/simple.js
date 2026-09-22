@@ -2,6 +2,7 @@
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const REVIEW_CONCURRENCY=2;
+  const UI_VERSION='v79';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -162,6 +163,22 @@
       policy.className='simple-review-policy';
       policy.textContent=String(draft?.policy_text||'Aucun texte de politique fourni par HackerOne.');
       body.appendChild(policy);
+
+      const exclusions=Array.isArray(draft?.scope_exclusions)?draft.scope_exclusions:[];
+      if(exclusions.length){
+        const exclusionsBox=document.createElement('div');
+        exclusionsBox.className='simple-review-policy';
+        const title=document.createElement('strong');
+        title.textContent='Exclusions HackerOne';
+        exclusionsBox.appendChild(title);
+        for(const item of exclusions){
+          const line=document.createElement('p');
+          line.className='muted compact';
+          line.textContent=(String(item?.category||'exclusion')+' · '+String(item?.details||'')).trim();
+          exclusionsBox.appendChild(line);
+        }
+        body.appendChild(exclusionsBox);
+      }
 
       const reviewState=document.createElement('p');
       reviewState.className='muted compact';
@@ -441,92 +458,65 @@
     const button=$('prepare');
     button.disabled=true;
     $('start').disabled=true;
-    const previousResult=selectionResult;
-    const previousSelection=[...selection];
     clearReviewPanel();
-    setStatus('Sélection automatique : 2 faciles + 2 moyens + 2 fort potentiel…');
+    setStatus('Préparation serveur des 6 programmes et de leurs politiques…');
     try{
-      const initialFailed=[...new Set(
+      const excluded=[...new Set(
         (Array.isArray(initialExcluded)?initialExcluded:[])
           .map(value=>String(value||'').trim().toLowerCase())
           .filter(Boolean)
       )];
-      const excluded=[...initialFailed];
-      const draftCache=new Map();
-      let currentResult=null;
-
-      if(initialFailed.length&&previousResult&&previousSelection.length===6){
-        const currentHandles=(Array.isArray(previousResult?.handles)?previousResult.handles:previousSelection)
-          .map(value=>String(value||'').trim().toLowerCase())
-          .filter(Boolean);
-        const replacementExclude=[...new Set([...excluded,...currentHandles])];
-        const replacements=await loadSimpleSelection(replacementExclude);
-        currentResult=replaceFailedSelection(previousResult,replacements,initialFailed);
-        if(!currentResult){
-          throw new Error('Pas assez de programmes compatibles pour remplacer uniquement les programmes devenus indisponibles.');
+      const query=excluded.length
+        ?'?exclude='+encodeURIComponent(excluded.join(','))
+        :'';
+      let result;
+      try{
+        result=await api('/hackerone/simple-review-package'+query);
+      }catch(error){
+        if(error?.reason!=='hackerone_catalog_not_initialized')throw error;
+        setStatus('Premier démarrage : initialisation du catalogue HackerOne…');
+        const connection=await api('/imports/hackerone/connection');
+        if(connection?.configured!==true){
+          const missing=new Error('Connexion HackerOne non configurée sur le serveur.');
+          missing.reason='hackerone_credentials_missing';
+          throw missing;
         }
+        await api('/imports/hackerone/programs?refresh=true');
+        result=await api('/hackerone/simple-review-package'+query);
       }
 
-      for(let round=0;round<8;round+=1){
-        if(!currentResult){
-          currentResult=await loadSimpleSelection(excluded);
-        }
-        selectionResult=currentResult;
-        selection=Array.isArray(currentResult?.handles)?currentResult.handles.filter(Boolean):[];
-        renderSelection(currentResult);
-        if(currentResult?.complete!==true||selection.length!==6){
-          throw new Error(
-            'Pas assez de programmes bounty compatibles pour constituer les 6 campagnes. Disponibles : '+selection.length+'.'
-          );
-        }
+      selectionResult=result;
+      selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
+      renderSelection(result);
+      if(result?.complete!==true||selection.length!==6){
+        throw new Error('Le serveur n’a pas pu constituer les 6 campagnes.');
+      }
 
-        const reviewCount=Number(currentResult?.review_count||0);
-        if(reviewCount>0){
-          $('start').disabled=true;
-          const reviewResult=await loadReviewDrafts(currentResult,draftCache);
-          const failed=Array.isArray(reviewResult?.failedHandles)?reviewResult.failedHandles:[];
-          if(failed.length){
-            for(const handle of failed){
-              if(!excluded.includes(handle))excluded.push(handle);
-            }
-            const currentHandles=(Array.isArray(currentResult?.handles)?currentResult.handles:selection)
-              .map(value=>String(value||'').trim().toLowerCase())
-              .filter(Boolean);
-            const replacementExclude=[...new Set([...excluded,...currentHandles])];
-            setStatus(
-              'Remplacement ciblé de '+failed.length+
-              ' programme(s) incompatible(s) · les autres politiques restent validées…',
-              'warn'
-            );
-            const replacements=await loadSimpleSelection(replacementExclude);
-            const merged=replaceFailedSelection(currentResult,replacements,failed);
-            if(!merged){
-              throw new Error('Aucun remplacement compatible trouvé dans la même catégorie.');
-            }
-            currentResult=merged;
-            clearReviewPanel();
-            continue;
-          }
-          if($('reviewAllConfirm'))$('reviewAllConfirm').checked=false;
-          setStatus(
-            reviewCount+' programme(s) doivent être validés une seule fois. Ouvre chaque politique, coche la confirmation puis valide.',
-            'warn'
-          );
-          return;
+      reviewDrafts=Array.isArray(result?.review_drafts)?result.review_drafts:[];
+      const reviewCount=Number(result?.review_count||0);
+      if(reviewCount>0){
+        if(reviewDrafts.length!==reviewCount){
+          throw new Error('Le paquet de revue HackerOne est incomplet.');
         }
-
-        await refreshRuntimeReadiness({quiet:true});
-        updateStartAvailability();
-        const revalidationCount=Number(currentResult?.revalidation_count||0);
+        renderReviewDrafts();
+        if($('reviewAllConfirm'))$('reviewAllConfirm').checked=false;
         setStatus(
-          revalidationCount
-            ?'Sélection prête : '+revalidationCount+' programme(s) déjà revu(s) seront revalidés automatiquement au démarrage.'
-            :'Sélection prête : les 6 programmes sont READY.',
-          'ok'
+          reviewCount+' programme(s) nécessitent une validation initiale. Les remplacements incompatibles ont déjà été résolus côté serveur.',
+          'warn'
         );
         return;
       }
-      throw new Error('Impossible de trouver 6 programmes dont la politique est disponible pour revue.');
+
+      clearReviewPanel();
+      await refreshRuntimeReadiness({quiet:true});
+      updateStartAvailability();
+      const revalidationCount=Number(result?.revalidation_count||0);
+      setStatus(
+        revalidationCount
+          ?'Sélection prête : '+revalidationCount+' programme(s) déjà revu(s) seront revalidés au démarrage.'
+          :'Sélection prête : les 6 programmes sont READY.',
+        'ok'
+      );
     }catch(error){
       selection=[];
       selectionResult=null;
@@ -535,26 +525,22 @@
       $('selection').textContent='Aucune sélection exploitable.';
       clearReviewPanel();
       let message=error.message;
-      const reason=String(error?.connectionReason||error?.reason||'');
-      const upstreamStatus=Number(error?.upstreamStatus||error?.detail?.upstream_status||0);
-      if(reason==='hackerone_credentials_missing'){
+      const reason=String(error?.reason||error?.detail?.reason||'');
+      if(reason==='simple_review_package_incomplete'||reason==='simple_review_package_exhausted'){
+        const rejected=Number(error?.detail?.rejected_count||0);
+        message='Pas assez de programmes compatibles après vérification'+(rejected?' ('+rejected+' rejeté(s))':'')+'.';
+      }else if(reason==='hackerone_credentials_missing'){
         message='Connexion HackerOne absente sur le serveur.';
       }else if(reason==='hackerone_authentication_failed'){
-        message='Identifiants HackerOne refusés par HackerOne. Le token doit être régénéré ou corrigé.';
+        message='Identifiants HackerOne refusés par HackerOne.';
       }else if(reason==='hackerone_rate_limited'){
-        message='Limite HackerOne atteinte. La sélection locale reste conservée ; réessaie dans quelques minutes.';
+        message='Limite HackerOne atteinte. Réessaie dans quelques minutes.';
       }else if(reason==='hackerone_timeout'){
         message='HackerOne ne répond pas avant le délai serveur.';
       }else if(reason==='hackerone_connection_failed'||reason==='hackerone_io_failed'){
         message='Le VPS ne parvient pas à joindre HackerOne.';
-      }else if(reason==='hackerone_forbidden'){
-        message='HackerOne refuse l’accès à la ressource demandée.';
       }else if(reason==='hackerone_upstream_unavailable'){
         message='HackerOne est momentanément inaccessible.';
-      }else if(reason==='hackerone_redirect_refused'){
-        message='HackerOne a renvoyé une redirection inattendue.';
-      }else if(reason==='hackerone_upstream_request_failed'){
-        message='Réponse HackerOne non exploitable'+(upstreamStatus?' (HTTP '+upstreamStatus+')':'')+'.';
       }
       setStatus('Sélection impossible : '+message,'err');
     }finally{
@@ -933,6 +919,13 @@
 
   function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
+    const versionNode=$('buildVersion');
+    if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('/sw.js?v=79',{updateViaCache:'none'})
+        .then(registration=>registration.update())
+        .catch(()=>{});
+    }
     $('token').addEventListener('input',saveToken);
     $('token').addEventListener('change',()=>void refreshRuntimeReadiness({quiet:true}));
     $('prepare').addEventListener('click',()=>void prepare());
