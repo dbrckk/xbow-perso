@@ -1139,15 +1139,10 @@ def _rollback_admitted_batch_campaigns(campaign_ids: list[str]) -> None:
             continue
 
 
-def _reviewed_campaign_input(
-    handle: str,
+def _reviewed_campaign_input_from_snapshot(
+    snapshot,
     store,
 ) -> HackerOneCampaignAdmissionInput:
-    try:
-        snapshot = fetch_hackerone_program_snapshot(handle)
-    except HackerOneClientError as exc:
-        raise _upstream_error(exc) from exc
-
     block_reason = _remote_program_launch_block_reason(dict(snapshot.program or {}))
     if block_reason is not None:
         raise HTTPException(
@@ -1243,6 +1238,17 @@ def _reviewed_campaign_input(
                 "handles": [snapshot.handle],
             },
         ) from exc
+
+
+def _reviewed_campaign_input(
+    handle: str,
+    store,
+) -> HackerOneCampaignAdmissionInput:
+    try:
+        snapshot = fetch_hackerone_program_snapshot(handle)
+    except HackerOneClientError as exc:
+        raise _upstream_error(exc) from exc
+    return _reviewed_campaign_input_from_snapshot(snapshot, store)
 
 
 _REPLACEABLE_PREFLIGHT_REASONS = {
