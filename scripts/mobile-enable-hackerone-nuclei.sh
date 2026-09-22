@@ -173,3 +173,8 @@ if failed:
 print("BUG_BOUNTY_LAUNCH_READY=true")
 print("NEXT_STEP=Open the dashboard, review any first-run policies, then press Commencer.")
 PY
+
+PUBLIC_HOST="$(read_env_value XBOW_PUBLIC_HOST)"
+if [ -n "$PUBLIC_HOST" ]; then
+  echo "DASHBOARD_URL=https://$PUBLIC_HOST/"
+fi
