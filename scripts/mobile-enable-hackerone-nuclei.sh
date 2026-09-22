@@ -130,7 +130,6 @@ install -m 600 "$TMP_PROFILE" "$LIVE_PROFILE_FILE"
 echo "=== ARM PERSISTENT HACKERONE NUCLEI PROFILE ==="
 bash "$INSTALL_DIR/scripts/mobile-production-update.sh"
 
-trap - ERR
 echo
 echo "=== HACKERONE API PROBE ==="
 "${COMPOSE[@]}" --profile scanner exec -T backend python - <<'PY'
@@ -173,6 +172,8 @@ if failed:
 print("BUG_BOUNTY_LAUNCH_READY=true")
 print("NEXT_STEP=Open the dashboard, review any first-run policies, then press Commencer.")
 PY
+
+trap - ERR
 
 PUBLIC_HOST="$(read_env_value XBOW_PUBLIC_HOST)"
 if [ -n "$PUBLIC_HOST" ]; then
