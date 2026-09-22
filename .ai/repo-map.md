@@ -3741,6 +3741,8 @@ program_name = str(snapshot.program.get("name") or "").strip()
 program_name = f"H1 {snapshot.handle}"
 program_name = program_name[:120]
 ⋮----
+_REPLACEABLE_PREFLIGHT_REASONS = {
+⋮----
 def _runtime_prelaunch_verdict() -> dict[str, Any]
 ⋮----
 """Return live runtime readiness without touching HackerOne program state."""
@@ -3769,6 +3771,7 @@ members: list[dict[str, Any]] = []
 prepared = _reviewed_campaign_input(handle, store)
 ⋮----
 detail = exc.detail if isinstance(exc.detail, dict) else {}
+reason = str(detail.get("reason") or "reviewed_preflight_blocked")
 ⋮----
 ready = [item for item in members if item["status"] == "ready"]
 blocked = [item for item in members if item["status"] == "blocked"]
@@ -13842,6 +13845,12 @@ prepared = []
 item = hackerone_api.HackerOneCampaignAdmissionInput(
 ⋮----
 result = hackerone_api.launch_reviewed_hackerone_batch(payload)
+⋮----
+def test_reviewed_batch_preflight_does_not_mark_global_upstream_failure_replaceable(monkeypatch)
+⋮----
+def fake_reviewed(_handle, _store)
+⋮----
+def test_go_no_go_exposes_replaceable_handles(monkeypatch)
 ````
 
 ## File: backend/tests/test_hackerone_remote_binding.py

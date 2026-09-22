@@ -22,31 +22,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T08:51:37Z
+Generated: 2026-09-22T08:53:34Z
 
 ### Git
 - Branch: `main`
-- Head: `2cfcdbebfa42`
-- Commit date: 2026-09-22T10:51:26+02:00
-- Commit: fix: throttle first-run HackerOne review loading (#345)
+- Head: `eba63c9842f3`
+- Commit date: 2026-09-22T10:52:45+02:00
+- Commit: feat: classify replaceable HackerOne preflight blockers (#346)
 - Tracked files: 564
 
 ### Recently changed files
+- `backend/app/hackerone_api.py`
+- `backend/tests/test_hackerone_prelaunch.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/hackerone_api.py`
-- `backend/tests/test_hackerone_prelaunch.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_hackerone_upstream_diagnostics.py`
 - `backend/app/github_learning_sync.py`
 - `backend/tests/test_github_learning_sync.py`
-- `backend/app/main.py`
-- `backend/tests/test_live_activation_profile.py`
-- `scripts/mobile-production-update.sh`
 
 ### Project signals
 - `pyproject.toml`
