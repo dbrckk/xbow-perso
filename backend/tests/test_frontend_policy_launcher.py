@@ -25,7 +25,7 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     for element_id in ("token", "prepare", "selection", "mode", "start", "status", "journal", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=69" defer></script>' in html
+    assert '<script src="/simple.js?v=70" defer></script>' in html
     assert "2 faciles + 2 moyens + 2 fort potentiel" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html
