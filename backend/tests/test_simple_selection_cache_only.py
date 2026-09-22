@@ -74,6 +74,8 @@ def test_simple_dashboard_recovers_launch_time_programme_state_races():
     assert "function replaceableLaunchReason(reason)" in script
     assert "review_profile_required" in script
     assert "program_submissions_not_open" in script
+    assert "stale_hackerone_snapshot" in script
+    assert "hackerone_snapshot_document_mismatch" in script
     assert "Array.isArray(error?.detail?.handles)" in script
     assert "ont changé après le pré-vol. Remplacement automatique" in script
     assert "await prepare(handles);" in script
