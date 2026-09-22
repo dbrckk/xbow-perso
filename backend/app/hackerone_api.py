@@ -207,6 +207,7 @@ def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any
             detail={
                 "message": "HackerOne remote snapshot changed; review again",
                 "reason": "stale_hackerone_snapshot",
+                "handles": [str(payload.remote_handle)],
             },
         )
     if _json_sha256(snapshot.document) != _json_sha256(payload.document):
@@ -215,6 +216,7 @@ def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any
             detail={
                 "message": "HackerOne scope document does not match the verified remote snapshot",
                 "reason": "hackerone_snapshot_document_mismatch",
+                "handles": [str(payload.remote_handle)],
             },
         )
     return {

@@ -285,7 +285,7 @@
     }
   }
 
-  async function prepare(){
+  async function prepare(initialExcluded=[]){
     if(!requireToken())return;
     const button=$('prepare');
     button.disabled=true;
@@ -293,7 +293,11 @@
     clearReviewPanel();
     setStatus('Sélection automatique : 2 faciles + 2 moyens + 2 fort potentiel…');
     try{
-      const excluded=[];
+      const excluded=[...new Set(
+        (Array.isArray(initialExcluded)?initialExcluded:[])
+          .map(value=>String(value||'').trim().toLowerCase())
+          .filter(Boolean)
+      )];
       for(let round=0;round<4;round+=1){
         const result=await loadSimpleSelection(excluded);
         selectionResult=result;
@@ -433,6 +437,19 @@
     }
   }
 
+  function replaceableLaunchReason(reason){
+    return [
+      'program_submissions_not_open',
+      'program_not_currently_open',
+      'review_profile_required',
+      'review_profile_binding_mismatch',
+      'review_profile_incomplete',
+      'review_profile_invalid',
+      'stale_hackerone_snapshot',
+      'hackerone_snapshot_document_mismatch'
+    ].includes(String(reason||''));
+  }
+
   async function start(){
     if(!requireToken())return;
     if(selection.length!==6){
@@ -453,6 +470,19 @@
         body:JSON.stringify({mode,handles:selection})
       });
       if(preflight?.go!==true){
+        const replaceable=(Array.isArray(preflight?.replaceable_handles)
+          ?preflight.replaceable_handles:[])
+          .map(value=>String(value||'').trim().toLowerCase())
+          .filter(handle=>handle&&selection.includes(handle));
+        if(preflight?.runtime_ready===true&&replaceable.length){
+          setStatus(
+            'Pré-vol : '+replaceable.length+' programme(s) ont changé. Remplacement automatique…',
+            'warn'
+          );
+          button.disabled=false;
+          await prepare(replaceable);
+          return;
+        }
         const blockers=(Array.isArray(preflight?.blockers)?preflight.blockers:[])
           .map(value=>String(value||'')).filter(Boolean);
         throw new Error('Pré-vol bloqué'+(blockers.length?' · '+blockers.join(' · '):''));
@@ -474,6 +504,18 @@
       );
       await refreshJournal({quiet:true});
     }catch(error){
+      const handles=(Array.isArray(error?.detail?.handles)?error.detail.handles:[])
+        .map(value=>String(value||'').trim().toLowerCase())
+        .filter(handle=>handle&&selection.includes(handle));
+      if(replaceableLaunchReason(error?.reason)&&handles.length){
+        setStatus(
+          'Lancement : '+handles.length+' programme(s) ont changé après le pré-vol. Remplacement automatique…',
+          'warn'
+        );
+        button.disabled=false;
+        await prepare(handles);
+        return;
+      }
       setStatus('Lancement bloqué : '+error.message,'err');
       button.disabled=false;
     }

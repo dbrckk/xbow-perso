@@ -58,3 +58,24 @@ def test_simple_dashboard_replaces_individually_unavailable_review_programs():
     assert "hackerone_program_review_unavailable" in script
     assert "Remplacement automatique de " in script
     assert "loadSimpleSelection(excluded)" in script
+
+
+def test_simple_dashboard_auto_replaces_preflight_stale_programmes():
+    script = _text("frontend/simple.js")
+    assert "async function prepare(initialExcluded=[])" in script
+    assert "preflight?.replaceable_handles" in script
+    assert "preflight?.runtime_ready===true&&replaceable.length" in script
+    assert "await prepare(replaceable);" in script
+    assert "programme(s) ont changé. Remplacement automatique" in script
+
+
+def test_simple_dashboard_recovers_launch_time_programme_state_races():
+    script = _text("frontend/simple.js")
+    assert "function replaceableLaunchReason(reason)" in script
+    assert "review_profile_required" in script
+    assert "program_submissions_not_open" in script
+    assert "stale_hackerone_snapshot" in script
+    assert "hackerone_snapshot_document_mismatch" in script
+    assert "Array.isArray(error?.detail?.handles)" in script
+    assert "ont changé après le pré-vol. Remplacement automatique" in script
+    assert "await prepare(handles);" in script

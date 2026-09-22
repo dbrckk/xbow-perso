@@ -113,6 +113,7 @@ def test_bound_preview_rejects_document_not_from_remote_snapshot(monkeypatch):
 
     assert response.status_code == 409
     assert response.json()["detail"]["reason"] == "hackerone_snapshot_document_mismatch"
+    assert response.json()["detail"]["handles"] == ["acme"]
 
 
 def test_bound_launch_refetches_and_rejects_snapshot_drift(tmp_path, monkeypatch):
@@ -144,6 +145,7 @@ def test_bound_launch_refetches_and_rejects_snapshot_drift(tmp_path, monkeypatch
     assert response.json()["detail"] == {
         "message": "HackerOne remote snapshot changed; review again",
         "reason": "stale_hackerone_snapshot",
+        "handles": ["acme"],
     }
 
 
