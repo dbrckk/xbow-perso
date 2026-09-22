@@ -121,3 +121,13 @@ def test_enable_script_reexecs_from_refreshed_checkout_exactly_once():
     assert 'XBOW_ACTIVATION_REFRESHED:-0' in script
     assert "=== RESTART ACTIVATION FROM UPDATED CHECKOUT ===" in script
     assert 'exec env XBOW_ACTIVATION_REFRESHED=1 bash "$INSTALL_DIR/scripts/mobile-enable-hackerone-nuclei.sh"' in script
+
+
+def test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate():
+    script = (ROOT / "scripts/mobile-enable-hackerone-nuclei.sh").read_text(encoding="utf-8")
+
+    reconcile = script.index("=== RECONCILE HACKERONE BATCH STATE ===")
+    queue_check = script.index("=== QUEUE MUST BE IDLE BEFORE ARMING ===")
+    assert reconcile < queue_check
+    assert "reconcile_hackerone_batches(queue(), storage(), limit=200)" in script
+    assert "RECONCILED_BATCHES=" in script
