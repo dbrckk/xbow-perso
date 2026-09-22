@@ -643,6 +643,17 @@
       updateStartAvailability();
       await refreshJournal({quiet:true});
     }catch(error){
+      if(!Number(error?.status||0)&&String(error?.message||'')==='Serveur inaccessible'){
+        await refreshJournal({quiet:true});
+        if(batchActive){
+          setStatus(
+            'Le téléphone a perdu la réponse, mais le lot est bien actif côté serveur. Aucun doublon ne sera lancé.',
+            'ok'
+          );
+          updateStartAvailability();
+          return;
+        }
+      }
       if(error?.reason==='batch_go_no_go_blocked'){
         const detail=error?.detail||{};
         setStatus(
