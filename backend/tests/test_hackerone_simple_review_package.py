@@ -121,3 +121,29 @@ def test_atomic_review_package_reports_bounded_failure(monkeypatch):
         assert detail["contains_secrets"] is False
     else:
         raise AssertionError("exhausted review package must fail closed")
+
+
+def test_atomic_review_package_stops_on_global_hackerone_outage(monkeypatch):
+    monkeypatch.setattr(
+        hackerone_api,
+        "hackerone_simple_selection",
+        lambda exclude="": _selection(["a","b","c","d","e","f"]),
+    )
+
+    def fail_fetch(_handle):
+        raise hackerone_api.HackerOneClientError(
+            "temporary upstream failure",
+            status_code=503,
+        )
+
+    monkeypatch.setattr(hackerone_api, "fetch_hackerone_program_snapshot", fail_fetch)
+
+    try:
+        hackerone_api.hackerone_simple_review_package()
+    except Exception as exc:
+        assert getattr(exc, "status_code", None) == 503
+        detail=getattr(exc, "detail", {})
+        assert detail["reason"] == "hackerone_upstream_unavailable"
+        assert detail["contains_secrets"] is False
+    else:
+        raise AssertionError("global HackerOne outage must stop preparation")
