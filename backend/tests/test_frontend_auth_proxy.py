@@ -200,3 +200,12 @@ def test_one_or_two_selection_is_preserved_after_profile_validation():
     assert "selection:nextSelection" in script
     assert "handles:nextSelection.map" in script
     assert "launch_ready:nextSelection.length>=1" in script
+
+
+def test_mobile_dashboard_bounds_api_waits_and_shows_search_elapsed_time():
+    script = _text("frontend/simple.js")
+    assert "const timeoutMs=Math.max(1000,Number(options.timeoutMs||45000));" in script
+    assert "controller.abort()" in script
+    assert "Délai serveur dépassé" in script
+    assert "timeoutMs:130000" in script
+    assert "Recherche de programmes accessibles… '+seconds+' s" in script
