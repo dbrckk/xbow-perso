@@ -86,6 +86,7 @@ def test_learning_digest_is_detailed_but_excludes_raw_evidence_and_payloads():
     assert signals["findings"]["confirmed"] == 1
     assert signals["findings"]["confirmation_rate"] == 1.0
     assert signals["findings"]["severities"] == {"high": 1}
+    assert signals["findings"]["cwes"] == {"CWE-200": 1}
     assert signals["events"]["recon_task_completed"] == 1
     assert any("confirmed severity/CWE" in item for item in signals["recommendations"])
 
