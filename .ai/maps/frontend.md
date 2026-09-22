@@ -421,6 +421,8 @@ function renderJournal(payload)
 ⋮----
 async function refreshJournal(
 ⋮----
+async function cancelActiveBatch()
+⋮----
 function bind()
 ```
 

@@ -1,100 +1,402 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "693fc6da341d88a103612c920274aebb92626cba",
-  "head": "575f67c6e5bc4b323d445860016f1c8983d7e1f9",
+  "base": "575f67c6e5bc4b323d445860016f1c8983d7e1f9",
+  "head": "fbf2163f3900240d4249189a07eafba026f3e1de",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/tests/test_mobile_production_update_script.py",
+      "path": "backend/tests/test_frontend_auth_proxy.py",
       "status": "M"
     },
     {
-      "path": "scripts/mobile-enable-hackerone-nuclei.sh",
+      "path": "backend/tests/test_frontend_policy_launcher.py",
+      "status": "M"
+    },
+    {
+      "path": "frontend/index.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend/simple.js",
+      "status": "M"
+    },
+    {
+      "path": "frontend/sw.js",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/tests/test_mobile_production_update_script.py"
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "frontend/simple.js",
+    "frontend/sw.js"
   ],
   "impacted_files": [
-    "backend/tests/test_mobile_production_update_script.py"
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "frontend/simple.js",
+    "frontend/sw.js"
   ],
   "impacted_symbols": [
     {
-      "name": "test_live_production_update_waits_for_worker_heartbeats",
+      "name": "_text",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
       "line": 7
     },
     {
-      "name": "test_mobile_status_reports_hackerone_launch_readiness",
+      "name": "test_frontend_proxies_redacted_backend_diagnostics",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 17
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 11
     },
     {
-      "name": "test_mobile_status_prints_explicit_launch_verdict_and_blockers",
+      "name": "test_diagnostic_routes_bypass_service_worker_cache",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 27
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 18
     },
     {
-      "name": "test_enable_script_requires_final_live_launch_verdict",
+      "name": "test_frontend_assets_are_explicitly_cache_busted",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 41
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 25
     },
     {
-      "name": "test_mobile_status_requires_live_hackerone_api_probe_for_ready_verdict",
+      "name": "test_api_token_is_persisted_across_browser_sessions",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 52
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 33
     },
     {
-      "name": "test_enable_script_probes_hackerone_before_declaring_profile_armed",
+      "name": "test_frontend_has_no_totp_control",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 42
+    },
+    {
+      "name": "test_simple_dashboard_runtime_is_shipped_in_frontend_image",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 51
+    },
+    {
+      "name": "test_service_worker_matches_precache_assets_by_path",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 58
+    },
+    {
+      "name": "test_simple_dashboard_exposes_first_run_review_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
       "line": 64
     },
     {
-      "name": "test_enable_script_reports_actionable_non_idle_queue_blocker",
+      "name": "test_simple_dashboard_grouped_review_and_quiet_journal",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 75
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 77
     },
     {
-      "name": "test_enable_script_keeps_rollback_active_through_final_launch_verification",
+      "name": "test_simple_dashboard_bounds_hackerone_review_concurrency",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 89
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 87
     },
     {
-      "name": "test_enable_script_refreshes_safe_production_before_readiness_and_queue_checks",
+      "name": "test_simple_dashboard_shows_review_loading_progress",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 99
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 96
     },
     {
-      "name": "test_enable_script_documents_stale_checkout_and_stopped_stack_recovery",
+      "name": "test_simple_dashboard_surfaces_live_scanner_readiness",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 110
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 103
     },
     {
-      "name": "test_enable_script_reexecs_from_refreshed_checkout_exactly_once",
+      "name": "test_simple_dashboard_bounds_review_profile_persistence",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 114
+    },
+    {
+      "name": "test_start_button_requires_live_runtime_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 124
+    },
+    {
+      "name": "test_simple_dashboard_surfaces_runtime_remediation",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 135
+    },
+    {
+      "name": "test_simple_dashboard_prevents_duplicate_active_batches",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 143
+    },
+    {
+      "name": "test_simple_dashboard_reconciles_ambiguous_mobile_launch_response",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 154
+    },
+    {
+      "name": "test_simple_dashboard_can_cancel_active_hackerone_batch",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 163
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 9
+    },
+    {
+      "name": "test_hackerone_reviewed_batch_routes_exist",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 13
+    },
+    {
+      "name": "test_minimal_frontend_exposes_only_primary_operator_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 21
+    },
+    {
+      "name": "test_minimal_frontend_preserves_safety_and_server_persistence",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 41
+    },
+    {
+      "name": "test_minimal_launcher_rechecks_runtime_without_reselection",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 53
+    },
+    {
+      "name": "test_minimal_launcher_uses_single_final_reviewed_launch_request",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 60
+    },
+    {
+      "name": "token",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 14
+    },
+    {
+      "name": "saveToken",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 18
+    },
+    {
+      "name": "setStatus",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 22
+    },
+    {
+      "name": "updateStartAvailability",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 29
+    },
+    {
+      "name": "requireToken",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 41
+    },
+    {
+      "name": "api",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 48
+    },
+    {
+      "name": "money",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 74
+    },
+    {
+      "name": "stateLabel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 79
+    },
+    {
+      "name": "renderSelection",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 86
+    },
+    {
+      "name": "clearReviewPanel",
+      "kind": "function",
+      "file": "frontend/simple.js",
       "line": 118
     },
     {
-      "name": "test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate",
+      "name": "reviewableDraft",
       "kind": "function",
-      "file": "backend/tests/test_mobile_production_update_script.py",
+      "file": "frontend/simple.js",
       "line": 126
+    },
+    {
+      "name": "renderReviewDrafts",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 136
+    },
+    {
+      "name": "retryableReviewError",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 181
+    },
+    {
+      "name": "loadReviewDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 195
+    },
+    {
+      "name": "loadReviewDrafts",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 209
+    },
+    {
+      "name": "updateProgress",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 221
+    },
+    {
+      "name": "reviewWorker",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 229
+    },
+    {
+      "name": "refreshRuntimeReadiness",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 293
+    },
+    {
+      "name": "loadSimpleSelection",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 335
+    },
+    {
+      "name": "prepare",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 358
+    },
+    {
+      "name": "reviewProfilePayload",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 451
+    },
+    {
+      "name": "persistReviewDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 475
+    },
+    {
+      "name": "saveReviews",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 502
+    },
+    {
+      "name": "updateProgress",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 525
+    },
+    {
+      "name": "persistWorker",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 530
+    },
+    {
+      "name": "replaceableLaunchReason",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 583
+    },
+    {
+      "name": "preflightBlockerMessage",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 596
+    },
+    {
+      "name": "start",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 613
+    },
+    {
+      "name": "repoSyncLabel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 701
+    },
+    {
+      "name": "renderJournal",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 711
+    },
+    {
+      "name": "refreshJournal",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 759
+    },
+    {
+      "name": "cancelActiveBatch",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 791
+    },
+    {
+      "name": "bind",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 820
     }
   ],
   "selected_tests": [
-    "backend/tests/test_mobile_production_update_script.py"
+    "backend/tests/test_auth.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_pipeline_swarm.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_simple_portfolio.py",
+    "backend/tests/test_simple_selection_cache_only.py",
+    "backend/tests/test_simple_selection_cached.py",
+    "backend/tests/test_swarm_coordinator.py"
   ]
 }

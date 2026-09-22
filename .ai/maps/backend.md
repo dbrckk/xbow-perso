@@ -12552,6 +12552,8 @@ def test_simple_dashboard_prevents_duplicate_active_batches()
 def test_simple_dashboard_reconciles_ambiguous_mobile_launch_response()
 ⋮----
 start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
+⋮----
+def test_simple_dashboard_can_cancel_active_hackerone_batch()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py

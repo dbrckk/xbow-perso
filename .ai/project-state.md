@@ -22,28 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T17:42:56Z
+Generated: 2026-09-22T17:44:52Z
 
 ### Git
 - Branch: `main`
-- Head: `575f67c6e5bc`
-- Commit date: 2026-09-22T19:42:40+02:00
-- Commit: fix: reconcile stale HackerOne batches before scanner activation (#372)
+- Head: `fbf2163f3900`
+- Commit date: 2026-09-22T19:44:36+02:00
+- Commit: feat: cancel the active HackerOne batch from the simple dashboard (#373)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-enable-hackerone-nuclei.sh`
 - `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_api.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_hackerone_prelaunch.py`
 - `backend/tests/test_simple_selection_cache_only.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
-- `backend/tests/test_hackerone_nuclei_e2e.py`
 
 ### Project signals
 - `pyproject.toml`
