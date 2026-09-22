@@ -13128,6 +13128,8 @@ def test_simple_dashboard_shows_review_loading_progress()
 def test_simple_dashboard_surfaces_live_scanner_readiness()
 ⋮----
 def test_simple_dashboard_bounds_review_profile_persistence()
+⋮----
+def test_start_button_requires_live_runtime_readiness()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -13146,6 +13148,8 @@ html = _text("frontend/index.html")
 script = _text("frontend/simple.js")
 ⋮----
 def test_minimal_frontend_preserves_safety_and_server_persistence()
+⋮----
+def test_minimal_launcher_rechecks_runtime_without_reselection()
 ````
 
 ## File: backend/tests/test_github_learning_sync.py
@@ -19310,6 +19314,8 @@ function token()
 function saveToken()
 ⋮----
 function setStatus(message,kind='')
+⋮----
+function updateStartAvailability()
 ⋮----
 function requireToken()
 ⋮----

@@ -365,6 +365,8 @@ function saveToken()
 ⋮----
 function setStatus(message,kind='')
 ⋮----
+function updateStartAvailability()
+⋮----
 function requireToken()
 ⋮----
 async function api(path,options=

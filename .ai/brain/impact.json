@@ -1,448 +1,360 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "7966cc4c0fbe1db3be42767ed3339941954652e2",
-  "head": "a1d6bd2c48327dff72cdb76dff54168b2bc8f9cc",
+  "base": "a1d6bd2c48327dff72cdb76dff54168b2bc8f9cc",
+  "head": "5a7ed9e8235cc684953d719cb9621df2771c0dd4",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/worker_service.py",
+      "path": "backend/tests/test_frontend_auth_proxy.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_worker_observations.py",
+      "path": "backend/tests/test_frontend_policy_launcher.py",
+      "status": "M"
+    },
+    {
+      "path": "frontend/index.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend/simple.js",
+      "status": "M"
+    },
+    {
+      "path": "frontend/sw.js",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/worker_service.py",
-    "backend/tests/test_worker_observations.py"
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "frontend/simple.js",
+    "frontend/sw.js"
   ],
   "impacted_files": [
-    "backend/app/worker_service.py",
-    "backend/tests/test_campaign_cancel.py",
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_scanner_observation_chain.py",
-    "backend/tests/test_worker_concurrency.py",
-    "backend/tests/test_worker_observations.py",
-    "backend/tests/test_worker_outcome_memory.py",
-    "backend/tests/test_worker_roles.py",
-    "backend/tests/test_worker_state.py"
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "frontend/simple.js",
+    "frontend/sw.js"
   ],
   "impacted_symbols": [
     {
-      "name": "CampaignCancelledError",
-      "kind": "class",
-      "file": "backend/app/worker_service.py",
-      "line": 47
-    },
-    {
-      "name": "StaleValidationJobError",
-      "kind": "class",
-      "file": "backend/app/worker_service.py",
-      "line": 51
-    },
-    {
-      "name": "StaleBrowserJobError",
-      "kind": "class",
-      "file": "backend/app/worker_service.py",
-      "line": 55
-    },
-    {
-      "name": "_save",
+      "name": "_text",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 63
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 7
     },
     {
-      "name": "_campaign",
+      "name": "test_frontend_proxies_redacted_backend_diagnostics",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 68
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 11
     },
     {
-      "name": "_append_event_once",
+      "name": "test_diagnostic_routes_bypass_service_worker_cache",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 79
-    },
-    {
-      "name": "_lease_heartbeat",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 96
-    },
-    {
-      "name": "renew",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 103
-    },
-    {
-      "name": "_process_scanner_job",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 124
-    },
-    {
-      "name": "process_strix_scan",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 131
-    },
-    {
-      "name": "process_nuclei_scan",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 135
-    },
-    {
-      "name": "process_validation",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 139
-    },
-    {
-      "name": "process_browser_flow",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 212
-    },
-    {
-      "name": "process_recon_task",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 316
-    },
-    {
-      "name": "process_report",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 419
-    },
-    {
-      "name": "_record_worker_outcome",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 461
-    },
-    {
-      "name": "_worker_bool",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 491
-    },
-    {
-      "name": "_legacy_unprovenanced_jobs_allowed",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 503
-    },
-    {
-      "name": "_verify_policy_bound_job",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 507
-    },
-    {
-      "name": "_active_scanner_execution_requested",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 527
-    },
-    {
-      "name": "_claim_for_role",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 534
-    },
-    {
-      "name": "process_one",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 548
-    },
-    {
-      "name": "_worker_poll_seconds",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 605
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 616
-    },
-    {
-      "name": "_setup",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_cancel.py",
-      "line": 10
-    },
-    {
-      "name": "test_cancel_campaign_cancels_queued_jobs_but_preserves_running_lease",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_cancel.py",
-      "line": 33
-    },
-    {
-      "name": "test_cancel_campaign_is_idempotent",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_cancel.py",
-      "line": 60
-    },
-    {
-      "name": "test_worker_refuses_cancelled_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_cancel.py",
-      "line": 76
-    },
-    {
-      "name": "test_completed_campaign_cannot_be_cancelled",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_cancel.py",
-      "line": 84
-    },
-    {
-      "name": "test_running_job_becomes_cancelled_when_worker_observes_cancelled_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_cancel.py",
-      "line": 98
-    },
-    {
-      "name": "test_cancelled_campaign_rejects_new_mutations",
-      "kind": "function",
-      "file": "backend/tests/test_campaign_cancel.py",
-      "line": 134
-    },
-    {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 10
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 23
-    },
-    {
-      "name": "test_validation_worker_persists_sanitized_differential_signal_without_confirming",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 40
-    },
-    {
-      "name": "test_finding_intelligence_surfaces_differential_signal_and_summary",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 91
-    },
-    {
-      "name": "test_red_team_decision_prioritizes_strong_signal_inside_existing_review_work",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 133
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_observation_chain.py",
-      "line": 6
-    },
-    {
-      "name": "test_scanner_finding_persists_canonical_asset_endpoint_finding_evidence_chain",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_observation_chain.py",
-      "line": 20
-    },
-    {
-      "name": "test_scanner_finding_without_endpoint_links_directly_to_asset",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_observation_chain.py",
-      "line": 65
-    },
-    {
-      "name": "make_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 17
-    },
-    {
-      "name": "test_worker_save_rejects_stale_campaign_snapshot",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 32
-    },
-    {
-      "name": "test_worker_poll_interval_is_bounded",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 53
-    },
-    {
-      "name": "test_validation_worker_rejects_resolved_finding_before_probe",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 66
-    },
-    {
-      "name": "test_validation_worker_rejects_completed_campaign_before_probe",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 93
-    },
-    {
-      "name": "test_stale_validation_job_is_cancelled_without_retry",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 120
-    },
-    {
-      "name": "test_completed_campaign_validation_job_is_cancelled_without_retry",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 165
-    },
-    {
-      "name": "test_completed_campaign_browser_job_is_cancelled_without_retry",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 209
-    },
-    {
-      "name": "test_worker_observation_lineage_roundtrips",
-      "kind": "function",
-      "file": "backend/tests/test_worker_observations.py",
-      "line": 14
-    },
-    {
-      "name": "test_recon_observed_primary_target_is_recorded_as_endpoint",
-      "kind": "function",
-      "file": "backend/tests/test_worker_observations.py",
-      "line": 69
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_worker_outcome_memory.py",
-      "line": 8
-    },
-    {
-      "name": "test_record_worker_outcome_is_idempotent_and_payload_free",
-      "kind": "function",
-      "file": "backend/tests/test_worker_outcome_memory.py",
-      "line": 22
-    },
-    {
-      "name": "test_worker_outcome_audit_detects_tampering",
-      "kind": "function",
-      "file": "backend/tests/test_worker_outcome_memory.py",
-      "line": 55
-    },
-    {
-      "name": "test_worker_outcome_audit_links_multiple_events",
-      "kind": "function",
-      "file": "backend/tests/test_worker_outcome_memory.py",
-      "line": 76
-    },
-    {
-      "name": "test_worker_outcome_extends_existing_campaign_audit_chain",
-      "kind": "function",
-      "file": "backend/tests/test_worker_outcome_memory.py",
-      "line": 100
-    },
-    {
-      "name": "test_worker_event_helper_seals_and_deduplicates_campaign_event",
-      "kind": "function",
-      "file": "backend/tests/test_worker_outcome_memory.py",
-      "line": 136
-    },
-    {
-      "name": "FakeQueue",
-      "kind": "class",
-      "file": "backend/tests/test_worker_roles.py",
-      "line": 4
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "backend/tests/test_worker_roles.py",
-      "line": 5
-    },
-    {
-      "name": "claim",
-      "kind": "function",
-      "file": "backend/tests/test_worker_roles.py",
-      "line": 9
-    },
-    {
-      "name": "claim_allowed",
-      "kind": "function",
-      "file": "backend/tests/test_worker_roles.py",
-      "line": 13
-    },
-    {
-      "name": "test_general_worker_keeps_scanner_preview_jobs_in_safe_mode",
-      "kind": "function",
-      "file": "backend/tests/test_worker_roles.py",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
       "line": 18
     },
     {
-      "name": "test_general_worker_excludes_scanner_jobs_for_active_execution",
+      "name": "test_frontend_assets_are_explicitly_cache_busted",
       "kind": "function",
-      "file": "backend/tests/test_worker_roles.py",
-      "line": 30
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 25
     },
     {
-      "name": "test_scanner_worker_claims_only_scanner_jobs",
+      "name": "test_api_token_is_persisted_across_browser_sessions",
       "kind": "function",
-      "file": "backend/tests/test_worker_roles.py",
-      "line": 46
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 33
     },
     {
-      "name": "_campaign",
+      "name": "test_frontend_has_no_totp_control",
       "kind": "function",
-      "file": "backend/tests/test_worker_state.py",
-      "line": 5
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 42
     },
     {
-      "name": "_finding",
+      "name": "test_simple_dashboard_runtime_is_shipped_in_frontend_image",
       "kind": "function",
-      "file": "backend/tests/test_worker_state.py",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 51
+    },
+    {
+      "name": "test_service_worker_matches_precache_assets_by_path",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 58
+    },
+    {
+      "name": "test_simple_dashboard_exposes_first_run_review_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 64
+    },
+    {
+      "name": "test_simple_dashboard_grouped_review_and_quiet_journal",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 77
+    },
+    {
+      "name": "test_simple_dashboard_bounds_hackerone_review_concurrency",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 87
+    },
+    {
+      "name": "test_simple_dashboard_shows_review_loading_progress",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 96
+    },
+    {
+      "name": "test_simple_dashboard_surfaces_live_scanner_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 103
+    },
+    {
+      "name": "test_simple_dashboard_bounds_review_profile_persistence",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 113
+    },
+    {
+      "name": "test_start_button_requires_live_runtime_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 123
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 9
+    },
+    {
+      "name": "test_hackerone_reviewed_batch_routes_exist",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 13
+    },
+    {
+      "name": "test_minimal_frontend_exposes_only_primary_operator_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 21
+    },
+    {
+      "name": "test_minimal_frontend_preserves_safety_and_server_persistence",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 41
+    },
+    {
+      "name": "test_minimal_launcher_rechecks_runtime_without_reselection",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 53
+    },
+    {
+      "name": "token",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 12
+    },
+    {
+      "name": "saveToken",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 16
+    },
+    {
+      "name": "setStatus",
+      "kind": "function",
+      "file": "frontend/simple.js",
       "line": 20
     },
     {
-      "name": "test_post_scan_state_stays_validating_for_known_unresolved_finding",
+      "name": "updateStartAvailability",
       "kind": "function",
-      "file": "backend/tests/test_worker_state.py",
-      "line": 32
+      "file": "frontend/simple.js",
+      "line": 27
     },
     {
-      "name": "test_post_scan_state_completes_only_when_all_findings_are_resolved",
+      "name": "requireToken",
       "kind": "function",
-      "file": "backend/tests/test_worker_state.py",
+      "file": "frontend/simple.js",
       "line": 38
     },
     {
-      "name": "test_post_scan_state_completes_when_scan_has_no_findings",
+      "name": "api",
       "kind": "function",
-      "file": "backend/tests/test_worker_state.py",
-      "line": 44
+      "file": "frontend/simple.js",
+      "line": 45
+    },
+    {
+      "name": "money",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 71
+    },
+    {
+      "name": "stateLabel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 76
+    },
+    {
+      "name": "renderSelection",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 83
+    },
+    {
+      "name": "clearReviewPanel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 115
+    },
+    {
+      "name": "reviewableDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 123
+    },
+    {
+      "name": "renderReviewDrafts",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 133
+    },
+    {
+      "name": "retryableReviewError",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 178
+    },
+    {
+      "name": "loadReviewDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 192
+    },
+    {
+      "name": "loadReviewDrafts",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 206
+    },
+    {
+      "name": "updateProgress",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 218
+    },
+    {
+      "name": "reviewWorker",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 226
+    },
+    {
+      "name": "refreshRuntimeReadiness",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 290
+    },
+    {
+      "name": "loadSimpleSelection",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 321
+    },
+    {
+      "name": "prepare",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 344
+    },
+    {
+      "name": "reviewProfilePayload",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 437
+    },
+    {
+      "name": "persistReviewDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 461
+    },
+    {
+      "name": "saveReviews",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 488
+    },
+    {
+      "name": "updateProgress",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 511
+    },
+    {
+      "name": "persistWorker",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 516
+    },
+    {
+      "name": "replaceableLaunchReason",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 569
+    },
+    {
+      "name": "start",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 582
+    },
+    {
+      "name": "repoSyncLabel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 655
+    },
+    {
+      "name": "renderJournal",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 665
+    },
+    {
+      "name": "refreshJournal",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 713
+    },
+    {
+      "name": "bind",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 735
     }
   ],
   "selected_tests": [
-    "backend/tests/test_campaign_cancel.py",
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_pentagi_status_worker_service.py",
-    "backend/tests/test_pentagi_worker_service.py",
-    "backend/tests/test_scanner_observation_chain.py",
-    "backend/tests/test_worker_concurrency.py",
-    "backend/tests/test_worker_observations.py",
-    "backend/tests/test_worker_outcome_memory.py",
-    "backend/tests/test_worker_roles.py",
-    "backend/tests/test_worker_state.py"
+    "backend/tests/test_auth.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_pipeline_swarm.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_simple_portfolio.py",
+    "backend/tests/test_simple_selection_cache_only.py",
+    "backend/tests/test_simple_selection_cached.py",
+    "backend/tests/test_swarm_coordinator.py"
   ]
 }

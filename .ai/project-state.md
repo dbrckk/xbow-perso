@@ -22,28 +22,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T12:51:30Z
+Generated: 2026-09-22T12:58:29Z
 
 ### Git
 - Branch: `main`
-- Head: `a1d6bd2c4832`
-- Commit date: 2026-09-22T14:51:18+02:00
-- Commit: fix: treat an observed recon target as a discovered endpoint (#353)
+- Head: `5a7ed9e8235c`
+- Commit date: 2026-09-22T14:58:17+02:00
+- Commit: fix: only enable launch when HackerOne runtime is live (#356)
 - Tracked files: 565
 
 ### Recently changed files
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `backend/app/worker_service.py`
 - `backend/tests/test_worker_observations.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_job_provenance_integration.py`
 - `backend/tests/test_orchestrator.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_mobile_production_update_script.py`
 - `backend/tests/test_simple_selection_cache_only.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 - `scripts/mobile-production-status.sh`
 - `scripts/mobile-production-update.sh`
 - `backend/app/hackerone_api.py`

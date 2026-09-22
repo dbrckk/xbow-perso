@@ -1,14 +1,18 @@
 # Change impact
 
-Base: b32a65f29ba914f6d67aa8d253c3f887c1872eca
-Head: a1d6bd2c48327dff72cdb76dff54168b2bc8f9cc
+Base: 2528afe4a9a782b8b0b916ce1582336ac3334531
+Head: 5a7ed9e8235cc684953d719cb9621df2771c0dd4
 
 ## Changed files
-- M backend/app/worker_service.py
-- M backend/tests/test_worker_observations.py
+- M backend/tests/test_frontend_auth_proxy.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M frontend/index.html
+- M frontend/simple.js
+- M frontend/sw.js
 
 ## Affected areas
 - backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
