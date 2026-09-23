@@ -22,12 +22,13 @@ def test_http_routes_are_registered_once():
     assert duplicates == {}
 
 
-def test_previous_duplicate_routes_are_exposed_exactly_once():
-    counts=Counter(_http_route_keys())
+def test_previous_duplicate_routes_remain_exposed():
+    paths=app.openapi()["paths"]
     for path in (
         "/api/campaigns/{campaign_id}/finding-correlations",
         "/api/campaigns/{campaign_id}/finding-clusters",
         "/api/campaigns/{campaign_id}/report-readiness",
         "/api/campaigns/{campaign_id}/review-queue",
     ):
-        assert counts[("GET", path)] == 1
+        assert path in paths
+        assert "get" in paths[path]
