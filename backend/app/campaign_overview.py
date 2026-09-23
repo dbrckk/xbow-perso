@@ -21,8 +21,8 @@ from .planner_budget import PlannerBudget, budget_usage
 from .recon_swarm import build_recon_plan, router as recon_swarm_router
 from .red_team_coverage import build_red_team_coverage, router as red_team_coverage_router
 from .red_team_decision import build_red_team_decisions, router as red_team_decision_router
-from .report_readiness import build_report_readiness, router as report_readiness_router
-from .review_queue import build_review_queue, router as review_queue_router
+from .report_readiness import build_report_readiness
+from .review_queue import build_review_queue
 from .storage import ArtifactIntegrityError
 from .submission_state import submission_status
 from .validation_state import analyze_validation_state
@@ -30,10 +30,8 @@ from .validation_state import analyze_validation_state
 router = APIRouter()
 router.routes.extend(attack_surface_router.routes)
 router.routes.extend(red_team_coverage_router.routes)
-router.routes.extend(review_queue_router.routes)
 router.routes.extend(finding_triage_router.routes)
 router.routes.extend(finding_lifecycle_router.routes)
-router.routes.extend(report_readiness_router.routes)
 router.routes.extend(red_team_decision_router.routes)
 router.routes.extend(decision_consensus_router.routes)
 router.routes.extend(campaign_risk_router.routes)
