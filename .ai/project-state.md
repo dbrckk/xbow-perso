@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-23T17:05:12Z
+Generated: 2026-09-23T17:46:12Z
 
 ### Git
 - Branch: `main`
-- Head: `4f06586cd5d3`
-- Commit date: 2026-09-23T19:04:59+02:00
-- Commit: fix: make the v81 route contract check robust (#383)
+- Head: `2d08ac2ad2b2`
+- Commit date: 2026-09-23T19:46:00+02:00
+- Commit: ops: make production self-test strict and verify accessible bounties (#384)
 - Tracked files: 566
 
 ### Recently changed files
@@ -42,9 +42,6 @@ Generated: 2026-09-23T17:05:12Z
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/hackerone_review_draft.py`
-- `backend/tests/test_hackerone_review_draft.py`
-- `backend/tests/test_simple_selection_cache_only.py`
 
 ### Project signals
 - `pyproject.toml`

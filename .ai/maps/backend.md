@@ -14801,6 +14801,10 @@ def test_mobile_status_production_contract_requires_all_live_prerequisites()
 verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
 ⋮----
 def test_mobile_status_route_contract_tolerates_non_route_entries()
+⋮----
+def test_mobile_status_uses_live_origin_main_and_fails_closed()
+⋮----
+def test_mobile_status_live_verifies_one_or_two_accessible_bounties()
 ```
 
 ## File: tests/test_mobile_reset_api_token.py
