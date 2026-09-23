@@ -14793,6 +14793,12 @@ def test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate()
 reconcile = script.index("=== RECONCILE HACKERONE BATCH STATE ===")
 ⋮----
 def test_mobile_status_public_https_probe_uses_get_not_head()
+⋮----
+def test_mobile_status_verifies_exact_deployed_v81_contract()
+⋮----
+def test_mobile_status_production_contract_requires_all_live_prerequisites()
+⋮----
+verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

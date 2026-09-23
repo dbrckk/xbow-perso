@@ -857,6 +857,18 @@ chmod 600 "$SECRETS_FILE"
 
 cd "$INSTALL_DIR"
 
+echo "=== DEPLOYED REVISION ==="
+LOCAL_SHA="$(git rev-parse HEAD)"
+REMOTE_SHA="$(git rev-parse origin/main 2>/dev/null || true)"
+echo "LOCAL_SHA=$LOCAL_SHA"
+echo "ORIGIN_MAIN_SHA=$REMOTE_SHA"
+if [ -n "$REMOTE_SHA" ] && [ "$LOCAL_SHA" = "$REMOTE_SHA" ]; then
+  echo "CHECKOUT_CURRENT=true"
+else
+  echo "CHECKOUT_CURRENT=false"
+fi
+
+
 # shellcheck disable=SC1090
 . "$SECRETS_FILE"
 export XBOW_POSTGRES_PASSWORD="${XBOW_POSTGRES_PASSWORD:-}"
@@ -979,12 +991,62 @@ else
   fi
 fi
 
+DASHBOARD_VERSION_OK=false
 if [ -n "$PUBLIC_HOST" ]; then
   echo "=== DASHBOARD ASSET VERSION ==="
-  curl -fsS "https://$PUBLIC_HOST/" \
-    | grep -o 'simple.js?v=[0-9][0-9]*' \
-    | head -n1 \
-    || true
+  DASHBOARD_ASSET="$(
+    curl -fsS "https://$PUBLIC_HOST/" \
+      | grep -o 'simple.js?v=[0-9][0-9]*' \
+      | head -n1 \
+      || true
+  )"
+  echo "$DASHBOARD_ASSET"
+  if [ "$DASHBOARD_ASSET" = "simple.js?v=81" ]; then
+    DASHBOARD_VERSION_OK=true
+  fi
+  echo "DASHBOARD_VERSION_OK=$DASHBOARD_VERSION_OK"
+fi
+
+echo "=== V81 ROUTE CONTRACT ==="
+if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.main import app
+
+paths = {route.path for route in app.routes}
+required = {
+    "/api/hackerone/simple-review-package",
+    "/api/imports/hackerone/rules-preview",
+    "/api/imports/hackerone/batches/launch-reviewed",
+    "/api/hackerone/journal",
+}
+missing = sorted(required - paths)
+print("V81_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))
+for path in missing:
+    print("MISSING_ROUTE=" + path)
+raise SystemExit(0 if not missing else 1)
+PY
+then
+  V81_ROUTE_CONTRACT_OK=true
+else
+  V81_ROUTE_CONTRACT_OK=false
+fi
+
+echo "=== PRODUCTION CONTRACT VERDICT ==="
+CHECKOUT_CURRENT=false
+if [ -n "$REMOTE_SHA" ] && [ "$LOCAL_SHA" = "$REMOTE_SHA" ]; then
+  CHECKOUT_CURRENT=true
+fi
+if [ "$RUNTIME_READY" = "true" ] \
+  && [ "$PUBLIC_HTTPS_OK" = "true" ] \
+  && [ "$HACKERONE_API_READY" = "true" ] \
+  && [ "$DASHBOARD_VERSION_OK" = "true" ] \
+  && [ "$V81_ROUTE_CONTRACT_OK" = "true" ] \
+  && [ "$CHECKOUT_CURRENT" = "true" ]; then
+  echo "PRODUCTION_CONTRACT_OK=true"
+else
+  echo "PRODUCTION_CONTRACT_OK=false"
+  [ "$CHECKOUT_CURRENT" = "true" ] || echo "BLOCKER=checkout_stale | Le VPS n'est pas sur origin/main."
+  [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Interface v81 non servie publiquement."
+  [ "$V81_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique v81 manque dans le backend déployé."
 fi
 ```
 

@@ -1,13 +1,15 @@
 # Change impact
 
-Base: b926fa9d67269a002cf865f2bbcc3d6fec4f13a0
-Head: f718b35fab19280e54b648f4f602fa7da9652a0c
+Base: 8da3682b0039c711f6f95c1eee65aefe5ed07c0b
+Head: 673e8e44f6c177e09401d3b490ea883ca6522d3e
 
 ## Changed files
-- M backend/tests/test_hackerone_reviewed_batch_api.py
+- M backend/tests/test_mobile_production_update_script.py
+- M scripts/mobile-production-status.sh
 
 ## Affected areas
 - backend
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.
