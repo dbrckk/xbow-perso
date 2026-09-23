@@ -1267,6 +1267,17 @@ def _reviewed_campaign_input_from_snapshot(
             },
         ) from exc
 
+    conservative_reason = _conservative_admission_reason(policy)
+    if conservative_reason is not None:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile is not safe for automated scanning",
+                "reason": conservative_reason,
+                "handles": [snapshot.handle],
+            },
+        )
+
     program_name = str(snapshot.program.get("name") or "").strip()
     if len(program_name) < 2:
         program_name = f"H1 {snapshot.handle}"
@@ -1313,6 +1324,11 @@ _REPLACEABLE_PREFLIGHT_REASONS = {
     "review_profile_incomplete",
     "review_profile_invalid",
     "scope_exclusions_require_manual_enforcement",
+    "safe_harbor_required",
+    "automated_scanning_not_authorized",
+    "test_account_workflow_not_supported",
+    "test_account_constraints_not_supported",
+    "additional_restrictions_require_manual_enforcement",
 }
 
 
