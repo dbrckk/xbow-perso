@@ -418,3 +418,160 @@ def test_reviewed_batch_rejects_saved_policy_that_disables_automation(
     assert detail["reason"] == "automated_scanning_not_authorized"
     assert detail["handles"] == ["program-one"]
     assert store.list_campaigns() == []
+
+
+def test_v81_happy_path_review_package_to_profile_to_launch(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "v81-e2e.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    def review_snapshot(handle: str, domain: str, fingerprint: str):
+        document = {"data": [_resource(domain)], "links": {}}
+        return HackerOneProgramSnapshot(
+            handle=handle,
+            program={
+                "name": handle.replace("-", " ").title(),
+                "handle": handle,
+                "policy": "Automated scanning is allowed within the listed scope.",
+                "submission_state": "open",
+                "state": "public_mode",
+                "offers_bounties": True,
+                "gold_standard_safe_harbor": True,
+            },
+            document=document,
+            scope_exclusions=(),
+            preview={
+                "complete": True,
+                "allowed_targets": [domain],
+                "denied_targets": [],
+                "conflicts": [],
+                "unsupported": [],
+                "assets": [
+                    {
+                        "identifier": domain,
+                        "asset_type": "Domain",
+                        "eligible_for_submission": True,
+                        "compatible": True,
+                    }
+                ],
+            },
+            snapshot_sha256=fingerprint,
+        )
+
+    snapshots = {
+        "program-one": review_snapshot("program-one", "one.example.com", "a" * 64),
+        "program-two": review_snapshot("program-two", "two.example.com", "b" * 64),
+    }
+
+    def fake_selection(exclude=""):
+        excluded={value for value in exclude.split(",") if value}
+        handles=[
+            handle
+            for handle in ["program-one", "program-two", "x3", "x4", "x5", "x6"]
+            if handle not in excluded
+        ]
+        items=[]
+        for handle in handles[:6]:
+            items.append(
+                {
+                    "handle": handle,
+                    "name": handle.replace("-", " ").title(),
+                    "status": "REVIEW",
+                    "offers_bounties": True,
+                    "gold_standard_safe_harbor": True,
+                    "effort_factor": 1.0,
+                    "value_efficiency_score": 80,
+                    "opportunity_score": 80,
+                    "historical_usd_awarded_max": 1000,
+                    "historical_value_score": 50,
+                }
+            )
+        return {
+            "provider": "hackerone",
+            "groups": {"easy": items[:2], "medium": items[2:4], "high_value": items[4:6]},
+            "selection": items,
+            "handles": [item["handle"] for item in items],
+            "complete": len(items) == 6,
+            "selection_count": len(items),
+            "ready_count": 0,
+            "review_count": len(items),
+            "revalidation_count": 0,
+            "launch_ready": False,
+            "catalog_source": "local-cache",
+        }
+
+    def fetch_snapshot(handle):
+        if handle in snapshots:
+            return snapshots[handle]
+        return review_snapshot(handle, f"{handle}.example.com", (handle[0] * 64)[:64])
+
+    monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
+    monkeypatch.setattr(hackerone_api, "fetch_hackerone_program_snapshot", fetch_snapshot)
+    monkeypatch.setattr(
+        "app.hackerone_client.fetch_hackerone_program_snapshot",
+        fetch_snapshot,
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "_runtime_prelaunch_verdict",
+        lambda: {"runtime_ready": True, "runtime": {}, "blockers": []},
+    )
+
+    package = hackerone_api.hackerone_simple_review_package()
+    assert package["handles"] == ["program-one", "program-two"]
+    assert package["review_count"] == 2
+    assert package["live_verified"] is True
+    assert len(package["review_drafts"]) == 2
+
+    client = _app()
+    for draft in package["review_drafts"]:
+        response = client.post(
+            "/api/imports/hackerone/rules-preview",
+            json={
+                "document": draft["prefill"]["scope_document"],
+                "policy": {
+                    "authorization_reference": draft["prefill"]["authorization_reference"],
+                    "policy_version": draft["prefill"]["policy_version"],
+                    "reviewed_at": "2026-09-23T12:00:00+00:00",
+                    "reviewed_by": "v81-e2e-test",
+                    "safe_harbor_confirmed": True,
+                    "automated_scanning": True,
+                    "max_requests_per_second": 1.0,
+                    "test_account_required": False,
+                    "test_account_constraints": "",
+                    "additional_restrictions": [],
+                    "program_notes": "Conservative E2E test profile.",
+                },
+                "remote_handle": draft["handle"],
+                "remote_snapshot_sha256": draft["snapshot_sha256"],
+                "remember_review_profile": True,
+                "preferred_primary_url": draft["prefill"]["primary_url"],
+            },
+        )
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["review_profile_persisted"] is True
+        assert body["complete"] is True
+
+    launch = client.post(
+        "/api/imports/hackerone/batches/launch-reviewed",
+        json={
+            "mode": "sequential",
+            "handles": package["handles"],
+        },
+    )
+    assert launch.status_code == 200, launch.text
+    batch = launch.json()
+    assert [member["handle"] for member in batch["members"]] == package["handles"]
+    assert [member["status"] for member in batch["members"]] == ["running", "ready"]
+
+    jobs = JobQueue(db)
+    first_counts = jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])
+    second_counts = jobs.campaign_job_status_counts(batch["members"][1]["campaign_id"])
+    assert first_counts["queued"] >= 1
+    assert second_counts["queued"] == 0
