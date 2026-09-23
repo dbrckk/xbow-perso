@@ -596,12 +596,8 @@ def hackerone_simple_selection(
 def hackerone_simple_review_package(
     exclude: str = "",
 ):
-    """Return one or two currently usable HackerOne programmes.
-
-    The operator asked for the lowest-friction path: any authorized programme is
-    acceptable. Existing reviewed profiles are preferred, while REVIEW candidates
-    are checked live until one or two usable programmes are found.
-    """
+    """Return one or two live-verified, currently usable HackerOne programmes."""
+    store = None
     rejected = {
         value.strip().lower()
         for value in exclude.split(",")
@@ -613,6 +609,26 @@ def hackerone_simple_review_package(
     checked_handles: set[str] = set()
     candidate_order: dict[str, int] = {}
     last_selection: dict[str, Any] = {}
+
+    def _snapshot_or_http(handle: str):
+        try:
+            return fetch_hackerone_program_snapshot(handle)
+        except HackerOneClientError as exc:
+            detail = _hackerone_error_detail(exc)
+            reason = str(detail.get("reason") or "review_unavailable")
+            if detail.get("retryable") is True or reason in {
+                "hackerone_authentication_failed",
+                "hackerone_connection_failed",
+                "hackerone_timeout",
+                "hackerone_io_failed",
+                "hackerone_upstream_unavailable",
+                "hackerone_rate_limited",
+            }:
+                raise HTTPException(
+                    status_code=503 if detail.get("retryable") is True else 502,
+                    detail=detail,
+                ) from exc
+            return None
 
     for _round in range(4):
         local_exclude = sorted(rejected | set(accepted))
@@ -642,70 +658,107 @@ def hackerone_simple_review_package(
         if not items:
             break
 
-        immediate = [
-            item for item in items
-            if str(item.get("status") or "") in {"READY", "REVALIDATE"}
-        ]
-        for item in immediate:
-            handle = str(item.get("handle") or "").strip().lower()
-            if handle and handle not in rejected and handle not in accepted:
-                accepted[handle] = item
-                if len(accepted) >= 2:
-                    break
-        if len(accepted) >= 2:
-            break
-
-        review_items = [
-            item for item in items
-            if str(item.get("status") or "") == "REVIEW"
+        ordered = sorted(
+            items,
+            key=lambda item: (
+                {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(
+                    str(item.get("status") or ""),
+                    3,
+                ),
+                candidate_order.get(
+                    str(item.get("handle") or "").strip().lower(),
+                    10**9,
+                ),
+            ),
+        )
+        to_check = [
+            item for item in ordered
+            if str(item.get("status") or "") in {"READY", "REVALIDATE", "REVIEW"}
             and str(item.get("handle") or "").strip().lower() not in accepted
             and str(item.get("handle") or "").strip().lower() not in rejected
         ][:2]
-
-        def _load(item: dict[str, Any]) -> tuple[str, dict[str, Any] | None, list[str]]:
-            handle = str(item.get("handle") or "").strip().lower()
-            try:
-                snapshot = fetch_hackerone_program_snapshot(handle)
-                draft = build_hackerone_review_draft(snapshot)
-            except HackerOneClientError as exc:
-                detail = _hackerone_error_detail(exc)
-                reason = str(detail.get("reason") or "review_unavailable")
-                if detail.get("retryable") is True or reason in {
-                    "hackerone_authentication_failed",
-                    "hackerone_connection_failed",
-                    "hackerone_timeout",
-                    "hackerone_io_failed",
-                    "hackerone_upstream_unavailable",
-                    "hackerone_rate_limited",
-                }:
-                    raise HTTPException(
-                        status_code=503 if detail.get("retryable") is True else 502,
-                        detail=detail,
-                    ) from exc
-                return handle, None, [reason]
-            blockers = review_draft_blockers(draft)
-            return handle, draft, blockers
-
-        if review_items:
-            with ThreadPoolExecutor(max_workers=min(2, len(review_items))) as executor:
-                futures = {executor.submit(_load, item): item for item in review_items}
-                for future in as_completed(futures):
-                    handle, draft, blockers = future.result()
-                    checked_handles.add(handle)
-                    if draft is not None and review_draft_is_usable(draft):
-                        draft_cache[handle] = draft
-                        accepted[handle] = futures[future]
-                    else:
-                        rejected.add(handle)
-                        rejection_reasons[handle] = blockers or ["review_unavailable"]
-                    if len(accepted) >= 2:
-                        break
-
-        if len(accepted) >= 2:
+        if not to_check:
             break
 
-        progressed = bool(immediate or review_items)
-        if not progressed:
+        with ThreadPoolExecutor(max_workers=min(2, len(to_check))) as executor:
+            futures = {
+                executor.submit(
+                    _snapshot_or_http,
+                    str(item.get("handle") or "").strip().lower(),
+                ): item
+                for item in to_check
+            }
+            snapshots: dict[str, Any] = {}
+            for future in as_completed(futures):
+                item = futures[future]
+                handle = str(item.get("handle") or "").strip().lower()
+                snapshot = future.result()
+                checked_handles.add(handle)
+                if snapshot is None:
+                    rejected.add(handle)
+                    rejection_reasons[handle] = ["review_unavailable"]
+                else:
+                    snapshots[handle] = snapshot
+
+        for item in to_check:
+            handle = str(item.get("handle") or "").strip().lower()
+            snapshot = snapshots.get(handle)
+            if snapshot is None:
+                continue
+
+            status = str(item.get("status") or "")
+            if status in {"READY", "REVALIDATE"}:
+                if store is None:
+                    from .main import storage
+                    store = storage()
+                try:
+                    prepared = _reviewed_campaign_input_from_snapshot(snapshot, store)
+                except HTTPException as exc:
+                    detail = exc.detail if isinstance(exc.detail, dict) else {}
+                    reason = str(detail.get("reason") or "reviewed_preflight_blocked")
+                    if reason == "review_profile_required":
+                        draft = build_hackerone_review_draft(snapshot)
+                        blockers = review_draft_blockers(draft)
+                        if review_draft_is_usable(draft):
+                            refreshed = dict(item)
+                            refreshed["status"] = "REVIEW"
+                            refreshed["reasons"] = list(refreshed.get("reasons") or []) + [
+                                "current_snapshot_requires_human_review"
+                            ]
+                            accepted[handle] = refreshed
+                            draft_cache[handle] = draft
+                            continue
+                        rejected.add(handle)
+                        rejection_reasons[handle] = blockers or [reason]
+                        continue
+                    rejected.add(handle)
+                    rejection_reasons[handle] = [reason]
+                    continue
+
+                refreshed = dict(item)
+                refreshed["status"] = "READY"
+                refreshed["live_verified"] = True
+                refreshed["snapshot_sha256"] = str(
+                    prepared.remote_snapshot_sha256 or ""
+                )
+                accepted[handle] = refreshed
+            else:
+                draft = build_hackerone_review_draft(snapshot)
+                blockers = review_draft_blockers(draft)
+                if review_draft_is_usable(draft):
+                    refreshed = dict(item)
+                    refreshed["status"] = "REVIEW"
+                    refreshed["live_verified"] = True
+                    accepted[handle] = refreshed
+                    draft_cache[handle] = draft
+                else:
+                    rejected.add(handle)
+                    rejection_reasons[handle] = blockers or ["review_unavailable"]
+
+            if len(accepted) >= 2:
+                break
+
+        if len(accepted) >= 2:
             break
 
     selected = sorted(
@@ -763,7 +816,8 @@ def hackerone_simple_review_package(
             for handle in sorted(rejection_reasons)
         ],
         "catalog_checked_at": last_selection.get("catalog_checked_at"),
-        "selection_requires_live_hackerone": bool(review_count),
+        "selection_requires_live_hackerone": True,
+        "live_verified": True,
         "automatic_launch": False,
         "requires_launch_revalidation": True,
         "contains_secrets": False,
@@ -1139,15 +1193,10 @@ def _rollback_admitted_batch_campaigns(campaign_ids: list[str]) -> None:
             continue
 
 
-def _reviewed_campaign_input(
-    handle: str,
+def _reviewed_campaign_input_from_snapshot(
+    snapshot,
     store,
 ) -> HackerOneCampaignAdmissionInput:
-    try:
-        snapshot = fetch_hackerone_program_snapshot(handle)
-    except HackerOneClientError as exc:
-        raise _upstream_error(exc) from exc
-
     block_reason = _remote_program_launch_block_reason(dict(snapshot.program or {}))
     if block_reason is not None:
         raise HTTPException(
@@ -1218,6 +1267,17 @@ def _reviewed_campaign_input(
             },
         ) from exc
 
+    conservative_reason = _conservative_admission_reason(policy)
+    if conservative_reason is not None:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile is not safe for automated scanning",
+                "reason": conservative_reason,
+                "handles": [snapshot.handle],
+            },
+        )
+
     program_name = str(snapshot.program.get("name") or "").strip()
     if len(program_name) < 2:
         program_name = f"H1 {snapshot.handle}"
@@ -1245,6 +1305,17 @@ def _reviewed_campaign_input(
         ) from exc
 
 
+def _reviewed_campaign_input(
+    handle: str,
+    store,
+) -> HackerOneCampaignAdmissionInput:
+    try:
+        snapshot = fetch_hackerone_program_snapshot(handle)
+    except HackerOneClientError as exc:
+        raise _upstream_error(exc) from exc
+    return _reviewed_campaign_input_from_snapshot(snapshot, store)
+
+
 _REPLACEABLE_PREFLIGHT_REASONS = {
     "program_submissions_not_open",
     "program_not_currently_open",
@@ -1253,6 +1324,11 @@ _REPLACEABLE_PREFLIGHT_REASONS = {
     "review_profile_incomplete",
     "review_profile_invalid",
     "scope_exclusions_require_manual_enforcement",
+    "safe_harbor_required",
+    "automated_scanning_not_authorized",
+    "test_account_workflow_not_supported",
+    "test_account_constraints_not_supported",
+    "additional_restrictions_require_manual_enforcement",
 }
 
 

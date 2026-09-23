@@ -383,3 +383,38 @@ def test_reviewed_batch_rejects_unenforced_scope_exclusions_before_campaign_crea
     assert detail["handles"] == ["program-one"]
     assert store.list_campaigns() == []
     assert store.list_hackerone_batches(limit=10) == []
+
+
+def test_reviewed_batch_rejects_saved_policy_that_disables_automation(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "automation-disabled.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    fingerprint = "a" * 64
+    snapshot = _snapshot("program-one", "one.example.com", fingerprint)
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: snapshot,
+    )
+
+    profile = _profile("program-one", "one.example.com", fingerprint)
+    profile["policy"]["automated_scanning"] = False
+    store = Storage(db, artifacts)
+    store.save_hackerone_review_profile(profile, expected_version=0)
+
+    response = _app().post(
+        "/api/imports/hackerone/batches/launch-reviewed",
+        json={"mode": "sequential", "handles": ["program-one"]},
+    )
+
+    assert response.status_code == 409
+    detail = response.json()["detail"]
+    assert detail["reason"] == "automated_scanning_not_authorized"
+    assert detail["handles"] == ["program-one"]
+    assert store.list_campaigns() == []
