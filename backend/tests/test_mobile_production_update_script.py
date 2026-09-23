@@ -139,3 +139,38 @@ def test_mobile_status_public_https_probe_uses_get_not_head():
     assert 'curl -fsS -D - -o /dev/null "https://$PUBLIC_HOST/health"' in script
     assert 'curl -fsSI "https://$PUBLIC_HOST/health"' not in script
     assert 'echo "PUBLIC_HTTPS_OK=true"' in script
+
+
+def test_mobile_status_verifies_exact_deployed_v81_contract():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    assert "=== DEPLOYED REVISION ===" in script
+    assert 'LOCAL_SHA="$(git rev-parse HEAD)"' in script
+    assert 'REMOTE_SHA="$(git rev-parse origin/main 2>/dev/null || true)"' in script
+    assert "CHECKOUT_CURRENT=true" in script
+    assert 'DASHBOARD_ASSET" = "simple.js?v=81"' in script
+    assert "DASHBOARD_VERSION_OK=true" in script
+    assert "=== V81 ROUTE CONTRACT ===" in script
+    assert '"/api/hackerone/simple-review-package"' in script
+    assert '"/api/imports/hackerone/rules-preview"' in script
+    assert '"/api/imports/hackerone/batches/launch-reviewed"' in script
+    assert '"/api/hackerone/journal"' in script
+    assert "V81_ROUTE_CONTRACT_OK=true" in script
+    assert "=== PRODUCTION CONTRACT VERDICT ===" in script
+    assert "PRODUCTION_CONTRACT_OK=true" in script
+    assert "PRODUCTION_CONTRACT_OK=false" in script
+
+
+def test_mobile_status_production_contract_requires_all_live_prerequisites():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
+    assert '[ "$RUNTIME_READY" = "true" ]' in verdict
+    assert '[ "$PUBLIC_HTTPS_OK" = "true" ]' in verdict
+    assert '[ "$HACKERONE_API_READY" = "true" ]' in verdict
+    assert '[ "$DASHBOARD_VERSION_OK" = "true" ]' in verdict
+    assert '[ "$V81_ROUTE_CONTRACT_OK" = "true" ]' in verdict
+    assert '[ "$CHECKOUT_CURRENT" = "true" ]' in verdict
+    assert "BLOCKER=checkout_stale" in verdict
+    assert "BLOCKER=dashboard_version" in verdict
+    assert "BLOCKER=route_contract" in verdict
