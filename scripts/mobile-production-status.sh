@@ -23,14 +23,19 @@ cd "$INSTALL_DIR"
 
 echo "=== DEPLOYED REVISION ==="
 LOCAL_SHA="$(git rev-parse HEAD)"
-REMOTE_SHA="$(git rev-parse origin/main 2>/dev/null || true)"
+REMOTE_SHA="$(git ls-remote origin refs/heads/main 2>/dev/null | awk '{print $1}' | head -n1 || true)"
 echo "LOCAL_SHA=$LOCAL_SHA"
 echo "ORIGIN_MAIN_SHA=$REMOTE_SHA"
-if [ -n "$REMOTE_SHA" ] && [ "$LOCAL_SHA" = "$REMOTE_SHA" ]; then
-  echo "CHECKOUT_CURRENT=true"
-else
-  echo "CHECKOUT_CURRENT=false"
+REMOTE_MAIN_REACHABLE=false
+CHECKOUT_CURRENT=false
+if [ -n "$REMOTE_SHA" ]; then
+  REMOTE_MAIN_REACHABLE=true
+  if [ "$LOCAL_SHA" = "$REMOTE_SHA" ]; then
+    CHECKOUT_CURRENT=true
+  fi
 fi
+echo "REMOTE_MAIN_REACHABLE=$REMOTE_MAIN_REACHABLE"
+echo "CHECKOUT_CURRENT=$CHECKOUT_CURRENT"
 
 
 # shellcheck disable=SC1090
@@ -198,21 +203,60 @@ else
   V81_ROUTE_CONTRACT_OK=false
 fi
 
-echo "=== PRODUCTION CONTRACT VERDICT ==="
-CHECKOUT_CURRENT=false
-if [ -n "$REMOTE_SHA" ] && [ "$LOCAL_SHA" = "$REMOTE_SHA" ]; then
-  CHECKOUT_CURRENT=true
+echo "=== ACCESSIBLE BOUNTY PRECHECK ==="
+ACCESSIBLE_BOUNTY_PRECHECK_OK=false
+ACCESSIBLE_BOUNTY_RESULT="$(
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.hackerone_api import hackerone_simple_review_package
+from fastapi import HTTPException
+
+try:
+    result = hackerone_simple_review_package()
+except HTTPException as exc:
+    detail = exc.detail if isinstance(exc.detail, dict) else {"message": str(exc.detail)}
+    print("ACCESSIBLE_BOUNTY_PRECHECK_OK=false")
+    print("ACCESSIBLE_BOUNTY_REASON=" + str(detail.get("reason") or "http_error"))
+    print("ACCESSIBLE_BOUNTY_MESSAGE=" + str(detail.get("message") or "precheck failed"))
+    raise SystemExit(1)
+except Exception as exc:
+    print("ACCESSIBLE_BOUNTY_PRECHECK_OK=false")
+    print("ACCESSIBLE_BOUNTY_REASON=unexpected_error")
+    print("ACCESSIBLE_BOUNTY_MESSAGE=" + exc.__class__.__name__)
+    raise SystemExit(1)
+
+handles = [str(value) for value in list(result.get("handles") or []) if str(value)]
+ok = 1 <= len(handles) <= 2 and result.get("live_verified") is True
+print("ACCESSIBLE_BOUNTY_PRECHECK_OK=" + ("true" if ok else "false"))
+print("ACCESSIBLE_BOUNTY_COUNT=" + str(len(handles)))
+print("ACCESSIBLE_BOUNTY_HANDLES=" + ",".join(handles))
+print("ACCESSIBLE_BOUNTY_REVIEW_COUNT=" + str(int(result.get("review_count") or 0)))
+print("ACCESSIBLE_BOUNTY_READY_COUNT=" + str(int(result.get("ready_count") or 0)))
+raise SystemExit(0 if ok else 1)
+PY
+)" || true
+printf '%s
+' "$ACCESSIBLE_BOUNTY_RESULT"
+if printf '%s
+' "$ACCESSIBLE_BOUNTY_RESULT" | grep -qx 'ACCESSIBLE_BOUNTY_PRECHECK_OK=true'; then
+  ACCESSIBLE_BOUNTY_PRECHECK_OK=true
 fi
+
+echo "=== PRODUCTION CONTRACT VERDICT ==="
 if [ "$RUNTIME_READY" = "true" ] \
   && [ "$PUBLIC_HTTPS_OK" = "true" ] \
   && [ "$HACKERONE_API_READY" = "true" ] \
   && [ "$DASHBOARD_VERSION_OK" = "true" ] \
   && [ "$V81_ROUTE_CONTRACT_OK" = "true" ] \
+  && [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] \
+  && [ "$REMOTE_MAIN_REACHABLE" = "true" ] \
   && [ "$CHECKOUT_CURRENT" = "true" ]; then
   echo "PRODUCTION_CONTRACT_OK=true"
 else
   echo "PRODUCTION_CONTRACT_OK=false"
+  [ "$REMOTE_MAIN_REACHABLE" = "true" ] || echo "BLOCKER=origin_main_unreachable | Impossible de lire origin/main depuis le VPS."
   [ "$CHECKOUT_CURRENT" = "true" ] || echo "BLOCKER=checkout_stale | Le VPS n'est pas sur origin/main."
   [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Interface v81 non servie publiquement."
   [ "$V81_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique v81 manque dans le backend déployé."
+  [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] || echo "BLOCKER=accessible_bounty_precheck | Aucun programme HackerOne live-vérifié n'a pu être préparé."
+  exit 1
 fi
