@@ -174,3 +174,11 @@ def test_mobile_status_production_contract_requires_all_live_prerequisites():
     assert "BLOCKER=checkout_stale" in verdict
     assert "BLOCKER=dashboard_version" in verdict
     assert "BLOCKER=route_contract" in verdict
+
+
+def test_mobile_status_route_contract_tolerates_non_route_entries():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    assert 'getattr(route, "path", None)' in script
+    assert 'if (path := getattr(route, "path", None))' in script
+    assert "paths = {" in script
