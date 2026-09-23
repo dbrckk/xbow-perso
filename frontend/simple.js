@@ -524,6 +524,11 @@
       'review_profile_incomplete',
       'review_profile_invalid',
       'scope_exclusions_require_manual_enforcement',
+      'safe_harbor_required',
+      'automated_scanning_not_authorized',
+      'test_account_workflow_not_supported',
+      'test_account_constraints_not_supported',
+      'additional_restrictions_require_manual_enforcement',
       'stale_hackerone_snapshot',
       'hackerone_snapshot_document_mismatch'
     ].includes(String(reason||''));
