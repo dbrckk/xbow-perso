@@ -224,3 +224,94 @@ def test_review_package_limits_live_checks_to_two_per_round(monkeypatch):
         raise AssertionError("all-incompatible candidates must fail closed")
 
     assert len(seen) <= 8
+
+
+def test_review_package_live_verifies_ready_programmes(monkeypatch):
+    selection=_selection(["a","b","c","d","e","f"])
+    for item in selection["selection"]:
+        item["status"]="READY"
+    selection["review_count"]=0
+    selection["ready_count"]=6
+    selection["launch_ready"]=True
+
+    snapshots={handle:_snapshot(handle, complete=True) for handle in selection["handles"]}
+    fetch_calls=[]
+    verify_calls=[]
+
+    monkeypatch.setattr(
+        hackerone_api,
+        "hackerone_simple_selection",
+        lambda exclude="": selection,
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: fetch_calls.append(handle) or snapshots[handle],
+    )
+    monkeypatch.setattr(
+        "app.main.storage",
+        lambda: object(),
+    )
+
+    def fake_prepared(snapshot, _store):
+        verify_calls.append(snapshot.handle)
+        return SimpleNamespace(remote_snapshot_sha256=snapshot.snapshot_sha256)
+
+    monkeypatch.setattr(
+        hackerone_api,
+        "_reviewed_campaign_input_from_snapshot",
+        fake_prepared,
+    )
+
+    result=hackerone_api.hackerone_simple_review_package()
+
+    assert result["handles"] == ["a","b"]
+    assert result["ready_count"] == 2
+    assert result["review_count"] == 0
+    assert result["live_verified"] is True
+    assert set(fetch_calls) == {"a","b"}
+    assert verify_calls == ["a","b"]
+
+
+def test_review_package_turns_stale_ready_profile_into_human_review(monkeypatch):
+    selection=_selection(["a","b","c","d","e","f"])
+    for item in selection["selection"]:
+        item["status"]="READY"
+    selection["review_count"]=0
+    selection["ready_count"]=6
+    selection["launch_ready"]=True
+
+    monkeypatch.setattr(
+        hackerone_api,
+        "hackerone_simple_selection",
+        lambda exclude="": selection,
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: _snapshot(handle, complete=True),
+    )
+    monkeypatch.setattr("app.main.storage", lambda: object())
+
+    def stale_profile(snapshot, _store):
+        raise hackerone_api.HTTPException(
+            status_code=409,
+            detail={
+                "message":"review needed",
+                "reason":"review_profile_required",
+                "handles":[snapshot.handle],
+            },
+        )
+
+    monkeypatch.setattr(
+        hackerone_api,
+        "_reviewed_campaign_input_from_snapshot",
+        stale_profile,
+    )
+
+    result=hackerone_api.hackerone_simple_review_package()
+
+    assert result["handles"] == ["a","b"]
+    assert result["review_count"] == 2
+    assert len(result["review_drafts"]) == 2
+    assert result["launch_ready"] is False
