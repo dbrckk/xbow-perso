@@ -22,27 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T20:40:08Z
+Generated: 2026-09-23T15:48:41Z
 
 ### Git
 - Branch: `main`
-- Head: `3c2454bedc96`
-- Commit date: 2026-09-22T22:39:58+02:00
-- Commit: hardening: fail closed on unenforced HackerOne scope exclusions (#379)
+- Head: `c0432f99c53d`
+- Commit date: 2026-09-23T17:48:28+02:00
+- Commit: fix: live-verify accessible bounties before showing them (#380)
 - Tracked files: 566
 
 ### Recently changed files
 - `backend/app/hackerone_api.py`
-- `backend/app/hackerone_review_draft.py`
-- `backend/tests/test_hackerone_review_draft.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/tests/test_simple_selection_cache_only.py`
-- `frontend/simple.js`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_hackerone_simple_review_package.py`
 - `frontend/index.html`
+- `frontend/simple.js`
 - `frontend/sw.js`
+- `backend/app/hackerone_review_draft.py`
+- `backend/tests/test_hackerone_review_draft.py`
+- `backend/tests/test_simple_selection_cache_only.py`
 - `frontend/nginx.conf`
 
 ### Project signals

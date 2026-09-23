@@ -3037,12 +3037,8 @@ excluded_handles = {
 candidates = [
 result = select_simple_six(candidates)
 ⋮----
-"""Return one or two currently usable HackerOne programmes.
-
-    The operator asked for the lowest-friction path: any authorized programme is
-    acceptable. Existing reviewed profiles are preferred, while REVIEW candidates
-    are checked live until one or two usable programmes are found.
-    """
+"""Return one or two live-verified, currently usable HackerOne programmes."""
+store = None
 rejected = {
 accepted: dict[str, dict[str, Any]] = {}
 draft_cache: dict[str, dict[str, Any]] = {}
@@ -3050,6 +3046,10 @@ rejection_reasons: dict[str, list[str]] = {}
 checked_handles: set[str] = set()
 candidate_order: dict[str, int] = {}
 last_selection: dict[str, Any] = {}
+⋮----
+def _snapshot_or_http(handle: str)
+⋮----
+reason = str(detail.get("reason") or "review_unavailable")
 ⋮----
 local_exclude = sorted(rejected | set(accepted))
 ⋮----
@@ -3063,21 +3063,28 @@ items = [
 ⋮----
 handle = str(item.get("handle") or "").strip().lower()
 ⋮----
-immediate = [
+ordered = sorted(
+to_check = [
 ⋮----
-review_items = [
+futures = {
+snapshots: dict[str, Any] = {}
 ⋮----
-def _load(item: dict[str, Any]) -> tuple[str, dict[str, Any] | None, list[str]]
+item = futures[future]
+⋮----
+snapshot = future.result()
+⋮----
+snapshot = snapshots.get(handle)
+⋮----
+status = str(item.get("status") or "")
+⋮----
+prepared = _reviewed_campaign_input_from_snapshot(snapshot, store)
+⋮----
+reason = str(detail.get("reason") or "reviewed_preflight_blocked")
 ⋮----
 draft = build_hackerone_review_draft(snapshot)
-⋮----
-reason = str(detail.get("reason") or "review_unavailable")
-⋮----
 blockers = review_draft_blockers(draft)
 ⋮----
-futures = {executor.submit(_load, item): item for item in review_items}
-⋮----
-progressed = bool(immediate or review_items)
+refreshed = dict(item)
 ⋮----
 selected = sorted(
 ⋮----
@@ -3186,6 +3193,8 @@ primary_url = str(profile.get("preferred_primary_url") or "").strip()
 ⋮----
 policy = HackerOneProgramPolicyInput.model_validate(policy_raw)
 ⋮----
+conservative_reason = _conservative_admission_reason(policy)
+⋮----
 program_name = str(snapshot.program.get("name") or "").strip()
 ⋮----
 program_name = f"H1 {snapshot.handle}"
@@ -3219,8 +3228,6 @@ def preflight_reviewed_hackerone_batch(payload: HackerOneReviewedBatchLaunchInpu
 members: list[dict[str, Any]] = []
 ⋮----
 prepared = _reviewed_campaign_input(handle, store)
-⋮----
-reason = str(detail.get("reason") or "reviewed_preflight_blocked")
 ⋮----
 ready = [item for item in members if item["status"] == "ready"]
 blocked = [item for item in members if item["status"] == "blocked"]
@@ -12622,6 +12629,8 @@ def test_review_panel_displays_hackerone_scope_exclusions()
 def test_one_or_two_selection_is_preserved_after_profile_validation()
 ⋮----
 def test_mobile_dashboard_bounds_api_waits_and_shows_search_elapsed_time()
+⋮----
+def test_simple_dashboard_replaces_all_conservative_policy_blockers()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -13741,6 +13750,12 @@ fingerprint = "a" * 64
 snapshot = _snapshot(
 ⋮----
 detail = response.json()["detail"]
+⋮----
+db = str(tmp_path / "automation-disabled.sqlite3")
+⋮----
+snapshot = _snapshot("program-one", "one.example.com", fingerprint)
+⋮----
+profile = _profile("program-one", "one.example.com", fingerprint)
 ```
 
 ## File: tests/test_hackerone_scope_preview_api.py
@@ -13856,6 +13871,20 @@ seen=[]
 round_no={"n":0}
 ⋮----
 base=(round_no["n"]-1)*10
+⋮----
+def test_review_package_live_verifies_ready_programmes(monkeypatch)
+⋮----
+selection=_selection(["a","b","c","d","e","f"])
+⋮----
+snapshots={handle:_snapshot(handle, complete=True) for handle in selection["handles"]}
+fetch_calls=[]
+verify_calls=[]
+⋮----
+def fake_prepared(snapshot, _store)
+⋮----
+def test_review_package_turns_stale_ready_profile_into_human_review(monkeypatch)
+⋮----
+def stale_profile(snapshot, _store)
 ```
 
 ## File: tests/test_hackerone_upstream_diagnostics.py

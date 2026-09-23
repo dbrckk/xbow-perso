@@ -1,15 +1,17 @@
 # Change impact
 
-Base: 91efe0c1e9babc2121937d199fc9a66a03f70f3a
-Head: 3c2454bedc96670c258c8db1ebcafdeeb14b92c9
+Base: 6219d36accd70508dae2b23ca9bae511f124749e
+Head: c0432f99c53da5a32df6899479b27833ca0a93c4
 
 ## Changed files
 - M backend/app/hackerone_api.py
-- M backend/app/hackerone_review_draft.py
-- M backend/tests/test_hackerone_review_draft.py
+- M backend/tests/test_frontend_auth_proxy.py
+- M backend/tests/test_frontend_policy_launcher.py
 - M backend/tests/test_hackerone_reviewed_batch_api.py
-- M backend/tests/test_simple_selection_cache_only.py
+- M backend/tests/test_hackerone_simple_review_package.py
+- M frontend/index.html
 - M frontend/simple.js
+- M frontend/sw.js
 
 ## Affected areas
 - backend
