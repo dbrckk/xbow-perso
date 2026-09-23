@@ -146,7 +146,7 @@ def test_mobile_status_verifies_exact_deployed_v81_contract():
 
     assert "=== DEPLOYED REVISION ===" in script
     assert 'LOCAL_SHA="$(git rev-parse HEAD)"' in script
-    assert 'REMOTE_SHA="$(git rev-parse origin/main 2>/dev/null || true)"' in script
+    assert "git ls-remote origin refs/heads/main" in script
     assert "CHECKOUT_CURRENT=true" in script
     assert 'DASHBOARD_ASSET" = "simple.js?v=81"' in script
     assert "DASHBOARD_VERSION_OK=true" in script
