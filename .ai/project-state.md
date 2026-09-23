@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-23T15:48:41Z
+Generated: 2026-09-23T16:16:47Z
 
 ### Git
 - Branch: `main`
-- Head: `c0432f99c53d`
-- Commit date: 2026-09-23T17:48:28+02:00
-- Commit: fix: live-verify accessible bounties before showing them (#380)
+- Head: `f718b35fab19`
+- Commit date: 2026-09-23T18:16:35+02:00
+- Commit: test: verify v81 review-to-launch happy path end to end (#381)
 - Tracked files: 566
 
 ### Recently changed files
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/app/hackerone_api.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_hackerone_simple_review_package.py`
 - `frontend/index.html`
 - `frontend/simple.js`

@@ -13756,6 +13756,31 @@ db = str(tmp_path / "automation-disabled.sqlite3")
 snapshot = _snapshot("program-one", "one.example.com", fingerprint)
 ⋮----
 profile = _profile("program-one", "one.example.com", fingerprint)
+⋮----
+db = str(tmp_path / "v81-e2e.sqlite3")
+⋮----
+def review_snapshot(handle: str, domain: str, fingerprint: str)
+⋮----
+def fake_selection(exclude="")
+⋮----
+excluded={value for value in exclude.split(",") if value}
+handles=[
+items=[]
+⋮----
+package = hackerone_api.hackerone_simple_review_package()
+⋮----
+client = _app()
+⋮----
+response = client.post(
+⋮----
+body = response.json()
+⋮----
+launch = client.post(
+⋮----
+batch = launch.json()
+⋮----
+first_counts = jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])
+second_counts = jobs.campaign_job_status_counts(batch["members"][1]["campaign_id"])
 ```
 
 ## File: tests/test_hackerone_scope_preview_api.py
