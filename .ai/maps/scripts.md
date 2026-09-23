@@ -1011,7 +1011,11 @@ echo "=== V81 ROUTE CONTRACT ==="
 if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
 from app.main import app
 
-paths = {route.path for route in app.routes}
+paths = {
+    str(path)
+    for route in app.routes
+    if (path := getattr(route, "path", None))
+}
 required = {
     "/api/hackerone/simple-review-package",
     "/api/imports/hackerone/rules-preview",

@@ -14799,6 +14799,8 @@ def test_mobile_status_verifies_exact_deployed_v81_contract()
 def test_mobile_status_production_contract_requires_all_live_prerequisites()
 ⋮----
 verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
+⋮----
+def test_mobile_status_route_contract_tolerates_non_route_entries()
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

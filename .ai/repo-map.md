@@ -15407,6 +15407,8 @@ def test_mobile_status_verifies_exact_deployed_v81_contract()
 def test_mobile_status_production_contract_requires_all_live_prerequisites()
 ⋮----
 verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
+⋮----
+def test_mobile_status_route_contract_tolerates_non_route_entries()
 ````
 
 ## File: backend/tests/test_mobile_reset_api_token.py
@@ -20630,7 +20632,11 @@ echo "=== V81 ROUTE CONTRACT ==="
 if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
 from app.main import app
 
-paths = {route.path for route in app.routes}
+paths = {
+    str(path)
+    for route in app.routes
+    if (path := getattr(route, "path", None))
+}
 required = {
     "/api/hackerone/simple-review-package",
     "/api/imports/hackerone/rules-preview",

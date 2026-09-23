@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 8da3682b0039c711f6f95c1eee65aefe5ed07c0b
-Head: 673e8e44f6c177e09401d3b490ea883ca6522d3e
+Base: 554b4e2a1b10501be3c5205357b7fb3544ddd296
+Head: 4f06586cd5d3ae2e6945d332c39567deee0f3d33
 
 ## Changed files
 - M backend/tests/test_mobile_production_update_script.py
