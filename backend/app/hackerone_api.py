@@ -597,9 +597,7 @@ def hackerone_simple_review_package(
     exclude: str = "",
 ):
     """Return one or two live-verified, currently usable HackerOne programmes."""
-    from .main import storage
-
-    store = storage()
+    store = None
     rejected = {
         value.strip().lower()
         for value in exclude.split(",")
@@ -710,6 +708,9 @@ def hackerone_simple_review_package(
 
             status = str(item.get("status") or "")
             if status in {"READY", "REVALIDATE"}:
+                if store is None:
+                    from .main import storage
+                    store = storage()
                 try:
                     prepared = _reviewed_campaign_input_from_snapshot(snapshot, store)
                 except HTTPException as exc:
