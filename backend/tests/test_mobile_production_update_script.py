@@ -182,3 +182,31 @@ def test_mobile_status_route_contract_tolerates_non_route_entries():
     assert 'getattr(route, "path", None)' in script
     assert 'if (path := getattr(route, "path", None))' in script
     assert "paths = {" in script
+
+
+def test_mobile_status_uses_live_origin_main_and_fails_closed():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    assert "git ls-remote origin refs/heads/main" in script
+    assert "REMOTE_MAIN_REACHABLE=true" in script
+    assert "REMOTE_MAIN_REACHABLE=false" in script
+    verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
+    assert '[ "$REMOTE_MAIN_REACHABLE" = "true" ]' in verdict
+    assert "BLOCKER=origin_main_unreachable" in verdict
+    assert "exit 1" in verdict
+
+
+def test_mobile_status_live_verifies_one_or_two_accessible_bounties():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    assert "=== ACCESSIBLE BOUNTY PRECHECK ===" in script
+    assert "from app.hackerone_api import hackerone_simple_review_package" in script
+    assert "result = hackerone_simple_review_package()" in script
+    assert "1 <= len(handles) <= 2" in script
+    assert 'result.get("live_verified") is True' in script
+    assert "ACCESSIBLE_BOUNTY_PRECHECK_OK=true" in script
+    assert "ACCESSIBLE_BOUNTY_COUNT=" in script
+    assert "ACCESSIBLE_BOUNTY_HANDLES=" in script
+    verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
+    assert '[ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ]' in verdict
+    assert "BLOCKER=accessible_bounty_precheck" in verdict
