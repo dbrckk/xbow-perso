@@ -2,7 +2,7 @@
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v80';
+  const UI_VERSION='v81';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -763,7 +763,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=80',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=81',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
