@@ -22,21 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-24T10:05:54Z
+Generated: 2026-09-24T10:15:55Z
 
 ### Git
 - Branch: `main`
-- Head: `0520c3c08c41`
-- Commit date: 2026-09-24T12:05:43+02:00
-- Commit: fix: remove duplicate campaign API route registration (#386)
-- Tracked files: 567
+- Head: `1c9955e27cde`
+- Commit date: 2026-09-24T12:15:42+02:00
+- Commit: feat: add a fail-closed Hack The Box training mode (#387)
+- Tracked files: 569
 
 ### Recently changed files
+- `backend/app/htb_lab.py`
 - `backend/app/main.py`
-- `backend/tests/test_route_registration_uniqueness.py`
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_htb_lab.py`
 - `backend/tests/test_mobile_production_update_script.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `scripts/mobile-production-status.sh`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
+- `backend/tests/test_route_registration_uniqueness.py`
 
 ### Project signals
 - `pyproject.toml`

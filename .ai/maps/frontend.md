@@ -417,6 +417,10 @@ async function refreshJournal(
 ⋮----
 async function cancelActiveBatch()
 ⋮----
+function setHtbStatus(message,kind='')
+⋮----
+async function startHtbLab()
+⋮----
 function bind()
 ```
 

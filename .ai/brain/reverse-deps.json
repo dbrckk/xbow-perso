@@ -152,6 +152,7 @@
         "backend/app/hackerone_api.py",
         "backend/app/hackerone_binding.py",
         "backend/app/hackerone_report_sync_worker.py",
+        "backend/app/htb_lab.py",
         "backend/app/main.py",
         "backend/app/report_approval_api.py",
         "backend/app/submission_api.py",
@@ -167,7 +168,7 @@
         "backend/tests/test_submission_api.py",
         "backend/tests/test_worker_outcome_memory.py"
       ],
-      "in_degree": 18,
+      "in_degree": 19,
       "out_degree": 2
     },
     "backend/app/campaign_chain_priority.py": {
@@ -914,6 +915,18 @@
       "in_degree": 4,
       "out_degree": 3
     },
+    "backend/app/htb_lab.py": {
+      "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/main.py"
+      ],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/tests/test_htb_lab.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 2
+    },
     "backend/app/hypothesis_engine.py": {
       "dependencies": [
         "backend/app/evidence_chain.py",
@@ -1183,6 +1196,7 @@
         "backend/app/finding_readiness.py",
         "backend/app/hackerone_scope_import.py",
         "backend/app/high_value_intelligence.py",
+        "backend/app/htb_lab.py",
         "backend/app/hypothesis_memory.py",
         "backend/app/identity_access.py",
         "backend/app/incident_api.py",
@@ -1258,6 +1272,7 @@
         "backend/app/hackerone_report_tracking.py",
         "backend/app/hackerone_scope_import.py",
         "backend/app/high_value_intelligence.py",
+        "backend/app/htb_lab.py",
         "backend/app/hypothesis_engine.py",
         "backend/app/hypothesis_memory.py",
         "backend/app/identity_access.py",
@@ -1349,6 +1364,7 @@
         "backend/tests/test_hackerone_scope_preview_api.py",
         "backend/tests/test_health.py",
         "backend/tests/test_high_value_intelligence.py",
+        "backend/tests/test_htb_lab.py",
         "backend/tests/test_hypothesis_engine.py",
         "backend/tests/test_identity_access.py",
         "backend/tests/test_job_provenance.py",
@@ -1406,8 +1422,8 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 184,
-      "out_degree": 54
+      "in_degree": 186,
+      "out_degree": 55
     },
     "backend/app/metrics.py": {
       "dependencies": [
@@ -1753,13 +1769,14 @@
         "backend/tests/test_campaign_circuit_breaker.py",
         "backend/tests/test_hackerone_nuclei_e2e.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+        "backend/tests/test_htb_lab.py",
         "backend/tests/test_job_provenance_integration.py",
         "backend/tests/test_nuclei_queue_lifecycle.py",
         "backend/tests/test_orchestrator.py",
         "backend/tests/test_orchestrator_validation_alignment.py",
         "backend/tests/test_runtime_budget_config.py"
       ],
-      "in_degree": 10,
+      "in_degree": 11,
       "out_degree": 39
     },
     "backend/app/outbox_recovery.py": {
@@ -2561,6 +2578,7 @@
         "backend/tests/test_hackerone_review_profiles.py",
         "backend/tests/test_hackerone_reviewed_batch_api.py",
         "backend/tests/test_hackerone_scope_preview_api.py",
+        "backend/tests/test_htb_lab.py",
         "backend/tests/test_hypothesis_engine.py",
         "backend/tests/test_job_provenance_api_integration.py",
         "backend/tests/test_learning_memory.py",
@@ -2592,7 +2610,7 @@
         "backend/tests/test_worker_observations.py",
         "backend/tests/test_worker_outcome_memory.py"
       ],
-      "in_degree": 80,
+      "in_degree": 81,
       "out_degree": 1
     },
     "backend/app/storage_backend.py": {
@@ -3892,6 +3910,18 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 4
+    },
+    "backend/tests/test_htb_lab.py": {
+      "dependencies": [
+        "backend/app/htb_lab.py",
+        "backend/app/main.py",
+        "backend/app/orchestrator.py",
+        "backend/app/storage.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 5
     },
     "backend/tests/test_hypothesis_engine.py": {
       "dependencies": [
@@ -5332,6 +5362,7 @@
         "backend/tests/test_hackerone_upstream_diagnostics.py",
         "backend/tests/test_health.py",
         "backend/tests/test_high_value_intelligence.py",
+        "backend/tests/test_htb_lab.py",
         "backend/tests/test_hypothesis_engine.py",
         "backend/tests/test_hypothesis_memory.py",
         "backend/tests/test_identity_access.py",
@@ -5461,7 +5492,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 208,
+      "in_degree": 209,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

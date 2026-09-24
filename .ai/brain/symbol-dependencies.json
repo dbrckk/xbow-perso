@@ -5,6 +5,155 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
+    "HtbLabCampaignInput": {
+      "source": {
+        "file": "backend/app/htb_lab.py",
+        "start": 12,
+        "end": 40
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "validate_authorized_lab_target",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "validate_authorized_lab_target": {
+      "source": {
+        "file": "backend/app/htb_lab.py",
+        "start": 18,
+        "end": 40
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "create_htb_lab_campaign": {
+      "source": {
+        "file": "backend/app/htb_lab.py",
+        "start": 44,
+        "end": 94
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 202,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 9
+    },
     "authenticate_control_api": {
       "source": {
         "file": "backend/app/main.py",
@@ -2439,7 +2588,7 @@
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 1838,
+              "line": 1842,
               "kind": "function",
               "language": "python"
             }
@@ -3761,7 +3910,7 @@
       "source": {
         "file": "backend/app/main.py",
         "start": 1224,
-        "end": 1306
+        "end": 1310
       },
       "symbol_dependencies": [
         {
@@ -3962,8 +4111,8 @@
     "cancel_campaign": {
       "source": {
         "file": "backend/app/main.py",
-        "start": 1310,
-        "end": 1339
+        "start": 1314,
+        "end": 1343
       },
       "symbol_dependencies": [
         {
@@ -4068,8 +4217,8 @@
     "get_job": {
       "source": {
         "file": "backend/app/main.py",
-        "start": 1343,
-        "end": 1347
+        "start": 1347,
+        "end": 1351
       },
       "symbol_dependencies": [
         {
@@ -4098,179 +4247,6 @@
         }
       ],
       "dependency_count": 2
-    },
-    "get_job_provenance_status": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1351,
-        "end": 1365
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "verify_job_provenance",
-          "definitions": [
-            {
-              "file": "backend/app/job_provenance.py",
-              "line": 104,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "_validation_request_id": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1368,
-        "end": 1369
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_reconcile_validation_queued": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1372,
-        "end": 1417
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Finding",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 117,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reject_new_findings_for_closed_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 226,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "append_campaign_event",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "assert_campaign_record",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "has_event",
-          "definitions": [
-            {
-              "file": "backend/app/api_outbox.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
     }
   }
 }

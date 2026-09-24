@@ -94,6 +94,7 @@ app/
   hackerone_review_draft.py
   hackerone_scope_import.py
   high_value_intelligence.py
+  htb_lab.py
   hypothesis_engine.py
   hypothesis_memory.py
   identity_access.py
@@ -278,6 +279,7 @@ tests/
   test_hackerone_upstream_diagnostics.py
   test_health.py
   test_high_value_intelligence.py
+  test_htb_lab.py
   test_hypothesis_engine.py
   test_hypothesis_memory.py
   test_identity_access.py
@@ -4369,6 +4371,39 @@ graph = load_observation_graph(storage(), campaign.id)
 result = build_high_value_intelligence(graph, limit=limit)
 ```
 
+## File: app/htb_lab.py
+```python
+router = APIRouter()
+⋮----
+class HtbLabCampaignInput(BaseModel)
+⋮----
+target_url: HttpUrl
+authorized_lab: bool
+name: str = Field(default="Hack The Box Lab", min_length=2, max_length=120)
+⋮----
+@model_validator(mode="after")
+    def validate_authorized_lab_target(self)
+⋮----
+parsed = urlparse(str(self.target_url))
+host = (parsed.hostname or "").lower().rstrip(".")
+⋮----
+allowed = False
+⋮----
+address = ip_address(host)
+⋮----
+allowed = host.endswith(".htb") and host.count(".") >= 1
+⋮----
+allowed = address.is_private and not address.is_multicast
+⋮----
+@router.post("/api/labs/htb/campaigns")
+def create_htb_lab_campaign(payload: HtbLabCampaignInput)
+⋮----
+parsed = urlparse(str(payload.target_url))
+⋮----
+target = TargetInput(
+campaign = Campaign(target=target, state=CampaignState.ready)
+```
+
 ## File: app/hypothesis_engine.py
 ```python
 HypothesisKind = Literal[
@@ -5594,6 +5629,7 @@ host = (urlparse(str(campaign.target.primary_url)).hostname or "").lower()
 receipt = policy_receipt(campaign, host, "automated_scan")
 ⋮----
 hackerone_bound = any(
+htb_lab_bound = any(
 request_id = _pending_campaign_start_request(campaign) or str(uuid4())
 ⋮----
 planner_result = None
@@ -5708,6 +5744,7 @@ from .finding_cluster_saturation import router as finding_cluster_saturation_rou
 from .finding_intelligence import router as finding_intelligence_router  # noqa: E402
 from .high_value_intelligence import router as high_value_intelligence_router  # noqa: E402
 from .identity_access import router as identity_access_router  # noqa: E402
+from .htb_lab import router as htb_lab_router  # noqa: E402
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
@@ -12629,6 +12666,8 @@ def test_one_or_two_selection_is_preserved_after_profile_validation()
 def test_mobile_dashboard_bounds_api_waits_and_shows_search_elapsed_time()
 ⋮----
 def test_simple_dashboard_replaces_all_conservative_policy_blockers()
+⋮----
+def test_dashboard_exposes_exact_scope_htb_training_flow()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -12653,6 +12692,8 @@ def test_minimal_launcher_rechecks_runtime_without_reselection()
 def test_minimal_launcher_uses_single_final_reviewed_launch_request()
 ⋮----
 start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
+⋮----
+def test_htb_training_route_exists_and_frontend_keeps_it_separate_from_hackerone()
 ```
 
 ## File: tests/test_github_learning_sync.py
@@ -13989,6 +14030,53 @@ def test_surface_signal_without_scan_remains_undercovered()
 item = focuses["authentication-state-machine"]
 ```
 
+## File: tests/test_htb_lab.py
+```python
+class _FakeQueue
+⋮----
+def __init__(self)
+⋮----
+def enqueue(self, campaign_id, kind, payload, *, max_attempts=2, dedupe_key=None)
+⋮----
+job = {
+⋮----
+def get(self, job_id)
+⋮----
+def test_htb_lab_route_is_exposed()
+⋮----
+def test_htb_lab_rejects_public_targets()
+⋮----
+def test_htb_lab_requires_explicit_authorization_confirmation()
+⋮----
+def test_htb_lab_campaign_is_exact_scope_and_training_only(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+result = create_htb_lab_campaign(
+⋮----
+store = Storage(db, artifacts)
+campaign = store.get_campaign(result["campaign_id"])
+⋮----
+rules = campaign["target"]["rules"]
+⋮----
+def test_htb_lab_start_uses_bounded_planner(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-start.sqlite3")
+⋮----
+created = create_htb_lab_campaign(
+⋮----
+fake_queue = _FakeQueue()
+⋮----
+calls = []
+⋮----
+def fake_advance(campaign, queue, store)
+⋮----
+job = queue.enqueue(
+⋮----
+result = main.start_campaign(created["campaign_id"])
+```
+
 ## File: tests/test_hypothesis_engine.py
 ```python
 def test_hypotheses_are_bounded_and_deterministic()
@@ -14792,7 +14880,7 @@ reconcile = script.index("=== RECONCILE HACKERONE BATCH STATE ===")
 ⋮----
 def test_mobile_status_public_https_probe_uses_get_not_head()
 ⋮----
-def test_mobile_status_verifies_exact_deployed_v81_contract()
+def test_mobile_status_verifies_exact_deployed_v82_contract()
 ⋮----
 def test_mobile_status_production_contract_requires_all_live_prerequisites()
 ⋮----
