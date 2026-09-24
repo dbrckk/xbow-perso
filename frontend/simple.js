@@ -1,8 +1,9 @@
 (()=>{
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
+  const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v82';
+  const UI_VERSION='v83';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -793,6 +794,7 @@
       });
       const campaignId=String(campaign?.campaign_id||'');
       if(!campaignId)throw new Error('Le serveur n’a pas renvoyé d’identifiant de campagne.');
+      try{localStorage.setItem(HTB_ACTIVE_KEY,campaignId);}catch(_error){}
       setHtbStatus('Campagne créée. Démarrage du recon borné…');
       const started=await api('/campaigns/'+encodeURIComponent(campaignId)+'/start',{
         method:'POST',
@@ -804,8 +806,61 @@
         'ok'
       );
       if($('htbConfirm'))$('htbConfirm').checked=false;
+      $('htbFeedback')?.classList.remove('hidden');
     }catch(error){
       setHtbStatus('Entraînement HTB bloqué : '+error.message,'err');
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
+  function parseTechniqueList(value){
+    return [...new Set(
+      String(value||'').split(',')
+        .map(item=>item.trim().toLowerCase().replace(/\s+/g,'-'))
+        .filter(Boolean)
+    )].slice(0,20);
+  }
+
+  async function saveHtbLearning(){
+    if(!requireToken())return;
+    let campaignId='';
+    try{campaignId=String(localStorage.getItem(HTB_ACTIVE_KEY)||'');}catch(_error){}
+    if(!campaignId){
+      setHtbStatus('Lance d’abord une campagne HTB depuis ce dashboard.','err');
+      return;
+    }
+    const button=$('htbLearn');
+    if(button)button.disabled=true;
+    const solved=$('htbSolved')?.value!=='false';
+    const successful=parseTechniqueList($('htbSuccessTechniques')?.value);
+    const missed=parseTechniqueList($('htbMissedTechniques')?.value);
+    try{
+      const result=await api(
+        '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/outcome',
+        {
+          method:'POST',
+          body:JSON.stringify({
+            solved,
+            successful_techniques:successful,
+            missed_techniques:missed,
+            notes:''
+          })
+        }
+      );
+      const summary=await api(
+        '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/learning'
+      );
+      const techniques=Array.isArray(summary?.techniques)?summary.techniques:[];
+      const node=$('htbLearningStatus');
+      if(node){
+        node.textContent=
+          String(result?.learning_observations_written||0)+' signal(aux) ajouté(s) · '+
+          techniques.length+' technique(s) mémorisée(s).';
+      }
+      setHtbStatus('Apprentissage HTB enregistré sans payload ni secret.','ok');
+    }catch(error){
+      setHtbStatus('Apprentissage HTB bloqué : '+error.message,'err');
     }finally{
       if(button)button.disabled=false;
     }
@@ -816,7 +871,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=82',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=83',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -828,6 +883,10 @@
     $('refresh').addEventListener('click',()=>void refreshJournal());
     $('cancelActive').addEventListener('click',()=>void cancelActiveBatch());
     $('htbStart')?.addEventListener('click',()=>void startHtbLab());
+    $('htbLearn')?.addEventListener('click',()=>void saveHtbLearning());
+    try{
+      if(localStorage.getItem(HTB_ACTIVE_KEY))$('htbFeedback')?.classList.remove('hidden');
+    }catch(_error){}
     window.addEventListener('unhandledrejection',event=>{
       const message=event?.reason?.message||String(event?.reason||'Erreur JavaScript');
       setStatus('Erreur interface : '+message,'err');

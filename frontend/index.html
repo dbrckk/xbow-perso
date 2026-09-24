@@ -7,8 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>xbow-perso</title>
   <link rel="manifest" href="/manifest.webmanifest" />
-  <link rel="stylesheet" href="/app.css?v=82" />
-  <script src="/simple.js?v=82" defer></script>
+  <link rel="stylesheet" href="/app.css?v=83" />
+  <script src="/simple.js?v=83" defer></script>
 </head>
 <body>
 <main class="app-shell simple-shell">
@@ -61,7 +61,7 @@
     <p id="runtimeAction" class="muted compact"></p>
     <p id="status" class="simple-status muted">Prêt.</p>
     <p class="muted compact">Le lot continue sur le serveur même si tu fermes le dashboard. Chaque programme est revalidé juste avant son démarrage.</p>
-    <p id="buildVersion" class="muted compact">Interface v82</p>
+    <p id="buildVersion" class="muted compact">Interface v83</p>
   </section>
 
   <section class="card">
@@ -75,6 +75,19 @@
     </label>
     <button id="htbStart" type="button" class="secondary">Lancer l’entraînement HTB</button>
     <p id="htbStatus" class="simple-status muted">Cible exacte uniquement · IP privée ou nom .htb.</p>
+    <div id="htbFeedback" class="simple-review hidden">
+      <div class="simple-mode">
+        <label for="htbSolved">Résultat du lab</label>
+        <select id="htbSolved">
+          <option value="true">Résolu</option>
+          <option value="false">Pas résolu</option>
+        </select>
+      </div>
+      <input id="htbSuccessTechniques" type="text" autocomplete="off" placeholder="Techniques réussies, séparées par des virgules" />
+      <input id="htbMissedTechniques" type="text" autocomplete="off" placeholder="Techniques manquées, séparées par des virgules" />
+      <button id="htbLearn" type="button" class="secondary">Enregistrer l’apprentissage</button>
+      <p id="htbLearningStatus" class="muted compact">Aucune observation d’apprentissage enregistrée.</p>
+    </div>
   </section>
 
   <section class="card">

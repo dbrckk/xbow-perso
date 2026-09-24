@@ -2,7 +2,13 @@ from pydantic import ValidationError
 
 import app.main as main
 import app.orchestrator as orchestrator
-from app.htb_lab import HtbLabCampaignInput, create_htb_lab_campaign
+from app.htb_lab import (
+    HtbLabCampaignInput,
+    HtbLabOutcomeInput,
+    create_htb_lab_campaign,
+    htb_lab_learning_summary,
+    record_htb_lab_outcome,
+)
 from app.storage import Storage
 
 
@@ -130,3 +136,61 @@ def test_htb_lab_start_uses_bounded_planner(tmp_path, monkeypatch):
     assert result["state"] == "running"
     assert result["job"]["kind"] == "recon_task"
     assert result["planner"]["job_ids"] == [result["job"]["id"]]
+
+
+def test_htb_outcome_feedback_becomes_learning_memory(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-learning.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    created = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.44",
+            authorized_lab=True,
+        )
+    )
+
+    recorded = record_htb_lab_outcome(
+        created["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=True,
+            successful_techniques=["web-enumeration", "idor-check"],
+            missed_techniques=["graphql-mapping"],
+            notes="Operator notes are intentionally not persisted.",
+        ),
+    )
+
+    assert recorded["training_only"] is True
+    assert recorded["learning_observations_written"] == 3
+    assert recorded["notes_stored"] is False
+    assert recorded["contains_exploit_payloads"] is False
+
+    summary = htb_lab_learning_summary(created["campaign_id"])
+    by_technique = {item["technique"]: item for item in summary["techniques"]}
+    assert by_technique["web-enumeration"]["successes"] == 1
+    assert by_technique["idor-check"]["successes"] == 1
+    assert by_technique["graphql-mapping"]["failures"] == 1
+    assert summary["scope_expansion"] is False
+    assert summary["outcomes"][-1]["solved"] is True
+    assert summary["outcomes"][-1]["notes_present"] is True
+    assert "notes" not in summary["outcomes"][-1]
+
+
+def test_htb_outcome_rejects_overlapping_techniques():
+    try:
+        HtbLabOutcomeInput(
+            solved=False,
+            successful_techniques=["recon"],
+            missed_techniques=["recon"],
+        )
+    except ValidationError as exc:
+        assert "cannot be both successful and missed" in str(exc)
+    else:
+        raise AssertionError("overlapping technique outcome must be rejected")
+
+
+def test_htb_learning_routes_are_exposed():
+    paths = main.app.openapi()["paths"]
+    assert "/api/labs/htb/campaigns/{campaign_id}/outcome" in paths
+    assert "/api/labs/htb/campaigns/{campaign_id}/learning" in paths

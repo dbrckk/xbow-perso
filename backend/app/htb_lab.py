@@ -4,9 +4,21 @@ from ipaddress import ip_address
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field, HttpUrl, model_validator
+from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 
 router = APIRouter()
+
+
+_ALLOWED_TECHNIQUE_CHARS = set("abcdefghijklmnopqrstuvwxyz0123456789-_.:")
+
+
+def _normalize_technique(value: str) -> str:
+    normalized = str(value or "").strip().lower().replace(" ", "-")
+    if not normalized or len(normalized) > 80:
+        raise ValueError("technique labels must be between 1 and 80 characters")
+    if any(ch not in _ALLOWED_TECHNIQUE_CHARS for ch in normalized):
+        raise ValueError("technique labels contain unsupported characters")
+    return normalized
 
 
 class HtbLabCampaignInput(BaseModel):
@@ -91,4 +103,150 @@ def create_htb_lab_campaign(payload: HtbLabCampaignInput):
         "social_engineering": campaign.target.rules.social_engineering,
         "credential_attacks": campaign.target.rules.credential_attacks,
         "automatic_scope_expansion": False,
+    }
+
+
+class HtbLabOutcomeInput(BaseModel):
+    solved: bool
+    successful_techniques: list[str] = Field(default_factory=list, max_length=20)
+    missed_techniques: list[str] = Field(default_factory=list, max_length=20)
+    notes: str = Field(default="", max_length=1000)
+
+    @field_validator("successful_techniques", "missed_techniques")
+    @classmethod
+    def validate_techniques(cls, value: list[str]) -> list[str]:
+        normalized = [_normalize_technique(item) for item in value]
+        return list(dict.fromkeys(normalized))
+
+    @model_validator(mode="after")
+    def validate_overlap(self):
+        overlap = set(self.successful_techniques) & set(self.missed_techniques)
+        if overlap:
+            raise ValueError(
+                "a technique cannot be both successful and missed: "
+                + ", ".join(sorted(overlap))
+            )
+        return self
+
+
+def _assert_htb_campaign(campaign) -> None:
+    if not any(
+        isinstance(event, dict)
+        and event.get("type") == "htb_lab_bound"
+        and event.get("training_only") is True
+        for event in list(campaign.events or [])
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Campaign is not an HTB training campaign",
+                "reason": "not_htb_training_campaign",
+            },
+        )
+
+
+@router.post("/api/labs/htb/campaigns/{campaign_id}/outcome")
+def record_htb_lab_outcome(campaign_id: str, payload: HtbLabOutcomeInput):
+    """Record bounded operator feedback as reusable training evidence."""
+    import hashlib
+
+    from .campaign_audit import append_campaign_event
+    from .main import assert_campaign_record, save_campaign, storage, utcnow
+    from .observation_graph import Observation
+
+    campaign, version = assert_campaign_record(campaign_id)
+    _assert_htb_campaign(campaign)
+
+    successful = list(payload.successful_techniques)
+    missed = list(payload.missed_techniques)
+    timestamp = utcnow()
+    digest_source = "|".join(
+        [campaign_id, str(payload.solved), *successful, "--", *missed]
+    )
+    digest = hashlib.sha256(digest_source.encode("utf-8")).hexdigest()[:20]
+
+    append_campaign_event(
+        campaign.events,
+        {
+            "type": "htb_training_outcome",
+            "solved": bool(payload.solved),
+            "successful_technique_count": len(successful),
+            "missed_technique_count": len(missed),
+            "notes_present": bool(payload.notes.strip()),
+            "at": timestamp,
+        },
+    )
+    save_campaign(campaign, expected_version=version)
+
+    store = storage()
+    for technique in successful:
+        store.put_observation(
+            campaign.id,
+            Observation(
+                id=f"htb-learning:{digest}:success:{technique}",
+                kind="evidence",
+                value=technique,
+                source="htb-training-feedback",
+                metadata={
+                    "memory_type": "htb_training_feedback",
+                    "technique": technique,
+                    "outcome": "success",
+                    "training_only": True,
+                },
+            ).to_dict(),
+        )
+    for technique in missed:
+        store.put_observation(
+            campaign.id,
+            Observation(
+                id=f"htb-learning:{digest}:failure:{technique}",
+                kind="evidence",
+                value=technique,
+                source="htb-training-feedback",
+                metadata={
+                    "memory_type": "htb_training_feedback",
+                    "technique": technique,
+                    "outcome": "failure",
+                    "training_only": True,
+                },
+            ).to_dict(),
+        )
+
+    return {
+        "campaign_id": campaign.id,
+        "provider": "hackthebox",
+        "training_only": True,
+        "solved": bool(payload.solved),
+        "successful_techniques": successful,
+        "missed_techniques": missed,
+        "learning_observations_written": len(successful) + len(missed),
+        "notes_stored": False,
+        "contains_exploit_payloads": False,
+    }
+
+
+@router.get("/api/labs/htb/campaigns/{campaign_id}/learning")
+def htb_lab_learning_summary(campaign_id: str):
+    from .learning_memory import build_learning_memory, summarize_worker_outcomes
+    from .main import assert_campaign_exists, storage
+    from .observation_graph import load_observation_graph
+
+    campaign = assert_campaign_exists(campaign_id)
+    _assert_htb_campaign(campaign)
+    graph = load_observation_graph(storage(), campaign.id)
+    memories = build_learning_memory(graph, limit=50)
+    outcomes = [
+        event
+        for event in list(campaign.events or [])
+        if isinstance(event, dict) and event.get("type") == "htb_training_outcome"
+    ]
+    return {
+        "campaign_id": campaign.id,
+        "provider": "hackthebox",
+        "training_only": True,
+        "outcomes": outcomes[-20:],
+        "techniques": [item.to_dict() for item in memories],
+        "worker_outcomes": summarize_worker_outcomes(campaign.events),
+        "read_only": True,
+        "scope_expansion": False,
     }
