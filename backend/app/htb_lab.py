@@ -266,6 +266,37 @@ def is_htb_training_campaign(campaign) -> bool:
     )
 
 
+def _current_htb_feedback_observations(store, campaign):
+    campaign_id = (
+        str(campaign.get("id") or "")
+        if isinstance(campaign, dict)
+        else str(getattr(campaign, "id", "") or "")
+    )
+    if not campaign_id:
+        return []
+
+    latest_outcome = _latest_htb_outcome_event(campaign)
+    latest_digest = (
+        str(latest_outcome.get("feedback_digest") or "")
+        if isinstance(latest_outcome, dict)
+        else ""
+    )
+    result = []
+    for item in store.list_observations(campaign_id):
+        metadata = dict(item.get("metadata") or {})
+        if (
+            item.get("kind") != "evidence"
+            or metadata.get("memory_type") != "htb_training_feedback"
+            or metadata.get("training_only") is not True
+        ):
+            continue
+        observation_digest = str(metadata.get("feedback_digest") or "")
+        if latest_digest and observation_digest != latest_digest:
+            continue
+        result.append(item)
+    return result
+
+
 def collect_htb_cross_lab_learning(store, *, limit_campaigns: int = 200):
     """Aggregate bounded HTB training evidence across prior authorized labs only."""
     from .learning_memory import build_learning_memory, summarize_worker_outcomes
@@ -287,23 +318,8 @@ def collect_htb_cross_lab_learning(store, *, limit_campaigns: int = 200):
             continue
         campaign_count += 1
 
-        latest_outcome = _latest_htb_outcome_event(campaign)
-        latest_digest = (
-            str(latest_outcome.get("feedback_digest") or "")
-            if isinstance(latest_outcome, dict)
-            else ""
-        )
-        for item in store.list_observations(campaign_id):
+        for item in _current_htb_feedback_observations(store, campaign):
             metadata = dict(item.get("metadata") or {})
-            if (
-                item.get("kind") != "evidence"
-                or metadata.get("memory_type") != "htb_training_feedback"
-                or metadata.get("training_only") is not True
-            ):
-                continue
-            observation_digest = str(metadata.get("feedback_digest") or "")
-            if latest_digest and observation_digest != latest_digest:
-                continue
             graph.add(
                 Observation(
                     id=f"{campaign_id}:{item['id']}",
@@ -462,8 +478,19 @@ def htb_lab_learning_summary(campaign_id: str):
 
     campaign = assert_campaign_exists(campaign_id)
     _assert_htb_campaign(campaign)
-    graph = load_observation_graph(storage(), campaign.id)
-    memories = build_learning_memory(graph, limit=50)
+    store = storage()
+    graph = load_observation_graph(store, campaign.id)
+    feedback_ids = {
+        str(item.get("id") or "")
+        for item in _current_htb_feedback_observations(store, campaign)
+    }
+    filtered = type(graph)()
+    for item in graph.values():
+        metadata = dict(item.metadata or {})
+        if metadata.get("memory_type") == "htb_training_feedback" and item.id not in feedback_ids:
+            continue
+        filtered.add(item)
+    memories = build_learning_memory(filtered, limit=50)
     outcomes = [
         event
         for event in list(campaign.events or [])
