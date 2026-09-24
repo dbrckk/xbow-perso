@@ -200,6 +200,7 @@ required = {
     "/api/labs/htb/campaigns",
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
+    "/api/labs/htb/learning",
 }
 missing = sorted(required - paths)
 print("V83_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))
