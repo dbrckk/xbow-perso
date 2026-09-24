@@ -183,7 +183,7 @@ if [ -n "$PUBLIC_HOST" ]; then
   echo "DASHBOARD_VERSION_OK=$DASHBOARD_VERSION_OK"
 fi
 
-echo "=== V83 ROUTE CONTRACT ==="
+echo "=== APPLICATION ROUTE CONTRACT ==="
 if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
 from app.main import app
 
@@ -203,15 +203,15 @@ required = {
     "/api/labs/htb/learning",
 }
 missing = sorted(required - paths)
-print("V83_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))
+print("APP_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))
 for path in missing:
     print("MISSING_ROUTE=" + path)
 raise SystemExit(0 if not missing else 1)
 PY
 then
-  V83_ROUTE_CONTRACT_OK=true
+  APP_ROUTE_CONTRACT_OK=true
 else
-  V83_ROUTE_CONTRACT_OK=false
+  APP_ROUTE_CONTRACT_OK=false
 fi
 
 echo "=== ACCESSIBLE BOUNTY PRECHECK ==="
@@ -257,7 +257,7 @@ if [ "$RUNTIME_READY" = "true" ] \
   && [ "$PUBLIC_HTTPS_OK" = "true" ] \
   && [ "$HACKERONE_API_READY" = "true" ] \
   && [ "$DASHBOARD_VERSION_OK" = "true" ] \
-  && [ "$V83_ROUTE_CONTRACT_OK" = "true" ] \
+  && [ "$APP_ROUTE_CONTRACT_OK" = "true" ] \
   && [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] \
   && [ "$REMOTE_MAIN_REACHABLE" = "true" ] \
   && [ "$CHECKOUT_CURRENT" = "true" ]; then
@@ -267,7 +267,7 @@ else
   [ "$REMOTE_MAIN_REACHABLE" = "true" ] || echo "BLOCKER=origin_main_unreachable | Impossible de lire origin/main depuis le VPS."
   [ "$CHECKOUT_CURRENT" = "true" ] || echo "BLOCKER=checkout_stale | Le VPS n'est pas sur origin/main."
   [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Le dashboard public ne correspond pas au frontend du checkout déployé."
-  [ "$V83_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique v83 manque dans le backend déployé."
+  [ "$APP_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique de l'application manque dans le backend déployé."
   [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] || echo "BLOCKER=accessible_bounty_precheck | Aucun programme HackerOne live-vérifié n'a pu être préparé."
   exit 1
 fi
