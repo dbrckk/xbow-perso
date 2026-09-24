@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v84';
+  const UI_VERSION='v85';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -852,6 +852,7 @@
         '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/learning'
       );
       const globalSummary=await api('/labs/htb/learning');
+      await refreshHtbBenchmark({quiet:true});
       const techniques=Array.isArray(summary?.techniques)?summary.techniques:[];
       const globalTechniques=Array.isArray(globalSummary?.techniques)?globalSummary.techniques:[];
       const node=$('htbLearningStatus');
@@ -870,12 +871,43 @@
     }
   }
 
+  async function refreshHtbBenchmark({quiet=true}={}){
+    const node=$('htbBenchmark');
+    if(!node||!token())return null;
+    try{
+      const summary=await api('/labs/htb/benchmark');
+      const evaluated=Number(summary?.evaluated_campaign_count||0);
+      const solved=Number(summary?.solved_campaign_count||0);
+      const solveRate=summary?.solve_rate;
+      const techniqueRate=summary?.technique_success_rate;
+      const confirmed=Number(summary?.confirmed_finding_count||0);
+      if(!evaluated){
+        node.textContent='Benchmark HTB : aucun lab évalué pour le moment.';
+      }else{
+        const solveText=solveRate===null||solveRate===undefined
+          ?'—'
+          :Math.round(Number(solveRate)*100)+'%';
+        const techniqueText=techniqueRate===null||techniqueRate===undefined
+          ?'—'
+          :Math.round(Number(techniqueRate)*100)+'%';
+        node.textContent=
+          'Benchmark HTB : '+solved+'/'+evaluated+' lab(s) résolu(s) · '+
+          'taux '+solveText+' · techniques '+techniqueText+' · '+
+          confirmed+' finding(s) confirmé(s).';
+      }
+      return summary;
+    }catch(error){
+      if(!quiet)node.textContent='Benchmark HTB indisponible : '+error.message;
+      return null;
+    }
+  }
+
   function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=84',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=85',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -900,6 +932,7 @@
     });
     void refreshRuntimeReadiness({quiet:true});
     void refreshJournal({quiet:true});
+    void refreshHtbBenchmark({quiet:true});
     timer=setInterval(()=>{
       void refreshRuntimeReadiness({quiet:true});
       void refreshJournal({quiet:true});
