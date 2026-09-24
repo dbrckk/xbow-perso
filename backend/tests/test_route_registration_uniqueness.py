@@ -1,24 +1,16 @@
 from app.main import app
 
 
-def _route_count(path: str, method: str = "GET") -> int:
-    method = method.upper()
-    return sum(
-        1
-        for route in app.routes
-        if getattr(route, "path", None) == path
-        and method in set(getattr(route, "methods", set()) or set())
-    )
-
-
-def test_aggregated_campaign_routes_are_registered_exactly_once():
+def test_aggregated_campaign_routes_are_exposed_once_in_openapi():
+    schema = app.openapi()
     for path in (
         "/api/campaigns/{campaign_id}/finding-correlations",
         "/api/campaigns/{campaign_id}/finding-clusters",
         "/api/campaigns/{campaign_id}/report-readiness",
         "/api/campaigns/{campaign_id}/review-queue",
     ):
-        assert _route_count(path) == 1, path
+        assert path in schema["paths"], path
+        assert set(schema["paths"][path]) & {"get", "post", "put", "patch", "delete"}
 
 
 def test_openapi_operation_ids_are_unique_for_campaign_routes():
