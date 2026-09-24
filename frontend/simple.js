@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v83';
+  const UI_VERSION='v84';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -851,12 +851,16 @@
       const summary=await api(
         '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/learning'
       );
+      const globalSummary=await api('/labs/htb/learning');
       const techniques=Array.isArray(summary?.techniques)?summary.techniques:[];
+      const globalTechniques=Array.isArray(globalSummary?.techniques)?globalSummary.techniques:[];
       const node=$('htbLearningStatus');
       if(node){
         node.textContent=
           String(result?.learning_observations_written||0)+' signal(aux) ajouté(s) · '+
-          techniques.length+' technique(s) mémorisée(s).';
+          techniques.length+' technique(s) dans ce lab · '+
+          globalTechniques.length+' technique(s) globales sur '+
+          String(globalSummary?.campaign_count||0)+' lab(s).';
       }
       setHtbStatus('Apprentissage HTB enregistré sans payload ni secret.','ok');
     }catch(error){
@@ -871,7 +875,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=83',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=84',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
