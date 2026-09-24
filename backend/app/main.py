@@ -1237,6 +1237,10 @@ def start_campaign(campaign_id: str):
         isinstance(event, dict) and event.get("type") == "hackerone_policy_bound"
         for event in campaign.events
     )
+    htb_lab_bound = any(
+        isinstance(event, dict) and event.get("type") == "htb_lab_bound"
+        for event in campaign.events
+    )
     request_id = _pending_campaign_start_request(campaign) or str(uuid4())
     _record_campaign_start_intent(
         campaign,
@@ -1247,7 +1251,7 @@ def start_campaign(campaign_id: str):
 
     planner_result = None
     jobs = queue()
-    if hackerone_bound:
+    if hackerone_bound or htb_lab_bound:
         from .orchestrator import advance_campaign
 
         campaign, _current_version = assert_campaign_record(campaign.id)
@@ -1262,7 +1266,7 @@ def start_campaign(campaign_id: str):
             raise HTTPException(
                 status_code=409,
                 detail={
-                    "message": "HackerOne planner could not schedule bounded recon",
+                    "message": "Authorized planner could not schedule bounded recon",
                     "reason": "planner_start_blocked",
                     "action": action,
                 },
@@ -1870,6 +1874,7 @@ from .finding_cluster_saturation import router as finding_cluster_saturation_rou
 from .finding_intelligence import router as finding_intelligence_router  # noqa: E402
 from .high_value_intelligence import router as high_value_intelligence_router  # noqa: E402
 from .identity_access import router as identity_access_router  # noqa: E402
+from .htb_lab import router as htb_lab_router  # noqa: E402
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
@@ -1885,6 +1890,7 @@ app.include_router(finding_cluster_saturation_router)
 app.include_router(finding_intelligence_router)
 app.include_router(high_value_intelligence_router)
 app.include_router(identity_access_router)
+app.include_router(htb_lab_router)
 app.include_router(finding_readiness_router)
 app.include_router(metrics_router)
 app.include_router(alerts_router)
