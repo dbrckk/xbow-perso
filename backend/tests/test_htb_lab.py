@@ -7,10 +7,11 @@ from app.htb_lab import (
     HtbLabOutcomeInput,
     build_htb_cross_lab_learning_summary,
     create_htb_lab_campaign,
-    htb_global_learning_summary,
     htb_lab_learning_summary,
     record_htb_lab_outcome,
 )
+from app.jobqueue import JobQueue
+from app.observation_graph import Observation
 from app.storage import Storage
 
 
@@ -293,7 +294,7 @@ def test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only(
 
     store.put_observation(
         campaign.id,
-        main.Observation(
+        Observation(
             "asset:htb-current",
             "asset",
             "10.10.11.63",
@@ -302,7 +303,7 @@ def test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only(
     )
     store.put_observation(
         campaign.id,
-        main.Observation(
+        Observation(
             "endpoint:htb-current",
             "endpoint",
             "http://10.10.11.63/",
@@ -312,7 +313,7 @@ def test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only(
     )
     store.put_observation(
         campaign.id,
-        main.Observation(
+        Observation(
             "technology:htb-current",
             "technology",
             "Server:fixture",
@@ -321,7 +322,7 @@ def test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only(
         ).to_dict(),
     )
 
-    queue = main.JobQueue(db)
+    queue = JobQueue(db)
     result = orchestrator.advance_campaign(campaign, queue, store)
 
     adaptation = result["intelligence"]["scanner_adaptation"]
@@ -372,7 +373,7 @@ def test_non_htb_campaign_does_not_receive_htb_cross_lab_learning(
     )
     store = Storage(db, artifacts)
     store.save_campaign(campaign.model_dump(mode="json"))
-    queue = main.JobQueue(db)
+    queue = JobQueue(db)
 
     result = orchestrator.advance_campaign(campaign, queue, store)
 
