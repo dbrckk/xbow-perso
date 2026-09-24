@@ -5035,12 +5035,16 @@ normalized = [_normalize_technique(item) for item in value]
 ⋮----
 overlap = set(self.successful_techniques) & set(self.missed_techniques)
 ⋮----
+def _latest_htb_outcome_event(campaign) -> dict | None
+⋮----
+events = (
+⋮----
 def _assert_htb_campaign(campaign) -> None
 ⋮----
 @router.post("/api/labs/htb/campaigns/{campaign_id}/outcome")
 def record_htb_lab_outcome(campaign_id: str, payload: HtbLabOutcomeInput)
 ⋮----
-"""Record bounded operator feedback as reusable training evidence."""
+"""Record correction-safe operator feedback as reusable training evidence."""
 ⋮----
 successful = list(payload.successful_techniques)
 missed = list(payload.missed_techniques)
@@ -5048,11 +5052,25 @@ timestamp = utcnow()
 digest_source = "|".join(
 digest = hashlib.sha256(digest_source.encode("utf-8")).hexdigest()[:20]
 ⋮----
+latest = _latest_htb_outcome_event(campaign)
+event_written = not (
+⋮----
 store = storage()
+observations_written = 0
 ⋮----
 def is_htb_training_campaign(campaign) -> bool
 ⋮----
-events = (
+def _current_htb_feedback_observations(store, campaign)
+⋮----
+campaign_id = (
+⋮----
+latest_outcome = _latest_htb_outcome_event(campaign)
+latest_digest = (
+result = []
+⋮----
+metadata = dict(item.get("metadata") or {})
+⋮----
+observation_digest = str(metadata.get("feedback_digest") or "")
 ⋮----
 def collect_htb_cross_lab_learning(store, *, limit_campaigns: int = 200)
 ⋮----
@@ -5065,12 +5083,41 @@ feedback_observations = 0
 ⋮----
 campaign_id = str(campaign.get("id") or "")
 ⋮----
-metadata = dict(item.get("metadata") or {})
-⋮----
 memories = build_learning_memory(graph, limit=100)
 worker_outcomes = summarize_worker_outcomes(worker_events, recent_limit=50)
 ⋮----
 def build_htb_cross_lab_learning_summary(store, *, limit_campaigns: int = 200)
+⋮----
+def build_htb_benchmark_summary(store, *, limit_campaigns: int = 200)
+⋮----
+"""Measure HTB training progress without deriving or storing exploit payloads."""
+⋮----
+campaigns = [
+evaluated = 0
+solved = 0
+total_findings = 0
+confirmed_findings = 0
+recent: list[dict] = []
+⋮----
+outcome = _latest_htb_outcome_event(campaign)
+findings = [
+confirmed = [
+⋮----
+solved_value = None
+⋮----
+solved_value = bool(outcome.get("solved"))
+⋮----
+technique_attempts = sum(int(item.attempts) for item in memories)
+technique_successes = sum(int(item.successes) for item in memories)
+technique_failures = sum(int(item.failures) for item in memories)
+conclusive = technique_successes + technique_failures
+totals = dict(worker_outcomes.get("totals") or {})
+completed_jobs = int(totals.get("completed") or 0)
+failed_jobs = int(totals.get("failed") or 0)
+terminal_jobs = completed_jobs + failed_jobs
+⋮----
+@router.get("/api/labs/htb/benchmark")
+def htb_benchmark_summary(limit_campaigns: int = 200)
 ⋮----
 @router.get("/api/labs/htb/learning")
 def htb_global_learning_summary(limit_campaigns: int = 200)
@@ -5080,8 +5127,13 @@ def htb_lab_learning_summary(campaign_id: str)
 ⋮----
 campaign = assert_campaign_exists(campaign_id)
 ⋮----
-graph = load_observation_graph(storage(), campaign.id)
-memories = build_learning_memory(graph, limit=50)
+graph = load_observation_graph(store, campaign.id)
+feedback_ids = {
+filtered = type(graph)()
+⋮----
+metadata = dict(item.metadata or {})
+⋮----
+memories = build_learning_memory(filtered, limit=50)
 outcomes = [
 ````
 
@@ -13358,6 +13410,8 @@ def test_dashboard_exposes_exact_scope_htb_training_flow()
 def test_dashboard_exposes_htb_learning_feedback_without_payload_storage()
 ⋮----
 def test_dashboard_surfaces_cross_lab_htb_learning_summary()
+⋮----
+def test_dashboard_exposes_htb_benchmark_summary()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -13384,6 +13438,8 @@ def test_minimal_launcher_uses_single_final_reviewed_launch_request()
 start_block = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
 ⋮----
 def test_htb_training_route_exists_and_frontend_keeps_it_separate_from_hackerone()
+⋮----
+def test_htb_benchmark_route_is_separate_from_hackerone_launch()
 ````
 
 ## File: backend/tests/test_github_learning_sync.py
@@ -14810,6 +14866,38 @@ db = str(tmp_path / "non-htb-learning.sqlite3")
 prior = create_htb_lab_campaign(
 ⋮----
 campaign = main.Campaign(
+⋮----
+def test_htb_outcome_is_idempotent_for_identical_feedback(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-idempotent.sqlite3")
+⋮----
+payload = HtbLabOutcomeInput(
+⋮----
+first = record_htb_lab_outcome(created["campaign_id"], payload)
+second = record_htb_lab_outcome(created["campaign_id"], payload)
+⋮----
+campaign = store.get_campaign(created["campaign_id"])
+outcomes = [
+⋮----
+observations = [
+⋮----
+def test_htb_corrected_feedback_replaces_prior_learning_revision(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-corrected.sqlite3")
+⋮----
+global_summary = build_htb_cross_lab_learning_summary(store)
+by_technique = {item["technique"]: item for item in global_summary["techniques"]}
+⋮----
+lab_summary = htb_lab_learning_summary(created["campaign_id"])
+local_by_technique = {item["technique"]: item for item in lab_summary["techniques"]}
+⋮----
+def test_htb_benchmark_reports_objective_progress_metrics(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-benchmark.sqlite3")
+⋮----
+summary = build_htb_benchmark_summary(store)
+⋮----
+def test_htb_benchmark_route_is_exposed()
 ````
 
 ## File: backend/tests/test_hypothesis_engine.py
@@ -19909,6 +19997,8 @@ function parseTechniqueList(value)
 ⋮----
 async function saveHtbLearning()
 ⋮----
+async function refreshHtbBenchmark(
+⋮----
 function bind()
 ````
 
@@ -20900,6 +20990,7 @@ required = {
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
     "/api/labs/htb/learning",
+    "/api/labs/htb/benchmark",
 }
 missing = sorted(required - paths)
 print("APP_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))

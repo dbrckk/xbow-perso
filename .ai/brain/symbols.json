@@ -3112,50 +3112,78 @@
       "file": "backend/app/htb_lab.py",
       "language": "python",
       "kind": "function",
-      "name": "_assert_htb_campaign",
+      "name": "_latest_htb_outcome_event",
       "line": 132
     },
     {
       "file": "backend/app/htb_lab.py",
       "language": "python",
       "kind": "function",
-      "name": "record_htb_lab_outcome",
+      "name": "_assert_htb_campaign",
       "line": 144
     },
     {
       "file": "backend/app/htb_lab.py",
       "language": "python",
       "kind": "function",
+      "name": "record_htb_lab_outcome",
+      "line": 156
+    },
+    {
+      "file": "backend/app/htb_lab.py",
+      "language": "python",
+      "kind": "function",
       "name": "is_htb_training_campaign",
-      "line": 223
+      "line": 255
+    },
+    {
+      "file": "backend/app/htb_lab.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_current_htb_feedback_observations",
+      "line": 269
     },
     {
       "file": "backend/app/htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "collect_htb_cross_lab_learning",
-      "line": 237
+      "line": 300
     },
     {
       "file": "backend/app/htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "build_htb_cross_lab_learning_summary",
-      "line": 293
+      "line": 350
+    },
+    {
+      "file": "backend/app/htb_lab.py",
+      "language": "python",
+      "kind": "function",
+      "name": "build_htb_benchmark_summary",
+      "line": 364
+    },
+    {
+      "file": "backend/app/htb_lab.py",
+      "language": "python",
+      "kind": "function",
+      "name": "htb_benchmark_summary",
+      "line": 454
     },
     {
       "file": "backend/app/htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "htb_global_learning_summary",
-      "line": 308
+      "line": 464
     },
     {
       "file": "backend/app/htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "htb_lab_learning_summary",
-      "line": 318
+      "line": 474
     },
     {
       "file": "backend/app/hypothesis_engine.py",
@@ -12300,6 +12328,13 @@
       "line": 258
     },
     {
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_dashboard_exposes_htb_benchmark_summary",
+      "line": 265
+    },
+    {
       "file": "backend/tests/test_frontend_policy_launcher.py",
       "language": "python",
       "kind": "function",
@@ -12347,6 +12382,13 @@
       "kind": "function",
       "name": "test_htb_training_route_exists_and_frontend_keeps_it_separate_from_hackerone",
       "line": 70
+    },
+    {
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_htb_benchmark_route_is_separate_from_hackerone_launch",
+      "line": 80
     },
     {
       "file": "backend/tests/test_github_learning_sync.py",
@@ -14656,119 +14698,147 @@
       "language": "python",
       "kind": "class",
       "name": "_FakeQueue",
-      "line": 18
-    },
-    {
-      "file": "backend/tests/test_htb_lab.py",
-      "language": "python",
-      "kind": "function",
-      "name": "__init__",
       "line": 19
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
+      "name": "__init__",
+      "line": 20
+    },
+    {
+      "file": "backend/tests/test_htb_lab.py",
+      "language": "python",
+      "kind": "function",
       "name": "enqueue",
-      "line": 22
+      "line": 23
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "get",
-      "line": 35
+      "line": 36
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_lab_route_is_exposed",
-      "line": 39
+      "line": 40
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_lab_rejects_public_targets",
-      "line": 43
+      "line": 44
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_lab_requires_explicit_authorization_confirmation",
-      "line": 55
+      "line": 56
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_lab_campaign_is_exact_scope_and_training_only",
-      "line": 67
+      "line": 68
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_lab_start_uses_bounded_planner",
-      "line": 97
+      "line": 98
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "fake_advance",
-      "line": 115
+      "line": 116
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_outcome_feedback_becomes_learning_memory",
-      "line": 144
+      "line": 145
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_outcome_rejects_overlapping_techniques",
-      "line": 183
+      "line": 184
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_learning_routes_are_exposed",
-      "line": 196
+      "line": 197
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_global_learning_aggregates_authorized_labs_only",
-      "line": 202
+      "line": 203
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_global_learning_route_is_exposed",
-      "line": 254
+      "line": 255
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only",
-      "line": 259
+      "line": 260
     },
     {
       "file": "backend/tests/test_htb_lab.py",
       "language": "python",
       "kind": "function",
       "name": "test_non_htb_campaign_does_not_receive_htb_cross_lab_learning",
-      "line": 339
+      "line": 340
+    },
+    {
+      "file": "backend/tests/test_htb_lab.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_htb_outcome_is_idempotent_for_identical_feedback",
+      "line": 384
+    },
+    {
+      "file": "backend/tests/test_htb_lab.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_htb_corrected_feedback_replaces_prior_learning_revision",
+      "line": 424
+    },
+    {
+      "file": "backend/tests/test_htb_lab.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_htb_benchmark_reports_objective_progress_metrics",
+      "line": 467
+    },
+    {
+      "file": "backend/tests/test_htb_lab.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_htb_benchmark_route_is_exposed",
+      "line": 520
     },
     {
       "file": "backend/tests/test_hypothesis_engine.py",
@@ -16063,42 +16133,42 @@
       "language": "python",
       "kind": "function",
       "name": "test_mobile_status_production_contract_requires_all_live_prerequisites",
-      "line": 171
+      "line": 172
     },
     {
       "file": "backend/tests/test_mobile_production_update_script.py",
       "language": "python",
       "kind": "function",
       "name": "test_mobile_status_route_contract_tolerates_non_route_entries",
-      "line": 186
+      "line": 187
     },
     {
       "file": "backend/tests/test_mobile_production_update_script.py",
       "language": "python",
       "kind": "function",
       "name": "test_mobile_status_uses_live_origin_main_and_fails_closed",
-      "line": 194
+      "line": 195
     },
     {
       "file": "backend/tests/test_mobile_production_update_script.py",
       "language": "python",
       "kind": "function",
       "name": "test_mobile_status_live_verifies_one_or_two_accessible_bounties",
-      "line": 206
+      "line": 207
     },
     {
       "file": "backend/tests/test_mobile_production_update_script.py",
       "language": "python",
       "kind": "function",
       "name": "test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version",
-      "line": 222
+      "line": 223
     },
     {
       "file": "backend/tests/test_mobile_production_update_script.py",
       "language": "python",
       "kind": "function",
       "name": "test_mobile_status_route_contract_name_is_version_independent",
-      "line": 230
+      "line": 231
     },
     {
       "file": "backend/tests/test_mobile_reset_api_token.py",
@@ -24056,8 +24126,15 @@
       "file": "frontend/simple.js",
       "language": "javascript",
       "kind": "function",
+      "name": "refreshHtbBenchmark",
+      "line": 873
+    },
+    {
+      "file": "frontend/simple.js",
+      "language": "javascript",
+      "kind": "function",
       "name": "bind",
-      "line": 872
+      "line": 904
     }
   ]
 }
