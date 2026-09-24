@@ -22,6 +22,7 @@ from .evidence_quality import build_evidence_quality
 from .finding_correlation import cluster_findings
 from .hypothesis_memory import build_hypotheses
 from .high_value_intelligence import build_high_value_intelligence
+from .htb_lab import collect_htb_cross_lab_learning, is_htb_training_campaign
 from .identity_access import summarize_identity_access_differentials
 from .job_provenance import attach_job_provenance
 from .jobqueue import JobQueue
@@ -208,10 +209,25 @@ def _intelligence_context(
         )
         planned_actions[:] = [prioritized_action, *planned_actions[1:]]
     identity_access = summarize_identity_access_differentials(graph)
+    htb_cross_lab_learning = None
+    scanner_memories = memories
+    scanner_worker_outcomes = worker_outcomes
+    if is_htb_training_campaign(campaign):
+        (
+            scanner_memories,
+            scanner_worker_outcomes,
+            htb_cross_lab_metadata,
+        ) = collect_htb_cross_lab_learning(store)
+        htb_cross_lab_learning = {
+            **htb_cross_lab_metadata,
+            "techniques": [item.to_dict() for item in scanner_memories],
+            "worker_outcomes": scanner_worker_outcomes,
+            "advisory_only": True,
+        }
     scanner_adaptation = adapt_scanner_engines(
         _scan_engines(),
-        memories,
-        worker_outcomes,
+        scanner_memories,
+        scanner_worker_outcomes,
     )
     return {
         "decisions": decisions,
@@ -235,6 +251,7 @@ def _intelligence_context(
         "planner_intelligence": planner_intelligence,
         "identity_access": identity_access,
         "scanner_adaptation": scanner_adaptation,
+        "htb_cross_lab_learning": htb_cross_lab_learning,
         "surface_enrichment": _surface_enrichment(campaign, graph),
     }
 
@@ -620,6 +637,7 @@ def _result(
             "planner_intelligence": dict(intelligence["planner_intelligence"] or {}),
             "identity_access": dict(intelligence["identity_access"]),
             "scanner_adaptation": intelligence["scanner_adaptation"].to_dict(),
+            "htb_cross_lab_learning": intelligence.get("htb_cross_lab_learning"),
             "pipeline_coordination": (
                 intelligence["pipeline_coordination"].to_dict()
                 if intelligence.get("pipeline_coordination") is not None
