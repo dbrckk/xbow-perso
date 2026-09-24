@@ -1,15 +1,14 @@
 # Change impact
 
-Base: f01ae76c99f7631e7b64e7d0be6482dffc899d59
-Head: 2d08ac2ad2b2f50e6e6a492fd892a013403f29b1
+Base: be014f44a65090d491ff2d3e8f90a93779c6dd58
+Head: 0520c3c08c414f4ad5843db9696271e5fe0d51f9
 
 ## Changed files
-- M backend/tests/test_mobile_production_update_script.py
-- M scripts/mobile-production-status.sh
+- M backend/app/main.py
+- A backend/tests/test_route_registration_uniqueness.py
 
 ## Affected areas
 - backend
-- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

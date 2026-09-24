@@ -20,7 +20,6 @@
         "backend/app/evidence_quality.py",
         "backend/app/finding_cluster_consensus.py",
         "backend/app/finding_cluster_saturation.py",
-        "backend/app/finding_correlation.py",
         "backend/app/finding_intelligence.py",
         "backend/app/finding_readiness.py",
         "backend/app/hackerone_scope_import.py",
@@ -49,8 +48,6 @@
         "backend/app/queue_backend.py",
         "backend/app/readiness.py",
         "backend/app/report_approval_api.py",
-        "backend/app/report_readiness.py",
-        "backend/app/review_queue.py",
         "backend/app/runtime_capabilities.py",
         "backend/app/storage.py",
         "backend/app/storage_backend.py",
@@ -230,6 +227,7 @@
         "backend/tests/test_report_approval_api.py",
         "backend/tests/test_report_readiness.py",
         "backend/tests/test_review_queue.py",
+        "backend/tests/test_route_registration_uniqueness.py",
         "backend/tests/test_runtime_budget_config.py",
         "backend/tests/test_scan_payload_idempotency.py",
         "backend/tests/test_scanner_ingestion.py",
@@ -249,8 +247,8 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 183,
-      "out_degree": 57,
+      "in_degree": 184,
+      "out_degree": 54,
       "path": "backend/app/main.py"
     },
     {
@@ -430,6 +428,7 @@
         "backend/tests/test_report_readiness.py",
         "backend/tests/test_review_queue.py",
         "backend/tests/test_rolling_telemetry.py",
+        "backend/tests/test_route_registration_uniqueness.py",
         "backend/tests/test_runtime_budget_config.py",
         "backend/tests/test_runtime_capabilities.py",
         "backend/tests/test_runtime_gap_analysis.py",
@@ -469,7 +468,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 207,
+      "in_degree": 208,
       "out_degree": 4,
       "path": "frontend/app.js"
     },
@@ -1323,29 +1322,6 @@
     },
     {
       "dependencies": [
-        "backend/app/evidence_chain.py",
-        "backend/app/evidence_quality.py",
-        "backend/app/finding_consensus.py",
-        "backend/app/finding_correlation.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/validation_state.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_overview.py",
-        "backend/app/campaign_review_state.py",
-        "backend/app/main.py",
-        "backend/app/submission_api.py",
-        "backend/tests/test_report_readiness.py",
-        "frontend/app.js",
-        "frontend/hackerone.js"
-      ],
-      "in_degree": 7,
-      "out_degree": 7,
-      "path": "backend/app/report_readiness.py"
-    },
-    {
-      "dependencies": [
         "backend/app/main.py",
         "backend/app/observation_graph.py",
         "backend/tests/test_alert_delivery.py"
@@ -1390,6 +1366,28 @@
     },
     {
       "dependencies": [
+        "backend/app/evidence_chain.py",
+        "backend/app/evidence_quality.py",
+        "backend/app/finding_consensus.py",
+        "backend/app/finding_correlation.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/validation_state.py"
+      ],
+      "dependents": [
+        "backend/app/campaign_overview.py",
+        "backend/app/campaign_review_state.py",
+        "backend/app/submission_api.py",
+        "backend/tests/test_report_readiness.py",
+        "frontend/app.js",
+        "frontend/hackerone.js"
+      ],
+      "in_degree": 6,
+      "out_degree": 7,
+      "path": "backend/app/report_readiness.py"
+    },
+    {
+      "dependencies": [
         "backend/app/api_outbox.py",
         "backend/app/campaign_audit.py",
         "backend/app/main.py",
@@ -1431,27 +1429,6 @@
       "in_degree": 3,
       "out_degree": 10,
       "path": "backend/app/incident_observer.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/main.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_overview.py",
-        "backend/app/evidence_chain.py",
-        "backend/app/finding_cluster_consensus.py",
-        "backend/app/finding_cluster_saturation.py",
-        "backend/app/finding_intelligence.py",
-        "backend/app/finding_lifecycle.py",
-        "backend/app/finding_triage.py",
-        "backend/app/main.py",
-        "backend/app/orchestrator.py",
-        "backend/app/report_readiness.py",
-        "backend/tests/test_finding_correlation.py"
-      ],
-      "in_degree": 11,
-      "out_degree": 1,
-      "path": "backend/app/finding_correlation.py"
     },
     {
       "dependencies": [
@@ -1578,6 +1555,26 @@
       "in_degree": 2,
       "out_degree": 10,
       "path": "backend/app/submission_api.py"
+    },
+    {
+      "dependencies": [
+        "backend/app/main.py"
+      ],
+      "dependents": [
+        "backend/app/campaign_overview.py",
+        "backend/app/evidence_chain.py",
+        "backend/app/finding_cluster_consensus.py",
+        "backend/app/finding_cluster_saturation.py",
+        "backend/app/finding_intelligence.py",
+        "backend/app/finding_lifecycle.py",
+        "backend/app/finding_triage.py",
+        "backend/app/orchestrator.py",
+        "backend/app/report_readiness.py",
+        "backend/tests/test_finding_correlation.py"
+      ],
+      "in_degree": 10,
+      "out_degree": 1,
+      "path": "backend/app/finding_correlation.py"
     },
     {
       "dependencies": [
@@ -1894,25 +1891,6 @@
     },
     {
       "dependencies": [
-        "backend/app/evidence_chain.py",
-        "backend/app/hypothesis_engine.py",
-        "backend/app/hypothesis_memory.py",
-        "backend/app/knowledge_memory.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_overview.py",
-        "backend/app/main.py",
-        "backend/tests/test_form_waf_reasoning.py",
-        "backend/tests/test_review_queue.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 6,
-      "path": "backend/app/review_queue.py"
-    },
-    {
-      "dependencies": [
         "backend/app/jobqueue.py",
         "backend/app/main.py",
         "backend/app/observation_graph.py",
@@ -2040,6 +2018,24 @@
     },
     {
       "dependencies": [
+        "backend/app/evidence_chain.py",
+        "backend/app/hypothesis_engine.py",
+        "backend/app/hypothesis_memory.py",
+        "backend/app/knowledge_memory.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/campaign_overview.py",
+        "backend/tests/test_form_waf_reasoning.py",
+        "backend/tests/test_review_queue.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 6,
+      "path": "backend/app/review_queue.py"
+    },
+    {
+      "dependencies": [
         "backend/app/campaign_control.py",
         "backend/app/campaign_runtime.py",
         "backend/app/circuit_breaker.py",
@@ -2141,8 +2137,8 @@
       "path": "backend/app/finding_cluster_consensus.py"
     }
   ],
-  "edge_count": 1785,
+  "edge_count": 1784,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 367,
+  "node_count": 368,
   "schema_version": 1
 }

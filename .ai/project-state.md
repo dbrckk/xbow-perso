@@ -22,26 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-23T17:46:12Z
+Generated: 2026-09-24T10:05:54Z
 
 ### Git
 - Branch: `main`
-- Head: `2d08ac2ad2b2`
-- Commit date: 2026-09-23T19:46:00+02:00
-- Commit: ops: make production self-test strict and verify accessible bounties (#384)
-- Tracked files: 566
+- Head: `0520c3c08c41`
+- Commit date: 2026-09-24T12:05:43+02:00
+- Commit: fix: remove duplicate campaign API route registration (#386)
+- Tracked files: 567
 
 ### Recently changed files
+- `backend/app/main.py`
+- `backend/tests/test_route_registration_uniqueness.py`
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-production-status.sh`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/app/hackerone_api.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_hackerone_simple_review_package.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`

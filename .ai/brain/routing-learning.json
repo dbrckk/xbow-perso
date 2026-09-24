@@ -2,26 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "feat: prefill deterministic HackerOne first-review fields",
-      "terms": [
-        "deterministic",
-        "feat",
-        "fields",
-        "first-review",
-        "hackerone",
-        "prefill"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/app/hackerone_api.py",
-        "backend/app/hackerone_review_draft.py",
-        "backend/tests/test_hackerone_review_draft.py",
-        "frontend/hackerone.js",
-        "frontend/sw.js"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "feat: prioritize structural access differentials across test identities",
       "terms": [
         "access",
@@ -1369,6 +1349,24 @@
       "useful": [
         "backend/tests/test_mobile_production_update_script.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "fix: remove duplicate campaign API route registration (#386)",
+      "terms": [
+        "386",
+        "api",
+        "campaign",
+        "duplicate",
+        "registration",
+        "remove",
+        "route"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/main.py",
+        "backend/tests/test_route_registration_uniqueness.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1828,6 +1826,10 @@
     "384": {
       "backend/tests/test_mobile_production_update_script.py": 4
     },
+    "386": {
+      "backend/app/main.py": 4,
+      "backend/tests/test_route_registration_uniqueness.py": 4
+    },
     "access": {
       "backend/app/browser.py": 4,
       "backend/app/identity_access.py": 4,
@@ -1949,7 +1951,7 @@
     "api": {
       "backend/app/auth.py": 4,
       "backend/app/hackerone_live_readiness.py": 4,
-      "backend/app/main.py": 16,
+      "backend/app/main.py": 20,
       "backend/app/passive_api_intelligence.py": 4,
       "backend/app/vault_migration.py": 4,
       "backend/tests/test_auth.py": 8,
@@ -1961,6 +1963,7 @@
       "backend/tests/test_mobile_production_update_script.py": 4,
       "backend/tests/test_mobile_reset_api_token.py": 4,
       "backend/tests/test_passive_api_intelligence.py": 4,
+      "backend/tests/test_route_registration_uniqueness.py": 4,
       "frontend/app.js": 12,
       "frontend/sw.js": 12
     },
@@ -2293,10 +2296,12 @@
     },
     "campaign": {
       "backend/app/campaign_chain_priority.py": 4,
+      "backend/app/main.py": 4,
       "backend/app/orchestrator.py": 8,
       "backend/app/passive_response_context.py": 4,
       "backend/tests/test_campaign_chain_priority.py": 4,
-      "backend/tests/test_passive_response_context.py": 4
+      "backend/tests/test_passive_response_context.py": 4,
+      "backend/tests/test_route_registration_uniqueness.py": 4
     },
     "campaigns": {
       "backend/app/main.py": 4,
@@ -2622,11 +2627,13 @@
     },
     "duplicate": {
       "backend/app/hackerone_api.py": 8,
+      "backend/app/main.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 4,
       "backend/tests/test_frontend_policy_launcher.py": 4,
       "backend/tests/test_hackerone_batch_api.py": 4,
       "backend/tests/test_hackerone_prelaunch.py": 8,
       "backend/tests/test_hackerone_reviewed_batch_api.py": 8,
+      "backend/tests/test_route_registration_uniqueness.py": 4,
       "frontend/simple.js": 4,
       "frontend/sw.js": 4
     },
@@ -3886,6 +3893,10 @@
       "backend/app/runtime_capabilities.py": 4,
       "backend/tests/test_hackerone_live_readiness.py": 4
     },
+    "registration": {
+      "backend/app/main.py": 4,
+      "backend/tests/test_route_registration_uniqueness.py": 4
+    },
     "release": {
       "backend/app/hackerone_api.py": 4,
       "backend/app/hackerone_batch.py": 4,
@@ -3916,13 +3927,14 @@
       "frontend/sw.js": 4
     },
     "remove": {
-      "backend/app/main.py": 4,
+      "backend/app/main.py": 8,
       "backend/app/vault_migration.py": 4,
       "backend/tests/test_auth.py": 4,
       "backend/tests/test_distributed_concurrency.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 4,
       "backend/tests/test_frontend_policy_launcher.py": 4,
       "backend/tests/test_live_activation_profile.py": 4,
+      "backend/tests/test_route_registration_uniqueness.py": 4,
       "frontend/app.js": 4,
       "frontend/sw.js": 4
     },
@@ -4055,7 +4067,9 @@
       "backend/tests/test_coverage.py": 4
     },
     "route": {
-      "backend/tests/test_mobile_production_update_script.py": 4
+      "backend/app/main.py": 4,
+      "backend/tests/test_mobile_production_update_script.py": 4,
+      "backend/tests/test_route_registration_uniqueness.py": 4
     },
     "run": {
       "backend/app/hackerone_api.py": 4,

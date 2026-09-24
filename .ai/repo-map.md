@@ -386,6 +386,7 @@ backend/
     test_report.py
     test_review_queue.py
     test_rolling_telemetry.py
+    test_route_registration_uniqueness.py
     test_runtime_budget_config.py
     test_runtime_capabilities.py
     test_runtime_gap_analysis.py
@@ -6315,13 +6316,10 @@ from .finding_cluster_saturation import router as finding_cluster_saturation_rou
 from .finding_intelligence import router as finding_intelligence_router  # noqa: E402
 from .high_value_intelligence import router as high_value_intelligence_router  # noqa: E402
 from .identity_access import router as identity_access_router  # noqa: E402
-from .finding_correlation import router as finding_correlation_router  # noqa: E402
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
-from .report_readiness import router as report_readiness_router  # noqa: E402
 from .report_approval_api import router as report_approval_router  # noqa: E402
-from .review_queue import router as review_queue_router  # noqa: E402
 ````
 
 ## File: backend/app/metrics.py
@@ -17858,6 +17856,19 @@ result = build_rolling_telemetry([future, malformed, event(1)], now=NOW)
 def test_output_is_redacted()
 ⋮----
 result = build_rolling_telemetry([event(1)], now=NOW)
+````
+
+## File: backend/tests/test_route_registration_uniqueness.py
+````python
+def test_aggregated_campaign_routes_are_exposed_once_in_openapi()
+⋮----
+schema = app.openapi()
+⋮----
+def test_openapi_operation_ids_are_unique_for_campaign_routes()
+⋮----
+operation_ids = []
+⋮----
+operation_id = operation.get("operationId")
 ````
 
 ## File: backend/tests/test_runtime_budget_config.py
