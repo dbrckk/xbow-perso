@@ -161,6 +161,7 @@ def test_mobile_status_verifies_exact_deployed_v83_contract():
     assert '"/api/labs/htb/campaigns"' in script
     assert '"/api/labs/htb/campaigns/{campaign_id}/outcome"' in script
     assert '"/api/labs/htb/campaigns/{campaign_id}/learning"' in script
+    assert '"/api/labs/htb/learning"' in script
     assert "V83_ROUTE_CONTRACT_OK=true" in script
     assert "=== PRODUCTION CONTRACT VERDICT ===" in script
     assert "PRODUCTION_CONTRACT_OK=true" in script
