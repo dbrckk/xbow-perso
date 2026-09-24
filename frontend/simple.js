@@ -2,7 +2,7 @@
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v81';
+  const UI_VERSION='v82';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -758,12 +758,65 @@
     }
   }
 
+  function setHtbStatus(message,kind=''){
+    const node=$('htbStatus');
+    if(!node)return;
+    node.textContent=message;
+    node.className='simple-status '+kind;
+  }
+
+  async function startHtbLab(){
+    if(!requireToken())return;
+    const target=String($('htbTarget')?.value||'').trim();
+    const confirmed=$('htbConfirm')?.checked===true;
+    if(!target){
+      setHtbStatus('Entre l’URL exacte de la machine HTB active.','err');
+      $('htbTarget')?.focus();
+      return;
+    }
+    if(!confirmed){
+      setHtbStatus('Confirme d’abord que cette cible est bien ton lab Hack The Box autorisé.','err');
+      return;
+    }
+
+    const button=$('htbStart');
+    if(button)button.disabled=true;
+    setHtbStatus('Création de la campagne HTB à scope exact…');
+    try{
+      const campaign=await api('/labs/htb/campaigns',{
+        method:'POST',
+        body:JSON.stringify({
+          target_url:target,
+          authorized_lab:true,
+          name:'Hack The Box Lab'
+        })
+      });
+      const campaignId=String(campaign?.campaign_id||'');
+      if(!campaignId)throw new Error('Le serveur n’a pas renvoyé d’identifiant de campagne.');
+      setHtbStatus('Campagne créée. Démarrage du recon borné…');
+      const started=await api('/campaigns/'+encodeURIComponent(campaignId)+'/start',{
+        method:'POST',
+        body:'{}'
+      });
+      const kind=String(started?.job?.kind||'tâche');
+      setHtbStatus(
+        'Entraînement HTB lancé · '+kind+' · campagne '+campaignId+'.',
+        'ok'
+      );
+      if($('htbConfirm'))$('htbConfirm').checked=false;
+    }catch(error){
+      setHtbStatus('Entraînement HTB bloqué : '+error.message,'err');
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
   function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=81',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=82',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -774,6 +827,7 @@
     $('start').addEventListener('click',()=>void start());
     $('refresh').addEventListener('click',()=>void refreshJournal());
     $('cancelActive').addEventListener('click',()=>void cancelActiveBatch());
+    $('htbStart')?.addEventListener('click',()=>void startHtbLab());
     window.addEventListener('unhandledrejection',event=>{
       const message=event?.reason?.message||String(event?.reason||'Erreur JavaScript');
       setStatus('Erreur interface : '+message,'err');

@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=81' in index
-    assert '/app.css?v=81' in index
-    assert "xbow-perso-v81" in sw
+    assert '/simple.js?v=82' in index
+    assert '/app.css?v=82' in index
+    assert "xbow-perso-v82" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=81" defer></script>' in index
+    assert '<script src="/simple.js?v=82" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v81';" in script
-    assert "serviceWorker.register('/sw.js?v=81',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v82';" in script
+    assert "serviceWorker.register('/sw.js?v=82',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v81" in html
+    assert "Interface v82" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -221,3 +221,18 @@ def test_simple_dashboard_replaces_all_conservative_policy_blockers():
         "additional_restrictions_require_manual_enforcement",
     ):
         assert reason in script
+
+
+def test_dashboard_exposes_exact_scope_htb_training_flow():
+    html = _text("frontend/index.html")
+    script = _text("frontend/simple.js")
+    assert 'id="htbTarget"' in html
+    assert 'id="htbConfirm"' in html
+    assert 'id="htbStart"' in html
+    assert 'id="htbStatus"' in html
+    assert "Hack The Box" in html
+    assert "Cible exacte uniquement" in html
+    assert "async function startHtbLab()" in script
+    assert "/labs/htb/campaigns" in script
+    assert "/campaigns/'+encodeURIComponent(campaignId)+'/start" in script
+    assert "authorized_lab:true" in script

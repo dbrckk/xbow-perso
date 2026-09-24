@@ -141,21 +141,22 @@ def test_mobile_status_public_https_probe_uses_get_not_head():
     assert 'echo "PUBLIC_HTTPS_OK=true"' in script
 
 
-def test_mobile_status_verifies_exact_deployed_v81_contract():
+def test_mobile_status_verifies_exact_deployed_v82_contract():
     script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
 
     assert "=== DEPLOYED REVISION ===" in script
     assert 'LOCAL_SHA="$(git rev-parse HEAD)"' in script
     assert "git ls-remote origin refs/heads/main" in script
     assert "CHECKOUT_CURRENT=true" in script
-    assert 'DASHBOARD_ASSET" = "simple.js?v=81"' in script
+    assert 'DASHBOARD_ASSET" = "simple.js?v=82"' in script
     assert "DASHBOARD_VERSION_OK=true" in script
-    assert "=== V81 ROUTE CONTRACT ===" in script
+    assert "=== V82 ROUTE CONTRACT ===" in script
     assert '"/api/hackerone/simple-review-package"' in script
     assert '"/api/imports/hackerone/rules-preview"' in script
     assert '"/api/imports/hackerone/batches/launch-reviewed"' in script
     assert '"/api/hackerone/journal"' in script
-    assert "V81_ROUTE_CONTRACT_OK=true" in script
+    assert '"/api/labs/htb/campaigns"' in script
+    assert "V82_ROUTE_CONTRACT_OK=true" in script
     assert "=== PRODUCTION CONTRACT VERDICT ===" in script
     assert "PRODUCTION_CONTRACT_OK=true" in script
     assert "PRODUCTION_CONTRACT_OK=false" in script
@@ -169,7 +170,7 @@ def test_mobile_status_production_contract_requires_all_live_prerequisites():
     assert '[ "$PUBLIC_HTTPS_OK" = "true" ]' in verdict
     assert '[ "$HACKERONE_API_READY" = "true" ]' in verdict
     assert '[ "$DASHBOARD_VERSION_OK" = "true" ]' in verdict
-    assert '[ "$V81_ROUTE_CONTRACT_OK" = "true" ]' in verdict
+    assert '[ "$V82_ROUTE_CONTRACT_OK" = "true" ]' in verdict
     assert '[ "$CHECKOUT_CURRENT" = "true" ]' in verdict
     assert "BLOCKER=checkout_stale" in verdict
     assert "BLOCKER=dashboard_version" in verdict
