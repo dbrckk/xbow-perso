@@ -236,3 +236,20 @@ def test_dashboard_exposes_exact_scope_htb_training_flow():
     assert "/labs/htb/campaigns" in script
     assert "/campaigns/'+encodeURIComponent(campaignId)+'/start" in script
     assert "authorized_lab:true" in script
+
+
+def test_dashboard_exposes_htb_learning_feedback_without_payload_storage():
+    html = _text("frontend/index.html")
+    script = _text("frontend/simple.js")
+    assert 'id="htbFeedback"' in html
+    assert 'id="htbSolved"' in html
+    assert 'id="htbSuccessTechniques"' in html
+    assert 'id="htbMissedTechniques"' in html
+    assert 'id="htbLearn"' in html
+    assert "async function saveHtbLearning()" in script
+    assert "/outcome" in script
+    assert "/learning" in script
+    assert "successful_techniques:successful" in script
+    assert "missed_techniques:missed" in script
+    assert "notes:''" in script
+    assert "Apprentissage HTB enregistré sans payload ni secret." in script
