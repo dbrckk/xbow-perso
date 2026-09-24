@@ -924,9 +924,10 @@
       ],
       "dependents": [
         "backend/app/main.py",
+        "backend/app/orchestrator.py",
         "backend/tests/test_htb_lab.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 4
     },
     "backend/app/hypothesis_engine.py": {
@@ -1105,6 +1106,7 @@
         "backend/tests/test_hackerone_nuclei_e2e.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
         "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "backend/tests/test_htb_lab.py",
         "backend/tests/test_job_provenance_api_integration.py",
         "backend/tests/test_job_provenance_integration.py",
         "backend/tests/test_jobqueue.py",
@@ -1125,7 +1127,7 @@
         "backend/tests/test_worker_concurrency.py",
         "backend/tests/test_worker_job_provenance.py"
       ],
-      "in_degree": 38,
+      "in_degree": 39,
       "out_degree": 1
     },
     "backend/app/knowledge_memory.py": {
@@ -1552,6 +1554,7 @@
         "backend/tests/test_hackerone_nuclei_e2e.py",
         "backend/tests/test_hackerone_report_lifecycle_e2e.py",
         "backend/tests/test_high_value_intelligence.py",
+        "backend/tests/test_htb_lab.py",
         "backend/tests/test_hypothesis_engine.py",
         "backend/tests/test_hypothesis_memory.py",
         "backend/tests/test_identity_access.py",
@@ -1581,7 +1584,7 @@
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 115,
+      "in_degree": 116,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -1742,6 +1745,7 @@
         "backend/app/evidence_quality.py",
         "backend/app/finding_correlation.py",
         "backend/app/high_value_intelligence.py",
+        "backend/app/htb_lab.py",
         "backend/app/hypothesis_memory.py",
         "backend/app/identity_access.py",
         "backend/app/job_provenance.py",
@@ -1781,7 +1785,7 @@
         "backend/tests/test_runtime_budget_config.py"
       ],
       "in_degree": 11,
-      "out_degree": 39
+      "out_degree": 40
     },
     "backend/app/outbox_recovery.py": {
       "dependencies": [
@@ -3918,14 +3922,16 @@
     "backend/tests/test_htb_lab.py": {
       "dependencies": [
         "backend/app/htb_lab.py",
+        "backend/app/jobqueue.py",
         "backend/app/main.py",
+        "backend/app/observation_graph.py",
         "backend/app/orchestrator.py",
         "backend/app/storage.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 5
+      "out_degree": 7
     },
     "backend/tests/test_hypothesis_engine.py": {
       "dependencies": [

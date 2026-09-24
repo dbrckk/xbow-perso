@@ -4442,6 +4442,31 @@ digest = hashlib.sha256(digest_source.encode("utf-8")).hexdigest()[:20]
 ⋮----
 store = storage()
 ⋮----
+def is_htb_training_campaign(campaign) -> bool
+⋮----
+events = (
+⋮----
+def collect_htb_cross_lab_learning(store, *, limit_campaigns: int = 200)
+⋮----
+"""Aggregate bounded HTB training evidence across prior authorized labs only."""
+⋮----
+graph = ObservationGraph()
+worker_events: list[dict] = []
+campaign_count = 0
+feedback_observations = 0
+⋮----
+campaign_id = str(campaign.get("id") or "")
+⋮----
+metadata = dict(item.get("metadata") or {})
+⋮----
+memories = build_learning_memory(graph, limit=100)
+worker_outcomes = summarize_worker_outcomes(worker_events, recent_limit=50)
+⋮----
+def build_htb_cross_lab_learning_summary(store, *, limit_campaigns: int = 200)
+⋮----
+@router.get("/api/labs/htb/learning")
+def htb_global_learning_summary(limit_campaigns: int = 200)
+⋮----
 @router.get("/api/labs/htb/campaigns/{campaign_id}/learning")
 def htb_lab_learning_summary(campaign_id: str)
 ⋮----
@@ -6312,6 +6337,11 @@ planner_action = planned_actions[0] if planned_actions else None
 planner_intelligence = None
 ⋮----
 identity_access = summarize_identity_access_differentials(graph)
+htb_cross_lab_learning = None
+scanner_memories = memories
+scanner_worker_outcomes = worker_outcomes
+⋮----
+htb_cross_lab_learning = {
 scanner_adaptation = adapt_scanner_engines(
 ⋮----
 """Return clusters whose validated representative has strong independent evidence.
@@ -12718,6 +12748,8 @@ def test_simple_dashboard_replaces_all_conservative_policy_blockers()
 def test_dashboard_exposes_exact_scope_htb_training_flow()
 ⋮----
 def test_dashboard_exposes_htb_learning_feedback_without_payload_storage()
+⋮----
+def test_dashboard_surfaces_cross_lab_htb_learning_summary()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -14140,6 +14172,36 @@ def test_htb_outcome_rejects_overlapping_techniques()
 def test_htb_learning_routes_are_exposed()
 ⋮----
 paths = main.app.openapi()["paths"]
+⋮----
+def test_htb_global_learning_aggregates_authorized_labs_only(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-global-learning.sqlite3")
+⋮----
+first = create_htb_lab_campaign(
+second = create_htb_lab_campaign(
+⋮----
+summary = build_htb_cross_lab_learning_summary(store)
+⋮----
+def test_htb_global_learning_route_is_exposed()
+⋮----
+db = str(tmp_path / "htb-scanner-learning.sqlite3")
+⋮----
+current = create_htb_lab_campaign(
+⋮----
+campaign_doc = store.get_campaign(current["campaign_id"])
+campaign = main.Campaign.model_validate(campaign_doc)
+⋮----
+queue = JobQueue(db)
+result = orchestrator.advance_campaign(campaign, queue, store)
+⋮----
+adaptation = result["intelligence"]["scanner_adaptation"]
+cross_lab = result["intelligence"]["htb_cross_lab_learning"]
+⋮----
+db = str(tmp_path / "non-htb-learning.sqlite3")
+⋮----
+prior = create_htb_lab_campaign(
+⋮----
+campaign = main.Campaign(
 ```
 
 ## File: tests/test_hypothesis_engine.py
@@ -14945,7 +15007,7 @@ reconcile = script.index("=== RECONCILE HACKERONE BATCH STATE ===")
 ⋮----
 def test_mobile_status_public_https_probe_uses_get_not_head()
 ⋮----
-def test_mobile_status_verifies_exact_deployed_v83_contract()
+def test_mobile_status_verifies_current_deployed_contract()
 ⋮----
 def test_mobile_status_production_contract_requires_all_live_prerequisites()
 ⋮----
@@ -14958,6 +15020,8 @@ def test_mobile_status_uses_live_origin_main_and_fails_closed()
 def test_mobile_status_live_verifies_one_or_two_accessible_bounties()
 ⋮----
 def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version()
+⋮----
+def test_mobile_status_route_contract_name_is_version_independent()
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

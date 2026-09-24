@@ -22,25 +22,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-24T15:25:04Z
+Generated: 2026-09-24T15:34:24Z
 
 ### Git
 - Branch: `main`
-- Head: `03fb1985aec9`
-- Commit date: 2026-09-24T17:24:52+02:00
-- Commit: fix: prevent production dashboard version drift (#389)
+- Head: `366f11fd526e`
+- Commit date: 2026-09-24T17:34:12+02:00
+- Commit: feat: make HTB learning persist across authorized labs (#390)
 - Tracked files: 569
 
 ### Recently changed files
-- `backend/tests/test_mobile_production_update_script.py`
-- `scripts/mobile-production-status.sh`
 - `backend/app/htb_lab.py`
+- `backend/app/orchestrator.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_htb_lab.py`
+- `backend/tests/test_mobile_production_update_script.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
+- `scripts/mobile-production-status.sh`
 - `backend/app/main.py`
 - `backend/tests/test_route_registration_uniqueness.py`
 
