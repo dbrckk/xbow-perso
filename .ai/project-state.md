@@ -22,18 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-24T10:15:55Z
+Generated: 2026-09-24T15:09:37Z
 
 ### Git
 - Branch: `main`
-- Head: `1c9955e27cde`
-- Commit date: 2026-09-24T12:15:42+02:00
-- Commit: feat: add a fail-closed Hack The Box training mode (#387)
+- Head: `2a763a86f0aa`
+- Commit date: 2026-09-24T17:09:23+02:00
+- Commit: feat: feed HTB outcomes back into bounded learning memory (#388)
 - Tracked files: 569
 
 ### Recently changed files
 - `backend/app/htb_lab.py`
-- `backend/app/main.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_htb_lab.py`
@@ -42,6 +41,7 @@ Generated: 2026-09-24T10:15:55Z
 - `frontend/simple.js`
 - `frontend/sw.js`
 - `scripts/mobile-production-status.sh`
+- `backend/app/main.py`
 - `backend/tests/test_route_registration_uniqueness.py`
 
 ### Project signals

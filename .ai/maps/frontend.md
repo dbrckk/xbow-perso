@@ -421,6 +421,10 @@ function setHtbStatus(message,kind='')
 ⋮----
 async function startHtbLab()
 ⋮----
+function parseTechniqueList(value)
+⋮----
+async function saveHtbLearning()
+⋮----
 function bind()
 ```
 

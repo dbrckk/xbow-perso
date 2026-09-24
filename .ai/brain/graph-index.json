@@ -510,6 +510,7 @@
         "backend/app/hackerone_intelligence.py",
         "backend/app/hackerone_live_readiness.py",
         "backend/app/high_value_intelligence.py",
+        "backend/app/htb_lab.py",
         "backend/app/hypothesis_engine.py",
         "backend/app/hypothesis_memory.py",
         "backend/app/identity_access.py",
@@ -598,7 +599,7 @@
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 114,
+      "in_degree": 115,
       "out_degree": 3,
       "path": "backend/app/observation_graph.py"
     },
@@ -1585,6 +1586,26 @@
     },
     {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/adaptive_cycle.py",
+        "backend/app/campaign_overview.py",
+        "backend/app/htb_lab.py",
+        "backend/app/orchestrator.py",
+        "backend/app/scanner_adaptation.py",
+        "backend/app/worker_service.py",
+        "backend/tests/test_adaptive_cycle.py",
+        "backend/tests/test_learning_memory.py",
+        "backend/tests/test_scanner_adaptation.py"
+      ],
+      "in_degree": 9,
+      "out_degree": 2,
+      "path": "backend/app/learning_memory.py"
+    },
+    {
+      "dependencies": [
         "backend/app/hypothesis_engine.py",
         "backend/app/main.py",
         "backend/app/observation_graph.py"
@@ -1781,25 +1802,6 @@
       "in_degree": 9,
       "out_degree": 1,
       "path": "backend/app/campaign_runtime.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/main.py",
-        "backend/app/observation_graph.py"
-      ],
-      "dependents": [
-        "backend/app/adaptive_cycle.py",
-        "backend/app/campaign_overview.py",
-        "backend/app/orchestrator.py",
-        "backend/app/scanner_adaptation.py",
-        "backend/app/worker_service.py",
-        "backend/tests/test_adaptive_cycle.py",
-        "backend/tests/test_learning_memory.py",
-        "backend/tests/test_scanner_adaptation.py"
-      ],
-      "in_degree": 8,
-      "out_degree": 2,
-      "path": "backend/app/learning_memory.py"
     },
     {
       "dependencies": [
@@ -2144,7 +2146,7 @@
       "path": "backend/app/finding_cluster_consensus.py"
     }
   ],
-  "edge_count": 1792,
+  "edge_count": 1794,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 370,
   "schema_version": 1

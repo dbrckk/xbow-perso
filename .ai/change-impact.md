@@ -1,14 +1,13 @@
 # Change impact
 
-Base: 77cf29c6cd39f435089d1bc5fb78648167f131d1
-Head: 1c9955e27cdee7bd829eed5faf5c057603736f96
+Base: 5ece2e9c2a1e25a49a7eb5a06ea124e8925f7c58
+Head: 2a763a86f0aa7c3f016edd2e865c77fd71af87e9
 
 ## Changed files
-- A backend/app/htb_lab.py
-- M backend/app/main.py
+- M backend/app/htb_lab.py
 - M backend/tests/test_frontend_auth_proxy.py
 - M backend/tests/test_frontend_policy_launcher.py
-- A backend/tests/test_htb_lab.py
+- M backend/tests/test_htb_lab.py
 - M backend/tests/test_mobile_production_update_script.py
 - M frontend/index.html
 - M frontend/simple.js

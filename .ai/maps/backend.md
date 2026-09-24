@@ -4375,6 +4375,12 @@ result = build_high_value_intelligence(graph, limit=limit)
 ```python
 router = APIRouter()
 ⋮----
+_ALLOWED_TECHNIQUE_CHARS = set("abcdefghijklmnopqrstuvwxyz0123456789-_.:")
+⋮----
+def _normalize_technique(value: str) -> str
+⋮----
+normalized = str(value or "").strip().lower().replace(" ", "-")
+⋮----
 class HtbLabCampaignInput(BaseModel)
 ⋮----
 target_url: HttpUrl
@@ -4402,6 +4408,48 @@ parsed = urlparse(str(payload.target_url))
 ⋮----
 target = TargetInput(
 campaign = Campaign(target=target, state=CampaignState.ready)
+⋮----
+class HtbLabOutcomeInput(BaseModel)
+⋮----
+solved: bool
+successful_techniques: list[str] = Field(default_factory=list, max_length=20)
+missed_techniques: list[str] = Field(default_factory=list, max_length=20)
+notes: str = Field(default="", max_length=1000)
+⋮----
+@field_validator("successful_techniques", "missed_techniques")
+@classmethod
+    def validate_techniques(cls, value: list[str]) -> list[str]
+⋮----
+normalized = [_normalize_technique(item) for item in value]
+⋮----
+@model_validator(mode="after")
+    def validate_overlap(self)
+⋮----
+overlap = set(self.successful_techniques) & set(self.missed_techniques)
+⋮----
+def _assert_htb_campaign(campaign) -> None
+⋮----
+@router.post("/api/labs/htb/campaigns/{campaign_id}/outcome")
+def record_htb_lab_outcome(campaign_id: str, payload: HtbLabOutcomeInput)
+⋮----
+"""Record bounded operator feedback as reusable training evidence."""
+⋮----
+successful = list(payload.successful_techniques)
+missed = list(payload.missed_techniques)
+timestamp = utcnow()
+digest_source = "|".join(
+digest = hashlib.sha256(digest_source.encode("utf-8")).hexdigest()[:20]
+⋮----
+store = storage()
+⋮----
+@router.get("/api/labs/htb/campaigns/{campaign_id}/learning")
+def htb_lab_learning_summary(campaign_id: str)
+⋮----
+campaign = assert_campaign_exists(campaign_id)
+⋮----
+graph = load_observation_graph(storage(), campaign.id)
+memories = build_learning_memory(graph, limit=50)
+outcomes = [
 ```
 
 ## File: app/hypothesis_engine.py
@@ -12668,6 +12716,8 @@ def test_mobile_dashboard_bounds_api_waits_and_shows_search_elapsed_time()
 def test_simple_dashboard_replaces_all_conservative_policy_blockers()
 ⋮----
 def test_dashboard_exposes_exact_scope_htb_training_flow()
+⋮----
+def test_dashboard_exposes_htb_learning_feedback_without_payload_storage()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -14075,6 +14125,21 @@ def fake_advance(campaign, queue, store)
 job = queue.enqueue(
 ⋮----
 result = main.start_campaign(created["campaign_id"])
+⋮----
+def test_htb_outcome_feedback_becomes_learning_memory(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-learning.sqlite3")
+⋮----
+recorded = record_htb_lab_outcome(
+⋮----
+summary = htb_lab_learning_summary(created["campaign_id"])
+by_technique = {item["technique"]: item for item in summary["techniques"]}
+⋮----
+def test_htb_outcome_rejects_overlapping_techniques()
+⋮----
+def test_htb_learning_routes_are_exposed()
+⋮----
+paths = main.app.openapi()["paths"]
 ```
 
 ## File: tests/test_hypothesis_engine.py
@@ -14880,7 +14945,7 @@ reconcile = script.index("=== RECONCILE HACKERONE BATCH STATE ===")
 ⋮----
 def test_mobile_status_public_https_probe_uses_get_not_head()
 ⋮----
-def test_mobile_status_verifies_exact_deployed_v82_contract()
+def test_mobile_status_verifies_exact_deployed_v83_contract()
 ⋮----
 def test_mobile_status_production_contract_requires_all_live_prerequisites()
 ⋮----

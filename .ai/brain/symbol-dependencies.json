@@ -5,11 +5,20 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
+    "_normalize_technique": {
+      "source": {
+        "file": "backend/app/htb_lab.py",
+        "start": 15,
+        "end": 21
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
     "HtbLabCampaignInput": {
       "source": {
         "file": "backend/app/htb_lab.py",
-        "start": 12,
-        "end": 40
+        "start": 24,
+        "end": 52
       },
       "symbol_dependencies": [
         {
@@ -17,7 +26,7 @@
           "definitions": [
             {
               "file": "backend/app/htb_lab.py",
-              "line": 18,
+              "line": 30,
               "kind": "function",
               "language": "python"
             }
@@ -30,8 +39,8 @@
     "validate_authorized_lab_target": {
       "source": {
         "file": "backend/app/htb_lab.py",
-        "start": 18,
-        "end": 40
+        "start": 30,
+        "end": 52
       },
       "symbol_dependencies": [],
       "dependency_count": 0
@@ -39,8 +48,8 @@
     "create_htb_lab_campaign": {
       "source": {
         "file": "backend/app/htb_lab.py",
-        "start": 44,
-        "end": 94
+        "start": 56,
+        "end": 106
       },
       "symbol_dependencies": [
         {
@@ -72,7 +81,7 @@
           "definitions": [
             {
               "file": "backend/app/htb_lab.py",
-              "line": 12,
+              "line": 24,
               "kind": "class",
               "language": "python"
             }
@@ -154,498 +163,43 @@
       ],
       "dependency_count": 9
     },
-    "authenticate_control_api": {
+    "HtbLabOutcomeInput": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 35,
-        "end": 42
+        "file": "backend/app/htb_lab.py",
+        "start": 109,
+        "end": 129
       },
       "symbol_dependencies": [
         {
-          "symbol": "AuthError",
+          "symbol": "_normalize_technique",
           "definitions": [
             {
-              "file": "backend/app/auth.py",
-              "line": 12,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "require_api_token",
-          "definitions": [
-            {
-              "file": "backend/app/auth.py",
-              "line": 80,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "utcnow": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 48,
-        "end": 49
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "storage": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 52,
-        "end": 53
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StorageBackend",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "queue": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 56,
-        "end": 57
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "QueueBackend",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_queue",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 40,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "incident_store": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 60,
-        "end": 65
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "IncidentStore",
-          "definitions": [
-            {
-              "file": "backend/app/incident_store.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_stable_key": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 68,
-        "end": 70
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "CampaignState": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 73,
-        "end": 80
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "ProgramRules": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 83,
-        "end": 93
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "TargetInput": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 96,
-        "end": 114
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "is_host_allowed",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 193,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "primary_target_must_be_allowed",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 103,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "primary_target_must_be_allowed": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 103,
-        "end": 114
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "is_host_allowed",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 193,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "Finding": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 117,
-        "end": 132
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "FindingReviewMetadataInput": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 135,
-        "end": 157
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "normalize_review_metadata",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 145,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "normalize_review_metadata": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 145,
-        "end": 157
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "Campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 160,
-        "end": 167
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Finding",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 117,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "EvidenceInput": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 170,
-        "end": 174
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "HackerOneScopePreviewInput": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 177,
-        "end": 178
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "IncidentAcknowledgeInput": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 181,
-        "end": 183
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "normalize_pattern": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 186,
-        "end": 190
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "is_host_allowed": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 193,
-        "end": 199
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "normalize_pattern",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 186,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "save_campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 202,
-        "end": 206
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CampaignConflictError",
-          "definitions": [
-            {
-              "file": "backend/app/storage_core.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "assert_campaign_record": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 209,
-        "end": 214
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get_campaign_record",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
+              "file": "backend/app/htb_lab.py",
               "line": 15,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "storage",
+          "symbol": "validate_overlap",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 52,
+              "file": "backend/app/htb_lab.py",
+              "line": 122,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validate_techniques",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 117,
               "kind": "function",
               "language": "python"
             }
@@ -655,11 +209,42 @@
       ],
       "dependency_count": 3
     },
-    "assert_campaign_exists": {
+    "validate_techniques": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 217,
-        "end": 218
+        "file": "backend/app/htb_lab.py",
+        "start": 117,
+        "end": 119
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_normalize_technique",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "validate_overlap": {
+      "source": {
+        "file": "backend/app/htb_lab.py",
+        "start": 122,
+        "end": 129
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_assert_htb_campaign": {
+      "source": {
+        "file": "backend/app/htb_lab.py",
+        "start": 132,
+        "end": 145
       },
       "symbol_dependencies": [
         {
@@ -672,7 +257,65 @@
               "language": "python"
             }
           ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "record_htb_lab_outcome": {
+      "source": {
+        "file": "backend/app/htb_lab.py",
+        "start": 149,
+        "end": 225
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 109,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_assert_htb_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "assert_campaign_record",
@@ -684,140 +327,14 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_reject_cancelled_campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 221,
-        "end": 223
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_reject_new_findings_for_closed_campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 226,
-        "end": 231
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_campaign_graph": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 234,
-        "end": 238
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
           "relation": "imported_module"
         },
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "save_campaign",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "from_records",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "list_observations",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 30,
+              "line": 202,
               "kind": "function",
               "language": "python"
             }
@@ -830,110 +347,6 @@
             {
               "file": "backend/app/main.py",
               "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "_has_evidence_backed_independent_validation": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 241,
-        "end": 243
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Finding",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 117,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_campaign_graph",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 234,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "has_evidence_backed_independent_validation",
-          "definitions": [
-            {
-              "file": "backend/app/validation_state.py",
-              "line": 98,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "policy_receipt": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 246,
-        "end": 269
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "is_host_allowed",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 193,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "seal_policy_receipt",
-          "definitions": [
-            {
-              "file": "backend/app/policy_integrity.py",
-              "line": 28,
               "kind": "function",
               "language": "python"
             }
@@ -950,36 +363,36 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 8
     },
-    "sanitized_scan_payload": {
+    "htb_lab_learning_summary": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 272,
-        "end": 305
+        "file": "backend/app/htb_lab.py",
+        "start": 229,
+        "end": 252
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "_assert_htb_campaign",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
+              "file": "backend/app/htb_lab.py",
+              "line": 132,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "attach_job_provenance",
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
-              "file": "backend/app/job_provenance.py",
-              "line": 85,
+              "file": "backend/app/main.py",
+              "line": 217,
               "kind": "function",
               "language": "python"
             }
@@ -987,509 +400,100 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "queue",
+          "symbol": "build_learning_memory",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 56,
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 6
     },
-    "live": {
+    "_text": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 309,
-        "end": 310
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 7,
+        "end": 8
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "ready": {
+    "test_frontend_proxies_redacted_backend_diagnostics": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 75,
-        "end": 75
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "auth_status": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 327,
-        "end": 332
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 11,
+        "end": 15
       },
       "symbol_dependencies": [
         {
-          "symbol": "api_token_source_status",
+          "symbol": "_text",
           "definitions": [
             {
-              "file": "backend/app/auth.py",
-              "line": 90,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "health": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 336,
-        "end": 348
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "deployment_preflight": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 352,
-        "end": 355
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_deployment_preflight",
-          "definitions": [
-            {
-              "file": "backend/app/deployment_preflight.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "system_capabilities": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 359,
-        "end": 439
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "safe_pentagi_runtime_capability",
-          "definitions": [
-            {
-              "file": "backend/app/runtime_capabilities.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "safe_recon_runtime_capability",
-          "definitions": [
-            {
-              "file": "backend/app/runtime_capabilities.py",
-              "line": 251,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "safe_scanner_runtime_capability",
-          "definitions": [
-            {
-              "file": "backend/app/runtime_capabilities.py",
-              "line": 163,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "get_observer_health": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 443,
-        "end": 444
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "observer_health_metrics",
-          "definitions": [
-            {
-              "file": "backend/app/observer_metrics.py",
+              "file": "backend/tests/test_frontend_auth_proxy.py",
               "line": 7,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "observer_runtime",
-          "definitions": [
-            {
-              "file": "backend/app/observer_runtime.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "snapshot",
-          "definitions": [
-            {
-              "file": "backend/app/observer_runtime.py",
-              "line": 19,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "get_incidents": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 448,
-        "end": 449
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "incident_store",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "read_incident_status",
-          "definitions": [
-            {
-              "file": "backend/app/incident_api.py",
-              "line": 14,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "acknowledge_incident": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 453,
-        "end": 464
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "IncidentAcknowledgeInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 181,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "IncidentApiConflict",
-          "definitions": [
-            {
-              "file": "backend/app/incident_api.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "acknowledge_incident_versioned",
-          "definitions": [
-            {
-              "file": "backend/app/incident_api.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "incident_store",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "list_agents": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 468,
-        "end": 470
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "public_agent_catalog",
-          "definitions": [
-            {
-              "file": "backend/app/agent_registry.py",
-              "line": 100,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 1
     },
-    "preview_hackerone_scope": {
+    "test_diagnostic_routes_bypass_service_worker_cache": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 474,
-        "end": 506
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 18,
+        "end": 22
       },
       "symbol_dependencies": [
         {
-          "symbol": "HackerOneScopeImportError",
+          "symbol": "_text",
           "definitions": [
             {
-              "file": "backend/app/hackerone_scope_import.py",
-              "line": 21,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HackerOneScopePreviewInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 177,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "import_hackerone_structured_scope",
-          "definitions": [
-            {
-              "file": "backend/app/hackerone_scope_import.py",
-              "line": 369,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "create_campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 510,
-        "end": 514
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "append_campaign_event",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "list_campaigns": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 518,
-        "end": 519
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "get_campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 523,
-        "end": 524
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -1499,43 +503,19 @@
       ],
       "dependency_count": 1
     },
-    "get_campaign_target_memory": {
+    "test_frontend_assets_are_explicitly_cache_busted": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 528,
-        "end": 536
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 25,
+        "end": 30
       },
       "symbol_dependencies": [
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "_text",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_target_memory",
-          "definitions": [
-            {
-              "file": "backend/app/target_memory.py",
-              "line": 123,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -1543,57 +523,21 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 1
     },
-    "get_campaign_surface_diff": {
+    "test_api_token_is_persisted_across_browser_sessions": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 540,
-        "end": 550
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 33,
+        "end": 39
       },
       "symbol_dependencies": [
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "_text",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_surface_diff_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/surface_diff.py",
-              "line": 64,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_target_memory",
-          "definitions": [
-            {
-              "file": "backend/app/target_memory.py",
-              "line": 123,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -1601,45 +545,21 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 1
     },
-    "get_campaign_surface_temporal": {
+    "test_frontend_has_no_totp_control": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 554,
-        "end": 562
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 42,
+        "end": 47
       },
       "symbol_dependencies": [
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "_text",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_temporal_surface_profile",
-          "definitions": [
-            {
-              "file": "backend/app/surface_temporal.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -1647,69 +567,21 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 1
     },
-    "get_campaign_surface_confidence": {
+    "test_simple_dashboard_runtime_is_shipped_in_frontend_image": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 566,
-        "end": 579
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 51,
+        "end": 55
       },
       "symbol_dependencies": [
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "_text",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_surface_confidence",
-          "definitions": [
-            {
-              "file": "backend/app/surface_confidence.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_target_memory",
-          "definitions": [
-            {
-              "file": "backend/app/target_memory.py",
-              "line": 123,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_temporal_surface_profile",
-          "definitions": [
-            {
-              "file": "backend/app/surface_temporal.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -1717,21 +589,549 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 1
     },
-    "campaign_outbox_status": {
+    "test_service_worker_matches_precache_assets_by_path": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 583,
-        "end": 593
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 58,
+        "end": 60
       },
       "symbol_dependencies": [
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "_text",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 217,
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_exposes_first_run_review_flow": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 64,
+        "end": 73
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_grouped_review_and_quiet_journal": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 76,
+        "end": 83
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_bounds_review_profile_persistence_concurrency": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 86,
+        "end": 91
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_uses_atomic_server_review_package": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 94,
+        "end": 101
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_surfaces_live_scanner_readiness": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 104,
+        "end": 112
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_bounds_review_profile_persistence": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 115,
+        "end": 122
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_start_button_requires_live_runtime_readiness": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 125,
+        "end": 133
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_surfaces_runtime_remediation": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 136,
+        "end": 141
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_prevents_duplicate_active_batches": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 144,
+        "end": 152
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_reconciles_ambiguous_mobile_launch_response": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 155,
+        "end": 161
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_can_cancel_active_hackerone_batch": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 164,
+        "end": 172
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_dashboard_forces_fresh_mobile_shell_and_exposes_version": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 177,
+        "end": 188
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_review_panel_displays_hackerone_scope_exclusions": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 191,
+        "end": 194
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_one_or_two_selection_is_preserved_after_profile_validation": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 197,
+        "end": 202
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_mobile_dashboard_bounds_api_waits_and_shows_search_elapsed_time": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 205,
+        "end": 211
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_simple_dashboard_replaces_all_conservative_policy_blockers": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 214,
+        "end": 223
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_dashboard_exposes_exact_scope_htb_training_flow": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 226,
+        "end": 238
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_dashboard_exposes_htb_learning_feedback_without_payload_storage": {
+      "source": {
+        "file": "backend/tests/test_frontend_auth_proxy.py",
+        "start": 241,
+        "end": 255
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_auth_proxy.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_hackerone_reviewed_batch_routes_exist": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 13,
+        "end": 19
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_minimal_frontend_exposes_only_primary_operator_flow": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 22,
+        "end": 39
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_policy_launcher.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_minimal_frontend_preserves_safety_and_server_persistence": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 42,
+        "end": 51
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_policy_launcher.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_minimal_launcher_rechecks_runtime_without_reselection": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 54,
+        "end": 58
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_policy_launcher.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_minimal_launcher_uses_single_final_reviewed_launch_request": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 61,
+        "end": 67
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_policy_launcher.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_htb_training_route_exists_and_frontend_keeps_it_separate_from_hackerone": {
+      "source": {
+        "file": "backend/tests/test_frontend_policy_launcher.py",
+        "start": 70,
+        "end": 77
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_text",
+          "definitions": [
+            {
+              "file": "backend/tests/test_frontend_policy_launcher.py",
+              "line": 9,
               "kind": "function",
               "language": "python"
             }
@@ -1739,175 +1139,45 @@
           "relation": "same_file"
         },
         {
-          "symbol": "outbox_snapshot",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/app/api_outbox.py",
-              "line": 124,
+              "file": "frontend/app.js",
+              "line": 60,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
           "relation": "imported_module"
-        },
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_FakeQueue": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 15,
+        "end": 33
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "snapshot",
+          "symbol": "enqueue",
           "definitions": [
             {
-              "file": "backend/app/observer_runtime.py",
+              "file": "backend/tests/test_htb_lab.py",
               "line": 19,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "campaign_outbox_recovery": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 597,
-        "end": 615
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "diagnose_outbox_recovery",
-          "definitions": [
-            {
-              "file": "backend/app/outbox_recovery.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "public_recovery_diagnostics",
-          "definitions": [
-            {
-              "file": "backend/app/outbox_recovery.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "_apply_local_outbox_repairs": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 618,
-        "end": 653
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "append_campaign_event",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         },
         {
           "symbol": "get",
           "definitions": [
             {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "local_completion_event",
-          "definitions": [
-            {
-              "file": "backend/app/outbox_recovery.py",
-              "line": 75,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1915,162 +1185,20 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 2
     },
-    "reconcile_campaign_outbox_local": {
+    "__init__": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 657,
-        "end": 711
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 16,
+        "end": 136
       },
       "symbol_dependencies": [
         {
-          "symbol": "_apply_local_outbox_repairs",
+          "symbol": "HtbLabCampaignInput",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 618,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reject_cancelled_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "assert_campaign_record",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "diagnose_outbox_recovery",
-          "definitions": [
-            {
-              "file": "backend/app/outbox_recovery.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "public_recovery_diagnostics",
-          "definitions": [
-            {
-              "file": "backend/app/outbox_recovery.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 9
-    },
-    "preview_pentagi_campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 715,
-        "end": 743
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PentagiAdmissionError",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_admission.py",
-              "line": 12,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PentagiControlError",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_control.py",
-              "line": 11,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PentagiPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_adapter.py",
+              "file": "backend/app/htb_lab.py",
               "line": 24,
               "kind": "class",
               "language": "python"
@@ -2079,1246 +1207,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_reject_cancelled_campaign",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prepare_pentagi_control_preview",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_control.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "_pentagi_dispatch_fingerprint": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 746,
-        "end": 747
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_record_pentagi_dispatch_intent": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 750,
-        "end": 773
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "append_campaign_event",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "_reconcile_pentagi_queued_event": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 776,
-        "end": 819
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "append_campaign_event",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "assert_campaign_record",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "dispatch_pentagi_campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 823,
-        "end": 893
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "PentagiAdmissionError",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_admission.py",
-              "line": 12,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PentagiControlError",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_control.py",
-              "line": 11,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PentagiExecutionGuardError",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_execution_guard.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PentagiPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_adapter.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_pentagi_dispatch_fingerprint",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 746,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reconcile_pentagi_queued_event",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 776,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record_pentagi_dispatch_intent",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 750,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reject_cancelled_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "assert_campaign_record",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "enqueue_pentagi_flow",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_dispatch.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prepare_pentagi_execution_permit",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_dispatch.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "require_pentagi_control_ready",
-          "definitions": [
-            {
-              "file": "backend/app/pentagi_control.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 17
-    },
-    "pentagi_campaign_status": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 897,
-        "end": 923
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "campaign_job_counts",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "list_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 1842,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "list_campaign_observations": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 927,
-        "end": 929
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "list_observations",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 30,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "campaign_decision_audit": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 933,
-        "end": 941
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_campaign_graph",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 234,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "verify_decision_audit_chain",
-          "definitions": [
-            {
-              "file": "backend/app/decision_audit.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "campaign_event_audit": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 945,
-        "end": 951
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "verify_campaign_event_chain",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "campaign_worker_audit": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 955,
-        "end": 963
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "verify_worker_audit_chain",
-          "definitions": [
-            {
-              "file": "backend/app/worker_audit.py",
-              "line": 71,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "campaign_knowledge": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 967,
-        "end": 978
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_campaign_graph",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 234,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_hypotheses",
-          "definitions": [
-            {
-              "file": "backend/app/hypothesis_memory.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_knowledge_snapshot",
-          "definitions": [
-            {
-              "file": "backend/app/knowledge_memory.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "decision_history",
-          "definitions": [
-            {
-              "file": "backend/app/knowledge_memory.py",
-              "line": 216,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "rank_findings",
-          "definitions": [
-            {
-              "file": "backend/app/knowledge_memory.py",
-              "line": 149,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "snapshot",
-          "definitions": [
-            {
-              "file": "backend/app/observer_runtime.py",
+              "file": "backend/app/storage.py",
               "line": 19,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/agent_registry.py",
-              "line": 17,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/evidence_quality.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_cluster_consensus.py",
-              "line": 30,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_cluster_saturation.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_readiness.py",
-              "line": 31,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "campaign_finding_ranking": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 982,
-        "end": 1005
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_campaign_graph",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 234,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "list_hypothesis_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "rank_findings_explainable",
-          "definitions": [
-            {
-              "file": "backend/app/knowledge_memory.py",
-              "line": 176,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "summarize_hypothesis_stability",
-          "definitions": [
-            {
-              "file": "backend/app/hypothesis_memory.py",
-              "line": 182,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "campaign_advisory_history": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1009,
-        "end": 1014
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "list_advisory_focus_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "campaign_advisory_delta": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1018,
-        "end": 1025
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "diff_advisory_focus_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/planner_advisory.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "list_advisory_focus_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "campaign_advisory_journal": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1029,
-        "end": 1037
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_advisory_decision_journal",
-          "definitions": [
-            {
-              "file": "backend/app/planner_advisory.py",
-              "line": 146,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "list_advisory_focus_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "campaign_hypothesis_history": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1041,
-        "end": 1046
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "list_hypothesis_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "campaign_hypothesis_delta": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1050,
-        "end": 1057
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "diff_hypothesis_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/hypothesis_memory.py",
-              "line": 100,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "list_hypothesis_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "campaign_hypothesis_stability": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1061,
-        "end": 1069
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "list_hypothesis_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "summarize_hypothesis_stability",
-          "definitions": [
-            {
-              "file": "backend/app/hypothesis_memory.py",
-              "line": 182,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "campaign_plan": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1073,
-        "end": 1119
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "AdaptivePlanner",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 110,
               "kind": "class",
               "language": "python"
             }
@@ -3326,636 +1219,12 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_campaign_graph",
+          "symbol": "_FakeQueue",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 234,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "advisory_focus_fingerprint",
-          "definitions": [
-            {
-              "file": "backend/app/planner_advisory.py",
-              "line": 76,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "agent_for_action",
-          "definitions": [
-            {
-              "file": "backend/app/agent_registry.py",
-              "line": 93,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "apply_budget",
-          "definitions": [
-            {
-              "file": "backend/app/planner_budget.py",
-              "line": 173,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "budget_usage",
-          "definitions": [
-            {
-              "file": "backend/app/planner_budget.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_advisory_planner_context",
-          "definitions": [
-            {
-              "file": "backend/app/planner_advisory.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_quality",
-          "definitions": [
-            {
-              "file": "backend/app/evidence_quality.py",
-              "line": 43,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_hypotheses",
-          "definitions": [
-            {
-              "file": "backend/app/hypothesis_memory.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_knowledge_snapshot",
-          "definitions": [
-            {
-              "file": "backend/app/knowledge_memory.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "list_hypothesis_snapshots",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "planner_budget_from_env",
-          "definitions": [
-            {
-              "file": "backend/app/planner_budget.py",
-              "line": 54,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "put_advisory_focus_snapshot",
-          "definitions": [
-            {
-              "file": "backend/app/storage_backend.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "rank_findings",
-          "definitions": [
-            {
-              "file": "backend/app/knowledge_memory.py",
-              "line": 149,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "summarize_hypothesis_stability",
-          "definitions": [
-            {
-              "file": "backend/app/hypothesis_memory.py",
-              "line": 182,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/agent_registry.py",
-              "line": 17,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/evidence_quality.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_cluster_consensus.py",
-              "line": 30,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_cluster_saturation.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_readiness.py",
-              "line": 31,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 20
-    },
-    "check_policy": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1123,
-        "end": 1129
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "append_campaign_event",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "assert_campaign_record",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "policy_receipt",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 246,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "verify_campaign_policy_receipt": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1133,
-        "end": 1135
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "verify_policy_receipt",
-          "definitions": [
-            {
-              "file": "backend/app/policy_integrity.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_pending_campaign_start_request": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1138,
-        "end": 1143
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 15,
               "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "pending_request_id",
-          "definitions": [
-            {
-              "file": "backend/app/api_outbox.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_record_campaign_start_intent": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1146,
-        "end": 1169
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "append_campaign_event",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "_reconcile_campaign_started": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1172,
-        "end": 1220
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reject_cancelled_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "append_campaign_event",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "assert_campaign_record",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 9
-    },
-    "start_campaign": {
-      "source": {
-        "file": "backend/app/main.py",
-        "start": 1224,
-        "end": 1310
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_pending_campaign_start_request",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 1138,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reconcile_campaign_started",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 1172,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record_campaign_start_intent",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 1146,
-              "kind": "function",
               "language": "python"
             }
           ],
@@ -3974,64 +1243,76 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "append_campaign_event",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
+              "file": "frontend/app.js",
+              "line": 60,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "assert_campaign_record",
+          "symbol": "create_htb_lab_campaign",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 209,
+              "file": "backend/app/htb_lab.py",
+              "line": 56,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
           "symbol": "enqueue",
           "definitions": [
             {
-              "file": "backend/app/queue_backend.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "policy_receipt",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 246,
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "fake_advance",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 112,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 523,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "queue",
@@ -4043,14 +1324,26 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "ready",
+          "symbol": "start_campaign",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 314,
+              "line": 1224,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_htb_lab_campaign_is_exact_scope_and_training_only",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -4058,11 +1351,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "sanitized_scan_payload",
+          "symbol": "test_htb_lab_rejects_public_targets",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 272,
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -4070,22 +1363,10 @@
           "relation": "same_file"
         },
         {
-          "symbol": "save_campaign",
+          "symbol": "test_htb_lab_requires_explicit_authorization_confirmation",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 202,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
+              "file": "backend/tests/test_htb_lab.py",
               "line": 52,
               "kind": "function",
               "language": "python"
@@ -4094,11 +1375,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "utcnow",
+          "symbol": "test_htb_lab_route_is_exposed",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 48,
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_lab_start_uses_bounded_planner",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 94,
               "kind": "function",
               "language": "python"
             }
@@ -4106,21 +1399,187 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 16
+      "dependency_count": 17
     },
-    "cancel_campaign": {
+    "enqueue": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 1314,
-        "end": 1343
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 19,
+        "end": 30
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "get": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 32,
+        "end": 33
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_htb_lab_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 36,
+        "end": 37
       },
       "symbol_dependencies": [
         {
-          "symbol": "CampaignState",
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_htb_lab_rejects_public_targets": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 40,
+        "end": 49
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_htb_lab_requires_explicit_authorization_confirmation": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 52,
+        "end": 61
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_htb_lab_campaign_is_exact_scope_and_training_only": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 64,
+        "end": 91
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_campaign",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 73,
+              "line": 523,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_htb_lab_start_uses_bounded_planner": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 94,
+        "end": 138
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_FakeQueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 15,
               "kind": "class",
               "language": "python"
             }
@@ -4128,11 +1587,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "append_campaign_event",
+          "symbol": "advance_campaign",
           "definitions": [
             {
-              "file": "backend/app/campaign_audit.py",
-              "line": 38,
+              "file": "backend/app/orchestrator.py",
+              "line": 643,
               "kind": "function",
               "language": "python"
             }
@@ -4140,11 +1599,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "assert_campaign_record",
+          "symbol": "create_htb_lab_campaign",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 209,
+              "file": "backend/app/htb_lab.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -4152,11 +1623,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "campaign_job_status_counts",
+          "symbol": "fake_advance",
           "definitions": [
             {
-              "file": "backend/app/queue_backend.py",
-              "line": 17,
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 112,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
               "kind": "function",
               "language": "python"
             }
@@ -4164,11 +1647,105 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "cancel_queued",
+          "symbol": "start_campaign",
           "definitions": [
             {
-              "file": "backend/app/queue_backend.py",
-              "line": 18,
+              "file": "backend/app/main.py",
+              "line": 1224,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "fake_advance": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 112,
+        "end": 232
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 109,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 643,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "htb_lab_learning_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 229,
               "kind": "function",
               "language": "python"
             }
@@ -4185,14 +1762,38 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "save_campaign",
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 149,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "start_campaign",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 202,
+              "line": 1224,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_htb_learning_routes_are_exposed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 193,
               "kind": "function",
               "language": "python"
             }
@@ -4200,13 +1801,1095 @@
           "relation": "same_file"
         },
         {
-          "symbol": "utcnow",
+          "symbol": "test_htb_outcome_feedback_becomes_learning_memory",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 48,
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 141,
               "kind": "function",
               "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_outcome_rejects_overlapping_techniques",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 180,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "test_htb_outcome_feedback_becomes_learning_memory": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 141,
+        "end": 177
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 109,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "htb_lab_learning_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 229,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 149,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_htb_outcome_rejects_overlapping_techniques": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 180,
+        "end": 190
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 109,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_htb_learning_routes_are_exposed": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 193,
+        "end": 196
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_live_production_update_waits_for_worker_heartbeats": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 7,
+        "end": 14
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_reports_hackerone_launch_readiness": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 17,
+        "end": 24
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_prints_explicit_launch_verdict_and_blockers": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 27,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_enable_script_requires_final_live_launch_verdict": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 41,
+        "end": 49
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_requires_live_hackerone_api_probe_for_ready_verdict": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 52,
+        "end": 61
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_enable_script_probes_hackerone_before_declaring_profile_armed": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 64,
+        "end": 72
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_enable_script_reports_actionable_non_idle_queue_blocker": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 75,
+        "end": 86
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_enable_script_keeps_rollback_active_through_final_launch_verification": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 89,
+        "end": 96
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_enable_script_refreshes_safe_production_before_readiness_and_queue_checks": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 99,
+        "end": 107
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_enable_script_documents_stale_checkout_and_stopped_stack_recovery": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 110,
+        "end": 115
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_enable_script_reexecs_from_refreshed_checkout_exactly_once": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 118,
+        "end": 123
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 126,
+        "end": 133
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_public_https_probe_uses_get_not_head": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 136,
+        "end": 141
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_verifies_exact_deployed_v83_contract": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 144,
+        "end": 164
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_production_contract_requires_all_live_prerequisites": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 167,
+        "end": 179
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_route_contract_tolerates_non_route_entries": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 182,
+        "end": 187
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_uses_live_origin_main_and_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 190,
+        "end": 199
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_mobile_status_live_verifies_one_or_two_accessible_bounties": {
+      "source": {
+        "file": "backend/tests/test_mobile_production_update_script.py",
+        "start": 202,
+        "end": 215
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "token": {
+      "source": {
+        "file": "frontend/simple.js",
+        "start": 16,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 51,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearReviewPanel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 129,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "money",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 92,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderSelection",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 104,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "requireToken",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 44,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "saveToken",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 20,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setStatus",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 24,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "start",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 554,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stateLabel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 97,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateStartAvailability",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 31,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "saveToken": {
+      "source": {
+        "file": "frontend/simple.js",
+        "start": 20,
+        "end": 140
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 51,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearReviewPanel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 129,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "money",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 92,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderSelection",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 104,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "requireToken",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 44,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewableDraft",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 137,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setStatus",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 24,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "start",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 554,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stateLabel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 97,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "token",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateStartAvailability",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 31,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "setStatus": {
+      "source": {
+        "file": "frontend/simple.js",
+        "start": 24,
+        "end": 144
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 51,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearReviewPanel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 129,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "money",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 92,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderSelection",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 104,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "requireToken",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 44,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewableDraft",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 137,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "start",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 554,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stateLabel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 97,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "token",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "updateStartAvailability",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 31,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "updateStartAvailability": {
+      "source": {
+        "file": "frontend/simple.js",
+        "start": 31,
+        "end": 151
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 51,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearReviewPanel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 129,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "money",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 92,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderReviewDrafts",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 147,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderSelection",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 104,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "requireToken",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 44,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewableDraft",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 137,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setStatus",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 24,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "start",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 554,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stateLabel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 97,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "token",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "requireToken": {
+      "source": {
+        "file": "frontend/simple.js",
+        "start": 44,
+        "end": 164
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 51,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clearReviewPanel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 129,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "money",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 92,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderReviewDrafts",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 147,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderSelection",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 104,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewableDraft",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 137,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setStatus",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 24,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stateLabel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 97,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "token",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "api": {
+      "source": {
+        "file": "frontend/simple.js",
+        "start": 51,
+        "end": 171
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "clearReviewPanel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 129,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "money",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 92,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderReviewDrafts",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 147,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderSelection",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 104,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "requireToken",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 44,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewableDraft",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 137,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stateLabel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 97,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "token",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 16,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
@@ -4214,39 +2897,87 @@
       ],
       "dependency_count": 8
     },
-    "get_job": {
+    "money": {
       "source": {
-        "file": "backend/app/main.py",
-        "start": 1347,
-        "end": 1351
+        "file": "frontend/simple.js",
+        "start": 92,
+        "end": 212
       },
       "symbol_dependencies": [
         {
-          "symbol": "get",
+          "symbol": "clearReviewPanel",
           "definitions": [
             {
-              "file": "backend/app/queue_backend.py",
-              "line": 13,
+              "file": "frontend/simple.js",
+              "line": 129,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "queue",
+          "symbol": "renderReviewDrafts",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 56,
+              "file": "frontend/simple.js",
+              "line": 147,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "renderSelection",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 104,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "retryableReviewError",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 208,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewableDraft",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 137,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "stateLabel",
+          "definitions": [
+            {
+              "file": "frontend/simple.js",
+              "line": 97,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 6
     }
   }
 }
