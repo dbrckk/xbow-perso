@@ -191,6 +191,8 @@ required = {
     "/api/imports/hackerone/batches/launch-reviewed",
     "/api/hackerone/journal",
     "/api/labs/htb/campaigns",
+    "/api/labs/htb/campaigns/{campaign_id}/outcome",
+    "/api/labs/htb/campaigns/{campaign_id}/learning",
 }
 missing = sorted(required - paths)
 print("V82_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))
