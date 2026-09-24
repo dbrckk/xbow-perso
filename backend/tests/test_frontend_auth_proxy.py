@@ -27,7 +27,7 @@ def test_frontend_assets_are_explicitly_cache_busted():
     sw = _text("frontend/sw.js")
     assert '/simple.js?v=82' in index
     assert '/app.css?v=82' in index
-    assert "xbow-perso-v82" in sw
+    assert "xbow-perso-v83" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v82';" in script
+    assert "const UI_VERSION='v83';" in script
     assert "serviceWorker.register('/sw.js?v=82',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v82" in html
+    assert "Interface v83" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
