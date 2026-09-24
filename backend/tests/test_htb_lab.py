@@ -5,7 +5,9 @@ import app.orchestrator as orchestrator
 from app.htb_lab import (
     HtbLabCampaignInput,
     HtbLabOutcomeInput,
+    build_htb_cross_lab_learning_summary,
     create_htb_lab_campaign,
+    htb_global_learning_summary,
     htb_lab_learning_summary,
     record_htb_lab_outcome,
 )
@@ -194,3 +196,184 @@ def test_htb_learning_routes_are_exposed():
     paths = main.app.openapi()["paths"]
     assert "/api/labs/htb/campaigns/{campaign_id}/outcome" in paths
     assert "/api/labs/htb/campaigns/{campaign_id}/learning" in paths
+
+
+def test_htb_global_learning_aggregates_authorized_labs_only(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-global-learning.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    first = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.51",
+            authorized_lab=True,
+            name="HTB first",
+        )
+    )
+    second = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.52",
+            authorized_lab=True,
+            name="HTB second",
+        )
+    )
+    record_htb_lab_outcome(
+        first["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=True,
+            successful_techniques=["web-enumeration"],
+            missed_techniques=["scanner:nuclei"],
+        ),
+    )
+    record_htb_lab_outcome(
+        second["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=False,
+            successful_techniques=["web-enumeration"],
+            missed_techniques=["scanner:nuclei"],
+        ),
+    )
+
+    store = Storage(db, artifacts)
+    summary = build_htb_cross_lab_learning_summary(store)
+    by_technique = {item["technique"]: item for item in summary["techniques"]}
+
+    assert summary["campaign_count"] == 2
+    assert summary["feedback_observations"] == 4
+    assert summary["training_only"] is True
+    assert summary["scope_expansion"] is False
+    assert summary["contains_exploit_payloads"] is False
+    assert by_technique["web-enumeration"]["successes"] == 2
+    assert by_technique["web-enumeration"]["source_count"] == 2
+    assert by_technique["scanner:nuclei"]["failures"] == 2
+    assert by_technique["scanner:nuclei"]["confidence"] >= 0.4
+
+
+def test_htb_global_learning_route_is_exposed():
+    paths = main.app.openapi()["paths"]
+    assert "/api/labs/htb/learning" in paths
+
+
+def test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "htb-scanner-learning.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_SCAN_ENGINES", "strix,nuclei")
+
+    for host in ("10.10.11.61", "10.10.11.62"):
+        created = create_htb_lab_campaign(
+            HtbLabCampaignInput(
+                target_url=f"http://{host}",
+                authorized_lab=True,
+            )
+        )
+        record_htb_lab_outcome(
+            created["campaign_id"],
+            HtbLabOutcomeInput(
+                solved=False,
+                successful_techniques=[],
+                missed_techniques=["scanner:nuclei"],
+            ),
+        )
+
+    current = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.63",
+            authorized_lab=True,
+        )
+    )
+    store = Storage(db, artifacts)
+    campaign_doc = store.get_campaign(current["campaign_id"])
+    campaign = main.Campaign.model_validate(campaign_doc)
+
+    store.put_observation(
+        campaign.id,
+        main.Observation(
+            "asset:htb-current",
+            "asset",
+            "10.10.11.63",
+            "recon",
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        main.Observation(
+            "endpoint:htb-current",
+            "endpoint",
+            "http://10.10.11.63/",
+            "recon:crawl",
+            parent_ids=("asset:htb-current",),
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        main.Observation(
+            "technology:htb-current",
+            "technology",
+            "Server:fixture",
+            "recon:detect_technology",
+            parent_ids=("asset:htb-current",),
+        ).to_dict(),
+    )
+
+    queue = main.JobQueue(db)
+    result = orchestrator.advance_campaign(campaign, queue, store)
+
+    adaptation = result["intelligence"]["scanner_adaptation"]
+    cross_lab = result["intelligence"]["htb_cross_lab_learning"]
+    assert result["action"]["kind"] == "scan"
+    assert cross_lab["campaign_count"] == 3
+    assert cross_lab["advisory_only"] is True
+    assert adaptation["configured_engines"] == ["strix", "nuclei"]
+    assert adaptation["selected_engines"] == ["strix"]
+    assert adaptation["suppressed_engines"] == ["nuclei"]
+    assert [queue.get(job_id)["kind"] for job_id in result["job_ids"]] == ["strix_scan"]
+
+
+def test_non_htb_campaign_does_not_receive_htb_cross_lab_learning(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "non-htb-learning.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    prior = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.71",
+            authorized_lab=True,
+        )
+    )
+    record_htb_lab_outcome(
+        prior["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=False,
+            missed_techniques=["scanner:nuclei"],
+        ),
+    )
+
+    campaign = main.Campaign(
+        id="ordinary-campaign",
+        target=main.TargetInput(
+            name="ordinary",
+            primary_url="https://example.test",
+            rules=main.ProgramRules(
+                authorization_reference="fixture",
+                allowed_targets=["example.test"],
+                automated_scanning=True,
+            ),
+        ),
+    )
+    store = Storage(db, artifacts)
+    store.save_campaign(campaign.model_dump(mode="json"))
+    queue = main.JobQueue(db)
+
+    result = orchestrator.advance_campaign(campaign, queue, store)
+
+    assert result["intelligence"]["htb_cross_lab_learning"] is None
