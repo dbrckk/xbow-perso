@@ -156,6 +156,8 @@ def test_mobile_status_verifies_exact_deployed_v82_contract():
     assert '"/api/imports/hackerone/batches/launch-reviewed"' in script
     assert '"/api/hackerone/journal"' in script
     assert '"/api/labs/htb/campaigns"' in script
+    assert '"/api/labs/htb/campaigns/{campaign_id}/outcome"' in script
+    assert '"/api/labs/htb/campaigns/{campaign_id}/learning"' in script
     assert "V82_ROUTE_CONTRACT_OK=true" in script
     assert "=== PRODUCTION CONTRACT VERDICT ===" in script
     assert "PRODUCTION_CONTRACT_OK=true" in script
