@@ -148,7 +148,10 @@ def test_mobile_status_verifies_exact_deployed_v83_contract():
     assert 'LOCAL_SHA="$(git rev-parse HEAD)"' in script
     assert "git ls-remote origin refs/heads/main" in script
     assert "CHECKOUT_CURRENT=true" in script
-    assert 'DASHBOARD_ASSET" = "simple.js?v=82"' in script
+    assert "EXPECTED_DASHBOARD_ASSET=" in script
+    assert "grep -o 'simple.js?v=[0-9][0-9]*' frontend/index.html" in script
+    assert "PUBLIC_DASHBOARD_ASSET=" in script
+    assert '[ "$DASHBOARD_ASSET" = "$EXPECTED_DASHBOARD_ASSET" ]' in script
     assert "DASHBOARD_VERSION_OK=true" in script
     assert "=== V83 ROUTE CONTRACT ===" in script
     assert '"/api/hackerone/simple-review-package"' in script
@@ -213,3 +216,11 @@ def test_mobile_status_live_verifies_one_or_two_accessible_bounties():
     verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
     assert '[ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ]' in verdict
     assert "BLOCKER=accessible_bounty_precheck" in verdict
+
+
+def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    assert "EXPECTED_DASHBOARD_ASSET=" in script
+    assert "frontend/index.html" in script
+    assert 'simple.js?v=82' not in script
