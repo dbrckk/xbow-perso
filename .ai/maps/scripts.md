@@ -997,6 +997,11 @@ else
 fi
 
 DASHBOARD_VERSION_OK=false
+EXPECTED_DASHBOARD_ASSET="$(
+  grep -o 'simple.js?v=[0-9][0-9]*' frontend/index.html \
+    | head -n1 \
+    || true
+)"
 if [ -n "$PUBLIC_HOST" ]; then
   echo "=== DASHBOARD ASSET VERSION ==="
   DASHBOARD_ASSET="$(
@@ -1005,8 +1010,10 @@ if [ -n "$PUBLIC_HOST" ]; then
       | head -n1 \
       || true
   )"
-  echo "$DASHBOARD_ASSET"
-  if [ "$DASHBOARD_ASSET" = "simple.js?v=82" ]; then
+  echo "EXPECTED_DASHBOARD_ASSET=$EXPECTED_DASHBOARD_ASSET"
+  echo "PUBLIC_DASHBOARD_ASSET=$DASHBOARD_ASSET"
+  if [ -n "$EXPECTED_DASHBOARD_ASSET" ] \
+    && [ "$DASHBOARD_ASSET" = "$EXPECTED_DASHBOARD_ASSET" ]; then
     DASHBOARD_VERSION_OK=true
   fi
   echo "DASHBOARD_VERSION_OK=$DASHBOARD_VERSION_OK"
@@ -1094,7 +1101,7 @@ else
   echo "PRODUCTION_CONTRACT_OK=false"
   [ "$REMOTE_MAIN_REACHABLE" = "true" ] || echo "BLOCKER=origin_main_unreachable | Impossible de lire origin/main depuis le VPS."
   [ "$CHECKOUT_CURRENT" = "true" ] || echo "BLOCKER=checkout_stale | Le VPS n'est pas sur origin/main."
-  [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Interface v83 non servie publiquement."
+  [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Le dashboard public ne correspond pas au frontend du checkout déployé."
   [ "$V83_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique v83 manque dans le backend déployé."
   [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] || echo "BLOCKER=accessible_bounty_precheck | Aucun programme HackerOne live-vérifié n'a pu être préparé."
   exit 1
