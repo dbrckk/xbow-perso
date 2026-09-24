@@ -130,12 +130,7 @@ class HtbLabOutcomeInput(BaseModel):
 
 
 def _assert_htb_campaign(campaign) -> None:
-    if not any(
-        isinstance(event, dict)
-        and event.get("type") == "htb_lab_bound"
-        and event.get("training_only") is True
-        for event in list(campaign.events or [])
-    ):
+    if not is_htb_training_campaign(campaign):
         raise HTTPException(
             status_code=409,
             detail={
@@ -223,6 +218,100 @@ def record_htb_lab_outcome(campaign_id: str, payload: HtbLabOutcomeInput):
         "notes_stored": False,
         "contains_exploit_payloads": False,
     }
+
+
+def is_htb_training_campaign(campaign) -> bool:
+    events = (
+        list(getattr(campaign, "events", ()) or ())
+        if not isinstance(campaign, dict)
+        else list(campaign.get("events") or [])
+    )
+    return any(
+        isinstance(event, dict)
+        and event.get("type") == "htb_lab_bound"
+        and event.get("training_only") is True
+        for event in events
+    )
+
+
+def collect_htb_cross_lab_learning(store, *, limit_campaigns: int = 200):
+    """Aggregate bounded HTB training evidence across prior authorized labs only."""
+    from .learning_memory import build_learning_memory, summarize_worker_outcomes
+    from .observation_graph import Observation, ObservationGraph
+
+    if not 1 <= limit_campaigns <= 1000:
+        raise ValueError("HTB campaign learning limit must be between 1 and 1000")
+
+    graph = ObservationGraph()
+    worker_events: list[dict] = []
+    campaign_count = 0
+    feedback_observations = 0
+
+    for campaign in store.list_campaigns(limit=limit_campaigns):
+        if not is_htb_training_campaign(campaign):
+            continue
+        campaign_id = str(campaign.get("id") or "")
+        if not campaign_id:
+            continue
+        campaign_count += 1
+
+        for item in store.list_observations(campaign_id):
+            metadata = dict(item.get("metadata") or {})
+            if (
+                item.get("kind") != "evidence"
+                or metadata.get("memory_type") != "htb_training_feedback"
+                or metadata.get("training_only") is not True
+            ):
+                continue
+            graph.add(
+                Observation(
+                    id=f"{campaign_id}:{item['id']}",
+                    kind="evidence",
+                    value=str(item.get("value") or ""),
+                    source=f"{item.get('source') or 'htb-training'}:{campaign_id}",
+                    metadata=metadata,
+                )
+            )
+            feedback_observations += 1
+
+        worker_events.extend(
+            event
+            for event in list(campaign.get("events") or [])
+            if isinstance(event, dict) and event.get("type") == "worker_outcome"
+        )
+
+    memories = build_learning_memory(graph, limit=100)
+    worker_outcomes = summarize_worker_outcomes(worker_events, recent_limit=50)
+    return memories, worker_outcomes, {
+        "campaign_count": campaign_count,
+        "feedback_observations": feedback_observations,
+        "training_only": True,
+        "scope_expansion": False,
+    }
+
+
+def build_htb_cross_lab_learning_summary(store, *, limit_campaigns: int = 200):
+    memories, worker_outcomes, metadata = collect_htb_cross_lab_learning(
+        store,
+        limit_campaigns=limit_campaigns,
+    )
+    return {
+        **metadata,
+        "techniques": [item.to_dict() for item in memories],
+        "worker_outcomes": worker_outcomes,
+        "read_only": True,
+        "contains_exploit_payloads": False,
+    }
+
+
+@router.get("/api/labs/htb/learning")
+def htb_global_learning_summary(limit_campaigns: int = 200):
+    from .main import storage
+
+    return build_htb_cross_lab_learning_summary(
+        storage(),
+        limit_campaigns=limit_campaigns,
+    )
 
 
 @router.get("/api/labs/htb/campaigns/{campaign_id}/learning")

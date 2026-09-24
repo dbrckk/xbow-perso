@@ -141,7 +141,7 @@ def test_mobile_status_public_https_probe_uses_get_not_head():
     assert 'echo "PUBLIC_HTTPS_OK=true"' in script
 
 
-def test_mobile_status_verifies_exact_deployed_v83_contract():
+def test_mobile_status_verifies_current_deployed_contract():
     script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
 
     assert "=== DEPLOYED REVISION ===" in script
@@ -153,7 +153,7 @@ def test_mobile_status_verifies_exact_deployed_v83_contract():
     assert "PUBLIC_DASHBOARD_ASSET=" in script
     assert '[ "$DASHBOARD_ASSET" = "$EXPECTED_DASHBOARD_ASSET" ]' in script
     assert "DASHBOARD_VERSION_OK=true" in script
-    assert "=== V83 ROUTE CONTRACT ===" in script
+    assert "=== APPLICATION ROUTE CONTRACT ===" in script
     assert '"/api/hackerone/simple-review-package"' in script
     assert '"/api/imports/hackerone/rules-preview"' in script
     assert '"/api/imports/hackerone/batches/launch-reviewed"' in script
@@ -161,7 +161,8 @@ def test_mobile_status_verifies_exact_deployed_v83_contract():
     assert '"/api/labs/htb/campaigns"' in script
     assert '"/api/labs/htb/campaigns/{campaign_id}/outcome"' in script
     assert '"/api/labs/htb/campaigns/{campaign_id}/learning"' in script
-    assert "V83_ROUTE_CONTRACT_OK=true" in script
+    assert '"/api/labs/htb/learning"' in script
+    assert "APP_ROUTE_CONTRACT_OK=true" in script
     assert "=== PRODUCTION CONTRACT VERDICT ===" in script
     assert "PRODUCTION_CONTRACT_OK=true" in script
     assert "PRODUCTION_CONTRACT_OK=false" in script
@@ -175,7 +176,7 @@ def test_mobile_status_production_contract_requires_all_live_prerequisites():
     assert '[ "$PUBLIC_HTTPS_OK" = "true" ]' in verdict
     assert '[ "$HACKERONE_API_READY" = "true" ]' in verdict
     assert '[ "$DASHBOARD_VERSION_OK" = "true" ]' in verdict
-    assert '[ "$V83_ROUTE_CONTRACT_OK" = "true" ]' in verdict
+    assert '[ "$APP_ROUTE_CONTRACT_OK" = "true" ]' in verdict
     assert '[ "$CHECKOUT_CURRENT" = "true" ]' in verdict
     assert "BLOCKER=checkout_stale" in verdict
     assert "BLOCKER=dashboard_version" in verdict
@@ -224,3 +225,10 @@ def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_versio
     assert "EXPECTED_DASHBOARD_ASSET=" in script
     assert "frontend/index.html" in script
     assert 'simple.js?v=82' not in script
+
+
+def test_mobile_status_route_contract_name_is_version_independent():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+    assert "=== APPLICATION ROUTE CONTRACT ===" in script
+    assert "APP_ROUTE_CONTRACT_OK=true" in script
+    assert "V83_ROUTE_CONTRACT_OK" not in script

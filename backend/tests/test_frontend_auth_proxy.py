@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=83' in index
-    assert '/app.css?v=83' in index
-    assert "xbow-perso-v83" in sw
+    assert '/simple.js?v=84' in index
+    assert '/app.css?v=84' in index
+    assert "xbow-perso-v84" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=83" defer></script>' in index
+    assert '<script src="/simple.js?v=84" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v83';" in script
-    assert "serviceWorker.register('/sw.js?v=83',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v84';" in script
+    assert "serviceWorker.register('/sw.js?v=84',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v83" in html
+    assert "Interface v84" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -253,3 +253,10 @@ def test_dashboard_exposes_htb_learning_feedback_without_payload_storage():
     assert "missed_techniques:missed" in script
     assert "notes:''" in script
     assert "Apprentissage HTB enregistré sans payload ni secret." in script
+
+
+def test_dashboard_surfaces_cross_lab_htb_learning_summary():
+    script = _text("frontend/simple.js")
+    assert "const globalSummary=await api('/labs/htb/learning');" in script
+    assert "globalTechniques.length+' technique(s) globales sur '" in script
+    assert "globalSummary?.campaign_count" in script
