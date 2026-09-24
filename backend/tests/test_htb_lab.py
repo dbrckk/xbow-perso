@@ -5,6 +5,7 @@ import app.orchestrator as orchestrator
 from app.htb_lab import (
     HtbLabCampaignInput,
     HtbLabOutcomeInput,
+    build_htb_benchmark_summary,
     build_htb_cross_lab_learning_summary,
     create_htb_lab_campaign,
     htb_lab_learning_summary,
@@ -378,3 +379,144 @@ def test_non_htb_campaign_does_not_receive_htb_cross_lab_learning(
     result = orchestrator.advance_campaign(campaign, queue, store)
 
     assert result["intelligence"]["htb_cross_lab_learning"] is None
+
+
+def test_htb_outcome_is_idempotent_for_identical_feedback(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-idempotent.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    created = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.81",
+            authorized_lab=True,
+        )
+    )
+    payload = HtbLabOutcomeInput(
+        solved=True,
+        successful_techniques=["web-enumeration"],
+        missed_techniques=["graphql-mapping"],
+    )
+
+    first = record_htb_lab_outcome(created["campaign_id"], payload)
+    second = record_htb_lab_outcome(created["campaign_id"], payload)
+
+    assert first["feedback_digest"] == second["feedback_digest"]
+    assert first["event_written"] is True
+    assert second["event_written"] is False
+
+    store = Storage(db, artifacts)
+    campaign = store.get_campaign(created["campaign_id"])
+    outcomes = [
+        event for event in campaign["events"]
+        if isinstance(event, dict) and event.get("type") == "htb_training_outcome"
+    ]
+    assert len(outcomes) == 1
+
+    observations = [
+        item for item in store.list_observations(created["campaign_id"])
+        if (item.get("metadata") or {}).get("memory_type") == "htb_training_feedback"
+    ]
+    assert len(observations) == 2
+
+
+def test_htb_corrected_feedback_replaces_prior_learning_revision(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-corrected.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    created = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.82",
+            authorized_lab=True,
+        )
+    )
+    record_htb_lab_outcome(
+        created["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=False,
+            successful_techniques=["recon"],
+            missed_techniques=[],
+        ),
+    )
+    record_htb_lab_outcome(
+        created["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=True,
+            successful_techniques=[],
+            missed_techniques=["recon"],
+        ),
+    )
+
+    store = Storage(db, artifacts)
+    global_summary = build_htb_cross_lab_learning_summary(store)
+    by_technique = {item["technique"]: item for item in global_summary["techniques"]}
+    assert by_technique["recon"]["attempts"] == 1
+    assert by_technique["recon"]["successes"] == 0
+    assert by_technique["recon"]["failures"] == 1
+
+    lab_summary = htb_lab_learning_summary(created["campaign_id"])
+    local_by_technique = {item["technique"]: item for item in lab_summary["techniques"]}
+    assert local_by_technique["recon"]["attempts"] == 1
+    assert local_by_technique["recon"]["failures"] == 1
+    assert lab_summary["outcomes"][-1]["solved"] is True
+
+
+def test_htb_benchmark_reports_objective_progress_metrics(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-benchmark.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    first = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.83",
+            authorized_lab=True,
+        )
+    )
+    second = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.84",
+            authorized_lab=True,
+        )
+    )
+    record_htb_lab_outcome(
+        first["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=True,
+            successful_techniques=["web-enumeration", "idor"],
+            missed_techniques=[],
+        ),
+    )
+    record_htb_lab_outcome(
+        second["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=False,
+            successful_techniques=[],
+            missed_techniques=["graphql"],
+        ),
+    )
+
+    store = Storage(db, artifacts)
+    summary = build_htb_benchmark_summary(store)
+
+    assert summary["provider"] == "hackthebox"
+    assert summary["training_only"] is True
+    assert summary["campaign_count"] == 2
+    assert summary["evaluated_campaign_count"] == 2
+    assert summary["solved_campaign_count"] == 1
+    assert summary["solve_rate"] == 0.5
+    assert summary["technique_attempts"] == 3
+    assert summary["technique_successes"] == 2
+    assert summary["technique_failures"] == 1
+    assert summary["technique_success_rate"] == 0.6667
+    assert summary["scope_expansion"] is False
+    assert summary["contains_exploit_payloads"] is False
+    assert len(summary["recent_campaigns"]) == 2
+
+
+def test_htb_benchmark_route_is_exposed():
+    paths = main.app.openapi()["paths"]
+    assert "/api/labs/htb/benchmark" in paths
