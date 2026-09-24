@@ -148,7 +148,7 @@ def test_mobile_status_verifies_exact_deployed_v82_contract():
     assert 'LOCAL_SHA="$(git rev-parse HEAD)"' in script
     assert "git ls-remote origin refs/heads/main" in script
     assert "CHECKOUT_CURRENT=true" in script
-    assert 'DASHBOARD_ASSET" = "simple.js?v=81"' in script
+    assert 'DASHBOARD_ASSET" = "simple.js?v=82"' in script
     assert "DASHBOARD_VERSION_OK=true" in script
     assert "=== V82 ROUTE CONTRACT ===" in script
     assert '"/api/hackerone/simple-review-package"' in script
