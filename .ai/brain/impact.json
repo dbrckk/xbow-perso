@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "9d61aed9b8d075988c7a6247fcdba0d6b9860693",
-  "head": "8c090a9322edd9f87176c27c4f74bd9fc16d56c0",
+  "base": "8c090a9322edd9f87176c27c4f74bd9fc16d56c0",
+  "head": "6ca8355fd6d1803bc196b3389737453290ec3e80",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -12,17 +12,27 @@
     {
       "path": "backend/tests/test_hackerone_feasibility.py",
       "status": "M"
+    },
+    {
+      "path": "backend/tests/test_mobile_production_update_script.py",
+      "status": "M"
+    },
+    {
+      "path": "scripts/mobile-production-status.sh",
+      "status": "M"
     }
   ],
   "changed_source_files": [
     "backend/app/hackerone_feasibility.py",
-    "backend/tests/test_hackerone_feasibility.py"
+    "backend/tests/test_hackerone_feasibility.py",
+    "backend/tests/test_mobile_production_update_script.py"
   ],
   "impacted_files": [
     "backend/app/hackerone_api.py",
     "backend/app/hackerone_feasibility.py",
     "backend/app/worker_service.py",
-    "backend/tests/test_hackerone_feasibility.py"
+    "backend/tests/test_hackerone_feasibility.py",
+    "backend/tests/test_mobile_production_update_script.py"
   ],
   "impacted_symbols": [
     {
@@ -401,73 +411,73 @@
       "name": "_utcnow",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 21
+      "line": 44
     },
     {
       "name": "_strict_int_env",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 25
+      "line": 48
     },
     {
       "name": "feasibility_poll_seconds",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 36
+      "line": 59
     },
     {
       "name": "feasibility_batch_size",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 45
+      "line": 68
     },
     {
       "name": "feasibility_initial_batch_size",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 54
+      "line": 77
     },
     {
       "name": "_open_bounty",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 63
+      "line": 86
     },
     {
       "name": "_checked_sort_key",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 79
+      "line": 102
     },
     {
       "name": "_inspect_handle",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 91
+      "line": 114
     },
     {
       "name": "refresh_hackerone_feasibility_batch",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 124
+      "line": 147
     },
     {
       "name": "maybe_refresh_hackerone_feasibility",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 227
+      "line": 250
     },
     {
       "name": "feasibility_summary",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 238
+      "line": 261
     },
     {
       "name": "annotate_with_feasibility",
       "kind": "function",
       "file": "backend/app/hackerone_feasibility.py",
-      "line": 315
+      "line": 357
     },
     {
       "name": "CampaignCancelledError",
@@ -726,9 +736,142 @@
       "kind": "function",
       "file": "backend/tests/test_hackerone_feasibility.py",
       "line": 239
+    },
+    {
+      "name": "test_feasibility_summary_turns_blockers_into_capability_gaps",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_feasibility.py",
+      "line": 255
+    },
+    {
+      "name": "test_live_production_update_waits_for_worker_heartbeats",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 7
+    },
+    {
+      "name": "test_mobile_status_reports_hackerone_launch_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 17
+    },
+    {
+      "name": "test_mobile_status_prints_explicit_launch_verdict_and_blockers",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 27
+    },
+    {
+      "name": "test_enable_script_requires_final_live_launch_verdict",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 41
+    },
+    {
+      "name": "test_mobile_status_requires_live_hackerone_api_probe_for_ready_verdict",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 52
+    },
+    {
+      "name": "test_enable_script_probes_hackerone_before_declaring_profile_armed",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 64
+    },
+    {
+      "name": "test_enable_script_reports_actionable_non_idle_queue_blocker",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 75
+    },
+    {
+      "name": "test_enable_script_keeps_rollback_active_through_final_launch_verification",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 89
+    },
+    {
+      "name": "test_enable_script_refreshes_safe_production_before_readiness_and_queue_checks",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 99
+    },
+    {
+      "name": "test_enable_script_documents_stale_checkout_and_stopped_stack_recovery",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 110
+    },
+    {
+      "name": "test_enable_script_reexecs_from_refreshed_checkout_exactly_once",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 118
+    },
+    {
+      "name": "test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 126
+    },
+    {
+      "name": "test_mobile_status_public_https_probe_uses_get_not_head",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 136
+    },
+    {
+      "name": "test_mobile_status_verifies_current_deployed_contract",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 144
+    },
+    {
+      "name": "test_mobile_status_production_contract_requires_all_live_prerequisites",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 173
+    },
+    {
+      "name": "test_mobile_status_route_contract_tolerates_non_route_entries",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 188
+    },
+    {
+      "name": "test_mobile_status_uses_live_origin_main_and_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 196
+    },
+    {
+      "name": "test_mobile_status_live_verifies_one_or_two_accessible_bounties",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 208
+    },
+    {
+      "name": "test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 224
+    },
+    {
+      "name": "test_mobile_status_route_contract_name_is_version_independent",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 232
+    },
+    {
+      "name": "test_mobile_status_reports_hackerone_feasibility_pool_and_gaps",
+      "kind": "function",
+      "file": "backend/tests/test_mobile_production_update_script.py",
+      "line": 239
     }
   ],
   "selected_tests": [
-    "backend/tests/test_hackerone_feasibility.py"
+    "backend/tests/test_hackerone_feasibility.py",
+    "backend/tests/test_mobile_production_update_script.py"
   ]
 }

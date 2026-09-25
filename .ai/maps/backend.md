@@ -3817,6 +3817,8 @@ summary = {
 ```python
 _next_attempt_monotonic = 0.0
 ⋮----
+_CAPABILITY_GAPS = {
+⋮----
 def _utcnow() -> str
 ⋮----
 def _strict_int_env(name: str, default: int, minimum: int, maximum: int) -> int
@@ -3890,6 +3892,10 @@ unavailable_count = 0
 program = programmes.get(handle, {})
 ⋮----
 key = str(reason)
+⋮----
+gap_rows = []
+⋮----
+gap = dict(_CAPABILITY_GAPS.get(reason) or {})
 ⋮----
 safe_limit = max(1, min(500, int(limit)))
 ⋮----
@@ -13531,6 +13537,10 @@ summary = feasibility.feasibility_summary(store.catalog)
 def test_retryable_entries_are_prioritized_for_recheck()
 ⋮----
 existing = {
+⋮----
+def test_feasibility_summary_turns_blockers_into_capability_gaps()
+⋮----
+gaps = {row["reason"]: row for row in result["capability_gaps"]}
 ```
 
 ## File: tests/test_hackerone_intelligence.py
@@ -15412,6 +15422,8 @@ def test_mobile_status_live_verifies_one_or_two_accessible_bounties()
 def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version()
 ⋮----
 def test_mobile_status_route_contract_name_is_version_independent()
+⋮----
+def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps()
 ```
 
 ## File: tests/test_mobile_reset_api_token.py

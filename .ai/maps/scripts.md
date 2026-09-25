@@ -1033,6 +1033,7 @@ required = {
     "/api/imports/hackerone/rules-preview",
     "/api/imports/hackerone/batches/launch-reviewed",
     "/api/hackerone/journal",
+    "/api/hackerone/feasibility-index",
     "/api/labs/htb/campaigns",
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
@@ -1051,6 +1052,37 @@ then
 else
   APP_ROUTE_CONTRACT_OK=false
 fi
+
+echo "=== HACKERONE FEASIBILITY INDEX ==="
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY' || true
+from app.hackerone_feasibility import feasibility_summary
+from app.main import storage
+
+catalog = storage().get_hackerone_catalog_state() or {}
+summary = feasibility_summary(catalog, limit=20)
+print("FEASIBILITY_INDEXED=" + str(summary.get("indexed", 0)))
+print("FEASIBILITY_COMPATIBLE=" + str(summary.get("compatible_count", 0)))
+print("FEASIBILITY_BLOCKED=" + str(summary.get("blocked_count", 0)))
+print("FEASIBILITY_UNAVAILABLE=" + str(summary.get("unavailable_count", 0)))
+for row in list(summary.get("capability_gaps") or [])[:8]:
+    print(
+        "CAPABILITY_GAP="
+        + str(row.get("reason") or "")
+        + "|"
+        + str(row.get("count") or 0)
+        + "|"
+        + str(row.get("capability") or "")
+    )
+for item in list(summary.get("programs") or [])[:10]:
+    print(
+        "COMPATIBLE_PROGRAM="
+        + str(item.get("handle") or "")
+        + "|"
+        + str(item.get("scope_mode") or "")
+        + "|"
+        + str(item.get("primary_url") or "")
+    )
+PY
 
 echo "=== ACCESSIBLE BOUNTY PRECHECK ==="
 ACCESSIBLE_BOUNTY_PRECHECK_OK=false

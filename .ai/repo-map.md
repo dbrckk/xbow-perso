@@ -4425,6 +4425,8 @@ summary = {
 ````python
 _next_attempt_monotonic = 0.0
 ⋮----
+_CAPABILITY_GAPS = {
+⋮----
 def _utcnow() -> str
 ⋮----
 def _strict_int_env(name: str, default: int, minimum: int, maximum: int) -> int
@@ -4498,6 +4500,10 @@ unavailable_count = 0
 program = programmes.get(handle, {})
 ⋮----
 key = str(reason)
+⋮----
+gap_rows = []
+⋮----
+gap = dict(_CAPABILITY_GAPS.get(reason) or {})
 ⋮----
 safe_limit = max(1, min(500, int(limit)))
 ⋮----
@@ -14139,6 +14145,10 @@ summary = feasibility.feasibility_summary(store.catalog)
 def test_retryable_entries_are_prioritized_for_recheck()
 ⋮----
 existing = {
+⋮----
+def test_feasibility_summary_turns_blockers_into_capability_gaps()
+⋮----
+gaps = {row["reason"]: row for row in result["capability_gaps"]}
 ````
 
 ## File: backend/tests/test_hackerone_intelligence.py
@@ -16020,6 +16030,8 @@ def test_mobile_status_live_verifies_one_or_two_accessible_bounties()
 def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version()
 ⋮----
 def test_mobile_status_route_contract_name_is_version_independent()
+⋮----
+def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps()
 ````
 
 ## File: backend/tests/test_mobile_reset_api_token.py
@@ -21294,6 +21306,7 @@ required = {
     "/api/imports/hackerone/rules-preview",
     "/api/imports/hackerone/batches/launch-reviewed",
     "/api/hackerone/journal",
+    "/api/hackerone/feasibility-index",
     "/api/labs/htb/campaigns",
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
@@ -21312,6 +21325,37 @@ then
 else
   APP_ROUTE_CONTRACT_OK=false
 fi
+
+echo "=== HACKERONE FEASIBILITY INDEX ==="
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY' || true
+from app.hackerone_feasibility import feasibility_summary
+from app.main import storage
+
+catalog = storage().get_hackerone_catalog_state() or {}
+summary = feasibility_summary(catalog, limit=20)
+print("FEASIBILITY_INDEXED=" + str(summary.get("indexed", 0)))
+print("FEASIBILITY_COMPATIBLE=" + str(summary.get("compatible_count", 0)))
+print("FEASIBILITY_BLOCKED=" + str(summary.get("blocked_count", 0)))
+print("FEASIBILITY_UNAVAILABLE=" + str(summary.get("unavailable_count", 0)))
+for row in list(summary.get("capability_gaps") or [])[:8]:
+    print(
+        "CAPABILITY_GAP="
+        + str(row.get("reason") or "")
+        + "|"
+        + str(row.get("count") or 0)
+        + "|"
+        + str(row.get("capability") or "")
+    )
+for item in list(summary.get("programs") or [])[:10]:
+    print(
+        "COMPATIBLE_PROGRAM="
+        + str(item.get("handle") or "")
+        + "|"
+        + str(item.get("scope_mode") or "")
+        + "|"
+        + str(item.get("primary_url") or "")
+    )
+PY
 
 echo "=== ACCESSIBLE BOUNTY PRECHECK ==="
 ACCESSIBLE_BOUNTY_PRECHECK_OK=false

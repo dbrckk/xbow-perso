@@ -22,18 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-25T18:57:11Z
+Generated: 2026-09-25T19:01:20Z
 
 ### Git
 - Branch: `main`
-- Head: `8c090a9322ed`
-- Commit date: 2026-09-25T20:56:46+02:00
-- Commit: improve: accelerate HackerOne feasibility discovery (#397)
+- Head: `6ca8355fd6d1`
+- Commit date: 2026-09-25T21:01:06+02:00
+- Commit: feat: report HackerOne compatibility gaps from real programme data (#398)
 - Tracked files: 571
 
 ### Recently changed files
 - `backend/app/hackerone_feasibility.py`
 - `backend/tests/test_hackerone_feasibility.py`
+- `backend/tests/test_mobile_production_update_script.py`
+- `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/app/simple_portfolio.py`
@@ -47,11 +49,6 @@ Generated: 2026-09-25T18:57:11Z
 - `backend/tests/test_hackerone_remote_binding.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_hackerone_scope_import.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_hackerone_simple_review_package.py`
-- `backend/tests/test_simple_portfolio.py`
-- `frontend/index.html`
 
 ### Project signals
 - `pyproject.toml`
