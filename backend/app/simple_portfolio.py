@@ -40,6 +40,14 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
         and item.get("offers_bounties") is True
     ]
 
+    def feasibility_rank(item: dict[str, Any]) -> int:
+        value = item.get("project_compatible")
+        if value is True:
+            return 0
+        if value is None:
+            return 1
+        return 2
+
     def efficiency(item: dict[str, Any]) -> tuple[float, float, str]:
         return (
             -float(item.get("value_efficiency_score") or 0),
@@ -50,6 +58,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     easy_pool = sorted(
         pool,
         key=lambda item: (
+            feasibility_rank(item),
             {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
             0 if item.get("gold_standard_safe_harbor") is True else 1,
             float(item.get("effort_factor") or 99),
@@ -68,6 +77,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
         medium_pool = sorted(
             remaining,
             key=lambda item: (
+                feasibility_rank(item),
                 {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
                 0 if item.get("gold_standard_safe_harbor") is True else 1,
                 abs(float(item.get("effort_factor") or 0) - median),
@@ -83,6 +93,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     high_value = sorted(
         remaining,
         key=lambda item: (
+            feasibility_rank(item),
             {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
             0 if item.get("gold_standard_safe_harbor") is True else 1,
             -float(item.get("historical_usd_awarded_max") or 0),
@@ -119,6 +130,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
             "medium": "candidates around the remaining median effort, then best efficiency",
             "high_value": "remaining candidates with the strongest public historical award signal",
         },
+        "project_feasibility_preferred": True,
         "historical_value_is_advisory_only": True,
         "scope_expansion": False,
     }
