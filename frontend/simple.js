@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v85';
+  const UI_VERSION='v86';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -807,6 +807,7 @@
       );
       if($('htbConfirm'))$('htbConfirm').checked=false;
       $('htbFeedback')?.classList.remove('hidden');
+      await refreshHtbSession({quiet:true});
     }catch(error){
       setHtbStatus('Entraînement HTB bloqué : '+error.message,'err');
     }finally{
@@ -853,6 +854,7 @@
       );
       const globalSummary=await api('/labs/htb/learning');
       await refreshHtbBenchmark({quiet:true});
+      await refreshHtbSession({quiet:true});
       const techniques=Array.isArray(summary?.techniques)?summary.techniques:[];
       const globalTechniques=Array.isArray(globalSummary?.techniques)?globalSummary.techniques:[];
       const node=$('htbLearningStatus');
@@ -868,6 +870,49 @@
       setHtbStatus('Apprentissage HTB bloqué : '+error.message,'err');
     }finally{
       if(button)button.disabled=false;
+    }
+  }
+
+  async function refreshHtbSession({quiet=true}={}){
+    const node=$('htbSession');
+    if(!node||!token())return null;
+    let campaignId='';
+    try{campaignId=String(localStorage.getItem(HTB_ACTIVE_KEY)||'');}catch(_error){}
+    if(!campaignId){
+      node.textContent='Session HTB : aucune campagne active sur cet appareil.';
+      $('htbFeedback')?.classList.add('hidden');
+      return null;
+    }
+    try{
+      const summary=await api(
+        '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/status'
+      );
+      const counts=summary?.job_counts||{};
+      const state=String(summary?.state||'inconnu');
+      const queued=Number(counts?.queued||0);
+      const running=Number(counts?.running||0);
+      const completed=Number(counts?.completed||0);
+      const failed=Number(counts?.failed||0);
+      const findings=Number(summary?.finding_count||0);
+      const confirmed=Number(summary?.confirmed_finding_count||0);
+      node.textContent=
+        'Session HTB : '+state+
+        ' · jobs '+running+' actif(s), '+queued+' en attente, '+completed+' terminé(s), '+failed+' échec(s)'+
+        ' · findings '+findings+' ('+confirmed+' confirmé(s))'+
+        (summary?.evaluated===true
+          ?' · évaluation '+(summary?.solved===true?'résolue':'non résolue')
+          :' · évaluation à renseigner');
+      $('htbFeedback')?.classList.remove('hidden');
+      return summary;
+    }catch(error){
+      if(Number(error?.status||0)===404){
+        try{localStorage.removeItem(HTB_ACTIVE_KEY);}catch(_error){}
+        node.textContent='Session HTB : campagne précédente introuvable.';
+        $('htbFeedback')?.classList.add('hidden');
+      }else if(!quiet){
+        node.textContent='Session HTB indisponible : '+error.message;
+      }
+      return null;
     }
   }
 
@@ -907,7 +952,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=85',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=86',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -933,9 +978,11 @@
     void refreshRuntimeReadiness({quiet:true});
     void refreshJournal({quiet:true});
     void refreshHtbBenchmark({quiet:true});
+    void refreshHtbSession({quiet:true});
     timer=setInterval(()=>{
       void refreshRuntimeReadiness({quiet:true});
       void refreshJournal({quiet:true});
+      void refreshHtbSession({quiet:true});
     },15000);
   }
 
