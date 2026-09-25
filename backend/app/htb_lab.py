@@ -470,6 +470,39 @@ def htb_global_learning_summary(limit_campaigns: int = 200):
     )
 
 
+@router.get("/api/labs/htb/campaigns/{campaign_id}/status")
+def htb_lab_session_status(campaign_id: str):
+    """Return a redacted operational view of one authorized HTB lab."""
+    from .main import assert_campaign_exists, queue
+
+    campaign = assert_campaign_exists(campaign_id)
+    _assert_htb_campaign(campaign)
+    counts = queue().campaign_job_status_counts(campaign.id)
+    findings = list(campaign.findings or [])
+    confirmed = [
+        finding for finding in findings
+        if str(getattr(finding, "status", "")) == "confirmed"
+    ]
+    latest_outcome = _latest_htb_outcome_event(campaign)
+    return {
+        "campaign_id": campaign.id,
+        "provider": "hackthebox",
+        "training_only": True,
+        "state": str(getattr(campaign.state, "value", campaign.state)),
+        "job_counts": {key: int(value) for key, value in dict(counts).items()},
+        "finding_count": len(findings),
+        "confirmed_finding_count": len(confirmed),
+        "evaluated": isinstance(latest_outcome, dict),
+        "solved": (
+            bool(latest_outcome.get("solved"))
+            if isinstance(latest_outcome, dict)
+            else None
+        ),
+        "scope_expansion": False,
+        "contains_exploit_payloads": False,
+    }
+
+
 @router.get("/api/labs/htb/campaigns/{campaign_id}/learning")
 def htb_lab_learning_summary(campaign_id: str):
     from .learning_memory import build_learning_memory, summarize_worker_outcomes
