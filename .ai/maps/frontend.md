@@ -389,6 +389,8 @@ function retryableReviewError(error)
 ⋮----
 async function refreshRuntimeReadiness(
 ⋮----
+function rejectionSummaryText(detail)
+⋮----
 async function prepare(initialExcluded=[])
 ⋮----
 function reviewProfilePayload(draft)

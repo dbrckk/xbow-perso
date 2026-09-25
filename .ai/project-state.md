@@ -22,24 +22,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-25T15:28:49Z
+Generated: 2026-09-25T15:41:17Z
 
 ### Git
 - Branch: `main`
-- Head: `e97523df1849`
-- Commit date: 2026-09-25T17:27:59+02:00
-- Commit: feat: expose live HTB session status in the dashboard (#392)
+- Head: `2e33926c8e1e`
+- Commit date: 2026-09-25T17:41:05+02:00
+- Commit: fix: make the first real HackerOne attempt easier to reach (#393)
 - Tracked files: 569
 
 ### Recently changed files
-- `backend/app/htb_lab.py`
+- `backend/app/hackerone_api.py`
+- `backend/app/simple_portfolio.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_htb_lab.py`
-- `backend/tests/test_mobile_production_update_script.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
+- `backend/tests/test_hackerone_simple_review_package.py`
+- `backend/tests/test_simple_portfolio.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
+- `backend/app/htb_lab.py`
+- `backend/tests/test_htb_lab.py`
+- `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-production-status.sh`
 - `backend/app/orchestrator.py`
 

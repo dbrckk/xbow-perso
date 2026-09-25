@@ -3648,7 +3648,7 @@ excluded_handles = {
 candidates = [
 result = select_simple_six(candidates)
 ⋮----
-"""Return one or two live-verified, currently usable HackerOne programmes."""
+"""Return the first live-verified HackerOne programme usable for a real attempt."""
 store = None
 rejected = {
 accepted: dict[str, dict[str, Any]] = {}
@@ -9940,8 +9940,9 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]
 """Pick 2 easy + 2 medium + 2 high-value bounty candidates.
 
     READY programs are preferred. REVIEW programs may be proposed for the one-time
-    human review flow, but they remain non-launchable until an exact reviewed
-    profile is persisted for the current HackerOne snapshot.
+    human review flow even when they do not carry HackerOne's Gold Standard Safe
+    Harbor badge; the badge is only a ranking signal. They remain non-launchable
+    until a human reviews the current policy and an exact profile is persisted.
     """
 pool = [
 ⋮----
@@ -13422,6 +13423,8 @@ def test_dashboard_surfaces_cross_lab_htb_learning_summary()
 def test_dashboard_exposes_htb_benchmark_summary()
 ⋮----
 def test_htb_dashboard_tracks_session_status_without_exposing_payloads()
+⋮----
+def test_hackerone_dashboard_explains_why_candidates_were_rejected()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -14577,7 +14580,6 @@ launch = client.post(
 batch = launch.json()
 ⋮----
 first_counts = jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])
-second_counts = jobs.campaign_job_status_counts(batch["members"][1]["campaign_id"])
 ````
 
 ## File: backend/tests/test_hackerone_scope_preview_api.py
@@ -14660,7 +14662,7 @@ def _snapshot(handle: str, *, complete: bool = True)
 ⋮----
 domain=f"{handle}.example.com"
 ⋮----
-def test_review_package_stops_after_two_usable_programmes(monkeypatch)
+def test_review_package_stops_after_first_usable_programme(monkeypatch)
 ⋮----
 calls=[]
 ⋮----
@@ -14682,7 +14684,7 @@ def test_review_package_stops_on_global_hackerone_outage(monkeypatch)
 ⋮----
 def fail_fetch(_handle)
 ⋮----
-def test_review_package_returns_one_or_two_usable_programmes(monkeypatch)
+def test_review_package_returns_exactly_one_usable_programme(monkeypatch)
 ⋮----
 excluded={value for value in exclude.split(",") if value}
 handles=[h for h in ["a","b","c","d","e","f"] if h not in excluded]
@@ -14707,6 +14709,8 @@ def fake_prepared(snapshot, _store)
 def test_review_package_turns_stale_ready_profile_into_human_review(monkeypatch)
 ⋮----
 def stale_profile(snapshot, _store)
+⋮----
+def test_review_package_failure_exposes_rejection_summary(monkeypatch)
 ````
 
 ## File: backend/tests/test_hackerone_upstream_diagnostics.py
@@ -18633,7 +18637,7 @@ def test_simple_six_is_disjoint_and_complete()
 programs = [
 result = select_simple_six(programs)
 ⋮----
-def test_simple_six_can_propose_safe_harbor_review_candidates_but_not_launch_them()
+def test_simple_six_can_propose_review_candidates_without_gold_standard_badge()
 ⋮----
 def test_cached_review_profile_is_deferred_for_launch_revalidation()
 ⋮----
@@ -18641,6 +18645,8 @@ programs = [{
 result = mark_cached_review_profiles(programs)
 ⋮----
 def test_simple_six_allows_revalidation_without_forcing_first_run_review()
+⋮----
+def test_gold_standard_badge_is_only_a_review_ranking_signal()
 ````
 
 ## File: backend/tests/test_simple_selection_cache_only.py
@@ -19980,6 +19986,8 @@ const sleep=ms
 function retryableReviewError(error)
 ⋮----
 async function refreshRuntimeReadiness(
+⋮----
+function rejectionSummaryText(detail)
 ⋮----
 async function prepare(initialExcluded=[])
 ⋮----
