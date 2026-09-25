@@ -29,18 +29,15 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
     """Pick 2 easy + 2 medium + 2 high-value bounty candidates.
 
     READY programs are preferred. REVIEW programs may be proposed for the one-time
-    human review flow, but they remain non-launchable until an exact reviewed
-    profile is persisted for the current HackerOne snapshot.
+    human review flow even when they do not carry HackerOne's Gold Standard Safe
+    Harbor badge; the badge is only a ranking signal. They remain non-launchable
+    until a human reviews the current policy and an exact profile is persisted.
     """
     pool = [
         dict(item)
         for item in programs
         if str(item.get("status") or "") in {"READY", "REVALIDATE", "REVIEW"}
         and item.get("offers_bounties") is True
-        and (
-            str(item.get("status") or "") in {"READY", "REVALIDATE"}
-            or item.get("gold_standard_safe_harbor") is True
-        )
     ]
 
     def efficiency(item: dict[str, Any]) -> tuple[float, float, str]:
@@ -54,6 +51,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
         pool,
         key=lambda item: (
             {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
+            0 if item.get("gold_standard_safe_harbor") is True else 1,
             float(item.get("effort_factor") or 99),
             -float(item.get("value_efficiency_score") or 0),
             -float(item.get("opportunity_score") or 0),
@@ -71,6 +69,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
             remaining,
             key=lambda item: (
                 {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
+                0 if item.get("gold_standard_safe_harbor") is True else 1,
                 abs(float(item.get("effort_factor") or 0) - median),
                 *efficiency(item),
             ),
@@ -85,6 +84,7 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]:
         remaining,
         key=lambda item: (
             {"READY": 0, "REVALIDATE": 1, "REVIEW": 2}.get(str(item.get("status") or ""), 3),
+            0 if item.get("gold_standard_safe_harbor") is True else 1,
             -float(item.get("historical_usd_awarded_max") or 0),
             -float(item.get("historical_value_score") or 0),
             -float(item.get("opportunity_score") or 0),
