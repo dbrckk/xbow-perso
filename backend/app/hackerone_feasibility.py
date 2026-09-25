@@ -36,7 +36,7 @@ def _strict_int_env(name: str, default: int, minimum: int, maximum: int) -> int:
 def feasibility_poll_seconds() -> int:
     return _strict_int_env(
         "XBOW_HACKERONE_FEASIBILITY_POLL_SECONDS",
-        600,
+        300,
         300,
         86400,
     )
