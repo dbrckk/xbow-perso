@@ -9,6 +9,7 @@ from app.htb_lab import (
     build_htb_cross_lab_learning_summary,
     create_htb_lab_campaign,
     htb_lab_learning_summary,
+    htb_lab_session_status,
     record_htb_lab_outcome,
 )
 from app.jobqueue import JobQueue
@@ -520,3 +521,37 @@ def test_htb_benchmark_reports_objective_progress_metrics(tmp_path, monkeypatch)
 def test_htb_benchmark_route_is_exposed():
     paths = main.app.openapi()["paths"]
     assert "/api/labs/htb/benchmark" in paths
+
+
+def test_htb_session_status_is_redacted_and_operational(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-status.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    created = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.91",
+            authorized_lab=True,
+        )
+    )
+
+    result = htb_lab_session_status(created["campaign_id"])
+
+    assert result["provider"] == "hackthebox"
+    assert result["training_only"] is True
+    assert result["campaign_id"] == created["campaign_id"]
+    assert result["state"] == "ready"
+    assert result["finding_count"] == 0
+    assert result["confirmed_finding_count"] == 0
+    assert result["evaluated"] is False
+    assert result["solved"] is None
+    assert result["scope_expansion"] is False
+    assert result["contains_exploit_payloads"] is False
+    assert isinstance(result["job_counts"], dict)
+
+
+def test_htb_session_status_route_is_exposed():
+    paths = main.app.openapi()["paths"]
+    assert "/api/labs/htb/campaigns/{campaign_id}/status" in paths

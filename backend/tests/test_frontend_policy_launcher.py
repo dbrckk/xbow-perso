@@ -26,7 +26,7 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "runtimeAction", "status", "journal", "cancelActive", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=85" defer></script>' in html
+    assert '<script src="/simple.js?v=86" defer></script>' in html
     assert "Trouver 1 ou 2 bug bounties accessibles" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html
@@ -83,3 +83,7 @@ def test_htb_benchmark_route_is_separate_from_hackerone_launch():
     assert "/api/labs/htb/benchmark" in schema["paths"]
     assert "/labs/htb/benchmark" in script
     assert "/imports/hackerone/batches/launch-reviewed" in script
+
+
+def test_htb_status_route_exists():
+    assert "/api/labs/htb/campaigns/{campaign_id}/status" in app.openapi()["paths"]
