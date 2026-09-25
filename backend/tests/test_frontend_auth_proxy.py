@@ -126,7 +126,7 @@ def test_start_button_requires_live_runtime_readiness():
     script = _text("frontend/simple.js")
     assert "let runtimeReady=false;" in script
     assert "function updateStartAvailability()" in script
-    assert "selection.length>=1" in script
+    assert "selection.length===1" in script
     assert "runtimeReady===true" in script
     assert "runtimeReady=readiness?.live_scan_ready===true;" in script
     assert "runtimeReady=false;" in script
