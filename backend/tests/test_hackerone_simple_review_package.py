@@ -64,7 +64,7 @@ def _snapshot(handle: str, *, complete: bool = True):
     )
 
 
-def test_review_package_stops_after_two_usable_programmes(monkeypatch):
+def test_review_package_stops_after_first_usable_programme(monkeypatch):
     calls=[]
 
     def fake_fetch(handle):
@@ -80,9 +80,9 @@ def test_review_package_stops_after_two_usable_programmes(monkeypatch):
 
     result=hackerone_api.hackerone_simple_review_package()
 
-    assert result["handles"] == ["a","b"]
-    assert len(result["review_drafts"]) == 2
-    assert result["review_package_target"] == 2
+    assert result["handles"] == ["a"]
+    assert len(result["review_drafts"]) == 1
+    assert result["review_package_target"] == 1
     assert result["review_package_minimum"] == 1
     assert set(calls).issuperset({"a","b"})
 
@@ -174,7 +174,7 @@ def test_review_package_stops_on_global_hackerone_outage(monkeypatch):
         raise AssertionError("global HackerOne outage must stop preparation")
 
 
-def test_review_package_returns_one_or_two_usable_programmes(monkeypatch):
+def test_review_package_returns_exactly_one_usable_programme(monkeypatch):
     def fake_selection(exclude=""):
         excluded={value for value in exclude.split(",") if value}
         handles=[h for h in ["a","b","c","d","e","f"] if h not in excluded]
@@ -191,8 +191,8 @@ def test_review_package_returns_one_or_two_usable_programmes(monkeypatch):
 
     result=hackerone_api.hackerone_simple_review_package()
 
-    assert 1 <= len(result["handles"]) <= 2
-    assert result["review_package_target"] == 2
+    assert len(result["handles"]) == 1
+    assert result["review_package_target"] == 1
     assert result["review_package_minimum"] == 1
     assert result["complete"] is True
 
@@ -218,12 +218,12 @@ def test_review_package_limits_live_checks_to_two_per_round(monkeypatch):
     except Exception as exc:
         detail=getattr(exc, "detail", {})
         assert detail["reason"] == "simple_review_package_exhausted"
-        assert detail["checked_count"] <= 8
-        assert detail["max_checked"] == 8
+        assert detail["checked_count"] <= 24
+        assert detail["max_checked"] == 24
     else:
         raise AssertionError("all-incompatible candidates must fail closed")
 
-    assert len(seen) <= 8
+    assert len(seen) <= 24
 
 
 def test_review_package_live_verifies_ready_programmes(monkeypatch):
@@ -265,12 +265,12 @@ def test_review_package_live_verifies_ready_programmes(monkeypatch):
 
     result=hackerone_api.hackerone_simple_review_package()
 
-    assert result["handles"] == ["a","b"]
-    assert result["ready_count"] == 2
+    assert result["handles"] == ["a"]
+    assert result["ready_count"] == 1
     assert result["review_count"] == 0
     assert result["live_verified"] is True
     assert set(fetch_calls) == {"a","b"}
-    assert verify_calls == ["a","b"]
+    assert verify_calls == ["a"]
 
 
 def test_review_package_turns_stale_ready_profile_into_human_review(monkeypatch):
@@ -311,7 +311,33 @@ def test_review_package_turns_stale_ready_profile_into_human_review(monkeypatch)
 
     result=hackerone_api.hackerone_simple_review_package()
 
-    assert result["handles"] == ["a","b"]
-    assert result["review_count"] == 2
-    assert len(result["review_drafts"]) == 2
+    assert result["handles"] == ["a"]
+    assert result["review_count"] == 1
+    assert len(result["review_drafts"]) == 1
     assert result["launch_ready"] is False
+
+
+def test_review_package_failure_exposes_rejection_summary(monkeypatch):
+    round_no={"n":0}
+
+    def fake_selection(exclude=""):
+        round_no["n"] += 1
+        base=(round_no["n"]-1)*10
+        return _selection([f"x{base+i}" for i in range(6)])
+
+    monkeypatch.setattr(hackerone_api, "hackerone_simple_selection", fake_selection)
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: _snapshot(handle, complete=False),
+    )
+
+    try:
+        hackerone_api.hackerone_simple_review_package()
+    except Exception as exc:
+        detail=getattr(exc, "detail", {})
+        assert detail["reason"] == "simple_review_package_exhausted"
+        assert detail["rejection_summary"]["scope_incomplete_for_web_engine"] >= 1
+        assert detail["max_checked"] == 24
+    else:
+        raise AssertionError("all-incompatible candidates must fail closed")
