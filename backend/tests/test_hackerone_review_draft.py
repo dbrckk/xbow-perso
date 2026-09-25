@@ -107,3 +107,53 @@ def test_review_draft_blockers_fail_closed_for_incomplete_scope_or_missing_polic
     assert "scope_incomplete_for_web_engine" in blockers
     assert "policy_text_unavailable" in blockers
     assert review_draft_is_usable(draft) is False
+
+
+def test_review_draft_projects_exact_domain_from_mixed_scope():
+    snapshot = _snapshot()
+    snapshot.preview["complete"] = False
+    snapshot.preview["assets"].append(
+        {
+            "identifier": "com.example.mobile",
+            "asset_type": "AndroidPlayStore",
+            "eligible_for_submission": True,
+            "compatible": False,
+        }
+    )
+    snapshot.document = {
+        "data": [
+            {
+                "type": "structured-scope",
+                "id": "domain",
+                "attributes": {
+                    "asset_identifier": "app.example.com",
+                    "asset_type": "Domain",
+                    "eligible_for_submission": True,
+                    "eligible_for_bounty": True,
+                    "instruction": None,
+                },
+            },
+            {
+                "type": "structured-scope",
+                "id": "mobile",
+                "attributes": {
+                    "asset_identifier": "com.example.mobile",
+                    "asset_type": "AndroidPlayStore",
+                    "eligible_for_submission": True,
+                    "eligible_for_bounty": True,
+                    "instruction": None,
+                },
+            },
+        ],
+        "links": {},
+    }
+
+    draft = build_hackerone_review_draft(snapshot)
+
+    assert draft["prefill"]["scope_mode"] == "exact-domain"
+    assert draft["evidence"]["scope_mode"] == "exact-domain"
+    assert draft["evidence"]["scope_complete"] is True
+    assert draft["evidence"]["full_scope_complete"] is False
+    assert len(draft["prefill"]["scope_document"]["data"]) == 1
+    assert draft["review_blockers"] == []
+    assert review_draft_is_usable(draft) is True
