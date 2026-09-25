@@ -5122,10 +5122,18 @@ def htb_benchmark_summary(limit_campaigns: int = 200)
 @router.get("/api/labs/htb/learning")
 def htb_global_learning_summary(limit_campaigns: int = 200)
 ⋮----
-@router.get("/api/labs/htb/campaigns/{campaign_id}/learning")
-def htb_lab_learning_summary(campaign_id: str)
+@router.get("/api/labs/htb/campaigns/{campaign_id}/status")
+def htb_lab_session_status(campaign_id: str)
+⋮----
+"""Return a redacted operational view of one authorized HTB lab."""
 ⋮----
 campaign = assert_campaign_exists(campaign_id)
+⋮----
+counts = queue().campaign_job_status_counts(campaign.id)
+findings = list(campaign.findings or [])
+⋮----
+@router.get("/api/labs/htb/campaigns/{campaign_id}/learning")
+def htb_lab_learning_summary(campaign_id: str)
 ⋮----
 graph = load_observation_graph(store, campaign.id)
 feedback_ids = {
@@ -13412,6 +13420,8 @@ def test_dashboard_exposes_htb_learning_feedback_without_payload_storage()
 def test_dashboard_surfaces_cross_lab_htb_learning_summary()
 ⋮----
 def test_dashboard_exposes_htb_benchmark_summary()
+⋮----
+def test_htb_dashboard_tracks_session_status_without_exposing_payloads()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -13440,6 +13450,8 @@ start_block = script.split("async function start()", 1)[1].split("function repoS
 def test_htb_training_route_exists_and_frontend_keeps_it_separate_from_hackerone()
 ⋮----
 def test_htb_benchmark_route_is_separate_from_hackerone_launch()
+⋮----
+def test_htb_status_route_exists()
 ````
 
 ## File: backend/tests/test_github_learning_sync.py
@@ -14898,6 +14910,14 @@ db = str(tmp_path / "htb-benchmark.sqlite3")
 summary = build_htb_benchmark_summary(store)
 ⋮----
 def test_htb_benchmark_route_is_exposed()
+⋮----
+def test_htb_session_status_is_redacted_and_operational(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-status.sqlite3")
+⋮----
+result = htb_lab_session_status(created["campaign_id"])
+⋮----
+def test_htb_session_status_route_is_exposed()
 ````
 
 ## File: backend/tests/test_hypothesis_engine.py
@@ -19997,6 +20017,8 @@ function parseTechniqueList(value)
 ⋮----
 async function saveHtbLearning()
 ⋮----
+async function refreshHtbSession(
+⋮----
 async function refreshHtbBenchmark(
 ⋮----
 function bind()
@@ -20989,6 +21011,7 @@ required = {
     "/api/labs/htb/campaigns",
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
+    "/api/labs/htb/campaigns/{campaign_id}/status",
     "/api/labs/htb/learning",
     "/api/labs/htb/benchmark",
 }

@@ -1036,6 +1036,7 @@ required = {
     "/api/labs/htb/campaigns",
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
+    "/api/labs/htb/campaigns/{campaign_id}/status",
     "/api/labs/htb/learning",
     "/api/labs/htb/benchmark",
 }

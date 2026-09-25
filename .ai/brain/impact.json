@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "366f11fd526e4b96bcdd77fecc8ceb567bec36db",
-  "head": "288f1484f8e32b4daa72898ba0b116c371f1da32",
+  "base": "288f1484f8e32b4daa72898ba0b116c371f1da32",
+  "head": "e97523df18498fd0db2a29e3f4b3e382ad027501",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -166,10 +166,16 @@
       "line": 464
     },
     {
-      "name": "htb_lab_learning_summary",
+      "name": "htb_lab_session_status",
       "kind": "function",
       "file": "backend/app/htb_lab.py",
       "line": 474
+    },
+    {
+      "name": "htb_lab_learning_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 507
     },
     {
       "name": "authenticate_control_api",
@@ -982,6 +988,12 @@
       "line": 265
     },
     {
+      "name": "test_htb_dashboard_tracks_session_status_without_exposing_payloads",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 276
+    },
+    {
       "name": "_text",
       "kind": "function",
       "file": "backend/tests/test_frontend_policy_launcher.py",
@@ -1030,130 +1042,148 @@
       "line": 80
     },
     {
+      "name": "test_htb_status_route_exists",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 88
+    },
+    {
       "name": "_FakeQueue",
       "kind": "class",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 19
+      "line": 20
     },
     {
       "name": "__init__",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 20
+      "line": 21
     },
     {
       "name": "enqueue",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 23
+      "line": 24
     },
     {
       "name": "get",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 36
+      "line": 37
     },
     {
       "name": "test_htb_lab_route_is_exposed",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 40
+      "line": 41
     },
     {
       "name": "test_htb_lab_rejects_public_targets",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 44
+      "line": 45
     },
     {
       "name": "test_htb_lab_requires_explicit_authorization_confirmation",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 56
+      "line": 57
     },
     {
       "name": "test_htb_lab_campaign_is_exact_scope_and_training_only",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 68
+      "line": 69
     },
     {
       "name": "test_htb_lab_start_uses_bounded_planner",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 98
+      "line": 99
     },
     {
       "name": "fake_advance",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 116
+      "line": 117
     },
     {
       "name": "test_htb_outcome_feedback_becomes_learning_memory",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 145
+      "line": 146
     },
     {
       "name": "test_htb_outcome_rejects_overlapping_techniques",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 184
+      "line": 185
     },
     {
       "name": "test_htb_learning_routes_are_exposed",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 197
+      "line": 198
     },
     {
       "name": "test_htb_global_learning_aggregates_authorized_labs_only",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 203
+      "line": 204
     },
     {
       "name": "test_htb_global_learning_route_is_exposed",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 255
+      "line": 256
     },
     {
       "name": "test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 260
+      "line": 261
     },
     {
       "name": "test_non_htb_campaign_does_not_receive_htb_cross_lab_learning",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 340
+      "line": 341
     },
     {
       "name": "test_htb_outcome_is_idempotent_for_identical_feedback",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 384
+      "line": 385
     },
     {
       "name": "test_htb_corrected_feedback_replaces_prior_learning_revision",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 424
+      "line": 425
     },
     {
       "name": "test_htb_benchmark_reports_objective_progress_metrics",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 467
+      "line": 468
     },
     {
       "name": "test_htb_benchmark_route_is_exposed",
       "kind": "function",
       "file": "backend/tests/test_htb_lab.py",
-      "line": 520
+      "line": 521
+    },
+    {
+      "name": "test_htb_session_status_is_redacted_and_operational",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 526
+    },
+    {
+      "name": "test_htb_session_status_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 555
     },
     {
       "name": "test_live_production_update_waits_for_worker_heartbeats",
@@ -1243,37 +1273,37 @@
       "name": "test_mobile_status_production_contract_requires_all_live_prerequisites",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 172
+      "line": 173
     },
     {
       "name": "test_mobile_status_route_contract_tolerates_non_route_entries",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 187
+      "line": 188
     },
     {
       "name": "test_mobile_status_uses_live_origin_main_and_fails_closed",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 195
+      "line": 196
     },
     {
       "name": "test_mobile_status_live_verifies_one_or_two_accessible_bounties",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 207
+      "line": 208
     },
     {
       "name": "test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 223
+      "line": 224
     },
     {
       "name": "test_mobile_status_route_contract_name_is_version_independent",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 231
+      "line": 232
     },
     {
       "name": "token",
@@ -1453,25 +1483,31 @@
       "name": "parseTechniqueList",
       "kind": "function",
       "file": "frontend/simple.js",
-      "line": 816
+      "line": 817
     },
     {
       "name": "saveHtbLearning",
       "kind": "function",
       "file": "frontend/simple.js",
-      "line": 824
+      "line": 825
+    },
+    {
+      "name": "refreshHtbSession",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 875
     },
     {
       "name": "refreshHtbBenchmark",
       "kind": "function",
       "file": "frontend/simple.js",
-      "line": 873
+      "line": 918
     },
     {
       "name": "bind",
       "kind": "function",
       "file": "frontend/simple.js",
-      "line": 904
+      "line": 949
     }
   ],
   "selected_tests": [

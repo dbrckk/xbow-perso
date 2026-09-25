@@ -1,7 +1,7 @@
 # Change impact
 
-Base: b4de834d6d674881ccc41bf8d192507cf93e7dd9
-Head: 288f1484f8e32b4daa72898ba0b116c371f1da32
+Base: 86fb326aa2a6dbd510ba4fc9b658f8b018694cd2
+Head: e97523df18498fd0db2a29e3f4b3e382ad027501
 
 ## Changed files
 - M backend/app/htb_lab.py

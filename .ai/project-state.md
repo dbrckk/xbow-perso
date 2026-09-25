@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-24T21:53:41Z
+Generated: 2026-09-25T15:28:49Z
 
 ### Git
 - Branch: `main`
-- Head: `288f1484f8e3`
-- Commit date: 2026-09-24T23:53:30+02:00
-- Commit: feat: add objective HTB benchmark and correction-safe learning (#391)
+- Head: `e97523df1849`
+- Commit date: 2026-09-25T17:27:59+02:00
+- Commit: feat: expose live HTB session status in the dashboard (#392)
 - Tracked files: 569
 
 ### Recently changed files
@@ -42,7 +42,6 @@ Generated: 2026-09-24T21:53:41Z
 - `frontend/sw.js`
 - `scripts/mobile-production-status.sh`
 - `backend/app/orchestrator.py`
-- `backend/app/main.py`
 
 ### Project signals
 - `pyproject.toml`
