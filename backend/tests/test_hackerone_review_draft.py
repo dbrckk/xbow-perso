@@ -157,3 +157,39 @@ def test_review_draft_projects_exact_domain_from_mixed_scope():
     assert len(draft["prefill"]["scope_document"]["data"]) == 1
     assert draft["review_blockers"] == []
     assert review_draft_is_usable(draft) is True
+
+
+def test_review_draft_accepts_exact_ip_address_as_primary_web_target():
+    snapshot = _snapshot()
+    snapshot.preview["assets"] = [
+        {
+            "identifier": "203.0.113.25",
+            "asset_type": "IpAddress",
+            "eligible_for_submission": True,
+            "compatible": True,
+        }
+    ]
+    snapshot.preview["complete"] = True
+
+    draft = build_hackerone_review_draft(snapshot)
+
+    assert draft["prefill"]["primary_url"] == "https://203.0.113.25"
+    assert draft["review_blockers"] == []
+    assert review_draft_is_usable(draft) is True
+
+
+def test_review_draft_accepts_exact_ipv6_address_as_primary_web_target():
+    snapshot = _snapshot()
+    snapshot.preview["assets"] = [
+        {
+            "identifier": "2001:db8::25",
+            "asset_type": "IpAddress",
+            "eligible_for_submission": True,
+            "compatible": True,
+        }
+    ]
+    snapshot.preview["complete"] = True
+
+    draft = build_hackerone_review_draft(snapshot)
+
+    assert draft["prefill"]["primary_url"] == "https://[2001:db8::25]"
