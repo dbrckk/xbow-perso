@@ -217,19 +217,55 @@ def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any
                 "handles": [str(payload.remote_handle)],
             },
         )
-    if _json_sha256(snapshot.document) != _json_sha256(payload.document):
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "message": "HackerOne scope document does not match the verified remote snapshot",
-                "reason": "hackerone_snapshot_document_mismatch",
-                "handles": [str(payload.remote_handle)],
-            },
+
+    submitted_hash = _json_sha256(payload.document)
+    scope_mode = "full"
+    if _json_sha256(snapshot.document) != submitted_hash:
+        if payload.preferred_primary_url is None:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne scope document does not match the verified remote snapshot",
+                    "reason": "hackerone_snapshot_document_mismatch",
+                    "handles": [str(payload.remote_handle)],
+                },
+            )
+        from .hackerone_scope_import import (
+            HackerOneScopeImportError,
+            project_hackerone_exact_domain_scope,
         )
+
+        try:
+            projection = project_hackerone_exact_domain_scope(
+                snapshot.document,
+                str(payload.preferred_primary_url),
+            )
+        except HackerOneScopeImportError as exc:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne exact-domain scope projection no longer matches",
+                    "reason": "hackerone_snapshot_document_mismatch",
+                    "handles": [str(payload.remote_handle)],
+                },
+            ) from exc
+        if _json_sha256(projection) != submitted_hash:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne scope projection does not match the verified remote snapshot",
+                    "reason": "hackerone_snapshot_document_mismatch",
+                    "handles": [str(payload.remote_handle)],
+                },
+            )
+        scope_mode = "exact-domain"
+
     return {
         "handle": snapshot.handle,
         "snapshot_sha256": snapshot.snapshot_sha256,
         "verified": True,
+        "scope_mode": scope_mode,
+        "scope_document_sha256": submitted_hash,
     }
 
 
@@ -1055,6 +1091,9 @@ def preview_hackerone_rules(payload: HackerOneRulesPreviewInput):
                 "handle": payload.remote_handle,
                 "snapshot_sha256": payload.remote_snapshot_sha256,
                 "preferred_primary_url": str(target.primary_url),
+                "scope_mode": str((remote_binding or {}).get("scope_mode") or "full"),
+                "scope_document": payload.document,
+                "scope_document_sha256": _json_sha256(payload.document),
                 "policy": policy_snapshot,
                 "policy_snapshot_sha256": _json_sha256(policy_snapshot),
                 "saved_at": now,
@@ -1279,6 +1318,52 @@ def _reviewed_campaign_input_from_snapshot(
             },
         )
 
+    scope_mode = str(profile.get("scope_mode") or "full")
+    effective_document = snapshot.document
+    if scope_mode == "exact-domain":
+        from .hackerone_scope_import import (
+            HackerOneScopeImportError,
+            project_hackerone_exact_domain_scope,
+        )
+
+        try:
+            effective_document = project_hackerone_exact_domain_scope(
+                snapshot.document,
+                primary_url,
+            )
+        except HackerOneScopeImportError as exc:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne exact-domain scope projection is no longer valid",
+                    "reason": "review_profile_binding_mismatch",
+                    "handles": [snapshot.handle],
+                },
+            ) from exc
+
+        stored_document = profile.get("scope_document")
+        if (
+            not isinstance(stored_document, dict)
+            or _json_sha256(stored_document) != _json_sha256(effective_document)
+        ):
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "HackerOne exact-domain review profile no longer matches",
+                    "reason": "review_profile_binding_mismatch",
+                    "handles": [snapshot.handle],
+                },
+            )
+    elif scope_mode != "full":
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "HackerOne reviewed profile scope mode is invalid",
+                "reason": "review_profile_invalid",
+                "handles": [snapshot.handle],
+            },
+        )
+
     try:
         policy = HackerOneProgramPolicyInput.model_validate(policy_raw)
     except ValidationError as exc:
@@ -1309,7 +1394,7 @@ def _reviewed_campaign_input_from_snapshot(
 
     try:
         return HackerOneCampaignAdmissionInput(
-            document=snapshot.document,
+            document=effective_document,
             policy=policy,
             target=HackerOneCampaignTargetInput(
                 name=program_name,
