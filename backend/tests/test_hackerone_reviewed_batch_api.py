@@ -573,3 +573,164 @@ def test_v81_happy_path_review_package_to_profile_to_launch(
     jobs = JobQueue(db)
     first_counts = jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])
     assert first_counts["queued"] >= 1
+
+
+def test_mixed_remote_scope_can_launch_one_exact_reviewed_domain(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "exact-domain.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    fingerprint = "c" * 64
+    domain = "web.example.com"
+    document = {
+        "data": [
+            _resource(domain),
+            {
+                "type": "structured-scope",
+                "attributes": {
+                    "asset_identifier": "com.example.mobile",
+                    "asset_type": "AndroidPlayStore",
+                    "eligible_for_submission": True,
+                },
+            },
+        ],
+        "links": {},
+    }
+    snapshot = HackerOneProgramSnapshot(
+        handle="mixed-program",
+        program={
+            "name": "Mixed Program",
+            "handle": "mixed-program",
+            "policy": "Automated scanning is allowed within the listed web scope.",
+            "submission_state": "open",
+            "state": "public_mode",
+            "offers_bounties": True,
+            "gold_standard_safe_harbor": False,
+        },
+        document=document,
+        scope_exclusions=(),
+        preview={
+            "complete": False,
+            "allowed_targets": [domain],
+            "denied_targets": [],
+            "conflicts": [],
+            "unsupported": ["AndroidPlayStore:com.example.mobile"],
+            "assets": [
+                {
+                    "identifier": domain,
+                    "asset_type": "Domain",
+                    "eligible_for_submission": True,
+                    "compatible": True,
+                },
+                {
+                    "identifier": "com.example.mobile",
+                    "asset_type": "AndroidPlayStore",
+                    "eligible_for_submission": True,
+                    "compatible": False,
+                },
+            ],
+        },
+        snapshot_sha256=fingerprint,
+    )
+
+    monkeypatch.setattr(
+        hackerone_api,
+        "fetch_hackerone_program_snapshot",
+        lambda handle: snapshot,
+    )
+    monkeypatch.setattr(
+        "app.hackerone_client.fetch_hackerone_program_snapshot",
+        lambda handle: snapshot,
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "_runtime_prelaunch_verdict",
+        lambda: {"runtime_ready": True, "runtime": {}, "blockers": []},
+    )
+    monkeypatch.setattr(
+        hackerone_api,
+        "hackerone_simple_selection",
+        lambda exclude="": {
+            "provider": "hackerone",
+            "groups": {"easy": [], "medium": [], "high_value": []},
+            "selection": [
+                {
+                    "handle": "mixed-program",
+                    "name": "Mixed Program",
+                    "status": "REVIEW",
+                    "offers_bounties": True,
+                    "gold_standard_safe_harbor": False,
+                    "effort_factor": 1.0,
+                    "value_efficiency_score": 50,
+                    "opportunity_score": 50,
+                    "historical_usd_awarded_max": 0,
+                    "historical_value_score": 0,
+                }
+            ],
+            "handles": ["mixed-program"],
+            "complete": False,
+            "selection_count": 1,
+            "ready_count": 0,
+            "review_count": 1,
+            "revalidation_count": 0,
+            "launch_ready": False,
+            "catalog_source": "local-cache",
+        },
+    )
+
+    package = hackerone_api.hackerone_simple_review_package()
+    assert package["handles"] == ["mixed-program"]
+    draft = package["review_drafts"][0]
+    assert draft["prefill"]["scope_mode"] == "exact-domain"
+    assert len(draft["prefill"]["scope_document"]["data"]) == 1
+
+    client = _app()
+    reviewed = client.post(
+        "/api/imports/hackerone/rules-preview",
+        json={
+            "document": draft["prefill"]["scope_document"],
+            "policy": {
+                "authorization_reference": draft["prefill"]["authorization_reference"],
+                "policy_version": draft["prefill"]["policy_version"],
+                "reviewed_at": "2026-09-25T12:00:00+00:00",
+                "reviewed_by": "exact-domain-e2e",
+                "safe_harbor_confirmed": True,
+                "automated_scanning": True,
+                "max_requests_per_second": 1.0,
+                "test_account_required": False,
+                "test_account_constraints": "",
+                "additional_restrictions": [],
+                "program_notes": "Exact-domain projection reviewed by operator.",
+            },
+            "remote_handle": "mixed-program",
+            "remote_snapshot_sha256": fingerprint,
+            "remember_review_profile": True,
+            "preferred_primary_url": f"https://{domain}",
+        },
+    )
+    assert reviewed.status_code == 200, reviewed.text
+    assert reviewed.json()["review_profile_persisted"] is True
+    assert reviewed.json()["remote_binding"]["scope_mode"] == "exact-domain"
+
+    stored = Storage(db, artifacts).get_hackerone_review_profile(
+        f"mixed-program@{fingerprint}"
+    )
+    assert stored is not None
+    assert stored["scope_mode"] == "exact-domain"
+    assert len(stored["scope_document"]["data"]) == 1
+
+    launch = client.post(
+        "/api/imports/hackerone/batches/launch-reviewed",
+        json={"mode": "sequential", "handles": ["mixed-program"]},
+    )
+    assert launch.status_code == 200, launch.text
+    batch = launch.json()
+    assert batch["members"][0]["handle"] == "mixed-program"
+    campaign = Storage(db, artifacts).get_campaign(batch["members"][0]["campaign_id"])
+    assert campaign is not None
+    assert campaign["target"]["rules"]["allowed_targets"] == [domain]
