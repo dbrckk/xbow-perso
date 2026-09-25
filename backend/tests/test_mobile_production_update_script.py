@@ -234,3 +234,17 @@ def test_mobile_status_route_contract_name_is_version_independent():
     assert "=== APPLICATION ROUTE CONTRACT ===" in script
     assert "APP_ROUTE_CONTRACT_OK=true" in script
     assert "V83_ROUTE_CONTRACT_OK" not in script
+
+
+def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    assert "=== HACKERONE FEASIBILITY INDEX ===" in script
+    assert "from app.hackerone_feasibility import feasibility_summary" in script
+    assert "FEASIBILITY_INDEXED=" in script
+    assert "FEASIBILITY_COMPATIBLE=" in script
+    assert "FEASIBILITY_BLOCKED=" in script
+    assert "FEASIBILITY_UNAVAILABLE=" in script
+    assert "CAPABILITY_GAP=" in script
+    assert "COMPATIBLE_PROGRAM=" in script
+    assert '"/api/hackerone/feasibility-index"' in script
