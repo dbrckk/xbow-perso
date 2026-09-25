@@ -250,3 +250,31 @@ def test_retryable_entries_are_prioritized_for_recheck():
 
     assert feasibility._checked_sort_key("alpha", existing)[0] == 0
     assert feasibility._checked_sort_key("beta", existing)[0] == 1
+
+
+def test_feasibility_summary_turns_blockers_into_capability_gaps():
+    catalog = {
+        "feasibility_index": {
+            "alpha": {
+                "project_compatible": False,
+                "status": "blocked",
+                "blockers": [
+                    "scope_incomplete_for_web_engine",
+                    "scope_exclusions_require_manual_enforcement",
+                ],
+            },
+            "beta": {
+                "project_compatible": False,
+                "status": "blocked",
+                "blockers": ["scope_incomplete_for_web_engine"],
+            },
+        },
+        "programs": [_program("alpha"), _program("beta")],
+    }
+
+    result = feasibility.feasibility_summary(catalog)
+    gaps = {row["reason"]: row for row in result["capability_gaps"]}
+
+    assert gaps["scope_incomplete_for_web_engine"]["count"] == 2
+    assert gaps["scope_incomplete_for_web_engine"]["capability"] == "path_or_network_aware_scope"
+    assert gaps["scope_exclusions_require_manual_enforcement"]["capability"] == "structured_scope_exclusion_enforcement"
