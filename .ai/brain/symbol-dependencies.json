@@ -5,28 +5,200 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_normalize_technique": {
+    "HackerOneProgramPolicyInput": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 15,
-        "end": 21
+        "file": "backend/app/hackerone_api.py",
+        "start": 49,
+        "end": 76
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "request_rate_must_be_explicit_number",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "reviewed_at_must_be_timezone_aware",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 66,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "reviewed_at_must_be_timezone_aware": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 66,
+        "end": 69
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "HtbLabCampaignInput": {
+    "request_rate_must_be_explicit_number": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 24,
-        "end": 59
+        "file": "backend/app/hackerone_api.py",
+        "start": 73,
+        "end": 76
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneRulesPreviewInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 79,
+        "end": 101
       },
       "symbol_dependencies": [
         {
-          "symbol": "validate_authorized_lab_target",
+          "symbol": "HackerOneProgramPolicyInput",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 30,
+              "file": "backend/app/hackerone_api.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "remote_binding_must_be_complete",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 93,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "remote_binding_must_be_complete": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 93,
+        "end": 101
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneCampaignTargetInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 104,
+        "end": 108
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneCampaignAdmissionInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 111,
+        "end": 112
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneCampaignTargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 104,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneRulesPreviewInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 79,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "HackerOneBatchLaunchInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 115,
+        "end": 135
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneCampaignAdmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 111,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "campaigns_must_be_remote_bound_and_unique",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "campaigns_must_be_remote_bound_and_unique": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 125,
+        "end": 135
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneReviewedBatchLaunchInput": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 138,
+        "end": 162
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "reviewed_handles_must_be_unique",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 146,
               "kind": "function",
               "language": "python"
             }
@@ -36,20 +208,1546 @@
       ],
       "dependency_count": 1
     },
-    "validate_authorized_lab_target": {
+    "reviewed_handles_must_be_unique": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 30,
-        "end": 59
+        "file": "backend/app/hackerone_api.py",
+        "start": 146,
+        "end": 162
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "create_htb_lab_campaign": {
+    "HackerOneReportSubmissionInput": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 63,
-        "end": 113
+        "file": "backend/app/hackerone_api.py",
+        "start": 165,
+        "end": 177
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "normalize_actor",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "normalize_actor": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 173,
+        "end": 177
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_policy_from_input": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 180,
+        "end": 195
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneProgramPolicy",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 78,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneProgramPolicyInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_json_sha256": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 198,
+        "end": 205
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_verify_remote_binding": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 208,
+        "end": 274
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneRulesPreviewInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 79,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneScopeImportError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_json_sha256",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 198,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "project_hackerone_exact_domain_scope",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 243,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "_remote_program_launch_block_reason": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 277,
+        "end": 284
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_conservative_admission_reason": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 287,
+        "end": 298
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_hackerone_error_detail": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 302,
+        "end": 351
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_upstream_error": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 354,
+        "end": 359
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_program_list_item": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 360,
+        "end": 377
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "hackerone_attention_center": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 381,
+        "end": 387
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_hackerone_attention_center",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_attention.py",
+              "line": 177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_campaigns",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 518,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "hackerone_live_readiness": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 391,
+        "end": 394
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_hackerone_live_readiness",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_live_readiness.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "hackerone_connection": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 398,
+        "end": 441
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_hackerone_error_detail",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_json",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_hackerone_credentials",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "list_hackerone_programs": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 445,
+        "end": 470
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refresh_hackerone_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_catalog.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "hackerone_program_catalog": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 474,
+        "end": 488
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refresh_hackerone_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_catalog.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "hackerone_feasibility_index": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 492,
+        "end": 524
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "feasibility_summary",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "refresh_hackerone_feasibility_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "hackerone_program_discovery": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 528,
+        "end": 580
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_local_outcome_signals",
+          "definitions": [
+            {
+              "file": "backend/app/local_outcome_intelligence.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_program_discovery",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_discovery.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_campaigns",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 518,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_hackerone_review_profiles",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refresh_hackerone_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_catalog.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "hackerone_discovery_selection": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 584,
+        "end": 606
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "hackerone_program_discovery",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 528,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "select_diversified_portfolio",
+          "definitions": [
+            {
+              "file": "backend/app/value_efficiency.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "hackerone_simple_selection": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 610,
+        "end": 682
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "annotate_with_feasibility",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 292,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_local_outcome_signals",
+          "definitions": [
+            {
+              "file": "backend/app/local_outcome_intelligence.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_program_discovery",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_discovery.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_campaigns",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 518,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_hackerone_review_profiles",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "live",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 309,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "mark_cached_review_profiles",
+          "definitions": [
+            {
+              "file": "backend/app/simple_portfolio.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "select_simple_six",
+          "definitions": [
+            {
+              "file": "backend/app/simple_portfolio.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "hackerone_simple_review_package": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 686,
+        "end": 938
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_hackerone_error_detail",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reviewed_campaign_input_from_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1313,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_snapshot_or_http",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 703,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_hackerone_review_draft",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "hackerone_simple_selection",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 610,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "live",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 309,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "review_draft_blockers",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "review_draft_is_usable",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "_snapshot_or_http": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 703,
+        "end": 823
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_hackerone_error_detail",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reviewed_campaign_input_from_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1313,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_hackerone_review_draft",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "hackerone_simple_selection",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 610,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "review_draft_blockers",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "review_draft_is_usable",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "hackerone_campaign_journal": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 942,
+        "end": 1046
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 523,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "learning_sync_configuration",
+          "definitions": [
+            {
+              "file": "backend/app/github_learning_sync.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_hackerone_batches",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1793,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "hackerone_learning_intelligence": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1050,
+        "end": 1067
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refresh_hackerone_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_intelligence.py",
+              "line": 597,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "get_hackerone_program_review_draft": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1071,
+        "end": 1087
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_hackerone_review_draft",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "get_hackerone_program_snapshot": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1091,
+        "end": 1104
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "preview_hackerone_rules": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1108,
+        "end": 1173
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneRulesPreviewInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 79,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneScopeImportError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_conservative_admission_reason",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 287,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_json_sha256",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 198,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_policy_from_input",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 180,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verify_remote_binding",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 208,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "import_hackerone_structured_scope",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 470,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_program_rules",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 171,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "list_hackerone_review_profiles": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1177,
+        "end": 1187
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_admit_hackerone_campaign_impl": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1190,
+        "end": 1283
       },
       "symbol_dependencies": [
         {
@@ -77,11 +1775,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "HtbLabCampaignInput",
+          "symbol": "HackerOneCampaignAdmissionInput",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
+              "file": "backend/app/hackerone_api.py",
+              "line": 111,
               "kind": "class",
               "language": "python"
             }
@@ -89,11 +1787,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "ProgramRules",
+          "symbol": "HackerOneScopeImportError",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 83,
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 21,
               "kind": "class",
               "language": "python"
             }
@@ -113,11 +1811,83 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "_conservative_admission_reason",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 287,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_json_sha256",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 198,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_policy_from_input",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 180,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verify_remote_binding",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 208,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
           "symbol": "append_campaign_event",
           "definitions": [
             {
               "file": "backend/app/campaign_audit.py",
               "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "import_hackerone_structured_scope",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 470,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "policy_snapshot_fingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -149,6 +1919,30 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "to_program_rules",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 171,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "utcnow",
           "definitions": [
             {
@@ -161,119 +1955,33 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 9
+      "dependency_count": 17
     },
-    "HtbLabOutcomeInput": {
+    "admit_hackerone_campaign": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 116,
-        "end": 136
+        "file": "backend/app/hackerone_api.py",
+        "start": 1287,
+        "end": 1288
       },
       "symbol_dependencies": [
         {
-          "symbol": "_normalize_technique",
+          "symbol": "HackerOneCampaignAdmissionInput",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_overlap",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 129,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_techniques",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "validate_techniques": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 124,
-        "end": 126
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_normalize_technique",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "validate_overlap": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 129,
-        "end": 136
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_latest_htb_outcome_event": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 139,
-        "end": 148
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_assert_htb_campaign": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 151,
-        "end": 159
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
+              "file": "backend/app/hackerone_api.py",
+              "line": 111,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "is_htb_training_campaign",
+          "symbol": "_admit_hackerone_campaign_impl",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 262,
+              "file": "backend/app/hackerone_api.py",
+              "line": 1190,
               "kind": "function",
               "language": "python"
             }
@@ -283,19 +1991,63 @@
       ],
       "dependency_count": 2
     },
-    "record_htb_lab_outcome": {
+    "_batch_summary": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 163,
-        "end": 259
+        "file": "backend/app/hackerone_api.py",
+        "start": 1291,
+        "end": 1300
       },
       "symbol_dependencies": [
         {
-          "symbol": "HtbLabOutcomeInput",
+          "symbol": "ready",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_rollback_admitted_batch_campaigns": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1303,
+        "end": 1310
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "cancel_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_reviewed_campaign_input_from_snapshot": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1313,
+        "end": 1468
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneCampaignAdmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 111,
               "kind": "class",
               "language": "python"
             }
@@ -303,10 +2055,116 @@
           "relation": "same_file"
         },
         {
-          "symbol": "Observation",
+          "symbol": "HackerOneCampaignTargetInput",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
+              "file": "backend/app/hackerone_api.py",
+              "line": 104,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneProgramPolicyInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneScopeImportError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_conservative_admission_reason",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 287,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_json_sha256",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 198,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_remote_program_launch_block_reason",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 277,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "project_hackerone_exact_domain_scope",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 243,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "_reviewed_campaign_input": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1471,
+        "end": 1479
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneCampaignAdmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 111,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
               "line": 24,
               "kind": "class",
               "language": "python"
@@ -315,11 +2173,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_assert_htb_campaign",
+          "symbol": "_reviewed_campaign_input_from_snapshot",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 151,
+              "file": "backend/app/hackerone_api.py",
+              "line": 1313,
               "kind": "function",
               "language": "python"
             }
@@ -327,11 +2185,381 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_latest_htb_outcome_event",
+          "symbol": "_upstream_error",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 139,
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fetch_hackerone_program_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_runtime_prelaunch_verdict": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1498,
+        "end": 1517
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_hackerone_live_readiness",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_live_readiness.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "live",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 309,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "hackerone_batch_go_no_go": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1521,
+        "end": 1548
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 138,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_prelaunch_verdict",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1498,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "preflight_reviewed_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1552,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "preflight_reviewed_hackerone_batch": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1552,
+        "end": 1606
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 138,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reviewed_campaign_input",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1471,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_active_hackerone_batch": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1609,
+        "end": 1614
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "list_hackerone_batches",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1793,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_raise_if_active_hackerone_batch": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1617,
+        "end": 1628
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_active_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1609,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "launch_reviewed_hackerone_batch": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1632,
+        "end": 1691
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 115,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneCampaignAdmissionInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 111,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "HackerOneReviewedBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 138,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_launch_hackerone_batch_impl",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1695,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_raise_if_active_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1617,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reviewed_campaign_input",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1471,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_prelaunch_verdict",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1498,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "_launch_hackerone_batch_impl": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1695,
+        "end": 1780
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneBatchLaunchInput",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 115,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_admit_hackerone_campaign_impl",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1190,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_batch_summary",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1291,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_rollback_admitted_batch_campaigns",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1303,
               "kind": "function",
               "language": "python"
             }
@@ -363,6 +2591,54 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "get_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1806,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reconcile_hackerone_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_batch.py",
+              "line": 187,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "save_campaign",
           "definitions": [
             {
@@ -399,76 +2675,33 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 9
+      "dependency_count": 13
     },
-    "is_htb_training_campaign": {
+    "launch_hackerone_batch": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 262,
-        "end": 273
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_current_htb_feedback_observations": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 276,
-        "end": 304
+        "file": "backend/app/hackerone_api.py",
+        "start": 1784,
+        "end": 1789
       },
       "symbol_dependencies": [
         {
-          "symbol": "_latest_htb_outcome_event",
+          "symbol": "HackerOneBatchLaunchInput",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 139,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "collect_htb_cross_lab_learning": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 307,
-        "end": 354
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
+              "file": "backend/app/hackerone_api.py",
+              "line": 115,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "ObservationGraph",
+          "symbol": "_launch_hackerone_batch_impl",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_current_htb_feedback_observations",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 276,
+              "file": "backend/app/hackerone_api.py",
+              "line": 1695,
               "kind": "function",
               "language": "python"
             }
@@ -476,35 +2709,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "_raise_if_active_hackerone_batch",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "is_htb_training_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 262,
+              "file": "backend/app/hackerone_api.py",
+              "line": 1617,
               "kind": "function",
               "language": "python"
             }
@@ -512,103 +2721,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "list_campaigns",
+          "symbol": "storage",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 518,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "build_htb_cross_lab_learning_summary": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 357,
-        "end": 368
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "collect_htb_cross_lab_learning",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 307,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_htb_benchmark_summary": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 371,
-        "end": 457
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_latest_htb_outcome_event",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 139,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "collect_htb_cross_lab_learning",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 307,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "is_htb_training_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 262,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "list_campaigns",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 518,
+              "line": 52,
               "kind": "function",
               "language": "python"
             }
@@ -618,25 +2735,13 @@
       ],
       "dependency_count": 4
     },
-    "htb_benchmark_summary": {
+    "list_hackerone_batches": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 461,
-        "end": 467
+        "file": "backend/app/hackerone_api.py",
+        "start": 1793,
+        "end": 1802
       },
       "symbol_dependencies": [
-        {
-          "symbol": "build_htb_benchmark_summary",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 371,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
         {
           "symbol": "storage",
           "definitions": [
@@ -650,85 +2755,15 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 1
     },
-    "htb_global_learning_summary": {
+    "get_hackerone_batch": {
       "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 471,
-        "end": 477
+        "file": "backend/app/hackerone_api.py",
+        "start": 1806,
+        "end": 1813
       },
       "symbol_dependencies": [
-        {
-          "symbol": "build_htb_cross_lab_learning_summary",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 357,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "htb_lab_session_status": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 481,
-        "end": 510
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_assert_htb_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 151,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_latest_htb_outcome_event",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 139,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
         {
           "symbol": "queue",
           "definitions": [
@@ -740,83 +2775,13 @@
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "htb_lab_learning_summary": {
-      "source": {
-        "file": "backend/app/htb_lab.py",
-        "start": 514,
-        "end": 548
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_assert_htb_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 151,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "_current_htb_feedback_observations",
+          "symbol": "reconcile_hackerone_batch",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 276,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_observation_graph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 99,
+              "file": "backend/app/hackerone_batch.py",
+              "line": 187,
               "kind": "function",
               "language": "python"
             }
@@ -834,147 +2799,23 @@
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "values",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 9
-    },
-    "_FakeQueue": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 20,
-        "end": 38
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 70,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enqueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 24,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
       "dependency_count": 3
     },
-    "__init__": {
+    "cancel_hackerone_batch": {
       "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 21,
-        "end": 141
+        "file": "backend/app/hackerone_api.py",
+        "start": 1817,
+        "end": 1843
       },
       "symbol_dependencies": [
         {
-          "symbol": "HtbLabCampaignInput",
+          "symbol": "_batch_summary",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enqueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 24,
+              "file": "backend/app/hackerone_api.py",
+              "line": 1291,
               "kind": "function",
               "language": "python"
             }
@@ -982,23 +2823,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get_campaign",
+          "symbol": "cancel_campaign",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 523,
+              "line": 1314,
               "kind": "function",
               "language": "python"
             }
@@ -1006,281 +2835,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "test_htb_lab_accepts_private_lab_ip_and_htb_hostname",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 78,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_lab_campaign_is_exact_scope_and_training_only",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 103,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_lab_rejects_public_targets",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 45,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_lab_requires_explicit_authorization_confirmation",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 91,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_lab_route_is_exposed",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_lab_start_uses_bounded_planner",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 133,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 14
-    },
-    "enqueue": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 24,
-        "end": 35
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "get": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 37,
-        "end": 38
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_htb_lab_route_is_exposed": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 41,
-        "end": 42
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_htb_lab_rejects_public_targets": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 45,
-        "end": 54
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 60,
-        "end": 75
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_htb_lab_accepts_private_lab_ip_and_htb_hostname": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 78,
-        "end": 88
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_htb_lab_requires_explicit_authorization_confirmation": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 91,
-        "end": 100
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_htb_lab_campaign_is_exact_scope_and_training_only": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 103,
-        "end": 130
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get_campaign",
+          "symbol": "storage",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 523,
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
               "kind": "function",
               "language": "python"
             }
@@ -1288,33 +2859,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 4
     },
-    "test_htb_lab_start_uses_bounded_planner": {
+    "launch_hackerone_campaign": {
       "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 133,
-        "end": 177
+        "file": "backend/app/hackerone_api.py",
+        "start": 1847,
+        "end": 1860
       },
       "symbol_dependencies": [
         {
-          "symbol": "HtbLabCampaignInput",
+          "symbol": "HackerOneCampaignAdmissionInput",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_FakeQueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 20,
+              "file": "backend/app/hackerone_api.py",
+              "line": 111,
               "kind": "class",
               "language": "python"
             }
@@ -1322,35 +2881,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "advance_campaign",
+          "symbol": "admit_hackerone_campaign",
           "definitions": [
             {
-              "file": "backend/app/orchestrator.py",
-              "line": 661,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enqueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 24,
+              "file": "backend/app/hackerone_api.py",
+              "line": 1287,
               "kind": "function",
               "language": "python"
             }
@@ -1358,23 +2893,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "fake_advance",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 151,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "queue",
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 56,
+              "line": 217,
               "kind": "function",
               "language": "python"
             }
@@ -1387,6 +2910,233 @@
             {
               "file": "backend/app/main.py",
               "line": 1224,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_hackerone_submission_enabled": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1863,
+        "end": 1874
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_verified_remote_team_handle": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1877,
+        "end": 1893
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_unresolved_hackerone_attempt": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1896,
+        "end": 1913
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "get_hackerone_remote_report_status": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1919,
+        "end": 1939
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_json",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "project_remote_report_status",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "remote_submission_for_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "get_hackerone_needs_more_info_draft": {
+      "source": {
+        "file": "backend/app/hackerone_api.py",
+        "start": 1945,
+        "end": 1983
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_upstream_error",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 354,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_json",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "project_remote_report_status",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "remote_submission_for_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_report_tracking.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "render_needs_more_info_draft",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_needs_info.py",
+              "line": 6,
               "kind": "function",
               "language": "python"
             }
@@ -1396,18 +3146,42 @@
       ],
       "dependency_count": 8
     },
-    "fake_advance": {
+    "submit_hackerone_report": {
       "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 151,
-        "end": 271
+        "file": "backend/app/hackerone_api.py",
+        "start": 1989,
+        "end": 2183
       },
       "symbol_dependencies": [
         {
-          "symbol": "HtbLabCampaignInput",
+          "symbol": "ArtifactIntegrityError",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
+              "file": "backend/app/storage_core.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "HackerOneClient",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
+              "line": 123,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
               "line": 24,
               "kind": "class",
               "language": "python"
@@ -1416,59 +3190,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "HtbLabOutcomeInput",
+          "symbol": "HackerOneReportSubmissionInput",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
+              "file": "backend/app/hackerone_api.py",
+              "line": 165,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "advance_campaign",
+          "symbol": "_hackerone_submission_enabled",
           "definitions": [
             {
-              "file": "backend/app/orchestrator.py",
-              "line": 661,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "enqueue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 24,
+              "file": "backend/app/hackerone_api.py",
+              "line": 1863,
               "kind": "function",
               "language": "python"
             }
@@ -1476,11 +3214,35 @@
           "relation": "same_file"
         },
         {
-          "symbol": "htb_lab_learning_summary",
+          "symbol": "_unresolved_hackerone_attempt",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 514,
+              "file": "backend/app/hackerone_api.py",
+              "line": 1896,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verified_remote_team_handle",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_api.py",
+              "line": 1877,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
@@ -1488,11 +3250,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "queue",
+          "symbol": "approval_status_from_storage",
+          "definitions": [
+            {
+              "file": "backend/app/report_approval.py",
+              "line": 145,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 56,
+              "line": 217,
               "kind": "function",
               "language": "python"
             }
@@ -1500,23 +3274,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "record_htb_lab_outcome",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 163,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "start_campaign",
+          "symbol": "assert_campaign_record",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 1224,
+              "line": 209,
               "kind": "function",
               "language": "python"
             }
@@ -1524,561 +3286,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "test_htb_global_learning_aggregates_authorized_labs_only",
+          "symbol": "latest_remote_submission",
           "definitions": [
             {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 238,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_learning_routes_are_exposed",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 232,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_outcome_feedback_becomes_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 180,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_htb_outcome_rejects_overlapping_techniques",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 14
-    },
-    "test_htb_outcome_feedback_becomes_learning_memory": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 180,
-        "end": 216
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HtbLabOutcomeInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "htb_lab_learning_summary",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 514,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_htb_lab_outcome",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 163,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_htb_outcome_rejects_overlapping_techniques": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 219,
-        "end": 229
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabOutcomeInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_htb_learning_routes_are_exposed": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 232,
-        "end": 235
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_htb_global_learning_aggregates_authorized_labs_only": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 238,
-        "end": 287
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HtbLabOutcomeInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_htb_cross_lab_learning_summary",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 357,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_htb_lab_outcome",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 163,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_htb_global_learning_route_is_exposed": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 290,
-        "end": 292
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 295,
-        "end": 372
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HtbLabOutcomeInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "advance_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/orchestrator.py",
-              "line": 661,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
+              "file": "backend/app/hackerone_report_tracking.py",
               "line": 37,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 523,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
           "relation": "imported_module"
         },
         {
-          "symbol": "queue",
+          "symbol": "post_json",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_htb_lab_outcome",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 163,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 12
-    },
-    "test_non_htb_campaign_does_not_receive_htb_cross_lab_learning": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 375,
-        "end": 416
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HtbLabOutcomeInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "advance_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/orchestrator.py",
-              "line": 661,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_htb_lab_outcome",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 163,
+              "file": "backend/app/hackerone_client.py",
+              "line": 180,
               "kind": "function",
               "language": "python"
             }
@@ -2096,22 +3320,150 @@
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "submission_event",
+          "definitions": [
+            {
+              "file": "backend/app/submission_state.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "submission_status",
+          "definitions": [
+            {
+              "file": "backend/app/submission_state.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 12
+      "dependency_count": 18
     },
-    "test_htb_outcome_is_idempotent_for_identical_feedback": {
+    "_utcnow": {
       "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 419,
-        "end": 456
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 21,
+        "end": 22
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_strict_int_env": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 25,
+        "end": 33
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "feasibility_poll_seconds": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 36,
+        "end": 42
       },
       "symbol_dependencies": [
         {
-          "symbol": "HtbLabCampaignInput",
+          "symbol": "_strict_int_env",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "feasibility_batch_size": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 45,
+        "end": 51
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_strict_int_env",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_open_bounty": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 54,
+        "end": 67
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_checked_sort_key": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 70,
+        "end": 77
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_inspect_handle": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 80,
+        "end": 107
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HackerOneClientError",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_client.py",
               "line": 24,
               "kind": "class",
               "language": "python"
@@ -2120,47 +3472,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "HtbLabOutcomeInput",
+          "symbol": "_utcnow",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/tests/test_htb_lab.py",
-              "line": 37,
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             }
@@ -2168,11 +3484,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "get_campaign",
+          "symbol": "build_hackerone_review_draft",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 523,
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 36,
               "kind": "function",
               "language": "python"
             }
@@ -2180,69 +3496,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "record_htb_lab_outcome",
+          "symbol": "fetch_hackerone_program_snapshot",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 163,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "test_htb_corrected_feedback_replaces_prior_learning_revision": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 459,
-        "end": 499
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HtbLabOutcomeInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_htb_cross_lab_learning_summary",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 357,
+              "file": "backend/app/hackerone_client.py",
+              "line": 365,
               "kind": "function",
               "language": "python"
             }
@@ -2250,11 +3508,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "create_htb_lab_campaign",
+          "symbol": "review_draft_blockers",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 12,
               "kind": "function",
               "language": "python"
             }
@@ -2262,105 +3520,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "htb_lab_learning_summary",
+          "symbol": "review_draft_is_usable",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 514,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_htb_lab_outcome",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 163,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "test_htb_benchmark_reports_objective_progress_metrics": {
-      "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 502,
-        "end": 552
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "HtbLabCampaignInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "HtbLabOutcomeInput",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 116,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_htb_benchmark_summary",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 371,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create_htb_lab_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_htb_lab_outcome",
-          "definitions": [
-            {
-              "file": "backend/app/htb_lab.py",
-              "line": 163,
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -2370,41 +3534,184 @@
       ],
       "dependency_count": 6
     },
-    "test_htb_benchmark_route_is_exposed": {
+    "refresh_hackerone_feasibility_batch": {
       "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 555,
-        "end": 557
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 110,
+        "end": 205
       },
       "symbol_dependencies": [
         {
-          "symbol": "api",
+          "symbol": "CampaignConflictError",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
+              "file": "backend/app/storage_core.py",
+              "line": 22,
+              "kind": "class",
+              "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "class_like"
+        },
+        {
+          "symbol": "_checked_sort_key",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_inspect_handle",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_open_bounty",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "feasibility_batch_size",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 45,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "maybe_refresh_hackerone_feasibility": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 208,
+        "end": 216
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "feasibility_poll_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "refresh_hackerone_feasibility_batch",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "feasibility_summary": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 219,
+        "end": 289
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "annotate_with_feasibility": {
+      "source": {
+        "file": "backend/app/hackerone_feasibility.py",
+        "start": 292,
+        "end": 316
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "review_draft_blockers": {
+      "source": {
+        "file": "backend/app/hackerone_review_draft.py",
+        "start": 12,
+        "end": 29
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "review_draft_is_usable": {
+      "source": {
+        "file": "backend/app/hackerone_review_draft.py",
+        "start": 32,
+        "end": 33
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "review_draft_blockers",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 1
     },
-    "test_htb_session_status_is_redacted_and_operational": {
+    "build_hackerone_review_draft": {
       "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 560,
-        "end": 586
+        "file": "backend/app/hackerone_review_draft.py",
+        "start": 36,
+        "end": 134
       },
       "symbol_dependencies": [
         {
-          "symbol": "HtbLabCampaignInput",
+          "symbol": "HackerOneScopeImportError",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 24,
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 21,
               "kind": "class",
               "language": "python"
             }
@@ -2412,11 +3719,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "create_htb_lab_campaign",
+          "symbol": "project_hackerone_exact_domain_scope",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 63,
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 243,
               "kind": "function",
               "language": "python"
             }
@@ -2424,50 +3731,103 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "htb_lab_session_status",
+          "symbol": "review_draft_blockers",
           "definitions": [
             {
-              "file": "backend/app/htb_lab.py",
-              "line": 481,
+              "file": "backend/app/hackerone_review_draft.py",
+              "line": 12,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 3
     },
-    "test_htb_session_status_route_is_exposed": {
+    "mark_cached_review_profiles": {
       "source": {
-        "file": "backend/tests/test_htb_lab.py",
-        "start": 589,
-        "end": 591
+        "file": "backend/app/simple_portfolio.py",
+        "start": 6,
+        "end": 25
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "select_simple_six": {
+      "source": {
+        "file": "backend/app/simple_portfolio.py",
+        "start": 28,
+        "end": 136
       },
       "symbol_dependencies": [
         {
-          "symbol": "api",
+          "symbol": "efficiency",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
+              "file": "backend/app/simple_portfolio.py",
+              "line": 51,
               "kind": "function",
-              "language": "javascript"
+              "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "feasibility_rank",
+          "definitions": [
+            {
+              "file": "backend/app/simple_portfolio.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "feasibility_rank": {
+      "source": {
+        "file": "backend/app/simple_portfolio.py",
+        "start": 43,
+        "end": 163
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "efficiency",
+          "definitions": [
+            {
+              "file": "backend/app/simple_portfolio.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "efficiency": {
+      "source": {
+        "file": "backend/app/simple_portfolio.py",
+        "start": 51,
+        "end": 171
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "feasibility_rank",
+          "definitions": [
+            {
+              "file": "backend/app/simple_portfolio.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 1

@@ -22,36 +22,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-25T18:25:04Z
+Generated: 2026-09-25T18:53:22Z
 
 ### Git
 - Branch: `main`
-- Head: `8a8e793fb2fc`
-- Commit date: 2026-09-25T20:24:52+02:00
-- Commit: hardening: reject unsafe local address classes in HTB mode (#395)
-- Tracked files: 569
+- Head: `9d61aed9b8d0`
+- Commit date: 2026-09-25T20:52:18+02:00
+- Commit: feat: build a durable HackerOne feasibility index (#396)
+- Tracked files: 571
 
 ### Recently changed files
+- `backend/app/hackerone_api.py`
+- `backend/app/hackerone_feasibility.py`
+- `backend/app/hackerone_review_draft.py`
+- `backend/app/simple_portfolio.py`
+- `backend/app/worker_service.py`
+- `backend/tests/test_hackerone_feasibility.py`
+- `backend/tests/test_hackerone_review_draft.py`
 - `backend/app/htb_lab.py`
 - `backend/tests/test_htb_lab.py`
-- `backend/app/hackerone_api.py`
 - `backend/app/hackerone_binding.py`
-- `backend/app/hackerone_review_draft.py`
 - `backend/app/hackerone_scope_import.py`
 - `backend/tests/test_hackerone_binding.py`
 - `backend/tests/test_hackerone_remote_binding.py`
-- `backend/tests/test_hackerone_review_draft.py`
 - `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_hackerone_scope_import.py`
-- `backend/app/simple_portfolio.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_hackerone_simple_review_package.py`
 - `backend/tests/test_simple_portfolio.py`
 - `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
-- `backend/tests/test_mobile_production_update_script.py`
 
 ### Project signals
 - `pyproject.toml`

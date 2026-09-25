@@ -102,6 +102,7 @@ backend/
     hackerone_catalog.py
     hackerone_client.py
     hackerone_discovery.py
+    hackerone_feasibility.py
     hackerone_intelligence.py
     hackerone_live_readiness.py
     hackerone_needs_info.py
@@ -274,6 +275,7 @@ backend/
     test_hackerone_client.py
     test_hackerone_control_center_api.py
     test_hackerone_discovery.py
+    test_hackerone_feasibility.py
     test_hackerone_intelligence.py
     test_hackerone_launch_api.py
     test_hackerone_live_readiness.py
@@ -3618,9 +3620,17 @@ state = storage().get_hackerone_catalog_state()
 ⋮----
 state = refresh_hackerone_catalog(storage(), client=HackerOneClient())
 ⋮----
-"""Return a low-friction READY/REVIEW/BLOCKED program selection view."""
+"""Return the durable set of programmes the current web pipeline can handle."""
 ⋮----
 catalog = store.get_hackerone_catalog_state()
+⋮----
+refresh_result = None
+⋮----
+refresh_result = refresh_hackerone_feasibility_batch(store)
+catalog = store.get_hackerone_catalog_state() or catalog
+summary = feasibility_summary(catalog, limit=limit)
+⋮----
+"""Return a low-friction READY/REVIEW/BLOCKED program selection view."""
 ⋮----
 catalog = refresh_hackerone_catalog(store, client=HackerOneClient())
 ⋮----
@@ -3652,6 +3662,7 @@ selected = select_diversified_portfolio(
 local_outcomes = build_local_outcome_signals(store.list_campaigns(limit=1000))
 discovery = build_program_discovery(
 excluded_handles = {
+annotated = annotate_with_feasibility(
 candidates = [
 result = select_simple_six(candidates)
 ⋮----
@@ -4410,6 +4421,84 @@ efficiency = {
 summary = {
 ````
 
+## File: backend/app/hackerone_feasibility.py
+````python
+_next_attempt_monotonic = 0.0
+⋮----
+def _utcnow() -> str
+⋮----
+def _strict_int_env(name: str, default: int, minimum: int, maximum: int) -> int
+⋮----
+raw = (os.getenv(name) or str(default)).strip()
+⋮----
+value = int(raw)
+⋮----
+def feasibility_poll_seconds() -> int
+⋮----
+def feasibility_batch_size() -> int
+⋮----
+def _open_bounty(program: dict[str, Any]) -> bool
+⋮----
+record = existing.get(handle)
+⋮----
+def _inspect_handle(handle: str) -> dict[str, Any]
+⋮----
+snapshot = fetch_hackerone_program_snapshot(handle)
+⋮----
+draft = build_hackerone_review_draft(snapshot)
+blockers = review_draft_blockers(draft)
+usable = review_draft_is_usable(draft)
+⋮----
+record = store.get_hackerone_catalog_state_record()
+⋮----
+existing_raw = catalog.get("feasibility_index")
+existing = (
+⋮----
+programmes = [
+⋮----
+limit = batch_size if batch_size is not None else feasibility_batch_size()
+selected = [
+⋮----
+results: list[dict[str, Any]] = []
+⋮----
+futures = {
+⋮----
+updated_index = dict(existing)
+⋮----
+current_handles = {
+updated_index = {
+⋮----
+updated = {
+⋮----
+compatible = sum(
+⋮----
+def maybe_refresh_hackerone_feasibility(store) -> dict[str, Any]
+⋮----
+now = time.monotonic()
+⋮----
+_next_attempt_monotonic = now + feasibility_poll_seconds()
+⋮----
+raw = catalog.get("feasibility_index")
+index = (
+programmes = {
+⋮----
+compatible = []
+blocker_counts: dict[str, int] = {}
+⋮----
+program = programmes.get(handle, {})
+⋮----
+key = str(reason)
+⋮----
+safe_limit = max(1, min(500, int(limit)))
+⋮----
+index = raw if isinstance(raw, dict) else {}
+result: list[dict[str, Any]] = []
+⋮----
+value = dict(item)
+handle = str(value.get("handle") or "")
+cached = index.get(handle)
+````
+
 ## File: backend/app/hackerone_intelligence.py
 ````python
 INTELLIGENCE_ID = "current"
@@ -4768,10 +4857,18 @@ program = dict(snapshot.program or {})
 preview = dict(snapshot.preview or {})
 ⋮----
 primary_url = None
+compatible_assets = [
 ⋮----
 identifier = str(asset.get("identifier") or "").strip().rstrip(".").lower()
 ⋮----
 primary_url = f"https://{identifier}"
+⋮----
+identifier = str(asset.get("identifier") or "").strip()
+⋮----
+address = ipaddress.ip_address(identifier)
+⋮----
+host = f"[{address.compressed}]" if address.version == 6 else address.compressed
+primary_url = f"https://{host}"
 ⋮----
 scope_document = snapshot.document
 scope_mode = "full"
@@ -10000,6 +10097,10 @@ def select_simple_six(programs: list[dict[str, Any]]) -> dict[str, Any]
     """
 pool = [
 ⋮----
+def feasibility_rank(item: dict[str, Any]) -> int
+⋮----
+value = item.get("project_compatible")
+⋮----
 def efficiency(item: dict[str, Any]) -> tuple[float, float, str]
 ⋮----
 easy_pool = sorted(
@@ -11450,6 +11551,8 @@ coordinator = heartbeat_role == "general"
 # Read-only catalog monitoring must never take down execution workers.
 ⋮----
 # Public Hacktivity learning is advisory and must never stop workers.
+⋮----
+# Compatibility indexing is advisory and must never stop workers.
 ⋮----
 # Batch scheduling must fail closed without taking down the worker.
 ⋮----
@@ -13958,6 +14061,56 @@ def test_closed_program_is_blocked_even_with_matching_profile()
 def test_ready_items_sort_before_review_and_blocked()
 ````
 
+## File: backend/tests/test_hackerone_feasibility.py
+````python
+class _Store
+⋮----
+def __init__(self, catalog)
+⋮----
+def get_hackerone_catalog_state_record(self, catalog_id="current")
+⋮----
+def get_hackerone_catalog_state(self, catalog_id="current")
+⋮----
+def save_hackerone_catalog_state(self, document, *, expected_version=None)
+⋮----
+def _program(handle: str)
+⋮----
+def _snapshot(handle: str, *, compatible: bool = True)
+⋮----
+domain = f"{handle}.example.com"
+⋮----
+def _ranked(handle: str, *, compatible)
+⋮----
+def test_feasibility_batch_builds_durable_compatible_index(monkeypatch)
+⋮----
+catalog = {
+store = _Store(catalog)
+⋮----
+def fake_fetch(handle)
+⋮----
+result = feasibility.refresh_hackerone_feasibility_batch(store, batch_size=2)
+⋮----
+index = store.catalog["feasibility_index"]
+⋮----
+def test_feasibility_summary_lists_many_compatible_programmes()
+⋮----
+result = feasibility.feasibility_summary(catalog)
+⋮----
+def test_simple_portfolio_prefers_known_project_compatible_programmes()
+⋮----
+programs = [
+⋮----
+result = select_simple_six(programs)
+⋮----
+def test_feasibility_route_is_exposed()
+⋮----
+schema = app.openapi()
+⋮----
+def test_worker_continuously_builds_feasibility_index()
+⋮----
+source = (
+````
+
 ## File: backend/tests/test_hackerone_intelligence.py
 ````python
 class FakeClient
@@ -14529,6 +14682,10 @@ def test_review_draft_blockers_fail_closed_for_incomplete_scope_or_missing_polic
 blockers = review_draft_blockers(draft)
 ⋮----
 def test_review_draft_projects_exact_domain_from_mixed_scope()
+⋮----
+def test_review_draft_accepts_exact_ip_address_as_primary_web_target()
+⋮----
+def test_review_draft_accepts_exact_ipv6_address_as_primary_web_target()
 ````
 
 ## File: backend/tests/test_hackerone_review_profiles.py
