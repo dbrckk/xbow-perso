@@ -70,11 +70,12 @@ def test_bound_rules_preview_returns_verified_remote_binding(monkeypatch):
     )
 
     assert response.status_code == 200
-    assert response.json()["remote_binding"] == {
-        "handle": "acme",
-        "snapshot_sha256": "a" * 64,
-        "verified": True,
-    }
+    binding = response.json()["remote_binding"]
+    assert binding["handle"] == "acme"
+    assert binding["snapshot_sha256"] == "a" * 64
+    assert binding["verified"] is True
+    assert binding["scope_mode"] == "full"
+    assert len(binding["scope_document_sha256"]) == 64
 
 
 def test_remote_binding_must_be_complete():
