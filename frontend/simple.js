@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v86';
+  const UI_VERSION='v87';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -34,8 +34,7 @@
     if(!button)return;
     const reviewsPending=Number(selectionResult?.review_count||0)>0;
     button.disabled=!(
-      selection.length>=1
-      && selection.length<=2
+      selection.length===1
       && !reviewsPending
       && runtimeReady===true
       && batchActive===false
@@ -262,13 +261,34 @@
     }
   }
 
+  function rejectionSummaryText(detail){
+    const summary=detail&&typeof detail.rejection_summary==='object'
+      ?detail.rejection_summary
+      :{};
+    const labels={
+      scope_exclusions_require_manual_enforcement:'exclusions de scope',
+      scope_incomplete_for_web_engine:'scope incompatible',
+      no_compatible_primary_domain:'aucun domaine compatible',
+      policy_text_unavailable:'politique absente',
+      bounties_not_offered:'pas de bounty',
+      submissions_not_open:'soumissions fermées',
+      program_not_open:'programme fermé',
+      review_unavailable:'revue indisponible'
+    };
+    return Object.entries(summary)
+      .sort((a,b)=>Number(b[1]||0)-Number(a[1]||0))
+      .slice(0,3)
+      .map(([reason,count])=>String(count)+'× '+String(labels[reason]||reason))
+      .join(' · ');
+  }
+
   async function prepare(initialExcluded=[]){
     if(!requireToken())return;
     const button=$('prepare');
     button.disabled=true;
     $('start').disabled=true;
     clearReviewPanel();
-    setStatus('Recherche de 1 ou 2 programmes HackerOne accessibles…');
+    setStatus('Recherche d’un programme HackerOne réellement accessible…');
     const searchStarted=Date.now();
     const searchTimer=setInterval(()=>{
       const seconds=Math.max(1,Math.floor((Date.now()-searchStarted)/1000));
@@ -302,7 +322,7 @@
       selectionResult=result;
       selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
       renderSelection(result);
-      if(result?.complete!==true||selection.length<1||selection.length>2){
+      if(result?.complete!==true||selection.length!==1){
         throw new Error('Le serveur n’a pas trouvé de programme exploitable.');
       }
 
@@ -342,7 +362,10 @@
       const reason=String(error?.reason||error?.detail?.reason||'');
       if(reason==='simple_review_package_incomplete'||reason==='simple_review_package_exhausted'){
         const rejected=Number(error?.detail?.rejected_count||0);
-        message='Aucun programme compatible trouvé après vérification'+(rejected?' ('+rejected+' rejeté(s))':'')+'.';
+        const summary=rejectionSummaryText(error?.detail||{});
+        message='Aucun programme compatible trouvé après vérification'+
+          (rejected?' ('+rejected+' rejeté(s))':'')+
+          (summary?' · '+summary:'')+'.';
       }else if(reason==='hackerone_credentials_missing'){
         message='Connexion HackerOne absente sur le serveur.';
       }else if(reason==='hackerone_authentication_failed'){
@@ -555,7 +578,7 @@
   async function start(){
     if(!requireToken())return;
     if(selection.length<1||selection.length>2){
-      setStatus('Sélectionne d’abord 1 ou 2 campagnes accessibles.','err');
+      setStatus('Sélectionne d’abord un programme accessible.','err');
       return;
     }
     if(Number(selectionResult?.review_count||0)>0){
@@ -952,7 +975,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=86',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=87',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
