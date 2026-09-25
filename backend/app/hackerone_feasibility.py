@@ -17,6 +17,29 @@ from .storage import CampaignConflictError
 
 _next_attempt_monotonic = 0.0
 
+_CAPABILITY_GAPS = {
+    "no_compatible_primary_domain": {
+        "capability": "wildcard_or_non_domain_bootstrap",
+        "description": "Ajouter un démarrage sûr pour les scopes wildcard/URL/IP sans domaine exact.",
+    },
+    "scope_incomplete_for_web_engine": {
+        "capability": "path_or_network_aware_scope",
+        "description": "Ajouter des règles de scope URL/CIDR plus granulaires sans élargir le périmètre.",
+    },
+    "scope_exclusions_require_manual_enforcement": {
+        "capability": "structured_scope_exclusion_enforcement",
+        "description": "Transformer les exclusions HackerOne en règles machine vérifiables avant tout scan.",
+    },
+    "policy_text_unavailable": {
+        "capability": "policy_visibility",
+        "description": "Aucune automatisation sûre sans texte de politique vérifiable.",
+    },
+    "review_unavailable": {
+        "capability": "upstream_availability",
+        "description": "Réessayer plus tard; ce blocage n'implique pas une incompatibilité du projet.",
+    },
+}
+
 
 def _utcnow() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -291,6 +314,24 @@ def feasibility_summary(
             str(item.get("handle") or ""),
         )
     )
+    gap_rows = []
+    for reason, count in sorted(
+        blocker_counts.items(),
+        key=lambda item: (-item[1], item[0]),
+    ):
+        gap = dict(_CAPABILITY_GAPS.get(reason) or {})
+        gap_rows.append(
+            {
+                "reason": reason,
+                "count": int(count),
+                "capability": str(gap.get("capability") or "manual_review_or_new_adapter"),
+                "description": str(
+                    gap.get("description")
+                    or "Analyser ce blocage avant d'ajouter une capacité au projet."
+                ),
+            }
+        )
+
     safe_limit = max(1, min(500, int(limit)))
     return {
         "indexed": len(index),
@@ -305,6 +346,7 @@ def feasibility_summary(
         "blocker_counts": dict(
             sorted(blocker_counts.items(), key=lambda item: (-item[1], item[0]))
         ),
+        "capability_gaps": gap_rows,
         "updated_at": catalog.get("feasibility_updated_at"),
         "read_only": True,
         "automatic_launch": False,
