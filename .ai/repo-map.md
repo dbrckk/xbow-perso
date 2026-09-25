@@ -5061,7 +5061,7 @@ address = ip_address(host)
 ⋮----
 allowed = host.endswith(".htb") and host.count(".") >= 1
 ⋮----
-allowed = address.is_private and not address.is_multicast
+allowed = (
 ⋮----
 @router.post("/api/labs/htb/campaigns")
 def create_htb_lab_campaign(payload: HtbLabCampaignInput)
@@ -14892,6 +14892,12 @@ def get(self, job_id)
 def test_htb_lab_route_is_exposed()
 ⋮----
 def test_htb_lab_rejects_public_targets()
+⋮----
+def test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips()
+⋮----
+def test_htb_lab_accepts_private_lab_ip_and_htb_hostname()
+⋮----
+payload = HtbLabCampaignInput(
 ⋮----
 def test_htb_lab_requires_explicit_authorization_confirmation()
 ⋮----

@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-25T18:10:57Z
+Generated: 2026-09-25T18:25:04Z
 
 ### Git
 - Branch: `main`
-- Head: `a124226ce9b0`
-- Commit date: 2026-09-25T20:10:46+02:00
-- Commit: feat: allow one exact web domain from mixed HackerOne scopes (#394)
+- Head: `8a8e793fb2fc`
+- Commit date: 2026-09-25T20:24:52+02:00
+- Commit: hardening: reject unsafe local address classes in HTB mode (#395)
 - Tracked files: 569
 
 ### Recently changed files
+- `backend/app/htb_lab.py`
+- `backend/tests/test_htb_lab.py`
 - `backend/app/hackerone_api.py`
 - `backend/app/hackerone_binding.py`
 - `backend/app/hackerone_review_draft.py`
@@ -49,8 +51,6 @@ Generated: 2026-09-25T18:10:57Z
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/htb_lab.py`
-- `backend/tests/test_htb_lab.py`
 - `backend/tests/test_mobile_production_update_script.py`
 
 ### Project signals

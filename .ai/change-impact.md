@@ -1,18 +1,11 @@
 # Change impact
 
-Base: 59b53ed9541d03acdca5a01bbbf2f890351aba29
-Head: a124226ce9b05d617e1515e1f55ddb1fbc79bdec
+Base: abdde854edd620675335a012dfe8a06752eb75db
+Head: 8a8e793fb2fcd63baf1e67153bd3974394004bda
 
 ## Changed files
-- M backend/app/hackerone_api.py
-- M backend/app/hackerone_binding.py
-- M backend/app/hackerone_review_draft.py
-- M backend/app/hackerone_scope_import.py
-- M backend/tests/test_hackerone_binding.py
-- M backend/tests/test_hackerone_remote_binding.py
-- M backend/tests/test_hackerone_review_draft.py
-- M backend/tests/test_hackerone_reviewed_batch_api.py
-- M backend/tests/test_hackerone_scope_import.py
+- M backend/app/htb_lab.py
+- M backend/tests/test_htb_lab.py
 
 ## Affected areas
 - backend

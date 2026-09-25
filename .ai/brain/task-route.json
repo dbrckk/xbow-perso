@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 2,
+    "score_margin": 6,
     "tier": "bounded",
-    "top_score": 23
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "c694cc0149158d5a2403bb8a9f98efb156a0d46fb5502cba46daf0b2baf5a61f",
+    "fingerprint": "9b48aeb8207b80bbdf3997fcb2b566721a7894792b6d1637db35e02b9359959b",
     "hit": false
   },
-  "candidate_count": 54,
+  "candidate_count": 32,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -20,31 +20,12 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "path": "backend/app/orchestrator.py",
       "reasons": [
         "impact",
         "search-index"
       ],
-      "score": 23,
-      "symbols": [
-        "_launch_payload",
-        "_resource",
-        "fake_execute",
-        "fake_recon",
-        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue",
-        "test_hackerone_worker_automatically_advances_from_recon_to_nuclei"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/orchestrator.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -140,6 +121,33 @@
         "test_adaptation_ranks_successful_memory_first",
         "test_adaptation_rejects_unknown_or_duplicate_configuration",
         "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_normalization.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "test_normalized_ids_are_engine_scoped_and_stable",
+        "test_normalizers_fail_closed_outside_scope",
+        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
+        "test_nuclei_jsonl_parser_rejects_invalid_line",
+        "test_nuclei_jsonl_parser_rejects_oversized_file",
+        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
+        "test_scanner_registry_dispatches_nuclei_parser",
+        "test_scanner_registry_dispatches_strix_parser",
+        "test_scanner_registry_exposes_supported_engines",
+        "test_scanner_registry_missing_run_directory_is_empty",
+        "test_scanner_registry_rejects_symlinked_artifacts",
+        "test_scanner_registry_rejects_unknown_engine",
+        "test_scanner_registry_selects_latest_artifact",
+        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
       ]
     }
   ],
