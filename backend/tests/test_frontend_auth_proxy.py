@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=85' in index
-    assert '/app.css?v=85' in index
-    assert "xbow-perso-v85" in sw
+    assert '/simple.js?v=86' in index
+    assert '/app.css?v=86' in index
+    assert "xbow-perso-v86" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=85" defer></script>' in index
+    assert '<script src="/simple.js?v=86" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v85';" in script
-    assert "serviceWorker.register('/sw.js?v=85',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v86';" in script
+    assert "serviceWorker.register('/sw.js?v=86',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v85" in html
+    assert "Interface v86" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -271,3 +271,14 @@ def test_dashboard_exposes_htb_benchmark_summary():
     assert "evaluated_campaign_count" in script
     assert "technique_success_rate" in script
     assert "confirmed_finding_count" in script
+
+
+def test_htb_dashboard_tracks_session_status_without_exposing_payloads():
+    html = _text("frontend/index.html")
+    script = _text("frontend/simple.js")
+    assert 'id="htbSession"' in html
+    assert "async function refreshHtbSession" in script
+    assert "/status" in script
+    assert "job_counts" in script
+    assert "confirmed_finding_count" in script
+    assert "void refreshHtbSession({quiet:true});" in script
