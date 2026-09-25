@@ -4437,6 +4437,8 @@ def feasibility_poll_seconds() -> int
 ⋮----
 def feasibility_batch_size() -> int
 ⋮----
+def feasibility_initial_batch_size() -> int
+⋮----
 def _open_bounty(program: dict[str, Any]) -> bool
 ⋮----
 record = existing.get(handle)
@@ -4444,6 +4446,9 @@ record = existing.get(handle)
 def _inspect_handle(handle: str) -> dict[str, Any]
 ⋮----
 snapshot = fetch_hackerone_program_snapshot(handle)
+⋮----
+status = exc.status_code
+retryable = status is None or status == 429 or int(status or 0) >= 500
 ⋮----
 draft = build_hackerone_review_draft(snapshot)
 blockers = review_draft_blockers(draft)
@@ -4456,7 +4461,11 @@ existing = (
 ⋮----
 programmes = [
 ⋮----
-limit = batch_size if batch_size is not None else feasibility_batch_size()
+limit = batch_size
+⋮----
+limit = feasibility_initial_batch_size()
+⋮----
+limit = feasibility_batch_size()
 selected = [
 ⋮----
 results: list[dict[str, Any]] = []
@@ -4484,6 +4493,7 @@ programmes = {
 ⋮----
 compatible = []
 blocker_counts: dict[str, int] = {}
+unavailable_count = 0
 ⋮----
 program = programmes.get(handle, {})
 ⋮----
@@ -14109,6 +14119,26 @@ schema = app.openapi()
 def test_worker_continuously_builds_feasibility_index()
 ⋮----
 source = (
+⋮----
+def test_initial_feasibility_warmup_checks_twelve_programmes(monkeypatch)
+⋮----
+programs = [_program(f"p{i:02d}") for i in range(20)]
+store = _Store({
+seen=[]
+⋮----
+result = feasibility.refresh_hackerone_feasibility_batch(store)
+⋮----
+def test_retryable_hackerone_failure_is_not_cached_as_incompatible(monkeypatch)
+⋮----
+def fail(_handle)
+⋮----
+record = store.catalog["feasibility_index"]["alpha"]
+⋮----
+summary = feasibility.feasibility_summary(store.catalog)
+⋮----
+def test_retryable_entries_are_prioritized_for_recheck()
+⋮----
+existing = {
 ````
 
 ## File: backend/tests/test_hackerone_intelligence.py

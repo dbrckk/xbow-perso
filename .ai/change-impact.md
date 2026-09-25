@@ -1,16 +1,11 @@
 # Change impact
 
-Base: 8a71edb0e8858c37f6837a33804568d390030ff1
-Head: 9d61aed9b8d075988c7a6247fcdba0d6b9860693
+Base: cb9262ce0c0d21b18d13c6ed9cd47291394199e4
+Head: 8c090a9322edd9f87176c27c4f74bd9fc16d56c0
 
 ## Changed files
-- M backend/app/hackerone_api.py
-- A backend/app/hackerone_feasibility.py
-- M backend/app/hackerone_review_draft.py
-- M backend/app/simple_portfolio.py
-- M backend/app/worker_service.py
-- A backend/tests/test_hackerone_feasibility.py
-- M backend/tests/test_hackerone_review_draft.py
+- M backend/app/hackerone_feasibility.py
+- M backend/tests/test_hackerone_feasibility.py
 
 ## Affected areas
 - backend

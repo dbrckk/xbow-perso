@@ -22,22 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-25T18:53:22Z
+Generated: 2026-09-25T18:57:11Z
 
 ### Git
 - Branch: `main`
-- Head: `9d61aed9b8d0`
-- Commit date: 2026-09-25T20:52:18+02:00
-- Commit: feat: build a durable HackerOne feasibility index (#396)
+- Head: `8c090a9322ed`
+- Commit date: 2026-09-25T20:56:46+02:00
+- Commit: improve: accelerate HackerOne feasibility discovery (#397)
 - Tracked files: 571
 
 ### Recently changed files
-- `backend/app/hackerone_api.py`
 - `backend/app/hackerone_feasibility.py`
+- `backend/tests/test_hackerone_feasibility.py`
+- `backend/app/hackerone_api.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/app/simple_portfolio.py`
 - `backend/app/worker_service.py`
-- `backend/tests/test_hackerone_feasibility.py`
 - `backend/tests/test_hackerone_review_draft.py`
 - `backend/app/htb_lab.py`
 - `backend/tests/test_htb_lab.py`

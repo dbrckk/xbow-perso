@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 3,
+    "score_margin": 2,
     "tier": "bounded",
-    "top_score": 26
+    "top_score": 23
   },
   "cache": {
-    "fingerprint": "eaeb22c443af1cd194f68a45eeecabf5fa3be89b8c080319c732cb5455d887c0",
+    "fingerprint": "f0f5821baf8e0d97f62c38cd276954d5a0e0ef9729a895f66c5f5ee83f1f44bf",
     "hit": false
   },
-  "candidate_count": 59,
+  "candidate_count": 32,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -23,10 +23,9 @@
       "path": "backend/app/worker_service.py",
       "reasons": [
         "impact",
-        "recently-changed",
         "search-index"
       ],
-      "score": 26,
+      "score": 23,
       "symbols": [
         "CampaignCancelledError",
         "StaleBrowserJobError",
@@ -48,26 +47,6 @@
         "process_nuclei_scan",
         "process_one",
         "process_recon_task"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "_launch_payload",
-        "_resource",
-        "fake_execute",
-        "fake_recon",
-        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue",
-        "test_hackerone_worker_automatically_advances_from_recon_to_nuclei"
       ]
     },
     {
@@ -156,6 +135,25 @@
         "test_scan_engines_default_preserves_strix",
         "test_scan_engines_support_explicit_nuclei_and_fail_closed",
         "test_sqlite_queue_accepts_nuclei_scan"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_adaptation.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "_memory",
+        "test_adaptation_never_expands_configured_engines",
+        "test_adaptation_never_suppresses_last_configured_engine",
+        "test_adaptation_ranks_successful_memory_first",
+        "test_adaptation_rejects_unknown_or_duplicate_configuration",
+        "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
       ]
     }
   ],
