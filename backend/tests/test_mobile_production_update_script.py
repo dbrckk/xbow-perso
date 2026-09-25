@@ -161,6 +161,7 @@ def test_mobile_status_verifies_current_deployed_contract():
     assert '"/api/labs/htb/campaigns"' in script
     assert '"/api/labs/htb/campaigns/{campaign_id}/outcome"' in script
     assert '"/api/labs/htb/campaigns/{campaign_id}/learning"' in script
+    assert '"/api/labs/htb/campaigns/{campaign_id}/status"' in script
     assert '"/api/labs/htb/learning"' in script
     assert '"/api/labs/htb/benchmark"' in script
     assert "APP_ROUTE_CONTRACT_OK=true" in script
