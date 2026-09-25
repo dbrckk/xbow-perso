@@ -170,3 +170,20 @@ def test_simple_portfolio_prefers_known_project_compatible_programmes():
         for item in result["selection"]
     )
     assert result["project_feasibility_preferred"] is True
+
+
+def test_feasibility_route_is_exposed():
+    from app.main import app
+
+    schema = app.openapi()
+    assert "/api/hackerone/feasibility-index" in schema["paths"]
+
+
+def test_worker_continuously_builds_feasibility_index():
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[1] / "app" / "worker_service.py"
+    ).read_text(encoding="utf-8")
+    assert "maybe_refresh_hackerone_feasibility" in source
+    assert "maybe_refresh_hackerone_feasibility(store)" in source
