@@ -19,8 +19,12 @@ _next_attempt_monotonic = 0.0
 
 _CAPABILITY_GAPS = {
     "no_compatible_primary_domain": {
-        "capability": "wildcard_or_non_domain_bootstrap",
-        "description": "Ajouter un démarrage sûr pour les scopes wildcard/URL/IP sans domaine exact.",
+        "capability": "wildcard_or_path_bootstrap",
+        "description": "Ajouter un démarrage sûr pour les scopes wildcard/URL sans cible web exacte.",
+    },
+    "no_bounty_eligible_primary_target": {
+        "capability": "bounty_target_selection",
+        "description": "Le programme paie des bounties mais les cibles web compatibles inspectées sont explicitement non éligibles au bounty.",
     },
     "scope_incomplete_for_web_engine": {
         "capability": "path_or_network_aware_scope",
