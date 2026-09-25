@@ -21,6 +21,11 @@ from .hackerone_client import (
 from .hackerone_catalog import refresh_hackerone_catalog
 from .hackerone_live_readiness import build_hackerone_live_readiness
 from .hackerone_intelligence import refresh_hackerone_intelligence
+from .hackerone_feasibility import (
+    annotate_with_feasibility,
+    feasibility_summary,
+    refresh_hackerone_feasibility_batch,
+)
 from .local_outcome_intelligence import build_local_outcome_signals
 from .hackerone_discovery import build_program_discovery
 from .value_efficiency import select_diversified_portfolio
@@ -483,6 +488,42 @@ def hackerone_program_catalog():
     }
 
 
+@router.get("/api/hackerone/feasibility-index")
+def hackerone_feasibility_index(
+    limit: int = Query(default=100, ge=1, le=500),
+    refresh: bool = Query(default=False),
+):
+    """Return the durable set of programmes the current web pipeline can handle."""
+    from .main import storage
+
+    store = storage()
+    catalog = store.get_hackerone_catalog_state()
+    if catalog is None:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Le catalogue local HackerOne n’est pas encore initialisé",
+                "reason": "hackerone_catalog_not_initialized",
+            },
+        )
+    refresh_result = None
+    if refresh:
+        refresh_result = refresh_hackerone_feasibility_batch(store)
+        catalog = store.get_hackerone_catalog_state() or catalog
+    summary = feasibility_summary(catalog, limit=limit)
+    return {
+        "provider": "hackerone",
+        **summary,
+        "refresh": refresh_result,
+        "definition": (
+            "compatible signifie que le scope actuel peut être projeté de façon "
+            "conservative vers le pipeline web du projet; le lancement exige encore "
+            "la revue humaine et la revalidation HackerOne."
+        ),
+        "contains_secrets": False,
+    }
+
+
 @router.get("/api/hackerone/discovery")
 def hackerone_program_discovery(
     verify_limit: int = Query(default=20, ge=0, le=50),
@@ -608,9 +649,13 @@ def hackerone_simple_selection(
         for value in exclude.split(",")
         if value.strip()
     }
+    annotated = annotate_with_feasibility(
+        mark_cached_review_profiles(list(discovery.get("programs") or [])),
+        catalog,
+    )
     candidates = [
         item
-        for item in mark_cached_review_profiles(list(discovery.get("programs") or []))
+        for item in annotated
         if str(item.get("handle") or "").lower() not in excluded_handles
     ]
     result = select_simple_six(candidates)
@@ -620,6 +665,15 @@ def hackerone_simple_selection(
         "catalog_checked_at": catalog.get("checked_at"),
         "catalog_program_count": len(list(catalog.get("programs") or [])),
         "catalog_source": "local-cache",
+        "feasibility_indexed": len(
+            dict(catalog.get("feasibility_index") or {})
+        ),
+        "feasibility_compatible": sum(
+            1
+            for value in dict(catalog.get("feasibility_index") or {}).values()
+            if isinstance(value, dict)
+            and value.get("project_compatible") is True
+        ),
         "selection_requires_live_hackerone": False,
         "excluded_handles": sorted(excluded_handles),
         "read_only": True,
