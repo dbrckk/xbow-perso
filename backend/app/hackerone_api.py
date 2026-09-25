@@ -596,7 +596,7 @@ def hackerone_simple_selection(
 def hackerone_simple_review_package(
     exclude: str = "",
 ):
-    """Return one or two live-verified, currently usable HackerOne programmes."""
+    """Return the first live-verified HackerOne programme usable for a real attempt."""
     store = None
     rejected = {
         value.strip().lower()
@@ -630,7 +630,7 @@ def hackerone_simple_review_package(
                 ) from exc
             return None
 
-    for _round in range(4):
+    for _round in range(12):
         local_exclude = sorted(rejected | set(accepted))
         try:
             candidate_selection = hackerone_simple_selection(
@@ -755,10 +755,10 @@ def hackerone_simple_review_package(
                     rejected.add(handle)
                     rejection_reasons[handle] = blockers or ["review_unavailable"]
 
-            if len(accepted) >= 2:
+            if len(accepted) >= 1:
                 break
 
-        if len(accepted) >= 2:
+        if len(accepted) >= 1:
             break
 
     selected = sorted(
@@ -767,7 +767,7 @@ def hackerone_simple_review_package(
             str(item.get("handle") or "").strip().lower(),
             10**9,
         ),
-    )[:2]
+    )[:1]
     if not selected:
         raise HTTPException(
             status_code=409,
@@ -776,11 +776,23 @@ def hackerone_simple_review_package(
                 "reason": "simple_review_package_exhausted",
                 "rejected_count": len(rejected),
                 "checked_count": len(checked_handles),
-                "max_checked": 8,
+                "max_checked": 24,
                 "review_rejections": [
                     {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
                     for handle in sorted(rejection_reasons)
                 ][:50],
+                "rejection_summary": {
+                    reason: sum(
+                        1
+                        for reasons in rejection_reasons.values()
+                        if reason in reasons
+                    )
+                    for reason in sorted({
+                        reason
+                        for reasons in rejection_reasons.values()
+                        for reason in reasons
+                    })
+                },
                 "contains_secrets": False,
             },
         )
@@ -805,16 +817,28 @@ def hackerone_simple_review_package(
         "launch_ready": review_count == 0,
         "review_drafts": drafts,
         "review_package": True,
-        "review_package_target": 2,
+        "review_package_target": 1,
         "review_package_minimum": 1,
         "review_package_rounds": _round + 1,
         "review_package_checked": len(checked_handles),
-        "review_package_max_checked": 8,
+        "review_package_max_checked": 24,
         "review_package_rejected": len(rejected),
         "review_rejections": [
             {"handle": handle, "reasons": rejection_reasons.get(handle, [])}
             for handle in sorted(rejection_reasons)
         ],
+        "rejection_summary": {
+            reason: sum(
+                1
+                for reasons in rejection_reasons.values()
+                if reason in reasons
+            )
+            for reason in sorted({
+                reason
+                for reasons in rejection_reasons.values()
+                for reason in reasons
+            })
+        },
         "catalog_checked_at": last_selection.get("catalog_checked_at"),
         "selection_requires_live_hackerone": True,
         "live_verified": True,
