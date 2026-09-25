@@ -43,11 +43,18 @@ class HtbLabCampaignInput(BaseModel):
         except ValueError:
             allowed = host.endswith(".htb") and host.count(".") >= 1
         else:
-            allowed = address.is_private and not address.is_multicast
+            allowed = (
+                address.is_private
+                and not address.is_loopback
+                and not address.is_link_local
+                and not address.is_unspecified
+                and not address.is_multicast
+                and not address.is_reserved
+            )
 
         if not allowed:
             raise ValueError(
-                "HTB training targets must be an exact private IP or a .htb lab hostname"
+                "HTB training targets must be an exact private lab IP or a .htb lab hostname"
             )
         return self
 

@@ -49,9 +49,43 @@ def test_htb_lab_rejects_public_targets():
             authorized_lab=True,
         )
     except ValidationError as exc:
-        assert "exact private IP or a .htb lab hostname" in str(exc)
+        assert "exact private lab IP or a .htb lab hostname" in str(exc)
     else:
         raise AssertionError("public internet targets must be rejected")
+
+
+
+
+
+def test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips():
+    for target in (
+        "http://127.0.0.1",
+        "http://169.254.10.20",
+        "http://0.0.0.0",
+        "http://224.0.0.1",
+    ):
+        try:
+            HtbLabCampaignInput(
+                target_url=target,
+                authorized_lab=True,
+            )
+        except ValidationError as exc:
+            assert "exact private lab IP or a .htb lab hostname" in str(exc)
+        else:
+            raise AssertionError(f"unsafe HTB target must be rejected: {target}")
+
+
+def test_htb_lab_accepts_private_lab_ip_and_htb_hostname():
+    for target in (
+        "http://10.10.11.42",
+        "http://10.129.42.11",
+        "http://machine.htb",
+    ):
+        payload = HtbLabCampaignInput(
+            target_url=target,
+            authorized_lab=True,
+        )
+        assert payload.authorized_lab is True
 
 
 def test_htb_lab_requires_explicit_authorization_confirmation():
