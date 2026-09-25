@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ipaddress
 from typing import Any
 
 from .hackerone_scope_import import (
@@ -38,18 +39,32 @@ def build_hackerone_review_draft(snapshot) -> dict[str, Any]:
     preview = dict(snapshot.preview or {})
 
     primary_url = None
-    for asset in list(preview.get("assets") or []):
-        if not isinstance(asset, dict):
-            continue
-        if asset.get("eligible_for_submission") is not True:
-            continue
-        if asset.get("compatible") is not True:
-            continue
+    compatible_assets = [
+        asset
+        for asset in list(preview.get("assets") or [])
+        if isinstance(asset, dict)
+        and asset.get("eligible_for_submission") is True
+        and asset.get("compatible") is True
+    ]
+    for asset in compatible_assets:
         if str(asset.get("asset_type") or "") != "Domain":
             continue
         identifier = str(asset.get("identifier") or "").strip().rstrip(".").lower()
         if identifier and "*" not in identifier:
             primary_url = f"https://{identifier}"
+            break
+
+    if primary_url is None:
+        for asset in compatible_assets:
+            if str(asset.get("asset_type") or "") != "IpAddress":
+                continue
+            identifier = str(asset.get("identifier") or "").strip()
+            try:
+                address = ipaddress.ip_address(identifier)
+            except ValueError:
+                continue
+            host = f"[{address.compressed}]" if address.version == 6 else address.compressed
+            primary_url = f"https://{host}"
             break
 
     scope_document = snapshot.document
