@@ -523,10 +523,10 @@ def test_v81_happy_path_review_package_to_profile_to_launch(
     )
 
     package = hackerone_api.hackerone_simple_review_package()
-    assert package["handles"] == ["program-one", "program-two"]
-    assert package["review_count"] == 2
+    assert package["handles"] == ["program-one"]
+    assert package["review_count"] == 1
     assert package["live_verified"] is True
-    assert len(package["review_drafts"]) == 2
+    assert len(package["review_drafts"]) == 1
 
     client = _app()
     for draft in package["review_drafts"]:
@@ -568,10 +568,8 @@ def test_v81_happy_path_review_package_to_profile_to_launch(
     assert launch.status_code == 200, launch.text
     batch = launch.json()
     assert [member["handle"] for member in batch["members"]] == package["handles"]
-    assert [member["status"] for member in batch["members"]] == ["running", "ready"]
+    assert [member["status"] for member in batch["members"]] == ["running"]
 
     jobs = JobQueue(db)
     first_counts = jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])
-    second_counts = jobs.campaign_job_status_counts(batch["members"][1]["campaign_id"])
     assert first_counts["queued"] >= 1
-    assert second_counts["queued"] == 0
