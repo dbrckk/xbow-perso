@@ -68,6 +68,12 @@ def test_hackerone_scope_preview_maps_host_safe_assets():
     assert preview.conflicts == ()
     assert preview.unsupported == ()
     assert all(asset.compatible for asset in preview.assets)
+    assert [asset.eligible_for_bounty for asset in preview.assets] == [
+        True,
+        True,
+        True,
+        False,
+    ]
 
 
 def test_hackerone_scope_conversion_requires_explicit_program_policy():
