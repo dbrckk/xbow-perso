@@ -37,7 +37,7 @@ def test_simple_six_is_disjoint_and_complete():
     assert len(result["groups"]["high_value"]) == 2
 
 
-def test_simple_six_can_propose_safe_harbor_review_candidates_but_not_launch_them():
+def test_simple_six_can_propose_review_candidates_without_gold_standard_badge():
     programs = [
         _program("ready", effort=1, efficiency=90, award=1000),
         {
@@ -56,9 +56,9 @@ def test_simple_six_can_propose_safe_harbor_review_candidates_but_not_launch_the
 
     assert "ready" in result["handles"]
     assert "review" in result["handles"]
-    assert "unsafe-review" not in result["handles"]
+    assert "unsafe-review" in result["handles"]
     assert "free" not in result["handles"]
-    assert result["review_count"] == 1
+    assert result["review_count"] == 2
     assert result["launch_ready"] is False
     assert result["complete"] is False
 
@@ -91,3 +91,22 @@ def test_simple_six_allows_revalidation_without_forcing_first_run_review():
     assert result["review_count"] == 0
     assert result["revalidation_count"] == 6
     assert result["launch_ready"] is True
+
+
+def test_gold_standard_badge_is_only_a_review_ranking_signal():
+    programs = [
+        {
+            **_program("badge", effort=1.0, efficiency=80, award=1000),
+            "status": "REVIEW",
+            "gold_standard_safe_harbor": True,
+        },
+        {
+            **_program("no-badge", effort=0.1, efficiency=99, award=9999),
+            "status": "REVIEW",
+            "gold_standard_safe_harbor": False,
+        },
+    ]
+    result = select_simple_six(programs)
+
+    assert result["handles"][0] == "badge"
+    assert "no-badge" in result["handles"]
