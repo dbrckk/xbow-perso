@@ -4,6 +4,7 @@ from app.hackerone_scope_import import (
     HackerOneProgramPolicy,
     HackerOneScopeImportError,
     import_hackerone_structured_scope,
+    project_hackerone_exact_domain_scope,
 )
 
 
@@ -333,4 +334,79 @@ def test_malformed_scope_links_fail_closed():
                 "data": [_resource("example.com", "Domain", True)],
                 "links": ["not", "a", "mapping"],
             }
+        )
+
+
+def test_exact_domain_projection_ignores_unrelated_unsupported_assets():
+    document = {
+        "data": [
+            _resource("web.example.com", "Domain", True),
+            _resource("com.example.mobile", "AndroidPlayStore", True),
+            _resource("https://other.example.com/private", "Url", False),
+        ]
+    }
+
+    projection = project_hackerone_exact_domain_scope(
+        document,
+        "https://web.example.com",
+    )
+    preview = import_hackerone_structured_scope(projection)
+
+    assert preview.complete is True
+    assert preview.allowed_targets == ("web.example.com",)
+    assert preview.denied_targets == ()
+    assert len(projection["data"]) == 1
+
+
+def test_exact_domain_projection_fails_on_exact_denial():
+    document = {
+        "data": [
+            _resource("web.example.com", "Domain", True),
+            _resource("WEB.EXAMPLE.COM", "Domain", False),
+        ]
+    }
+
+    with pytest.raises(
+        HackerOneScopeImportError,
+        match="explicit out-of-scope",
+    ):
+        project_hackerone_exact_domain_scope(
+            document,
+            "https://web.example.com",
+        )
+
+
+def test_exact_domain_projection_fails_on_denied_covering_wildcard():
+    document = {
+        "data": [
+            _resource("web.example.com", "Domain", True),
+            _resource("*.example.com", "Wildcard", False),
+        ]
+    }
+
+    with pytest.raises(
+        HackerOneScopeImportError,
+        match="explicit out-of-scope",
+    ):
+        project_hackerone_exact_domain_scope(
+            document,
+            "https://web.example.com",
+        )
+
+
+def test_exact_domain_projection_requires_exact_eligible_domain():
+    document = {
+        "data": [
+            _resource("*.example.com", "Wildcard", True),
+            _resource("com.example.mobile", "AndroidPlayStore", True),
+        ]
+    }
+
+    with pytest.raises(
+        HackerOneScopeImportError,
+        match="exact eligible HackerOne Domain",
+    ):
+        project_hackerone_exact_domain_scope(
+            document,
+            "https://web.example.com",
         )
