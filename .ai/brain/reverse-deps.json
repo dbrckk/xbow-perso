@@ -876,6 +876,7 @@
     },
     "backend/app/hackerone_review_draft.py": {
       "dependencies": [
+        "backend/app/hackerone_scope_import.py",
         "backend/tests/test_hackerone_prelaunch.py"
       ],
       "dependents": [
@@ -883,7 +884,7 @@
         "backend/tests/test_hackerone_review_draft.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/app/hackerone_scope_import.py": {
       "dependencies": [
@@ -893,11 +894,12 @@
       "dependents": [
         "backend/app/hackerone_api.py",
         "backend/app/hackerone_client.py",
+        "backend/app/hackerone_review_draft.py",
         "backend/app/main.py",
         "backend/tests/test_hackerone_remote_snapshot.py",
         "backend/tests/test_hackerone_scope_import.py"
       ],
-      "in_degree": 5,
+      "in_degree": 6,
       "out_degree": 2
     },
     "backend/app/high_value_intelligence.py": {
@@ -3585,11 +3587,12 @@
         "backend/app/jobqueue.py",
         "backend/app/main.py",
         "backend/app/storage.py",
+        "backend/tests/test_hackerone_prelaunch.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 6
+      "out_degree": 7
     },
     "backend/tests/test_hackerone_catalog.py": {
       "dependencies": [
@@ -3740,6 +3743,7 @@
         "backend/tests/test_control_views.py",
         "backend/tests/test_domain_incident_lifecycle.py",
         "backend/tests/test_dr_cli.py",
+        "backend/tests/test_hackerone_binding.py",
         "backend/tests/test_hackerone_control_center_api.py",
         "backend/tests/test_hackerone_remote_binding.py",
         "backend/tests/test_hackerone_remote_snapshot.py",
@@ -3757,7 +3761,7 @@
         "frontend/app.js",
         "frontend/hackerone.js"
       ],
-      "in_degree": 43,
+      "in_degree": 44,
       "out_degree": 2
     },
     "backend/tests/test_hackerone_remote_binding.py": {

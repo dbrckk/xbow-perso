@@ -22,21 +22,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-25T15:41:17Z
+Generated: 2026-09-25T18:10:57Z
 
 ### Git
 - Branch: `main`
-- Head: `2e33926c8e1e`
-- Commit date: 2026-09-25T17:41:05+02:00
-- Commit: fix: make the first real HackerOne attempt easier to reach (#393)
+- Head: `a124226ce9b0`
+- Commit date: 2026-09-25T20:10:46+02:00
+- Commit: feat: allow one exact web domain from mixed HackerOne scopes (#394)
 - Tracked files: 569
 
 ### Recently changed files
 - `backend/app/hackerone_api.py`
+- `backend/app/hackerone_binding.py`
+- `backend/app/hackerone_review_draft.py`
+- `backend/app/hackerone_scope_import.py`
+- `backend/tests/test_hackerone_binding.py`
+- `backend/tests/test_hackerone_remote_binding.py`
+- `backend/tests/test_hackerone_review_draft.py`
+- `backend/tests/test_hackerone_reviewed_batch_api.py`
+- `backend/tests/test_hackerone_scope_import.py`
 - `backend/app/simple_portfolio.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
 - `backend/tests/test_hackerone_simple_review_package.py`
 - `backend/tests/test_simple_portfolio.py`
 - `frontend/index.html`
@@ -45,8 +52,6 @@ Generated: 2026-09-25T15:41:17Z
 - `backend/app/htb_lab.py`
 - `backend/tests/test_htb_lab.py`
 - `backend/tests/test_mobile_production_update_script.py`
-- `scripts/mobile-production-status.sh`
-- `backend/app/orchestrator.py`
 
 ### Project signals
 - `pyproject.toml`

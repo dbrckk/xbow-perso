@@ -3538,6 +3538,13 @@ def _verify_remote_binding(payload: HackerOneRulesPreviewInput) -> dict[str, Any
 ⋮----
 snapshot = fetch_hackerone_program_snapshot(payload.remote_handle)
 ⋮----
+submitted_hash = _json_sha256(payload.document)
+scope_mode = "full"
+⋮----
+projection = project_hackerone_exact_domain_scope(
+⋮----
+scope_mode = "exact-domain"
+⋮----
 def _remote_program_launch_block_reason(program: dict[str, Any]) -> str | None
 ⋮----
 submission_state = str(program.get("submission_state") or "").strip().lower()
@@ -3801,6 +3808,13 @@ profile = store.get_hackerone_review_profile(profile_id)
 ⋮----
 policy_raw = profile.get("policy")
 primary_url = str(profile.get("preferred_primary_url") or "").strip()
+⋮----
+scope_mode = str(profile.get("scope_mode") or "full")
+effective_document = snapshot.document
+⋮----
+effective_document = project_hackerone_exact_domain_scope(
+⋮----
+stored_document = profile.get("scope_document")
 ⋮----
 policy = HackerOneProgramPolicyInput.model_validate(policy_raw)
 ⋮----
@@ -4110,6 +4124,11 @@ def _validated_remote_binding(value: Any, reasons: list[str]) -> dict[str, Any] 
 handle = value.get("handle")
 snapshot_sha256 = value.get("snapshot_sha256")
 verified = value.get("verified")
+⋮----
+scope_mode = value.get("scope_mode")
+scope_document_sha256 = value.get("scope_document_sha256")
+⋮----
+validated = {
 ⋮----
 binding_events = [
 ⋮----
@@ -4754,6 +4773,15 @@ identifier = str(asset.get("identifier") or "").strip().rstrip(".").lower()
 ⋮----
 primary_url = f"https://{identifier}"
 ⋮----
+scope_document = snapshot.document
+scope_mode = "full"
+scope_complete = bool(preview.get("complete"))
+⋮----
+scope_document = project_hackerone_exact_domain_scope(
+⋮----
+scope_mode = "exact-domain"
+scope_complete = True
+⋮----
 handle = str(snapshot.handle)
 snapshot_sha = str(snapshot.snapshot_sha256)
 draft = {
@@ -4833,6 +4861,45 @@ complete: bool
 conflicts: tuple[str, ...]
 unsupported: tuple[str, ...]
 ⋮----
+"""Project one exact eligible Domain from a mixed HackerOne scope.
+
+    This is intentionally narrower than the remote programme scope. It exists so
+    the web scanner can operate on one exact domain even when the programme also
+    lists unrelated unsupported assets such as mobile apps or source code.
+
+    Any explicit denial for the exact host, or a denied wildcard covering it,
+    fails closed.
+    """
+⋮----
+parsed = urlparse(str(primary_url))
+⋮----
+primary_host = _ascii_domain(parsed.hostname)
+⋮----
+links = document.get("links")
+⋮----
+data = document.get("data")
+⋮----
+resources = [data]
+⋮----
+resources = data
+⋮----
+matching_allowed: list[dict[str, Any]] = []
+denied_match = False
+⋮----
+attributes = _resource_attributes(resource)
+identifier = _clean_identifier(attributes.get("asset_identifier"))
+asset_type = _canonical_asset_type(attributes.get("asset_type"))
+eligible = attributes.get("eligible_for_submission")
+⋮----
+domain = _ascii_domain(identifier)
+⋮----
+denied_match = True
+⋮----
+suffix = pattern[2:]
+⋮----
+projection = {
+preview = import_hackerone_structured_scope(projection)
+⋮----
 def _clean_identifier(value: Any) -> str
 ⋮----
 identifier = value.strip()
@@ -4865,22 +4932,9 @@ attributes = resource.get("attributes")
 ⋮----
 def import_hackerone_structured_scope(document: dict[str, Any]) -> HackerOneScopePreview
 ⋮----
-links = document.get("links")
-⋮----
-data = document.get("data")
-⋮----
-resources = [data]
-⋮----
-resources = data
-⋮----
 assets: list[HackerOneScopeAsset] = []
 statuses: dict[str, set[bool]] = {}
 unsupported_labels: set[str] = set()
-⋮----
-attributes = _resource_attributes(resource)
-identifier = _clean_identifier(attributes.get("asset_identifier"))
-asset_type = _canonical_asset_type(attributes.get("asset_type"))
-eligible = attributes.get("eligible_for_submission")
 ⋮----
 compatible = host_pattern is not None
 ⋮----
@@ -13721,6 +13775,18 @@ campaign = main.Campaign(
 start_result = main.start_campaign(campaign.id)
 ⋮----
 provenance = start_result["job"]["payload"]["_provenance"]
+⋮----
+def test_hackerone_binding_accepts_valid_scope_metadata(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "scope-binding.sqlite3")
+⋮----
+payload = _admission_payload()
+⋮----
+document = payload.document
+⋮----
+admitted = admit_hackerone_campaign(payload)
+campaign = main.Campaign.model_validate(admitted["campaign"])
+provenance = attach_job_provenance(
 ````
 
 ## File: backend/tests/test_hackerone_catalog.py
@@ -14215,6 +14281,8 @@ document = {"data": [_resource("example.com")], "links": {}}
 ⋮----
 response = _api().post(
 ⋮----
+binding = response.json()["remote_binding"]
+⋮----
 def test_remote_binding_must_be_complete()
 ⋮----
 def test_bound_preview_rejects_document_not_from_remote_snapshot(monkeypatch)
@@ -14459,6 +14527,8 @@ def test_review_draft_exposes_scope_exclusions_and_blocks_automation()
 def test_review_draft_blockers_fail_closed_for_incomplete_scope_or_missing_policy()
 ⋮----
 blockers = review_draft_blockers(draft)
+⋮----
+def test_review_draft_projects_exact_domain_from_mixed_scope()
 ````
 
 ## File: backend/tests/test_hackerone_review_profiles.py
@@ -14580,6 +14650,21 @@ launch = client.post(
 batch = launch.json()
 ⋮----
 first_counts = jobs.campaign_job_status_counts(batch["members"][0]["campaign_id"])
+⋮----
+db = str(tmp_path / "exact-domain.sqlite3")
+⋮----
+fingerprint = "c" * 64
+domain = "web.example.com"
+document = {
+snapshot = HackerOneProgramSnapshot(
+⋮----
+draft = package["review_drafts"][0]
+⋮----
+reviewed = client.post(
+⋮----
+stored = Storage(db, artifacts).get_hackerone_review_profile(
+⋮----
+campaign = Storage(db, artifacts).get_campaign(batch["members"][0]["campaign_id"])
 ````
 
 ## File: backend/tests/test_hackerone_scope_preview_api.py
