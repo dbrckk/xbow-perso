@@ -192,3 +192,51 @@ def test_non_hackerone_start_keeps_strix_routing(tmp_path, monkeypatch):
     assert "external_policy_provider" not in provenance
     assert "external_policy_fingerprint" not in provenance
     assert jobs.stats()["total"] == 1
+
+
+def test_hackerone_binding_accepts_valid_scope_metadata(tmp_path, monkeypatch):
+    db = str(tmp_path / "scope-binding.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    payload = _admission_payload()
+    payload.remote_handle = "acme"
+    payload.remote_snapshot_sha256 = "a" * 64
+
+    document = payload.document
+    monkeypatch.setattr(
+        "app.hackerone_api.fetch_hackerone_program_snapshot",
+        lambda handle: type(
+            "Snapshot",
+            (),
+            {
+                "handle": "acme",
+                "snapshot_sha256": "a" * 64,
+                "document": document,
+            },
+        )(),
+    )
+
+    admitted = admit_hackerone_campaign(payload)
+    campaign = main.Campaign.model_validate(admitted["campaign"])
+    provenance = attach_job_provenance(
+        {"campaign_id": campaign.id},
+        campaign,
+        job_kind="recon_task",
+        action="crawl",
+    )
+
+    assert provenance["_provenance"]["external_policy_provider"] == "hackerone"
+    assert (
+        provenance["_provenance"]["external_policy_fingerprint"]
+        == admitted["policy_binding"]["binding_fingerprint"]
+    )
+    assert verify_job_provenance(
+        {
+            "campaign_id": campaign.id,
+            "kind": "recon_task",
+            "payload": provenance,
+        },
+        campaign,
+    )["valid"] is True

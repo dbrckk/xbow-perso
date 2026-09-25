@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from .hackerone_scope_import import (
+    HackerOneScopeImportError,
+    project_hackerone_exact_domain_scope,
+)
+
 
 def review_draft_blockers(draft: dict[str, Any]) -> list[str]:
     evidence = dict(draft.get("evidence") or {})
@@ -47,6 +52,21 @@ def build_hackerone_review_draft(snapshot) -> dict[str, Any]:
             primary_url = f"https://{identifier}"
             break
 
+    scope_document = snapshot.document
+    scope_mode = "full"
+    scope_complete = bool(preview.get("complete"))
+    if primary_url and not scope_complete:
+        try:
+            scope_document = project_hackerone_exact_domain_scope(
+                snapshot.document,
+                primary_url,
+            )
+        except HackerOneScopeImportError:
+            pass
+        else:
+            scope_mode = "exact-domain"
+            scope_complete = True
+
     handle = str(snapshot.handle)
     snapshot_sha = str(snapshot.snapshot_sha256)
     draft = {
@@ -56,7 +76,8 @@ def build_hackerone_review_draft(snapshot) -> dict[str, Any]:
         "prefill": {
             "name": str(program.get("name") or f"H1 {handle}")[:120],
             "primary_url": primary_url,
-            "scope_document": snapshot.document,
+            "scope_document": scope_document,
+            "scope_mode": scope_mode,
             "authorization_reference": f"https://hackerone.com/{handle}",
             "policy_version": f"snapshot:{snapshot_sha[:16]}",
         },
@@ -75,7 +96,9 @@ def build_hackerone_review_draft(snapshot) -> dict[str, Any]:
             "submission_state": program.get("submission_state"),
             "program_state": program.get("state"),
             "policy_text_available": bool(str(program.get("policy") or "").strip()),
-            "scope_complete": bool(preview.get("complete")),
+            "scope_complete": scope_complete,
+            "full_scope_complete": bool(preview.get("complete")),
+            "scope_mode": scope_mode,
         },
         "manual_required": [
             "reviewed_by",

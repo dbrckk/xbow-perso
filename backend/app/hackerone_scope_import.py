@@ -240,6 +240,107 @@ class HackerOneScopePreview:
         )
 
 
+def project_hackerone_exact_domain_scope(
+    document: dict[str, Any],
+    primary_url: str,
+) -> dict[str, Any]:
+    """Project one exact eligible Domain from a mixed HackerOne scope.
+
+    This is intentionally narrower than the remote programme scope. It exists so
+    the web scanner can operate on one exact domain even when the programme also
+    lists unrelated unsupported assets such as mobile apps or source code.
+
+    Any explicit denial for the exact host, or a denied wildcard covering it,
+    fails closed.
+    """
+    try:
+        parsed = urlparse(str(primary_url))
+    except ValueError as exc:
+        raise HackerOneScopeImportError("primary URL is invalid") from exc
+    if parsed.scheme.lower() not in {"http", "https"} or not parsed.hostname:
+        raise HackerOneScopeImportError("primary URL must be http(s) with a hostname")
+    if parsed.username or parsed.password:
+        raise HackerOneScopeImportError("primary URL must not contain userinfo")
+    try:
+        primary_host = _ascii_domain(parsed.hostname)
+    except ValueError as exc:
+        raise HackerOneScopeImportError("primary URL hostname is invalid") from exc
+
+    if not isinstance(document, dict):
+        raise HackerOneScopeImportError("HackerOne scope document must be an object")
+    links = document.get("links")
+    if links is not None:
+        if not isinstance(links, dict):
+            raise HackerOneScopeImportError("HackerOne scope document links are invalid")
+        if links.get("next"):
+            raise HackerOneScopeImportError(
+                "HackerOne scope document is paginated; collect all pages before projection"
+            )
+
+    data = document.get("data")
+    if isinstance(data, dict):
+        resources = [data]
+    elif isinstance(data, list):
+        resources = data
+    else:
+        raise HackerOneScopeImportError("HackerOne scope document data must be a resource or list")
+
+    matching_allowed: list[dict[str, Any]] = []
+    denied_match = False
+    for resource in resources:
+        attributes = _resource_attributes(resource)
+        identifier = _clean_identifier(attributes.get("asset_identifier"))
+        asset_type = _canonical_asset_type(attributes.get("asset_type"))
+        eligible = attributes.get("eligible_for_submission")
+        if not isinstance(eligible, bool):
+            raise HackerOneScopeImportError(
+                "HackerOne eligible_for_submission must be boolean"
+            )
+
+        if asset_type == "Domain":
+            try:
+                domain = _ascii_domain(identifier)
+            except ValueError:
+                continue
+            if domain != primary_host:
+                continue
+            if eligible:
+                matching_allowed.append(resource)
+            else:
+                denied_match = True
+            continue
+
+        if asset_type == "Wildcard" and not eligible:
+            pattern, reason = _compatible_host_pattern(asset_type, identifier)
+            if pattern is None or reason is not None or not pattern.startswith("*."):
+                continue
+            suffix = pattern[2:]
+            if primary_host.endswith("." + suffix):
+                denied_match = True
+
+    if denied_match:
+        raise HackerOneScopeImportError(
+            "primary domain is covered by an explicit out-of-scope entry"
+        )
+    if not matching_allowed:
+        raise HackerOneScopeImportError(
+            "primary domain is not an exact eligible HackerOne Domain asset"
+        )
+
+    projection = {
+        "data": matching_allowed,
+        "links": {},
+    }
+    preview = import_hackerone_structured_scope(projection)
+    if (
+        not preview.complete
+        or primary_host not in set(preview.allowed_targets)
+        or preview.denied_targets
+    ):
+        raise HackerOneScopeImportError("exact domain scope projection is not safe")
+    return projection
+
+
 def _clean_identifier(value: Any) -> str:
     if not isinstance(value, str):
         raise HackerOneScopeImportError("HackerOne asset identifier must be a string")

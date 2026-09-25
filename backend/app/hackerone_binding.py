@@ -60,13 +60,29 @@ def _validated_remote_binding(value: Any, reasons: list[str]) -> dict[str, Any] 
     if verified is not True:
         reasons.append("remote_binding_not_verified")
 
+    scope_mode = value.get("scope_mode")
+    scope_document_sha256 = value.get("scope_document_sha256")
+    if scope_mode is not None and scope_mode not in {"full", "exact-domain"}:
+        reasons.append("remote_binding_scope_mode_invalid")
+    if scope_document_sha256 is not None and (
+        not isinstance(scope_document_sha256, str)
+        or len(scope_document_sha256) != 64
+        or any(ch not in "0123456789abcdef" for ch in scope_document_sha256)
+    ):
+        reasons.append("remote_binding_scope_document_sha256_invalid")
+
     if any(reason.startswith("remote_binding_") for reason in reasons):
         return None
-    return {
+    validated = {
         "handle": handle,
         "snapshot_sha256": snapshot_sha256,
         "verified": True,
     }
+    if scope_mode is not None:
+        validated["scope_mode"] = scope_mode
+    if scope_document_sha256 is not None:
+        validated["scope_document_sha256"] = scope_document_sha256
+    return validated
 
 
 def verify_hackerone_campaign_binding(
