@@ -187,3 +187,66 @@ def test_worker_continuously_builds_feasibility_index():
     ).read_text(encoding="utf-8")
     assert "maybe_refresh_hackerone_feasibility" in source
     assert "maybe_refresh_hackerone_feasibility(store)" in source
+
+
+def test_initial_feasibility_warmup_checks_twelve_programmes(monkeypatch):
+    programs = [_program(f"p{i:02d}") for i in range(20)]
+    store = _Store({
+        "id": "current",
+        "programs": programs,
+        "fingerprint": "f" * 64,
+        "checked_at": "2026-09-25T00:00:00+00:00",
+        "updated_at": "2026-09-25T00:00:00+00:00",
+    })
+    seen=[]
+
+    def fake_fetch(handle):
+        seen.append(handle)
+        return _snapshot(handle, compatible=True)
+
+    monkeypatch.setattr(feasibility, "fetch_hackerone_program_snapshot", fake_fetch)
+
+    result = feasibility.refresh_hackerone_feasibility_batch(store)
+
+    assert result["checked"] == 12
+    assert len(seen) == 12
+
+
+def test_retryable_hackerone_failure_is_not_cached_as_incompatible(monkeypatch):
+    store = _Store({
+        "id": "current",
+        "programs": [_program("alpha")],
+        "fingerprint": "f" * 64,
+        "checked_at": "2026-09-25T00:00:00+00:00",
+        "updated_at": "2026-09-25T00:00:00+00:00",
+    })
+
+    def fail(_handle):
+        raise feasibility.HackerOneClientError("rate limited", status_code=429)
+
+    monkeypatch.setattr(feasibility, "fetch_hackerone_program_snapshot", fail)
+
+    feasibility.refresh_hackerone_feasibility_batch(store, batch_size=1)
+
+    record = store.catalog["feasibility_index"]["alpha"]
+    assert record["project_compatible"] is None
+    assert record["retryable"] is True
+    summary = feasibility.feasibility_summary(store.catalog)
+    assert summary["blocked_count"] == 0
+    assert summary["unavailable_count"] == 1
+
+
+def test_retryable_entries_are_prioritized_for_recheck():
+    existing = {
+        "alpha": {
+            "retryable": True,
+            "checked_at": "2026-09-25T00:00:00+00:00",
+        },
+        "beta": {
+            "retryable": False,
+            "checked_at": "2026-09-24T00:00:00+00:00",
+        },
+    }
+
+    assert feasibility._checked_sort_key("alpha", existing)[0] == 0
+    assert feasibility._checked_sort_key("beta", existing)[0] == 1
