@@ -51,6 +51,15 @@ def feasibility_batch_size() -> int:
     )
 
 
+def feasibility_initial_batch_size() -> int:
+    return _strict_int_env(
+        "XBOW_HACKERONE_FEASIBILITY_INITIAL_BATCH_SIZE",
+        12,
+        4,
+        24,
+    )
+
+
 def _open_bounty(program: dict[str, Any]) -> bool:
     if program.get("offers_bounties") is not True:
         return False
@@ -74,6 +83,8 @@ def _checked_sort_key(
     record = existing.get(handle)
     if not isinstance(record, dict):
         return (0, "", handle)
+    if record.get("retryable") is True:
+        return (0, str(record.get("checked_at") or ""), handle)
     return (1, str(record.get("checked_at") or ""), handle)
 
 
@@ -81,12 +92,15 @@ def _inspect_handle(handle: str) -> dict[str, Any]:
     try:
         snapshot = fetch_hackerone_program_snapshot(handle)
     except HackerOneClientError as exc:
+        status = exc.status_code
+        retryable = status is None or status == 429 or int(status or 0) >= 500
         return {
             "handle": handle,
             "status": "unavailable",
-            "project_compatible": False,
+            "project_compatible": None if retryable else False,
             "blockers": ["review_unavailable"],
-            "upstream_status": exc.status_code,
+            "retryable": retryable,
+            "upstream_status": status,
             "checked_at": _utcnow(),
             "contains_secrets": False,
         }
@@ -141,12 +155,17 @@ def refresh_hackerone_feasibility_batch(
         )
     )
 
-    limit = batch_size if batch_size is not None else feasibility_batch_size()
+    if batch_size is not None:
+        limit = batch_size
+    elif not existing:
+        limit = feasibility_initial_batch_size()
+    else:
+        limit = feasibility_batch_size()
     selected = [
         str(item.get("handle") or "")
         for item in programmes
         if str(item.get("handle") or "")
-    ][: max(1, min(12, int(limit)))]
+    ][: max(1, min(24, int(limit)))]
 
     if not selected:
         return {
@@ -239,6 +258,7 @@ def feasibility_summary(
 
     compatible = []
     blocker_counts: dict[str, int] = {}
+    unavailable_count = 0
     for handle, record in index.items():
         if record.get("project_compatible") is True:
             program = programmes.get(handle, {})
@@ -257,10 +277,12 @@ def feasibility_summary(
                     "requires_launch_revalidation": True,
                 }
             )
-        else:
+        elif record.get("project_compatible") is False:
             for reason in list(record.get("blockers") or []):
                 key = str(reason)
                 blocker_counts[key] = blocker_counts.get(key, 0) + 1
+        else:
+            unavailable_count += 1
 
     compatible.sort(
         key=lambda item: (
@@ -276,8 +298,9 @@ def feasibility_summary(
         "blocked_count": sum(
             1
             for value in index.values()
-            if value.get("project_compatible") is not True
+            if value.get("project_compatible") is False
         ),
+        "unavailable_count": unavailable_count,
         "programs": compatible[:safe_limit],
         "blocker_counts": dict(
             sorted(blocker_counts.items(), key=lambda item: (-item[1], item[0]))
