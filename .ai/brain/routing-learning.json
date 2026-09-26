@@ -2,24 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "fix: add verified vault API token reset helper (#325)",
-      "terms": [
-        "325",
-        "add",
-        "api",
-        "helper",
-        "reset",
-        "token",
-        "vault",
-        "verified"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/tests/test_mobile_reset_api_token.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "fix: load production compose secrets before vault token reset (#326)",
       "terms": [
         "326",
@@ -1390,6 +1372,28 @@
       "useful": [
         "backend/tests/test_mobile_production_update_script.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "fix: accept HackerOne JSON:API responses and classify feasibility failures (#403)",
+      "terms": [
+        "403",
+        "accept",
+        "api",
+        "classify",
+        "failures",
+        "feasibility",
+        "hackerone",
+        "json",
+        "responses"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/hackerone_client.py",
+        "backend/app/hackerone_feasibility.py",
+        "backend/tests/test_hackerone_client.py",
+        "backend/tests/test_hackerone_feasibility.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1969,8 +1973,20 @@
     "402": {
       "backend/tests/test_mobile_production_update_script.py": 4
     },
+    "403": {
+      "backend/app/hackerone_client.py": 4,
+      "backend/app/hackerone_feasibility.py": 4,
+      "backend/tests/test_hackerone_client.py": 4,
+      "backend/tests/test_hackerone_feasibility.py": 4
+    },
     "accelerate": {
       "backend/app/hackerone_feasibility.py": 4,
+      "backend/tests/test_hackerone_feasibility.py": 4
+    },
+    "accept": {
+      "backend/app/hackerone_client.py": 4,
+      "backend/app/hackerone_feasibility.py": 4,
+      "backend/tests/test_hackerone_client.py": 4,
       "backend/tests/test_hackerone_feasibility.py": 4
     },
     "access": {
@@ -2119,6 +2135,8 @@
     },
     "api": {
       "backend/app/auth.py": 4,
+      "backend/app/hackerone_client.py": 4,
+      "backend/app/hackerone_feasibility.py": 4,
       "backend/app/hackerone_live_readiness.py": 4,
       "backend/app/main.py": 20,
       "backend/app/passive_api_intelligence.py": 4,
@@ -2127,6 +2145,8 @@
       "backend/tests/test_distributed_concurrency.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 8,
       "backend/tests/test_frontend_policy_launcher.py": 8,
+      "backend/tests/test_hackerone_client.py": 4,
+      "backend/tests/test_hackerone_feasibility.py": 4,
       "backend/tests/test_hackerone_live_readiness.py": 4,
       "backend/tests/test_live_activation_profile.py": 16,
       "backend/tests/test_mobile_production_update_script.py": 4,
@@ -2589,6 +2609,10 @@
     },
     "classify": {
       "backend/app/hackerone_api.py": 4,
+      "backend/app/hackerone_client.py": 4,
+      "backend/app/hackerone_feasibility.py": 4,
+      "backend/tests/test_hackerone_client.py": 4,
+      "backend/tests/test_hackerone_feasibility.py": 4,
       "backend/tests/test_hackerone_prelaunch.py": 4
     },
     "click": {
@@ -3063,6 +3087,10 @@
     },
     "failures": {
       "backend/app/hackerone_api.py": 4,
+      "backend/app/hackerone_client.py": 4,
+      "backend/app/hackerone_feasibility.py": 4,
+      "backend/tests/test_hackerone_client.py": 4,
+      "backend/tests/test_hackerone_feasibility.py": 4,
       "backend/tests/test_hackerone_upstream_diagnostics.py": 4
     },
     "families": {
@@ -3073,11 +3101,13 @@
     },
     "feasibility": {
       "backend/app/hackerone_api.py": 4,
-      "backend/app/hackerone_feasibility.py": 8,
+      "backend/app/hackerone_client.py": 4,
+      "backend/app/hackerone_feasibility.py": 12,
       "backend/app/hackerone_review_draft.py": 4,
       "backend/app/simple_portfolio.py": 4,
       "backend/app/worker_service.py": 4,
-      "backend/tests/test_hackerone_feasibility.py": 8,
+      "backend/tests/test_hackerone_client.py": 4,
+      "backend/tests/test_hackerone_feasibility.py": 12,
       "backend/tests/test_hackerone_review_draft.py": 4,
       "backend/tests/test_mobile_production_update_script.py": 4
     },
@@ -3333,8 +3363,9 @@
       "backend/app/hackerone_batch.py": 4,
       "backend/app/hackerone_binding.py": 4,
       "backend/app/hackerone_catalog.py": 4,
+      "backend/app/hackerone_client.py": 4,
       "backend/app/hackerone_discovery.py": 4,
-      "backend/app/hackerone_feasibility.py": 16,
+      "backend/app/hackerone_feasibility.py": 20,
       "backend/app/hackerone_live_readiness.py": 4,
       "backend/app/hackerone_review_draft.py": 24,
       "backend/app/hackerone_scope_import.py": 12,
@@ -3350,10 +3381,10 @@
       "backend/tests/test_hackerone_batch_api.py": 8,
       "backend/tests/test_hackerone_binding.py": 8,
       "backend/tests/test_hackerone_catalog.py": 4,
-      "backend/tests/test_hackerone_client.py": 4,
+      "backend/tests/test_hackerone_client.py": 8,
       "backend/tests/test_hackerone_control_center_api.py": 4,
       "backend/tests/test_hackerone_discovery.py": 4,
-      "backend/tests/test_hackerone_feasibility.py": 12,
+      "backend/tests/test_hackerone_feasibility.py": 16,
       "backend/tests/test_hackerone_launch_api.py": 4,
       "backend/tests/test_hackerone_live_readiness.py": 4,
       "backend/tests/test_hackerone_nuclei_e2e.py": 4,
@@ -3580,6 +3611,12 @@
       "backend/tests/test_simple_portfolio.py": 4,
       "frontend/simple.js": 8,
       "frontend/sw.js": 8
+    },
+    "json": {
+      "backend/app/hackerone_client.py": 4,
+      "backend/app/hackerone_feasibility.py": 4,
+      "backend/tests/test_hackerone_client.py": 4,
+      "backend/tests/test_hackerone_feasibility.py": 4
     },
     "keep": {
       "backend/app/hackerone_api.py": 4,
@@ -4564,6 +4601,12 @@
       "backend/app/passive_response_context.py": 4,
       "backend/tests/test_passive_high_value_ranking.py": 4,
       "backend/tests/test_passive_response_context.py": 4
+    },
+    "responses": {
+      "backend/app/hackerone_client.py": 4,
+      "backend/app/hackerone_feasibility.py": 4,
+      "backend/tests/test_hackerone_client.py": 4,
+      "backend/tests/test_hackerone_feasibility.py": 4
     },
     "restarting": {
       "backend/tests/test_frontend_auth_proxy.py": 4,

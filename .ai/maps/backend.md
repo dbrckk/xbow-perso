@@ -3679,6 +3679,10 @@ value = path.strip()
 ⋮----
 parts = value.split("/")
 ⋮----
+def _is_json_content_type(value: str) -> bool
+⋮----
+media_type = str(value or "").split(";", 1)[0].strip().lower()
+⋮----
 def _read_bounded(response, limit: int) -> bytes
 ⋮----
 payload = response.read(limit + 1)
@@ -3837,12 +3841,14 @@ def _open_bounty(program: dict[str, Any]) -> bool
 ⋮----
 record = existing.get(handle)
 ⋮----
+def _client_failure_reason(exc: HackerOneClientError) -> tuple[str, bool]
+⋮----
+message = str(exc).lower()
+status = exc.status_code
+⋮----
 def _inspect_handle(handle: str) -> dict[str, Any]
 ⋮----
 snapshot = fetch_hackerone_program_snapshot(handle)
-⋮----
-status = exc.status_code
-retryable = status is None or status == 429 or int(status or 0) >= 500
 ⋮----
 draft = build_hackerone_review_draft(snapshot)
 blockers = review_draft_blockers(draft)
@@ -3888,10 +3894,13 @@ programmes = {
 compatible = []
 blocker_counts: dict[str, int] = {}
 unavailable_count = 0
+unavailable_reason_counts: dict[str, int] = {}
 ⋮----
 program = programmes.get(handle, {})
 ⋮----
 key = str(reason)
+⋮----
+reason = str(record.get("failure_reason") or "review_unavailable")
 ⋮----
 gap_rows = []
 ⋮----
@@ -13434,6 +13443,12 @@ client = HackerOneClient(
 def test_hackerone_client_imports_cleanly_in_isolated_process()
 ⋮----
 result = subprocess.run(
+⋮----
+def test_client_accepts_jsonapi_vendor_media_type(monkeypatch)
+⋮----
+response = _Response(
+⋮----
+def test_client_still_rejects_non_json_vendor_media_type(monkeypatch)
 ```
 
 ## File: tests/test_hackerone_control_center_api.py
@@ -13569,6 +13584,10 @@ existing = {
 def test_feasibility_summary_turns_blockers_into_capability_gaps()
 ⋮----
 gaps = {row["reason"]: row for row in result["capability_gaps"]}
+⋮----
+def test_non_transport_snapshot_shape_failure_is_blocked_not_unavailable(monkeypatch)
+⋮----
+def test_unavailable_summary_reports_transient_failure_reasons(monkeypatch)
 ```
 
 ## File: tests/test_hackerone_intelligence.py

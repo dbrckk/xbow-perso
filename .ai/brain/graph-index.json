@@ -826,6 +826,7 @@
         "backend/app/github_learning_sync.py",
         "backend/app/hackerone_api.py",
         "backend/app/hackerone_client.py",
+        "backend/app/hackerone_feasibility.py",
         "backend/app/hackerone_intelligence.py",
         "backend/app/hackerone_needs_info.py",
         "backend/app/hackerone_report_tracking.py",
@@ -843,6 +844,7 @@
         "backend/tests/test_hackerone_batch_api.py",
         "backend/tests/test_hackerone_client.py",
         "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_feasibility.py",
         "backend/tests/test_hackerone_launch_api.py",
         "backend/tests/test_hackerone_needs_info.py",
         "backend/tests/test_hackerone_remote_binding.py",
@@ -862,7 +864,7 @@
         "frontend/hackerone.js",
         "frontend/simple.js"
       ],
-      "in_degree": 41,
+      "in_degree": 43,
       "out_degree": 2,
       "path": "backend/tests/test_alert_delivery.py"
     },
@@ -2022,6 +2024,24 @@
     },
     {
       "dependencies": [
+        "backend/app/hackerone_client.py",
+        "backend/app/hackerone_review_draft.py",
+        "backend/app/storage.py",
+        "backend/app/storage_core.py",
+        "backend/tests/test_alert_delivery.py",
+        "backend/tests/test_hackerone_prelaunch.py"
+      ],
+      "dependents": [
+        "backend/app/hackerone_api.py",
+        "backend/app/worker_service.py",
+        "backend/tests/test_hackerone_feasibility.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 6,
+      "path": "backend/app/hackerone_feasibility.py"
+    },
+    {
+      "dependencies": [
         "backend/app/observation_graph.py",
         "backend/app/observer_heartbeat.py",
         "backend/app/observer_lease.py",
@@ -2140,26 +2160,9 @@
       "in_degree": 5,
       "out_degree": 3,
       "path": "backend/app/hypothesis_memory.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/decision_audit.py",
-        "backend/app/knowledge_memory.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_control.py",
-        "backend/app/main.py",
-        "backend/app/orchestrator.py",
-        "backend/tests/test_decision_timeline.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 4,
-      "path": "backend/app/decision_timeline.py"
     }
   ],
-  "edge_count": 1814,
+  "edge_count": 1816,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 372,
   "schema_version": 1

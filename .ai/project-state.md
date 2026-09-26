@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T09:40:48Z
+Generated: 2026-09-26T11:07:17Z
 
 ### Git
 - Branch: `main`
-- Head: `3ec74ec8471a`
-- Commit date: 2026-09-26T11:40:36+02:00
-- Commit: fix: verify deployed routes through OpenAPI and warm feasibility (#402)
+- Head: `676b547e0fa7`
+- Commit date: 2026-09-26T13:07:01+02:00
+- Commit: fix: accept HackerOne JSON:API responses and classify feasibility failures (#403)
 - Tracked files: 571
 
 ### Recently changed files
+- `backend/app/hackerone_client.py`
+- `backend/app/hackerone_feasibility.py`
+- `backend/tests/test_hackerone_client.py`
+- `backend/tests/test_hackerone_feasibility.py`
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-production-status.sh`
 - `scripts/mobile-production-update.sh`
@@ -42,12 +46,10 @@ Generated: 2026-09-26T09:40:48Z
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/hackerone_feasibility.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/app/hackerone_scope_import.py`
 - `backend/tests/test_hackerone_review_draft.py`
 - `backend/tests/test_hackerone_scope_import.py`
-- `backend/tests/test_hackerone_feasibility.py`
 
 ### Project signals
 - `pyproject.toml`
