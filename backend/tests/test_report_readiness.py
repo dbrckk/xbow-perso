@@ -197,3 +197,68 @@ def test_review_queue_and_report_readiness_routes_are_registered():
 
     assert "/api/campaigns/{campaign_id}/review-queue" in paths
     assert "/api/campaigns/{campaign_id}/report-readiness" in paths
+
+
+
+def test_submission_quality_score_separates_low_signal_from_reviewable_reports():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+
+    low = build_report_readiness([_finding("f1")], graph)[0]
+
+    assert low.submission_quality_score < 0.65
+    assert low.submission_quality_band == "low_signal"
+    assert low.quality_components["evidence_backed_validation"] == 0.0
+
+
+def test_submission_quality_score_rewards_complete_evidence_and_metadata():
+    finding = _finding("f1", "confirmed")
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "validation:v1",
+            "validation",
+            "observed",
+            "independent-validator",
+            parent_ids=("finding:f1",),
+        )
+    )
+    graph.add(
+        Observation(
+            "evidence:e1",
+            "evidence",
+            "artifact-reference",
+            "independent-validator",
+            parent_ids=("validation:v1",),
+            metadata={
+                "artifact_id": "artifact-f1",
+                "artifact_kind": "validation",
+                "artifact_sha256": "a" * 64,
+            },
+        )
+    )
+
+    item = build_report_readiness([finding], graph)[0]
+
+    assert item.submission_quality_score > 0.75
+    assert item.submission_quality_band in {"review", "high_signal"}
+    assert item.quality_components["metadata_completeness"] == 0.25
