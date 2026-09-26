@@ -11,6 +11,7 @@ from .finding_correlation import cluster_findings
 from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .observation_graph import load_observation_graph
+from .public_duplicate_intelligence import rank_public_duplicate_risk
 
 router = APIRouter()
 
@@ -21,6 +22,8 @@ def build_finding_intelligence(
     *,
     hypothesis_snapshots: list[dict[str, Any]] | None = None,
     threshold: float = 0.75,
+    public_reports: list[dict[str, Any]] | None = None,
+    program_handle: str | None = None,
 ) -> dict[str, Any]:
     readiness = build_finding_readiness(
         findings,
@@ -63,6 +66,11 @@ def build_finding_intelligence(
             finding_id,
             DifferentialSignal(finding_id=finding_id, signal="none"),
         )
+        duplicate_risk = rank_public_duplicate_risk(
+            finding,
+            list(public_reports or []),
+            program_handle=program_handle,
+        )
         finding_rows.append(
             {
                 "finding_id": finding_id,
@@ -71,6 +79,7 @@ def build_finding_intelligence(
                 "readiness": readiness_item.to_dict() if readiness_item else None,
                 "triage": triage_item.to_dict() if triage_item else None,
                 "differential": differential_item.to_dict(),
+                "public_duplicate_risk": duplicate_risk,
                 "cluster_id": cluster_id,
                 "cluster_status": (
                     consensus_by_cluster[cluster_id].status
@@ -131,6 +140,10 @@ def build_finding_intelligence(
                 row["differential"]["signal"] == "weak"
                 for row in finding_rows
             ),
+            "high_public_similarity_findings": sum(
+                row["public_duplicate_risk"]["risk_band"] == "high_public_similarity"
+                for row in finding_rows
+            ),
             "saturated_clusters": sum(
                 bool(row["saturation"]) and row["saturation"]["saturated"]
                 for row in cluster_rows
@@ -152,11 +165,25 @@ def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):
     store = storage()
     graph = load_observation_graph(store, campaign.id)
     snapshots = store.list_hypothesis_snapshots(campaign.id, limit=50)
+    intelligence = store.get_hackerone_intelligence_state() or {}
+    public_reports = list(intelligence.get("reports") or [])
+    program_handle = None
+    for event in reversed(campaign.events):
+        if event.get("type") != "hackerone_policy_bound":
+            continue
+        binding = event.get("remote_binding")
+        if isinstance(binding, dict) and binding.get("verified") is True:
+            handle = str(binding.get("handle") or "").strip()
+            if handle:
+                program_handle = handle
+        break
     payload = build_finding_intelligence(
         campaign.findings,
         graph,
         hypothesis_snapshots=snapshots,
         threshold=threshold,
+        public_reports=public_reports,
+        program_handle=program_handle,
     )
     return {
         "campaign_id": campaign.id,
