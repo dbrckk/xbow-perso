@@ -663,3 +663,86 @@ def test_htb_finish_records_learning_and_cancels_campaign(tmp_path, monkeypatch)
 def test_htb_finish_route_is_exposed():
     paths = main.app.openapi()["paths"]
     assert "/api/labs/htb/campaigns/{campaign_id}/finish" in paths
+
+
+def test_htb_training_end_to_end_create_start_learn_finish_and_benchmark(
+    tmp_path,
+    monkeypatch,
+):
+    db = str(tmp_path / "htb-e2e.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    queue = JobQueue(db)
+    monkeypatch.setattr(main, "queue", lambda: queue)
+
+    created = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.130",
+            authorized_lab=True,
+            name="HTB E2E fixture",
+        )
+    )
+
+    def fake_advance(campaign, jobs, store):
+        job = jobs.enqueue(
+            campaign.id,
+            "recon_task",
+            {
+                "campaign_id": campaign.id,
+                "kind": "crawl",
+                "target": str(campaign.target.primary_url),
+                "max_requests": 8,
+                "allowed_methods": ["GET", "HEAD"],
+                "same_origin_only": True,
+            },
+            max_attempts=2,
+            dedupe_key="htb-e2e-recon",
+        )
+        return {
+            "action": {
+                "kind": "crawl",
+                "target": str(campaign.target.primary_url),
+                "reason": "bounded HTB E2E recon",
+                "priority": 100,
+            },
+            "job_ids": [job["id"]],
+        }
+
+    monkeypatch.setattr(orchestrator, "advance_campaign", fake_advance)
+
+    started = main.start_campaign(created["campaign_id"])
+    assert started["state"] == "running"
+    assert started["job"]["kind"] == "recon_task"
+
+    status = htb_lab_session_status(created["campaign_id"])
+    assert status["state"] == "running"
+    assert status["job_counts"]["queued"] == 1
+    assert status["finding_count"] == 0
+
+    finished = finish_htb_lab_campaign(
+        created["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=True,
+            successful_techniques=["web-enumeration"],
+            missed_techniques=["graphql-mapping"],
+        ),
+    )
+    assert finished["state"] == "cancelled"
+    assert finished["outcome"]["learning_observations_written"] == 2
+
+    learning = htb_lab_learning_summary(created["campaign_id"])
+    techniques = {item["technique"]: item for item in learning["techniques"]}
+    assert techniques["web-enumeration"]["successes"] == 1
+    assert techniques["graphql-mapping"]["failures"] == 1
+
+    benchmark = build_htb_benchmark_summary(Storage(db, artifacts))
+    assert benchmark["campaign_count"] == 1
+    assert benchmark["evaluated_campaign_count"] == 1
+    assert benchmark["solved_campaign_count"] == 1
+    assert benchmark["solve_rate"] == 1.0
+    assert benchmark["technique_attempts"] == 2
+    assert benchmark["training_only"] is True
+    assert benchmark["scope_expansion"] is False
