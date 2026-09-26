@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=87' in index
-    assert '/app.css?v=87' in index
-    assert "xbow-perso-v87" in sw
+    assert '/simple.js?v=88' in index
+    assert '/app.css?v=88' in index
+    assert "xbow-perso-v88" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=87" defer></script>' in index
+    assert '<script src="/simple.js?v=88" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v87';" in script
-    assert "serviceWorker.register('/sw.js?v=87',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v88';" in script
+    assert "serviceWorker.register('/sw.js?v=88',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v87" in html
+    assert "Interface v88" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -291,3 +291,15 @@ def test_hackerone_dashboard_explains_why_candidates_were_rejected():
     assert "exclusions de scope" in script
     assert "scope incompatible" in script
     assert "aucun domaine compatible" in script
+
+
+def test_htb_dashboard_finishes_or_cancels_training_explicitly():
+    html = _text("frontend/index.html")
+    script = _text("frontend/simple.js")
+    assert 'id="htbCancel"' in html
+    assert "Terminer et enregistrer l’apprentissage" in html
+    assert "Arrêter sans apprentissage" in html
+    assert "/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/finish" in script
+    assert "async function cancelHtbLab()" in script
+    assert "/campaigns/'+encodeURIComponent(campaignId)+'/cancel" in script
+    assert "localStorage.removeItem(HTB_ACTIVE_KEY)" in script
