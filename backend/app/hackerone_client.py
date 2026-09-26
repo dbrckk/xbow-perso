@@ -113,6 +113,17 @@ def _validate_path(path: str) -> str:
     return value
 
 
+def _is_json_content_type(value: str) -> bool:
+    media_type = str(value or "").split(";", 1)[0].strip().lower()
+    return (
+        media_type == "application/json"
+        or (
+            media_type.startswith("application/")
+            and media_type.endswith("+json")
+        )
+    )
+
+
 def _read_bounded(response, limit: int) -> bytes:
     payload = response.read(limit + 1)
     if len(payload) > limit:
@@ -150,7 +161,7 @@ class HackerOneClient:
             response = opener.open(request, timeout=timeout)
             status = int(getattr(response, "status", response.getcode()))
             content_type = (response.headers.get("Content-Type") or "").lower()
-            if "application/json" not in content_type:
+            if not _is_json_content_type(content_type):
                 raise HackerOneClientError("HackerOne response is not JSON")
             raw = _read_bounded(response, _max_response_bytes())
         except HackerOneClientError:
@@ -218,7 +229,7 @@ class HackerOneClient:
             response = opener.open(request, timeout=timeout)
             status = int(getattr(response, "status", response.getcode()))
             content_type = (response.headers.get("Content-Type") or "").lower()
-            if "application/json" not in content_type:
+            if not _is_json_content_type(content_type):
                 raise HackerOneClientError("HackerOne response is not JSON")
             raw = _read_bounded(response, _max_response_bytes())
         except HackerOneClientError:
