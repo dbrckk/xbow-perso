@@ -25,7 +25,7 @@ jobs:
       - run: pip install cyclonedx-bom==7.1.0
       - name: Generate CycloneDX SBOM
         run: cyclonedx-py environment --output-format JSON --output-file backend-sbom.cdx.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: backend-sbom
           path: backend-sbom.cdx.json

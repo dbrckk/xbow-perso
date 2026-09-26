@@ -98,7 +98,7 @@ jobs:
           printf '%s\n' "frontend=$FRONTEND_IMAGE" >> release-gate/manifest.txt
           printf '%s\n' "validated_commit=${{ github.sha }}" >> release-gate/manifest.txt
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: production-candidate-${{ github.run_id }}
           path: release-gate/manifest.txt
