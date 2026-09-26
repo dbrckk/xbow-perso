@@ -249,6 +249,7 @@ tests/
   test_form_waf_reasoning.py
   test_frontend_auth_proxy.py
   test_frontend_policy_launcher.py
+  test_github_actions_runtime.py
   test_github_learning_sync.py
   test_hackerone_activity_summary.py
   test_hackerone_attention.py
@@ -13075,6 +13076,16 @@ def test_htb_benchmark_route_is_separate_from_hackerone_launch()
 def test_htb_status_route_exists()
 ⋮----
 def test_htb_focus_route_is_separate_and_read_only()
+```
+
+## File: tests/test_github_actions_runtime.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+WORKFLOWS = (
+⋮----
+def test_core_github_actions_use_node24_capable_major_versions()
+⋮----
+combined = "\n".join(
 ```
 
 ## File: tests/test_github_learning_sync.py

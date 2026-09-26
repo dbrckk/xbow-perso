@@ -22,16 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T12:29:27Z
+Generated: 2026-09-26T18:48:40Z
 
 ### Git
 - Branch: `main`
-- Head: `9bc06da4f016`
-- Commit date: 2026-09-26T14:29:15+02:00
-- Commit: feat: surface HTB next-focus learning recommendations (#406)
-- Tracked files: 571
+- Head: `9421b2de2850`
+- Commit date: 2026-09-26T20:48:29+02:00
+- Commit: chore: modernize GitHub Actions to Node 24 runtimes (#407)
+- Tracked files: 572
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `.github/workflows/mobile-vps-deploy.yml`
+- `.github/workflows/release-images.yml`
+- `.github/workflows/release-quality-gate.yml`
+- `.github/workflows/security.yml`
+- `.github/workflows/supply-chain.yml`
+- `backend/tests/test_github_actions_runtime.py`
 - `backend/app/htb_lab.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
@@ -45,7 +52,6 @@ Generated: 2026-09-26T12:29:27Z
 - `backend/app/hackerone_feasibility.py`
 - `backend/tests/test_hackerone_client.py`
 - `backend/tests/test_hackerone_feasibility.py`
-- `scripts/mobile-production-update.sh`
 
 ### Project signals
 - `pyproject.toml`

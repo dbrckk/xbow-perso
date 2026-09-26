@@ -265,6 +265,7 @@ backend/
     test_form_waf_reasoning.py
     test_frontend_auth_proxy.py
     test_frontend_policy_launcher.py
+    test_github_actions_runtime.py
     test_github_learning_sync.py
     test_hackerone_activity_summary.py
     test_hackerone_attention.py
@@ -571,7 +572,7 @@ jobs:
     environment: mobile-vps
     steps:
       - name: Checkout requested ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref }}
 
@@ -669,7 +670,7 @@ jobs:
           - component: frontend
             context: ./frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: docker/setup-buildx-action@v3
 
@@ -763,7 +764,7 @@ jobs:
           [[ "$BACKEND_IMAGE" =~ $pattern ]] || { echo "backend image is not digest-pinned"; exit 1; }
           [[ "$FRONTEND_IMAGE" =~ $pattern ]] || { echo "frontend image is not digest-pinned"; exit 1; }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.release_ref }}
 
@@ -779,7 +780,7 @@ jobs:
           IMAGE: ${{ inputs.frontend_image }}
         run: gh attestation verify "oci://$IMAGE" --repo "${{ github.repository }}"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -853,8 +854,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -870,7 +871,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
@@ -919,8 +920,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -941,7 +942,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v3
       - name: Build backend without publishing
         uses: docker/build-push-action@v6
@@ -13683,6 +13684,16 @@ def test_htb_benchmark_route_is_separate_from_hackerone_launch()
 def test_htb_status_route_exists()
 ⋮----
 def test_htb_focus_route_is_separate_and_read_only()
+````
+
+## File: backend/tests/test_github_actions_runtime.py
+````python
+ROOT = Path(__file__).resolve().parents[2]
+WORKFLOWS = (
+⋮----
+def test_core_github_actions_use_node24_capable_major_versions()
+⋮----
+combined = "\n".join(
 ````
 
 ## File: backend/tests/test_github_learning_sync.py

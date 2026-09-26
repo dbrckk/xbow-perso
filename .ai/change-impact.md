@@ -1,23 +1,20 @@
 # Change impact
 
-Base: 6d329596c6572067010fc5e49377546f99db75ba
-Head: 9bc06da4f0163ed13d954670776e11e0f04b9dea
+Base: 405839ded285089cf7def02a30c6b0657afa2088
+Head: 9421b2de285049d6732cce0e23239388e7a36eda
 
 ## Changed files
-- M backend/app/htb_lab.py
-- M backend/tests/test_frontend_auth_proxy.py
-- M backend/tests/test_frontend_policy_launcher.py
-- M backend/tests/test_htb_lab.py
-- M backend/tests/test_mobile_production_update_script.py
-- M frontend/index.html
-- M frontend/simple.js
-- M frontend/sw.js
-- M scripts/mobile-production-status.sh
+- M .github/workflows/ci.yml
+- M .github/workflows/mobile-vps-deploy.yml
+- M .github/workflows/release-images.yml
+- M .github/workflows/release-quality-gate.yml
+- M .github/workflows/security.yml
+- M .github/workflows/supply-chain.yml
+- A backend/tests/test_github_actions_runtime.py
 
 ## Affected areas
+- .github
 - backend
-- frontend
-- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.
