@@ -59,15 +59,40 @@ class HtbLabCampaignInput(BaseModel):
         return self
 
 
+def _active_same_target_htb_campaign(store, host: str):
+    for campaign in store.list_campaigns(limit=500):
+        if not is_htb_training_campaign(campaign):
+            continue
+        state = str(campaign.get("state") or "")
+        if state in {"completed", "cancelled"}:
+            continue
+        rules = dict((campaign.get("target") or {}).get("rules") or {})
+        allowed = [str(value).lower().rstrip(".") for value in list(rules.get("allowed_targets") or [])]
+        if host in allowed:
+            return campaign
+    return None
+
+
 @router.post("/api/labs/htb/campaigns")
 def create_htb_lab_campaign(payload: HtbLabCampaignInput):
     from .campaign_audit import append_campaign_event
-    from .main import Campaign, CampaignState, ProgramRules, TargetInput, save_campaign, utcnow
+    from .main import Campaign, CampaignState, ProgramRules, TargetInput, save_campaign, storage, utcnow
 
     parsed = urlparse(str(payload.target_url))
     host = (parsed.hostname or "").lower().rstrip(".")
     if not host:
         raise HTTPException(status_code=400, detail="HTB lab target has no hostname")
+
+    active = _active_same_target_htb_campaign(storage(), host)
+    if active is not None:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "An HTB training campaign is already active for this exact target",
+                "reason": "active_htb_target_exists",
+                "campaign_id": str(active.get("id") or ""),
+            },
+        )
 
     target = TargetInput(
         name=payload.name,
@@ -452,6 +477,33 @@ def build_htb_benchmark_summary(store, *, limit_campaigns: int = 200):
         ),
         "recent_campaigns": recent[-20:],
         "read_only": True,
+        "scope_expansion": False,
+        "contains_exploit_payloads": False,
+    }
+
+
+
+
+@router.post("/api/labs/htb/campaigns/{campaign_id}/finish")
+def finish_htb_lab_campaign(campaign_id: str, payload: HtbLabOutcomeInput):
+    """Persist correction-safe learning and close the HTB campaign in one operator action."""
+    from .main import CampaignState, assert_campaign_exists, cancel_campaign
+
+    outcome = record_htb_lab_outcome(campaign_id, payload)
+    campaign = assert_campaign_exists(campaign_id)
+    state = getattr(campaign.state, "value", campaign.state)
+    cancellation = None
+    if state not in {CampaignState.completed.value, CampaignState.cancelled.value}:
+        cancellation = cancel_campaign(campaign_id)
+
+    final_campaign = assert_campaign_exists(campaign_id)
+    return {
+        "campaign_id": final_campaign.id,
+        "provider": "hackthebox",
+        "training_only": True,
+        "state": str(getattr(final_campaign.state, "value", final_campaign.state)),
+        "outcome": outcome,
+        "cancellation": cancellation,
         "scope_expansion": False,
         "contains_exploit_payloads": False,
     }
