@@ -14667,6 +14667,23 @@ db = str(tmp_path / "htb-finish.sqlite3")
 result = finish_htb_lab_campaign(
 ⋮----
 def test_htb_finish_route_is_exposed()
+⋮----
+db = str(tmp_path / "htb-e2e.sqlite3")
+⋮----
+def fake_advance(campaign, jobs, store)
+⋮----
+job = jobs.enqueue(
+⋮----
+started = main.start_campaign(created["campaign_id"])
+⋮----
+status = htb_lab_session_status(created["campaign_id"])
+⋮----
+finished = finish_htb_lab_campaign(
+⋮----
+learning = htb_lab_learning_summary(created["campaign_id"])
+techniques = {item["technique"]: item for item in learning["techniques"]}
+⋮----
+benchmark = build_htb_benchmark_summary(Storage(db, artifacts))
 ```
 
 ## File: tests/test_hypothesis_engine.py

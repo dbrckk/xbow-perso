@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T11:11:07Z
+Generated: 2026-09-26T11:13:52Z
 
 ### Git
 - Branch: `main`
-- Head: `1694b1332ab9`
-- Commit date: 2026-09-26T13:10:35+02:00
-- Commit: ops: surface HackerOne feasibility unavailable reasons (#404)
+- Head: `5ccc562e80b4`
+- Commit date: 2026-09-26T13:13:42+02:00
+- Commit: test: cover the complete HTB training and learning loop (#405)
 - Tracked files: 571
 
 ### Recently changed files
+- `backend/tests/test_htb_lab.py`
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_client.py`
@@ -42,7 +43,6 @@ Generated: 2026-09-26T11:11:07Z
 - `backend/app/htb_lab.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_htb_lab.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`

@@ -5,238 +5,1991 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "test_live_production_update_waits_for_worker_heartbeats": {
+    "_FakeQueue": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 7,
-        "end": 14
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_mobile_status_reports_hackerone_launch_readiness": {
-      "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 17,
-        "end": 24
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_mobile_status_prints_explicit_launch_verdict_and_blockers": {
-      "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 27,
-        "end": 38
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_enable_script_requires_final_live_launch_verdict": {
-      "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 41,
-        "end": 49
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_mobile_status_requires_live_hackerone_api_probe_for_ready_verdict": {
-      "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 52,
-        "end": 61
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 21,
+        "end": 39
       },
       "symbol_dependencies": [
         {
-          "symbol": "HackerOneClient",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "backend/app/hackerone_client.py",
-              "line": 134,
+              "file": "backend/app/jobqueue.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "__init__": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 22,
+        "end": 142
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "class_like"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_enable_script_probes_hackerone_before_declaring_profile_armed": {
-      "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 64,
-        "end": 72
-      },
-      "symbol_dependencies": [
+          "relation": "imported_module"
+        },
         {
-          "symbol": "HackerOneClient",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/hackerone_client.py",
-              "line": 134,
+              "file": "backend/app/storage.py",
+              "line": 19,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 523,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_htb_lab_accepts_private_lab_ip_and_htb_hostname",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_lab_campaign_is_exact_scope_and_training_only",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_lab_rejects_public_targets",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_lab_requires_explicit_authorization_confirmation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_lab_route_is_exposed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_lab_start_uses_bounded_planner",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "enqueue": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 25,
+        "end": 36
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "get": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 38,
+        "end": 39
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_htb_lab_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 42,
+        "end": 43
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
       "dependency_count": 1
     },
-    "test_enable_script_reports_actionable_non_idle_queue_blocker": {
+    "test_htb_lab_rejects_public_targets": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 75,
-        "end": 86
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 46,
+        "end": 55
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     },
-    "test_enable_script_keeps_rollback_active_through_final_launch_verification": {
+    "test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 89,
-        "end": 96
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 61,
+        "end": 76
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     },
-    "test_enable_script_refreshes_safe_production_before_readiness_and_queue_checks": {
+    "test_htb_lab_accepts_private_lab_ip_and_htb_hostname": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 99,
-        "end": 107
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 79,
+        "end": 89
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     },
-    "test_enable_script_documents_stale_checkout_and_stopped_stack_recovery": {
+    "test_htb_lab_requires_explicit_authorization_confirmation": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 110,
-        "end": 115
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 92,
+        "end": 101
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     },
-    "test_enable_script_reexecs_from_refreshed_checkout_exactly_once": {
+    "test_htb_lab_campaign_is_exact_scope_and_training_only": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 118,
-        "end": 123
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 104,
+        "end": 131
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 523,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
     },
-    "test_enable_script_reconciles_hackerone_batches_before_queue_idle_gate": {
+    "test_htb_lab_start_uses_bounded_planner": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 126,
-        "end": 133
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 134,
+        "end": 178
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_FakeQueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 661,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fake_advance",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 152,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 689,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "start_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1224,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
     },
-    "test_mobile_status_public_https_probe_uses_get_not_head": {
+    "fake_advance": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 136,
-        "end": 141
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 152,
+        "end": 272
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 661,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "htb_lab_learning_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 566,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "start_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1224,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_htb_global_learning_aggregates_authorized_labs_only",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 239,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_learning_routes_are_exposed",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 233,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_outcome_feedback_becomes_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_htb_outcome_rejects_overlapping_techniques",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 220,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 14
     },
-    "test_mobile_status_verifies_current_deployed_contract": {
+    "test_htb_outcome_feedback_becomes_learning_memory": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 144,
-        "end": 171
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 181,
+        "end": 217
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "htb_lab_learning_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 566,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
     },
-    "test_mobile_status_production_contract_requires_all_live_prerequisites": {
+    "test_htb_outcome_rejects_overlapping_techniques": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 174,
-        "end": 186
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 220,
+        "end": 230
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     },
-    "test_mobile_status_route_contract_uses_openapi_paths_not_router_internals": {
+    "test_htb_learning_routes_are_exposed": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 189,
-        "end": 193
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 233,
+        "end": 236
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     },
-    "test_mobile_status_uses_live_origin_main_and_fails_closed": {
+    "test_htb_global_learning_aggregates_authorized_labs_only": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 196,
-        "end": 205
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 239,
+        "end": 288
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_htb_cross_lab_learning_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 382,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
     },
-    "test_mobile_status_live_verifies_one_or_two_accessible_bounties": {
+    "test_htb_global_learning_route_is_exposed": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 208,
-        "end": 218
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 291,
+        "end": 293
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     },
-    "test_mobile_status_separates_production_health_from_bounty_availability": {
+    "test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 221,
-        "end": 238
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 296,
+        "end": 373
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 661,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 523,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 12
     },
-    "test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version": {
+    "test_non_htb_campaign_does_not_receive_htb_cross_lab_learning": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 241,
-        "end": 246
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 376,
+        "end": 417
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 661,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 202,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 12
     },
-    "test_mobile_status_route_contract_name_is_version_independent": {
+    "test_htb_outcome_is_idempotent_for_identical_feedback": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 249,
-        "end": 253
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 420,
+        "end": 457
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 523,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
     },
-    "test_mobile_status_reports_hackerone_feasibility_pool_and_gaps": {
+    "test_htb_corrected_feedback_replaces_prior_learning_revision": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 256,
-        "end": 269
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 460,
+        "end": 500
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_htb_cross_lab_learning_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 382,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "htb_lab_learning_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 566,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
     },
-    "test_live_production_update_warms_hackerone_feasibility_index": {
+    "test_htb_benchmark_reports_objective_progress_metrics": {
       "source": {
-        "file": "backend/tests/test_mobile_production_update_script.py",
-        "start": 272,
-        "end": 281
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 503,
+        "end": 553
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_htb_benchmark_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 396,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_htb_lab_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_htb_benchmark_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 556,
+        "end": 558
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_htb_session_status_is_redacted_and_operational": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 561,
+        "end": 587
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "htb_lab_session_status",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 533,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_htb_session_status_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 590,
+        "end": 592
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_htb_duplicate_exact_active_target_is_rejected": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 595,
+        "end": 622
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_htb_finish_records_learning_and_cancels_campaign": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 625,
+        "end": 660
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finish",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 429,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finish_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 488,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 523,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "test_htb_finish_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 663,
+        "end": 665
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finish",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 429,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_htb_training_end_to_end_create_start_learn_finish_and_benchmark": {
+      "source": {
+        "file": "backend/tests/test_htb_lab.py",
+        "start": 668,
+        "end": 748
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "HtbLabCampaignInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HtbLabOutcomeInput",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 141,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 661,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_htb_benchmark_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 396,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "fake_advance",
+          "definitions": [
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 152,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/tests/test_htb_lab.py",
+              "line": 689,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "finish_htb_lab_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 488,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "htb_lab_learning_summary",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 566,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "htb_lab_session_status",
+          "definitions": [
+            {
+              "file": "backend/app/htb_lab.py",
+              "line": 533,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "start_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1224,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
     }
   }
 }

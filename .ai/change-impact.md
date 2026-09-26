@@ -1,15 +1,13 @@
 # Change impact
 
-Base: c0e689293a26134a4e2b136e31f4a45d06decbb2
-Head: 1694b1332ab95ba69de22cfe65fd08935bb6b449
+Base: 117d85a53bf36c03df8289d04cc7565c6db28258
+Head: 5ccc562e80b4c07a25a7a93cb2f3c15587336ef8
 
 ## Changed files
-- M backend/tests/test_mobile_production_update_script.py
-- M scripts/mobile-production-status.sh
+- M backend/tests/test_htb_lab.py
 
 ## Affected areas
 - backend
-- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.
