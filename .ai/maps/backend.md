@@ -4266,6 +4266,7 @@ preview = dict(snapshot.preview or {})
 ⋮----
 primary_url = None
 compatible_assets = [
+bounty_compatible_assets = [
 ⋮----
 identifier = str(asset.get("identifier") or "").strip().rstrip(".").lower()
 ⋮----
@@ -4352,6 +4353,7 @@ class HackerOneScopeAsset
 identifier: str
 asset_type: str
 eligible_for_submission: bool
+eligible_for_bounty: bool | None
 host_pattern: str | None
 compatible: bool
 reason: str | None = None
@@ -4440,6 +4442,9 @@ def import_hackerone_structured_scope(document: dict[str, Any]) -> HackerOneScop
 assets: list[HackerOneScopeAsset] = []
 statuses: dict[str, set[bool]] = {}
 unsupported_labels: set[str] = set()
+⋮----
+bounty_raw = attributes.get("eligible_for_bounty")
+eligible_for_bounty = bounty_raw if isinstance(bounty_raw, bool) else None
 ⋮----
 compatible = host_pattern is not None
 ⋮----
@@ -14118,6 +14123,10 @@ def test_review_draft_projects_exact_domain_from_mixed_scope()
 def test_review_draft_accepts_exact_ip_address_as_primary_web_target()
 ⋮----
 def test_review_draft_accepts_exact_ipv6_address_as_primary_web_target()
+⋮----
+def test_review_draft_prefers_explicitly_bounty_eligible_domain()
+⋮----
+def test_review_draft_rejects_only_explicitly_unpaid_web_targets()
 ```
 
 ## File: tests/test_hackerone_review_profiles.py

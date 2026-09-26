@@ -22,33 +22,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-25T19:01:20Z
+Generated: 2026-09-26T05:48:01Z
 
 ### Git
 - Branch: `main`
-- Head: `6ca8355fd6d1`
-- Commit date: 2026-09-25T21:01:06+02:00
-- Commit: feat: report HackerOne compatibility gaps from real programme data (#398)
+- Head: `5ff10e118b9b`
+- Commit date: 2026-09-26T07:47:50+02:00
+- Commit: improve: prefer bounty-eligible HackerOne web targets (#399)
 - Tracked files: 571
 
 ### Recently changed files
 - `backend/app/hackerone_feasibility.py`
+- `backend/app/hackerone_review_draft.py`
+- `backend/app/hackerone_scope_import.py`
+- `backend/tests/test_hackerone_review_draft.py`
+- `backend/tests/test_hackerone_scope_import.py`
 - `backend/tests/test_hackerone_feasibility.py`
 - `backend/tests/test_mobile_production_update_script.py`
 - `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_api.py`
-- `backend/app/hackerone_review_draft.py`
 - `backend/app/simple_portfolio.py`
 - `backend/app/worker_service.py`
-- `backend/tests/test_hackerone_review_draft.py`
 - `backend/app/htb_lab.py`
 - `backend/tests/test_htb_lab.py`
-- `backend/app/hackerone_binding.py`
-- `backend/app/hackerone_scope_import.py`
-- `backend/tests/test_hackerone_binding.py`
-- `backend/tests/test_hackerone_remote_binding.py`
-- `backend/tests/test_hackerone_reviewed_batch_api.py`
-- `backend/tests/test_hackerone_scope_import.py`
 
 ### Project signals
 - `pyproject.toml`
