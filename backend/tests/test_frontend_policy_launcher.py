@@ -26,7 +26,7 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "runtimeAction", "status", "journal", "cancelActive", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=87" defer></script>' in html
+    assert '<script src="/simple.js?v=88" defer></script>' in html
     assert "Trouver un bug bounty accessible" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html

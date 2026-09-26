@@ -199,6 +199,7 @@ required = {
     "/api/hackerone/journal",
     "/api/hackerone/feasibility-index",
     "/api/labs/htb/campaigns",
+    "/api/labs/htb/campaigns/{campaign_id}/finish",
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
     "/api/labs/htb/campaigns/{campaign_id}/status",
