@@ -189,6 +189,7 @@ class HackerOneScopeAsset:
     identifier: str
     asset_type: str
     eligible_for_submission: bool
+    eligible_for_bounty: bool | None
     host_pattern: str | None
     compatible: bool
     reason: str | None = None
@@ -504,6 +505,8 @@ def import_hackerone_structured_scope(document: dict[str, Any]) -> HackerOneScop
             raise HackerOneScopeImportError(
                 "HackerOne eligible_for_submission must be boolean"
             )
+        bounty_raw = attributes.get("eligible_for_bounty")
+        eligible_for_bounty = bounty_raw if isinstance(bounty_raw, bool) else None
 
         host_pattern, reason = _compatible_host_pattern(asset_type, identifier)
         compatible = host_pattern is not None
@@ -517,6 +520,7 @@ def import_hackerone_structured_scope(document: dict[str, Any]) -> HackerOneScop
                 identifier=identifier,
                 asset_type=asset_type,
                 eligible_for_submission=eligible,
+                eligible_for_bounty=eligible_for_bounty,
                 host_pattern=host_pattern,
                 compatible=compatible,
                 reason=reason,

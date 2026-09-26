@@ -193,3 +193,49 @@ def test_review_draft_accepts_exact_ipv6_address_as_primary_web_target():
     draft = build_hackerone_review_draft(snapshot)
 
     assert draft["prefill"]["primary_url"] == "https://[2001:db8::25]"
+
+
+def test_review_draft_prefers_explicitly_bounty_eligible_domain():
+    snapshot = _snapshot()
+    snapshot.preview["assets"] = [
+        {
+            "identifier": "unpaid.example.com",
+            "asset_type": "Domain",
+            "eligible_for_submission": True,
+            "eligible_for_bounty": False,
+            "compatible": True,
+        },
+        {
+            "identifier": "paid.example.com",
+            "asset_type": "Domain",
+            "eligible_for_submission": True,
+            "eligible_for_bounty": True,
+            "compatible": True,
+        },
+    ]
+
+    draft = build_hackerone_review_draft(snapshot)
+
+    assert draft["prefill"]["primary_url"] == "https://paid.example.com"
+    assert draft["evidence"]["bounty_eligible_primary_target"] is True
+    assert draft["evidence"]["explicitly_unpaid_compatible_assets"] == 1
+    assert draft["review_blockers"] == []
+
+
+def test_review_draft_rejects_only_explicitly_unpaid_web_targets():
+    snapshot = _snapshot()
+    snapshot.preview["assets"] = [
+        {
+            "identifier": "unpaid.example.com",
+            "asset_type": "Domain",
+            "eligible_for_submission": True,
+            "eligible_for_bounty": False,
+            "compatible": True,
+        }
+    ]
+
+    draft = build_hackerone_review_draft(snapshot)
+
+    assert draft["prefill"]["primary_url"] is None
+    assert "no_bounty_eligible_primary_target" in draft["review_blockers"]
+    assert review_draft_is_usable(draft) is False

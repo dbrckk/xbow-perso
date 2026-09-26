@@ -20,6 +20,12 @@ def review_draft_blockers(draft: dict[str, Any]) -> list[str]:
         blockers.append("bounties_not_offered")
     if evidence.get("policy_text_available") is not True:
         blockers.append("policy_text_unavailable")
+    if (
+        evidence.get("offers_bounties") is True
+        and not str((draft.get("prefill") or {}).get("primary_url") or "").strip()
+        and int(evidence.get("explicitly_unpaid_compatible_assets") or 0) > 0
+    ):
+        blockers.append("no_bounty_eligible_primary_target")
     if list(draft.get("scope_exclusions") or []):
         blockers.append("scope_exclusions_require_manual_enforcement")
     if str(evidence.get("submission_state") or "").strip().lower() in {"closed", "paused", "disabled"}:
@@ -46,7 +52,15 @@ def build_hackerone_review_draft(snapshot) -> dict[str, Any]:
         and asset.get("eligible_for_submission") is True
         and asset.get("compatible") is True
     ]
-    for asset in compatible_assets:
+    bounty_compatible_assets = [
+        asset
+        for asset in compatible_assets
+        if asset.get("eligible_for_bounty") is not False
+    ]
+    bounty_compatible_assets.sort(
+        key=lambda asset: 0 if asset.get("eligible_for_bounty") is True else 1
+    )
+    for asset in bounty_compatible_assets:
         if str(asset.get("asset_type") or "") != "Domain":
             continue
         identifier = str(asset.get("identifier") or "").strip().rstrip(".").lower()
@@ -55,7 +69,7 @@ def build_hackerone_review_draft(snapshot) -> dict[str, Any]:
             break
 
     if primary_url is None:
-        for asset in compatible_assets:
+        for asset in bounty_compatible_assets:
             if str(asset.get("asset_type") or "") != "IpAddress":
                 continue
             identifier = str(asset.get("identifier") or "").strip()
@@ -114,6 +128,23 @@ def build_hackerone_review_draft(snapshot) -> dict[str, Any]:
             "scope_complete": scope_complete,
             "full_scope_complete": bool(preview.get("complete")),
             "scope_mode": scope_mode,
+            "bounty_eligible_primary_target": (
+                next(
+                    (
+                        asset.get("eligible_for_bounty")
+                        for asset in bounty_compatible_assets
+                        if primary_url
+                        and str(asset.get("identifier") or "").strip().lower().rstrip(".")
+                        in primary_url.lower()
+                    ),
+                    None,
+                )
+            ),
+            "explicitly_unpaid_compatible_assets": sum(
+                1
+                for asset in compatible_assets
+                if asset.get("eligible_for_bounty") is False
+            ),
         },
         "manual_required": [
             "reviewed_by",
