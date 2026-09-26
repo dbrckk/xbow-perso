@@ -22,30 +22,30 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T11:13:52Z
+Generated: 2026-09-26T12:29:27Z
 
 ### Git
 - Branch: `main`
-- Head: `5ccc562e80b4`
-- Commit date: 2026-09-26T13:13:42+02:00
-- Commit: test: cover the complete HTB training and learning loop (#405)
+- Head: `9bc06da4f016`
+- Commit date: 2026-09-26T14:29:15+02:00
+- Commit: feat: surface HTB next-focus learning recommendations (#406)
 - Tracked files: 571
 
 ### Recently changed files
+- `backend/app/htb_lab.py`
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_htb_lab.py`
 - `backend/tests/test_mobile_production_update_script.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_client.py`
 - `backend/app/hackerone_feasibility.py`
 - `backend/tests/test_hackerone_client.py`
 - `backend/tests/test_hackerone_feasibility.py`
 - `scripts/mobile-production-update.sh`
-- `backend/app/htb_lab.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`

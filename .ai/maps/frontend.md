@@ -433,6 +433,8 @@ async function refreshHtbSession(
 ⋮----
 async function refreshHtbBenchmark(
 ⋮----
+async function refreshHtbFocus(
+⋮----
 function bind()
 ```
 

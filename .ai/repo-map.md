@@ -5320,6 +5320,20 @@ cancellation = cancel_campaign(campaign_id)
 ⋮----
 final_campaign = assert_campaign_exists(campaign_id)
 ⋮----
+"""Return read-only next-focus recommendations from prior HTB feedback only."""
+⋮----
+ranked = []
+⋮----
+conclusive = int(item.successes) + int(item.failures)
+⋮----
+gap = int(item.failures) - int(item.successes)
+priority_score = (
+⋮----
+focus = ranked[:limit]
+⋮----
+@router.get("/api/labs/htb/focus")
+def htb_focus_summary(limit_campaigns: int = 200, limit: int = 5)
+⋮----
 @router.get("/api/labs/htb/benchmark")
 def htb_benchmark_summary(limit_campaigns: int = 200)
 ⋮----
@@ -13635,6 +13649,8 @@ def test_htb_dashboard_tracks_session_status_without_exposing_payloads()
 def test_hackerone_dashboard_explains_why_candidates_were_rejected()
 ⋮----
 def test_htb_dashboard_finishes_or_cancels_training_explicitly()
+⋮----
+def test_dashboard_surfaces_htb_next_focus_recommendations()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -13665,6 +13681,8 @@ def test_htb_training_route_exists_and_frontend_keeps_it_separate_from_hackerone
 def test_htb_benchmark_route_is_separate_from_hackerone_launch()
 ⋮----
 def test_htb_status_route_exists()
+⋮----
+def test_htb_focus_route_is_separate_and_read_only()
 ````
 
 ## File: backend/tests/test_github_learning_sync.py
@@ -15292,6 +15310,14 @@ learning = htb_lab_learning_summary(created["campaign_id"])
 techniques = {item["technique"]: item for item in learning["techniques"]}
 ⋮----
 benchmark = build_htb_benchmark_summary(Storage(db, artifacts))
+⋮----
+def test_htb_focus_ranks_repeated_misses_without_automatic_execution(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-focus.sqlite3")
+⋮----
+summary = build_htb_focus_summary(Storage(db, artifacts), limit=3)
+⋮----
+def test_htb_focus_route_is_exposed()
 ````
 
 ## File: backend/tests/test_hypothesis_engine.py
@@ -20410,6 +20436,8 @@ async function refreshHtbSession(
 ⋮----
 async function refreshHtbBenchmark(
 ⋮----
+async function refreshHtbFocus(
+⋮----
 function bind()
 ````
 
@@ -21401,6 +21429,7 @@ required = {
     "/api/labs/htb/campaigns/{campaign_id}/status",
     "/api/labs/htb/learning",
     "/api/labs/htb/benchmark",
+    "/api/labs/htb/focus",
 }
 missing = sorted(required - paths)
 print("APP_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))
