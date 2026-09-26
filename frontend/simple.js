@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v87';
+  const UI_VERSION='v88';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -861,7 +861,7 @@
     const missed=parseTechniqueList($('htbMissedTechniques')?.value);
     try{
       const result=await api(
-        '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/outcome',
+        '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/finish',
         {
           method:'POST',
           body:JSON.stringify({
@@ -877,20 +877,56 @@
       );
       const globalSummary=await api('/labs/htb/learning');
       await refreshHtbBenchmark({quiet:true});
-      await refreshHtbSession({quiet:true});
       const techniques=Array.isArray(summary?.techniques)?summary.techniques:[];
       const globalTechniques=Array.isArray(globalSummary?.techniques)?globalSummary.techniques:[];
       const node=$('htbLearningStatus');
       if(node){
         node.textContent=
-          String(result?.learning_observations_written||0)+' signal(aux) ajouté(s) · '+
+          String(result?.outcome?.learning_observations_written||0)+' signal(aux) ajouté(s) · '+
           techniques.length+' technique(s) dans ce lab · '+
           globalTechniques.length+' technique(s) globales sur '+
           String(globalSummary?.campaign_count||0)+' lab(s).';
       }
-      setHtbStatus('Apprentissage HTB enregistré sans payload ni secret.','ok');
+      try{localStorage.removeItem(HTB_ACTIVE_KEY);}catch(_error){}
+      $('htbFeedback')?.classList.add('hidden');
+      const session=$('htbSession');
+      if(session)session.textContent='Session HTB : terminée et apprentissage enregistré.';
+      setHtbStatus('Entraînement HTB terminé. Apprentissage enregistré sans payload ni secret.','ok');
     }catch(error){
       setHtbStatus('Apprentissage HTB bloqué : '+error.message,'err');
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
+  async function cancelHtbLab(){
+    if(!requireToken())return;
+    let campaignId='';
+    try{campaignId=String(localStorage.getItem(HTB_ACTIVE_KEY)||'');}catch(_error){}
+    if(!campaignId){
+      setHtbStatus('Aucune campagne HTB active sur cet appareil.','warn');
+      return;
+    }
+    const button=$('htbCancel');
+    if(button)button.disabled=true;
+    try{
+      await api('/campaigns/'+encodeURIComponent(campaignId)+'/cancel',{
+        method:'POST',
+        body:'{}'
+      });
+      try{localStorage.removeItem(HTB_ACTIVE_KEY);}catch(_error){}
+      $('htbFeedback')?.classList.add('hidden');
+      const session=$('htbSession');
+      if(session)session.textContent='Session HTB : arrêtée sans apprentissage.';
+      setHtbStatus('Campagne HTB arrêtée.','ok');
+    }catch(error){
+      if(Number(error?.status||0)===409&&String(error?.message||'').includes('Completed campaign')){
+        try{localStorage.removeItem(HTB_ACTIVE_KEY);}catch(_error){}
+        $('htbFeedback')?.classList.add('hidden');
+        setHtbStatus('Campagne HTB déjà terminée.','ok');
+      }else{
+        setHtbStatus('Arrêt HTB impossible : '+error.message,'err');
+      }
     }finally{
       if(button)button.disabled=false;
     }
@@ -975,7 +1011,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=87',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=88',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -988,6 +1024,7 @@
     $('cancelActive').addEventListener('click',()=>void cancelActiveBatch());
     $('htbStart')?.addEventListener('click',()=>void startHtbLab());
     $('htbLearn')?.addEventListener('click',()=>void saveHtbLearning());
+    $('htbCancel')?.addEventListener('click',()=>void cancelHtbLab());
     try{
       if(localStorage.getItem(HTB_ACTIVE_KEY))$('htbFeedback')?.classList.remove('hidden');
     }catch(_error){}
