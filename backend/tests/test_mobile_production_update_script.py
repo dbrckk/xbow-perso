@@ -186,12 +186,11 @@ def test_mobile_status_production_contract_requires_all_live_prerequisites():
     assert "BLOCKER=route_contract" in verdict
 
 
-def test_mobile_status_route_contract_tolerates_non_route_entries():
+def test_mobile_status_route_contract_uses_openapi_paths_not_router_internals():
     script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
 
-    assert 'getattr(route, "path", None)' in script
-    assert 'if (path := getattr(route, "path", None))' in script
-    assert "paths = {" in script
+    assert 'paths = set((app.openapi().get("paths") or {}).keys())' in script
+    assert 'getattr(route, "path", None)' not in script
 
 
 def test_mobile_status_uses_live_origin_main_and_fails_closed():
