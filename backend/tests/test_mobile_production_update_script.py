@@ -262,6 +262,8 @@ def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps():
     assert "FEASIBILITY_COMPATIBLE=" in script
     assert "FEASIBILITY_BLOCKED=" in script
     assert "FEASIBILITY_UNAVAILABLE=" in script
+    assert "UNAVAILABLE_REASON=" in script
+    assert "unavailable_reason_counts" in script
     assert "CAPABILITY_GAP=" in script
     assert "COMPATIBLE_PROGRAM=" in script
     assert '"/api/hackerone/feasibility-index"' in script
