@@ -187,11 +187,7 @@ echo "=== APPLICATION ROUTE CONTRACT ==="
 if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
 from app.main import app
 
-paths = {
-    str(path)
-    for route in app.routes
-    if (path := getattr(route, "path", None))
-}
+paths = set((app.openapi().get("paths") or {}).keys())
 required = {
     "/api/hackerone/simple-review-package",
     "/api/imports/hackerone/rules-preview",
