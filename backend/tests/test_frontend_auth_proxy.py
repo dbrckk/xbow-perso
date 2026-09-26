@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=88' in index
-    assert '/app.css?v=88' in index
-    assert "xbow-perso-v88" in sw
+    assert '/simple.js?v=89' in index
+    assert '/app.css?v=89' in index
+    assert "xbow-perso-v89" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=88" defer></script>' in index
+    assert '<script src="/simple.js?v=89" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v88';" in script
-    assert "serviceWorker.register('/sw.js?v=88',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v89';" in script
+    assert "serviceWorker.register('/sw.js?v=89',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v88" in html
+    assert "Interface v89" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -303,3 +303,13 @@ def test_htb_dashboard_finishes_or_cancels_training_explicitly():
     assert "async function cancelHtbLab()" in script
     assert "/campaigns/'+encodeURIComponent(campaignId)+'/cancel" in script
     assert "localStorage.removeItem(HTB_ACTIVE_KEY)" in script
+
+
+def test_dashboard_surfaces_htb_next_focus_recommendations():
+    html = _text("frontend/index.html")
+    script = _text("frontend/simple.js")
+    assert 'id="htbFocus"' in html
+    assert "async function refreshHtbFocus" in script
+    assert "/labs/htb/focus?limit=3" in script
+    assert "Prochain focus HTB" in script
+    assert "void refreshHtbFocus({quiet:true});" in script

@@ -7,6 +7,7 @@ from app.htb_lab import (
     HtbLabOutcomeInput,
     build_htb_benchmark_summary,
     build_htb_cross_lab_learning_summary,
+    build_htb_focus_summary,
     create_htb_lab_campaign,
     finish_htb_lab_campaign,
     htb_lab_learning_summary,
@@ -746,3 +747,56 @@ def test_htb_training_end_to_end_create_start_learn_finish_and_benchmark(
     assert benchmark["technique_attempts"] == 2
     assert benchmark["training_only"] is True
     assert benchmark["scope_expansion"] is False
+
+
+def test_htb_focus_ranks_repeated_misses_without_automatic_execution(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-focus.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    first = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.140",
+            authorized_lab=True,
+        )
+    )
+    second = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.141",
+            authorized_lab=True,
+        )
+    )
+    record_htb_lab_outcome(
+        first["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=False,
+            successful_techniques=["web-enumeration"],
+            missed_techniques=["graphql-mapping", "idor-check"],
+        ),
+    )
+    record_htb_lab_outcome(
+        second["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=False,
+            successful_techniques=[],
+            missed_techniques=["graphql-mapping"],
+        ),
+    )
+
+    summary = build_htb_focus_summary(Storage(db, artifacts), limit=3)
+
+    assert summary["provider"] == "hackthebox"
+    assert summary["training_only"] is True
+    assert summary["advisory_only"] is True
+    assert summary["automatic_execution"] is False
+    assert summary["scope_expansion"] is False
+    assert summary["contains_exploit_payloads"] is False
+    assert summary["top_focus"]["technique"] == "graphql-mapping"
+    assert summary["top_focus"]["failures"] == 2
+    assert summary["focus"][0]["priority_score"] > summary["focus"][1]["priority_score"]
+
+
+def test_htb_focus_route_is_exposed():
+    paths = main.app.openapi()["paths"]
+    assert "/api/labs/htb/focus" in paths

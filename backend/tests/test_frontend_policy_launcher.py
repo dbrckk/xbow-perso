@@ -26,7 +26,7 @@ def test_minimal_frontend_exposes_only_primary_operator_flow():
     for element_id in ("token", "prepare", "selection", "mode", "start", "runtimeStatus", "runtimeAction", "status", "journal", "cancelActive", "refresh"):
         assert f'id="{element_id}"' in html
 
-    assert '<script src="/simple.js?v=88" defer></script>' in html
+    assert '<script src="/simple.js?v=89" defer></script>' in html
     assert "Trouver un bug bounty accessible" in html
     assert "Toutes à la fois" in html
     assert "Une après l’autre" in html
@@ -87,3 +87,11 @@ def test_htb_benchmark_route_is_separate_from_hackerone_launch():
 
 def test_htb_status_route_exists():
     assert "/api/labs/htb/campaigns/{campaign_id}/status" in app.openapi()["paths"]
+
+
+def test_htb_focus_route_is_separate_and_read_only():
+    schema = app.openapi()
+    script = _text("frontend/simple.js")
+    assert "/api/labs/htb/focus" in schema["paths"]
+    assert "get" in schema["paths"]["/api/labs/htb/focus"]
+    assert "/labs/htb/focus?limit=3" in script

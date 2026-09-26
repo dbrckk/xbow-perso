@@ -509,6 +509,83 @@ def finish_htb_lab_campaign(campaign_id: str, payload: HtbLabOutcomeInput):
     }
 
 
+def build_htb_focus_summary(
+    store,
+    *,
+    limit_campaigns: int = 200,
+    limit: int = 5,
+):
+    """Return read-only next-focus recommendations from prior HTB feedback only."""
+    if not 1 <= limit <= 20:
+        raise ValueError("HTB focus limit must be between 1 and 20")
+
+    memories, worker_outcomes, metadata = collect_htb_cross_lab_learning(
+        store,
+        limit_campaigns=limit_campaigns,
+    )
+    ranked = []
+    for item in memories:
+        conclusive = int(item.successes) + int(item.failures)
+        if conclusive <= 0:
+            continue
+        gap = int(item.failures) - int(item.successes)
+        priority_score = (
+            int(item.failures) * 10
+            + max(0, gap) * 4
+            + min(int(item.attempts), 10)
+        )
+        ranked.append(
+            {
+                "technique": item.technique,
+                "attempts": int(item.attempts),
+                "successes": int(item.successes),
+                "failures": int(item.failures),
+                "success_rate": float(item.success_rate),
+                "confidence": float(item.confidence),
+                "priority_score": priority_score,
+                "reason": (
+                    "missed more often than solved"
+                    if item.failures > item.successes
+                    else "low observed success rate"
+                ),
+            }
+        )
+
+    ranked.sort(
+        key=lambda item: (
+            -int(item["priority_score"]),
+            float(item["success_rate"]),
+            -int(item["attempts"]),
+            str(item["technique"]),
+        )
+    )
+    focus = ranked[:limit]
+    return {
+        "provider": "hackthebox",
+        "training_only": True,
+        "campaign_count": int(metadata.get("campaign_count") or 0),
+        "feedback_observations": int(metadata.get("feedback_observations") or 0),
+        "focus": focus,
+        "top_focus": focus[0] if focus else None,
+        "worker_outcomes": worker_outcomes,
+        "advisory_only": True,
+        "automatic_execution": False,
+        "scope_expansion": False,
+        "contains_exploit_payloads": False,
+    }
+
+
+@router.get("/api/labs/htb/focus")
+def htb_focus_summary(limit_campaigns: int = 200, limit: int = 5):
+    from .main import storage
+
+    return build_htb_focus_summary(
+        storage(),
+        limit_campaigns=limit_campaigns,
+        limit=limit,
+    )
+
+
 @router.get("/api/labs/htb/benchmark")
 def htb_benchmark_summary(limit_campaigns: int = 200):
     from .main import storage
