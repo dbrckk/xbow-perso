@@ -18,6 +18,18 @@ from .storage import CampaignConflictError
 _next_attempt_monotonic = 0.0
 
 _CAPABILITY_GAPS = {
+    "hackerone_response_not_json": {
+        "capability": "hackerone_jsonapi_transport",
+        "description": "Adapter le client aux media types JSON renvoyés par les endpoints HackerOne.",
+    },
+    "hackerone_response_shape_invalid": {
+        "capability": "hackerone_response_adapter",
+        "description": "Adapter le parseur à la forme actuelle de la réponse HackerOne sans relâcher les contrôles de scope.",
+    },
+    "hackerone_structured_scope_invalid": {
+        "capability": "hackerone_scope_adapter",
+        "description": "Adapter l'import du Structured Scope à la forme actuelle renvoyée par HackerOne.",
+    },
     "no_compatible_primary_domain": {
         "capability": "wildcard_or_path_bootstrap",
         "description": "Ajouter un démarrage sûr pour les scopes wildcard/URL sans cible web exacte.",
@@ -115,17 +127,49 @@ def _checked_sort_key(
     return (1, str(record.get("checked_at") or ""), handle)
 
 
+def _client_failure_reason(exc: HackerOneClientError) -> tuple[str, bool]:
+    message = str(exc).lower()
+    status = exc.status_code
+    if status == 429:
+        return "hackerone_rate_limited", True
+    if status is not None and status >= 500:
+        return "hackerone_upstream_unavailable", True
+    if "timed out" in message:
+        return "hackerone_timeout", True
+    if "connection failed" in message:
+        return "hackerone_connection_failed", True
+    if "i/o failed" in message:
+        return "hackerone_io_failed", True
+    if "not json" in message:
+        return "hackerone_response_not_json", False
+    if "structured scope is invalid" in message:
+        return "hackerone_structured_scope_invalid", False
+    if (
+        "response has no" in message
+        or "response must be" in message
+        or "paginated response" in message
+        or "program policy is invalid" in message
+        or "program name is invalid" in message
+        or "handle mismatch" in message
+    ):
+        return "hackerone_response_shape_invalid", False
+    if status in {401, 403, 404}:
+        return f"hackerone_http_{status}", False
+    return "hackerone_snapshot_invalid", False
+
+
 def _inspect_handle(handle: str) -> dict[str, Any]:
     try:
         snapshot = fetch_hackerone_program_snapshot(handle)
     except HackerOneClientError as exc:
         status = exc.status_code
-        retryable = status is None or status == 429 or int(status or 0) >= 500
+        reason, retryable = _client_failure_reason(exc)
         return {
             "handle": handle,
-            "status": "unavailable",
+            "status": "unavailable" if retryable else "blocked",
             "project_compatible": None if retryable else False,
-            "blockers": ["review_unavailable"],
+            "blockers": ["review_unavailable"] if retryable else [reason],
+            "failure_reason": reason,
             "retryable": retryable,
             "upstream_status": status,
             "checked_at": _utcnow(),
@@ -286,6 +330,7 @@ def feasibility_summary(
     compatible = []
     blocker_counts: dict[str, int] = {}
     unavailable_count = 0
+    unavailable_reason_counts: dict[str, int] = {}
     for handle, record in index.items():
         if record.get("project_compatible") is True:
             program = programmes.get(handle, {})
@@ -310,6 +355,8 @@ def feasibility_summary(
                 blocker_counts[key] = blocker_counts.get(key, 0) + 1
         else:
             unavailable_count += 1
+            reason = str(record.get("failure_reason") or "review_unavailable")
+            unavailable_reason_counts[reason] = unavailable_reason_counts.get(reason, 0) + 1
 
     compatible.sort(
         key=lambda item: (
@@ -346,6 +393,12 @@ def feasibility_summary(
             if value.get("project_compatible") is False
         ),
         "unavailable_count": unavailable_count,
+        "unavailable_reason_counts": dict(
+            sorted(
+                unavailable_reason_counts.items(),
+                key=lambda item: (-item[1], item[0]),
+            )
+        ),
         "programs": compatible[:safe_limit],
         "blocker_counts": dict(
             sorted(blocker_counts.items(), key=lambda item: (-item[1], item[0]))
