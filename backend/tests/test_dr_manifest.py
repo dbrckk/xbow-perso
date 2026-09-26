@@ -12,6 +12,44 @@ from app.dr_manifest import (
 )
 
 
+@pytest.mark.parametrize("symlink", [False, True])
+def test_manifest_write_preserves_preexisting_temporary_file(tmp_path, monkeypatch, symlink):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+    destination = tmp_path / "manifest.json"
+    destination.write_bytes(b"previous-manifest")
+    temporary = tmp_path / "manifest.json.tmp"
+    existing = tmp_path / "other-writer"
+    existing.write_bytes(b"other-writer-data")
+    if symlink:
+        temporary.symlink_to(existing)
+    else:
+        temporary.write_bytes(b"other-writer-data")
+
+    with pytest.raises(DisasterRecoveryError, match="manifest write failed"):
+        write_backup_manifest({"version": 1, "artifacts": []}, str(destination))
+
+    assert temporary.read_bytes() == b"other-writer-data"
+    assert temporary.is_symlink() is symlink
+    assert existing.read_bytes() == b"other-writer-data"
+    assert destination.read_bytes() == b"previous-manifest"
+
+
+def test_manifest_write_cleans_owned_temporary_after_replace_failure(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+    destination = tmp_path / "manifest.json"
+    destination.mkdir()
+    marker = destination / "keep"
+    marker.write_bytes(b"keep")
+
+    with pytest.raises(DisasterRecoveryError, match="manifest write failed"):
+        write_backup_manifest({"version": 1, "artifacts": []}, str(destination))
+
+    assert marker.read_bytes() == b"keep"
+    assert not (tmp_path / "manifest.json.tmp").exists()
+
+
 def _files(tmp_path):
     postgres = tmp_path / "postgres.dump"
     redis = tmp_path / "dump.rdb"
