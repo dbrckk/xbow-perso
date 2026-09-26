@@ -217,3 +217,44 @@ def test_hackerone_client_imports_cleanly_in_isolated_process():
 
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "ok"
+
+
+def test_client_accepts_jsonapi_vendor_media_type(monkeypatch):
+    response = _Response(
+        b'{"data":[]}',
+        content_type="application/vnd.api+json; charset=utf-8",
+    )
+    opener = _Opener(response)
+    monkeypatch.setattr(
+        "app.hackerone_client.urllib.request.build_opener",
+        lambda *args: opener,
+    )
+    client = HackerOneClient(
+        HackerOneCredentials(
+            username="researcher",
+            token="token-value-1234567890",
+        )
+    )
+
+    assert client.get_json("hackers/programs") == {"data": []}
+
+
+def test_client_still_rejects_non_json_vendor_media_type(monkeypatch):
+    response = _Response(
+        b'{"data":[]}',
+        content_type="application/octet-stream",
+    )
+    opener = _Opener(response)
+    monkeypatch.setattr(
+        "app.hackerone_client.urllib.request.build_opener",
+        lambda *args: opener,
+    )
+    client = HackerOneClient(
+        HackerOneCredentials(
+            username="researcher",
+            token="token-value-1234567890",
+        )
+    )
+
+    with pytest.raises(HackerOneClientError, match="not JSON"):
+        client.get_json("hackers/programs")

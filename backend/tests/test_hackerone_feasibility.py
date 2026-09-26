@@ -278,3 +278,65 @@ def test_feasibility_summary_turns_blockers_into_capability_gaps():
     assert gaps["scope_incomplete_for_web_engine"]["count"] == 2
     assert gaps["scope_incomplete_for_web_engine"]["capability"] == "path_or_network_aware_scope"
     assert gaps["scope_exclusions_require_manual_enforcement"]["capability"] == "structured_scope_exclusion_enforcement"
+
+
+def test_non_transport_snapshot_shape_failure_is_blocked_not_unavailable(monkeypatch):
+    store = _Store({
+        "id": "current",
+        "programs": [_program("alpha")],
+        "fingerprint": "f" * 64,
+        "checked_at": "2026-09-25T00:00:00+00:00",
+        "updated_at": "2026-09-25T00:00:00+00:00",
+    })
+
+    def fail(_handle):
+        raise feasibility.HackerOneClientError(
+            "HackerOne response is not JSON"
+        )
+
+    monkeypatch.setattr(
+        feasibility,
+        "fetch_hackerone_program_snapshot",
+        fail,
+    )
+
+    feasibility.refresh_hackerone_feasibility_batch(store, batch_size=1)
+
+    record = store.catalog["feasibility_index"]["alpha"]
+    assert record["project_compatible"] is False
+    assert record["retryable"] is False
+    assert record["failure_reason"] == "hackerone_response_not_json"
+
+    summary = feasibility.feasibility_summary(store.catalog)
+    assert summary["blocked_count"] == 1
+    assert summary["unavailable_count"] == 0
+    assert summary["blocker_counts"]["hackerone_response_not_json"] == 1
+
+
+def test_unavailable_summary_reports_transient_failure_reasons(monkeypatch):
+    store = _Store({
+        "id": "current",
+        "programs": [_program("alpha")],
+        "fingerprint": "f" * 64,
+        "checked_at": "2026-09-25T00:00:00+00:00",
+        "updated_at": "2026-09-25T00:00:00+00:00",
+    })
+
+    def fail(_handle):
+        raise feasibility.HackerOneClientError(
+            "HackerOne transport timed out"
+        )
+
+    monkeypatch.setattr(
+        feasibility,
+        "fetch_hackerone_program_snapshot",
+        fail,
+    )
+
+    feasibility.refresh_hackerone_feasibility_batch(store, batch_size=1)
+
+    summary = feasibility.feasibility_summary(store.catalog)
+    assert summary["unavailable_count"] == 1
+    assert summary["unavailable_reason_counts"] == {
+        "hackerone_timeout": 1
+    }
