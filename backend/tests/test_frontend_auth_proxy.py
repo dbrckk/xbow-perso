@@ -247,7 +247,7 @@ def test_dashboard_exposes_htb_learning_feedback_without_payload_storage():
     assert 'id="htbMissedTechniques"' in html
     assert 'id="htbLearn"' in html
     assert "async function saveHtbLearning()" in script
-    assert "/outcome" in script
+    assert "/finish" in script
     assert "/learning" in script
     assert "successful_techniques:successful" in script
     assert "missed_techniques:missed" in script
