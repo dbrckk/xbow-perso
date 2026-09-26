@@ -186,12 +186,11 @@ def test_mobile_status_production_contract_requires_all_live_prerequisites():
     assert "BLOCKER=route_contract" in verdict
 
 
-def test_mobile_status_route_contract_tolerates_non_route_entries():
+def test_mobile_status_route_contract_uses_openapi_paths_not_router_internals():
     script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
 
-    assert 'getattr(route, "path", None)' in script
-    assert 'if (path := getattr(route, "path", None))' in script
-    assert "paths = {" in script
+    assert 'paths = set((app.openapi().get("paths") or {}).keys())' in script
+    assert 'getattr(route, "path", None)' not in script
 
 
 def test_mobile_status_uses_live_origin_main_and_fails_closed():
@@ -266,3 +265,15 @@ def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps():
     assert "CAPABILITY_GAP=" in script
     assert "COMPATIBLE_PROGRAM=" in script
     assert '"/api/hackerone/feasibility-index"' in script
+
+
+def test_live_production_update_warms_hackerone_feasibility_index():
+    script = (ROOT / "scripts/mobile-production-update.sh").read_text(encoding="utf-8")
+
+    assert "=== HACKERONE FEASIBILITY WARMUP ===" in script
+    assert "from app.hackerone_catalog import refresh_hackerone_catalog" in script
+    assert "from app.hackerone_feasibility import refresh_hackerone_feasibility_batch" in script
+    assert "refresh_hackerone_feasibility_batch(store, batch_size=12)" in script
+    assert "FEASIBILITY_WARMUP_STATUS=" in script
+    assert "FEASIBILITY_WARMUP_INDEXED=" in script
+    assert "FEASIBILITY_WARMUP_COMPATIBLE=" in script
