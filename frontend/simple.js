@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v88';
+  const UI_VERSION='v89';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -877,6 +877,7 @@
       );
       const globalSummary=await api('/labs/htb/learning');
       await refreshHtbBenchmark({quiet:true});
+      await refreshHtbFocus({quiet:true});
       const techniques=Array.isArray(summary?.techniques)?summary.techniques:[];
       const globalTechniques=Array.isArray(globalSummary?.techniques)?globalSummary.techniques:[];
       const node=$('htbLearningStatus');
@@ -1006,12 +1007,35 @@
     }
   }
 
+  async function refreshHtbFocus({quiet=true}={}){
+    const node=$('htbFocus');
+    if(!node||!token())return null;
+    try{
+      const summary=await api('/labs/htb/focus?limit=3');
+      const focus=Array.isArray(summary?.focus)?summary.focus:[];
+      if(!focus.length){
+        node.textContent='Prochain focus HTB : pas encore assez de feedback.';
+        return summary;
+      }
+      node.textContent='Prochain focus HTB : '+
+        focus.map(item=>{
+          const rate=Math.round(Number(item?.success_rate||0)*100);
+          return String(item?.technique||'technique')+
+            ' · '+String(item?.failures||0)+' échec(s) · '+rate+'% réussite';
+        }).join(' · ');
+      return summary;
+    }catch(error){
+      if(!quiet)node.textContent='Focus HTB indisponible : '+error.message;
+      return null;
+    }
+  }
+
   function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=88',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=89',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -1038,6 +1062,7 @@
     void refreshRuntimeReadiness({quiet:true});
     void refreshJournal({quiet:true});
     void refreshHtbBenchmark({quiet:true});
+    void refreshHtbFocus({quiet:true});
     void refreshHtbSession({quiet:true});
     timer=setInterval(()=>{
       void refreshRuntimeReadiness({quiet:true});
