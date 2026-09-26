@@ -22,25 +22,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T09:00:01Z
+Generated: 2026-09-26T09:40:48Z
 
 ### Git
 - Branch: `main`
-- Head: `387e7240becf`
-- Commit date: 2026-09-26T10:59:51+02:00
-- Commit: improve: make HTB session lifecycle explicit and safer (#401)
+- Head: `3ec74ec8471a`
+- Commit date: 2026-09-26T11:40:36+02:00
+- Commit: fix: verify deployed routes through OpenAPI and warm feasibility (#402)
 - Tracked files: 571
 
 ### Recently changed files
+- `backend/tests/test_mobile_production_update_script.py`
+- `scripts/mobile-production-status.sh`
+- `scripts/mobile-production-update.sh`
 - `backend/app/htb_lab.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `backend/tests/test_htb_lab.py`
-- `backend/tests/test_mobile_production_update_script.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_feasibility.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/app/hackerone_scope_import.py`

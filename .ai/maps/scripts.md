@@ -1023,11 +1023,7 @@ echo "=== APPLICATION ROUTE CONTRACT ==="
 if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
 from app.main import app
 
-paths = {
-    str(path)
-    for route in app.routes
-    if (path := getattr(route, "path", None))
-}
+paths = set((app.openapi().get("paths") or {}).keys())
 required = {
     "/api/hackerone/simple-review-package",
     "/api/imports/hackerone/rules-preview",
@@ -1425,6 +1421,31 @@ if [ "$LIVE_MODE" = "true" ]; then
   echo "=== HACKERONE LIVE GO/NO-GO ==="
   "${COMPOSE[@]}" exec -T backend python -c \
     'from app.hackerone_live_readiness import build_hackerone_live_readiness; from app.main import dependency_readiness; r=build_hackerone_live_readiness(dependency_readiness()); assert r["live_scan_ready"], {"status": r["status"], "failed": [x["id"] for x in r["checks"] if x["required"] and not x["ok"]]}; print({"status": r["status"], "live_scan_ready": r["live_scan_ready"]})'
+
+  echo "=== HACKERONE FEASIBILITY WARMUP ==="
+  "${COMPOSE[@]}" exec -T backend python - <<'PY' || true
+from app.hackerone_catalog import refresh_hackerone_catalog
+from app.hackerone_feasibility import refresh_hackerone_feasibility_batch
+from app.hackerone_client import HackerOneClientError
+from app.main import storage
+
+store = storage()
+try:
+    if store.get_hackerone_catalog_state() is None:
+        refresh_hackerone_catalog(store)
+    result = refresh_hackerone_feasibility_batch(store, batch_size=12)
+except HackerOneClientError as exc:
+    print("FEASIBILITY_WARMUP_STATUS=upstream_unavailable")
+    print("FEASIBILITY_WARMUP_ERROR=" + exc.__class__.__name__)
+except Exception as exc:
+    print("FEASIBILITY_WARMUP_STATUS=error")
+    print("FEASIBILITY_WARMUP_ERROR=" + exc.__class__.__name__)
+else:
+    print("FEASIBILITY_WARMUP_STATUS=" + str(result.get("status") or "unknown"))
+    print("FEASIBILITY_WARMUP_CHECKED=" + str(result.get("checked") or 0))
+    print("FEASIBILITY_WARMUP_INDEXED=" + str(result.get("indexed") or 0))
+    print("FEASIBILITY_WARMUP_COMPATIBLE=" + str(result.get("compatible") or 0))
+PY
 fi
 
 echo "=== SERVICES ==="
