@@ -265,3 +265,15 @@ def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps():
     assert "CAPABILITY_GAP=" in script
     assert "COMPATIBLE_PROGRAM=" in script
     assert '"/api/hackerone/feasibility-index"' in script
+
+
+def test_live_production_update_warms_hackerone_feasibility_index():
+    script = (ROOT / "scripts/mobile-production-update.sh").read_text(encoding="utf-8")
+
+    assert "=== HACKERONE FEASIBILITY WARMUP ===" in script
+    assert "from app.hackerone_catalog import refresh_hackerone_catalog" in script
+    assert "from app.hackerone_feasibility import refresh_hackerone_feasibility_batch" in script
+    assert "refresh_hackerone_feasibility_batch(store, batch_size=12)" in script
+    assert "FEASIBILITY_WARMUP_STATUS=" in script
+    assert "FEASIBILITY_WARMUP_INDEXED=" in script
+    assert "FEASIBILITY_WARMUP_COMPATIBLE=" in script
