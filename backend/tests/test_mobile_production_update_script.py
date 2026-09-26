@@ -216,9 +216,26 @@ def test_mobile_status_live_verifies_one_or_two_accessible_bounties():
     assert "ACCESSIBLE_BOUNTY_PRECHECK_OK=true" in script
     assert "ACCESSIBLE_BOUNTY_COUNT=" in script
     assert "ACCESSIBLE_BOUNTY_HANDLES=" in script
-    verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
-    assert '[ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ]' in verdict
-    assert "BLOCKER=accessible_bounty_precheck" in verdict
+
+
+def test_mobile_status_separates_production_health_from_bounty_availability():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+
+    production = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1].split(
+        "=== BUG BOUNTY OPERATIONAL VERDICT ===",
+        1,
+    )[0]
+    operational = script.split("=== BUG BOUNTY OPERATIONAL VERDICT ===", 1)[1]
+
+    assert 'ACCESSIBLE_BOUNTY_PRECHECK_OK' not in production
+    assert "PRODUCTION_CONTRACT_OK=true" in production
+    assert "PRODUCTION_CONTRACT_OK=false" in production
+    assert '[ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ]' in operational
+    assert "BUG_BOUNTY_OPERATIONAL_OK=true" in operational
+    assert "BUG_BOUNTY_OPERATIONAL_OK=false" in operational
+    assert "BOUNTY_AVAILABILITY=ready" in operational
+    assert "BOUNTY_AVAILABILITY=no_current_compatible_program" in operational
+    assert "le déploiement reste sain" in operational
 
 
 def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version():
