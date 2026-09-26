@@ -4573,10 +4573,19 @@ allowed = host.endswith(".htb") and host.count(".") >= 1
 ⋮----
 allowed = (
 ⋮----
+def _active_same_target_htb_campaign(store, host: str)
+⋮----
+state = str(campaign.get("state") or "")
+⋮----
+rules = dict((campaign.get("target") or {}).get("rules") or {})
+allowed = [str(value).lower().rstrip(".") for value in list(rules.get("allowed_targets") or [])]
+⋮----
 @router.post("/api/labs/htb/campaigns")
 def create_htb_lab_campaign(payload: HtbLabCampaignInput)
 ⋮----
 parsed = urlparse(str(payload.target_url))
+⋮----
+active = _active_same_target_htb_campaign(storage(), host)
 ⋮----
 target = TargetInput(
 campaign = Campaign(target=target, state=CampaignState.ready)
@@ -4680,6 +4689,20 @@ completed_jobs = int(totals.get("completed") or 0)
 failed_jobs = int(totals.get("failed") or 0)
 terminal_jobs = completed_jobs + failed_jobs
 ⋮----
+@router.post("/api/labs/htb/campaigns/{campaign_id}/finish")
+def finish_htb_lab_campaign(campaign_id: str, payload: HtbLabOutcomeInput)
+⋮----
+"""Persist correction-safe learning and close the HTB campaign in one operator action."""
+⋮----
+outcome = record_htb_lab_outcome(campaign_id, payload)
+campaign = assert_campaign_exists(campaign_id)
+state = getattr(campaign.state, "value", campaign.state)
+cancellation = None
+⋮----
+cancellation = cancel_campaign(campaign_id)
+⋮----
+final_campaign = assert_campaign_exists(campaign_id)
+⋮----
 @router.get("/api/labs/htb/benchmark")
 def htb_benchmark_summary(limit_campaigns: int = 200)
 ⋮----
@@ -4690,8 +4713,6 @@ def htb_global_learning_summary(limit_campaigns: int = 200)
 def htb_lab_session_status(campaign_id: str)
 ⋮----
 """Return a redacted operational view of one authorized HTB lab."""
-⋮----
-campaign = assert_campaign_exists(campaign_id)
 ⋮----
 counts = queue().campaign_job_status_counts(campaign.id)
 findings = list(campaign.findings or [])
@@ -12995,6 +13016,8 @@ def test_dashboard_exposes_htb_benchmark_summary()
 def test_htb_dashboard_tracks_session_status_without_exposing_payloads()
 ⋮----
 def test_hackerone_dashboard_explains_why_candidates_were_rejected()
+⋮----
+def test_htb_dashboard_finishes_or_cancels_training_explicitly()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -14611,6 +14634,20 @@ db = str(tmp_path / "htb-status.sqlite3")
 result = htb_lab_session_status(created["campaign_id"])
 ⋮----
 def test_htb_session_status_route_is_exposed()
+⋮----
+def test_htb_duplicate_exact_active_target_is_rejected(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-duplicate.sqlite3")
+⋮----
+detail = getattr(exc, "detail", {})
+⋮----
+def test_htb_finish_records_learning_and_cancels_campaign(tmp_path, monkeypatch)
+⋮----
+db = str(tmp_path / "htb-finish.sqlite3")
+⋮----
+result = finish_htb_lab_campaign(
+⋮----
+def test_htb_finish_route_is_exposed()
 ```
 
 ## File: tests/test_hypothesis_engine.py

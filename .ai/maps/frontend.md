@@ -427,6 +427,8 @@ function parseTechniqueList(value)
 ⋮----
 async function saveHtbLearning()
 ⋮----
+async function cancelHtbLab()
+⋮----
 async function refreshHtbSession(
 ⋮----
 async function refreshHtbBenchmark(

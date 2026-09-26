@@ -1,14 +1,22 @@
 # Change impact
 
-Base: 36214630691a24e17c80c35d8c1f4cbbb6f11389
-Head: d7b5f4cc3f1f6ee252b871a2ef6c80165a63cc3f
+Base: 59d5f365f7b8d25f61954a75680cb5a987e80ab2
+Head: 387e7240becf8b5d1a306315478cfb80ea0792ba
 
 ## Changed files
+- M backend/app/htb_lab.py
+- M backend/tests/test_frontend_auth_proxy.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M backend/tests/test_htb_lab.py
 - M backend/tests/test_mobile_production_update_script.py
+- M frontend/index.html
+- M frontend/simple.js
+- M frontend/sw.js
 - M scripts/mobile-production-status.sh
 
 ## Affected areas
 - backend
+- frontend
 - scripts
 
 ## Related test candidates

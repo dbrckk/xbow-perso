@@ -1,12 +1,40 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "5ff10e118b9bb962bde38a9e67ddeb9a8280165c",
-  "head": "d7b5f4cc3f1f6ee252b871a2ef6c80165a63cc3f",
+  "base": "d7b5f4cc3f1f6ee252b871a2ef6c80165a63cc3f",
+  "head": "387e7240becf8b5d1a306315478cfb80ea0792ba",
   "index_mode": "incremental",
   "changed_files": [
     {
+      "path": "backend/app/htb_lab.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_frontend_auth_proxy.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_frontend_policy_launcher.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_htb_lab.py",
+      "status": "M"
+    },
+    {
       "path": "backend/tests/test_mobile_production_update_script.py",
+      "status": "M"
+    },
+    {
+      "path": "frontend/index.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend/simple.js",
+      "status": "M"
+    },
+    {
+      "path": "frontend/sw.js",
       "status": "M"
     },
     {
@@ -15,12 +43,1202 @@
     }
   ],
   "changed_source_files": [
-    "backend/tests/test_mobile_production_update_script.py"
+    "backend/app/htb_lab.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_htb_lab.py",
+    "backend/tests/test_mobile_production_update_script.py",
+    "frontend/simple.js",
+    "frontend/sw.js"
   ],
   "impacted_files": [
-    "backend/tests/test_mobile_production_update_script.py"
+    "backend/app/htb_lab.py",
+    "backend/app/main.py",
+    "backend/app/orchestrator.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_htb_lab.py",
+    "backend/tests/test_mobile_production_update_script.py",
+    "frontend/simple.js",
+    "frontend/sw.js"
   ],
   "impacted_symbols": [
+    {
+      "name": "_normalize_technique",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 15
+    },
+    {
+      "name": "HtbLabCampaignInput",
+      "kind": "class",
+      "file": "backend/app/htb_lab.py",
+      "line": 24
+    },
+    {
+      "name": "validate_authorized_lab_target",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 30
+    },
+    {
+      "name": "_active_same_target_htb_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 62
+    },
+    {
+      "name": "create_htb_lab_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 77
+    },
+    {
+      "name": "HtbLabOutcomeInput",
+      "kind": "class",
+      "file": "backend/app/htb_lab.py",
+      "line": 141
+    },
+    {
+      "name": "validate_techniques",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 149
+    },
+    {
+      "name": "validate_overlap",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 154
+    },
+    {
+      "name": "_latest_htb_outcome_event",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 164
+    },
+    {
+      "name": "_assert_htb_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 176
+    },
+    {
+      "name": "record_htb_lab_outcome",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 188
+    },
+    {
+      "name": "is_htb_training_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 287
+    },
+    {
+      "name": "_current_htb_feedback_observations",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 301
+    },
+    {
+      "name": "collect_htb_cross_lab_learning",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 332
+    },
+    {
+      "name": "build_htb_cross_lab_learning_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 382
+    },
+    {
+      "name": "build_htb_benchmark_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 396
+    },
+    {
+      "name": "finish_htb_lab_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 488
+    },
+    {
+      "name": "htb_benchmark_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 513
+    },
+    {
+      "name": "htb_global_learning_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 523
+    },
+    {
+      "name": "htb_lab_session_status",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 533
+    },
+    {
+      "name": "htb_lab_learning_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 566
+    },
+    {
+      "name": "authenticate_control_api",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 35
+    },
+    {
+      "name": "utcnow",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 48
+    },
+    {
+      "name": "storage",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 52
+    },
+    {
+      "name": "queue",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 56
+    },
+    {
+      "name": "incident_store",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 60
+    },
+    {
+      "name": "_stable_key",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 68
+    },
+    {
+      "name": "CampaignState",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 73
+    },
+    {
+      "name": "ProgramRules",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 83
+    },
+    {
+      "name": "TargetInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 96
+    },
+    {
+      "name": "primary_target_must_be_allowed",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 103
+    },
+    {
+      "name": "Finding",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 117
+    },
+    {
+      "name": "FindingReviewMetadataInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 135
+    },
+    {
+      "name": "normalize_review_metadata",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 145
+    },
+    {
+      "name": "Campaign",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 160
+    },
+    {
+      "name": "EvidenceInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 170
+    },
+    {
+      "name": "HackerOneScopePreviewInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 177
+    },
+    {
+      "name": "IncidentAcknowledgeInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 181
+    },
+    {
+      "name": "normalize_pattern",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 186
+    },
+    {
+      "name": "is_host_allowed",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 193
+    },
+    {
+      "name": "save_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 202
+    },
+    {
+      "name": "assert_campaign_record",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 209
+    },
+    {
+      "name": "assert_campaign_exists",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 217
+    },
+    {
+      "name": "_reject_cancelled_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 221
+    },
+    {
+      "name": "_reject_new_findings_for_closed_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 226
+    },
+    {
+      "name": "_campaign_graph",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 234
+    },
+    {
+      "name": "_has_evidence_backed_independent_validation",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 241
+    },
+    {
+      "name": "policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 246
+    },
+    {
+      "name": "sanitized_scan_payload",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 272
+    },
+    {
+      "name": "live",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 309
+    },
+    {
+      "name": "ready",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 314
+    },
+    {
+      "name": "auth_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 327
+    },
+    {
+      "name": "health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 336
+    },
+    {
+      "name": "deployment_preflight",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 352
+    },
+    {
+      "name": "system_capabilities",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 359
+    },
+    {
+      "name": "get_observer_health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 443
+    },
+    {
+      "name": "get_incidents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 448
+    },
+    {
+      "name": "acknowledge_incident",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 453
+    },
+    {
+      "name": "list_agents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 468
+    },
+    {
+      "name": "preview_hackerone_scope",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 474
+    },
+    {
+      "name": "create_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 510
+    },
+    {
+      "name": "list_campaigns",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 518
+    },
+    {
+      "name": "get_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 523
+    },
+    {
+      "name": "get_campaign_target_memory",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 528
+    },
+    {
+      "name": "get_campaign_surface_diff",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 540
+    },
+    {
+      "name": "get_campaign_surface_temporal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 554
+    },
+    {
+      "name": "get_campaign_surface_confidence",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 566
+    },
+    {
+      "name": "campaign_outbox_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 583
+    },
+    {
+      "name": "campaign_outbox_recovery",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 597
+    },
+    {
+      "name": "_apply_local_outbox_repairs",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 618
+    },
+    {
+      "name": "reconcile_campaign_outbox_local",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 657
+    },
+    {
+      "name": "preview_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 715
+    },
+    {
+      "name": "_pentagi_dispatch_fingerprint",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 746
+    },
+    {
+      "name": "_record_pentagi_dispatch_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 750
+    },
+    {
+      "name": "_reconcile_pentagi_queued_event",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 776
+    },
+    {
+      "name": "dispatch_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 823
+    },
+    {
+      "name": "pentagi_campaign_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 897
+    },
+    {
+      "name": "list_campaign_observations",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 927
+    },
+    {
+      "name": "campaign_decision_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 933
+    },
+    {
+      "name": "campaign_event_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 945
+    },
+    {
+      "name": "campaign_worker_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 955
+    },
+    {
+      "name": "campaign_knowledge",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 967
+    },
+    {
+      "name": "campaign_finding_ranking",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 982
+    },
+    {
+      "name": "campaign_advisory_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1009
+    },
+    {
+      "name": "campaign_advisory_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1018
+    },
+    {
+      "name": "campaign_advisory_journal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1029
+    },
+    {
+      "name": "campaign_hypothesis_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1041
+    },
+    {
+      "name": "campaign_hypothesis_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1050
+    },
+    {
+      "name": "campaign_hypothesis_stability",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1061
+    },
+    {
+      "name": "campaign_plan",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1073
+    },
+    {
+      "name": "check_policy",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1123
+    },
+    {
+      "name": "verify_campaign_policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1133
+    },
+    {
+      "name": "_pending_campaign_start_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1138
+    },
+    {
+      "name": "_record_campaign_start_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1146
+    },
+    {
+      "name": "_reconcile_campaign_started",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1172
+    },
+    {
+      "name": "start_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1224
+    },
+    {
+      "name": "cancel_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1314
+    },
+    {
+      "name": "get_job",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1347
+    },
+    {
+      "name": "get_job_provenance_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1355
+    },
+    {
+      "name": "_validation_request_id",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1372
+    },
+    {
+      "name": "_reconcile_validation_queued",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1376
+    },
+    {
+      "name": "add_finding",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1425
+    },
+    {
+      "name": "_record_report_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1510
+    },
+    {
+      "name": "_reconcile_report_job",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1537
+    },
+    {
+      "name": "_ensure_completion_report",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1583
+    },
+    {
+      "name": "update_finding_review_metadata",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1651
+    },
+    {
+      "name": "validate_finding",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1702
+    },
+    {
+      "name": "queue_report",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1768
+    },
+    {
+      "name": "add_text_artifact",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1811
+    },
+    {
+      "name": "list_artifacts",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1842
+    },
+    {
+      "name": "download_artifact",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1848
+    },
+    {
+      "name": "_stable_id",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 51
+    },
+    {
+      "name": "_graph_fingerprint",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 56
+    },
+    {
+      "name": "_load_graph",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 73
+    },
+    {
+      "name": "_seed_primary_target",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 77
+    },
+    {
+      "name": "_minimum_enrichment_score",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 94
+    },
+    {
+      "name": "_surface_enrichment",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 105
+    },
+    {
+      "name": "_intelligence_context",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 129
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 140
+    },
+    {
+      "name": "_validation_saturated_cluster_ids",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 259
+    },
+    {
+      "name": "_pending_findings",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 299
+    },
+    {
+      "name": "_enqueue_recon_tasks",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 345
+    },
+    {
+      "name": "_scan_engines",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 410
+    },
+    {
+      "name": "_enqueue_action",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 421
+    },
+    {
+      "name": "_decision_explanation",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 499
+    },
+    {
+      "name": "_record_decision",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 546
+    },
+    {
+      "name": "_result",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 589
+    },
+    {
+      "name": "advance_campaign",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 661
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 7
+    },
+    {
+      "name": "test_frontend_proxies_redacted_backend_diagnostics",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 11
+    },
+    {
+      "name": "test_diagnostic_routes_bypass_service_worker_cache",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 18
+    },
+    {
+      "name": "test_frontend_assets_are_explicitly_cache_busted",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 25
+    },
+    {
+      "name": "test_api_token_is_persisted_across_browser_sessions",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 33
+    },
+    {
+      "name": "test_frontend_has_no_totp_control",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 42
+    },
+    {
+      "name": "test_simple_dashboard_runtime_is_shipped_in_frontend_image",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 51
+    },
+    {
+      "name": "test_service_worker_matches_precache_assets_by_path",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 58
+    },
+    {
+      "name": "test_simple_dashboard_exposes_first_run_review_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 64
+    },
+    {
+      "name": "test_simple_dashboard_grouped_review_and_quiet_journal",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 76
+    },
+    {
+      "name": "test_simple_dashboard_bounds_review_profile_persistence_concurrency",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 86
+    },
+    {
+      "name": "test_simple_dashboard_uses_atomic_server_review_package",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 94
+    },
+    {
+      "name": "test_simple_dashboard_surfaces_live_scanner_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 104
+    },
+    {
+      "name": "test_simple_dashboard_bounds_review_profile_persistence",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 115
+    },
+    {
+      "name": "test_start_button_requires_live_runtime_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 125
+    },
+    {
+      "name": "test_simple_dashboard_surfaces_runtime_remediation",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 136
+    },
+    {
+      "name": "test_simple_dashboard_prevents_duplicate_active_batches",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 144
+    },
+    {
+      "name": "test_simple_dashboard_reconciles_ambiguous_mobile_launch_response",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 155
+    },
+    {
+      "name": "test_simple_dashboard_can_cancel_active_hackerone_batch",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 164
+    },
+    {
+      "name": "test_dashboard_forces_fresh_mobile_shell_and_exposes_version",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 177
+    },
+    {
+      "name": "test_review_panel_displays_hackerone_scope_exclusions",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 191
+    },
+    {
+      "name": "test_one_or_two_selection_is_preserved_after_profile_validation",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 197
+    },
+    {
+      "name": "test_mobile_dashboard_bounds_api_waits_and_shows_search_elapsed_time",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 205
+    },
+    {
+      "name": "test_simple_dashboard_replaces_all_conservative_policy_blockers",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 214
+    },
+    {
+      "name": "test_dashboard_exposes_exact_scope_htb_training_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 226
+    },
+    {
+      "name": "test_dashboard_exposes_htb_learning_feedback_without_payload_storage",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 241
+    },
+    {
+      "name": "test_dashboard_surfaces_cross_lab_htb_learning_summary",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 258
+    },
+    {
+      "name": "test_dashboard_exposes_htb_benchmark_summary",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 265
+    },
+    {
+      "name": "test_htb_dashboard_tracks_session_status_without_exposing_payloads",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 276
+    },
+    {
+      "name": "test_hackerone_dashboard_explains_why_candidates_were_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 287
+    },
+    {
+      "name": "test_htb_dashboard_finishes_or_cancels_training_explicitly",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_auth_proxy.py",
+      "line": 296
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 9
+    },
+    {
+      "name": "test_hackerone_reviewed_batch_routes_exist",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 13
+    },
+    {
+      "name": "test_minimal_frontend_exposes_only_primary_operator_flow",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 22
+    },
+    {
+      "name": "test_minimal_frontend_preserves_safety_and_server_persistence",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 42
+    },
+    {
+      "name": "test_minimal_launcher_rechecks_runtime_without_reselection",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 54
+    },
+    {
+      "name": "test_minimal_launcher_uses_single_final_reviewed_launch_request",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 61
+    },
+    {
+      "name": "test_htb_training_route_exists_and_frontend_keeps_it_separate_from_hackerone",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 70
+    },
+    {
+      "name": "test_htb_benchmark_route_is_separate_from_hackerone_launch",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 80
+    },
+    {
+      "name": "test_htb_status_route_exists",
+      "kind": "function",
+      "file": "backend/tests/test_frontend_policy_launcher.py",
+      "line": 88
+    },
+    {
+      "name": "_FakeQueue",
+      "kind": "class",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 21
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 22
+    },
+    {
+      "name": "enqueue",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 25
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 38
+    },
+    {
+      "name": "test_htb_lab_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 42
+    },
+    {
+      "name": "test_htb_lab_rejects_public_targets",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 46
+    },
+    {
+      "name": "test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 61
+    },
+    {
+      "name": "test_htb_lab_accepts_private_lab_ip_and_htb_hostname",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 79
+    },
+    {
+      "name": "test_htb_lab_requires_explicit_authorization_confirmation",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 92
+    },
+    {
+      "name": "test_htb_lab_campaign_is_exact_scope_and_training_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 104
+    },
+    {
+      "name": "test_htb_lab_start_uses_bounded_planner",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 134
+    },
+    {
+      "name": "fake_advance",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 152
+    },
+    {
+      "name": "test_htb_outcome_feedback_becomes_learning_memory",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 181
+    },
+    {
+      "name": "test_htb_outcome_rejects_overlapping_techniques",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 220
+    },
+    {
+      "name": "test_htb_learning_routes_are_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 233
+    },
+    {
+      "name": "test_htb_global_learning_aggregates_authorized_labs_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 239
+    },
+    {
+      "name": "test_htb_global_learning_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 291
+    },
+    {
+      "name": "test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 296
+    },
+    {
+      "name": "test_non_htb_campaign_does_not_receive_htb_cross_lab_learning",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 376
+    },
+    {
+      "name": "test_htb_outcome_is_idempotent_for_identical_feedback",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 420
+    },
+    {
+      "name": "test_htb_corrected_feedback_replaces_prior_learning_revision",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 460
+    },
+    {
+      "name": "test_htb_benchmark_reports_objective_progress_metrics",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 503
+    },
+    {
+      "name": "test_htb_benchmark_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 556
+    },
+    {
+      "name": "test_htb_session_status_is_redacted_and_operational",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 561
+    },
+    {
+      "name": "test_htb_session_status_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 590
+    },
+    {
+      "name": "test_htb_duplicate_exact_active_target_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 595
+    },
+    {
+      "name": "test_htb_finish_records_learning_and_cancels_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 625
+    },
+    {
+      "name": "test_htb_finish_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 663
+    },
     {
       "name": "test_live_production_update_waits_for_worker_heartbeats",
       "kind": "function",
@@ -109,52 +1327,279 @@
       "name": "test_mobile_status_production_contract_requires_all_live_prerequisites",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 173
+      "line": 174
     },
     {
       "name": "test_mobile_status_route_contract_tolerates_non_route_entries",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 188
+      "line": 189
     },
     {
       "name": "test_mobile_status_uses_live_origin_main_and_fails_closed",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 196
+      "line": 197
     },
     {
       "name": "test_mobile_status_live_verifies_one_or_two_accessible_bounties",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 208
+      "line": 209
     },
     {
       "name": "test_mobile_status_separates_production_health_from_bounty_availability",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 221
+      "line": 222
     },
     {
       "name": "test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 241
+      "line": 242
     },
     {
       "name": "test_mobile_status_route_contract_name_is_version_independent",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 249
+      "line": 250
     },
     {
       "name": "test_mobile_status_reports_hackerone_feasibility_pool_and_gaps",
       "kind": "function",
       "file": "backend/tests/test_mobile_production_update_script.py",
-      "line": 256
+      "line": 257
+    },
+    {
+      "name": "token",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 16
+    },
+    {
+      "name": "saveToken",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 20
+    },
+    {
+      "name": "setStatus",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 24
+    },
+    {
+      "name": "updateStartAvailability",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 31
+    },
+    {
+      "name": "requireToken",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 43
+    },
+    {
+      "name": "api",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 50
+    },
+    {
+      "name": "money",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 91
+    },
+    {
+      "name": "stateLabel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 96
+    },
+    {
+      "name": "renderSelection",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 103
+    },
+    {
+      "name": "clearReviewPanel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 128
+    },
+    {
+      "name": "reviewableDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 136
+    },
+    {
+      "name": "renderReviewDrafts",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 146
+    },
+    {
+      "name": "retryableReviewError",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 207
+    },
+    {
+      "name": "refreshRuntimeReadiness",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 221
+    },
+    {
+      "name": "rejectionSummaryText",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 263
+    },
+    {
+      "name": "prepare",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 284
+    },
+    {
+      "name": "reviewProfilePayload",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 388
+    },
+    {
+      "name": "persistReviewDraft",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 412
+    },
+    {
+      "name": "saveReviews",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 439
+    },
+    {
+      "name": "updateProgress",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 462
+    },
+    {
+      "name": "persistWorker",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 467
+    },
+    {
+      "name": "replaceableLaunchReason",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 541
+    },
+    {
+      "name": "preflightBlockerMessage",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 560
+    },
+    {
+      "name": "start",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 577
+    },
+    {
+      "name": "repoSyncLabel",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 665
+    },
+    {
+      "name": "renderJournal",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 675
+    },
+    {
+      "name": "refreshJournal",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 723
+    },
+    {
+      "name": "cancelActiveBatch",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 755
+    },
+    {
+      "name": "setHtbStatus",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 784
+    },
+    {
+      "name": "startHtbLab",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 791
+    },
+    {
+      "name": "parseTechniqueList",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 840
+    },
+    {
+      "name": "saveHtbLearning",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 848
+    },
+    {
+      "name": "cancelHtbLab",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 901
+    },
+    {
+      "name": "refreshHtbSession",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 934
+    },
+    {
+      "name": "refreshHtbBenchmark",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 977
+    },
+    {
+      "name": "bind",
+      "kind": "function",
+      "file": "frontend/simple.js",
+      "line": 1008
     }
   ],
   "selected_tests": [
-    "backend/tests/test_mobile_production_update_script.py"
+    "backend/tests/test_auth.py",
+    "backend/tests/test_frontend_auth_proxy.py",
+    "backend/tests/test_frontend_policy_launcher.py",
+    "backend/tests/test_hackerone_simple_review_package.py",
+    "backend/tests/test_htb_lab.py",
+    "backend/tests/test_mobile_production_update_script.py",
+    "backend/tests/test_pipeline_swarm.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_simple_portfolio.py",
+    "backend/tests/test_simple_selection_cache_only.py",
+    "backend/tests/test_simple_selection_cached.py",
+    "backend/tests/test_swarm_coordinator.py"
   ]
 }

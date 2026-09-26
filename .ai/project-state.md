@@ -22,17 +22,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T05:52:08Z
+Generated: 2026-09-26T09:00:01Z
 
 ### Git
 - Branch: `main`
-- Head: `d7b5f4cc3f1f`
-- Commit date: 2026-09-26T07:51:57+02:00
-- Commit: fix: separate production health from current bounty availability (#400)
+- Head: `387e7240becf`
+- Commit date: 2026-09-26T10:59:51+02:00
+- Commit: improve: make HTB session lifecycle explicit and safer (#401)
 - Tracked files: 571
 
 ### Recently changed files
+- `backend/app/htb_lab.py`
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_htb_lab.py`
 - `backend/tests/test_mobile_production_update_script.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_feasibility.py`
 - `backend/app/hackerone_review_draft.py`
@@ -40,9 +47,6 @@ Generated: 2026-09-26T05:52:08Z
 - `backend/tests/test_hackerone_review_draft.py`
 - `backend/tests/test_hackerone_scope_import.py`
 - `backend/tests/test_hackerone_feasibility.py`
-- `backend/app/hackerone_api.py`
-- `backend/app/simple_portfolio.py`
-- `backend/app/worker_service.py`
 
 ### Project signals
 - `pyproject.toml`
