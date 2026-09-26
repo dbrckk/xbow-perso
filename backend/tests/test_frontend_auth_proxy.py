@@ -252,7 +252,7 @@ def test_dashboard_exposes_htb_learning_feedback_without_payload_storage():
     assert "successful_techniques:successful" in script
     assert "missed_techniques:missed" in script
     assert "notes:''" in script
-    assert "Apprentissage HTB enregistré sans payload ni secret." in script
+    assert "Entraînement HTB terminé. Apprentissage enregistré sans payload ni secret." in script
 
 
 def test_dashboard_surfaces_cross_lab_htb_learning_summary():
