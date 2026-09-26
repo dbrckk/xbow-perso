@@ -1061,6 +1061,13 @@ print("FEASIBILITY_INDEXED=" + str(summary.get("indexed", 0)))
 print("FEASIBILITY_COMPATIBLE=" + str(summary.get("compatible_count", 0)))
 print("FEASIBILITY_BLOCKED=" + str(summary.get("blocked_count", 0)))
 print("FEASIBILITY_UNAVAILABLE=" + str(summary.get("unavailable_count", 0)))
+for reason, count in list((summary.get("unavailable_reason_counts") or {}).items())[:8]:
+    print(
+        "UNAVAILABLE_REASON="
+        + str(reason or "")
+        + "|"
+        + str(count or 0)
+    )
 for row in list(summary.get("capability_gaps") or [])[:8]:
     print(
         "CAPABILITY_GAP="

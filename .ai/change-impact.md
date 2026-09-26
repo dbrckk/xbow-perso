@@ -1,16 +1,15 @@
 # Change impact
 
-Base: 464f52bc734408e127a1df7223ad9f4a83a205e8
-Head: 676b547e0fa7f5c9e895fdee56b5adb77be280e9
+Base: c0e689293a26134a4e2b136e31f4a45d06decbb2
+Head: 1694b1332ab95ba69de22cfe65fd08935bb6b449
 
 ## Changed files
-- M backend/app/hackerone_client.py
-- M backend/app/hackerone_feasibility.py
-- M backend/tests/test_hackerone_client.py
-- M backend/tests/test_hackerone_feasibility.py
+- M backend/tests/test_mobile_production_update_script.py
+- M scripts/mobile-production-status.sh
 
 ## Affected areas
 - backend
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

@@ -22,22 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T11:07:17Z
+Generated: 2026-09-26T11:11:07Z
 
 ### Git
 - Branch: `main`
-- Head: `676b547e0fa7`
-- Commit date: 2026-09-26T13:07:01+02:00
-- Commit: fix: accept HackerOne JSON:API responses and classify feasibility failures (#403)
+- Head: `1694b1332ab9`
+- Commit date: 2026-09-26T13:10:35+02:00
+- Commit: ops: surface HackerOne feasibility unavailable reasons (#404)
 - Tracked files: 571
 
 ### Recently changed files
+- `backend/tests/test_mobile_production_update_script.py`
+- `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_client.py`
 - `backend/app/hackerone_feasibility.py`
 - `backend/tests/test_hackerone_client.py`
 - `backend/tests/test_hackerone_feasibility.py`
-- `backend/tests/test_mobile_production_update_script.py`
-- `scripts/mobile-production-status.sh`
 - `scripts/mobile-production-update.sh`
 - `backend/app/htb_lab.py`
 - `backend/tests/test_frontend_auth_proxy.py`
@@ -46,10 +46,6 @@ Generated: 2026-09-26T11:07:17Z
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/hackerone_review_draft.py`
-- `backend/app/hackerone_scope_import.py`
-- `backend/tests/test_hackerone_review_draft.py`
-- `backend/tests/test_hackerone_scope_import.py`
 
 ### Project signals
 - `pyproject.toml`
