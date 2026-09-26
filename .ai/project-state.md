@@ -22,29 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T05:48:01Z
+Generated: 2026-09-26T05:52:08Z
 
 ### Git
 - Branch: `main`
-- Head: `5ff10e118b9b`
-- Commit date: 2026-09-26T07:47:50+02:00
-- Commit: improve: prefer bounty-eligible HackerOne web targets (#399)
+- Head: `d7b5f4cc3f1f`
+- Commit date: 2026-09-26T07:51:57+02:00
+- Commit: fix: separate production health from current bounty availability (#400)
 - Tracked files: 571
 
 ### Recently changed files
+- `backend/tests/test_mobile_production_update_script.py`
+- `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_feasibility.py`
 - `backend/app/hackerone_review_draft.py`
 - `backend/app/hackerone_scope_import.py`
 - `backend/tests/test_hackerone_review_draft.py`
 - `backend/tests/test_hackerone_scope_import.py`
 - `backend/tests/test_hackerone_feasibility.py`
-- `backend/tests/test_mobile_production_update_script.py`
-- `scripts/mobile-production-status.sh`
 - `backend/app/hackerone_api.py`
 - `backend/app/simple_portfolio.py`
 - `backend/app/worker_service.py`
-- `backend/app/htb_lab.py`
-- `backend/tests/test_htb_lab.py`
 
 ### Project signals
 - `pyproject.toml`

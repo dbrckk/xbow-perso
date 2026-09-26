@@ -15428,6 +15428,11 @@ def test_mobile_status_uses_live_origin_main_and_fails_closed()
 ⋮----
 def test_mobile_status_live_verifies_one_or_two_accessible_bounties()
 ⋮----
+def test_mobile_status_separates_production_health_from_bounty_availability()
+⋮----
+production = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1].split(
+operational = script.split("=== BUG BOUNTY OPERATIONAL VERDICT ===", 1)[1]
+⋮----
 def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version()
 ⋮----
 def test_mobile_status_route_contract_name_is_version_independent()

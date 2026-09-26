@@ -16036,6 +16036,11 @@ def test_mobile_status_uses_live_origin_main_and_fails_closed()
 ⋮----
 def test_mobile_status_live_verifies_one_or_two_accessible_bounties()
 ⋮----
+def test_mobile_status_separates_production_health_from_bounty_availability()
+⋮----
+production = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1].split(
+operational = script.split("=== BUG BOUNTY OPERATIONAL VERDICT ===", 1)[1]
+⋮----
 def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version()
 ⋮----
 def test_mobile_status_route_contract_name_is_version_independent()
@@ -21405,14 +21410,15 @@ if printf '%s
 fi
 
 echo "=== PRODUCTION CONTRACT VERDICT ==="
+PRODUCTION_CONTRACT_OK=false
 if [ "$RUNTIME_READY" = "true" ] \
   && [ "$PUBLIC_HTTPS_OK" = "true" ] \
   && [ "$HACKERONE_API_READY" = "true" ] \
   && [ "$DASHBOARD_VERSION_OK" = "true" ] \
   && [ "$APP_ROUTE_CONTRACT_OK" = "true" ] \
-  && [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] \
   && [ "$REMOTE_MAIN_REACHABLE" = "true" ] \
   && [ "$CHECKOUT_CURRENT" = "true" ]; then
+  PRODUCTION_CONTRACT_OK=true
   echo "PRODUCTION_CONTRACT_OK=true"
 else
   echo "PRODUCTION_CONTRACT_OK=false"
@@ -21420,7 +21426,24 @@ else
   [ "$CHECKOUT_CURRENT" = "true" ] || echo "BLOCKER=checkout_stale | Le VPS n'est pas sur origin/main."
   [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Le dashboard public ne correspond pas au frontend du checkout déployé."
   [ "$APP_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique de l'application manque dans le backend déployé."
-  [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] || echo "BLOCKER=accessible_bounty_precheck | Aucun programme HackerOne live-vérifié n'a pu être préparé."
+fi
+
+echo "=== BUG BOUNTY OPERATIONAL VERDICT ==="
+if [ "$PRODUCTION_CONTRACT_OK" = "true" ] \
+  && [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ]; then
+  echo "BUG_BOUNTY_OPERATIONAL_OK=true"
+  echo "BOUNTY_AVAILABILITY=ready"
+else
+  echo "BUG_BOUNTY_OPERATIONAL_OK=false"
+  if [ "$PRODUCTION_CONTRACT_OK" != "true" ]; then
+    echo "BOUNTY_AVAILABILITY=blocked_by_runtime"
+  else
+    echo "BOUNTY_AVAILABILITY=no_current_compatible_program"
+    echo "INFO=accessible_bounty_precheck | Aucun programme HackerOne live-vérifié n'est disponible maintenant; le déploiement reste sain."
+  fi
+fi
+
+if [ "$PRODUCTION_CONTRACT_OK" != "true" ]; then
   exit 1
 fi
 ````
