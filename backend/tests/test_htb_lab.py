@@ -8,6 +8,7 @@ from app.htb_lab import (
     build_htb_benchmark_summary,
     build_htb_cross_lab_learning_summary,
     create_htb_lab_campaign,
+    finish_htb_lab_campaign,
     htb_lab_learning_summary,
     htb_lab_session_status,
     record_htb_lab_outcome,
@@ -589,3 +590,76 @@ def test_htb_session_status_is_redacted_and_operational(tmp_path, monkeypatch):
 def test_htb_session_status_route_is_exposed():
     paths = main.app.openapi()["paths"]
     assert "/api/labs/htb/campaigns/{campaign_id}/status" in paths
+
+
+def test_htb_duplicate_exact_active_target_is_rejected(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-duplicate.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+
+    first = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.120",
+            authorized_lab=True,
+        )
+    )
+    assert first["state"] == "ready"
+
+    try:
+        create_htb_lab_campaign(
+            HtbLabCampaignInput(
+                target_url="http://10.10.11.120",
+                authorized_lab=True,
+            )
+        )
+    except Exception as exc:
+        assert getattr(exc, "status_code", None) == 409
+        detail = getattr(exc, "detail", {})
+        assert detail["reason"] == "active_htb_target_exists"
+        assert detail["campaign_id"] == first["campaign_id"]
+    else:
+        raise AssertionError("duplicate active HTB target must be rejected")
+
+
+def test_htb_finish_records_learning_and_cancels_campaign(tmp_path, monkeypatch):
+    db = str(tmp_path / "htb-finish.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    monkeypatch.setenv("XBOW_QUEUE_BACKEND", "sqlite")
+
+    created = create_htb_lab_campaign(
+        HtbLabCampaignInput(
+            target_url="http://10.10.11.121",
+            authorized_lab=True,
+        )
+    )
+
+    result = finish_htb_lab_campaign(
+        created["campaign_id"],
+        HtbLabOutcomeInput(
+            solved=True,
+            successful_techniques=["web-enumeration"],
+            missed_techniques=["graphql-mapping"],
+        ),
+    )
+
+    assert result["provider"] == "hackthebox"
+    assert result["training_only"] is True
+    assert result["state"] == "cancelled"
+    assert result["scope_expansion"] is False
+    assert result["contains_exploit_payloads"] is False
+    assert result["outcome"]["learning_observations_written"] == 2
+    assert result["cancellation"]["state"] == "cancelled"
+
+    store = Storage(db, artifacts)
+    campaign = store.get_campaign(created["campaign_id"])
+    assert campaign["state"] == "cancelled"
+    assert any(event.get("type") == "htb_training_outcome" for event in campaign["events"])
+    assert any(event.get("type") == "campaign_cancelled" for event in campaign["events"])
+
+
+def test_htb_finish_route_is_exposed():
+    paths = main.app.openapi()["paths"]
+    assert "/api/labs/htb/campaigns/{campaign_id}/finish" in paths
