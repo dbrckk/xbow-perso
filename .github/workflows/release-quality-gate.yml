@@ -38,7 +38,7 @@ jobs:
           [[ "$BACKEND_IMAGE" =~ $pattern ]] || { echo "backend image is not digest-pinned"; exit 1; }
           [[ "$FRONTEND_IMAGE" =~ $pattern ]] || { echo "frontend image is not digest-pinned"; exit 1; }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.release_ref }}
 
@@ -54,7 +54,7 @@ jobs:
           IMAGE: ${{ inputs.frontend_image }}
         run: gh attestation verify "oci://$IMAGE" --repo "${{ github.repository }}"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
