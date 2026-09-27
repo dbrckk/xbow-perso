@@ -280,3 +280,14 @@ def test_live_production_update_warms_hackerone_feasibility_index():
     assert "FEASIBILITY_WARMUP_STATUS=" in script
     assert "FEASIBILITY_WARMUP_INDEXED=" in script
     assert "FEASIBILITY_WARMUP_COMPATIBLE=" in script
+
+
+def test_mobile_status_reports_htb_readiness_independently_from_hackerone():
+    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
+    assert '"/api/labs/htb/readiness"' in script
+    assert "=== HTB TRAINING READINESS ===" in script
+    assert "from app.htb_lab import build_htb_live_readiness" in script
+    assert "HTB_TRAINING_READY=true" in script
+    assert "HTB_TRAINING_OPERATIONAL_OK=true" in script
+    htb = script.split("=== HTB TRAINING OPERATIONAL VERDICT ===", 1)[1].split("=== BUG BOUNTY OPERATIONAL VERDICT ===", 1)[0]
+    assert "HACKERONE_API_READY" not in htb

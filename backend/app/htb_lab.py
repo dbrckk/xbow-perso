@@ -21,6 +21,129 @@ def _normalize_technique(value: str) -> str:
     return normalized
 
 
+def build_htb_live_readiness() -> dict:
+    """Return redacted readiness for an explicitly authorized HTB lab run."""
+    from .auth import AuthError, configured_api_token
+    from .deployment_preflight import build_deployment_preflight
+    from .main import dependency_readiness
+    from .runtime_capabilities import (
+        safe_recon_runtime_capability,
+        safe_scanner_runtime_capability,
+    )
+    from .worker_liveness import worker_liveness_snapshot
+
+    deployment = build_deployment_preflight(dependency_readiness())
+    recon = safe_recon_runtime_capability()
+    scanner = safe_scanner_runtime_capability()
+    workers = worker_liveness_snapshot()
+    general_worker = dict(workers.get("general") or {})
+    scanner_worker = dict(workers.get("scanner") or {})
+
+    try:
+        configured_api_token()
+        api_token_configured = True
+    except AuthError:
+        api_token_configured = False
+
+    checks = [
+        {
+            "id": "core_dependencies",
+            "label": "Dépendances principales",
+            "required": True,
+            "ok": bool(deployment.get("dependencies_ready")),
+            "action": "Corriger /api/ready avant l’entraînement HTB.",
+        },
+        {
+            "id": "recon_dispatch",
+            "label": "Reconnaissance bornée disponible",
+            "required": True,
+            "ok": bool(recon.get("dispatch_ready")),
+            "action": "Activer XBOW_ENABLE_RECON=true et résoudre les blocages recon.",
+        },
+        {
+            "id": "general_worker_live",
+            "label": "Worker général actif",
+            "required": True,
+            "ok": general_worker.get("live") is True,
+            "action": "Démarrer ou redémarrer le worker général.",
+        },
+        {
+            "id": "active_scans",
+            "label": "Scans actifs explicitement autorisés",
+            "required": True,
+            "ok": bool(scanner.get("active_scans_enabled")),
+            "action": "Activer le profil scanner uniquement pour le lab autorisé.",
+        },
+        {
+            "id": "dry_run_disabled",
+            "label": "Mode dry-run désactivé",
+            "required": True,
+            "ok": scanner.get("dry_run") is False,
+            "action": "Utiliser le profil scanner live pour le lab autorisé.",
+        },
+        {
+            "id": "scanner_worker",
+            "label": "Worker scanner dédié",
+            "required": True,
+            "ok": bool(scanner.get("scanner_worker_enabled")),
+            "action": "Démarrer le profil Docker scanner.",
+        },
+        {
+            "id": "scanner_worker_live",
+            "label": "Worker scanner actif",
+            "required": True,
+            "ok": scanner_worker.get("live") is True,
+            "action": "Vérifier le heartbeat du worker scanner.",
+        },
+        {
+            "id": "nuclei_enabled",
+            "label": "Nuclei activé",
+            "required": True,
+            "ok": bool(scanner.get("nuclei_enabled")),
+            "action": "Activer Nuclei dans le profil scanner.",
+        },
+        {
+            "id": "restricted_sandbox",
+            "label": "Sandbox scanner restricted-v1",
+            "required": True,
+            "ok": scanner.get("sandbox_profile") == "restricted-v1",
+            "action": "Conserver XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1.",
+        },
+        {
+            "id": "scanner_dispatch",
+            "label": "Admission scanner complète",
+            "required": True,
+            "ok": bool(scanner.get("dispatch_ready")) and bool(scanner.get("nuclei_enabled")),
+            "action": "Résoudre les dispatch_block_reasons du scanner.",
+        },
+        {
+            "id": "api_token",
+            "label": "Token API xbow configuré",
+            "required": True,
+            "ok": api_token_configured,
+            "action": "Configurer le token API xbow.",
+        },
+    ]
+    failed = [
+        item for item in checks
+        if item["required"] and item["ok"] is not True
+    ]
+    return {
+        "provider": "hackthebox",
+        "training_only": True,
+        "status": "ready" if not failed else "blocked",
+        "live_scan_ready": not failed,
+        "checks": checks,
+        "failed": [item["id"] for item in failed],
+        "contains_secrets": False,
+    }
+
+
+@router.get("/api/labs/htb/readiness")
+def htb_live_readiness():
+    return build_htb_live_readiness()
+
+
 class HtbLabCampaignInput(BaseModel):
     target_url: HttpUrl
     authorized_lab: bool

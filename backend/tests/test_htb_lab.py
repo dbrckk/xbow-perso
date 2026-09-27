@@ -800,3 +800,7 @@ def test_htb_focus_ranks_repeated_misses_without_automatic_execution(tmp_path, m
 def test_htb_focus_route_is_exposed():
     paths = main.app.openapi()["paths"]
     assert "/api/labs/htb/focus" in paths
+
+
+def test_htb_readiness_route_is_exposed():
+    assert "/api/labs/htb/readiness" in main.app.openapi()["paths"]
