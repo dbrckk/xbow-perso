@@ -44,3 +44,10 @@ def test_compose_wires_recon_flags_to_general_worker():
     assert "XBOW_ENABLE_RECON: ${XBOW_ENABLE_RECON:-false}" in worker
     assert "XBOW_ENABLE_EXTERNAL_RECON: ${XBOW_ENABLE_EXTERNAL_RECON:-false}" in worker
     assert "XBOW_EXTERNAL_RECON_MAX_OUTPUT_BYTES:" in worker
+
+
+def test_general_worker_image_attests_playwright_runtime():
+    dockerfile = (ROOT / "backend" / "Dockerfile").read_text()
+    assert "python -m playwright install --with-deps chromium" in dockerfile
+    assert "touch /opt/xbow-playwright-ready" in dockerfile
+    assert "chmod 0444 /opt/xbow-playwright-ready" in dockerfile
