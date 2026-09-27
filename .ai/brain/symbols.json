@@ -1534,6 +1534,55 @@
       "line": 116
     },
     {
+      "file": "backend/app/finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "normalize_cwe",
+      "line": 19
+    },
+    {
+      "file": "backend/app/finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "normalize_cvss_score",
+      "line": 29
+    },
+    {
+      "file": "backend/app/finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "cvss_qualitative_rating",
+      "line": 39
+    },
+    {
+      "file": "backend/app/finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "severity_matches_cvss",
+      "line": 50
+    },
+    {
+      "file": "backend/app/finding_metadata.py",
+      "language": "python",
+      "kind": "class",
+      "name": "FindingMetadataAssessment",
+      "line": 62
+    },
+    {
+      "file": "backend/app/finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "to_dict",
+      "line": 69
+    },
+    {
+      "file": "backend/app/finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "assess_finding_metadata",
+      "line": 73
+    },
+    {
       "file": "backend/app/finding_readiness.py",
       "language": "python",
       "kind": "class",
@@ -7082,7 +7131,7 @@
       "language": "python",
       "kind": "function",
       "name": "render_markdown",
-      "line": 10
+      "line": 11
     },
     {
       "file": "backend/app/report_approval.py",
@@ -7194,28 +7243,28 @@
       "language": "python",
       "kind": "class",
       "name": "ReportReadiness",
-      "line": 22
+      "line": 20
     },
     {
       "file": "backend/app/report_readiness.py",
       "language": "python",
       "kind": "function",
       "name": "to_dict",
-      "line": 39
+      "line": 40
     },
     {
       "file": "backend/app/report_readiness.py",
       "language": "python",
       "kind": "function",
       "name": "build_report_readiness",
-      "line": 46
+      "line": 47
     },
     {
       "file": "backend/app/report_readiness.py",
       "language": "python",
       "kind": "function",
       "name": "campaign_report_readiness",
-      "line": 153
+      "line": 157
     },
     {
       "file": "backend/app/review_queue.py",
@@ -12165,6 +12214,41 @@
       "kind": "function",
       "name": "test_finding_lifecycle_route_is_exposed",
       "line": 104
+    },
+    {
+      "file": "backend/tests/test_finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_cwe_normalization_is_canonical_and_fail_closed",
+      "line": 12
+    },
+    {
+      "file": "backend/tests/test_finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_cvss_normalization_rejects_invalid_or_non_finite_values",
+      "line": 20
+    },
+    {
+      "file": "backend/tests/test_finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_cvss_v3_qualitative_bands",
+      "line": 30
+    },
+    {
+      "file": "backend/tests/test_finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_severity_consistency_treats_zero_cvss_as_info",
+      "line": 42
+    },
+    {
+      "file": "backend/tests/test_finding_metadata.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_assessment_is_advisory_and_does_not_mutate_finding",
+      "line": 49
     },
     {
       "file": "backend/tests/test_finding_readiness.py",
@@ -20707,6 +20791,13 @@
       "line": 75
     },
     {
+      "file": "backend/tests/test_report.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_report_renders_normalized_cwe_and_cvss_rating",
+      "line": 94
+    },
+    {
       "file": "backend/tests/test_report_approval.py",
       "language": "python",
       "kind": "function",
@@ -20824,6 +20915,27 @@
       "kind": "function",
       "name": "test_report_approval_route_rejects_non_report_artifact",
       "line": 155
+    },
+    {
+      "file": "backend/tests/test_report_metadata_normalization.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_finding",
+      "line": 7
+    },
+    {
+      "file": "backend/tests/test_report_metadata_normalization.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_report_readiness_exposes_canonical_metadata",
+      "line": 25
+    },
+    {
+      "file": "backend/tests/test_report_metadata_normalization.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_report_readiness_flags_cvss_severity_mismatch",
+      "line": 39
     },
     {
       "file": "backend/tests/test_report_readiness.py",

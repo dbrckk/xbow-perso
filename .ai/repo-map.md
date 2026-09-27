@@ -92,6 +92,7 @@ backend/
     finding_correlation.py
     finding_intelligence.py
     finding_lifecycle.py
+    finding_metadata.py
     finding_readiness.py
     finding_triage.py
     github_learning_sync.py
@@ -259,6 +260,7 @@ backend/
     test_finding_correlation.py
     test_finding_intelligence.py
     test_finding_lifecycle.py
+    test_finding_metadata.py
     test_finding_readiness.py
     test_finding_review_metadata.py
     test_finding_triage.py
@@ -387,6 +389,7 @@ backend/
     test_redis_jobqueue.py
     test_report_approval_api.py
     test_report_approval.py
+    test_report_metadata_normalization.py
     test_report_readiness.py
     test_report.py
     test_review_queue.py
@@ -3163,6 +3166,54 @@ def campaign_finding_lifecycle(campaign_id: str)
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
 advice = build_finding_lifecycle(campaign.findings, graph)
+````
+
+## File: backend/app/finding_metadata.py
+````python
+_CWE_RE = re.compile(r"^CWE-[1-9][0-9]{0,5}$")
+⋮----
+_CVSS_RANGES = (
+⋮----
+def normalize_cwe(value: Any) -> str | None
+⋮----
+"""Return canonical CWE-N form when the supplied value is valid."""
+⋮----
+normalized = str(value).strip().upper()
+⋮----
+def normalize_cvss_score(value: Any) -> float | None
+⋮----
+"""Return a finite CVSS base score in the valid 0.0..10.0 range."""
+⋮----
+score = float(value)
+⋮----
+def cvss_qualitative_rating(value: Any) -> str | None
+⋮----
+"""Map a valid CVSS v3.x base score to its qualitative severity band."""
+score = normalize_cvss_score(value)
+⋮----
+def severity_matches_cvss(severity: Any, value: Any) -> bool
+⋮----
+"""Check declared severity against the CVSS qualitative rating."""
+rating = cvss_qualitative_rating(value)
+⋮----
+declared = str(severity or "").strip().lower()
+⋮----
+@dataclass(frozen=True)
+class FindingMetadataAssessment
+⋮----
+canonical_cwe: str | None
+cwe_valid: bool
+cvss_score: float | None
+cvss_rating: str | None
+severity_cvss_consistent: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def assess_finding_metadata(finding: Any) -> FindingMetadataAssessment
+⋮----
+canonical_cwe = normalize_cwe(getattr(finding, "cwe", None))
+score = normalize_cvss_score(getattr(finding, "cvss", None))
+rating = cvss_qualitative_rating(score)
 ````
 
 ## File: backend/app/finding_readiness.py
@@ -9499,8 +9550,6 @@ def approval_status_from_storage(campaign: Any, store: Any, artifact_id: str) ->
 ````python
 router = APIRouter()
 ⋮----
-_CWE_RE = re.compile(r"^CWE-[1-9][0-9]{0,5}$")
-⋮----
 @dataclass(frozen=True)
 class ReportReadiness
 ⋮----
@@ -9519,6 +9568,9 @@ submission_completeness_score: float
 evidence_quality_grade: str
 metadata_blockers: tuple[str, ...]
 metadata_checks: dict[str, bool]
+canonical_cwe: str | None
+cvss_rating: str | None
+severity_cvss_consistent: bool
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -9551,8 +9603,7 @@ blockers: list[str] = []
 ⋮----
 quality = quality_by_id.get(finding_id)
 evidence_grade = str(quality.grade if quality else "low")
-cwe = str(getattr(finding, "cwe", "") or "").strip().upper()
-cvss = getattr(finding, "cvss", None)
+metadata = assess_finding_metadata(finding)
 metadata_checks = {
 metadata_blockers = tuple(
 completeness = round(
@@ -9584,6 +9635,10 @@ quality = quality_by_id.get(str(finding.id)) if evidence_quality is not None els
 quality_grade = str((quality or {}).get("grade") or "unknown")
 quality_score = float((quality or {}).get("score") or 0.0)
 submission_ready = quality_grade == "high" if evidence_quality is not None else None
+metadata = assess_finding_metadata(finding)
+cwe_display = metadata.canonical_cwe or (str(finding.cwe).strip() if finding.cwe else "N/A")
+cvss_display = "N/A" if metadata.cvss_score is None or metadata.cvss_rating is None else f"{metadata.cvss_score:.1f} ({metadata.cvss_rating.upper()})"
+severity_consistency = "N/A" if metadata.cvss_score is None else ("CONSISTENT" if metadata.severity_cvss_consistent else "REVIEW")
 ````
 
 ## File: backend/app/review_queue.py
@@ -13473,6 +13528,23 @@ def test_rejected_finding_is_terminal()
 item = build_finding_lifecycle([_finding("f1", "rejected")], ObservationGraph())[0]
 ⋮----
 def test_finding_lifecycle_route_is_exposed()
+````
+
+## File: backend/tests/test_finding_metadata.py
+````python
+def test_cwe_normalization_is_canonical_and_fail_closed()
+⋮----
+def test_cvss_normalization_rejects_invalid_or_non_finite_values()
+⋮----
+def test_cvss_v3_qualitative_bands()
+⋮----
+def test_severity_consistency_treats_zero_cvss_as_info()
+⋮----
+def test_assessment_is_advisory_and_does_not_mutate_finding()
+⋮----
+finding = SimpleNamespace(cwe=" cwe-200 ", cvss=5.3, severity="medium")
+⋮----
+assessment = assess_finding_metadata(finding)
 ````
 
 ## File: backend/tests/test_finding_readiness.py
@@ -18487,6 +18559,17 @@ def test_tampered_report_bytes_cannot_be_approved_or_reported_as_approved(tmp_pa
 metadata = store.get_artifact(campaign.id, artifact["id"])
 ````
 
+## File: backend/tests/test_report_metadata_normalization.py
+````python
+def _finding(*, severity: str, cwe: str, cvss: float)
+⋮----
+def test_report_readiness_exposes_canonical_metadata()
+⋮----
+item = build_report_readiness(
+⋮----
+def test_report_readiness_flags_cvss_severity_mismatch()
+````
+
 ## File: backend/tests/test_report_readiness.py
 ````python
 def _finding(finding_id: str, status: str = "validation_required")
@@ -18548,6 +18631,10 @@ finding_id = str(campaign.findings[0].id)
 report = render_markdown(
 ⋮----
 def test_report_holds_confirmed_finding_when_evidence_quality_is_not_high()
+⋮----
+def test_report_renders_normalized_cwe_and_cvss_rating()
+⋮----
+report = render_markdown(campaign, platform="hackerone")
 ````
 
 ## File: backend/tests/test_review_queue.py

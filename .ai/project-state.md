@@ -22,16 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T17:43:23Z
+Generated: 2026-09-27T17:47:16Z
 
 ### Git
 - Branch: `main`
-- Head: `97c5d23bfbe4`
-- Commit date: 2026-09-27T19:43:13+02:00
-- Commit: feat: add HTB-specific readiness independent of HackerOne (#409)
-- Tracked files: 572
+- Head: `2d789bed101f`
+- Commit date: 2026-09-27T19:47:05+02:00
+- Commit: feat: strengthen CWE and CVSS report metadata (#411)
+- Tracked files: 575
 
 ### Recently changed files
+- `backend/app/finding_metadata.py`
+- `backend/app/report.py`
+- `backend/app/report_readiness.py`
+- `backend/tests/test_finding_metadata.py`
+- `backend/tests/test_report.py`
+- `backend/tests/test_report_metadata_normalization.py`
 - `backend/app/htb_lab.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_htb_lab.py`
@@ -46,8 +52,6 @@ Generated: 2026-09-27T17:43:23Z
 - `.github/workflows/supply-chain.yml`
 - `backend/tests/test_github_actions_runtime.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
-- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`
