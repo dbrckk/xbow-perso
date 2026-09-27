@@ -61,7 +61,7 @@ def test_openapi_preview_api_is_read_only_and_bounded():
         )
     )
 
-    assert result["schema"] == "openapi-read-only-preview-v2"
+    assert result["schema"] == "openapi-read-only-preview-v3"
     assert [item["method"] for item in result["cases"]] == ["GET"]
     assert result["summary"]["mutating_operations_skipped"] == 1
 
@@ -131,7 +131,7 @@ def test_openapi_preview_extracts_passive_parameter_and_response_metadata():
     )
 
     case = result["cases"][0]
-    assert result["schema"] == "openapi-read-only-preview-v2"
+    assert result["schema"] == "openapi-read-only-preview-v3"
     assert case["method"] == "GET"
     assert case["parameters"] == [
         {
@@ -178,3 +178,68 @@ def test_openapi_preview_ignores_external_parameter_refs():
     )
 
     assert result["cases"][0]["parameters"] == []
+
+
+def test_openapi_preview_emits_advisory_api_risk_signals_only():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "security": [{"oauth2": ["read"]}],
+            "paths": {
+                "/users/{user_id}/callback": {
+                    "get": {
+                        "operationId": "getUserCallback",
+                        "parameters": [
+                            {
+                                "name": "user_id",
+                                "in": "path",
+                                "required": True,
+                                "schema": {"type": "string"},
+                            },
+                            {
+                                "name": "callback_url",
+                                "in": "query",
+                                "schema": {"type": "string"},
+                            },
+                            {
+                                "name": "email",
+                                "in": "query",
+                                "schema": {"type": "string"},
+                            },
+                        ],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    case = result["cases"][0]
+    categories = {item["category"] for item in case["risk_signals"]}
+    assert result["schema"] == "openapi-read-only-preview-v3"
+    assert "bola_idor_review" in categories
+    assert "ssrf_input_review" in categories
+    assert "auth_session_review" in categories
+    assert "sensitive_data_review" in categories
+    assert all(item["advisory"] is True for item in case["risk_signals"])
+    assert all(item["vulnerability_confirmed"] is False for item in case["risk_signals"])
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_does_not_claim_vulnerability_from_path_name_only():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/public/url-directory": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    signals = result["cases"][0]["risk_signals"]
+    assert signals
+    assert all(item["vulnerability_confirmed"] is False for item in signals)

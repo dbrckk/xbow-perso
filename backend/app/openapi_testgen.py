@@ -23,6 +23,7 @@ class OpenApiTestCase:
     parameters: tuple[dict[str, Any], ...]
     response_codes: tuple[str, ...]
     response_content_types: tuple[str, ...]
+    risk_signals: tuple[dict[str, Any], ...]
     read_only: bool = True
     execution_mode: str = "preview_only"
     destructive: bool = False
@@ -33,9 +34,120 @@ class OpenApiTestCase:
         payload["parameters"] = [dict(item) for item in self.parameters]
         payload["response_codes"] = list(self.response_codes)
         payload["response_content_types"] = list(self.response_content_types)
+        payload["risk_signals"] = [dict(item) for item in self.risk_signals]
         return payload
 
 
+
+
+RISK_TERMS = {
+    "bola_idor": (
+        "id", "user_id", "account_id", "order_id", "invoice_id", "tenant_id",
+        "customer_id", "project_id", "document_id", "resource_id",
+    ),
+    "ssrf": (
+        "url", "uri", "callback", "webhook", "redirect", "return_url", "target",
+        "destination", "endpoint", "host",
+    ),
+    "auth_session": (
+        "token", "jwt", "oauth", "authorization", "session", "refresh_token",
+        "access_token",
+    ),
+    "sensitive_data": (
+        "email", "phone", "address", "ssn", "tax", "payment", "card", "bank",
+        "secret", "credential", "api_key",
+    ),
+}
+
+
+def _risk_signal(
+    *,
+    category: str,
+    confidence: str,
+    reason: str,
+    evidence: list[str],
+) -> dict[str, Any]:
+    return {
+        "category": category,
+        "confidence": confidence,
+        "reason": reason,
+        "evidence": evidence[:12],
+        "advisory": True,
+        "vulnerability_confirmed": False,
+    }
+
+
+def _operation_risk_signals(
+    path: str,
+    operation: dict[str, Any],
+    parameters: tuple[dict[str, Any], ...],
+    *,
+    authentication_declared: bool,
+) -> list[dict[str, Any]]:
+    haystack_parts = [path.lower(), str(operation.get("operationId") or "").lower()]
+    haystack_parts.extend(str(tag).lower() for tag in operation.get("tags", []) if isinstance(tag, str))
+    haystack_parts.extend(str(item.get("name") or "").lower() for item in parameters)
+    haystack = " ".join(haystack_parts)
+
+    signals: list[dict[str, Any]] = []
+
+    object_refs = sorted({
+        term for term in RISK_TERMS["bola_idor"]
+        if term in haystack
+    })
+    if object_refs:
+        signals.append(
+            _risk_signal(
+                category="bola_idor_review",
+                confidence="medium",
+                reason="Object identifiers are declared in a read-only operation and may warrant authorization-boundary review.",
+                evidence=object_refs,
+            )
+        )
+
+    ssrf_refs = sorted({
+        term for term in RISK_TERMS["ssrf"]
+        if term in haystack
+    })
+    if ssrf_refs:
+        signals.append(
+            _risk_signal(
+                category="ssrf_input_review",
+                confidence="medium",
+                reason="URL/host-like inputs are declared and may warrant server-side request handling review.",
+                evidence=ssrf_refs,
+            )
+        )
+
+    auth_refs = sorted({
+        term for term in RISK_TERMS["auth_session"]
+        if term in haystack
+    })
+    if auth_refs or authentication_declared:
+        signals.append(
+            _risk_signal(
+                category="auth_session_review",
+                confidence="low" if authentication_declared and not auth_refs else "medium",
+                reason="Authentication/session semantics are present and may warrant JWT/OAuth/session handling review.",
+                evidence=(["security_declared"] if authentication_declared else []) + auth_refs,
+            )
+        )
+
+    sensitive_refs = sorted({
+        term for term in RISK_TERMS["sensitive_data"]
+        if term in haystack
+    })
+    if sensitive_refs:
+        signals.append(
+            _risk_signal(
+                category="sensitive_data_review",
+                confidence="medium",
+                reason="Potentially sensitive data fields are referenced and may warrant exposure/minimization review.",
+                evidence=sensitive_refs,
+            )
+        )
+
+    return signals
 
 def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]:
     combined: list[Any] = []
@@ -147,6 +259,12 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
             authentication_declared = bool(security)
             parameters = _normalized_parameters(raw_item, operation)
             response_codes, response_content_types = _response_metadata(operation)
+            risk_signals = _operation_risk_signals(
+                path,
+                operation,
+                parameters,
+                authentication_declared=authentication_declared,
+            )
 
             cases.append(
                 OpenApiTestCase(
@@ -158,13 +276,14 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                     parameters=parameters,
                     response_codes=response_codes,
                     response_content_types=response_content_types,
+                    risk_signals=tuple(risk_signals),
                 )
             )
             if len(cases) > MAX_CASES:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v2",
+        "schema": "openapi-read-only-preview-v3",
         "source_version": version[:40],
         "execution_mode": "preview_only",
         "read_only": True,
