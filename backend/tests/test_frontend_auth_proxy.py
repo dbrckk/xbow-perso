@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=89" defer></script>' in index
+    assert '<script src="/simple.js?v=90" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
