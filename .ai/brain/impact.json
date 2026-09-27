@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "2d789bed101f2800db82d245225752230dbd3f42",
-  "head": "d3774ea4177ec9949abf5f9e0f7506a895b1b96f",
+  "base": "d3774ea4177ec9949abf5f9e0f7506a895b1b96f",
+  "head": "042fabae8370a6456800241acdce13a87fc540f2",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -10,375 +10,175 @@
       "status": "M"
     },
     {
-      "path": "backend/app/runtime_capabilities.py",
+      "path": "backend/app/browser.py",
       "status": "M"
     },
     {
-      "path": "backend/app/scanner_worker.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/strix_run_status.py",
-      "status": "A"
-    },
-    {
-      "path": "backend/tests/test_runtime_capabilities.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_strix_run_status.py",
+      "path": "backend/tests/test_browser_artifact_bounds.py",
       "status": "A"
     }
   ],
   "changed_source_files": [
-    "backend/app/runtime_capabilities.py",
-    "backend/app/scanner_worker.py",
-    "backend/app/strix_run_status.py",
-    "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_strix_run_status.py"
+    "backend/app/browser.py",
+    "backend/tests/test_browser_artifact_bounds.py"
   ],
   "impacted_files": [
-    "backend/app/campaign_control.py",
-    "backend/app/deployment_preflight.py",
-    "backend/app/hackerone_intelligence.py",
-    "backend/app/hackerone_live_readiness.py",
-    "backend/app/htb_lab.py",
+    "backend/app/browser.py",
     "backend/app/main.py",
-    "backend/app/orchestrator.py",
-    "backend/app/runtime_capabilities.py",
-    "backend/app/scanner_worker.py",
-    "backend/app/strix_run_status.py",
     "backend/app/worker_service.py",
-    "backend/tests/test_nuclei_preflight.py",
-    "backend/tests/test_nuclei_queue_lifecycle.py",
-    "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_scanner_worker.py",
-    "backend/tests/test_strix_run_status.py"
+    "backend/tests/test_browser.py",
+    "backend/tests/test_browser_artifact_bounds.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_recon_telemetry",
-      "kind": "function",
-      "file": "backend/app/campaign_control.py",
-      "line": 18
+      "name": "BrowserPolicyError",
+      "kind": "class",
+      "file": "backend/app/browser.py",
+      "line": 27
     },
     {
-      "name": "_autonomy_block_reasons",
-      "kind": "function",
-      "file": "backend/app/campaign_control.py",
-      "line": 56
+      "name": "BrowserStep",
+      "kind": "class",
+      "file": "backend/app/browser.py",
+      "line": 31
     },
     {
-      "name": "campaign_control_status",
+      "name": "validate_shape",
       "kind": "function",
-      "file": "backend/app/campaign_control.py",
-      "line": 68
+      "file": "backend/app/browser.py",
+      "line": 39
     },
     {
-      "name": "reset_campaign_circuit_breaker",
-      "kind": "function",
-      "file": "backend/app/campaign_control.py",
-      "line": 111
+      "name": "BrowserFlowInput",
+      "kind": "class",
+      "file": "backend/app/browser.py",
+      "line": 51
     },
     {
-      "name": "_configured",
-      "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 12
+      "name": "BrowserExecutionResult",
+      "kind": "class",
+      "file": "backend/app/browser.py",
+      "line": 66
     },
     {
       "name": "_bool_env",
       "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 16
+      "file": "backend/app/browser.py",
+      "line": 73
     },
     {
-      "name": "_production_mode",
+      "name": "_bounded_size_env",
       "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 28
+      "file": "backend/app/browser.py",
+      "line": 85
     },
     {
-      "name": "_image_digest_configured",
+      "name": "_max_browser_rendered_bytes",
       "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 32
+      "file": "backend/app/browser.py",
+      "line": 98
     },
     {
-      "name": "build_deployment_preflight",
+      "name": "_max_browser_screenshot_bytes",
       "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 39
+      "file": "backend/app/browser.py",
+      "line": 107
+    },
+    {
+      "name": "_browser_secret",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 116
     },
     {
       "name": "_utcnow",
       "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 260
+      "file": "backend/app/browser.py",
+      "line": 141
     },
     {
-      "name": "_bounded_text",
+      "name": "_campaign",
       "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 264
+      "file": "backend/app/browser.py",
+      "line": 145
     },
     {
-      "name": "_amount",
+      "name": "_flow_fingerprint",
       "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 271
+      "file": "backend/app/browser.py",
+      "line": 156
     },
     {
-      "name": "_bounded_int",
+      "name": "_flow_dedupe_key",
       "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 283
+      "file": "backend/app/browser.py",
+      "line": 166
     },
     {
-      "name": "_relationship_attributes",
+      "name": "_save_campaign",
       "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 293
+      "file": "backend/app/browser.py",
+      "line": 172
     },
     {
-      "name": "normalize_hacktivity_item",
+      "name": "_reconcile_browser_flow_queued",
       "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 307
-    },
-    {
-      "name": "classify_report",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 345
-    },
-    {
-      "name": "_max_pages",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 359
-    },
-    {
-      "name": "intelligence_poll_seconds",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 370
-    },
-    {
-      "name": "_enabled",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 383
-    },
-    {
-      "name": "fetch_disclosed_hacktivity",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 392
-    },
-    {
-      "name": "_category_statistics",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 421
-    },
-    {
-      "name": "_program_signals",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 479
-    },
-    {
-      "name": "_capability_gaps",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 524
-    },
-    {
-      "name": "build_hackerone_intelligence",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 542
-    },
-    {
-      "name": "refresh_hackerone_intelligence",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 597
-    },
-    {
-      "name": "maybe_refresh_hackerone_intelligence",
-      "kind": "function",
-      "file": "backend/app/hackerone_intelligence.py",
-      "line": 623
-    },
-    {
-      "name": "_strict_bool",
-      "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 17
-    },
-    {
-      "name": "_configured",
-      "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 29
-    },
-    {
-      "name": "build_hackerone_live_readiness",
-      "kind": "function",
-      "file": "backend/app/hackerone_live_readiness.py",
-      "line": 33
-    },
-    {
-      "name": "_normalize_technique",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 15
-    },
-    {
-      "name": "build_htb_live_readiness",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 24
-    },
-    {
-      "name": "htb_live_readiness",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 143
-    },
-    {
-      "name": "HtbLabCampaignInput",
-      "kind": "class",
-      "file": "backend/app/htb_lab.py",
-      "line": 147
-    },
-    {
-      "name": "validate_authorized_lab_target",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 153
-    },
-    {
-      "name": "_active_same_target_htb_campaign",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
+      "file": "backend/app/browser.py",
       "line": 185
     },
     {
-      "name": "create_htb_lab_campaign",
+      "name": "_allowed_url",
       "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 200
+      "file": "backend/app/browser.py",
+      "line": 231
     },
     {
-      "name": "HtbLabOutcomeInput",
-      "kind": "class",
-      "file": "backend/app/htb_lab.py",
-      "line": 264
+      "name": "_browser_storage_state",
+      "kind": "function",
+      "file": "backend/app/browser.py",
+      "line": 245
     },
     {
-      "name": "validate_techniques",
+      "name": "_assert_read_only_browser_method",
       "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 272
-    },
-    {
-      "name": "validate_overlap",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 277
-    },
-    {
-      "name": "_latest_htb_outcome_event",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 287
-    },
-    {
-      "name": "_assert_htb_campaign",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 299
-    },
-    {
-      "name": "record_htb_lab_outcome",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
+      "file": "backend/app/browser.py",
       "line": 311
     },
     {
-      "name": "is_htb_training_campaign",
+      "name": "_assert_browser_policy",
       "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 410
+      "file": "backend/app/browser.py",
+      "line": 317
     },
     {
-      "name": "_current_htb_feedback_observations",
+      "name": "validate_flow",
       "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 424
+      "file": "backend/app/browser.py",
+      "line": 332
     },
     {
-      "name": "collect_htb_cross_lab_learning",
+      "name": "queue_browser_flow",
       "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 455
+      "file": "backend/app/browser.py",
+      "line": 342
     },
     {
-      "name": "build_htb_cross_lab_learning_summary",
+      "name": "execute_browser_flow",
       "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 505
+      "file": "backend/app/browser.py",
+      "line": 415
     },
     {
-      "name": "build_htb_benchmark_summary",
+      "name": "route_guard",
       "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 519
+      "file": "backend/app/browser.py",
+      "line": 444
     },
     {
-      "name": "finish_htb_lab_campaign",
+      "name": "persist_browser_result",
       "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 611
-    },
-    {
-      "name": "build_htb_focus_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 635
-    },
-    {
-      "name": "htb_focus_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 702
-    },
-    {
-      "name": "htb_benchmark_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 713
-    },
-    {
-      "name": "htb_global_learning_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 723
-    },
-    {
-      "name": "htb_lab_session_status",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 733
-    },
-    {
-      "name": "htb_lab_learning_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 766
+      "file": "backend/app/browser.py",
+      "line": 629
     },
     {
       "name": "authenticate_control_api",
@@ -921,228 +721,6 @@
       "line": 1848
     },
     {
-      "name": "_stable_id",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 51
-    },
-    {
-      "name": "_graph_fingerprint",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 56
-    },
-    {
-      "name": "_load_graph",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 73
-    },
-    {
-      "name": "_seed_primary_target",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 77
-    },
-    {
-      "name": "_minimum_enrichment_score",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 94
-    },
-    {
-      "name": "_surface_enrichment",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 105
-    },
-    {
-      "name": "_intelligence_context",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 129
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 140
-    },
-    {
-      "name": "_validation_saturated_cluster_ids",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 259
-    },
-    {
-      "name": "_pending_findings",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 299
-    },
-    {
-      "name": "_enqueue_recon_tasks",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 345
-    },
-    {
-      "name": "_scan_engines",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 410
-    },
-    {
-      "name": "_enqueue_action",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 421
-    },
-    {
-      "name": "_decision_explanation",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 499
-    },
-    {
-      "name": "_record_decision",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 546
-    },
-    {
-      "name": "_result",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 589
-    },
-    {
-      "name": "advance_campaign",
-      "kind": "function",
-      "file": "backend/app/orchestrator.py",
-      "line": 661
-    },
-    {
-      "name": "CapabilityConfigError",
-      "kind": "class",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 8
-    },
-    {
-      "name": "_strict_bool",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 12
-    },
-    {
-      "name": "pentagi_runtime_capability",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 24
-    },
-    {
-      "name": "safe_pentagi_runtime_capability",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 77
-    },
-    {
-      "name": "scanner_runtime_capability",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 102
-    },
-    {
-      "name": "safe_scanner_runtime_capability",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 177
-    },
-    {
-      "name": "browser_runtime_capability",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 205
-    },
-    {
-      "name": "safe_browser_runtime_capability",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 217
-    },
-    {
-      "name": "recon_runtime_capability",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 231
-    },
-    {
-      "name": "safe_recon_runtime_capability",
-      "kind": "function",
-      "file": "backend/app/runtime_capabilities.py",
-      "line": 269
-    },
-    {
-      "name": "ScannerJobResult",
-      "kind": "class",
-      "file": "backend/app/scanner_worker.py",
-      "line": 18
-    },
-    {
-      "name": "_record_scan_observation",
-      "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 25
-    },
-    {
-      "name": "_state_after_scan",
-      "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 53
-    },
-    {
-      "name": "run_strix_job",
-      "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 61
-    },
-    {
-      "name": "run_nuclei_job",
-      "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 137
-    },
-    {
-      "name": "StrixRunStatusError",
-      "kind": "class",
-      "file": "backend/app/strix_run_status.py",
-      "line": 10
-    },
-    {
-      "name": "max_strix_run_json_bytes",
-      "kind": "function",
-      "file": "backend/app/strix_run_status.py",
-      "line": 14
-    },
-    {
-      "name": "StrixRunStatus",
-      "kind": "class",
-      "file": "backend/app/strix_run_status.py",
-      "line": 28
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/strix_run_status.py",
-      "line": 33
-    },
-    {
-      "name": "load_strix_run_status",
-      "kind": "function",
-      "file": "backend/app/strix_run_status.py",
-      "line": 41
-    },
-    {
       "name": "CampaignCancelledError",
       "kind": "class",
       "file": "backend/app/worker_service.py",
@@ -1287,233 +865,218 @@
       "line": 617
     },
     {
-      "name": "_clear",
-      "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 16
-    },
-    {
-      "name": "_active_nuclei",
-      "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 21
-    },
-    {
-      "name": "test_scanner_capability_blocks_active_nuclei_without_pinned_version",
-      "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 28
-    },
-    {
-      "name": "test_preflight_rejects_incomplete_active_nuclei_configuration",
-      "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 42
-    },
-    {
-      "name": "test_preflight_accepts_complete_active_nuclei_configuration_without_leaking_version",
-      "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 66
-    },
-    {
-      "name": "test_preflight_rejects_invalid_nuclei_boolean_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_nuclei_preflight.py",
-      "line": 89
-    },
-    {
       "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 13
+      "file": "backend/tests/test_browser.py",
+      "line": 30
     },
     {
-      "name": "test_scan_engines_default_preserves_strix",
+      "name": "test_browser_navigation_fails_closed_outside_scope",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 27
+      "file": "backend/tests/test_browser.py",
+      "line": 44
     },
     {
-      "name": "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+      "name": "test_browser_denied_target_overrides_wildcard_allow",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 32
+      "file": "backend/tests/test_browser.py",
+      "line": 50
     },
     {
-      "name": "test_sqlite_queue_accepts_nuclei_scan",
+      "name": "test_fill_rejects_literal_or_unscoped_secret_reference",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 41
+      "file": "backend/tests/test_browser.py",
+      "line": 56
     },
     {
-      "name": "test_nuclei_worker_dry_run_preserves_safe_default",
+      "name": "test_browser_is_dry_run_by_default",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 52
+      "file": "backend/tests/test_browser.py",
+      "line": 63
     },
     {
-      "name": "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+      "name": "test_browser_flow_dedupe_key_is_stable_for_same_campaign_version_and_flow",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "line": 78
+      "file": "backend/tests/test_browser.py",
+      "line": 77
     },
     {
-      "name": "fake_execute",
+      "name": "test_browser_flow_dedupe_key_changes_with_version_or_flow",
       "kind": "function",
-      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "file": "backend/tests/test_browser.py",
       "line": 90
     },
     {
-      "name": "_clear",
+      "name": "test_browser_artifacts_are_idempotent_per_job",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 24
+      "file": "backend/tests/test_browser.py",
+      "line": 97
     },
     {
-      "name": "test_pentagi_capability_defaults_fail_closed",
+      "name": "test_invalid_browser_automation_flag_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 29
-    },
-    {
-      "name": "test_all_operator_gates_still_do_not_claim_pentagi_execution",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 45
-    },
-    {
-      "name": "test_status_tracking_requires_integration_and_status_worker",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 67
-    },
-    {
-      "name": "test_invalid_boolean_configuration_fails_closed",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 80
-    },
-    {
-      "name": "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 95
-    },
-    {
-      "name": "test_capabilities_api_reports_configuration_error_without_raising",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
+      "file": "backend/tests/test_browser.py",
       "line": 115
     },
     {
-      "name": "test_scanner_runtime_capability_defaults_fail_closed",
+      "name": "test_browser_automation_flag_accepts_explicit_false_values",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 128
+      "file": "backend/tests/test_browser.py",
+      "line": 125
     },
     {
-      "name": "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile",
+      "name": "test_browser_automation_respects_program_disable",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 147
+      "file": "backend/tests/test_browser.py",
+      "line": 136
     },
     {
-      "name": "test_capabilities_api_exposes_scanner_worker_admission",
+      "name": "test_browser_automation_rejects_unsafe_campaign_flags",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 161
+      "file": "backend/tests/test_browser.py",
+      "line": 156
     },
     {
-      "name": "test_scanner_runtime_capability_rejects_unsupported_engine",
+      "name": "test_browser_request_methods_are_read_only",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 177
+      "file": "backend/tests/test_browser.py",
+      "line": 167
     },
     {
-      "name": "test_recon_runtime_capability_defaults_fail_closed",
+      "name": "test_browser_surface_observations_are_persistable_shape",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 191
+      "file": "backend/tests/test_browser.py",
+      "line": 176
     },
     {
-      "name": "test_external_recon_preflight_reports_missing_tools",
+      "name": "_clear_browser_secret_env",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 204
+      "file": "backend/tests/test_browser.py",
+      "line": 210
     },
     {
-      "name": "test_external_recon_preflight_ready_when_every_tool_exists",
+      "name": "_configure_browser_vault",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 225
+      "file": "backend/tests/test_browser.py",
+      "line": 221
     },
     {
-      "name": "test_recon_capability_invalid_configuration_fails_closed",
+      "name": "test_browser_secret_preserves_legacy_env_when_vault_disabled",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 239
+      "file": "backend/tests/test_browser.py",
+      "line": 230
     },
     {
-      "name": "test_capabilities_api_exposes_recon_preflight",
+      "name": "test_browser_secret_loads_from_vault",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 249
+      "file": "backend/tests/test_browser.py",
+      "line": 237
     },
     {
-      "name": "test_strix_runtime_capability_fails_closed_without_binary_or_docker",
+      "name": "test_browser_secret_refuses_env_fallback_when_vault_enabled",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 269
+      "file": "backend/tests/test_browser.py",
+      "line": 247
     },
     {
-      "name": "test_strix_runtime_capability_reports_ready_when_runtime_exists",
+      "name": "test_browser_secret_missing_in_vault_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 286
+      "file": "backend/tests/test_browser.py",
+      "line": 256
     },
     {
-      "name": "_campaign",
+      "name": "test_browser_secret_invalid_vault_configuration_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_scanner_worker.py",
-      "line": 7
+      "file": "backend/tests/test_browser.py",
+      "line": 264
     },
     {
-      "name": "test_scanner_worker_dry_run_stays_ready_and_records_event",
+      "name": "_browser_flow",
       "kind": "function",
-      "file": "backend/tests/test_scanner_worker.py",
-      "line": 21
+      "file": "backend/tests/test_browser.py",
+      "line": 273
     },
     {
-      "name": "test_strix_run_status_requires_completed_status",
+      "name": "_browser_api_backends",
       "kind": "function",
-      "file": "backend/tests/test_strix_run_status.py",
-      "line": 8
+      "file": "backend/tests/test_browser.py",
+      "line": 285
     },
     {
-      "name": "test_strix_run_status_does_not_treat_stopped_as_completed",
+      "name": "test_browser_queue_uses_backend_factories_and_audited_outbox",
       "kind": "function",
-      "file": "backend/tests/test_strix_run_status.py",
-      "line": 23
+      "file": "backend/tests/test_browser.py",
+      "line": 299
     },
     {
-      "name": "test_strix_run_status_fails_closed_without_run_json",
+      "name": "test_browser_conflict_before_intent_commit_never_enqueues",
       "kind": "function",
-      "file": "backend/tests/test_strix_run_status.py",
-      "line": 37
+      "file": "backend/tests/test_browser.py",
+      "line": 330
     },
     {
-      "name": "test_strix_run_status_rejects_oversized_status_file",
+      "name": "conflict",
       "kind": "function",
-      "file": "backend/tests/test_strix_run_status.py",
-      "line": 42
+      "file": "backend/tests/test_browser.py",
+      "line": 336
+    },
+    {
+      "name": "test_browser_retry_after_enqueue_reuses_existing_job",
+      "kind": "function",
+      "file": "backend/tests/test_browser.py",
+      "line": 349
+    },
+    {
+      "name": "test_browser_pending_intent_is_visible_in_outbox",
+      "kind": "function",
+      "file": "backend/tests/test_browser.py",
+      "line": 408
+    },
+    {
+      "name": "test_browser_storage_state_accepts_only_in_scope_session_state",
+      "kind": "function",
+      "file": "backend/tests/test_browser.py",
+      "line": 438
+    },
+    {
+      "name": "test_browser_storage_state_rejects_out_of_scope_cookie",
+      "kind": "function",
+      "file": "backend/tests/test_browser.py",
+      "line": 479
+    },
+    {
+      "name": "test_browser_storage_state_rejects_out_of_scope_origin",
+      "kind": "function",
+      "file": "backend/tests/test_browser.py",
+      "line": 504
+    },
+    {
+      "name": "test_browser_dry_run_keeps_identity_label_but_not_session_secret",
+      "kind": "function",
+      "file": "backend/tests/test_browser.py",
+      "line": 522
+    },
+    {
+      "name": "test_browser_artifact_limits_have_safe_defaults",
+      "kind": "function",
+      "file": "backend/tests/test_browser_artifact_bounds.py",
+      "line": 10
+    },
+    {
+      "name": "test_browser_artifact_limits_accept_bounded_configuration",
+      "kind": "function",
+      "file": "backend/tests/test_browser_artifact_bounds.py",
+      "line": 18
+    },
+    {
+      "name": "test_browser_artifact_limits_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_browser_artifact_bounds.py",
+      "line": 35
     }
   ],
   "selected_tests": [
-    "backend/tests/test_nuclei_preflight.py",
-    "backend/tests/test_nuclei_queue_lifecycle.py",
-    "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_scanner_worker.py",
-    "backend/tests/test_strix_run_status.py"
+    "backend/tests/test_browser.py",
+    "backend/tests/test_browser_artifact_bounds.py"
   ]
 }

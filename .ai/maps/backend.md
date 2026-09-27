@@ -210,6 +210,7 @@ tests/
   test_attack_surface.py
   test_auth.py
   test_autonomy_gate.py
+  test_browser_artifact_bounds.py
   test_browser.py
   test_campaign_audit.py
   test_campaign_cancel.py
@@ -951,6 +952,16 @@ raw = os.getenv(name)
 ⋮----
 value = raw.strip().lower()
 ⋮----
+def _bounded_size_env(name: str, default: int, *, minimum: int, maximum: int) -> int
+⋮----
+raw = os.getenv(name, str(default))
+⋮----
+value = int(raw)
+⋮----
+def _max_browser_rendered_bytes() -> int
+⋮----
+def _max_browser_screenshot_bytes() -> int
+⋮----
 def _browser_secret(secret_env: str) -> str
 ⋮----
 use_vault = vault_enabled()
@@ -1054,6 +1065,8 @@ target = _allowed_url(campaign, step.url or "", page.url if page.url != "about:b
 response = page.goto(target, wait_until="domcontentloaded", timeout=step.timeout_ms)
 final_url = _allowed_url(campaign, page.url, target)
 rendered = page.content().encode("utf-8", errors="replace")
+rendered_limit = _max_browser_rendered_bytes()
+⋮----
 structure_metrics = page.evaluate(
 bounded_structure = {
 structure_sha256 = hashlib.sha256(
@@ -1078,6 +1091,7 @@ framework_markers = page.evaluate(
 secret = _browser_secret(step.secret_env or "")
 ⋮----
 data = page.screenshot(full_page=True)
+screenshot_limit = _max_browser_screenshot_bytes()
 ⋮----
 artifacts = [
 ```
@@ -11764,6 +11778,17 @@ def test_gate_fails_closed_on_policy_runtime_budget_and_health()
 def test_report_focus_always_requires_human_review()
 ⋮----
 def test_autonomy_gate_route_is_exposed()
+```
+
+## File: tests/test_browser_artifact_bounds.py
+```python
+def test_browser_artifact_limits_have_safe_defaults(monkeypatch)
+⋮----
+def test_browser_artifact_limits_accept_bounded_configuration(monkeypatch)
+⋮----
+def test_browser_artifact_limits_fail_closed(monkeypatch, name, value, message)
+⋮----
+getter = (
 ```
 
 ## File: tests/test_browser.py

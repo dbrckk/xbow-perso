@@ -22,17 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T18:00:35Z
+Generated: 2026-09-27T18:05:47Z
 
 ### Git
 - Branch: `main`
-- Head: `d3774ea4177e`
-- Commit date: 2026-09-27T20:00:24+02:00
-- Commit: feat: harden Strix runtime lifecycle contract (#412)
-- Tracked files: 577
+- Head: `042fabae8370`
+- Commit date: 2026-09-27T20:05:36+02:00
+- Commit: feat: bound browser evidence artifacts (#413)
+- Tracked files: 578
 
 ### Recently changed files
 - `.env.example`
+- `backend/app/browser.py`
+- `backend/tests/test_browser_artifact_bounds.py`
 - `backend/app/runtime_capabilities.py`
 - `backend/app/scanner_worker.py`
 - `backend/app/strix_run_status.py`
@@ -50,8 +52,6 @@ Generated: 2026-09-27T18:00:35Z
 - `backend/tests/test_mobile_production_update_script.py`
 - `frontend/simple.js`
 - `scripts/mobile-production-status.sh`
-- `.github/workflows/ci.yml`
-- `.github/workflows/mobile-vps-deploy.yml`
 
 ### Project signals
 - `pyproject.toml`

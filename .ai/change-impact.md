@@ -1,15 +1,12 @@
 # Change impact
 
-Base: 055b16bfea21f3e850a217fe9b865dbe6d5f565e
-Head: d3774ea4177ec9949abf5f9e0f7506a895b1b96f
+Base: 63fbca44f6dff65143e7df118b8dbad9e4af041d
+Head: 042fabae8370a6456800241acdce13a87fc540f2
 
 ## Changed files
 - M .env.example
-- M backend/app/runtime_capabilities.py
-- M backend/app/scanner_worker.py
-- A backend/app/strix_run_status.py
-- M backend/tests/test_runtime_capabilities.py
-- A backend/tests/test_strix_run_status.py
+- M backend/app/browser.py
+- A backend/tests/test_browser_artifact_bounds.py
 
 ## Affected areas
 - (root)
