@@ -385,7 +385,10 @@ def test_orchestrator_includes_browser_recon_only_when_enabled(tmp_path, monkeyp
     queue = JobQueue(db)
     campaign = make_campaign()
     store.save_campaign(campaign.model_dump(mode="json"))
+    marker = tmp_path / "playwright-ready"
+    marker.write_text("ready", encoding="utf-8")
     monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "true")
+    monkeypatch.setenv("XBOW_PLAYWRIGHT_RUNTIME_MARKER", str(marker))
 
     asset = Observation("a1", "asset", "example.test", "recon")
     endpoint = Observation(
