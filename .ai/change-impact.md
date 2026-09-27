@@ -1,17 +1,13 @@
 # Change impact
 
-Base: 5848422c97c0d6567a072f5afad48bdba73ffc15
-Head: 1ae081efc85b2d71ebb1e7c8edd24ddc297746d0
+Base: 4f4d9c2e89d4dce035379b120c2f6a50c464ac18
+Head: 2d357d3a367932b36540158bf97ce9d42e8811ac
 
 ## Changed files
-- A OFFENSIVE_EXPANSION.md
-- M backend/app/main.py
-- A backend/app/offensive_expansion.py
-- A backend/app/openapi_testgen.py
-- A backend/tests/test_openapi_testgen.py
+- M backend/app/openapi_testgen.py
+- M backend/tests/test_openapi_testgen.py
 
 ## Affected areas
-- (root)
 - backend
 
 ## Related test candidates

@@ -7181,6 +7181,9 @@ path: str
 operation_id: str | None
 tags: tuple[str, ...]
 authentication_declared: bool
+parameters: tuple[dict[str, Any], ...]
+response_codes: tuple[str, ...]
+response_content_types: tuple[str, ...]
 read_only: bool = True
 execution_mode: str = "preview_only"
 destructive: bool = False
@@ -7188,6 +7191,31 @@ destructive: bool = False
 def to_dict(self) -> dict[str, Any]
 ⋮----
 payload = asdict(self)
+⋮----
+def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]
+⋮----
+combined: list[Any] = []
+⋮----
+normalized: list[dict[str, Any]] = []
+seen: set[tuple[str, str]] = set()
+⋮----
+name = str(item.get("name") or "").strip()[:160]
+location = str(item.get("in") or "").strip().lower()
+⋮----
+key = (location, name.lower())
+⋮----
+schema = item.get("schema") if isinstance(item.get("schema"), dict) else {}
+⋮----
+def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tuple[str, ...]]
+⋮----
+responses = operation.get("responses")
+⋮----
+codes: list[str] = []
+content_types: set[str] = set()
+⋮----
+code = str(raw_code)[:20]
+⋮----
+content = response.get("content")
 ⋮----
 def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]
 ⋮----
@@ -7218,6 +7246,7 @@ operation_id = str(operation_id)[:160]
 ⋮----
 security = operation.get("security", document.get("security"))
 authentication_declared = bool(security)
+parameters = _normalized_parameters(raw_item, operation)
 ````
 
 ## File: backend/app/operational_alerts.py
@@ -16846,6 +16875,12 @@ by_id = {item["id"]: item for item in catalog["capabilities"]}
 def test_expansion_routes_are_present_in_openapi()
 ⋮----
 paths = main.app.openapi()["paths"]
+⋮----
+def test_openapi_preview_extracts_passive_parameter_and_response_metadata()
+⋮----
+case = result["cases"][0]
+⋮----
+def test_openapi_preview_ignores_external_parameter_refs()
 ````
 
 ## File: backend/tests/test_operational_alerts.py

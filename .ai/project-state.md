@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T19:08:58Z
+Generated: 2026-09-27T19:14:35Z
 
 ### Git
 - Branch: `main`
-- Head: `1ae081efc85b`
-- Commit date: 2026-09-27T21:08:47+02:00
-- Commit: feat: add safe offensive expansion foundation (#417)
+- Head: `2d357d3a3679`
+- Commit date: 2026-09-27T21:14:24+02:00
+- Commit: feat: enrich passive OpenAPI security analysis (#418)
 - Tracked files: 582
 
 ### Recently changed files
+- `backend/app/openapi_testgen.py`
+- `backend/tests/test_openapi_testgen.py`
 - `OFFENSIVE_EXPANSION.md`
 - `backend/app/main.py`
 - `backend/app/offensive_expansion.py`
-- `backend/app/openapi_testgen.py`
-- `backend/tests/test_openapi_testgen.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
@@ -48,9 +48,6 @@ Generated: 2026-09-27T19:08:58Z
 - `backend/tests/test_job_provenance_integration.py`
 - `backend/tests/test_orchestrator.py`
 - `backend/tests/test_scanner_runtime_contract.py`
-- `.env.example`
-- `backend/app/browser.py`
-- `backend/tests/test_browser_artifact_bounds.py`
 
 ### Project signals
 - `pyproject.toml`
