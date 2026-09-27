@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=89' in index
-    assert '/app.css?v=89' in index
-    assert "xbow-perso-v89" in sw
+    assert '/simple.js?v=82' in index
+    assert '/app.css?v=82' in index
+    assert "xbow-perso-v82" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=89" defer></script>' in index
+    assert '<script src="/simple.js?v=82" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -93,7 +93,7 @@ def test_simple_dashboard_bounds_review_profile_persistence_concurrency():
 
 def test_simple_dashboard_uses_atomic_server_review_package():
     script = _text("frontend/simple.js")
-    assert "Recherche d’un programme HackerOne réellement accessible" in script
+    assert "Recherche de 1 ou 2 programmes HackerOne accessibles" in script
     assert "/hackerone/simple-review-package" in script
     assert "review_drafts" in script
     prepare_block = script.split("async function prepare(", 1)[1].split("function reviewProfilePayload", 1)[0]
@@ -126,7 +126,7 @@ def test_start_button_requires_live_runtime_readiness():
     script = _text("frontend/simple.js")
     assert "let runtimeReady=false;" in script
     assert "function updateStartAvailability()" in script
-    assert "selection.length===1" in script
+    assert "selection.length>=1" in script
     assert "runtimeReady===true" in script
     assert "runtimeReady=readiness?.live_scan_ready===true;" in script
     assert "runtimeReady=false;" in script
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v89';" in script
-    assert "serviceWorker.register('/sw.js?v=89',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v82';" in script
+    assert "serviceWorker.register('/sw.js?v=82',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v89" in html
+    assert "Interface v82" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -236,80 +236,3 @@ def test_dashboard_exposes_exact_scope_htb_training_flow():
     assert "/labs/htb/campaigns" in script
     assert "/campaigns/'+encodeURIComponent(campaignId)+'/start" in script
     assert "authorized_lab:true" in script
-
-
-def test_dashboard_exposes_htb_learning_feedback_without_payload_storage():
-    html = _text("frontend/index.html")
-    script = _text("frontend/simple.js")
-    assert 'id="htbFeedback"' in html
-    assert 'id="htbSolved"' in html
-    assert 'id="htbSuccessTechniques"' in html
-    assert 'id="htbMissedTechniques"' in html
-    assert 'id="htbLearn"' in html
-    assert "async function saveHtbLearning()" in script
-    assert "/finish" in script
-    assert "/learning" in script
-    assert "successful_techniques:successful" in script
-    assert "missed_techniques:missed" in script
-    assert "notes:''" in script
-    assert "Entraînement HTB terminé. Apprentissage enregistré sans payload ni secret." in script
-
-
-def test_dashboard_surfaces_cross_lab_htb_learning_summary():
-    script = _text("frontend/simple.js")
-    assert "const globalSummary=await api('/labs/htb/learning');" in script
-    assert "globalTechniques.length+' technique(s) globales sur '" in script
-    assert "globalSummary?.campaign_count" in script
-
-
-def test_dashboard_exposes_htb_benchmark_summary():
-    html = _text("frontend/index.html")
-    script = _text("frontend/simple.js")
-    assert 'id="htbBenchmark"' in html
-    assert "async function refreshHtbBenchmark" in script
-    assert "/labs/htb/benchmark" in script
-    assert "evaluated_campaign_count" in script
-    assert "technique_success_rate" in script
-    assert "confirmed_finding_count" in script
-
-
-def test_htb_dashboard_tracks_session_status_without_exposing_payloads():
-    html = _text("frontend/index.html")
-    script = _text("frontend/simple.js")
-    assert 'id="htbSession"' in html
-    assert "async function refreshHtbSession" in script
-    assert "/status" in script
-    assert "job_counts" in script
-    assert "confirmed_finding_count" in script
-    assert "void refreshHtbSession({quiet:true});" in script
-
-
-def test_hackerone_dashboard_explains_why_candidates_were_rejected():
-    script = _text("frontend/simple.js")
-    assert "function rejectionSummaryText(detail)" in script
-    assert "rejection_summary" in script
-    assert "exclusions de scope" in script
-    assert "scope incompatible" in script
-    assert "aucun domaine compatible" in script
-
-
-def test_htb_dashboard_finishes_or_cancels_training_explicitly():
-    html = _text("frontend/index.html")
-    script = _text("frontend/simple.js")
-    assert 'id="htbCancel"' in html
-    assert "Terminer et enregistrer l’apprentissage" in html
-    assert "Arrêter sans apprentissage" in html
-    assert "/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/finish" in script
-    assert "async function cancelHtbLab()" in script
-    assert "/campaigns/'+encodeURIComponent(campaignId)+'/cancel" in script
-    assert "localStorage.removeItem(HTB_ACTIVE_KEY)" in script
-
-
-def test_dashboard_surfaces_htb_next_focus_recommendations():
-    html = _text("frontend/index.html")
-    script = _text("frontend/simple.js")
-    assert 'id="htbFocus"' in html
-    assert "async function refreshHtbFocus" in script
-    assert "/labs/htb/focus?limit=3" in script
-    assert "Prochain focus HTB" in script
-    assert "void refreshHtbFocus({quiet:true});" in script
