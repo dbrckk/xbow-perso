@@ -139,6 +139,8 @@ backend/
     observer_runtime.py
     observer_scheduler.py
     observer_slo.py
+    offensive_expansion.py
+    openapi_testgen.py
     operational_alerts.py
     operational_slo.py
     opportunity_ranking.py
@@ -340,6 +342,7 @@ backend/
     test_observer_scheduler.py
     test_observer_slo.py
     test_openapi_integrity.py
+    test_openapi_testgen.py
     test_operational_alerts.py
     test_operational_slo.py
     test_opportunity_ranking.py
@@ -6410,6 +6413,8 @@ class HackerOneScopePreviewInput(BaseModel)
 ⋮----
 document: dict[str, Any]
 ⋮----
+class OpenApiPreviewInput(BaseModel)
+⋮----
 class IncidentAcknowledgeInput(BaseModel)
 ⋮----
 fingerprint: str = Field(min_length=1, max_length=64, pattern=r"^[0-9a-f]+$")
@@ -6491,6 +6496,12 @@ pentagi = safe_pentagi_runtime_capability()
 scanners = safe_scanner_runtime_capability()
 browser = safe_browser_runtime_capability()
 recon = safe_recon_runtime_capability()
+⋮----
+@app.post("/api/testing/openapi/preview")
+def preview_openapi_tests(payload: OpenApiPreviewInput)
+⋮----
+@app.get("/api/testing/offensive-expansion")
+def get_offensive_expansion()
 ⋮----
 @app.get("/api/observer/health")
 def get_observer_health()
@@ -7145,6 +7156,68 @@ state = "healthy"
 state = "critical"
 ⋮----
 state = "degraded"
+````
+
+## File: backend/app/offensive_expansion.py
+````python
+def offensive_expansion_catalog() -> dict[str, Any]
+⋮----
+"""Describe requested expansion capabilities without granting execution authority."""
+````
+
+## File: backend/app/openapi_testgen.py
+````python
+class OpenApiPreviewError(ValueError)
+⋮----
+READ_ONLY_METHODS = ("get", "head", "options")
+MAX_PATHS = 250
+MAX_CASES = 500
+⋮----
+@dataclass(frozen=True)
+class OpenApiTestCase
+⋮----
+method: str
+path: str
+operation_id: str | None
+tags: tuple[str, ...]
+authentication_declared: bool
+read_only: bool = True
+execution_mode: str = "preview_only"
+destructive: bool = False
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]
+⋮----
+"""Generate bounded, non-executing test cases from an OpenAPI document.
+
+    Only GET/HEAD/OPTIONS operations are included. The preview never sends
+    requests, invents payloads, follows external references, or enables a
+    scanner. It is intended as an advisory input to the existing scope-aware
+    orchestration pipeline.
+    """
+⋮----
+version = str(document.get("openapi") or document.get("swagger") or "").strip()
+⋮----
+paths = document.get("paths")
+⋮----
+cases: list[OpenApiTestCase] = []
+skipped_mutating = 0
+skipped_invalid = 0
+⋮----
+path = str(raw_path)
+⋮----
+normalized = str(method).lower()
+⋮----
+tags = tuple(
+operation_id = operation.get("operationId")
+⋮----
+operation_id = str(operation_id)[:160]
+⋮----
+security = operation.get("security", document.get("security"))
+authentication_declared = bool(security)
 ````
 
 ## File: backend/app/operational_alerts.py
@@ -16745,6 +16818,34 @@ exposed = []
 def test_capability_manifest_is_authenticated_and_conservative()
 ⋮----
 capabilities = system_capabilities()
+````
+
+## File: backend/tests/test_openapi_testgen.py
+````python
+def test_openapi_preview_generates_only_read_only_cases()
+⋮----
+result = build_openapi_read_only_preview(
+⋮----
+by_method = {case["method"]: case for case in result["cases"]}
+⋮----
+def test_openapi_preview_rejects_missing_version()
+⋮----
+def test_openapi_preview_rejects_excessive_paths()
+⋮----
+paths = {f"/p{index}": {"get": {}} for index in range(251)}
+⋮----
+def test_openapi_preview_api_is_read_only_and_bounded()
+⋮----
+result = main.preview_openapi_tests(
+⋮----
+def test_expansion_catalog_keeps_active_authority_unchanged()
+⋮----
+catalog = offensive_expansion_catalog()
+by_id = {item["id"]: item for item in catalog["capabilities"]}
+⋮----
+def test_expansion_routes_are_present_in_openapi()
+⋮----
+paths = main.app.openapi()["paths"]
 ````
 
 ## File: backend/tests/test_operational_alerts.py

@@ -22,22 +22,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T18:50:46Z
+Generated: 2026-09-27T19:08:58Z
 
 ### Git
 - Branch: `main`
-- Head: `31f0452f6bc9`
-- Commit date: 2026-09-27T20:50:35+02:00
-- Commit: feat: surface browser runtime readiness in dashboard (#416)
-- Tracked files: 578
+- Head: `1ae081efc85b`
+- Commit date: 2026-09-27T21:08:47+02:00
+- Commit: feat: add safe offensive expansion foundation (#417)
+- Tracked files: 582
 
 ### Recently changed files
+- `OFFENSIVE_EXPANSION.md`
+- `backend/app/main.py`
+- `backend/app/offensive_expansion.py`
+- `backend/app/openapi_testgen.py`
+- `backend/tests/test_openapi_testgen.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/main.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/Dockerfile`
 - `backend/app/runtime_capabilities.py`
@@ -47,9 +51,6 @@ Generated: 2026-09-27T18:50:46Z
 - `.env.example`
 - `backend/app/browser.py`
 - `backend/tests/test_browser_artifact_bounds.py`
-- `backend/app/scanner_worker.py`
-- `backend/app/strix_run_status.py`
-- `backend/tests/test_strix_run_status.py`
 
 ### Project signals
 - `pyproject.toml`

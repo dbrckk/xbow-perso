@@ -1254,6 +1254,8 @@
         "backend/app/observation_graph.py",
         "backend/app/observer_metrics.py",
         "backend/app/observer_runtime.py",
+        "backend/app/offensive_expansion.py",
+        "backend/app/openapi_testgen.py",
         "backend/app/operational_alerts.py",
         "backend/app/orchestrator.py",
         "backend/app/outbox_recovery.py",
@@ -1425,6 +1427,7 @@
         "backend/tests/test_nuclei_worker_plan.py",
         "backend/tests/test_observation_writer_provenance.py",
         "backend/tests/test_openapi_integrity.py",
+        "backend/tests/test_openapi_testgen.py",
         "backend/tests/test_operational_alerts.py",
         "backend/tests/test_orchestrator.py",
         "backend/tests/test_orchestrator_validation_alignment.py",
@@ -1471,8 +1474,8 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 188,
-      "out_degree": 55
+      "in_degree": 189,
+      "out_degree": 57
     },
     "backend/app/metrics.py": {
       "dependencies": [
@@ -1549,6 +1552,7 @@
         "backend/app/observation_writer.py",
         "backend/app/observer_scheduler.py",
         "backend/app/observer_slo.py",
+        "backend/app/offensive_expansion.py",
         "backend/app/orchestrator.py",
         "backend/app/passive_response_context.py",
         "backend/app/planner_advisory.py",
@@ -1629,7 +1633,7 @@
         "backend/tests/test_validation_state.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 117,
+      "in_degree": 118,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -1740,6 +1744,26 @@
       ],
       "in_degree": 2,
       "out_degree": 1
+    },
+    "backend/app/offensive_expansion.py": {
+      "dependencies": [
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/tests/test_openapi_testgen.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
+    },
+    "backend/app/openapi_testgen.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/tests/test_openapi_testgen.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 0
     },
     "backend/app/operational_alerts.py": {
       "dependencies": [
@@ -4392,6 +4416,17 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "backend/tests/test_openapi_testgen.py": {
+      "dependencies": [
+        "backend/app/main.py",
+        "backend/app/offensive_expansion.py",
+        "backend/app/openapi_testgen.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 4
+    },
     "backend/tests/test_operational_alerts.py": {
       "dependencies": [
         "backend/app/main.py",
@@ -5529,6 +5564,7 @@
         "backend/tests/test_observer_scheduler.py",
         "backend/tests/test_observer_slo.py",
         "backend/tests/test_openapi_integrity.py",
+        "backend/tests/test_openapi_testgen.py",
         "backend/tests/test_operational_alerts.py",
         "backend/tests/test_operational_slo.py",
         "backend/tests/test_opportunity_ranking.py",
@@ -5626,7 +5662,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 214,
+      "in_degree": 215,
       "out_degree": 4
     },
     "frontend/hackerone.js": {
