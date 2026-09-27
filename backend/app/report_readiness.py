@@ -107,7 +107,7 @@ def build_report_readiness(
             "remediation_present": bool(str(getattr(finding, "remediation", "") or "").strip()),
             "cwe_valid": metadata.cwe_valid,
             "cvss_present": metadata.cvss_score is not None,
-            "severity_cvss_consistent": metadata.severity_cvss_consistent,
+            "severity_cvss_consistent": metadata.cvss_score is None or metadata.severity_cvss_consistent,
             "evidence_high_quality": bool(
                 quality and quality.grade == "high" and float(quality.score) >= 0.80
             ),
@@ -177,7 +177,8 @@ def campaign_report_readiness(campaign_id: str):
             "submission_ready": sum(item.submission_ready for item in readiness),
             "submission_blocked": sum(not item.submission_ready for item in readiness),
             "severity_cvss_mismatches": sum(
-                not item.severity_cvss_consistent for item in readiness
+                item.cvss_rating is not None and not item.severity_cvss_consistent
+                for item in readiness
             ),
             "average_submission_completeness": round(
                 sum(item.submission_completeness_score for item in readiness) / len(readiness),
