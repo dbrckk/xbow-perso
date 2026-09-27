@@ -30,8 +30,9 @@ def test_openapi_preview_generates_only_read_only_cases():
     assert all(case["read_only"] is True for case in result["cases"])
     assert all(case["destructive"] is False for case in result["cases"])
     assert result["summary"]["mutating_operations_skipped"] == 2
-    assert result["cases"][0]["authentication_declared"] is True
-    assert result["cases"][1]["authentication_declared"] is False
+    by_method = {case["method"]: case for case in result["cases"]}
+    assert by_method["GET"]["authentication_declared"] is True
+    assert by_method["HEAD"]["authentication_declared"] is False
 
 
 def test_openapi_preview_rejects_missing_version():
