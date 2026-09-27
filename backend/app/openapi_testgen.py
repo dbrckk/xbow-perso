@@ -20,6 +20,9 @@ class OpenApiTestCase:
     operation_id: str | None
     tags: tuple[str, ...]
     authentication_declared: bool
+    parameters: tuple[dict[str, Any], ...]
+    response_codes: tuple[str, ...]
+    response_content_types: tuple[str, ...]
     read_only: bool = True
     execution_mode: str = "preview_only"
     destructive: bool = False
@@ -27,8 +30,65 @@ class OpenApiTestCase:
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["tags"] = list(self.tags)
+        payload["parameters"] = [dict(item) for item in self.parameters]
+        payload["response_codes"] = list(self.response_codes)
+        payload["response_content_types"] = list(self.response_content_types)
         return payload
 
+
+
+def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]:
+    combined: list[Any] = []
+    for source in (path_item.get("parameters"), operation.get("parameters")):
+        if isinstance(source, list):
+            combined.extend(source)
+
+    normalized: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in combined:
+        if not isinstance(item, dict) or "$ref" in item:
+            continue
+        name = str(item.get("name") or "").strip()[:160]
+        location = str(item.get("in") or "").strip().lower()
+        if not name or location not in {"path", "query", "header", "cookie"}:
+            continue
+        key = (location, name.lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        schema = item.get("schema") if isinstance(item.get("schema"), dict) else {}
+        normalized.append(
+            {
+                "name": name,
+                "in": location,
+                "required": bool(item.get("required")) or location == "path",
+                "schema_type": str(schema.get("type") or "")[:80] or None,
+            }
+        )
+        if len(normalized) >= 100:
+            break
+    return tuple(normalized)
+
+
+def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    responses = operation.get("responses")
+    if not isinstance(responses, dict):
+        return (), ()
+
+    codes: list[str] = []
+    content_types: set[str] = set()
+    for raw_code, response in sorted(responses.items(), key=lambda item: str(item[0])):
+        code = str(raw_code)[:20]
+        codes.append(code)
+        if isinstance(response, dict):
+            content = response.get("content")
+            if isinstance(content, dict):
+                for media_type in content:
+                    if isinstance(media_type, str) and media_type.strip():
+                        content_types.add(media_type.strip()[:120])
+        if len(codes) >= 50:
+            break
+    return tuple(codes), tuple(sorted(content_types)[:50])
 
 def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
     """Generate bounded, non-executing test cases from an OpenAPI document.
@@ -85,6 +145,8 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
 
             security = operation.get("security", document.get("security"))
             authentication_declared = bool(security)
+            parameters = _normalized_parameters(raw_item, operation)
+            response_codes, response_content_types = _response_metadata(operation)
 
             cases.append(
                 OpenApiTestCase(
@@ -93,13 +155,16 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                     operation_id=operation_id,
                     tags=tags,
                     authentication_declared=authentication_declared,
+                    parameters=parameters,
+                    response_codes=response_codes,
+                    response_content_types=response_content_types,
                 )
             )
             if len(cases) > MAX_CASES:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v1",
+        "schema": "openapi-read-only-preview-v2",
         "source_version": version[:40],
         "execution_mode": "preview_only",
         "read_only": True,
