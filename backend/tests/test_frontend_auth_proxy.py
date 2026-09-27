@@ -25,8 +25,8 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=90' in index
-    assert '/app.css?v=90' in index
+    assert '/simple.js?v=91' in index
+    assert '/app.css?v=91' in index
     assert "xbow-perso-v91" in sw
 
 
@@ -179,7 +179,7 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
     assert "const UI_VERSION='v91';" in script
-    assert "serviceWorker.register('/sw.js?v=90',{updateViaCache:'none'})" in script
+    assert "serviceWorker.register('/sw.js?v=91',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
     assert "Interface v91" in html
     assert "location = /index.html" in nginx
@@ -348,7 +348,7 @@ def test_dashboard_exposes_passive_openapi_review_panel():
     assert "JSON.parse(raw)" in script
     assert "renderOpenapiSummary(result)" in script
     assert "0 requête envoyée vers la cible." in script
-    assert "vulnerabilit" in script.lower()
+    assert "aucune vulnérabilité confirmée." in script
 
 
 def test_openapi_dashboard_review_is_not_part_of_campaign_start_gate():
