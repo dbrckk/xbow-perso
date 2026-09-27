@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
+from .finding_metadata import assess_finding_metadata
 from .main import Campaign
 
 ReportPlatform = Literal["generic", "hackerone", "bugcrowd"]
@@ -68,6 +69,10 @@ def render_markdown(
         quality_grade = str((quality or {}).get("grade") or "unknown")
         quality_score = float((quality or {}).get("score") or 0.0)
         submission_ready = quality_grade == "high" if evidence_quality is not None else None
+        metadata = assess_finding_metadata(finding)
+        cwe_display = metadata.canonical_cwe or (str(finding.cwe).strip() if finding.cwe else "N/A")
+        cvss_display = "N/A" if metadata.cvss_score is None or metadata.cvss_rating is None else f"{metadata.cvss_score:.1f} ({metadata.cvss_rating.upper()})"
+        severity_consistency = "N/A" if metadata.cvss_score is None else ("CONSISTENT" if metadata.severity_cvss_consistent else "REVIEW")
         lines += [
             f"### {index}. {finding.title}",
             "",
@@ -76,8 +81,9 @@ def render_markdown(
             f"- **Severity:** {finding.severity.upper()}",
             f"- **Asset:** `{finding.asset}`",
             f"- **Endpoint:** `{finding.endpoint or 'N/A'}`",
-            f"- **Weakness / CWE:** {finding.cwe or 'N/A'}",
-            f"- **CVSS:** {finding.cvss if finding.cvss is not None else 'N/A'}",
+            f"- **Weakness / CWE:** {cwe_display}",
+            f"- **CVSS:** {cvss_display}",
+            f"- **Severity/CVSS consistency:** {severity_consistency}",
             f"- **Discovery engine:** {finding.discovered_by}",
             f"- **Independent validator:** {finding.validated_by or 'N/A'}",
             *(

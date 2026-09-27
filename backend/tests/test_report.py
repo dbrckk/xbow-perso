@@ -89,3 +89,16 @@ def test_report_holds_confirmed_finding_when_evidence_quality_is_not_high():
     assert "0 of 1 confirmed finding(s) currently meet the high-quality evidence threshold." in report
     assert "**Evidence quality:** MEDIUM (70%)" in report
     assert "**Submission readiness:** HOLD — strengthen evidence before submission" in report
+
+
+def test_report_renders_normalized_cwe_and_cvss_rating():
+    campaign = _campaign()
+    campaign.findings[0].cwe = " cwe-200 "
+    campaign.findings[0].cvss = 5.3
+    campaign.findings[0].severity = "medium"
+
+    report = render_markdown(campaign, platform="hackerone")
+
+    assert "**Weakness / CWE:** CWE-200" in report
+    assert "**CVSS:** 5.3 (MEDIUM)" in report
+    assert "**Severity/CVSS consistency:** CONSISTENT" in report
