@@ -22,16 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-26T18:48:40Z
+Generated: 2026-09-27T17:43:23Z
 
 ### Git
 - Branch: `main`
-- Head: `9421b2de2850`
-- Commit date: 2026-09-26T20:48:29+02:00
-- Commit: chore: modernize GitHub Actions to Node 24 runtimes (#407)
+- Head: `97c5d23bfbe4`
+- Commit date: 2026-09-27T19:43:13+02:00
+- Commit: feat: add HTB-specific readiness independent of HackerOne (#409)
 - Tracked files: 572
 
 ### Recently changed files
+- `backend/app/htb_lab.py`
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_htb_lab.py`
+- `backend/tests/test_mobile_production_update_script.py`
+- `frontend/simple.js`
+- `scripts/mobile-production-status.sh`
 - `.github/workflows/ci.yml`
 - `.github/workflows/mobile-vps-deploy.yml`
 - `.github/workflows/release-images.yml`
@@ -39,19 +45,9 @@ Generated: 2026-09-26T18:48:40Z
 - `.github/workflows/security.yml`
 - `.github/workflows/supply-chain.yml`
 - `backend/tests/test_github_actions_runtime.py`
-- `backend/app/htb_lab.py`
-- `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
-- `backend/tests/test_htb_lab.py`
-- `backend/tests/test_mobile_production_update_script.py`
 - `frontend/index.html`
-- `frontend/simple.js`
 - `frontend/sw.js`
-- `scripts/mobile-production-status.sh`
-- `backend/app/hackerone_client.py`
-- `backend/app/hackerone_feasibility.py`
-- `backend/tests/test_hackerone_client.py`
-- `backend/tests/test_hackerone_feasibility.py`
 
 ### Project signals
 - `pyproject.toml`

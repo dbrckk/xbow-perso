@@ -1031,6 +1031,7 @@ required = {
     "/api/hackerone/journal",
     "/api/hackerone/feasibility-index",
     "/api/labs/htb/campaigns",
+    "/api/labs/htb/readiness",
     "/api/labs/htb/campaigns/{campaign_id}/finish",
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
@@ -1144,6 +1145,43 @@ else
   [ "$CHECKOUT_CURRENT" = "true" ] || echo "BLOCKER=checkout_stale | Le VPS n'est pas sur origin/main."
   [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Le dashboard public ne correspond pas au frontend du checkout déployé."
   [ "$APP_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique de l'application manque dans le backend déployé."
+fi
+
+echo "=== HTB TRAINING READINESS ==="
+HTB_TRAINING_READY=false
+HTB_RESULT="$(
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.htb_lab import build_htb_live_readiness
+
+result = build_htb_live_readiness()
+print("HTB_TRAINING_READY=" + ("true" if result.get("live_scan_ready") is True else "false"))
+for item in result.get("checks", []):
+    if item.get("required") is True and item.get("ok") is not True:
+        print(
+            "HTB_BLOCKER="
+            + str(item.get("id") or "")
+            + "|"
+            + str(item.get("label") or "")
+            + "|"
+            + str(item.get("action") or "")
+        )
+PY
+)"
+printf '%s\n' "$HTB_RESULT"
+if printf '%s\n' "$HTB_RESULT" | grep -qx 'HTB_TRAINING_READY=true'; then
+  HTB_TRAINING_READY=true
+fi
+
+echo "=== HTB TRAINING OPERATIONAL VERDICT ==="
+if [ "$PUBLIC_HTTPS_OK" = "true" ] \
+  && [ "$DASHBOARD_VERSION_OK" = "true" ] \
+  && [ "$APP_ROUTE_CONTRACT_OK" = "true" ] \
+  && [ "$REMOTE_MAIN_REACHABLE" = "true" ] \
+  && [ "$CHECKOUT_CURRENT" = "true" ] \
+  && [ "$HTB_TRAINING_READY" = "true" ]; then
+  echo "HTB_TRAINING_OPERATIONAL_OK=true"
+else
+  echo "HTB_TRAINING_OPERATIONAL_OK=false"
 fi
 
 echo "=== BUG BOUNTY OPERATIONAL VERDICT ==="

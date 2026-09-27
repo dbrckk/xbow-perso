@@ -5171,6 +5171,27 @@ def _normalize_technique(value: str) -> str
 ⋮----
 normalized = str(value or "").strip().lower().replace(" ", "-")
 ⋮----
+def build_htb_live_readiness() -> dict
+⋮----
+"""Return redacted readiness for an explicitly authorized HTB lab run."""
+⋮----
+deployment = build_deployment_preflight(dependency_readiness())
+recon = safe_recon_runtime_capability()
+scanner = safe_scanner_runtime_capability()
+workers = worker_liveness_snapshot()
+general_worker = dict(workers.get("general") or {})
+scanner_worker = dict(workers.get("scanner") or {})
+⋮----
+api_token_configured = True
+⋮----
+api_token_configured = False
+⋮----
+checks = [
+failed = [
+⋮----
+@router.get("/api/labs/htb/readiness")
+def htb_live_readiness()
+⋮----
 class HtbLabCampaignInput(BaseModel)
 ⋮----
 target_url: HttpUrl
@@ -13652,6 +13673,10 @@ def test_hackerone_dashboard_explains_why_candidates_were_rejected()
 def test_htb_dashboard_finishes_or_cancels_training_explicitly()
 ⋮----
 def test_dashboard_surfaces_htb_next_focus_recommendations()
+⋮----
+def test_htb_launch_checks_htb_specific_readiness_first()
+⋮----
+start = script.split("async function startHtbLab()", 1)[1].split("function parseTechniqueList", 1)[0]
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -15329,6 +15354,8 @@ db = str(tmp_path / "htb-focus.sqlite3")
 summary = build_htb_focus_summary(Storage(db, artifacts), limit=3)
 ⋮----
 def test_htb_focus_route_is_exposed()
+⋮----
+def test_htb_readiness_route_is_exposed()
 ````
 
 ## File: backend/tests/test_hypothesis_engine.py
@@ -16158,6 +16185,10 @@ def test_mobile_status_route_contract_name_is_version_independent()
 def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps()
 ⋮----
 def test_live_production_update_warms_hackerone_feasibility_index()
+⋮----
+def test_mobile_status_reports_htb_readiness_independently_from_hackerone()
+⋮----
+htb = script.split("=== HTB TRAINING OPERATIONAL VERDICT ===", 1)[1].split("=== BUG BOUNTY OPERATIONAL VERDICT ===", 1)[0]
 ````
 
 ## File: backend/tests/test_mobile_reset_api_token.py
@@ -21434,6 +21465,7 @@ required = {
     "/api/hackerone/journal",
     "/api/hackerone/feasibility-index",
     "/api/labs/htb/campaigns",
+    "/api/labs/htb/readiness",
     "/api/labs/htb/campaigns/{campaign_id}/finish",
     "/api/labs/htb/campaigns/{campaign_id}/outcome",
     "/api/labs/htb/campaigns/{campaign_id}/learning",
@@ -21547,6 +21579,43 @@ else
   [ "$CHECKOUT_CURRENT" = "true" ] || echo "BLOCKER=checkout_stale | Le VPS n'est pas sur origin/main."
   [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Le dashboard public ne correspond pas au frontend du checkout déployé."
   [ "$APP_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique de l'application manque dans le backend déployé."
+fi
+
+echo "=== HTB TRAINING READINESS ==="
+HTB_TRAINING_READY=false
+HTB_RESULT="$(
+docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
+from app.htb_lab import build_htb_live_readiness
+
+result = build_htb_live_readiness()
+print("HTB_TRAINING_READY=" + ("true" if result.get("live_scan_ready") is True else "false"))
+for item in result.get("checks", []):
+    if item.get("required") is True and item.get("ok") is not True:
+        print(
+            "HTB_BLOCKER="
+            + str(item.get("id") or "")
+            + "|"
+            + str(item.get("label") or "")
+            + "|"
+            + str(item.get("action") or "")
+        )
+PY
+)"
+printf '%s\n' "$HTB_RESULT"
+if printf '%s\n' "$HTB_RESULT" | grep -qx 'HTB_TRAINING_READY=true'; then
+  HTB_TRAINING_READY=true
+fi
+
+echo "=== HTB TRAINING OPERATIONAL VERDICT ==="
+if [ "$PUBLIC_HTTPS_OK" = "true" ] \
+  && [ "$DASHBOARD_VERSION_OK" = "true" ] \
+  && [ "$APP_ROUTE_CONTRACT_OK" = "true" ] \
+  && [ "$REMOTE_MAIN_REACHABLE" = "true" ] \
+  && [ "$CHECKOUT_CURRENT" = "true" ] \
+  && [ "$HTB_TRAINING_READY" = "true" ]; then
+  echo "HTB_TRAINING_OPERATIONAL_OK=true"
+else
+  echo "HTB_TRAINING_OPERATIONAL_OK=false"
 fi
 
 echo "=== BUG BOUNTY OPERATIONAL VERDICT ==="

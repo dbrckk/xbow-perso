@@ -4563,6 +4563,27 @@ def _normalize_technique(value: str) -> str
 ⋮----
 normalized = str(value or "").strip().lower().replace(" ", "-")
 ⋮----
+def build_htb_live_readiness() -> dict
+⋮----
+"""Return redacted readiness for an explicitly authorized HTB lab run."""
+⋮----
+deployment = build_deployment_preflight(dependency_readiness())
+recon = safe_recon_runtime_capability()
+scanner = safe_scanner_runtime_capability()
+workers = worker_liveness_snapshot()
+general_worker = dict(workers.get("general") or {})
+scanner_worker = dict(workers.get("scanner") or {})
+⋮----
+api_token_configured = True
+⋮----
+api_token_configured = False
+⋮----
+checks = [
+failed = [
+⋮----
+@router.get("/api/labs/htb/readiness")
+def htb_live_readiness()
+⋮----
 class HtbLabCampaignInput(BaseModel)
 ⋮----
 target_url: HttpUrl
@@ -13044,6 +13065,10 @@ def test_hackerone_dashboard_explains_why_candidates_were_rejected()
 def test_htb_dashboard_finishes_or_cancels_training_explicitly()
 ⋮----
 def test_dashboard_surfaces_htb_next_focus_recommendations()
+⋮----
+def test_htb_launch_checks_htb_specific_readiness_first()
+⋮----
+start = script.split("async function startHtbLab()", 1)[1].split("function parseTechniqueList", 1)[0]
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -14721,6 +14746,8 @@ db = str(tmp_path / "htb-focus.sqlite3")
 summary = build_htb_focus_summary(Storage(db, artifacts), limit=3)
 ⋮----
 def test_htb_focus_route_is_exposed()
+⋮----
+def test_htb_readiness_route_is_exposed()
 ```
 
 ## File: tests/test_hypothesis_engine.py
@@ -15550,6 +15577,10 @@ def test_mobile_status_route_contract_name_is_version_independent()
 def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps()
 ⋮----
 def test_live_production_update_warms_hackerone_feasibility_index()
+⋮----
+def test_mobile_status_reports_htb_readiness_independently_from_hackerone()
+⋮----
+htb = script.split("=== HTB TRAINING OPERATIONAL VERDICT ===", 1)[1].split("=== BUG BOUNTY OPERATIONAL VERDICT ===", 1)[0]
 ```
 
 ## File: tests/test_mobile_reset_api_token.py
