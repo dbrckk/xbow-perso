@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -10,12 +9,11 @@ from .evidence_chain import build_evidence_chains
 from .evidence_quality import build_evidence_quality
 from .finding_consensus import build_finding_consensus
 from .finding_correlation import correlate_findings
+from .finding_metadata import assess_finding_metadata
 from .observation_graph import ObservationGraph, load_observation_graph
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
-
-_CWE_RE = re.compile(r"^CWE-[1-9][0-9]{0,5}$")
 
 
 @dataclass(frozen=True)
@@ -35,6 +33,9 @@ class ReportReadiness:
     evidence_quality_grade: str
     metadata_blockers: tuple[str, ...]
     metadata_checks: dict[str, bool]
+    canonical_cwe: str | None
+    cvss_rating: str | None
+    severity_cvss_consistent: bool
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -98,15 +99,15 @@ def build_report_readiness(
 
         quality = quality_by_id.get(finding_id)
         evidence_grade = str(quality.grade if quality else "low")
-        cwe = str(getattr(finding, "cwe", "") or "").strip().upper()
-        cvss = getattr(finding, "cvss", None)
+        metadata = assess_finding_metadata(finding)
         metadata_checks = {
             "summary_present": bool(str(getattr(finding, "summary", "") or "").strip()),
             "impact_present": bool(str(getattr(finding, "impact", "") or "").strip()),
             "reproduction_steps_present": bool(getattr(finding, "reproduction_steps", None)),
             "remediation_present": bool(str(getattr(finding, "remediation", "") or "").strip()),
-            "cwe_valid": bool(_CWE_RE.fullmatch(cwe)),
-            "cvss_present": isinstance(cvss, (int, float)) and 0.0 <= float(cvss) <= 10.0,
+            "cwe_valid": metadata.cwe_valid,
+            "cvss_present": metadata.cvss_score is not None,
+            "severity_cvss_consistent": metadata.severity_cvss_consistent,
             "evidence_high_quality": bool(
                 quality and quality.grade == "high" and float(quality.score) >= 0.80
             ),
@@ -143,6 +144,9 @@ def build_report_readiness(
                 evidence_quality_grade=evidence_grade,
                 metadata_blockers=metadata_blockers,
                 metadata_checks=metadata_checks,
+                canonical_cwe=metadata.canonical_cwe,
+                cvss_rating=metadata.cvss_rating,
+                severity_cvss_consistent=metadata.severity_cvss_consistent,
             )
         )
 
@@ -172,6 +176,9 @@ def campaign_report_readiness(campaign_id: str):
             "highest_score": max((item.score for item in readiness), default=0.0),
             "submission_ready": sum(item.submission_ready for item in readiness),
             "submission_blocked": sum(not item.submission_ready for item in readiness),
+            "severity_cvss_mismatches": sum(
+                not item.severity_cvss_consistent for item in readiness
+            ),
             "average_submission_completeness": round(
                 sum(item.submission_completeness_score for item in readiness) / len(readiness),
                 4,
