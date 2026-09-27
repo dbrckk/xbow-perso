@@ -3,6 +3,7 @@ import pytest
 from app import main
 from app.runtime_capabilities import (
     CapabilityConfigError,
+    browser_runtime_capability,
     pentagi_runtime_capability,
     recon_runtime_capability,
     safe_pentagi_runtime_capability,
@@ -296,3 +297,42 @@ def test_strix_runtime_capability_reports_ready_when_runtime_exists(monkeypatch)
     assert result["dispatch_ready"] is True
     assert result["strix_binary_available"] is True
     assert result["strix_docker_runtime_available"] is True
+
+
+def test_browser_runtime_capability_fails_closed_without_runtime_marker(monkeypatch, tmp_path):
+    marker = tmp_path / "missing-playwright-marker"
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "true")
+    monkeypatch.setenv("XBOW_PLAYWRIGHT_RUNTIME_MARKER", str(marker))
+
+    result = browser_runtime_capability()
+
+    assert result["browser_automation_enabled"] is True
+    assert result["playwright_runtime_attested"] is False
+    assert result["dispatch_ready"] is False
+    assert result["dispatch_block_reasons"] == ["playwright_runtime_unattested"]
+
+
+def test_browser_runtime_capability_ready_with_runtime_marker(monkeypatch, tmp_path):
+    marker = tmp_path / "playwright-ready"
+    marker.write_text("ready", encoding="utf-8")
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "true")
+    monkeypatch.setenv("XBOW_PLAYWRIGHT_RUNTIME_MARKER", str(marker))
+
+    result = browser_runtime_capability()
+
+    assert result["playwright_runtime_attested"] is True
+    assert result["dispatch_ready"] is True
+    assert result["dispatch_block_reasons"] == []
+
+
+def test_browser_runtime_capability_disabled_even_when_runtime_exists(monkeypatch, tmp_path):
+    marker = tmp_path / "playwright-ready"
+    marker.write_text("ready", encoding="utf-8")
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "false")
+    monkeypatch.setenv("XBOW_PLAYWRIGHT_RUNTIME_MARKER", str(marker))
+
+    result = browser_runtime_capability()
+
+    assert result["playwright_runtime_attested"] is True
+    assert result["dispatch_ready"] is False
+    assert result["dispatch_block_reasons"] == ["browser_automation_disabled"]

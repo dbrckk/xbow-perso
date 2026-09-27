@@ -33,6 +33,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt \
     && python -m playwright install --with-deps chromium \
+    && touch /opt/xbow-playwright-ready \
+    && chmod 0444 /opt/xbow-playwright-ready \
     && rm -rf /var/lib/apt/lists/*
 COPY app ./app
 ENV PYTHONUNBUFFERED=1

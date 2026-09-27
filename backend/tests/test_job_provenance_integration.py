@@ -66,7 +66,10 @@ def test_orchestrator_scan_jobs_bind_each_engine_kind(tmp_path):
 
 
 def test_orchestrator_recon_and_browser_jobs_are_policy_bound(tmp_path, monkeypatch):
+    marker = tmp_path / "playwright-ready"
+    marker.write_text("ready", encoding="utf-8")
     monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "true")
+    monkeypatch.setenv("XBOW_PLAYWRIGHT_RUNTIME_MARKER", str(marker))
     queue = JobQueue(str(tmp_path / "queue.sqlite3"))
     campaign = _campaign()
     graph = ObservationGraph()
