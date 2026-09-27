@@ -181,6 +181,7 @@ app/
   storage_core.py
   storage.py
   strix_parser.py
+  strix_run_status.py
   submission_api.py
   submission_state.py
   surface_confidence.py
@@ -397,6 +398,7 @@ tests/
   test_simple_selection_cached.py
   test_storage_backend.py
   test_storage.py
+  test_strix_run_status.py
   test_submission_api.py
   test_submission_state.py
   test_surface_confidence.py
@@ -9179,6 +9181,10 @@ unsupported_engines = [item for item in engines if item not in supported_engines
 nuclei_allowlisted = "nuclei" in engines
 nuclei_version_configured = bool(
 nuclei_execution_intent = bool(
+strix_allowlisted = "strix" in engines
+strix_execution_intent = bool(
+strix_binary_available = bool(shutil.which("strix"))
+docker_cli_available = bool(shutil.which("docker"))
 ⋮----
 reasons: list[str] = []
 ⋮----
@@ -9523,6 +9529,8 @@ plan = build_strix_plan(campaign, run_dir)
 execution = execute(plan)
 ⋮----
 event = {
+⋮----
+strix_status = load_strix_run_status(run_dir)
 ⋮----
 ingestion = ingest_scanner_run(
 ⋮----
@@ -10000,6 +10008,42 @@ items = (
 normalized = []
 ⋮----
 finding = normalize_strix_item(item, campaign)
+```
+
+## File: app/strix_run_status.py
+```python
+class StrixRunStatusError(RuntimeError)
+⋮----
+def max_strix_run_json_bytes() -> int
+⋮----
+raw = os.getenv("XBOW_MAX_STRIX_RUN_JSON_BYTES", str(256 * 1024))
+⋮----
+limit = int(raw)
+⋮----
+@dataclass(frozen=True)
+class StrixRunStatus
+⋮----
+status: str
+completed: bool
+run_json_path: str
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def load_strix_run_status(output_dir: str | Path) -> StrixRunStatus
+⋮----
+root = Path(output_dir)
+⋮----
+root_resolved = root.resolve(strict=True)
+⋮----
+candidates: list[Path] = []
+⋮----
+resolved = candidate.resolve(strict=True)
+⋮----
+run_json = max(candidates, key=lambda path: (path.stat().st_mtime, str(path)))
+⋮----
+payload = json.loads(run_json.read_text(encoding="utf-8"))
+⋮----
+status = str(payload.get("status") or "").strip().lower()
 ```
 
 ## File: app/submission_api.py
@@ -18222,6 +18266,10 @@ result = safe_recon_runtime_capability()
 def test_capabilities_api_exposes_recon_preflight(monkeypatch)
 ⋮----
 recon = result["execution"]["recon_detail"]
+⋮----
+def test_strix_runtime_capability_fails_closed_without_binary_or_docker(monkeypatch)
+⋮----
+def test_strix_runtime_capability_reports_ready_when_runtime_exists(monkeypatch)
 ```
 
 ## File: tests/test_runtime_gap_analysis.py
@@ -18807,6 +18855,25 @@ batch = {
 record = store.get_hackerone_batch_record("batch-1")
 ⋮----
 stale = dict(document)
+```
+
+## File: tests/test_strix_run_status.py
+```python
+def test_strix_run_status_requires_completed_status(tmp_path)
+⋮----
+run_dir = tmp_path / "strix_runs" / "run-1"
+⋮----
+result = load_strix_run_status(tmp_path / "strix_runs")
+⋮----
+def test_strix_run_status_does_not_treat_stopped_as_completed(tmp_path)
+⋮----
+run_dir = tmp_path / "run"
+⋮----
+result = load_strix_run_status(tmp_path)
+⋮----
+def test_strix_run_status_fails_closed_without_run_json(tmp_path)
+⋮----
+def test_strix_run_status_rejects_oversized_status_file(tmp_path, monkeypatch)
 ```
 
 ## File: tests/test_submission_api.py

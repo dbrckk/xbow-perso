@@ -454,6 +454,7 @@
         "backend/tests/test_simple_selection_cached.py",
         "backend/tests/test_storage.py",
         "backend/tests/test_storage_backend.py",
+        "backend/tests/test_strix_run_status.py",
         "backend/tests/test_submission_api.py",
         "backend/tests/test_submission_state.py",
         "backend/tests/test_surface_confidence.py",
@@ -477,7 +478,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 212,
+      "in_degree": 213,
       "out_degree": 4,
       "path": "frontend/app.js"
     },
@@ -1807,6 +1808,26 @@
     },
     {
       "dependencies": [
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/observation_writer.py",
+        "backend/app/scanner_ingestion.py",
+        "backend/app/storage.py",
+        "backend/app/strix_run_status.py",
+        "backend/app/worker.py"
+      ],
+      "dependents": [
+        "backend/app/worker_service.py",
+        "backend/tests/test_nuclei_queue_lifecycle.py",
+        "backend/tests/test_scanner_worker.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 8,
+      "path": "backend/app/scanner_worker.py"
+    },
+    {
+      "dependencies": [
         "backend/app/campaign_runtime.py",
         "backend/app/circuit_breaker.py",
         "backend/app/decision_timeline.py",
@@ -1957,25 +1978,6 @@
       "in_degree": 6,
       "out_degree": 4,
       "path": "backend/app/pentagi_transport.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/jobqueue.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/observation_writer.py",
-        "backend/app/scanner_ingestion.py",
-        "backend/app/storage.py",
-        "backend/app/worker.py"
-      ],
-      "dependents": [
-        "backend/app/worker_service.py",
-        "backend/tests/test_nuclei_queue_lifecycle.py",
-        "backend/tests/test_scanner_worker.py"
-      ],
-      "in_degree": 3,
-      "out_degree": 7,
-      "path": "backend/app/scanner_worker.py"
     },
     {
       "dependencies": [
@@ -2172,8 +2174,8 @@
       "path": "backend/app/hackerone_scope_import.py"
     }
   ],
-  "edge_count": 1828,
+  "edge_count": 1833,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 375,
+  "node_count": 377,
   "schema_version": 1
 }

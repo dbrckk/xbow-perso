@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 3,
+    "score_margin": 0,
     "tier": "bounded",
-    "top_score": 26
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "829a502d687719ac36ad78dcfda97b18cdc22daba504d15486770e22bfe7e2d3",
+    "fingerprint": "aa8896c169cae0ed56e4530c79fa42b06160bc6c08ca556fa7fbec3e601d1ae5",
     "hit": false
   },
-  "candidate_count": 38,
+  "candidate_count": 40,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -20,7 +20,59 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/report.py",
+      "path": "backend/app/orchestrator.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "_decision_explanation",
+        "_enqueue_action",
+        "_enqueue_recon_tasks",
+        "_graph_fingerprint",
+        "_intelligence_context",
+        "_load_graph",
+        "_minimum_enrichment_score",
+        "_pending_findings",
+        "_record_decision",
+        "_result",
+        "_scan_engines",
+        "_seed_primary_target",
+        "_stable_id",
+        "_surface_enrichment",
+        "_validation_saturated_cluster_ids",
+        "advance_campaign",
+        "scope_checker"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "_campaign",
+        "fake_execute",
+        "test_nuclei_worker_dry_run_preserves_safe_default",
+        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+        "test_scan_engines_default_preserves_strix",
+        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+        "test_sqlite_queue_accepts_nuclei_scan"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_worker.py",
       "reasons": [
         "impact",
         "recently-changed",
@@ -28,7 +80,11 @@
       ],
       "score": 26,
       "symbols": [
-        "render_markdown"
+        "ScannerJobResult",
+        "_record_scan_observation",
+        "_state_after_scan",
+        "run_nuclei_job",
+        "run_strix_job"
       ]
     },
     {
@@ -70,29 +126,14 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/orchestrator.py",
+      "path": "backend/tests/test_scanner_worker.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 23,
       "symbols": [
-        "_decision_explanation",
-        "_enqueue_action",
-        "_enqueue_recon_tasks",
-        "_graph_fingerprint",
-        "_intelligence_context",
-        "_load_graph",
-        "_minimum_enrichment_score",
-        "_pending_findings",
-        "_record_decision",
-        "_result",
-        "_scan_engines",
-        "_seed_primary_target",
-        "_stable_id",
-        "_surface_enrichment",
-        "_validation_saturated_cluster_ids",
-        "advance_campaign",
-        "scope_checker"
+        "test_scanner_worker_dry_run_stays_ready_and_records_event"
       ]
     },
     {
@@ -110,47 +151,6 @@
         "_engine_memory",
         "adapt_scanner_engines",
         "rank_key"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_sandbox.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "ScannerSandboxAdmission",
-        "ScannerSandboxConfigError",
-        "_allowed_engines",
-        "_runtime_hardening_attestation",
-        "_strict_bool",
-        "require_scanner_sandbox",
-        "safe_scanner_sandbox_admission",
-        "scanner_sandbox_admission"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "_campaign",
-        "fake_execute",
-        "test_nuclei_worker_dry_run_preserves_safe_default",
-        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
-        "test_scan_engines_default_preserves_strix",
-        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
-        "test_sqlite_queue_accepts_nuclei_scan"
       ]
     }
   ],

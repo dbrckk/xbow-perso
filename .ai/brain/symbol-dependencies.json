@@ -5,37 +5,50 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "normalize_cwe": {
+    "CapabilityConfigError": {
       "source": {
-        "file": "backend/app/finding_metadata.py",
-        "start": 19,
-        "end": 26
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 8,
+        "end": 9
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "normalize_cvss_score": {
+    "_strict_bool": {
       "source": {
-        "file": "backend/app/finding_metadata.py",
-        "start": 29,
-        "end": 36
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "cvss_qualitative_rating": {
-      "source": {
-        "file": "backend/app/finding_metadata.py",
-        "start": 39,
-        "end": 47
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 12,
+        "end": 21
       },
       "symbol_dependencies": [
         {
-          "symbol": "normalize_cvss_score",
+          "symbol": "CapabilityConfigError",
           "definitions": [
             {
-              "file": "backend/app/finding_metadata.py",
-              "line": 29,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "pentagi_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 24,
+        "end": 74
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 12,
               "kind": "function",
               "language": "python"
             }
@@ -45,63 +58,19 @@
       ],
       "dependency_count": 1
     },
-    "severity_matches_cvss": {
+    "safe_pentagi_runtime_capability": {
       "source": {
-        "file": "backend/app/finding_metadata.py",
-        "start": 50,
-        "end": 58
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 77,
+        "end": 99
       },
       "symbol_dependencies": [
         {
-          "symbol": "cvss_qualitative_rating",
+          "symbol": "CapabilityConfigError",
           "definitions": [
             {
-              "file": "backend/app/finding_metadata.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "FindingMetadataAssessment": {
-      "source": {
-        "file": "backend/app/finding_metadata.py",
-        "start": 62,
-        "end": 70
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 69,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "to_dict": {
-      "source": {
-        "file": "backend/app/finding_metadata.py",
-        "start": 69,
-        "end": 189
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FindingMetadataAssessment",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 62,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 8,
               "kind": "class",
               "language": "python"
             }
@@ -109,59 +78,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "assess_finding_metadata",
+          "symbol": "pentagi_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/finding_metadata.py",
-              "line": 73,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "cvss_qualitative_rating",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "normalize_cvss_score",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "normalize_cwe",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 19,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "severity_matches_cvss",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 50,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
@@ -169,21 +90,43 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 2
     },
-    "assess_finding_metadata": {
+    "scanner_runtime_capability": {
       "source": {
-        "file": "backend/app/finding_metadata.py",
-        "start": 73,
-        "end": 86
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 102,
+        "end": 174
       },
       "symbol_dependencies": [
         {
-          "symbol": "FindingMetadataAssessment",
+          "symbol": "_strict_bool",
           "definitions": [
             {
-              "file": "backend/app/finding_metadata.py",
-              "line": 62,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "safe_scanner_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 177,
+        "end": 201
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 8,
               "kind": "class",
               "language": "python"
             }
@@ -191,47 +134,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "cvss_qualitative_rating",
+          "symbol": "scanner_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/finding_metadata.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "normalize_cvss_score",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "normalize_cwe",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 19,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "severity_matches_cvss",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 50,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 102,
               "kind": "function",
               "language": "python"
             }
@@ -239,13 +146,147 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 2
     },
-    "render_markdown": {
+    "browser_runtime_capability": {
       "source": {
-        "file": "backend/app/report.py",
-        "start": 11,
-        "end": 152
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 205,
+        "end": 214
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "safe_browser_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 217,
+        "end": 228
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "recon_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 231,
+        "end": 266
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "safe_recon_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 269,
+        "end": 288
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 231,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "ScannerJobResult": {
+      "source": {
+        "file": "backend/app/scanner_worker.py",
+        "start": 18,
+        "end": 22
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ScannerIngestionResult",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_ingestion.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_record_scan_observation": {
+      "source": {
+        "file": "backend/app/scanner_worker.py",
+        "start": 25,
+        "end": 50
       },
       "symbol_dependencies": [
         {
@@ -261,11 +302,708 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "assess_finding_metadata",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/app/finding_metadata.py",
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_state_after_scan": {
+      "source": {
+        "file": "backend/app/scanner_worker.py",
+        "start": 53,
+        "end": 58
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
               "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "run_strix_job": {
+      "source": {
+        "file": "backend/app/scanner_worker.py",
+        "start": 61,
+        "end": 134
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ScannerJobResult",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrixRunStatusError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_record_scan_observation",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_state_after_scan",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_strix_plan",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 166,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "execute",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ingest_scanner_run",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_ingestion.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_strix_run_status",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_execution_artifacts",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 388,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 19
+    },
+    "run_nuclei_job": {
+      "source": {
+        "file": "backend/app/scanner_worker.py",
+        "start": 137,
+        "end": 213
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ScannerJobResult",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_record_scan_observation",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_state_after_scan",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_nuclei_plan",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 91,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "execute",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ingest_scanner_run",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_ingestion.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_execution_artifacts",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 388,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "StrixRunStatusError": {
+      "source": {
+        "file": "backend/app/strix_run_status.py",
+        "start": 10,
+        "end": 11
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "max_strix_run_json_bytes": {
+      "source": {
+        "file": "backend/app/strix_run_status.py",
+        "start": 14,
+        "end": 24
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixRunStatusError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "StrixRunStatus": {
+      "source": {
+        "file": "backend/app/strix_run_status.py",
+        "start": 28,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "to_dict": {
+      "source": {
+        "file": "backend/app/strix_run_status.py",
+        "start": 33,
+        "end": 153
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixRunStatus",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 28,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StrixRunStatusError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_strix_run_status",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "max_strix_run_json_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "load_strix_run_status": {
+      "source": {
+        "file": "backend/app/strix_run_status.py",
+        "start": 41,
+        "end": 85
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixRunStatus",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 28,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StrixRunStatusError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "max_strix_run_json_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_clear": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 24,
+        "end": 26
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_pentagi_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 29,
+        "end": 42
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
@@ -275,43 +1013,19 @@
       ],
       "dependency_count": 2
     },
-    "ReportReadiness": {
+    "test_all_operator_gates_still_do_not_claim_pentagi_execution": {
       "source": {
-        "file": "backend/app/report_readiness.py",
-        "start": 20,
-        "end": 44
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 45,
+        "end": 64
       },
       "symbol_dependencies": [
         {
-          "symbol": "to_dict",
+          "symbol": "pentagi_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/evidence_chain.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/evidence_quality.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_consensus.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 150,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
@@ -321,43 +1035,77 @@
       ],
       "dependency_count": 1
     },
-    "build_report_readiness": {
+    "test_status_tracking_requires_integration_and_status_worker": {
       "source": {
-        "file": "backend/app/report_readiness.py",
-        "start": 47,
-        "end": 153
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 67,
+        "end": 77
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ReportReadiness",
-          "definitions": [
-            {
-              "file": "backend/app/report_readiness.py",
-              "line": 20,
-              "kind": "class",
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 24,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "analyze_validation_state",
+          "symbol": "pentagi_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/validation_state.py",
-              "line": 40,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_invalid_boolean_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 80,
+        "end": 92
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
@@ -365,358 +1113,12 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "assess_finding_metadata",
+          "symbol": "safe_pentagi_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/finding_metadata.py",
-              "line": 73,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_chains",
-          "definitions": [
-            {
-              "file": "backend/app/evidence_chain.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_quality",
-          "definitions": [
-            {
-              "file": "backend/app/evidence_quality.py",
-              "line": 43,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_consensus",
-          "definitions": [
-            {
-              "file": "backend/app/finding_consensus.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "correlate_findings",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 58,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "evidence_backed_independent_finding_ids",
-          "definitions": [
-            {
-              "file": "backend/app/validation_state.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "observed_independent_finding_ids",
-          "definitions": [
-            {
-              "file": "backend/app/validation_state.py",
+              "file": "backend/app/runtime_capabilities.py",
               "line": 77,
               "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "values",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 11
-    },
-    "campaign_report_readiness": {
-      "source": {
-        "file": "backend/app/report_readiness.py",
-        "start": 157,
-        "end": 194
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_report_readiness",
-          "definitions": [
-            {
-              "file": "backend/app/report_readiness.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "load_observation_graph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 99,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/evidence_chain.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/evidence_quality.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_consensus.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_cwe_normalization_is_canonical_and_fail_closed": {
-      "source": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "start": 12,
-        "end": 17
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "normalize_cwe",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 19,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_cvss_normalization_rejects_invalid_or_non_finite_values": {
-      "source": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "start": 20,
-        "end": 27
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "normalize_cvss_score",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_cvss_v3_qualitative_bands": {
-      "source": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "start": 30,
-        "end": 39
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "cvss_qualitative_rating",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_severity_consistency_treats_zero_cvss_as_info": {
-      "source": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "start": 42,
-        "end": 46
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "severity_matches_cvss",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_assessment_is_advisory_and_does_not_mutate_finding": {
-      "source": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "start": 49,
-        "end": 58
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assess_finding_metadata",
-          "definitions": [
-            {
-              "file": "backend/app/finding_metadata.py",
-              "line": 73,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_campaign": {
-      "source": {
-        "file": "backend/tests/test_report.py",
-        "start": 5,
-        "end": 33
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Finding",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 117,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
               "language": "python"
             }
           ],
@@ -725,208 +1127,50 @@
       ],
       "dependency_count": 4
     },
-    "test_hackerone_report_contains_submission_sections": {
+    "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets": {
       "source": {
-        "file": "backend/tests/test_report.py",
-        "start": 36,
-        "end": 43
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "render_markdown",
-          "definitions": [
-            {
-              "file": "backend/app/report.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_report_excludes_unconfirmed_findings": {
-      "source": {
-        "file": "backend/tests/test_report.py",
-        "start": 46,
-        "end": 52
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "render_markdown",
-          "definitions": [
-            {
-              "file": "backend/app/report.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_report_marks_high_quality_confirmed_finding_ready_for_review": {
-      "source": {
-        "file": "backend/tests/test_report.py",
-        "start": 56,
-        "end": 72
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "render_markdown",
-          "definitions": [
-            {
-              "file": "backend/app/report.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_report_holds_confirmed_finding_when_evidence_quality_is_not_high": {
-      "source": {
-        "file": "backend/tests/test_report.py",
-        "start": 75,
-        "end": 91
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "render_markdown",
-          "definitions": [
-            {
-              "file": "backend/app/report.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_report_renders_normalized_cwe_and_cvss_rating": {
-      "source": {
-        "file": "backend/tests/test_report.py",
-        "start": 94,
-        "end": 104
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "render_markdown",
-          "definitions": [
-            {
-              "file": "backend/app/report.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_finding": {
-      "source": {
-        "file": "backend/tests/test_report_metadata_normalization.py",
-        "start": 7,
-        "end": 22
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 95,
+        "end": 112
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_report_readiness_exposes_canonical_metadata": {
+    "test_capabilities_api_reports_configuration_error_without_raising": {
       "source": {
-        "file": "backend/tests/test_report_metadata_normalization.py",
-        "start": 25,
-        "end": 36
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 115,
+        "end": 124
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_report_metadata_normalization.py",
-              "line": 7,
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "build_report_readiness",
-          "definitions": [
-            {
-              "file": "backend/app/report_readiness.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 1
     },
-    "test_report_readiness_flags_cvss_severity_mismatch": {
+    "test_scanner_runtime_capability_defaults_fail_closed": {
       "source": {
-        "file": "backend/tests/test_report_metadata_normalization.py",
-        "start": 39,
-        "end": 48
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 128,
+        "end": 144
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "scanner_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_report_metadata_normalization.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_report_readiness",
-          "definitions": [
-            {
-              "file": "backend/app/report_readiness.py",
-              "line": 47,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 102,
               "kind": "function",
               "language": "python"
             }
@@ -934,7 +1178,313 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 1
+    },
+    "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 147,
+        "end": 158
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_scanner_worker_admission": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 161,
+        "end": 173
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_scanner_runtime_capability_rejects_unsupported_engine": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 177,
+        "end": 187
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_runtime_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 191,
+        "end": 201
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 231,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_external_recon_preflight_reports_missing_tools": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 204,
+        "end": 222
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 231,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_external_recon_preflight_ready_when_every_tool_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 225,
+        "end": 236
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 231,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_capability_invalid_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 239,
+        "end": 246
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "safe_recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 269,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_recon_preflight": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 249,
+        "end": 266
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_strix_runtime_capability_fails_closed_without_binary_or_docker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 269,
+        "end": 283
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_strix_runtime_capability_reports_ready_when_runtime_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 286,
+        "end": 298
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_strix_run_status_requires_completed_status": {
+      "source": {
+        "file": "backend/tests/test_strix_run_status.py",
+        "start": 8,
+        "end": 20
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "load_strix_run_status",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_strix_run_status_does_not_treat_stopped_as_completed": {
+      "source": {
+        "file": "backend/tests/test_strix_run_status.py",
+        "start": 23,
+        "end": 34
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "load_strix_run_status",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_strix_run_status_fails_closed_without_run_json": {
+      "source": {
+        "file": "backend/tests/test_strix_run_status.py",
+        "start": 37,
+        "end": 39
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixRunStatusError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_strix_run_status",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_strix_run_status_rejects_oversized_status_file": {
+      "source": {
+        "file": "backend/tests/test_strix_run_status.py",
+        "start": 42,
+        "end": 52
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixRunStatusError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_strix_run_status",
+          "definitions": [
+            {
+              "file": "backend/app/strix_run_status.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
     }
   }
 }

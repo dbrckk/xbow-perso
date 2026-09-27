@@ -22,16 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T17:47:16Z
+Generated: 2026-09-27T18:00:35Z
 
 ### Git
 - Branch: `main`
-- Head: `2d789bed101f`
-- Commit date: 2026-09-27T19:47:05+02:00
-- Commit: feat: strengthen CWE and CVSS report metadata (#411)
-- Tracked files: 575
+- Head: `d3774ea4177e`
+- Commit date: 2026-09-27T20:00:24+02:00
+- Commit: feat: harden Strix runtime lifecycle contract (#412)
+- Tracked files: 577
 
 ### Recently changed files
+- `.env.example`
+- `backend/app/runtime_capabilities.py`
+- `backend/app/scanner_worker.py`
+- `backend/app/strix_run_status.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_run_status.py`
 - `backend/app/finding_metadata.py`
 - `backend/app/report.py`
 - `backend/app/report_readiness.py`
@@ -46,12 +52,6 @@ Generated: 2026-09-27T17:47:16Z
 - `scripts/mobile-production-status.sh`
 - `.github/workflows/ci.yml`
 - `.github/workflows/mobile-vps-deploy.yml`
-- `.github/workflows/release-images.yml`
-- `.github/workflows/release-quality-gate.yml`
-- `.github/workflows/security.yml`
-- `.github/workflows/supply-chain.yml`
-- `backend/tests/test_github_actions_runtime.py`
-- `backend/tests/test_frontend_policy_launcher.py`
 
 ### Project signals
 - `pyproject.toml`

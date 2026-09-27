@@ -1,17 +1,18 @@
 # Change impact
 
-Base: 7a3af48a2a79ae39eca1b8a0dcec405028e6f559
-Head: 2d789bed101f2800db82d245225752230dbd3f42
+Base: 055b16bfea21f3e850a217fe9b865dbe6d5f565e
+Head: d3774ea4177ec9949abf5f9e0f7506a895b1b96f
 
 ## Changed files
-- A backend/app/finding_metadata.py
-- M backend/app/report.py
-- M backend/app/report_readiness.py
-- A backend/tests/test_finding_metadata.py
-- M backend/tests/test_report.py
-- A backend/tests/test_report_metadata_normalization.py
+- M .env.example
+- M backend/app/runtime_capabilities.py
+- M backend/app/scanner_worker.py
+- A backend/app/strix_run_status.py
+- M backend/tests/test_runtime_capabilities.py
+- A backend/tests/test_strix_run_status.py
 
 ## Affected areas
+- (root)
 - backend
 
 ## Related test candidates

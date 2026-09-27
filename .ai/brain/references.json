@@ -5,308 +5,1081 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "normalize_cwe": {
+    "CapabilityConfigError": {
       "definition": {
-        "file": "backend/app/finding_metadata.py",
-        "line": 19,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 19,
-          "preview": "def normalize_cwe(value: Any) -> str | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 74,
-          "preview": "canonical_cwe = normalize_cwe(getattr(finding, \"cwe\", None))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 6,
-          "preview": "normalize_cwe,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 13,
-          "preview": "assert normalize_cwe(\" cwe-79 \") == \"CWE-79\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 14,
-          "preview": "assert normalize_cwe(\"CWE-200\") == \"CWE-200\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 15,
-          "preview": "assert normalize_cwe(\"CWE-0\") is None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 16,
-          "preview": "assert normalize_cwe(\"79\") is None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 17,
-          "preview": "assert normalize_cwe(None) is None",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "normalize_cvss_score": {
-      "definition": {
-        "file": "backend/app/finding_metadata.py",
-        "line": 29,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 29,
-          "preview": "def normalize_cvss_score(value: Any) -> float | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 41,
-          "preview": "score = normalize_cvss_score(value)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 75,
-          "preview": "score = normalize_cvss_score(getattr(finding, \"cvss\", None))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 7,
-          "preview": "normalize_cvss_score,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 21,
-          "preview": "assert normalize_cvss_score(7.5) == 7.5",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 22,
-          "preview": "assert normalize_cvss_score(0) == 0.0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 23,
-          "preview": "assert normalize_cvss_score(True) is None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 24,
-          "preview": "assert normalize_cvss_score(float(\"nan\")) is None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 25,
-          "preview": "assert normalize_cvss_score(float(\"inf\")) is None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 26,
-          "preview": "assert normalize_cvss_score(-0.1) is None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 27,
-          "preview": "assert normalize_cvss_score(10.1) is None",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 11
-    },
-    "cvss_qualitative_rating": {
-      "definition": {
-        "file": "backend/app/finding_metadata.py",
-        "line": 39,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 39,
-          "preview": "def cvss_qualitative_rating(value: Any) -> str | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 52,
-          "preview": "rating = cvss_qualitative_rating(value)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 76,
-          "preview": "rating = cvss_qualitative_rating(score)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 5,
-          "preview": "cvss_qualitative_rating,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 31,
-          "preview": "assert cvss_qualitative_rating(0.0) == \"none\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 32,
-          "preview": "assert cvss_qualitative_rating(0.1) == \"low\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 33,
-          "preview": "assert cvss_qualitative_rating(3.9) == \"low\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 34,
-          "preview": "assert cvss_qualitative_rating(4.0) == \"medium\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 35,
-          "preview": "assert cvss_qualitative_rating(6.9) == \"medium\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 36,
-          "preview": "assert cvss_qualitative_rating(7.0) == \"high\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 37,
-          "preview": "assert cvss_qualitative_rating(8.9) == \"high\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 38,
-          "preview": "assert cvss_qualitative_rating(9.0) == \"critical\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 39,
-          "preview": "assert cvss_qualitative_rating(10.0) == \"critical\"",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 13
-    },
-    "severity_matches_cvss": {
-      "definition": {
-        "file": "backend/app/finding_metadata.py",
-        "line": 50,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 50,
-          "preview": "def severity_matches_cvss(severity: Any, value: Any) -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/finding_metadata.py",
-          "line": 82,
-          "preview": "severity_cvss_consistent=severity_matches_cvss(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 8,
-          "preview": "severity_matches_cvss,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 43,
-          "preview": "assert severity_matches_cvss(\"info\", 0.0) is True",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 44,
-          "preview": "assert severity_matches_cvss(\"low\", 0.0) is False",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 45,
-          "preview": "assert severity_matches_cvss(\"high\", 7.5) is True",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 46,
-          "preview": "assert severity_matches_cvss(\"medium\", 7.5) is False",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 7
-    },
-    "FindingMetadataAssessment": {
-      "definition": {
-        "file": "backend/app/finding_metadata.py",
-        "line": 62,
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 8,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/finding_metadata.py",
-          "line": 62,
-          "preview": "class FindingMetadataAssessment:",
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 8,
+          "preview": "class CapabilityConfigError(ValueError):",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/finding_metadata.py",
-          "line": 73,
-          "preview": "def assess_finding_metadata(finding: Any) -> FindingMetadataAssessment:",
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 21,
+          "preview": "raise CapabilityConfigError(f\"{name} must be a boolean\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/finding_metadata.py",
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 82,
+          "preview": "except CapabilityConfigError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 180,
+          "preview": "except CapabilityConfigError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 220,
+          "preview": "except CapabilityConfigError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 272,
+          "preview": "except CapabilityConfigError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 5,
+          "preview": "CapabilityConfigError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 84,
+          "preview": "with pytest.raises(CapabilityConfigError, match=\"XBOW_ENABLE_PENTAGI\"):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "_strict_bool": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 12,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/api_rate_limit.py",
+          "line": 28,
+          "preview": "def _strict_bool(name: str, default: bool = False) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_rate_limit.py",
+          "line": 56,
+          "preview": "enabled=_strict_bool(\"XBOW_API_RATE_LIMIT_ENABLED\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 17,
+          "preview": "def _strict_bool(name: str, default: bool = False) -> tuple[bool, bool]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 58,
+          "preview": "submission_enabled, submission_valid = _strict_bool(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 62,
+          "preview": "report_sync_enabled, report_sync_valid = _strict_bool(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 12,
+          "preview": "def _strict_bool(name: str, default: bool = False) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 32,
+          "preview": "integration_enabled = _strict_bool(\"XBOW_ENABLE_PENTAGI\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 33,
+          "preview": "active_scans_enabled = _strict_bool(\"XBOW_ENABLE_ACTIVE_SCANS\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 34,
+          "preview": "dry_run = _strict_bool(\"DRY_RUN\", True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 35,
+          "preview": "worker_enabled = _strict_bool(\"XBOW_ENABLE_PENTAGI_WORKER\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 36,
+          "preview": "transport_enabled = _strict_bool(\"XBOW_ENABLE_PENTAGI_TRANSPORT\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 37,
+          "preview": "status_worker_enabled = _strict_bool(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 103,
+          "preview": "active_scans_enabled = _strict_bool(\"XBOW_ENABLE_ACTIVE_SCANS\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 104,
+          "preview": "scanner_worker_enabled = _strict_bool(\"XBOW_ENABLE_SCANNER_WORKER\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 105,
+          "preview": "nuclei_enabled = _strict_bool(\"XBOW_ENABLE_NUCLEI\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 106,
+          "preview": "dry_run = _strict_bool(\"DRY_RUN\", True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 207,
+          "preview": "enabled = _strict_bool(\"XBOW_ENABLE_BROWSER_AUTOMATION\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 233,
+          "preview": "recon_enabled = _strict_bool(\"XBOW_ENABLE_RECON\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 234,
+          "preview": "external_enabled = _strict_bool(\"XBOW_ENABLE_EXTERNAL_RECON\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 36,
+          "preview": "def _strict_bool(name: str, default: bool = False) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 104,
+          "preview": "read_only_rootfs = _strict_bool(\"XBOW_SANDBOX_READ_ONLY_ROOTFS\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 105,
+          "preview": "no_new_privileges = _strict_bool(\"XBOW_SANDBOX_NO_NEW_PRIVILEGES\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 106,
+          "preview": "cap_drop_all = _strict_bool(\"XBOW_SANDBOX_CAP_DROP_ALL\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 108,
+          "preview": "scanner_worker_enabled = _strict_bool(\"XBOW_ENABLE_SCANNER_WORKER\", False)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 24
+    },
+    "pentagi_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 24,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 24,
+          "preview": "def pentagi_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 81,
+          "preview": "return pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 6,
+          "preview": "pentagi_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 32,
+          "preview": "result = pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 53,
+          "preview": "result = pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 71,
+          "preview": "disabled = pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 76,
+          "preview": "enabled = pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 85,
+          "preview": "pentagi_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "safe_pentagi_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 77,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/deployment_preflight.py",
+          "line": 7,
+          "preview": "safe_pentagi_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/deployment_preflight.py",
+          "line": 44,
+          "preview": "pentagi = safe_pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 361,
+          "preview": "safe_pentagi_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 366,
+          "preview": "pentagi = safe_pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
           "line": 77,
-          "preview": "return FindingMetadataAssessment(",
+          "preview": "def safe_pentagi_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 8,
+          "preview": "safe_pentagi_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 87,
+          "preview": "safe = safe_pentagi_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "scanner_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 102,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 102,
+          "preview": "def scanner_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 179,
+          "preview": "return scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 2,
+          "preview": "from app.runtime_capabilities import scanner_runtime_capability",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 34,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 10,
+          "preview": "scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 138,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 154,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 184,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 277,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 294,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 10
+    },
+    "safe_scanner_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 177,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 12,
+          "preview": "from .runtime_capabilities import safe_scanner_runtime_capability",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 82,
+          "preview": "scanner = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/deployment_preflight.py",
+          "line": 8,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/deployment_preflight.py",
+          "line": 45,
+          "preview": "scanner = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 15,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 548,
+          "preview": "scanner=safe_scanner_runtime_capability(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 12,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 39,
+          "preview": "scanner = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 31,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 37,
+          "preview": "scanner = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 363,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 367,
+          "preview": "scanners = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 177,
+          "preview": "def safe_scanner_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 13
+    },
+    "browser_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 205,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 205,
+          "preview": "def browser_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 219,
+          "preview": "return browser_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "safe_browser_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 217,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 13,
+          "preview": "safe_browser_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 546,
+          "preview": "browser = safe_browser_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 10,
+          "preview": "safe_browser_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 41,
+          "preview": "browser = safe_browser_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 40,
+          "preview": "from .runtime_capabilities import safe_browser_runtime_capability",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 353,
+          "preview": "browser_ready = safe_browser_runtime_capability().get(\"dispatch_ready\") is True",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 217,
+          "preview": "def safe_browser_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "recon_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 231,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 231,
+          "preview": "def recon_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 271,
+          "preview": "return recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_live_activation_profile.py",
+          "line": 29,
+          "preview": "assert \"recon_runtime_capability\" in script",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 7,
+          "preview": "recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 195,
+          "preview": "result = recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 212,
+          "preview": "result = recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 233,
+          "preview": "result = recon_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "safe_recon_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 269,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 14,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 549,
+          "preview": "recon=safe_recon_runtime_capability(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 11,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 40,
+          "preview": "recon = safe_recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 30,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 36,
+          "preview": "recon = safe_recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 362,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 368,
+          "preview": "recon = safe_recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 269,
+          "preview": "def safe_recon_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 9,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 242,
+          "preview": "result = safe_recon_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 11
+    },
+    "ScannerJobResult": {
+      "definition": {
+        "file": "backend/app/scanner_worker.py",
+        "line": 18,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 18,
+          "preview": "class ScannerJobResult:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 66,
+          "preview": ") -> ScannerJobResult:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 88,
+          "preview": "return ScannerJobResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 129,
+          "preview": "return ScannerJobResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 142,
+          "preview": ") -> ScannerJobResult:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 164,
+          "preview": "return ScannerJobResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 208,
+          "preview": "return ScannerJobResult(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "_record_scan_observation": {
+      "definition": {
+        "file": "backend/app/scanner_worker.py",
+        "line": 25,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 25,
+          "preview": "def _record_scan_observation(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 112,
+          "preview": "_record_scan_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 191,
+          "preview": "_record_scan_observation(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_state_after_scan": {
+      "definition": {
+        "file": "backend/app/scanner_worker.py",
+        "line": 53,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 53,
+          "preview": "def _state_after_scan(campaign: Campaign) -> CampaignState:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 119,
+          "preview": "campaign.state = _state_after_scan(campaign)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 198,
+          "preview": "campaign.state = _state_after_scan(campaign)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 38,
+          "preview": "from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_nuclei_job, run_strix_job",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 61,
+          "preview": "_state_after_scan = _scanner_state_after_scan",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_state.py",
+          "line": 2,
+          "preview": "from app.worker_service import _state_after_scan",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_state.py",
+          "line": 35,
+          "preview": "assert _state_after_scan(campaign) == CampaignState.validating",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_state.py",
+          "line": 41,
+          "preview": "assert _state_after_scan(campaign) == CampaignState.completed",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_state.py",
+          "line": 45,
+          "preview": "assert _state_after_scan(_campaign([])) == CampaignState.completed",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 9
+    },
+    "run_strix_job": {
+      "definition": {
+        "file": "backend/app/scanner_worker.py",
+        "line": 61,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 61,
+          "preview": "def run_strix_job(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 38,
+          "preview": "from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_nuclei_job, run_strix_job",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 133,
+          "preview": "_process_scanner_job(job, queue, store, run_strix_job)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_worker.py",
+          "line": 3,
+          "preview": "from app.scanner_worker import run_strix_job",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_worker.py",
+          "line": 31,
+          "preview": "result = run_strix_job(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "run_nuclei_job": {
+      "definition": {
+        "file": "backend/app/scanner_worker.py",
+        "line": 137,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 137,
+          "preview": "def run_nuclei_job(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 38,
+          "preview": "from .scanner_worker import _state_after_scan as _scanner_state_after_scan, run_nuclei_job, run_strix_job",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 137,
+          "preview": "_process_scanner_job(job, queue, store, run_nuclei_job)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 9,
+          "preview": "from app.scanner_worker import run_nuclei_job",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 64,
+          "preview": "result = run_nuclei_job(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 116,
+          "preview": "result = run_nuclei_job(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "StrixRunStatusError": {
+      "definition": {
+        "file": "backend/app/strix_run_status.py",
+        "line": 10,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 12,
+          "preview": "from .strix_run_status import StrixRunStatusError, load_strix_run_status",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 100,
+          "preview": "except StrixRunStatusError as exc:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 10,
+          "preview": "class StrixRunStatusError(RuntimeError):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 19,
+          "preview": "raise StrixRunStatusError(\"XBOW_MAX_STRIX_RUN_JSON_BYTES must be an integer\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 21,
+          "preview": "raise StrixRunStatusError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 44,
+          "preview": "raise StrixRunStatusError(\"Strix output directory is unavailable\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 49,
+          "preview": "raise StrixRunStatusError(\"Strix output directory is unavailable\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 64,
+          "preview": "raise StrixRunStatusError(\"Strix run.json was not produced\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 68,
+          "preview": "raise StrixRunStatusError(\"Strix run.json exceeds configured size limit\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 73,
+          "preview": "raise StrixRunStatusError(\"Strix run.json is unreadable or invalid\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 75,
+          "preview": "raise StrixRunStatusError(\"Strix run.json must contain an object\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 79,
+          "preview": "raise StrixRunStatusError(\"Strix run.json is missing status\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 5,
+          "preview": "from app.strix_run_status import StrixRunStatusError, load_strix_run_status",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 38,
+          "preview": "with pytest.raises(StrixRunStatusError, match=\"run.json was not produced\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 51,
+          "preview": "with pytest.raises(StrixRunStatusError, match=\"exceeds configured size limit\"):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 15
+    },
+    "max_strix_run_json_bytes": {
+      "definition": {
+        "file": "backend/app/strix_run_status.py",
+        "line": 14,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 14,
+          "preview": "def max_strix_run_json_bytes() -> int:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 67,
+          "preview": "if run_json.stat().st_size > max_strix_run_json_bytes():",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "StrixRunStatus": {
+      "definition": {
+        "file": "backend/app/strix_run_status.py",
+        "line": 28,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 28,
+          "preview": "class StrixRunStatus:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 41,
+          "preview": "def load_strix_run_status(output_dir: str | Path) -> StrixRunStatus:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 81,
+          "preview": "return StrixRunStatus(",
           "definition_candidate": false
         }
       ],
@@ -314,8 +1087,8 @@
     },
     "to_dict": {
       "definition": {
-        "file": "backend/app/finding_metadata.py",
-        "line": 69,
+        "file": "backend/app/strix_run_status.py",
+        "line": 33,
         "kind": "function",
         "language": "python"
       },
@@ -636,7 +1409,7 @@
           "file": "backend/app/finding_metadata.py",
           "line": 69,
           "preview": "def to_dict(self) -> dict[str, Any]:",
-          "definition_candidate": true
+          "definition_candidate": false
         },
         {
           "file": "backend/app/finding_readiness.py",
@@ -1043,1692 +1816,740 @@
       ],
       "occurrence_count": 120
     },
-    "assess_finding_metadata": {
+    "load_strix_run_status": {
       "definition": {
-        "file": "backend/app/finding_metadata.py",
-        "line": 73,
+        "file": "backend/app/strix_run_status.py",
+        "line": 41,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/finding_metadata.py",
-          "line": 73,
-          "preview": "def assess_finding_metadata(finding: Any) -> FindingMetadataAssessment:",
+          "file": "backend/app/scanner_worker.py",
+          "line": 12,
+          "preview": "from .strix_run_status import StrixRunStatusError, load_strix_run_status",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_worker.py",
+          "line": 99,
+          "preview": "strix_status = load_strix_run_status(run_dir)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_run_status.py",
+          "line": 41,
+          "preview": "def load_strix_run_status(output_dir: str | Path) -> StrixRunStatus:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/report.py",
+          "file": "backend/tests/test_strix_run_status.py",
           "line": 5,
-          "preview": "from .finding_metadata import assess_finding_metadata",
+          "preview": "from app.strix_run_status import StrixRunStatusError, load_strix_run_status",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/report.py",
-          "line": 72,
-          "preview": "metadata = assess_finding_metadata(finding)",
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 16,
+          "preview": "result = load_strix_run_status(tmp_path / \"strix_runs\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/report_readiness.py",
-          "line": 12,
-          "preview": "from .finding_metadata import assess_finding_metadata",
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 31,
+          "preview": "result = load_strix_run_status(tmp_path)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/report_readiness.py",
-          "line": 102,
-          "preview": "metadata = assess_finding_metadata(finding)",
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 39,
+          "preview": "load_strix_run_status(tmp_path)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 4,
-          "preview": "assess_finding_metadata,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_metadata.py",
+          "file": "backend/tests/test_strix_run_status.py",
           "line": 52,
-          "preview": "assessment = assess_finding_metadata(finding)",
+          "preview": "load_strix_run_status(tmp_path)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 8
     },
-    "render_markdown": {
+    "_clear": {
       "definition": {
-        "file": "backend/app/report.py",
-        "line": 11,
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 24,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/report.py",
-          "line": 11,
-          "preview": "def render_markdown(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 39,
-          "preview": "from .report import render_markdown",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 28,
+          "preview": "def _clear(monkeypatch):",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/worker_service.py",
-          "line": 430,
-          "preview": "report = render_markdown(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report.py",
-          "line": 2,
-          "preview": "from app.report import render_markdown",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report.py",
-          "line": 37,
-          "preview": "report = render_markdown(_campaign(), platform=\"hackerone\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report.py",
+          "file": "backend/tests/test_deployment_preflight.py",
           "line": 49,
-          "preview": "report = render_markdown(campaign, platform=\"bugcrowd\")",
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report.py",
-          "line": 60,
-          "preview": "report = render_markdown(",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 63,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report.py",
-          "line": 79,
-          "preview": "report = render_markdown(",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 74,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report.py",
-          "line": 100,
-          "preview": "report = render_markdown(campaign, platform=\"hackerone\")",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 9
-    },
-    "ReportReadiness": {
-      "definition": {
-        "file": "backend/app/report_readiness.py",
-        "line": 20,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/report_readiness.py",
-          "line": 20,
-          "preview": "class ReportReadiness:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/report_readiness.py",
-          "line": 49,
-          "preview": ") -> list[ReportReadiness]:",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 90,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/report_readiness.py",
-          "line": 71,
-          "preview": "readiness: list[ReportReadiness] = []",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 115,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/report_readiness.py",
+          "file": "backend/tests/test_deployment_preflight.py",
           "line": 131,
-          "preview": "ReportReadiness(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "build_report_readiness": {
-      "definition": {
-        "file": "backend/app/report_readiness.py",
-        "line": 47,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/campaign_overview.py",
-          "line": 24,
-          "preview": "from .report_readiness import build_report_readiness, router as report_readiness_router",
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/campaign_overview.py",
-          "line": 66,
-          "preview": "report_readiness = build_report_readiness(campaign.findings, graph)",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 144,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/campaign_review_state.py",
-          "line": 10,
-          "preview": "from .report_readiness import build_report_readiness",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 155,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/campaign_review_state.py",
-          "line": 22,
-          "preview": "readiness = build_report_readiness(findings, graph)",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 180,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/report_readiness.py",
-          "line": 47,
-          "preview": "def build_report_readiness(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/report_readiness.py",
-          "line": 162,
-          "preview": "readiness = build_report_readiness(campaign.findings, graph)",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 200,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/submission_api.py",
-          "line": 11,
-          "preview": "from .report_readiness import build_report_readiness",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 215,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/submission_api.py",
-          "line": 59,
-          "preview": "for item in build_report_readiness(campaign.findings, graph)",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 228,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_metadata_normalization.py",
-          "line": 4,
-          "preview": "from app.report_readiness import build_report_readiness",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 240,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_metadata_normalization.py",
-          "line": 26,
-          "preview": "item = build_report_readiness(",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 252,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_metadata_normalization.py",
-          "line": 40,
-          "preview": "item = build_report_readiness(",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 265,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 5,
-          "preview": "from app.report_readiness import build_report_readiness",
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 278,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 39,
-          "preview": "item = build_report_readiness([_finding(\"f1\")], graph)[0]",
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 21,
+          "preview": "def _clear(monkeypatch):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 78,
-          "preview": "item = build_report_readiness([_finding(\"f1\", \"confirmed\")], graph)[0]",
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 44,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 109,
-          "preview": "item = build_report_readiness([_finding(\"f1\", \"confirmed\")], graph)[0]",
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 72,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 123,
-          "preview": "items = build_report_readiness(findings, graph)",
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 88,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 174,
-          "preview": "item = build_report_readiness([finding], graph)[0]",
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 115,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_report_readiness.py",
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 126,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 142,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 175,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
           "line": 188,
-          "preview": "item = build_report_readiness([finding], graph)[0]",
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 206,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 245,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 16,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 22,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 90,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 24,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 30,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 68,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 81,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 116,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_sandbox.py",
+          "line": 22,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_sandbox.py",
+          "line": 39,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_sandbox.py",
+          "line": 81,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 9,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 34,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 45,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 57,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 68,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 77,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 13,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 19,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 30,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 42,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 54,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 66,
+          "preview": "_clear(monkeypatch)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 18
+      "occurrence_count": 51
     },
-    "campaign_report_readiness": {
+    "test_pentagi_capability_defaults_fail_closed": {
       "definition": {
-        "file": "backend/app/report_readiness.py",
-        "line": 157,
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 29,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/report_readiness.py",
-          "line": 157,
-          "preview": "def campaign_report_readiness(campaign_id: str):",
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 29,
+          "preview": "def test_pentagi_capability_defaults_fail_closed(monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_cwe_normalization_is_canonical_and_fail_closed": {
+    "test_all_operator_gates_still_do_not_claim_pentagi_execution": {
       "definition": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "line": 12,
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 45,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 12,
-          "preview": "def test_cwe_normalization_is_canonical_and_fail_closed():",
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 45,
+          "preview": "def test_all_operator_gates_still_do_not_claim_pentagi_execution(monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_cvss_normalization_rejects_invalid_or_non_finite_values": {
+    "test_status_tracking_requires_integration_and_status_worker": {
       "definition": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "line": 20,
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 67,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 20,
-          "preview": "def test_cvss_normalization_rejects_invalid_or_non_finite_values():",
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 67,
+          "preview": "def test_status_tracking_requires_integration_and_status_worker(monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_cvss_v3_qualitative_bands": {
+    "test_invalid_boolean_configuration_fails_closed": {
       "definition": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "line": 30,
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 80,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 30,
-          "preview": "def test_cvss_v3_qualitative_bands():",
+          "file": "backend/tests/test_pentagi_admission.py",
+          "line": 118,
+          "preview": "def test_invalid_boolean_configuration_fails_closed(monkeypatch, name, value):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 80,
+          "preview": "def test_invalid_boolean_configuration_fails_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 95,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 95,
+          "preview": "def test_capabilities_api_exposes_runtime_pentagi_state_without_secrets(monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_severity_consistency_treats_zero_cvss_as_info": {
+    "test_capabilities_api_reports_configuration_error_without_raising": {
       "definition": {
-        "file": "backend/tests/test_finding_metadata.py",
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 115,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 115,
+          "preview": "def test_capabilities_api_reports_configuration_error_without_raising(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scanner_runtime_capability_defaults_fail_closed": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 128,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 128,
+          "preview": "def test_scanner_runtime_capability_defaults_fail_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 147,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 147,
+          "preview": "def test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_capabilities_api_exposes_scanner_worker_admission": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 161,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 161,
+          "preview": "def test_capabilities_api_exposes_scanner_worker_admission(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scanner_runtime_capability_rejects_unsupported_engine": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 177,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 177,
+          "preview": "def test_scanner_runtime_capability_rejects_unsupported_engine(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_recon_runtime_capability_defaults_fail_closed": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 191,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 191,
+          "preview": "def test_recon_runtime_capability_defaults_fail_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_external_recon_preflight_reports_missing_tools": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 204,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 204,
+          "preview": "def test_external_recon_preflight_reports_missing_tools(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_external_recon_preflight_ready_when_every_tool_exists": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 225,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 225,
+          "preview": "def test_external_recon_preflight_ready_when_every_tool_exists(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_recon_capability_invalid_configuration_fails_closed": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 239,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 239,
+          "preview": "def test_recon_capability_invalid_configuration_fails_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_capabilities_api_exposes_recon_preflight": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 249,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 249,
+          "preview": "def test_capabilities_api_exposes_recon_preflight(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_strix_runtime_capability_fails_closed_without_binary_or_docker": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 269,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 269,
+          "preview": "def test_strix_runtime_capability_fails_closed_without_binary_or_docker(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_strix_runtime_capability_reports_ready_when_runtime_exists": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 286,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 286,
+          "preview": "def test_strix_runtime_capability_reports_ready_when_runtime_exists(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_strix_run_status_requires_completed_status": {
+      "definition": {
+        "file": "backend/tests/test_strix_run_status.py",
+        "line": 8,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 8,
+          "preview": "def test_strix_run_status_requires_completed_status(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_strix_run_status_does_not_treat_stopped_as_completed": {
+      "definition": {
+        "file": "backend/tests/test_strix_run_status.py",
+        "line": 23,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 23,
+          "preview": "def test_strix_run_status_does_not_treat_stopped_as_completed(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_strix_run_status_fails_closed_without_run_json": {
+      "definition": {
+        "file": "backend/tests/test_strix_run_status.py",
+        "line": 37,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_strix_run_status.py",
+          "line": 37,
+          "preview": "def test_strix_run_status_fails_closed_without_run_json(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_strix_run_status_rejects_oversized_status_file": {
+      "definition": {
+        "file": "backend/tests/test_strix_run_status.py",
         "line": 42,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_finding_metadata.py",
+          "file": "backend/tests/test_strix_run_status.py",
           "line": 42,
-          "preview": "def test_severity_consistency_treats_zero_cvss_as_info():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_assessment_is_advisory_and_does_not_mutate_finding": {
-      "definition": {
-        "file": "backend/tests/test_finding_metadata.py",
-        "line": 49,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_finding_metadata.py",
-          "line": 49,
-          "preview": "def test_assessment_is_advisory_and_does_not_mutate_finding():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "_campaign": {
-      "definition": {
-        "file": "backend/tests/test_report.py",
-        "line": 5,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/browser.py",
-          "line": 114,
-          "preview": "def _campaign(campaign_id: str, store: StorageBackend | None = None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 164,
-          "preview": "campaign, version = _campaign(campaign_id, store)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 314,
-          "preview": "campaign, version = _campaign(campaign_id, store)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/browser.py",
-          "line": 350,
-          "preview": "latest, _latest_version = _campaign(campaign.id, store)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 69,
-          "preview": "def _campaign(store: Storage, campaign_id: str) -> tuple[Campaign, int]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 126,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 142,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 214,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 318,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 421,
-          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 521,
-          "preview": "campaign, _version = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 573,
-          "preview": "latest_campaign, _ = _campaign(store, job[\"campaign_id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 9,
-          "preview": "def _campaign(events):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 131,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 151,
-          "preview": "campaign = _campaign([])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 162,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 188,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 230,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 286,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 321,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 371,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 432,
-          "preview": "base = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 500,
-          "preview": "campaign = _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 30,
-          "preview": "def _campaign() -> Campaign:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 47,
-          "preview": "validate_flow(_campaign(), flow)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 53,
-          "preview": "validate_flow(_campaign(), flow)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 71,
-          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 99,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 122,
-          "preview": "execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 131,
-          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 137,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 157,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 290,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 465,
-          "preview": "_campaign(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 499,
-          "preview": "_campaign(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 517,
-          "preview": "_campaign(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 530,
-          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_cancel.py",
-          "line": 7,
-          "preview": "from app.worker_service import _campaign as load_worker_campaign, process_one",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 13,
-          "preview": "def _campaign():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 28,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 58,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 106,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 136,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_control_views.py",
-          "line": 16,
-          "preview": "def _campaign() -> Campaign:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_control_views.py",
-          "line": 46,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 8,
-          "preview": "def _campaign():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 64,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 94,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 138,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 199,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 271,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 316,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 338,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 357,
-          "preview": "result = build_decision_timeline(_campaign(), graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 23,
-          "preview": "def _campaign(*findings: Finding) -> Campaign:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 42,
-          "preview": "campaign = _campaign(finding)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 48,
-          "preview": "lambda _campaign, _finding: ProbeResult(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 93,
-          "preview": "campaign = _campaign(finding)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 99,
-          "preview": "lambda _campaign, _finding: ProbeResult(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_backed_planner.py",
-          "line": 6,
-          "preview": "def _campaign(status=\"validation_required\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_backed_planner.py",
-          "line": 60,
-          "preview": "action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=False))[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_backed_planner.py",
-          "line": 67,
-          "preview": "action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=True))[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_backed_planner.py",
-          "line": 75,
-          "preview": "_campaign(status=\"confirmed\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 7,
-          "preview": "def _campaign(campaign_id, state, *, activity=None, nmi=None, bounty=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 75,
-          "preview": "_campaign(\"c1\", \"needs-more-info\", nmi=True),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 76,
-          "preview": "_campaign(\"c2\", \"triaged\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 77,
-          "preview": "_campaign(\"c3\", \"resolved\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 78,
-          "preview": "_campaign(\"c4\", \"duplicate\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 79,
-          "preview": "_campaign(\"c5\", \"informative\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 102,
-          "preview": "[_campaign(\"c1\", \"triaged\", bounty=True)]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 117,
-          "preview": "result = build_hackerone_attention_center([_campaign(\"c1\", None)])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 141,
-          "preview": "campaign = _campaign(\"c1\", \"triaged\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 165,
-          "preview": "return [_campaign(\"c1\", \"needs-more-info\", nmi=True)]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 177,
-          "preview": "first = _campaign(\"c1\", \"triaged\", activity=\"activity-comment\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 178,
-          "preview": "second = _campaign(\"c1\", \"triaged\", activity=\"activity-comment\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 192,
-          "preview": "campaign = _campaign(\"c1\", \"needs-more-info\", nmi=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 213,
-          "preview": "campaign = _campaign(\"c1\", \"triaged\", bounty=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 24,
-          "preview": "def _campaign(campaign_id, state=\"running\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 67,
-          "preview": "store.save_campaign(_campaign(\"c1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 68,
-          "preview": "store.save_campaign(_campaign(\"c2\", state=\"ready\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 100,
-          "preview": "store.save_campaign(_campaign(campaign_id))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 127,
-          "preview": "store.save_campaign(_campaign(\"c1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 148,
-          "preview": "store.save_campaign(_campaign(\"c1\", state=\"ready\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 175,
-          "preview": "store.save_campaign(_campaign(\"c1\", state=\"ready\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 222,
-          "preview": "store.save_campaign(_campaign(\"c1\", state=\"ready\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 223,
-          "preview": "store.save_campaign(_campaign(\"c2\", state=\"ready\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 256,
-          "preview": "store.save_campaign(_campaign(\"active-campaign\", state=\"ready\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 17,
-          "preview": "def _campaign(*, allowed_targets=None, rps=2.0):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 34,
-          "preview": "first = _campaign(allowed_targets=[\"example.test\", \"*.example.test\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 35,
-          "preview": "second = _campaign(allowed_targets=[\"*.example.test\", \"example.test\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 41,
-          "preview": "base = _campaign(rps=2.0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 42,
-          "preview": "changed = _campaign(rps=1.0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 48,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 69,
-          "preview": "campaign = _campaign(rps=2.0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 93,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 112,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 128,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance.py",
-          "line": 158,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_api_integration.py",
-          "line": 12,
-          "preview": "def _campaign(*, findings=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_api_integration.py",
-          "line": 35,
-          "preview": "campaign = campaign or _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_api_integration.py",
-          "line": 111,
-          "preview": "campaign=_campaign(findings=[finding]),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_api_integration.py",
-          "line": 147,
-          "preview": "campaign=_campaign(findings=[finding]),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 10,
-          "preview": "def _campaign(*, findings=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 37,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 50,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 71,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_job_provenance_integration.py",
-          "line": 109,
-          "preview": "campaign = _campaign(findings=[finding])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 4,
-          "preview": "def _campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 34,
-          "preview": "_campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 43,
-          "preview": "_campaign(\"alpha\", findings=[], submitted=0),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 78,
-          "preview": "_campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_local_outcome_intelligence.py",
-          "line": 96,
-          "preview": "_campaign(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-          "line": 13,
-          "preview": "def _campaign():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-          "line": 56,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
-          "line": 82,
-          "preview": "campaign = _campaign()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 9,
-          "preview": "def _campaign(*, rps: float = 2.0):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 54,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 67,
-          "preview": "assert build_nuclei_plan(_campaign(), str(root / \"job-1\")).dry_run is True",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 70,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-2\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_nuclei_worker_plan.py",
-          "line": 80,
-          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 120
-    },
-    "test_hackerone_report_contains_submission_sections": {
-      "definition": {
-        "file": "backend/tests/test_report.py",
-        "line": 36,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_report.py",
-          "line": 36,
-          "preview": "def test_hackerone_report_contains_submission_sections():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_report_excludes_unconfirmed_findings": {
-      "definition": {
-        "file": "backend/tests/test_report.py",
-        "line": 46,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_report.py",
-          "line": 46,
-          "preview": "def test_report_excludes_unconfirmed_findings():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_report_marks_high_quality_confirmed_finding_ready_for_review": {
-      "definition": {
-        "file": "backend/tests/test_report.py",
-        "line": 56,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_report.py",
-          "line": 56,
-          "preview": "def test_report_marks_high_quality_confirmed_finding_ready_for_review():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_report_holds_confirmed_finding_when_evidence_quality_is_not_high": {
-      "definition": {
-        "file": "backend/tests/test_report.py",
-        "line": 75,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_report.py",
-          "line": 75,
-          "preview": "def test_report_holds_confirmed_finding_when_evidence_quality_is_not_high():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_report_renders_normalized_cwe_and_cvss_rating": {
-      "definition": {
-        "file": "backend/tests/test_report.py",
-        "line": 94,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_report.py",
-          "line": 94,
-          "preview": "def test_report_renders_normalized_cwe_and_cvss_rating():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "_finding": {
-      "definition": {
-        "file": "backend/tests/test_report_metadata_normalization.py",
-        "line": 7,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_campaign_review_state.py",
-          "line": 8,
-          "preview": "def _finding(finding_id: str, status: str = \"validation_required\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_review_state.py",
-          "line": 33,
-          "preview": "state = build_campaign_review_state([_finding(\"f1\")], graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_review_state.py",
-          "line": 73,
-          "preview": "state = build_campaign_review_state([_finding(\"f1\", \"confirmed\")], graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 10,
-          "preview": "def _finding(fid: str) -> Finding:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 41,
-          "preview": "finding = _finding(\"f1\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 48,
-          "preview": "lambda _campaign, _finding: ProbeResult(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 92,
-          "preview": "finding = _finding(\"f1\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 99,
-          "preview": "lambda _campaign, _finding: ProbeResult(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 134,
-          "preview": "findings = [_finding(\"f-none\"), _finding(\"f-strong\")]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_consensus.py",
-          "line": 8,
-          "preview": "def _finding(fid: str, endpoint: str):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_consensus.py",
-          "line": 60,
-          "preview": "_finding(\"f1\", \"https://example.test/a?id=1\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_consensus.py",
-          "line": 61,
-          "preview": "_finding(\"f2\", \"https://example.test/a?id=2\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_consensus.py",
-          "line": 90,
-          "preview": "_finding(\"f1\", \"https://example.test/a?id=1\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_consensus.py",
-          "line": 91,
-          "preview": "_finding(\"f2\", \"https://example.test/a?id=2\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_consensus.py",
-          "line": 122,
-          "preview": "_finding(\"f1\", \"https://example.test/a?id=1\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_consensus.py",
-          "line": 123,
-          "preview": "_finding(\"f2\", \"https://example.test/a?id=2\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_saturation.py",
-          "line": 8,
-          "preview": "def _finding(fid: str, endpoint: str):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_saturation.py",
-          "line": 37,
-          "preview": "_finding(\"f1\", \"https://example.test/a?id=one\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_saturation.py",
-          "line": 38,
-          "preview": "_finding(\"f2\", \"https://example.test/a?id=two\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_saturation.py",
-          "line": 77,
-          "preview": "_finding(\"f1\", \"https://example.test/a?id=one\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_cluster_saturation.py",
-          "line": 78,
-          "preview": "_finding(\"f2\", \"https://example.test/a?id=two\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 12,
-          "preview": "def _finding(finding_id: str, endpoint: str, *, severity: str = \"medium\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 27,
-          "preview": "_finding(\"f1\", \"https://example.test:443/account?id=1\", severity=\"medium\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 28,
-          "preview": "_finding(\"f2\", \"HTTPS://EXAMPLE.TEST/account?id=secret\", severity=\"high\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 43,
-          "preview": "first = _finding(\"f1\", \"https://example.test/a\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 44,
-          "preview": "second = _finding(\"f2\", \"https://example.test/b\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 69,
-          "preview": "_finding(\"f1\", \"https://example.test/a?token=one\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 70,
-          "preview": "_finding(\"f2\", \"https://example.test/a?token=two\", severity=\"high\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 92,
-          "preview": "left = _finding(\"f1\", \"https://example.test/a?id=one\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 93,
-          "preview": "right = _finding(\"f2\", \"https://EXAMPLE.TEST:443/a?id=two\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 109,
-          "preview": "left = _finding(\"f1\", \"https://example.test/a\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 110,
-          "preview": "right = _finding(\"f2\", \"https://other.test/a\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 121,
-          "preview": "first = _finding(\"f1\", \"https://example.test/a?id=1\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 122,
-          "preview": "second = _finding(\"f2\", \"https://example.test/a?id=2\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 123,
-          "preview": "third = _finding(\"f3\", \"https://example.test/b\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 136,
-          "preview": "findings = [_finding(\"f1\", \"https://example.test/a\")]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 163,
-          "preview": "_finding(\"f1\", \"https://example.test/a?id=one\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 164,
-          "preview": "_finding(\"f2\", \"https://example.test/a?id=two\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 8,
-          "preview": "def _finding(fid: str, endpoint: str, severity: str = \"high\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 61,
-          "preview": "_finding(\"f1\", \"https://example.test/a?id=one\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 62,
-          "preview": "_finding(\"f2\", \"https://example.test/a?id=two\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 96,
-          "preview": "_finding(\"f1\", \"https://example.test/a?id=one\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 97,
-          "preview": "_finding(\"f2\", \"https://example.test/a?id=two\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 111,
-          "preview": "_finding(\"f1\", \"https://example.test/a?token=one\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 112,
-          "preview": "_finding(\"f2\", \"https://example.test/a?token=two\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_lifecycle.py",
-          "line": 8,
-          "preview": "def _finding(finding_id: str, status: str):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_lifecycle.py",
-          "line": 21,
-          "preview": "item = build_finding_lifecycle([_finding(\"f1\", \"candidate\")], ObservationGraph())[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_lifecycle.py",
-          "line": 43,
-          "preview": "item = build_finding_lifecycle([_finding(\"f1\", \"validation_required\")], graph)[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_lifecycle.py",
-          "line": 85,
-          "preview": "item = build_finding_lifecycle([_finding(\"f1\", \"confirmed\")], graph)[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_lifecycle.py",
-          "line": 96,
-          "preview": "item = build_finding_lifecycle([_finding(\"f1\", \"rejected\")], ObservationGraph())[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_readiness.py",
-          "line": 8,
-          "preview": "def _finding(finding_id=\"f1\", severity=\"high\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_readiness.py",
-          "line": 63,
-          "preview": "item = build_finding_readiness([_finding()], graph)[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_readiness.py",
-          "line": 88,
-          "preview": "[_finding()],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_readiness.py",
-          "line": 138,
-          "preview": "[_finding()],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 7,
-          "preview": "def _finding(finding_id: str, severity: str, *, endpoint: str | None = None, cwe: str | None = None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 23,
-          "preview": "_finding(\"low\", \"low\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 24,
-          "preview": "_finding(\"critical\", \"critical\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 49,
-          "preview": "_finding(\"f1\", \"high\", endpoint=endpoint, cwe=\"CWE-200\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 50,
-          "preview": "_finding(\"f2\", \"high\", endpoint=\"HTTPS://EXAMPLE.TEST:443/api?id=other\", cwe=\"cwe-200\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 64,
-          "preview": "finding = _finding(\"f1\", \"high\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 110,
-          "preview": "findings=[_finding(\"f1\", \"medium\")],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 124,
-          "preview": "finding = _finding(\"quality\", \"high\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 166,
-          "preview": "finding = _finding(\"quality-high\", \"high\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_metadata_normalization.py",
-          "line": 7,
-          "preview": "def _finding(*, severity: str, cwe: str, cvss: float):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_report_metadata_normalization.py",
-          "line": 27,
-          "preview": "[_finding(severity=\"high\", cwe=\" cwe-200 \", cvss=7.5)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_metadata_normalization.py",
-          "line": 41,
-          "preview": "[_finding(severity=\"medium\", cwe=\"CWE-79\", cvss=9.1)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 8,
-          "preview": "def _finding(finding_id: str, status: str = \"validation_required\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 39,
-          "preview": "item = build_report_readiness([_finding(\"f1\")], graph)[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 78,
-          "preview": "item = build_report_readiness([_finding(\"f1\", \"confirmed\")], graph)[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 109,
-          "preview": "item = build_report_readiness([_finding(\"f1\", \"confirmed\")], graph)[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 119,
-          "preview": "findings = [_finding(\"f1\", \"confirmed\"), _finding(\"f2\", \"confirmed\")]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 135,
-          "preview": "finding = _finding(\"f1\", \"confirmed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 184,
-          "preview": "finding = _finding(\"f1\", \"confirmed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_worker_state.py",
-          "line": 20,
-          "preview": "def _finding(status):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_worker_state.py",
-          "line": 33,
-          "preview": "campaign = _campaign([_finding(\"validation_required\")])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_worker_state.py",
-          "line": 39,
-          "preview": "campaign = _campaign([_finding(\"confirmed\"), _finding(\"rejected\")])",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 76
-    },
-    "test_report_readiness_exposes_canonical_metadata": {
-      "definition": {
-        "file": "backend/tests/test_report_metadata_normalization.py",
-        "line": 25,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_report_metadata_normalization.py",
-          "line": 25,
-          "preview": "def test_report_readiness_exposes_canonical_metadata():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_report_readiness_flags_cvss_severity_mismatch": {
-      "definition": {
-        "file": "backend/tests/test_report_metadata_normalization.py",
-        "line": 39,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_report_metadata_normalization.py",
-          "line": 39,
-          "preview": "def test_report_readiness_flags_cvss_severity_mismatch():",
+          "preview": "def test_strix_run_status_rejects_oversized_status_file(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
       ],
