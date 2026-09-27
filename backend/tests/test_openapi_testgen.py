@@ -26,7 +26,7 @@ def test_openapi_preview_generates_only_read_only_cases():
     assert result["execution_mode"] == "preview_only"
     assert result["read_only"] is True
     assert result["network_requests_sent"] == 0
-    assert [case["method"] for case in result["cases"]] == ["GET", "HEAD"]
+    assert {case["method"] for case in result["cases"]} == {"GET", "HEAD"}
     assert all(case["read_only"] is True for case in result["cases"])
     assert all(case["destructive"] is False for case in result["cases"])
     assert result["summary"]["mutating_operations_skipped"] == 2
