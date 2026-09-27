@@ -61,7 +61,7 @@ def test_openapi_preview_api_is_read_only_and_bounded():
         )
     )
 
-    assert result["schema"] == "openapi-read-only-preview-v3"
+    assert result["schema"] == "openapi-read-only-preview-v4"
     assert [item["method"] for item in result["cases"]] == ["GET"]
     assert result["summary"]["mutating_operations_skipped"] == 1
 
@@ -131,7 +131,7 @@ def test_openapi_preview_extracts_passive_parameter_and_response_metadata():
     )
 
     case = result["cases"][0]
-    assert result["schema"] == "openapi-read-only-preview-v3"
+    assert result["schema"] == "openapi-read-only-preview-v4"
     assert case["method"] == "GET"
     assert case["parameters"] == [
         {
@@ -216,7 +216,7 @@ def test_openapi_preview_emits_advisory_api_risk_signals_only():
 
     case = result["cases"][0]
     categories = {item["category"] for item in case["risk_signals"]}
-    assert result["schema"] == "openapi-read-only-preview-v3"
+    assert result["schema"] == "openapi-read-only-preview-v4"
     assert "bola_idor_review" in categories
     assert "ssrf_input_review" in categories
     assert "auth_session_review" in categories
@@ -243,3 +243,79 @@ def test_openapi_preview_does_not_claim_vulnerability_from_path_name_only():
     signals = result["cases"][0]["risk_signals"]
     assert signals
     assert all(item["vulnerability_confirmed"] is False for item in signals)
+
+
+def test_openapi_preview_prioritizes_review_without_execution_effect():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "security": [{"oauth2": ["read"]}],
+            "paths": {
+                "/health": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                },
+                "/users/{user_id}/callback": {
+                    "get": {
+                        "parameters": [
+                            {
+                                "name": "user_id",
+                                "in": "path",
+                                "required": True,
+                                "schema": {"type": "string"},
+                            },
+                            {
+                                "name": "callback_url",
+                                "in": "query",
+                                "schema": {"type": "string"},
+                            },
+                            {
+                                "name": "email",
+                                "in": "query",
+                                "schema": {"type": "string"},
+                            },
+                        ],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                },
+            },
+        }
+    )
+
+    assert result["schema"] == "openapi-read-only-preview-v4"
+    assert result["network_requests_sent"] == 0
+    assert result["execution_mode"] == "preview_only"
+    assert result["cases"][0]["path"] == "/users/{user_id}/callback"
+    assert 0 < result["cases"][0]["review_priority"] <= 100
+    assert "bola_idor_review" in result["cases"][0]["review_priority_reasons"]
+    assert "ssrf_input_review" in result["cases"][0]["review_priority_reasons"]
+    assert "authenticated_surface" in result["cases"][0]["review_priority_reasons"]
+    assert result["cases"][1]["path"] == "/health"
+    assert result["cases"][1]["review_priority"] > 0
+    assert all(
+        signal["vulnerability_confirmed"] is False
+        for case in result["cases"]
+        for signal in case["risk_signals"]
+    )
+
+
+def test_openapi_preview_zero_priority_without_risk_signals():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/health": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    case = result["cases"][0]
+    assert case["review_priority"] == 0
+    assert case["review_priority_reasons"] == []
+    assert case["risk_signals"] == []
+    assert result["network_requests_sent"] == 0
