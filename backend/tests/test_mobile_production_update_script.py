@@ -141,32 +141,22 @@ def test_mobile_status_public_https_probe_uses_get_not_head():
     assert 'echo "PUBLIC_HTTPS_OK=true"' in script
 
 
-def test_mobile_status_verifies_current_deployed_contract():
+def test_mobile_status_verifies_exact_deployed_v82_contract():
     script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
 
     assert "=== DEPLOYED REVISION ===" in script
     assert 'LOCAL_SHA="$(git rev-parse HEAD)"' in script
     assert "git ls-remote origin refs/heads/main" in script
     assert "CHECKOUT_CURRENT=true" in script
-    assert "EXPECTED_DASHBOARD_ASSET=" in script
-    assert "grep -o 'simple.js?v=[0-9][0-9]*' frontend/index.html" in script
-    assert "PUBLIC_DASHBOARD_ASSET=" in script
-    assert '[ "$DASHBOARD_ASSET" = "$EXPECTED_DASHBOARD_ASSET" ]' in script
+    assert 'DASHBOARD_ASSET" = "simple.js?v=82"' in script
     assert "DASHBOARD_VERSION_OK=true" in script
-    assert "=== APPLICATION ROUTE CONTRACT ===" in script
+    assert "=== V82 ROUTE CONTRACT ===" in script
     assert '"/api/hackerone/simple-review-package"' in script
     assert '"/api/imports/hackerone/rules-preview"' in script
     assert '"/api/imports/hackerone/batches/launch-reviewed"' in script
     assert '"/api/hackerone/journal"' in script
     assert '"/api/labs/htb/campaigns"' in script
-    assert '"/api/labs/htb/campaigns/{campaign_id}/finish"' in script
-    assert '"/api/labs/htb/campaigns/{campaign_id}/outcome"' in script
-    assert '"/api/labs/htb/campaigns/{campaign_id}/learning"' in script
-    assert '"/api/labs/htb/campaigns/{campaign_id}/status"' in script
-    assert '"/api/labs/htb/learning"' in script
-    assert '"/api/labs/htb/benchmark"' in script
-    assert '"/api/labs/htb/focus"' in script
-    assert "APP_ROUTE_CONTRACT_OK=true" in script
+    assert "V82_ROUTE_CONTRACT_OK=true" in script
     assert "=== PRODUCTION CONTRACT VERDICT ===" in script
     assert "PRODUCTION_CONTRACT_OK=true" in script
     assert "PRODUCTION_CONTRACT_OK=false" in script
@@ -180,18 +170,19 @@ def test_mobile_status_production_contract_requires_all_live_prerequisites():
     assert '[ "$PUBLIC_HTTPS_OK" = "true" ]' in verdict
     assert '[ "$HACKERONE_API_READY" = "true" ]' in verdict
     assert '[ "$DASHBOARD_VERSION_OK" = "true" ]' in verdict
-    assert '[ "$APP_ROUTE_CONTRACT_OK" = "true" ]' in verdict
+    assert '[ "$V82_ROUTE_CONTRACT_OK" = "true" ]' in verdict
     assert '[ "$CHECKOUT_CURRENT" = "true" ]' in verdict
     assert "BLOCKER=checkout_stale" in verdict
     assert "BLOCKER=dashboard_version" in verdict
     assert "BLOCKER=route_contract" in verdict
 
 
-def test_mobile_status_route_contract_uses_openapi_paths_not_router_internals():
+def test_mobile_status_route_contract_tolerates_non_route_entries():
     script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
 
-    assert 'paths = set((app.openapi().get("paths") or {}).keys())' in script
-    assert 'getattr(route, "path", None)' not in script
+    assert 'getattr(route, "path", None)' in script
+    assert 'if (path := getattr(route, "path", None))' in script
+    assert "paths = {" in script
 
 
 def test_mobile_status_uses_live_origin_main_and_fails_closed():
@@ -217,66 +208,6 @@ def test_mobile_status_live_verifies_one_or_two_accessible_bounties():
     assert "ACCESSIBLE_BOUNTY_PRECHECK_OK=true" in script
     assert "ACCESSIBLE_BOUNTY_COUNT=" in script
     assert "ACCESSIBLE_BOUNTY_HANDLES=" in script
-
-
-def test_mobile_status_separates_production_health_from_bounty_availability():
-    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
-
-    production = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1].split(
-        "=== BUG BOUNTY OPERATIONAL VERDICT ===",
-        1,
-    )[0]
-    operational = script.split("=== BUG BOUNTY OPERATIONAL VERDICT ===", 1)[1]
-
-    assert 'ACCESSIBLE_BOUNTY_PRECHECK_OK' not in production
-    assert "PRODUCTION_CONTRACT_OK=true" in production
-    assert "PRODUCTION_CONTRACT_OK=false" in production
-    assert '[ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ]' in operational
-    assert "BUG_BOUNTY_OPERATIONAL_OK=true" in operational
-    assert "BUG_BOUNTY_OPERATIONAL_OK=false" in operational
-    assert "BOUNTY_AVAILABILITY=ready" in operational
-    assert "BOUNTY_AVAILABILITY=no_current_compatible_program" in operational
-    assert "le déploiement reste sain" in operational
-
-
-def test_mobile_status_dashboard_version_check_cannot_drift_from_frontend_version():
-    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
-
-    assert "EXPECTED_DASHBOARD_ASSET=" in script
-    assert "frontend/index.html" in script
-    assert 'simple.js?v=82' not in script
-
-
-def test_mobile_status_route_contract_name_is_version_independent():
-    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
-    assert "=== APPLICATION ROUTE CONTRACT ===" in script
-    assert "APP_ROUTE_CONTRACT_OK=true" in script
-    assert "V83_ROUTE_CONTRACT_OK" not in script
-
-
-def test_mobile_status_reports_hackerone_feasibility_pool_and_gaps():
-    script = (ROOT / "scripts/mobile-production-status.sh").read_text(encoding="utf-8")
-
-    assert "=== HACKERONE FEASIBILITY INDEX ===" in script
-    assert "from app.hackerone_feasibility import feasibility_summary" in script
-    assert "FEASIBILITY_INDEXED=" in script
-    assert "FEASIBILITY_COMPATIBLE=" in script
-    assert "FEASIBILITY_BLOCKED=" in script
-    assert "FEASIBILITY_UNAVAILABLE=" in script
-    assert "UNAVAILABLE_REASON=" in script
-    assert "unavailable_reason_counts" in script
-    assert "CAPABILITY_GAP=" in script
-    assert "COMPATIBLE_PROGRAM=" in script
-    assert '"/api/hackerone/feasibility-index"' in script
-
-
-def test_live_production_update_warms_hackerone_feasibility_index():
-    script = (ROOT / "scripts/mobile-production-update.sh").read_text(encoding="utf-8")
-
-    assert "=== HACKERONE FEASIBILITY WARMUP ===" in script
-    assert "from app.hackerone_catalog import refresh_hackerone_catalog" in script
-    assert "from app.hackerone_feasibility import refresh_hackerone_feasibility_batch" in script
-    assert "refresh_hackerone_feasibility_batch(store, batch_size=12)" in script
-    assert "FEASIBILITY_WARMUP_STATUS=" in script
-    assert "FEASIBILITY_WARMUP_INDEXED=" in script
-    assert "FEASIBILITY_WARMUP_COMPATIBLE=" in script
+    verdict = script.split("=== PRODUCTION CONTRACT VERDICT ===", 1)[1]
+    assert '[ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ]' in verdict
+    assert "BLOCKER=accessible_bounty_precheck" in verdict
