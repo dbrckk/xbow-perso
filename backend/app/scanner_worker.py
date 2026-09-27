@@ -9,6 +9,7 @@ from .main import Campaign, CampaignState, utcnow
 from .observation_graph import Observation
 from .observation_writer import record_asset
 from .scanner_ingestion import ScannerIngestionResult, ingest_scanner_run
+from .strix_run_status import StrixRunStatusError, load_strix_run_status
 from .storage import Storage
 from .worker import build_nuclei_plan, build_strix_plan, execute, persist_execution_artifacts
 
@@ -93,6 +94,13 @@ def run_strix_job(
 
     if execution["status"] != "completed":
         raise RuntimeError(execution.get("stderr") or "Strix execution failed")
+
+    try:
+        strix_status = load_strix_run_status(run_dir)
+    except StrixRunStatusError as exc:
+        raise RuntimeError(str(exc)) from exc
+    if not strix_status.completed:
+        raise RuntimeError(f"Strix run did not complete: {strix_status.status}")
 
     ingestion = ingest_scanner_run(
         "strix",
