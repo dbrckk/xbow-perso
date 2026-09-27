@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v90';
+  const UI_VERSION='v91';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1080,12 +1080,130 @@
     }
   }
 
+
+  function openapiCategoryLabel(category){
+    const labels={
+      bola_idor_review:'BOLA / IDOR',
+      ssrf_input_review:'Entrées URL / SSRF',
+      auth_session_review:'Auth / session',
+      sensitive_data_review:'Données sensibles'
+    };
+    return labels[String(category||'')]||String(category||'signal');
+  }
+
+  function renderOpenapiSummary(payload){
+    const root=$('openapiSummary');
+    if(!root)return;
+    root.replaceChildren();
+
+    const review=payload?.summary?.review||{};
+    const headline=document.createElement('p');
+    headline.className='muted compact';
+    headline.textContent=
+      String(review?.flagged_operations||0)+' opération(s) signalée(s) · '+
+      String(review?.unflagged_operations||0)+' non signalée(s) · priorité max '+
+      String(review?.max_review_priority||0)+'/100 · aucune vulnérabilité confirmée.';
+    root.appendChild(headline);
+
+    const categories=review?.category_counts&&typeof review.category_counts==='object'
+      ?Object.entries(review.category_counts)
+      :[];
+    if(categories.length){
+      const categoryLine=document.createElement('p');
+      categoryLine.className='muted compact';
+      categoryLine.textContent='Catégories : '+
+        categories
+          .sort((a,b)=>Number(b[1]||0)-Number(a[1]||0))
+          .map(([name,count])=>openapiCategoryLabel(name)+' '+String(count))
+          .join(' · ');
+      root.appendChild(categoryLine);
+    }
+
+    const top=Array.isArray(review?.top_review_operations)
+      ?review.top_review_operations.slice(0,10)
+      :[];
+    for(const item of top){
+      const row=document.createElement('div');
+      row.className='simple-log';
+      const head=document.createElement('strong');
+      head.textContent=
+        String(item?.method||'GET')+' '+String(item?.path||'/')+
+        ' · priorité '+String(item?.review_priority||0)+'/100';
+      row.appendChild(head);
+      const reasons=Array.isArray(item?.review_priority_reasons)
+        ?item.review_priority_reasons.map(openapiCategoryLabel)
+        :[];
+      if(reasons.length){
+        const detail=document.createElement('div');
+        detail.className='muted compact';
+        detail.textContent=reasons.join(' · ');
+        row.appendChild(detail);
+      }
+      root.appendChild(row);
+    }
+  }
+
+  async function analyzeOpenapi(){
+    if(!requireToken())return;
+    const input=$('openapiDocument');
+    const button=$('openapiAnalyze');
+    const status=$('openapiStatus');
+    const raw=String(input?.value||'').trim();
+    if(!raw){
+      if(status){
+        status.textContent='Colle d’abord une spécification OpenAPI/Swagger JSON.';
+        status.className='simple-status err';
+      }
+      input?.focus();
+      return;
+    }
+
+    let documentValue;
+    try{
+      documentValue=JSON.parse(raw);
+    }catch(_error){
+      if(status){
+        status.textContent='JSON invalide. Corrige la spécification avant analyse.';
+        status.className='simple-status err';
+      }
+      return;
+    }
+
+    if(button)button.disabled=true;
+    if(status){
+      status.textContent='Analyse passive de la spécification…';
+      status.className='simple-status muted';
+    }
+    try{
+      const result=await api('/testing/openapi/preview',{
+        method:'POST',
+        body:JSON.stringify({document:documentValue})
+      });
+      renderOpenapiSummary(result);
+      const generated=Number(result?.summary?.cases_generated||0);
+      if(status){
+        status.textContent=
+          'Analyse terminée · '+generated+
+          ' opération(s) lecture seule · 0 requête envoyée vers la cible.';
+        status.className='simple-status ok';
+      }
+    }catch(error){
+      $('openapiSummary')?.replaceChildren();
+      if(status){
+        status.textContent='Analyse OpenAPI impossible : '+error.message;
+        status.className='simple-status err';
+      }
+    }finally{
+      if(button)button.disabled=false;
+    }
+  }
+
   function bind(){
     try{$('token').value=localStorage.getItem(TOKEN_KEY)||'';}catch(_error){}
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=90',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=91',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -1099,6 +1217,7 @@
     $('htbStart')?.addEventListener('click',()=>void startHtbLab());
     $('htbLearn')?.addEventListener('click',()=>void saveHtbLearning());
     $('htbCancel')?.addEventListener('click',()=>void cancelHtbLab());
+    $('openapiAnalyze')?.addEventListener('click',()=>void analyzeOpenapi());
     try{
       if(localStorage.getItem(HTB_ACTIVE_KEY))$('htbFeedback')?.classList.remove('hidden');
     }catch(_error){}
