@@ -1,15 +1,17 @@
 # Change impact
 
-Base: 63fbca44f6dff65143e7df118b8dbad9e4af041d
-Head: 042fabae8370a6456800241acdce13a87fc540f2
+Base: 9f9f764bce09f50cb24331e21117e00d856111cf
+Head: 355f4a7f7d177e7e36f502529e5201d4945c2937
 
 ## Changed files
-- M .env.example
-- M backend/app/browser.py
-- A backend/tests/test_browser_artifact_bounds.py
+- M backend/Dockerfile
+- M backend/app/runtime_capabilities.py
+- M backend/tests/test_job_provenance_integration.py
+- M backend/tests/test_orchestrator.py
+- M backend/tests/test_runtime_capabilities.py
+- M backend/tests/test_scanner_runtime_contract.py
 
 ## Affected areas
-- (root)
 - backend
 
 ## Related test candidates

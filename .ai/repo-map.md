@@ -9816,6 +9816,8 @@ def browser_runtime_capability() -> dict[str, Any]
 ⋮----
 """Return redacted readiness for bounded browser observation."""
 enabled = _strict_bool("XBOW_ENABLE_BROWSER_AUTOMATION", False)
+marker = Path(
+runtime_attested = marker.is_file()
 ⋮----
 def safe_browser_runtime_capability() -> dict[str, Any]
 ⋮----
@@ -15872,6 +15874,8 @@ by_kind = {job["kind"]: job for job in jobs}
 ⋮----
 def test_orchestrator_recon_and_browser_jobs_are_policy_bound(tmp_path, monkeypatch)
 ⋮----
+marker = tmp_path / "playwright-ready"
+⋮----
 tasks = [
 ⋮----
 jobs = _enqueue_recon_tasks(campaign, graph, queue, tasks)
@@ -16887,6 +16891,8 @@ jobs = [queue.get(job_id) for job_id in result["job_ids"]]
 def test_orchestrator_includes_browser_recon_only_when_enabled(tmp_path, monkeypatch)
 ⋮----
 db = str(tmp_path / "browser-enabled.sqlite3")
+⋮----
+marker = tmp_path / "playwright-ready"
 ⋮----
 def test_orchestrator_allows_scan_after_surface_enrichment_threshold(tmp_path)
 ⋮----
@@ -18903,6 +18909,18 @@ recon = result["execution"]["recon_detail"]
 def test_strix_runtime_capability_fails_closed_without_binary_or_docker(monkeypatch)
 ⋮----
 def test_strix_runtime_capability_reports_ready_when_runtime_exists(monkeypatch)
+⋮----
+def test_browser_runtime_capability_fails_closed_without_runtime_marker(monkeypatch, tmp_path)
+⋮----
+marker = tmp_path / "missing-playwright-marker"
+⋮----
+result = browser_runtime_capability()
+⋮----
+def test_browser_runtime_capability_ready_with_runtime_marker(monkeypatch, tmp_path)
+⋮----
+marker = tmp_path / "playwright-ready"
+⋮----
+def test_browser_runtime_capability_disabled_even_when_runtime_exists(monkeypatch, tmp_path)
 ````
 
 ## File: backend/tests/test_runtime_gap_analysis.py
@@ -19118,6 +19136,8 @@ dockerfile = (ROOT / "backend" / "Dockerfile").read_text()
 def test_compose_wires_recon_flags_to_general_worker()
 ⋮----
 worker = compose.split("  worker:", 1)[1].split("\n  scanner-worker:", 1)[0]
+⋮----
+def test_general_worker_image_attests_playwright_runtime()
 ````
 
 ## File: backend/tests/test_scanner_sandbox.py

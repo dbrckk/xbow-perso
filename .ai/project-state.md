@@ -22,23 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T18:05:47Z
+Generated: 2026-09-27T18:21:01Z
 
 ### Git
 - Branch: `main`
-- Head: `042fabae8370`
-- Commit date: 2026-09-27T20:05:36+02:00
-- Commit: feat: bound browser evidence artifacts (#413)
+- Head: `355f4a7f7d17`
+- Commit date: 2026-09-27T20:20:45+02:00
+- Commit: feat: attest Playwright browser runtime readiness (#414)
 - Tracked files: 578
 
 ### Recently changed files
+- `backend/Dockerfile`
+- `backend/app/runtime_capabilities.py`
+- `backend/tests/test_job_provenance_integration.py`
+- `backend/tests/test_orchestrator.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_scanner_runtime_contract.py`
 - `.env.example`
 - `backend/app/browser.py`
 - `backend/tests/test_browser_artifact_bounds.py`
-- `backend/app/runtime_capabilities.py`
 - `backend/app/scanner_worker.py`
 - `backend/app/strix_run_status.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_run_status.py`
 - `backend/app/finding_metadata.py`
 - `backend/app/report.py`
@@ -48,10 +52,6 @@ Generated: 2026-09-27T18:05:47Z
 - `backend/tests/test_report_metadata_normalization.py`
 - `backend/app/htb_lab.py`
 - `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_htb_lab.py`
-- `backend/tests/test_mobile_production_update_script.py`
-- `frontend/simple.js`
-- `scripts/mobile-production-status.sh`
 
 ### Project signals
 - `pyproject.toml`
