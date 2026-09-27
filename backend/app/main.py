@@ -178,6 +178,10 @@ class HackerOneScopePreviewInput(BaseModel):
     document: dict[str, Any]
 
 
+class OpenApiPreviewInput(BaseModel):
+    document: dict[str, Any]
+
+
 class IncidentAcknowledgeInput(BaseModel):
     fingerprint: str = Field(min_length=1, max_length=64, pattern=r"^[0-9a-f]+$")
     expected_version: int = Field(ge=1)
@@ -440,6 +444,23 @@ def system_capabilities():
             ),
         },
     }
+
+
+@app.post("/api/testing/openapi/preview")
+def preview_openapi_tests(payload: OpenApiPreviewInput):
+    from .openapi_testgen import OpenApiPreviewError, build_openapi_read_only_preview
+
+    try:
+        return build_openapi_read_only_preview(payload.document)
+    except OpenApiPreviewError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/testing/offensive-expansion")
+def get_offensive_expansion():
+    from .offensive_expansion import offensive_expansion_catalog
+
+    return offensive_expansion_catalog()
 
 
 @app.get("/api/observer/health")
