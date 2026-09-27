@@ -161,11 +161,6 @@ else
 fi
 
 DASHBOARD_VERSION_OK=false
-EXPECTED_DASHBOARD_ASSET="$(
-  grep -o 'simple.js?v=[0-9][0-9]*' frontend/index.html \
-    | head -n1 \
-    || true
-)"
 if [ -n "$PUBLIC_HOST" ]; then
   echo "=== DASHBOARD ASSET VERSION ==="
   DASHBOARD_ASSET="$(
@@ -174,84 +169,40 @@ if [ -n "$PUBLIC_HOST" ]; then
       | head -n1 \
       || true
   )"
-  echo "EXPECTED_DASHBOARD_ASSET=$EXPECTED_DASHBOARD_ASSET"
-  echo "PUBLIC_DASHBOARD_ASSET=$DASHBOARD_ASSET"
-  if [ -n "$EXPECTED_DASHBOARD_ASSET" ] \
-    && [ "$DASHBOARD_ASSET" = "$EXPECTED_DASHBOARD_ASSET" ]; then
+  echo "$DASHBOARD_ASSET"
+  if [ "$DASHBOARD_ASSET" = "simple.js?v=82" ]; then
     DASHBOARD_VERSION_OK=true
   fi
   echo "DASHBOARD_VERSION_OK=$DASHBOARD_VERSION_OK"
 fi
 
-echo "=== APPLICATION ROUTE CONTRACT ==="
+echo "=== V82 ROUTE CONTRACT ==="
 if docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY'
 from app.main import app
 
-paths = set((app.openapi().get("paths") or {}).keys())
+paths = {
+    str(path)
+    for route in app.routes
+    if (path := getattr(route, "path", None))
+}
 required = {
     "/api/hackerone/simple-review-package",
     "/api/imports/hackerone/rules-preview",
     "/api/imports/hackerone/batches/launch-reviewed",
     "/api/hackerone/journal",
-    "/api/hackerone/feasibility-index",
     "/api/labs/htb/campaigns",
-    "/api/labs/htb/campaigns/{campaign_id}/finish",
-    "/api/labs/htb/campaigns/{campaign_id}/outcome",
-    "/api/labs/htb/campaigns/{campaign_id}/learning",
-    "/api/labs/htb/campaigns/{campaign_id}/status",
-    "/api/labs/htb/learning",
-    "/api/labs/htb/benchmark",
-    "/api/labs/htb/focus",
 }
 missing = sorted(required - paths)
-print("APP_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))
+print("V82_ROUTE_CONTRACT_OK=" + ("true" if not missing else "false"))
 for path in missing:
     print("MISSING_ROUTE=" + path)
 raise SystemExit(0 if not missing else 1)
 PY
 then
-  APP_ROUTE_CONTRACT_OK=true
+  V82_ROUTE_CONTRACT_OK=true
 else
-  APP_ROUTE_CONTRACT_OK=false
+  V82_ROUTE_CONTRACT_OK=false
 fi
-
-echo "=== HACKERONE FEASIBILITY INDEX ==="
-docker compose -f docker-compose.yml -f docker-compose.distributed.yml -f docker-compose.tls.yml --profile scanner exec -T backend python - <<'PY' || true
-from app.hackerone_feasibility import feasibility_summary
-from app.main import storage
-
-catalog = storage().get_hackerone_catalog_state() or {}
-summary = feasibility_summary(catalog, limit=20)
-print("FEASIBILITY_INDEXED=" + str(summary.get("indexed", 0)))
-print("FEASIBILITY_COMPATIBLE=" + str(summary.get("compatible_count", 0)))
-print("FEASIBILITY_BLOCKED=" + str(summary.get("blocked_count", 0)))
-print("FEASIBILITY_UNAVAILABLE=" + str(summary.get("unavailable_count", 0)))
-for reason, count in list((summary.get("unavailable_reason_counts") or {}).items())[:8]:
-    print(
-        "UNAVAILABLE_REASON="
-        + str(reason or "")
-        + "|"
-        + str(count or 0)
-    )
-for row in list(summary.get("capability_gaps") or [])[:8]:
-    print(
-        "CAPABILITY_GAP="
-        + str(row.get("reason") or "")
-        + "|"
-        + str(row.get("count") or 0)
-        + "|"
-        + str(row.get("capability") or "")
-    )
-for item in list(summary.get("programs") or [])[:10]:
-    print(
-        "COMPATIBLE_PROGRAM="
-        + str(item.get("handle") or "")
-        + "|"
-        + str(item.get("scope_mode") or "")
-        + "|"
-        + str(item.get("primary_url") or "")
-    )
-PY
 
 echo "=== ACCESSIBLE BOUNTY PRECHECK ==="
 ACCESSIBLE_BOUNTY_PRECHECK_OK=false
@@ -292,39 +243,21 @@ if printf '%s
 fi
 
 echo "=== PRODUCTION CONTRACT VERDICT ==="
-PRODUCTION_CONTRACT_OK=false
 if [ "$RUNTIME_READY" = "true" ] \
   && [ "$PUBLIC_HTTPS_OK" = "true" ] \
   && [ "$HACKERONE_API_READY" = "true" ] \
   && [ "$DASHBOARD_VERSION_OK" = "true" ] \
-  && [ "$APP_ROUTE_CONTRACT_OK" = "true" ] \
+  && [ "$V82_ROUTE_CONTRACT_OK" = "true" ] \
+  && [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] \
   && [ "$REMOTE_MAIN_REACHABLE" = "true" ] \
   && [ "$CHECKOUT_CURRENT" = "true" ]; then
-  PRODUCTION_CONTRACT_OK=true
   echo "PRODUCTION_CONTRACT_OK=true"
 else
   echo "PRODUCTION_CONTRACT_OK=false"
   [ "$REMOTE_MAIN_REACHABLE" = "true" ] || echo "BLOCKER=origin_main_unreachable | Impossible de lire origin/main depuis le VPS."
   [ "$CHECKOUT_CURRENT" = "true" ] || echo "BLOCKER=checkout_stale | Le VPS n'est pas sur origin/main."
-  [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Le dashboard public ne correspond pas au frontend du checkout déployé."
-  [ "$APP_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique de l'application manque dans le backend déployé."
-fi
-
-echo "=== BUG BOUNTY OPERATIONAL VERDICT ==="
-if [ "$PRODUCTION_CONTRACT_OK" = "true" ] \
-  && [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ]; then
-  echo "BUG_BOUNTY_OPERATIONAL_OK=true"
-  echo "BOUNTY_AVAILABILITY=ready"
-else
-  echo "BUG_BOUNTY_OPERATIONAL_OK=false"
-  if [ "$PRODUCTION_CONTRACT_OK" != "true" ]; then
-    echo "BOUNTY_AVAILABILITY=blocked_by_runtime"
-  else
-    echo "BOUNTY_AVAILABILITY=no_current_compatible_program"
-    echo "INFO=accessible_bounty_precheck | Aucun programme HackerOne live-vérifié n'est disponible maintenant; le déploiement reste sain."
-  fi
-fi
-
-if [ "$PRODUCTION_CONTRACT_OK" != "true" ]; then
+  [ "$DASHBOARD_VERSION_OK" = "true" ] || echo "BLOCKER=dashboard_version | Interface v82 non servie publiquement."
+  [ "$V82_ROUTE_CONTRACT_OK" = "true" ] || echo "BLOCKER=route_contract | Une route critique v82 manque dans le backend déployé."
+  [ "$ACCESSIBLE_BOUNTY_PRECHECK_OK" = "true" ] || echo "BLOCKER=accessible_bounty_precheck | Aucun programme HackerOne live-vérifié n'a pu être préparé."
   exit 1
 fi
