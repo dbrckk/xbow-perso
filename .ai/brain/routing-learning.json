@@ -2,33 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "fix: make simple bounty selection resilient and learning setup one-time (#339)",
-      "terms": [
-        "339",
-        "bounty",
-        "learning",
-        "make",
-        "one-time",
-        "resilient",
-        "selection",
-        "setup",
-        "simple"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/app/hackerone_api.py",
-        "backend/app/main.py",
-        "backend/tests/test_frontend_auth_proxy.py",
-        "backend/tests/test_frontend_policy_launcher.py",
-        "backend/tests/test_live_activation_profile.py",
-        "backend/tests/test_mobile_reset_api_token.py",
-        "backend/tests/test_simple_selection_cache_only.py",
-        "frontend/simple.js",
-        "frontend/sw.js"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "fix: make simple HackerOne selection resilient and diagnosable (#340)",
       "terms": [
         "340",
@@ -1349,6 +1322,26 @@
         "backend/app/main.py",
         "backend/tests/test_runtime_capabilities.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "feat: surface browser runtime readiness in dashboard (#416)",
+      "terms": [
+        "416",
+        "browser",
+        "dashboard",
+        "feat",
+        "readiness",
+        "runtime",
+        "surface"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/tests/test_frontend_auth_proxy.py",
+        "backend/tests/test_frontend_policy_launcher.py",
+        "frontend/simple.js",
+        "frontend/sw.js"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1992,6 +1985,12 @@
       "backend/app/main.py": 4,
       "backend/tests/test_runtime_capabilities.py": 4
     },
+    "416": {
+      "backend/tests/test_frontend_auth_proxy.py": 4,
+      "backend/tests/test_frontend_policy_launcher.py": 4,
+      "frontend/simple.js": 4,
+      "frontend/sw.js": 4
+    },
     "accelerate": {
       "backend/app/hackerone_feasibility.py": 4,
       "backend/tests/test_hackerone_feasibility.py": 4
@@ -2514,8 +2513,8 @@
       "backend/app/orchestrator.py": 4,
       "backend/app/runtime_capabilities.py": 8,
       "backend/tests/test_browser_artifact_bounds.py": 4,
-      "backend/tests/test_frontend_auth_proxy.py": 4,
-      "backend/tests/test_frontend_policy_launcher.py": 4,
+      "backend/tests/test_frontend_auth_proxy.py": 8,
+      "backend/tests/test_frontend_policy_launcher.py": 8,
       "backend/tests/test_hackerone_live_readiness.py": 4,
       "backend/tests/test_job_provenance_integration.py": 8,
       "backend/tests/test_live_activation_profile.py": 4,
@@ -2523,7 +2522,8 @@
       "backend/tests/test_runtime_capabilities.py": 8,
       "backend/tests/test_scanner_runtime_contract.py": 4,
       "frontend/app.js": 4,
-      "frontend/sw.js": 4
+      "frontend/simple.js": 4,
+      "frontend/sw.js": 8
     },
     "bug": {
       "backend/app/hackerone_api.py": 4,
@@ -2805,16 +2805,16 @@
       "backend/app/worker_service.py": 4,
       "backend/tests/test_auth.py": 4,
       "backend/tests/test_distributed_concurrency.py": 4,
-      "backend/tests/test_frontend_auth_proxy.py": 28,
-      "backend/tests/test_frontend_policy_launcher.py": 24,
+      "backend/tests/test_frontend_auth_proxy.py": 32,
+      "backend/tests/test_frontend_policy_launcher.py": 28,
       "backend/tests/test_github_learning_sync.py": 4,
       "backend/tests/test_htb_lab.py": 4,
       "backend/tests/test_live_activation_profile.py": 12,
       "backend/tests/test_mobile_production_update_script.py": 8,
       "frontend/app.js": 4,
       "frontend/hackerone.js": 4,
-      "frontend/simple.js": 20,
-      "frontend/sw.js": 32
+      "frontend/simple.js": 24,
+      "frontend/sw.js": 36
     },
     "data": {
       "backend/app/hackerone_feasibility.py": 4,
@@ -4527,8 +4527,8 @@
       "backend/app/htb_lab.py": 4,
       "backend/app/runtime_capabilities.py": 8,
       "backend/app/runtime_gap_analysis.py": 4,
-      "backend/tests/test_frontend_auth_proxy.py": 8,
-      "backend/tests/test_frontend_policy_launcher.py": 4,
+      "backend/tests/test_frontend_auth_proxy.py": 12,
+      "backend/tests/test_frontend_policy_launcher.py": 8,
       "backend/tests/test_hackerone_live_readiness.py": 4,
       "backend/tests/test_htb_lab.py": 4,
       "backend/tests/test_job_provenance_integration.py": 4,
@@ -4538,8 +4538,8 @@
       "backend/tests/test_runtime_gap_analysis.py": 4,
       "backend/tests/test_scanner_runtime_contract.py": 4,
       "backend/tests/test_simple_selection_cache_only.py": 4,
-      "frontend/simple.js": 8,
-      "frontend/sw.js": 4
+      "frontend/simple.js": 12,
+      "frontend/sw.js": 8
     },
     "ready": {
       "backend/app/hackerone_discovery.py": 4,
@@ -4863,8 +4863,8 @@
       "backend/app/runtime_gap_analysis.py": 4,
       "backend/app/scanner_worker.py": 4,
       "backend/app/strix_run_status.py": 4,
-      "backend/tests/test_frontend_auth_proxy.py": 8,
-      "backend/tests/test_frontend_policy_launcher.py": 8,
+      "backend/tests/test_frontend_auth_proxy.py": 12,
+      "backend/tests/test_frontend_policy_launcher.py": 12,
       "backend/tests/test_github_learning_sync.py": 4,
       "backend/tests/test_hackerone_live_readiness.py": 4,
       "backend/tests/test_job_provenance_integration.py": 8,
@@ -4874,8 +4874,8 @@
       "backend/tests/test_runtime_gap_analysis.py": 4,
       "backend/tests/test_scanner_runtime_contract.py": 4,
       "backend/tests/test_strix_run_status.py": 4,
-      "frontend/simple.js": 8,
-      "frontend/sw.js": 8
+      "frontend/simple.js": 12,
+      "frontend/sw.js": 12
     },
     "runtimes": {
       "backend/tests/test_github_actions_runtime.py": 4
@@ -5220,8 +5220,8 @@
       "backend/app/surface_confidence.py": 4,
       "backend/app/surface_diff.py": 4,
       "backend/app/surface_temporal.py": 4,
-      "backend/tests/test_frontend_auth_proxy.py": 4,
-      "backend/tests/test_frontend_policy_launcher.py": 4,
+      "backend/tests/test_frontend_auth_proxy.py": 8,
+      "backend/tests/test_frontend_policy_launcher.py": 8,
       "backend/tests/test_htb_lab.py": 4,
       "backend/tests/test_mobile_production_update_script.py": 8,
       "backend/tests/test_recon_priority.py": 12,
@@ -5230,8 +5230,8 @@
       "backend/tests/test_surface_diff.py": 4,
       "backend/tests/test_surface_temporal.py": 4,
       "frontend/app.js": 12,
-      "frontend/simple.js": 8,
-      "frontend/sw.js": 16
+      "frontend/simple.js": 12,
+      "frontend/sw.js": 20
     },
     "surfaces": {
       "backend/app/coverage.py": 4,

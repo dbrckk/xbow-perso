@@ -389,6 +389,10 @@ function retryableReviewError(error)
 ⋮----
 async function refreshRuntimeReadiness(
 ⋮----
+function browserBlockReasonLabel(reason)
+⋮----
+async function refreshBrowserReadiness(
+⋮----
 function rejectionSummaryText(detail)
 ⋮----
 async function prepare(initialExcluded=[])

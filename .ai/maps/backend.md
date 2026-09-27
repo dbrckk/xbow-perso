@@ -13213,6 +13213,8 @@ def test_dashboard_surfaces_htb_next_focus_recommendations()
 def test_htb_launch_checks_htb_specific_readiness_first()
 ⋮----
 start = script.split("async function startHtbLab()", 1)[1].split("function parseTechniqueList", 1)[0]
+⋮----
+def test_simple_dashboard_surfaces_browser_runtime_readiness()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py

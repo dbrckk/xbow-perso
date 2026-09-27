@@ -22,16 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T18:27:24Z
+Generated: 2026-09-27T18:50:46Z
 
 ### Git
 - Branch: `main`
-- Head: `f3a2395c3aad`
-- Commit date: 2026-09-27T20:27:12+02:00
-- Commit: feat: expose browser runtime capability detail (#415)
+- Head: `31f0452f6bc9`
+- Commit date: 2026-09-27T20:50:35+02:00
+- Commit: feat: surface browser runtime readiness in dashboard (#416)
 - Tracked files: 578
 
 ### Recently changed files
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `backend/app/main.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/Dockerfile`
@@ -45,12 +50,6 @@ Generated: 2026-09-27T18:27:24Z
 - `backend/app/scanner_worker.py`
 - `backend/app/strix_run_status.py`
 - `backend/tests/test_strix_run_status.py`
-- `backend/app/finding_metadata.py`
-- `backend/app/report.py`
-- `backend/app/report_readiness.py`
-- `backend/tests/test_finding_metadata.py`
-- `backend/tests/test_report.py`
-- `backend/tests/test_report_metadata_normalization.py`
 
 ### Project signals
 - `pyproject.toml`
