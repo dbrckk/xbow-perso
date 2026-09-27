@@ -6577,6 +6577,8 @@ parameters: tuple[dict[str, Any], ...]
 response_codes: tuple[str, ...]
 response_content_types: tuple[str, ...]
 risk_signals: tuple[dict[str, Any], ...]
+review_priority: int
+review_priority_reasons: tuple[str, ...]
 read_only: bool = True
 execution_mode: str = "preview_only"
 destructive: bool = False
@@ -6600,6 +6602,19 @@ ssrf_refs = sorted({
 auth_refs = sorted({
 ⋮----
 sensitive_refs = sorted({
+⋮----
+RISK_REVIEW_WEIGHTS = {
+CONFIDENCE_WEIGHTS = {
+⋮----
+score = 0.0
+reasons: list[str] = []
+⋮----
+category = str(signal.get("category") or "")
+confidence = str(signal.get("confidence") or "low")
+weight = RISK_REVIEW_WEIGHTS.get(category, 0)
+factor = CONFIDENCE_WEIGHTS.get(confidence, 0.5)
+⋮----
+bounded = max(0, min(100, int(round(score))))
 ⋮----
 def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]
 ⋮----
@@ -16300,6 +16315,10 @@ categories = {item["category"] for item in case["risk_signals"]}
 def test_openapi_preview_does_not_claim_vulnerability_from_path_name_only()
 ⋮----
 signals = result["cases"][0]["risk_signals"]
+⋮----
+def test_openapi_preview_prioritizes_review_without_execution_effect()
+⋮----
+def test_openapi_preview_zero_priority_without_risk_signals()
 ```
 
 ## File: tests/test_operational_alerts.py
