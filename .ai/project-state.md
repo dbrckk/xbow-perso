@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T19:14:35Z
+Generated: 2026-09-27T19:20:44Z
 
 ### Git
 - Branch: `main`
-- Head: `2d357d3a3679`
-- Commit date: 2026-09-27T21:14:24+02:00
-- Commit: feat: enrich passive OpenAPI security analysis (#418)
+- Head: `c08b8b0c5234`
+- Commit date: 2026-09-27T21:20:33+02:00
+- Commit: feat: add passive OpenAPI API risk review signals (#419)
 - Tracked files: 582
 
 ### Recently changed files
@@ -43,11 +43,6 @@ Generated: 2026-09-27T19:14:35Z
 - `frontend/simple.js`
 - `frontend/sw.js`
 - `backend/tests/test_runtime_capabilities.py`
-- `backend/Dockerfile`
-- `backend/app/runtime_capabilities.py`
-- `backend/tests/test_job_provenance_integration.py`
-- `backend/tests/test_orchestrator.py`
-- `backend/tests/test_scanner_runtime_contract.py`
 
 ### Project signals
 - `pyproject.toml`

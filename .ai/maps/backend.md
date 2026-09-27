@@ -6576,6 +6576,7 @@ authentication_declared: bool
 parameters: tuple[dict[str, Any], ...]
 response_codes: tuple[str, ...]
 response_content_types: tuple[str, ...]
+risk_signals: tuple[dict[str, Any], ...]
 read_only: bool = True
 execution_mode: str = "preview_only"
 destructive: bool = False
@@ -6583,6 +6584,22 @@ destructive: bool = False
 def to_dict(self) -> dict[str, Any]
 ⋮----
 payload = asdict(self)
+⋮----
+RISK_TERMS = {
+⋮----
+haystack_parts = [path.lower(), str(operation.get("operationId") or "").lower()]
+⋮----
+haystack = " ".join(haystack_parts)
+⋮----
+signals: list[dict[str, Any]] = []
+⋮----
+object_refs = sorted({
+⋮----
+ssrf_refs = sorted({
+⋮----
+auth_refs = sorted({
+⋮----
+sensitive_refs = sorted({
 ⋮----
 def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]
 ⋮----
@@ -6639,6 +6656,8 @@ operation_id = str(operation_id)[:160]
 security = operation.get("security", document.get("security"))
 authentication_declared = bool(security)
 parameters = _normalized_parameters(raw_item, operation)
+⋮----
+risk_signals = _operation_risk_signals(
 ```
 
 ## File: app/operational_alerts.py
@@ -16273,6 +16292,14 @@ def test_openapi_preview_extracts_passive_parameter_and_response_metadata()
 case = result["cases"][0]
 ⋮----
 def test_openapi_preview_ignores_external_parameter_refs()
+⋮----
+def test_openapi_preview_emits_advisory_api_risk_signals_only()
+⋮----
+categories = {item["category"] for item in case["risk_signals"]}
+⋮----
+def test_openapi_preview_does_not_claim_vulnerability_from_path_name_only()
+⋮----
+signals = result["cases"][0]["risk_signals"]
 ```
 
 ## File: tests/test_operational_alerts.py
