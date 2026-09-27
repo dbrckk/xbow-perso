@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v89';
+  const UI_VERSION='v90';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -257,6 +257,44 @@
       const actionNode=$('runtimeAction');
       if(actionNode)actionNode.textContent='Vérifie la stack de production puis relance le diagnostic.';
       if(!quiet)setStatus('État scanner indisponible : '+error.message,'warn');
+      return null;
+    }
+  }
+
+  function browserBlockReasonLabel(reason){
+    const labels={
+      browser_automation_disabled:'automatisation désactivée',
+      playwright_runtime_unattested:'runtime Playwright non attesté',
+      invalid_boolean_configuration:'configuration invalide'
+    };
+    return labels[String(reason||'')]||String(reason||'blocage runtime');
+  }
+
+  async function refreshBrowserReadiness({quiet=true}={}){
+    const node=$('browserRuntimeStatus');
+    if(!node||!token())return null;
+    try{
+      const capabilities=await api('/capabilities');
+      const browser=capabilities?.execution?.browser_detail||{};
+      const reasons=Array.isArray(browser?.dispatch_block_reasons)
+        ?browser.dispatch_block_reasons
+        :[];
+      if(browser?.dispatch_ready===true){
+        node.textContent='Navigateur : Playwright prêt et attesté.';
+        node.className='muted compact state-ready';
+      }else if(browser?.browser_automation_enabled!==true){
+        node.textContent='Navigateur : désactivé.';
+        node.className='muted compact';
+      }else{
+        const labels=reasons.slice(0,2).map(browserBlockReasonLabel).filter(Boolean);
+        node.textContent='Navigateur : non prêt'+(labels.length?' · '+labels.join(' · '):'')+'.';
+        node.className='muted compact state-review';
+      }
+      return browser;
+    }catch(error){
+      node.textContent='Navigateur : état indisponible.';
+      node.className='muted compact state-review';
+      if(!quiet)setStatus('État navigateur indisponible : '+error.message,'warn');
       return null;
     }
   }
@@ -1047,7 +1085,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=89',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=90',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -1072,12 +1110,14 @@
       if(event?.message)setStatus('Erreur interface : '+event.message,'err');
     });
     void refreshRuntimeReadiness({quiet:true});
+    void refreshBrowserReadiness({quiet:true});
     void refreshJournal({quiet:true});
     void refreshHtbBenchmark({quiet:true});
     void refreshHtbFocus({quiet:true});
     void refreshHtbSession({quiet:true});
     timer=setInterval(()=>{
       void refreshRuntimeReadiness({quiet:true});
+      void refreshBrowserReadiness({quiet:true});
       void refreshJournal({quiet:true});
       void refreshHtbSession({quiet:true});
     },15000);
