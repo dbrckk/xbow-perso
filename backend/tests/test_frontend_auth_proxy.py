@@ -25,8 +25,8 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=89' in index
-    assert '/app.css?v=89' in index
+    assert '/simple.js?v=90' in index
+    assert '/app.css?v=90' in index
     assert "xbow-perso-v90" in sw
 
 
@@ -179,7 +179,7 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
     assert "const UI_VERSION='v90';" in script
-    assert "serviceWorker.register('/sw.js?v=89',{updateViaCache:'none'})" in script
+    assert "serviceWorker.register('/sw.js?v=90',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
     assert "Interface v90" in html
     assert "location = /index.html" in nginx
