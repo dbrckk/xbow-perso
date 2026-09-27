@@ -1,9 +1,8 @@
 (()=>{
   const TOKEN_KEY='xbowApiToken';
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
-  const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v89';
+  const UI_VERSION='v82';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -34,7 +33,8 @@
     if(!button)return;
     const reviewsPending=Number(selectionResult?.review_count||0)>0;
     button.disabled=!(
-      selection.length===1
+      selection.length>=1
+      && selection.length<=2
       && !reviewsPending
       && runtimeReady===true
       && batchActive===false
@@ -261,34 +261,13 @@
     }
   }
 
-  function rejectionSummaryText(detail){
-    const summary=detail&&typeof detail.rejection_summary==='object'
-      ?detail.rejection_summary
-      :{};
-    const labels={
-      scope_exclusions_require_manual_enforcement:'exclusions de scope',
-      scope_incomplete_for_web_engine:'scope incompatible',
-      no_compatible_primary_domain:'aucun domaine compatible',
-      policy_text_unavailable:'politique absente',
-      bounties_not_offered:'pas de bounty',
-      submissions_not_open:'soumissions fermées',
-      program_not_open:'programme fermé',
-      review_unavailable:'revue indisponible'
-    };
-    return Object.entries(summary)
-      .sort((a,b)=>Number(b[1]||0)-Number(a[1]||0))
-      .slice(0,3)
-      .map(([reason,count])=>String(count)+'× '+String(labels[reason]||reason))
-      .join(' · ');
-  }
-
   async function prepare(initialExcluded=[]){
     if(!requireToken())return;
     const button=$('prepare');
     button.disabled=true;
     $('start').disabled=true;
     clearReviewPanel();
-    setStatus('Recherche d’un programme HackerOne réellement accessible…');
+    setStatus('Recherche de 1 ou 2 programmes HackerOne accessibles…');
     const searchStarted=Date.now();
     const searchTimer=setInterval(()=>{
       const seconds=Math.max(1,Math.floor((Date.now()-searchStarted)/1000));
@@ -322,7 +301,7 @@
       selectionResult=result;
       selection=Array.isArray(result?.handles)?result.handles.filter(Boolean):[];
       renderSelection(result);
-      if(result?.complete!==true||selection.length!==1){
+      if(result?.complete!==true||selection.length<1||selection.length>2){
         throw new Error('Le serveur n’a pas trouvé de programme exploitable.');
       }
 
@@ -362,10 +341,7 @@
       const reason=String(error?.reason||error?.detail?.reason||'');
       if(reason==='simple_review_package_incomplete'||reason==='simple_review_package_exhausted'){
         const rejected=Number(error?.detail?.rejected_count||0);
-        const summary=rejectionSummaryText(error?.detail||{});
-        message='Aucun programme compatible trouvé après vérification'+
-          (rejected?' ('+rejected+' rejeté(s))':'')+
-          (summary?' · '+summary:'')+'.';
+        message='Aucun programme compatible trouvé après vérification'+(rejected?' ('+rejected+' rejeté(s))':'')+'.';
       }else if(reason==='hackerone_credentials_missing'){
         message='Connexion HackerOne absente sur le serveur.';
       }else if(reason==='hackerone_authentication_failed'){
@@ -578,7 +554,7 @@
   async function start(){
     if(!requireToken())return;
     if(selection.length<1||selection.length>2){
-      setStatus('Sélectionne d’abord un programme accessible.','err');
+      setStatus('Sélectionne d’abord 1 ou 2 campagnes accessibles.','err');
       return;
     }
     if(Number(selectionResult?.review_count||0)>0){
@@ -817,7 +793,6 @@
       });
       const campaignId=String(campaign?.campaign_id||'');
       if(!campaignId)throw new Error('Le serveur n’a pas renvoyé d’identifiant de campagne.');
-      try{localStorage.setItem(HTB_ACTIVE_KEY,campaignId);}catch(_error){}
       setHtbStatus('Campagne créée. Démarrage du recon borné…');
       const started=await api('/campaigns/'+encodeURIComponent(campaignId)+'/start',{
         method:'POST',
@@ -829,204 +804,10 @@
         'ok'
       );
       if($('htbConfirm'))$('htbConfirm').checked=false;
-      $('htbFeedback')?.classList.remove('hidden');
-      await refreshHtbSession({quiet:true});
     }catch(error){
       setHtbStatus('Entraînement HTB bloqué : '+error.message,'err');
     }finally{
       if(button)button.disabled=false;
-    }
-  }
-
-  function parseTechniqueList(value){
-    return [...new Set(
-      String(value||'').split(',')
-        .map(item=>item.trim().toLowerCase().replace(/\s+/g,'-'))
-        .filter(Boolean)
-    )].slice(0,20);
-  }
-
-  async function saveHtbLearning(){
-    if(!requireToken())return;
-    let campaignId='';
-    try{campaignId=String(localStorage.getItem(HTB_ACTIVE_KEY)||'');}catch(_error){}
-    if(!campaignId){
-      setHtbStatus('Lance d’abord une campagne HTB depuis ce dashboard.','err');
-      return;
-    }
-    const button=$('htbLearn');
-    if(button)button.disabled=true;
-    const solved=$('htbSolved')?.value!=='false';
-    const successful=parseTechniqueList($('htbSuccessTechniques')?.value);
-    const missed=parseTechniqueList($('htbMissedTechniques')?.value);
-    try{
-      const result=await api(
-        '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/finish',
-        {
-          method:'POST',
-          body:JSON.stringify({
-            solved,
-            successful_techniques:successful,
-            missed_techniques:missed,
-            notes:''
-          })
-        }
-      );
-      const summary=await api(
-        '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/learning'
-      );
-      const globalSummary=await api('/labs/htb/learning');
-      await refreshHtbBenchmark({quiet:true});
-      await refreshHtbFocus({quiet:true});
-      const techniques=Array.isArray(summary?.techniques)?summary.techniques:[];
-      const globalTechniques=Array.isArray(globalSummary?.techniques)?globalSummary.techniques:[];
-      const node=$('htbLearningStatus');
-      if(node){
-        node.textContent=
-          String(result?.outcome?.learning_observations_written||0)+' signal(aux) ajouté(s) · '+
-          techniques.length+' technique(s) dans ce lab · '+
-          globalTechniques.length+' technique(s) globales sur '+
-          String(globalSummary?.campaign_count||0)+' lab(s).';
-      }
-      try{localStorage.removeItem(HTB_ACTIVE_KEY);}catch(_error){}
-      $('htbFeedback')?.classList.add('hidden');
-      const session=$('htbSession');
-      if(session)session.textContent='Session HTB : terminée et apprentissage enregistré.';
-      setHtbStatus('Entraînement HTB terminé. Apprentissage enregistré sans payload ni secret.','ok');
-    }catch(error){
-      setHtbStatus('Apprentissage HTB bloqué : '+error.message,'err');
-    }finally{
-      if(button)button.disabled=false;
-    }
-  }
-
-  async function cancelHtbLab(){
-    if(!requireToken())return;
-    let campaignId='';
-    try{campaignId=String(localStorage.getItem(HTB_ACTIVE_KEY)||'');}catch(_error){}
-    if(!campaignId){
-      setHtbStatus('Aucune campagne HTB active sur cet appareil.','warn');
-      return;
-    }
-    const button=$('htbCancel');
-    if(button)button.disabled=true;
-    try{
-      await api('/campaigns/'+encodeURIComponent(campaignId)+'/cancel',{
-        method:'POST',
-        body:'{}'
-      });
-      try{localStorage.removeItem(HTB_ACTIVE_KEY);}catch(_error){}
-      $('htbFeedback')?.classList.add('hidden');
-      const session=$('htbSession');
-      if(session)session.textContent='Session HTB : arrêtée sans apprentissage.';
-      setHtbStatus('Campagne HTB arrêtée.','ok');
-    }catch(error){
-      if(Number(error?.status||0)===409&&String(error?.message||'').includes('Completed campaign')){
-        try{localStorage.removeItem(HTB_ACTIVE_KEY);}catch(_error){}
-        $('htbFeedback')?.classList.add('hidden');
-        setHtbStatus('Campagne HTB déjà terminée.','ok');
-      }else{
-        setHtbStatus('Arrêt HTB impossible : '+error.message,'err');
-      }
-    }finally{
-      if(button)button.disabled=false;
-    }
-  }
-
-  async function refreshHtbSession({quiet=true}={}){
-    const node=$('htbSession');
-    if(!node||!token())return null;
-    let campaignId='';
-    try{campaignId=String(localStorage.getItem(HTB_ACTIVE_KEY)||'');}catch(_error){}
-    if(!campaignId){
-      node.textContent='Session HTB : aucune campagne active sur cet appareil.';
-      $('htbFeedback')?.classList.add('hidden');
-      return null;
-    }
-    try{
-      const summary=await api(
-        '/labs/htb/campaigns/'+encodeURIComponent(campaignId)+'/status'
-      );
-      const counts=summary?.job_counts||{};
-      const state=String(summary?.state||'inconnu');
-      const queued=Number(counts?.queued||0);
-      const running=Number(counts?.running||0);
-      const completed=Number(counts?.completed||0);
-      const failed=Number(counts?.failed||0);
-      const findings=Number(summary?.finding_count||0);
-      const confirmed=Number(summary?.confirmed_finding_count||0);
-      node.textContent=
-        'Session HTB : '+state+
-        ' · jobs '+running+' actif(s), '+queued+' en attente, '+completed+' terminé(s), '+failed+' échec(s)'+
-        ' · findings '+findings+' ('+confirmed+' confirmé(s))'+
-        (summary?.evaluated===true
-          ?' · évaluation '+(summary?.solved===true?'résolue':'non résolue')
-          :' · évaluation à renseigner');
-      $('htbFeedback')?.classList.remove('hidden');
-      return summary;
-    }catch(error){
-      if(Number(error?.status||0)===404){
-        try{localStorage.removeItem(HTB_ACTIVE_KEY);}catch(_error){}
-        node.textContent='Session HTB : campagne précédente introuvable.';
-        $('htbFeedback')?.classList.add('hidden');
-      }else if(!quiet){
-        node.textContent='Session HTB indisponible : '+error.message;
-      }
-      return null;
-    }
-  }
-
-  async function refreshHtbBenchmark({quiet=true}={}){
-    const node=$('htbBenchmark');
-    if(!node||!token())return null;
-    try{
-      const summary=await api('/labs/htb/benchmark');
-      const evaluated=Number(summary?.evaluated_campaign_count||0);
-      const solved=Number(summary?.solved_campaign_count||0);
-      const solveRate=summary?.solve_rate;
-      const techniqueRate=summary?.technique_success_rate;
-      const confirmed=Number(summary?.confirmed_finding_count||0);
-      if(!evaluated){
-        node.textContent='Benchmark HTB : aucun lab évalué pour le moment.';
-      }else{
-        const solveText=solveRate===null||solveRate===undefined
-          ?'—'
-          :Math.round(Number(solveRate)*100)+'%';
-        const techniqueText=techniqueRate===null||techniqueRate===undefined
-          ?'—'
-          :Math.round(Number(techniqueRate)*100)+'%';
-        node.textContent=
-          'Benchmark HTB : '+solved+'/'+evaluated+' lab(s) résolu(s) · '+
-          'taux '+solveText+' · techniques '+techniqueText+' · '+
-          confirmed+' finding(s) confirmé(s).';
-      }
-      return summary;
-    }catch(error){
-      if(!quiet)node.textContent='Benchmark HTB indisponible : '+error.message;
-      return null;
-    }
-  }
-
-  async function refreshHtbFocus({quiet=true}={}){
-    const node=$('htbFocus');
-    if(!node||!token())return null;
-    try{
-      const summary=await api('/labs/htb/focus?limit=3');
-      const focus=Array.isArray(summary?.focus)?summary.focus:[];
-      if(!focus.length){
-        node.textContent='Prochain focus HTB : pas encore assez de feedback.';
-        return summary;
-      }
-      node.textContent='Prochain focus HTB : '+
-        focus.map(item=>{
-          const rate=Math.round(Number(item?.success_rate||0)*100);
-          return String(item?.technique||'technique')+
-            ' · '+String(item?.failures||0)+' échec(s) · '+rate+'% réussite';
-        }).join(' · ');
-      return summary;
-    }catch(error){
-      if(!quiet)node.textContent='Focus HTB indisponible : '+error.message;
-      return null;
     }
   }
 
@@ -1035,7 +816,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=89',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=82',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -1047,11 +828,6 @@
     $('refresh').addEventListener('click',()=>void refreshJournal());
     $('cancelActive').addEventListener('click',()=>void cancelActiveBatch());
     $('htbStart')?.addEventListener('click',()=>void startHtbLab());
-    $('htbLearn')?.addEventListener('click',()=>void saveHtbLearning());
-    $('htbCancel')?.addEventListener('click',()=>void cancelHtbLab());
-    try{
-      if(localStorage.getItem(HTB_ACTIVE_KEY))$('htbFeedback')?.classList.remove('hidden');
-    }catch(_error){}
     window.addEventListener('unhandledrejection',event=>{
       const message=event?.reason?.message||String(event?.reason||'Erreur JavaScript');
       setStatus('Erreur interface : '+message,'err');
@@ -1061,13 +837,9 @@
     });
     void refreshRuntimeReadiness({quiet:true});
     void refreshJournal({quiet:true});
-    void refreshHtbBenchmark({quiet:true});
-    void refreshHtbFocus({quiet:true});
-    void refreshHtbSession({quiet:true});
     timer=setInterval(()=>{
       void refreshRuntimeReadiness({quiet:true});
       void refreshJournal({quiet:true});
-      void refreshHtbSession({quiet:true});
     },15000);
   }
 
