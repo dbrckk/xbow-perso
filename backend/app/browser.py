@@ -82,6 +82,37 @@ def _bool_env(name: str, default: bool = False) -> bool:
     raise BrowserPolicyError(f"{name} must be a boolean")
 
 
+def _bounded_size_env(name: str, default: int, *, minimum: int, maximum: int) -> int:
+    raw = os.getenv(name, str(default))
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise BrowserPolicyError(f"{name} must be an integer") from exc
+    if not minimum <= value <= maximum:
+        raise BrowserPolicyError(
+            f"{name} must be between {minimum} and {maximum} bytes"
+        )
+    return value
+
+
+def _max_browser_rendered_bytes() -> int:
+    return _bounded_size_env(
+        "XBOW_BROWSER_MAX_RENDERED_BYTES",
+        2 * 1024 * 1024,
+        minimum=16 * 1024,
+        maximum=16 * 1024 * 1024,
+    )
+
+
+def _max_browser_screenshot_bytes() -> int:
+    return _bounded_size_env(
+        "XBOW_BROWSER_MAX_SCREENSHOT_BYTES",
+        8 * 1024 * 1024,
+        minimum=64 * 1024,
+        maximum=32 * 1024 * 1024,
+    )
+
+
 def _browser_secret(secret_env: str) -> str:
     try:
         use_vault = vault_enabled()
@@ -431,6 +462,11 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
                     response = page.goto(target, wait_until="domcontentloaded", timeout=step.timeout_ms)
                     final_url = _allowed_url(campaign, page.url, target)
                     rendered = page.content().encode("utf-8", errors="replace")
+                    rendered_limit = _max_browser_rendered_bytes()
+                    if len(rendered) > rendered_limit:
+                        raise BrowserPolicyError(
+                            "browser rendered document exceeds configured size limit"
+                        )
                     structure_metrics = page.evaluate(
                         """() => ({
                           links: document.querySelectorAll('a[href]').length,
@@ -572,6 +608,11 @@ def execute_browser_flow(campaign, payload: dict) -> BrowserExecutionResult:
                     observations.append({"step": index, "operation": "wait_for", "selector": step.selector})
                 elif step.operation == "screenshot":
                     data = page.screenshot(full_page=True)
+                    screenshot_limit = _max_browser_screenshot_bytes()
+                    if len(data) > screenshot_limit:
+                        raise BrowserPolicyError(
+                            "browser screenshot exceeds configured size limit"
+                        )
                     screenshots.append((f"browser-step-{index}.png", data))
                     observations.append({"step": index, "operation": "screenshot", "bytes": len(data)})
         finally:
