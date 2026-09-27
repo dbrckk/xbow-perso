@@ -22,21 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T18:21:01Z
+Generated: 2026-09-27T18:27:24Z
 
 ### Git
 - Branch: `main`
-- Head: `355f4a7f7d17`
-- Commit date: 2026-09-27T20:20:45+02:00
-- Commit: feat: attest Playwright browser runtime readiness (#414)
+- Head: `f3a2395c3aad`
+- Commit date: 2026-09-27T20:27:12+02:00
+- Commit: feat: expose browser runtime capability detail (#415)
 - Tracked files: 578
 
 ### Recently changed files
+- `backend/app/main.py`
+- `backend/tests/test_runtime_capabilities.py`
 - `backend/Dockerfile`
 - `backend/app/runtime_capabilities.py`
 - `backend/tests/test_job_provenance_integration.py`
 - `backend/tests/test_orchestrator.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_scanner_runtime_contract.py`
 - `.env.example`
 - `backend/app/browser.py`
@@ -50,8 +51,6 @@ Generated: 2026-09-27T18:21:01Z
 - `backend/tests/test_finding_metadata.py`
 - `backend/tests/test_report.py`
 - `backend/tests/test_report_metadata_normalization.py`
-- `backend/app/htb_lab.py`
-- `backend/tests/test_frontend_auth_proxy.py`
 
 ### Project signals
 - `pyproject.toml`

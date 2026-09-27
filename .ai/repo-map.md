@@ -6489,6 +6489,7 @@ def system_capabilities()
 ⋮----
 pentagi = safe_pentagi_runtime_capability()
 scanners = safe_scanner_runtime_capability()
+browser = safe_browser_runtime_capability()
 recon = safe_recon_runtime_capability()
 ⋮----
 @app.get("/api/observer/health")
@@ -18921,6 +18922,10 @@ def test_browser_runtime_capability_ready_with_runtime_marker(monkeypatch, tmp_p
 marker = tmp_path / "playwright-ready"
 ⋮----
 def test_browser_runtime_capability_disabled_even_when_runtime_exists(monkeypatch, tmp_path)
+⋮----
+def test_capabilities_api_exposes_browser_runtime_detail(monkeypatch, tmp_path)
+⋮----
+browser = result["execution"]["browser_detail"]
 ````
 
 ## File: backend/tests/test_runtime_gap_analysis.py

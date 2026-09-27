@@ -1,15 +1,11 @@
 # Change impact
 
-Base: 9f9f764bce09f50cb24331e21117e00d856111cf
-Head: 355f4a7f7d177e7e36f502529e5201d4945c2937
+Base: 947123be89b6b3af4e6c5d6feaaf7b2d37c1c929
+Head: f3a2395c3aaddae2029506413aba49c599d47773
 
 ## Changed files
-- M backend/Dockerfile
-- M backend/app/runtime_capabilities.py
-- M backend/tests/test_job_provenance_integration.py
-- M backend/tests/test_orchestrator.py
+- M backend/app/main.py
 - M backend/tests/test_runtime_capabilities.py
-- M backend/tests/test_scanner_runtime_contract.py
 
 ## Affected areas
 - backend
