@@ -358,6 +358,7 @@ def deployment_preflight():
 @app.get("/api/capabilities")
 def system_capabilities():
     from .runtime_capabilities import (
+        safe_browser_runtime_capability,
         safe_pentagi_runtime_capability,
         safe_recon_runtime_capability,
         safe_scanner_runtime_capability,
@@ -365,6 +366,7 @@ def system_capabilities():
 
     pentagi = safe_pentagi_runtime_capability()
     scanners = safe_scanner_runtime_capability()
+    browser = safe_browser_runtime_capability()
     recon = safe_recon_runtime_capability()
     return {
         "campaign_control": {
@@ -385,7 +387,8 @@ def system_capabilities():
             "scanner_worker": scanners["mode"],
             "scanner_worker_detail": scanners,
             "http_validation": "gated",
-            "browser_automation": "gated",
+            "browser_automation": browser["mode"],
+            "browser_detail": browser,
             "recon": recon["mode"],
             "recon_detail": recon,
             "pentagi": pentagi["mode"],

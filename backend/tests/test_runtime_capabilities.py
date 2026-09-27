@@ -336,3 +336,19 @@ def test_browser_runtime_capability_disabled_even_when_runtime_exists(monkeypatc
     assert result["playwright_runtime_attested"] is True
     assert result["dispatch_ready"] is False
     assert result["dispatch_block_reasons"] == ["browser_automation_disabled"]
+
+
+def test_capabilities_api_exposes_browser_runtime_detail(monkeypatch, tmp_path):
+    marker = tmp_path / "playwright-ready"
+    marker.write_text("ready", encoding="utf-8")
+    monkeypatch.setenv("XBOW_ENABLE_BROWSER_AUTOMATION", "true")
+    monkeypatch.setenv("XBOW_PLAYWRIGHT_RUNTIME_MARKER", str(marker))
+
+    result = main.system_capabilities()
+
+    browser = result["execution"]["browser_detail"]
+    assert result["execution"]["browser_automation"] == "enabled"
+    assert browser["browser_automation_enabled"] is True
+    assert browser["playwright_runtime_attested"] is True
+    assert browser["dispatch_ready"] is True
+    assert browser["contains_secrets"] is False
