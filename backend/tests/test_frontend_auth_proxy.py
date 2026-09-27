@@ -313,3 +313,12 @@ def test_dashboard_surfaces_htb_next_focus_recommendations():
     assert "/labs/htb/focus?limit=3" in script
     assert "Prochain focus HTB" in script
     assert "void refreshHtbFocus({quiet:true});" in script
+
+
+def test_htb_launch_checks_htb_specific_readiness_first():
+    script = _text("frontend/simple.js")
+    start = script.split("async function startHtbLab()", 1)[1].split("function parseTechniqueList", 1)[0]
+    assert "/labs/htb/readiness" in start
+    assert "live_scan_ready!==true" in start
+    assert "Runtime HTB non prêt" in start
+    assert start.index("/labs/htb/readiness") < start.index("/labs/htb/campaigns")
