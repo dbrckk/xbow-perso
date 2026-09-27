@@ -123,6 +123,12 @@ def scanner_runtime_capability() -> dict[str, Any]:
     nuclei_execution_intent = bool(
         active_scans_enabled and nuclei_enabled and not dry_run
     )
+    strix_allowlisted = "strix" in engines
+    strix_execution_intent = bool(
+        active_scans_enabled and strix_allowlisted and not dry_run
+    )
+    strix_binary_available = bool(shutil.which("strix"))
+    docker_cli_available = bool(shutil.which("docker"))
 
     reasons: list[str] = []
     if not active_scans_enabled:
@@ -141,6 +147,10 @@ def scanner_runtime_capability() -> dict[str, Any]:
         reasons.append("nuclei_not_allowlisted")
     if nuclei_execution_intent and not nuclei_version_configured:
         reasons.append("nuclei_version_allowlist_missing")
+    if strix_execution_intent and not strix_binary_available:
+        reasons.append("strix_binary_unavailable")
+    if strix_execution_intent and not docker_cli_available:
+        reasons.append("strix_docker_runtime_unavailable")
 
     return {
         "mode": "active_gated" if active_scans_enabled else "disabled",
@@ -150,6 +160,10 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "nuclei_execution_intent": nuclei_execution_intent,
         "nuclei_allowlisted": nuclei_allowlisted,
         "nuclei_version_configured": nuclei_version_configured,
+        "strix_execution_intent": strix_execution_intent,
+        "strix_allowlisted": strix_allowlisted,
+        "strix_binary_available": strix_binary_available,
+        "strix_docker_runtime_available": docker_cli_available,
         "dry_run": dry_run,
         "sandbox_profile": profile or "unconfigured",
         "allowed_engines": list(engines),
@@ -172,6 +186,10 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "nuclei_execution_intent": False,
             "nuclei_allowlisted": False,
             "nuclei_version_configured": False,
+            "strix_execution_intent": False,
+            "strix_allowlisted": False,
+            "strix_binary_available": False,
+            "strix_docker_runtime_available": False,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
             "allowed_engines": [],
