@@ -194,6 +194,44 @@ def _review_priority(
     bounded = max(0, min(100, int(round(score))))
     return bounded, tuple(dict.fromkeys(reasons))[:12]
 
+
+def _review_summary(cases: list[OpenApiTestCase]) -> dict[str, Any]:
+    category_counts: dict[str, int] = {}
+    flagged_operations = 0
+    for case in cases:
+        if case.risk_signals:
+            flagged_operations += 1
+        for signal in case.risk_signals:
+            category = str(signal.get("category") or "").strip()
+            if category:
+                category_counts[category] = category_counts.get(category, 0) + 1
+
+    ranked = sorted(
+        cases,
+        key=lambda item: (-item.review_priority, item.path, item.method),
+    )
+    top = [
+        {
+            "method": case.method,
+            "path": case.path,
+            "operation_id": case.operation_id,
+            "review_priority": case.review_priority,
+            "review_priority_reasons": list(case.review_priority_reasons),
+        }
+        for case in ranked[:10]
+        if case.review_priority > 0
+    ]
+    return {
+        "advisory": True,
+        "vulnerabilities_confirmed": 0,
+        "flagged_operations": flagged_operations,
+        "unflagged_operations": max(0, len(cases) - flagged_operations),
+        "max_review_priority": max((case.review_priority for case in cases), default=0),
+        "category_counts": dict(sorted(category_counts.items())),
+        "top_review_operations": top,
+    }
+
+
 def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]:
     combined: list[Any] = []
     for source in (path_item.get("parameters"), operation.get("parameters")):
@@ -335,7 +373,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v4",
+        "schema": "openapi-read-only-preview-v5",
         "source_version": version[:40],
         "execution_mode": "preview_only",
         "read_only": True,
@@ -352,5 +390,6 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
             "cases_generated": len(cases),
             "mutating_operations_skipped": skipped_mutating,
             "invalid_entries_skipped": skipped_invalid,
+            "review": _review_summary(cases),
         },
     }
