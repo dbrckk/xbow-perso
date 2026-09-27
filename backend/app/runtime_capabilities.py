@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import shutil
+from pathlib import Path
 from typing import Any
 
 
@@ -205,11 +206,23 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
 def browser_runtime_capability() -> dict[str, Any]:
     """Return redacted readiness for bounded browser observation."""
     enabled = _strict_bool("XBOW_ENABLE_BROWSER_AUTOMATION", False)
+    marker = Path(
+        os.getenv("XBOW_PLAYWRIGHT_RUNTIME_MARKER", "/opt/xbow-playwright-ready")
+    )
+    runtime_attested = marker.is_file()
+
+    reasons: list[str] = []
+    if not enabled:
+        reasons.append("browser_automation_disabled")
+    if enabled and not runtime_attested:
+        reasons.append("playwright_runtime_unattested")
+
     return {
         "mode": "enabled" if enabled else "disabled",
         "browser_automation_enabled": enabled,
-        "dispatch_ready": enabled,
-        "dispatch_block_reasons": [] if enabled else ["browser_automation_disabled"],
+        "playwright_runtime_attested": runtime_attested,
+        "dispatch_ready": not reasons,
+        "dispatch_block_reasons": reasons,
         "contains_secrets": False,
     }
 
@@ -221,6 +234,7 @@ def safe_browser_runtime_capability() -> dict[str, Any]:
         return {
             "mode": "configuration_error",
             "browser_automation_enabled": False,
+            "playwright_runtime_attested": False,
             "dispatch_ready": False,
             "dispatch_block_reasons": ["invalid_boolean_configuration"],
             "contains_secrets": False,
