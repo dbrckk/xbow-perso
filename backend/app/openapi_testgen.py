@@ -24,6 +24,8 @@ class OpenApiTestCase:
     response_codes: tuple[str, ...]
     response_content_types: tuple[str, ...]
     risk_signals: tuple[dict[str, Any], ...]
+    review_priority: int
+    review_priority_reasons: tuple[str, ...]
     read_only: bool = True
     execution_mode: str = "preview_only"
     destructive: bool = False
@@ -35,6 +37,7 @@ class OpenApiTestCase:
         payload["response_codes"] = list(self.response_codes)
         payload["response_content_types"] = list(self.response_content_types)
         payload["risk_signals"] = [dict(item) for item in self.risk_signals]
+        payload["review_priority_reasons"] = list(self.review_priority_reasons)
         return payload
 
 
@@ -148,6 +151,48 @@ def _operation_risk_signals(
         )
 
     return signals
+
+
+RISK_REVIEW_WEIGHTS = {
+    "bola_idor_review": 30,
+    "ssrf_input_review": 30,
+    "auth_session_review": 20,
+    "sensitive_data_review": 20,
+}
+CONFIDENCE_WEIGHTS = {
+    "low": 0.5,
+    "medium": 1.0,
+    "high": 1.25,
+}
+
+
+def _review_priority(
+    risk_signals: list[dict[str, Any]],
+    *,
+    authentication_declared: bool,
+    parameter_count: int,
+) -> tuple[int, tuple[str, ...]]:
+    score = 0.0
+    reasons: list[str] = []
+
+    for signal in risk_signals:
+        category = str(signal.get("category") or "")
+        confidence = str(signal.get("confidence") or "low")
+        weight = RISK_REVIEW_WEIGHTS.get(category, 0)
+        factor = CONFIDENCE_WEIGHTS.get(confidence, 0.5)
+        if weight:
+            score += weight * factor
+            reasons.append(category)
+
+    if authentication_declared and risk_signals:
+        score += 5
+        reasons.append("authenticated_surface")
+    if parameter_count >= 3:
+        score += 5
+        reasons.append("parameter_rich_surface")
+
+    bounded = max(0, min(100, int(round(score))))
+    return bounded, tuple(dict.fromkeys(reasons))[:12]
 
 def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]:
     combined: list[Any] = []
@@ -265,6 +310,11 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 parameters,
                 authentication_declared=authentication_declared,
             )
+            review_priority, review_priority_reasons = _review_priority(
+                risk_signals,
+                authentication_declared=authentication_declared,
+                parameter_count=len(parameters),
+            )
 
             cases.append(
                 OpenApiTestCase(
@@ -277,18 +327,26 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                     response_codes=response_codes,
                     response_content_types=response_content_types,
                     risk_signals=tuple(risk_signals),
+                    review_priority=review_priority,
+                    review_priority_reasons=review_priority_reasons,
                 )
             )
             if len(cases) > MAX_CASES:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v3",
+        "schema": "openapi-read-only-preview-v4",
         "source_version": version[:40],
         "execution_mode": "preview_only",
         "read_only": True,
         "network_requests_sent": 0,
-        "cases": [case.to_dict() for case in cases],
+        "cases": [
+            case.to_dict()
+            for case in sorted(
+                cases,
+                key=lambda item: (-item.review_priority, item.path, item.method),
+            )
+        ],
         "summary": {
             "paths_seen": len(paths),
             "cases_generated": len(cases),
