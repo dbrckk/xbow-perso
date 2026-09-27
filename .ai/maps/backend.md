@@ -6616,6 +6616,16 @@ factor = CONFIDENCE_WEIGHTS.get(confidence, 0.5)
 ⋮----
 bounded = max(0, min(100, int(round(score))))
 ⋮----
+def _review_summary(cases: list[OpenApiTestCase]) -> dict[str, Any]
+⋮----
+category_counts: dict[str, int] = {}
+flagged_operations = 0
+⋮----
+category = str(signal.get("category") or "").strip()
+⋮----
+ranked = sorted(
+top = [
+⋮----
 def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]
 ⋮----
 combined: list[Any] = []
@@ -16319,6 +16329,12 @@ signals = result["cases"][0]["risk_signals"]
 def test_openapi_preview_prioritizes_review_without_execution_effect()
 ⋮----
 def test_openapi_preview_zero_priority_without_risk_signals()
+⋮----
+def test_openapi_preview_exposes_advisory_review_summary()
+⋮----
+review = result["summary"]["review"]
+⋮----
+def test_openapi_review_summary_is_empty_for_unflagged_spec()
 ```
 
 ## File: tests/test_operational_alerts.py

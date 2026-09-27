@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T19:25:53Z
+Generated: 2026-09-27T19:54:33Z
 
 ### Git
 - Branch: `main`
-- Head: `44ec975b6a58`
-- Commit date: 2026-09-27T21:25:42+02:00
-- Commit: feat: prioritize passive OpenAPI security review (#420)
+- Head: `5a70a5fe1117`
+- Commit date: 2026-09-27T21:54:22+02:00
+- Commit: feat: summarize passive OpenAPI security review (#421)
 - Tracked files: 582
 
 ### Recently changed files
@@ -37,11 +37,6 @@ Generated: 2026-09-27T19:25:53Z
 - `OFFENSIVE_EXPANSION.md`
 - `backend/app/main.py`
 - `backend/app/offensive_expansion.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`

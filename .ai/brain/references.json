@@ -33,31 +33,31 @@
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 260,
+          "line": 298,
           "preview": "raise OpenApiPreviewError(\"OpenAPI document must be an object\")",
           "definition_candidate": false
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 264,
+          "line": 302,
           "preview": "raise OpenApiPreviewError(\"OpenAPI/Swagger version is required\")",
           "definition_candidate": false
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 268,
+          "line": 306,
           "preview": "raise OpenApiPreviewError(\"OpenAPI paths must be an object\")",
           "definition_candidate": false
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 270,
+          "line": 308,
           "preview": "raise OpenApiPreviewError(f\"OpenAPI document exceeds {MAX_PATHS} paths\")",
           "definition_candidate": false
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 335,
+          "line": 373,
           "preview": "raise OpenApiPreviewError(f\"OpenAPI preview exceeds {MAX_CASES} cases\")",
           "definition_candidate": false
         },
@@ -98,18 +98,24 @@
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 272,
+          "line": 198,
+          "preview": "def _review_summary(cases: list[OpenApiTestCase]) -> dict[str, Any]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/openapi_testgen.py",
+          "line": 310,
           "preview": "cases: list[OpenApiTestCase] = []",
           "definition_candidate": false
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 320,
+          "line": 358,
           "preview": "OpenApiTestCase(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 4
     },
     "to_dict": {
       "definition": {
@@ -709,7 +715,7 @@
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 344,
+          "line": 382,
           "preview": "case.to_dict()",
           "definition_candidate": false
         },
@@ -899,7 +905,7 @@
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 307,
+          "line": 345,
           "preview": "risk_signals = _operation_risk_signals(",
           "definition_candidate": false
         }
@@ -922,8 +928,31 @@
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 313,
+          "line": 351,
           "preview": "review_priority, review_priority_reasons = _review_priority(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_review_summary": {
+      "definition": {
+        "file": "backend/app/openapi_testgen.py",
+        "line": 198,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/openapi_testgen.py",
+          "line": 198,
+          "preview": "def _review_summary(cases: list[OpenApiTestCase]) -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/openapi_testgen.py",
+          "line": 393,
+          "preview": "\"review\": _review_summary(cases),",
           "definition_candidate": false
         }
       ],
@@ -932,20 +961,20 @@
     "_normalized_parameters": {
       "definition": {
         "file": "backend/app/openapi_testgen.py",
-        "line": 197,
+        "line": 235,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 197,
+          "line": 235,
           "preview": "def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 305,
+          "line": 343,
           "preview": "parameters = _normalized_parameters(raw_item, operation)",
           "definition_candidate": false
         }
@@ -955,20 +984,20 @@
     "_response_metadata": {
       "definition": {
         "file": "backend/app/openapi_testgen.py",
-        "line": 230,
+        "line": 268,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 230,
+          "line": 268,
           "preview": "def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tuple[str, ...]]:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 306,
+          "line": 344,
           "preview": "response_codes, response_content_types = _response_metadata(operation)",
           "definition_candidate": false
         }
@@ -978,7 +1007,7 @@
     "build_openapi_read_only_preview": {
       "definition": {
         "file": "backend/app/openapi_testgen.py",
-        "line": 250,
+        "line": 288,
         "kind": "function",
         "language": "python"
       },
@@ -997,7 +1026,7 @@
         },
         {
           "file": "backend/app/openapi_testgen.py",
-          "line": 250,
+          "line": 288,
           "preview": "def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:",
           "definition_candidate": true
         },
@@ -1060,9 +1089,21 @@
           "line": 304,
           "preview": "result = build_openapi_read_only_preview(",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_openapi_testgen.py",
+          "line": 325,
+          "preview": "result = build_openapi_read_only_preview(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_openapi_testgen.py",
+          "line": 378,
+          "preview": "result = build_openapi_read_only_preview(",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 13
+      "occurrence_count": 15
     },
     "test_openapi_preview_generates_only_read_only_cases": {
       "definition": {
@@ -1263,6 +1304,40 @@
           "file": "backend/tests/test_openapi_testgen.py",
           "line": 303,
           "preview": "def test_openapi_preview_zero_priority_without_risk_signals():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_openapi_preview_exposes_advisory_review_summary": {
+      "definition": {
+        "file": "backend/tests/test_openapi_testgen.py",
+        "line": 324,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_openapi_testgen.py",
+          "line": 324,
+          "preview": "def test_openapi_preview_exposes_advisory_review_summary():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_openapi_review_summary_is_empty_for_unflagged_spec": {
+      "definition": {
+        "file": "backend/tests/test_openapi_testgen.py",
+        "line": 377,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_openapi_testgen.py",
+          "line": 377,
+          "preview": "def test_openapi_review_summary_is_empty_for_unflagged_spec():",
           "definition_candidate": true
         }
       ],
