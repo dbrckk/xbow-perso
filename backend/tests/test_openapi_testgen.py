@@ -131,7 +131,7 @@ def test_openapi_preview_extracts_passive_parameter_and_response_metadata():
     )
 
     case = result["cases"][0]
-    assert result["schema"] == "openapi-read-only-preview-v2"
+    assert result["schema"] == "openapi-read-only-preview-v3"
     assert case["method"] == "GET"
     assert case["parameters"] == [
         {
