@@ -805,8 +805,20 @@
 
     const button=$('htbStart');
     if(button)button.disabled=true;
-    setHtbStatus('Création de la campagne HTB à scope exact…');
+    setHtbStatus('Vérification du runtime HTB…');
     try{
+      const readiness=await api('/labs/htb/readiness');
+      if(readiness?.live_scan_ready!==true){
+        const failed=(Array.isArray(readiness?.checks)?readiness.checks:[])
+          .filter(item=>item?.required===true&&item?.ok!==true);
+        const labels=failed.slice(0,3)
+          .map(item=>String(item?.label||item?.id||'contrôle'))
+          .filter(Boolean);
+        throw new Error(
+          'Runtime HTB non prêt'+(labels.length?' · '+labels.join(' · '):'')
+        );
+      }
+      setHtbStatus('Création de la campagne HTB à scope exact…');
       const campaign=await api('/labs/htb/campaigns',{
         method:'POST',
         body:JSON.stringify({
