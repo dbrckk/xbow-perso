@@ -400,8 +400,8 @@ def test_pwa_precache_matches_v94_assets():
     sw = _text("frontend/sw.js")
     index = _text("frontend/index.html")
     assert "xbow-perso-v94" in sw
-    assert "/app.css?v=93" in sw
-    assert "/simple.js?v=93" in sw
+    assert "/app.css?v=94" in sw
+    assert "/simple.js?v=94" in sw
     assert '/app.css?v=94' in index
     assert '/simple.js?v=94' in index
 
