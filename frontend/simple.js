@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v93';
+  const UI_VERSION='v94';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1119,6 +1119,46 @@
       root.appendChild(categoryLine);
     }
 
+    const auth=payload?.summary?.authentication||{};
+    const schemes=Array.isArray(auth?.security_schemes)?auth.security_schemes:[];
+    const referenced=Array.isArray(auth?.referenced_scheme_names)?auth.referenced_scheme_names:[];
+    const unknown=Array.isArray(auth?.unknown_scheme_references)?auth.unknown_scheme_references:[];
+    const publicOverrides=Array.isArray(auth?.explicit_public_overrides)?auth.explicit_public_overrides:[];
+    const unauthenticated=Array.isArray(auth?.sensitive_unauthenticated_operations)
+      ?auth.sensitive_unauthenticated_operations
+      :[];
+
+    const authHeadline=document.createElement('p');
+    authHeadline.className='muted compact';
+    authHeadline.textContent=
+      'Auth déclarée : '+String(auth?.defined_scheme_count||0)+' schéma(s) · '+
+      String(referenced.length)+' référencé(s) · '+
+      String(publicOverrides.length)+' override(s) public(s) · '+
+      String(unauthenticated.length)+' opération(s) sensible(s) sans auth.';
+    root.appendChild(authHeadline);
+
+    if(schemes.length){
+      const schemeLine=document.createElement('p');
+      schemeLine.className='muted compact';
+      schemeLine.textContent='Schémas : '+
+        schemes.slice(0,12).map(item=>{
+          const parts=[String(item?.name||'schéma'),String(item?.type||'type inconnu')];
+          if(item?.scheme)parts.push(String(item.scheme));
+          if(Array.isArray(item?.oauth_flows)&&item.oauth_flows.length){
+            parts.push(item.oauth_flows.join('/'));
+          }
+          return parts.join(' · ');
+        }).join(' | ');
+      root.appendChild(schemeLine);
+    }
+
+    if(unknown.length){
+      const warning=document.createElement('p');
+      warning.className='muted compact state-review';
+      warning.textContent='Références auth inconnues : '+unknown.slice(0,12).join(', ')+'.';
+      root.appendChild(warning);
+    }
+
     const top=Array.isArray(review?.top_review_operations)
       ?review.top_review_operations.slice(0,10)
       :[];
@@ -1288,7 +1328,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=93',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=94',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
