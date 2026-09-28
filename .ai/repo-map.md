@@ -7173,6 +7173,7 @@ READ_ONLY_METHODS = ("get", "head", "options")
 MAX_PATHS = 250
 MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
+MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 ⋮----
 @dataclass(frozen=True)
 class OpenApiTestCase
@@ -7322,6 +7323,10 @@ content_types: set[str] = set()
 code = str(raw_code)[:20]
 ⋮----
 content = response.get("content")
+⋮----
+def _document_size_bytes(document: dict[str, Any]) -> int
+⋮----
+encoded = json.dumps(
 ⋮----
 def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]
 ⋮----
@@ -17069,6 +17074,14 @@ path = "/" + ("a" * 2047)
 def test_openapi_preview_rejects_path_above_maximum_length()
 ⋮----
 path = "/" + ("a" * 2048)
+⋮----
+def test_openapi_preview_rejects_document_above_two_mib()
+⋮----
+oversized = "x" * (2 * 1024 * 1024)
+⋮----
+def test_openapi_preview_accepts_normal_document_under_size_bound()
+⋮----
+def test_openapi_preview_api_maps_oversized_document_to_bad_request()
 ````
 
 ## File: backend/tests/test_operational_alerts.py

@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 54fabe50cc48f3b29f42b9739a076841d79da3a1
-Head: bb327144374514def00e200cfb437b92ffc6587e
+Base: 5a220095cf26bf8ec82039c6496816cde75f9331
+Head: 6acc643d422b4dabf7f12a8353db29b18c47ea1b
 
 ## Changed files
 - M backend/app/openapi_testgen.py
