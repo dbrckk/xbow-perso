@@ -27,7 +27,7 @@ def test_frontend_assets_are_explicitly_cache_busted():
     sw = _text("frontend/sw.js")
     assert '/simple.js?v=93' in index
     assert '/app.css?v=93' in index
-    assert "xbow-perso-v93" in sw
+    assert "xbow-perso-v94" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v93';" in script
+    assert "const UI_VERSION='v94';" in script
     assert "serviceWorker.register('/sw.js?v=93',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v93" in html
+    assert "Interface v94" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -396,11 +396,32 @@ def test_openapi_file_ux_validates_and_resets_locally():
     assert "openapiClear')?.addEventListener('click',clearOpenapiReview)" in script
 
 
-def test_pwa_precache_matches_v93_assets():
+def test_pwa_precache_matches_v94_assets():
     sw = _text("frontend/sw.js")
     index = _text("frontend/index.html")
-    assert "xbow-perso-v93" in sw
+    assert "xbow-perso-v94" in sw
     assert "/app.css?v=93" in sw
     assert "/simple.js?v=93" in sw
     assert '/app.css?v=93' in index
     assert '/simple.js?v=93' in index
+
+
+def test_dashboard_surfaces_passive_openapi_auth_inventory():
+    script = _text("frontend/simple.js")
+    assert "const auth=payload?.summary?.authentication||{};" in script
+    assert "security_schemes" in script
+    assert "referenced_scheme_names" in script
+    assert "unknown_scheme_references" in script
+    assert "explicit_public_overrides" in script
+    assert "sensitive_unauthenticated_operations" in script
+    assert "Auth déclarée :" in script
+    assert "Références auth inconnues :" in script
+
+
+def test_openapi_auth_dashboard_remains_render_only():
+    script = _text("frontend/simple.js")
+    block = script.split("const auth=payload?.summary?.authentication||{};", 1)[1].split("const top=Array.isArray", 1)[0]
+    assert "fetch(" not in block
+    assert "api(" not in block
+    assert "innerHTML" not in block
+    assert "textContent" in block
