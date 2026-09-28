@@ -12,6 +12,7 @@ class OpenApiPreviewError(ValueError):
 READ_ONLY_METHODS = ("get", "head", "options")
 MAX_PATHS = 250
 MAX_CASES = 500
+MAX_PATH_LENGTH = 2048
 
 
 @dataclass(frozen=True)
@@ -485,6 +486,10 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
         if not path.startswith("/") or not isinstance(raw_item, dict):
             skipped_invalid += 1
             continue
+        if len(path) > MAX_PATH_LENGTH:
+            raise OpenApiPreviewError(
+                f"OpenAPI path exceeds {MAX_PATH_LENGTH} characters"
+            )
 
         for method, operation in raw_item.items():
             normalized = str(method).lower()
@@ -530,7 +535,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
             cases.append(
                 OpenApiTestCase(
                     method=normalized.upper(),
-                    path=path[:2048],
+                    path=path,
                     operation_id=operation_id,
                     tags=tags,
                     authentication_declared=authentication_declared,
