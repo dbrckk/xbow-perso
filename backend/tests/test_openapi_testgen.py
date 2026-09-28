@@ -739,3 +739,59 @@ def test_openapi_preview_api_maps_oversized_document_to_bad_request():
 
     assert exc.value.status_code == 400
     assert "2097152 bytes" in str(exc.value.detail)
+
+
+def test_openapi_preview_normalizes_blank_operation_id_to_none():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/health": {
+                    "get": {
+                        "operationId": "   ",
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["operation_id"] is None
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_preserves_operation_id_at_maximum_length():
+    operation_id = "a" * 160
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/health": {
+                    "get": {
+                        "operationId": operation_id,
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["operation_id"] == operation_id
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_operation_id_above_maximum_length():
+    with pytest.raises(OpenApiPreviewError, match="160 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "paths": {
+                    "/health": {
+                        "get": {
+                            "operationId": "a" * 161,
+                            "responses": {"200": {"description": "ok"}},
+                        }
+                    }
+                },
+            }
+        )
