@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=91' in index
-    assert '/app.css?v=91' in index
-    assert "xbow-perso-v91" in sw
+    assert '/simple.js?v=92' in index
+    assert '/app.css?v=92' in index
+    assert "xbow-perso-v92" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=91" defer></script>' in index
+    assert '<script src="/simple.js?v=92" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v91';" in script
-    assert "serviceWorker.register('/sw.js?v=91',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v92';" in script
+    assert "serviceWorker.register('/sw.js?v=92',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v91" in html
+    assert "Interface v92" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -357,3 +357,26 @@ def test_openapi_dashboard_review_is_not_part_of_campaign_start_gate():
     assert "openapi" not in start_gate.lower()
     start_flow = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
     assert "/testing/openapi/preview" not in start_flow
+
+def test_dashboard_openapi_file_import_is_local_and_bounded():
+    html = _text("frontend/index.html")
+    script = _text("frontend/simple.js")
+    assert 'id="openapiFile"' in html
+    assert 'accept="application/json,.json"' in html
+    assert 'id="openapiFileStatus"' in html
+    assert "const OPENAPI_FILE_MAX_BYTES=2*1024*1024;" in script
+    assert "async function loadOpenapiFile()" in script
+    assert "await file.text()" in script
+    assert "JSON.parse(text)" in script
+    assert "Number(file.size||0)>OPENAPI_FILE_MAX_BYTES" in script
+    assert "Fichier refusé : JSON uniquement." in script
+    assert "Fichier refusé : taille maximale 2 Mio." in script
+    assert "openapiFile')?.addEventListener('change'" in script
+
+
+def test_openapi_file_import_does_not_add_target_network_fetch():
+    script = _text("frontend/simple.js")
+    block = script.split("async function loadOpenapiFile()", 1)[1].split("async function analyzeOpenapi()", 1)[0]
+    assert "fetch(" not in block
+    assert "api(" not in block
+    assert "localStorage" not in block

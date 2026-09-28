@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v91';
+  const UI_VERSION='v92';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1143,6 +1143,39 @@
     }
   }
 
+  const OPENAPI_FILE_MAX_BYTES=2*1024*1024;
+
+  async function loadOpenapiFile(){
+    const input=$('openapiFile');
+    const status=$('openapiFileStatus');
+    const file=input?.files?.[0];
+    if(!file)return;
+    const name=String(file.name||'').toLowerCase();
+    const type=String(file.type||'').toLowerCase();
+    if(!(name.endsWith('.json')||type==='application/json')){
+      if(status)status.textContent='Fichier refusé : JSON uniquement.';
+      if(input)input.value='';
+      return;
+    }
+    if(Number(file.size||0)>OPENAPI_FILE_MAX_BYTES){
+      if(status)status.textContent='Fichier refusé : taille maximale 2 Mio.';
+      if(input)input.value='';
+      return;
+    }
+    try{
+      const text=await file.text();
+      JSON.parse(text);
+      const target=$('openapiDocument');
+      if(target)target.value=text;
+      if(status)status.textContent=
+        'Fichier chargé localement · '+String(file.name||'openapi.json')+
+        ' · '+String(file.size||0)+' octets.';
+    }catch(_error){
+      if(status)status.textContent='Fichier refusé : JSON invalide ou illisible.';
+      if(input)input.value='';
+    }
+  }
+
   async function analyzeOpenapi(){
     if(!requireToken())return;
     const input=$('openapiDocument');
@@ -1203,7 +1236,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=91',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=92',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -1218,6 +1251,7 @@
     $('htbLearn')?.addEventListener('click',()=>void saveHtbLearning());
     $('htbCancel')?.addEventListener('click',()=>void cancelHtbLab());
     $('openapiAnalyze')?.addEventListener('click',()=>void analyzeOpenapi());
+    $('openapiFile')?.addEventListener('change',()=>void loadOpenapiFile());
     try{
       if(localStorage.getItem(HTB_ACTIVE_KEY))$('htbFeedback')?.classList.remove('hidden');
     }catch(_error){}
