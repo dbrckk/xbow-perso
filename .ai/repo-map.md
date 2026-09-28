@@ -13977,6 +13977,12 @@ def test_openapi_dashboard_review_is_not_part_of_campaign_start_gate()
 start_gate = script.split("function updateStartAvailability()", 1)[1].split("function requireToken()", 1)[0]
 ⋮----
 start_flow = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
+⋮----
+def test_dashboard_openapi_file_import_is_local_and_bounded()
+⋮----
+def test_openapi_file_import_does_not_add_target_network_fetch()
+⋮----
+block = script.split("async function loadOpenapiFile()", 1)[1].split("async function analyzeOpenapi()", 1)[0]
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -20899,6 +20905,8 @@ async function refreshHtbFocus(
 function openapiCategoryLabel(category)
 ⋮----
 function renderOpenapiSummary(payload)
+⋮----
+async function loadOpenapiFile()
 ⋮----
 async function analyzeOpenapi()
 ⋮----

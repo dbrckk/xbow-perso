@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-28T06:08:20Z
+Generated: 2026-09-28T06:20:54Z
 
 ### Git
 - Branch: `main`
-- Head: `8125b2535465`
-- Commit date: 2026-09-28T08:07:58+02:00
-- Commit: feat: surface passive OpenAPI review in mobile dashboard (#422)
+- Head: `30f827706012`
+- Commit date: 2026-09-28T08:20:44+02:00
+- Commit: feat: add bounded local OpenAPI file import (#423)
 - Tracked files: 582
 
 ### Recently changed files
