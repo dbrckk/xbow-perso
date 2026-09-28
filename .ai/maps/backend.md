@@ -6592,19 +6592,39 @@ payload = asdict(self)
 ⋮----
 RISK_TERMS = {
 ⋮----
-haystack_parts = [path.lower(), str(operation.get("operationId") or "").lower()]
+def _operation_tags(operation: dict[str, Any]) -> tuple[str, ...]
 ⋮----
-haystack = " ".join(haystack_parts)
+raw_tags = operation.get("tags")
+⋮----
+def _signal_identifiers(value: str) -> tuple[set[str], set[str]]
+⋮----
+raw = str(value or "").strip()
+⋮----
+camel_split = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", raw)
+normalized = re.sub(r"[^A-Za-z0-9]+", "_", camel_split).strip("_").lower()
+⋮----
+identifiers = {part for part in normalized.split("__") if part}
+⋮----
+tokens = {token for token in normalized.split("_") if token}
+⋮----
+values = [path, str(operation.get("operationId") or "")]
+⋮----
+identifiers: set[str] = set()
+tokens: set[str] = set()
+⋮----
+matches: list[str] = []
+⋮----
+normalized = term.lower()
 ⋮----
 signals: list[dict[str, Any]] = []
 ⋮----
-object_refs = sorted({
+object_refs = _matched_risk_terms("bola_idor", identifiers, tokens)
 ⋮----
-ssrf_refs = sorted({
+ssrf_refs = _matched_risk_terms("ssrf", identifiers, tokens)
 ⋮----
-auth_refs = sorted({
+auth_refs = _matched_risk_terms("auth_session", identifiers, tokens)
 ⋮----
-sensitive_refs = sorted({
+sensitive_refs = _matched_risk_terms("sensitive_data", identifiers, tokens)
 ⋮----
 RISK_REVIEW_WEIGHTS = {
 CONFIDENCE_WEIGHTS = {
@@ -6716,7 +6736,7 @@ path = str(raw_path)
 ⋮----
 normalized = str(method).lower()
 ⋮----
-tags = tuple(
+tags = _operation_tags(operation)
 operation_id = operation.get("operationId")
 ⋮----
 operation_id = str(operation_id)[:160]
@@ -16418,6 +16438,20 @@ rendered = str(auth)
 def test_openapi_preview_flags_unknown_auth_scheme_reference_advisory_only()
 ⋮----
 def test_swagger2_auth_inventory_is_metadata_only()
+⋮----
+def test_openapi_risk_matching_avoids_id_substring_false_positives()
+⋮----
+categories = {
+⋮----
+def test_openapi_risk_matching_keeps_structured_object_identifier_signal()
+⋮----
+bola = next(item for item in signals if item["category"] == "bola_idor_review")
+⋮----
+def test_openapi_risk_matching_keeps_compound_ssrf_input_signal()
+⋮----
+ssrf = next(item for item in signals if item["category"] == "ssrf_input_review")
+⋮----
+def test_openapi_string_tags_are_ignored_instead_of_iterated()
 ```
 
 ## File: tests/test_operational_alerts.py
