@@ -678,3 +678,64 @@ def test_openapi_preview_rejects_path_above_maximum_length():
                 },
             }
         )
+
+
+def test_openapi_preview_rejects_document_above_two_mib():
+    oversized = "x" * (2 * 1024 * 1024)
+    with pytest.raises(OpenApiPreviewError, match="2097152 bytes"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "info": {"description": oversized},
+                "paths": {
+                    "/health": {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
+
+
+def test_openapi_preview_accepts_normal_document_under_size_bound():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "info": {"description": "bounded passive preview"},
+            "paths": {
+                "/health": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["path"] == "/health"
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_api_maps_oversized_document_to_bad_request():
+    oversized = "x" * (2 * 1024 * 1024)
+
+    with pytest.raises(main.HTTPException) as exc:
+        main.preview_openapi_tests(
+            main.OpenApiPreviewInput(
+                document={
+                    "openapi": "3.1.0",
+                    "info": {"description": oversized},
+                    "paths": {
+                        "/health": {
+                            "get": {
+                                "responses": {"200": {"description": "ok"}}
+                            }
+                        }
+                    },
+                }
+            )
+        )
+
+    assert exc.value.status_code == 400
+    assert "2097152 bytes" in str(exc.value.detail)

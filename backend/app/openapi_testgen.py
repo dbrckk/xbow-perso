@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import json
 import re
 from typing import Any
 
@@ -13,6 +14,7 @@ READ_ONLY_METHODS = ("get", "head", "options")
 MAX_PATHS = 250
 MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
+MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -455,6 +457,19 @@ def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tupl
             break
     return tuple(codes), tuple(sorted(content_types)[:50])
 
+def _document_size_bytes(document: dict[str, Any]) -> int:
+    try:
+        encoded = json.dumps(
+            document,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+    except (TypeError, ValueError) as exc:
+        raise OpenApiPreviewError("OpenAPI document must be JSON-serializable") from exc
+    return len(encoded)
+
+
 def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
     """Generate bounded, non-executing test cases from an OpenAPI document.
 
@@ -466,6 +481,10 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
 
     if not isinstance(document, dict):
         raise OpenApiPreviewError("OpenAPI document must be an object")
+    if _document_size_bytes(document) > MAX_DOCUMENT_BYTES:
+        raise OpenApiPreviewError(
+            f"OpenAPI document exceeds {MAX_DOCUMENT_BYTES} bytes"
+        )
 
     version = str(document.get("openapi") or document.get("swagger") or "").strip()
     if not version:
