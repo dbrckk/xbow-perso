@@ -20,6 +20,9 @@ class OpenApiTestCase:
     operation_id: str | None
     tags: tuple[str, ...]
     authentication_declared: bool
+    security_scheme_names: tuple[str, ...]
+    security_source: str
+    explicitly_public: bool
     parameters: tuple[dict[str, Any], ...]
     response_codes: tuple[str, ...]
     response_content_types: tuple[str, ...]
@@ -33,6 +36,7 @@ class OpenApiTestCase:
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["tags"] = list(self.tags)
+        payload["security_scheme_names"] = list(self.security_scheme_names)
         payload["parameters"] = [dict(item) for item in self.parameters]
         payload["response_codes"] = list(self.response_codes)
         payload["response_content_types"] = list(self.response_content_types)
@@ -232,6 +236,125 @@ def _review_summary(cases: list[OpenApiTestCase]) -> dict[str, Any]:
     }
 
 
+
+MAX_SECURITY_SCHEMES = 100
+MAX_SECURITY_REFERENCES = 100
+
+
+def _security_requirement_names(value: Any) -> tuple[str, ...]:
+    if not isinstance(value, list):
+        return ()
+    names: set[str] = set()
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        for raw_name in item:
+            name = str(raw_name).strip()[:160]
+            if name:
+                names.add(name)
+            if len(names) >= MAX_SECURITY_REFERENCES:
+                break
+        if len(names) >= MAX_SECURITY_REFERENCES:
+            break
+    return tuple(sorted(names))
+
+
+def _security_scheme_inventory(document: dict[str, Any]) -> tuple[dict[str, Any], ...]:
+    source: Any = None
+    components = document.get("components")
+    if isinstance(components, dict):
+        source = components.get("securitySchemes")
+    if not isinstance(source, dict):
+        source = document.get("securityDefinitions")
+    if not isinstance(source, dict):
+        return ()
+
+    inventory: list[dict[str, Any]] = []
+    for raw_name, raw_scheme in sorted(source.items(), key=lambda item: str(item[0])):
+        if len(inventory) >= MAX_SECURITY_SCHEMES:
+            break
+        if not isinstance(raw_scheme, dict) or "$ref" in raw_scheme:
+            continue
+        name = str(raw_name).strip()[:160]
+        if not name:
+            continue
+        scheme_type = str(raw_scheme.get("type") or "").strip().lower()[:80] or None
+        http_scheme = str(raw_scheme.get("scheme") or "").strip().lower()[:80] or None
+        bearer_format = str(raw_scheme.get("bearerFormat") or "").strip()[:80] or None
+        location = str(raw_scheme.get("in") or "").strip().lower()[:40] or None
+
+        flows: list[str] = []
+        raw_flows = raw_scheme.get("flows")
+        if isinstance(raw_flows, dict):
+            flows = sorted(
+                str(flow).strip()[:80]
+                for flow, value in raw_flows.items()
+                if isinstance(flow, str) and flow.strip() and isinstance(value, dict)
+            )[:20]
+        swagger_flow = str(raw_scheme.get("flow") or "").strip()[:80]
+        if swagger_flow and swagger_flow not in flows:
+            flows.append(swagger_flow)
+
+        inventory.append(
+            {
+                "name": name,
+                "type": scheme_type,
+                "scheme": http_scheme,
+                "bearer_format": bearer_format,
+                "in": location,
+                "oauth_flows": flows[:20],
+                "open_id_connect": bool(str(raw_scheme.get("openIdConnectUrl") or "").strip()),
+            }
+        )
+    return tuple(inventory)
+
+
+def _authentication_summary(
+    document: dict[str, Any],
+    cases: list[OpenApiTestCase],
+) -> dict[str, Any]:
+    inventory = _security_scheme_inventory(document)
+    defined = {str(item.get("name") or "") for item in inventory}
+    referenced = sorted({
+        name
+        for case in cases
+        for name in case.security_scheme_names
+        if name
+    })
+    unknown = sorted(name for name in referenced if name not in defined)
+
+    explicit_public = [
+        {"method": case.method, "path": case.path}
+        for case in cases
+        if case.explicitly_public
+    ][:50]
+
+    sensitive_unauthenticated = [
+        {"method": case.method, "path": case.path}
+        for case in cases
+        if not case.authentication_declared
+        and any(
+            str(signal.get("category") or "") in {
+                "bola_idor_review",
+                "sensitive_data_review",
+                "auth_session_review",
+            }
+            for signal in case.risk_signals
+        )
+    ][:50]
+
+    return {
+        "advisory": True,
+        "security_schemes": [dict(item) for item in inventory],
+        "defined_scheme_count": len(inventory),
+        "referenced_scheme_names": referenced[:MAX_SECURITY_REFERENCES],
+        "unknown_scheme_references": unknown[:MAX_SECURITY_REFERENCES],
+        "explicit_public_overrides": explicit_public,
+        "sensitive_unauthenticated_operations": sensitive_unauthenticated,
+        "vulnerabilities_confirmed": 0,
+    }
+
+
 def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]:
     combined: list[Any] = []
     for source in (path_item.get("parameters"), operation.get("parameters")):
@@ -338,8 +461,16 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
             if operation_id is not None:
                 operation_id = str(operation_id)[:160]
 
-            security = operation.get("security", document.get("security"))
+            operation_has_security = "security" in operation
+            security = operation.get("security") if operation_has_security else document.get("security")
             authentication_declared = bool(security)
+            security_scheme_names = _security_requirement_names(security)
+            security_source = (
+                "operation"
+                if operation_has_security
+                else ("document" if "security" in document else "none")
+            )
+            explicitly_public = operation_has_security and operation.get("security") == []
             parameters = _normalized_parameters(raw_item, operation)
             response_codes, response_content_types = _response_metadata(operation)
             risk_signals = _operation_risk_signals(
@@ -361,6 +492,9 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                     operation_id=operation_id,
                     tags=tags,
                     authentication_declared=authentication_declared,
+                    security_scheme_names=security_scheme_names,
+                    security_source=security_source,
+                    explicitly_public=explicitly_public,
                     parameters=parameters,
                     response_codes=response_codes,
                     response_content_types=response_content_types,
@@ -373,7 +507,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v5",
+        "schema": "openapi-read-only-preview-v6",
         "source_version": version[:40],
         "execution_mode": "preview_only",
         "read_only": True,
@@ -391,5 +525,6 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
             "mutating_operations_skipped": skipped_mutating,
             "invalid_entries_skipped": skipped_invalid,
             "review": _review_summary(cases),
+            "authentication": _authentication_summary(document, cases),
         },
     }
