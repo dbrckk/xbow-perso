@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import re
 from typing import Any
 
 
@@ -53,8 +54,8 @@ RISK_TERMS = {
         "customer_id", "project_id", "document_id", "resource_id",
     ),
     "ssrf": (
-        "url", "uri", "callback", "webhook", "redirect", "return_url", "target",
-        "destination", "endpoint", "host",
+        "url", "uri", "callback", "callback_url", "webhook", "redirect", "return_url",
+        "target", "destination", "endpoint", "host",
     ),
     "auth_session": (
         "token", "jwt", "oauth", "authorization", "session", "refresh_token",
@@ -65,6 +66,67 @@ RISK_TERMS = {
         "secret", "credential", "api_key",
     ),
 }
+
+
+def _operation_tags(operation: dict[str, Any]) -> tuple[str, ...]:
+    raw_tags = operation.get("tags")
+    if not isinstance(raw_tags, list):
+        return ()
+    return tuple(
+        str(tag).strip()[:80]
+        for tag in raw_tags
+        if isinstance(tag, str) and tag.strip()
+    )[:20]
+
+
+def _signal_identifiers(value: str) -> tuple[set[str], set[str]]:
+    raw = str(value or "").strip()
+    if not raw:
+        return set(), set()
+    camel_split = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", raw)
+    normalized = re.sub(r"[^A-Za-z0-9]+", "_", camel_split).strip("_").lower()
+    if not normalized:
+        return set(), set()
+
+    identifiers = {part for part in normalized.split("__") if part}
+    identifiers.add(normalized)
+    tokens = {token for token in normalized.split("_") if token}
+    return identifiers, tokens
+
+
+def _operation_signal_vocabulary(
+    path: str,
+    operation: dict[str, Any],
+    parameters: tuple[dict[str, Any], ...],
+) -> tuple[set[str], set[str]]:
+    values = [path, str(operation.get("operationId") or "")]
+    values.extend(_operation_tags(operation))
+    values.extend(str(item.get("name") or "") for item in parameters)
+
+    identifiers: set[str] = set()
+    tokens: set[str] = set()
+    for value in values:
+        value_identifiers, value_tokens = _signal_identifiers(value)
+        identifiers.update(value_identifiers)
+        tokens.update(value_tokens)
+    return identifiers, tokens
+
+
+def _matched_risk_terms(
+    category: str,
+    identifiers: set[str],
+    tokens: set[str],
+) -> list[str]:
+    matches: list[str] = []
+    for term in RISK_TERMS[category]:
+        normalized = term.lower()
+        if "_" in normalized:
+            if normalized in identifiers:
+                matches.append(term)
+            continue
+        if normalized in tokens or normalized in identifiers:
+            matches.append(term)
+    return sorted(set(matches))
 
 
 def _risk_signal(
@@ -91,17 +153,10 @@ def _operation_risk_signals(
     *,
     authentication_declared: bool,
 ) -> list[dict[str, Any]]:
-    haystack_parts = [path.lower(), str(operation.get("operationId") or "").lower()]
-    haystack_parts.extend(str(tag).lower() for tag in operation.get("tags", []) if isinstance(tag, str))
-    haystack_parts.extend(str(item.get("name") or "").lower() for item in parameters)
-    haystack = " ".join(haystack_parts)
-
+    identifiers, tokens = _operation_signal_vocabulary(path, operation, parameters)
     signals: list[dict[str, Any]] = []
 
-    object_refs = sorted({
-        term for term in RISK_TERMS["bola_idor"]
-        if term in haystack
-    })
+    object_refs = _matched_risk_terms("bola_idor", identifiers, tokens)
     if object_refs:
         signals.append(
             _risk_signal(
@@ -112,10 +167,7 @@ def _operation_risk_signals(
             )
         )
 
-    ssrf_refs = sorted({
-        term for term in RISK_TERMS["ssrf"]
-        if term in haystack
-    })
+    ssrf_refs = _matched_risk_terms("ssrf", identifiers, tokens)
     if ssrf_refs:
         signals.append(
             _risk_signal(
@@ -126,10 +178,7 @@ def _operation_risk_signals(
             )
         )
 
-    auth_refs = sorted({
-        term for term in RISK_TERMS["auth_session"]
-        if term in haystack
-    })
+    auth_refs = _matched_risk_terms("auth_session", identifiers, tokens)
     if auth_refs or authentication_declared:
         signals.append(
             _risk_signal(
@@ -140,10 +189,7 @@ def _operation_risk_signals(
             )
         )
 
-    sensitive_refs = sorted({
-        term for term in RISK_TERMS["sensitive_data"]
-        if term in haystack
-    })
+    sensitive_refs = _matched_risk_terms("sensitive_data", identifiers, tokens)
     if sensitive_refs:
         signals.append(
             _risk_signal(
@@ -452,11 +498,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 skipped_invalid += 1
                 continue
 
-            tags = tuple(
-                str(tag)[:80]
-                for tag in operation.get("tags", [])
-                if isinstance(tag, str) and tag.strip()
-            )[:20]
+            tags = _operation_tags(operation)
             operation_id = operation.get("operationId")
             if operation_id is not None:
                 operation_id = str(operation_id)[:160]

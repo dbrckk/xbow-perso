@@ -533,3 +533,110 @@ def test_swagger2_auth_inventory_is_metadata_only():
     assert auth["referenced_scheme_names"] == ["legacyOauth"]
     assert result["cases"][0]["security_source"] == "document"
     assert result["network_requests_sent"] == 0
+
+
+def test_openapi_risk_matching_avoids_id_substring_false_positives():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/public/directory": {
+                    "get": {
+                        "operationId": "listDirectoryProviders",
+                        "parameters": [
+                            {
+                                "name": "provider",
+                                "in": "query",
+                                "schema": {"type": "string"},
+                            }
+                        ],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    categories = {
+        item["category"]
+        for item in result["cases"][0]["risk_signals"]
+    }
+    assert "bola_idor_review" not in categories
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_risk_matching_keeps_structured_object_identifier_signal():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/users/{user_id}": {
+                    "get": {
+                        "parameters": [
+                            {
+                                "name": "user_id",
+                                "in": "path",
+                                "required": True,
+                                "schema": {"type": "string"},
+                            }
+                        ],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    signals = result["cases"][0]["risk_signals"]
+    bola = next(item for item in signals if item["category"] == "bola_idor_review")
+    assert "user_id" in bola["evidence"]
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_risk_matching_keeps_compound_ssrf_input_signal():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/callbacks": {
+                    "get": {
+                        "parameters": [
+                            {
+                                "name": "callback_url",
+                                "in": "query",
+                                "schema": {"type": "string"},
+                            }
+                        ],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    signals = result["cases"][0]["risk_signals"]
+    ssrf = next(item for item in signals if item["category"] == "ssrf_input_review")
+    assert "callback_url" in ssrf["evidence"]
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_string_tags_are_ignored_instead_of_iterated():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/health": {
+                    "get": {
+                        "tags": "user_id",
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    case = result["cases"][0]
+    assert case["tags"] == []
+    assert case["risk_signals"] == []
+    assert case["review_priority"] == 0
+    assert result["network_requests_sent"] == 0
