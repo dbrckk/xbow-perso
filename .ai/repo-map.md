@@ -13969,6 +13969,14 @@ def test_htb_launch_checks_htb_specific_readiness_first()
 start = script.split("async function startHtbLab()", 1)[1].split("function parseTechniqueList", 1)[0]
 ⋮----
 def test_simple_dashboard_surfaces_browser_runtime_readiness()
+⋮----
+def test_dashboard_exposes_passive_openapi_review_panel()
+⋮----
+def test_openapi_dashboard_review_is_not_part_of_campaign_start_gate()
+⋮----
+start_gate = script.split("function updateStartAvailability()", 1)[1].split("function requireToken()", 1)[0]
+⋮----
+start_flow = script.split("async function start()", 1)[1].split("function repoSyncLabel", 1)[0]
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -20887,6 +20895,12 @@ async function refreshHtbSession(
 async function refreshHtbBenchmark(
 ⋮----
 async function refreshHtbFocus(
+⋮----
+function openapiCategoryLabel(category)
+⋮----
+function renderOpenapiSummary(payload)
+⋮----
+async function analyzeOpenapi()
 ⋮----
 function bind()
 ````

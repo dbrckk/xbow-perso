@@ -439,6 +439,12 @@ async function refreshHtbBenchmark(
 ⋮----
 async function refreshHtbFocus(
 ⋮----
+function openapiCategoryLabel(category)
+⋮----
+function renderOpenapiSummary(payload)
+⋮----
+async function analyzeOpenapi()
+⋮----
 function bind()
 ```
 
