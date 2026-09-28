@@ -14,6 +14,7 @@ READ_ONLY_METHODS = ("get", "head", "options")
 MAX_PATHS = 250
 MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
+MAX_OPERATION_ID_LENGTH = 160
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
@@ -523,9 +524,16 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 continue
 
             tags = _operation_tags(operation)
-            operation_id = operation.get("operationId")
-            if operation_id is not None:
-                operation_id = str(operation_id)[:160]
+            raw_operation_id = operation.get("operationId")
+            operation_id = None
+            if raw_operation_id is not None:
+                operation_id = str(raw_operation_id).strip()
+                if not operation_id:
+                    operation_id = None
+                elif len(operation_id) > MAX_OPERATION_ID_LENGTH:
+                    raise OpenApiPreviewError(
+                        f"OpenAPI operationId exceeds {MAX_OPERATION_ID_LENGTH} characters"
+                    )
 
             operation_has_security = "security" in operation
             security = operation.get("security") if operation_has_security else document.get("security")
