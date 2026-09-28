@@ -22,23 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-28T06:43:36Z
+Generated: 2026-09-28T07:20:45Z
 
 ### Git
 - Branch: `main`
-- Head: `23691be0822b`
-- Commit date: 2026-09-28T08:43:25+02:00
-- Commit: feat: inventory passive OpenAPI authentication metadata (#425)
+- Head: `75de87494741`
+- Commit date: 2026-09-28T09:20:34+02:00
+- Commit: feat: surface passive OpenAPI auth inventory (#426)
 - Tracked files: 582
 
 ### Recently changed files
-- `backend/app/openapi_testgen.py`
-- `backend/tests/test_openapi_testgen.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
+- `backend/app/openapi_testgen.py`
+- `backend/tests/test_openapi_testgen.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -14033,7 +14033,13 @@ block = script.split("async function loadOpenapiFile()", 1)[1].split("async func
 ⋮----
 def test_openapi_file_ux_validates_and_resets_locally()
 ⋮----
-def test_pwa_precache_matches_v93_assets()
+def test_pwa_precache_matches_v94_assets()
+⋮----
+def test_dashboard_surfaces_passive_openapi_auth_inventory()
+⋮----
+def test_openapi_auth_dashboard_remains_render_only()
+⋮----
+block = script.split("const auth=payload?.summary?.authentication||{};", 1)[1].split("const top=Array.isArray", 1)[0]
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
