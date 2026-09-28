@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=92' in index
-    assert '/app.css?v=92' in index
-    assert "xbow-perso-v92" in sw
+    assert '/simple.js?v=93' in index
+    assert '/app.css?v=93' in index
+    assert "xbow-perso-v93" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=92" defer></script>' in index
+    assert '<script src="/simple.js?v=93" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v92';" in script
-    assert "serviceWorker.register('/sw.js?v=92',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v93';" in script
+    assert "serviceWorker.register('/sw.js?v=93',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v92" in html
+    assert "Interface v93" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -380,3 +380,27 @@ def test_openapi_file_import_does_not_add_target_network_fetch():
     assert "fetch(" not in block
     assert "api(" not in block
     assert "localStorage" not in block
+
+
+def test_openapi_file_ux_validates_and_resets_locally():
+    html = _text("frontend/index.html")
+    script = _text("frontend/simple.js")
+    assert 'id="openapiClear"' in html
+    assert "function validOpenapiDocument(value)" in script
+    assert "String(value.openapi||value.swagger||'').trim()" in script
+    assert "typeof value.paths==='object'" in script
+    assert "function formatOpenapiFileSize(bytes)" in script
+    assert "function clearOpenapiReview()" in script
+    assert "Spécification valide · prête à analyser." in script
+    assert "Document OpenAPI/Swagger incomplet : version et paths requis." in script
+    assert "openapiClear')?.addEventListener('click',clearOpenapiReview)" in script
+
+
+def test_pwa_precache_matches_v93_assets():
+    sw = _text("frontend/sw.js")
+    index = _text("frontend/index.html")
+    assert "xbow-perso-v93" in sw
+    assert "/app.css?v=93" in sw
+    assert "/simple.js?v=93" in sw
+    assert '/app.css?v=93' in index
+    assert '/simple.js?v=93' in index
