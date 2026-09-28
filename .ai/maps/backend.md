@@ -6573,6 +6573,9 @@ path: str
 operation_id: str | None
 tags: tuple[str, ...]
 authentication_declared: bool
+security_scheme_names: tuple[str, ...]
+security_source: str
+explicitly_public: bool
 parameters: tuple[dict[str, Any], ...]
 response_codes: tuple[str, ...]
 response_content_types: tuple[str, ...]
@@ -6626,6 +6629,46 @@ category = str(signal.get("category") or "").strip()
 ranked = sorted(
 top = [
 ⋮----
+MAX_SECURITY_SCHEMES = 100
+MAX_SECURITY_REFERENCES = 100
+⋮----
+def _security_requirement_names(value: Any) -> tuple[str, ...]
+⋮----
+names: set[str] = set()
+⋮----
+name = str(raw_name).strip()[:160]
+⋮----
+def _security_scheme_inventory(document: dict[str, Any]) -> tuple[dict[str, Any], ...]
+⋮----
+source: Any = None
+components = document.get("components")
+⋮----
+source = components.get("securitySchemes")
+⋮----
+source = document.get("securityDefinitions")
+⋮----
+inventory: list[dict[str, Any]] = []
+⋮----
+scheme_type = str(raw_scheme.get("type") or "").strip().lower()[:80] or None
+http_scheme = str(raw_scheme.get("scheme") or "").strip().lower()[:80] or None
+bearer_format = str(raw_scheme.get("bearerFormat") or "").strip()[:80] or None
+location = str(raw_scheme.get("in") or "").strip().lower()[:40] or None
+⋮----
+flows: list[str] = []
+raw_flows = raw_scheme.get("flows")
+⋮----
+flows = sorted(
+swagger_flow = str(raw_scheme.get("flow") or "").strip()[:80]
+⋮----
+inventory = _security_scheme_inventory(document)
+defined = {str(item.get("name") or "") for item in inventory}
+referenced = sorted({
+unknown = sorted(name for name in referenced if name not in defined)
+⋮----
+explicit_public = [
+⋮----
+sensitive_unauthenticated = [
+⋮----
 def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any]) -> tuple[dict[str, Any], ...]
 ⋮----
 combined: list[Any] = []
@@ -6678,8 +6721,12 @@ operation_id = operation.get("operationId")
 ⋮----
 operation_id = str(operation_id)[:160]
 ⋮----
-security = operation.get("security", document.get("security"))
+operation_has_security = "security" in operation
+security = operation.get("security") if operation_has_security else document.get("security")
 authentication_declared = bool(security)
+security_scheme_names = _security_requirement_names(security)
+security_source = (
+explicitly_public = operation_has_security and operation.get("security") == []
 parameters = _normalized_parameters(raw_item, operation)
 ⋮----
 risk_signals = _operation_risk_signals(
@@ -16353,6 +16400,18 @@ def test_openapi_preview_exposes_advisory_review_summary()
 review = result["summary"]["review"]
 ⋮----
 def test_openapi_review_summary_is_empty_for_unflagged_spec()
+⋮----
+def test_openapi_preview_inventories_openapi3_authentication_metadata()
+⋮----
+auth = result["summary"]["authentication"]
+⋮----
+schemes = {item["name"]: item for item in auth["security_schemes"]}
+⋮----
+rendered = str(auth)
+⋮----
+def test_openapi_preview_flags_unknown_auth_scheme_reference_advisory_only()
+⋮----
+def test_swagger2_auth_inventory_is_metadata_only()
 ```
 
 ## File: tests/test_operational_alerts.py
