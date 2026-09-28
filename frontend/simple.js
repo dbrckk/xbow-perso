@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v92';
+  const UI_VERSION='v93';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1145,6 +1145,40 @@
 
   const OPENAPI_FILE_MAX_BYTES=2*1024*1024;
 
+  function formatOpenapiFileSize(bytes){
+    const value=Math.max(0,Number(bytes||0));
+    if(value<1024)return Math.round(value)+' o';
+    if(value<1024*1024)return (value/1024).toFixed(value<10*1024?1:0)+' Kio';
+    return (value/(1024*1024)).toFixed(2)+' Mio';
+  }
+
+  function validOpenapiDocument(value){
+    return Boolean(
+      value
+      && typeof value==='object'
+      && !Array.isArray(value)
+      && String(value.openapi||value.swagger||'').trim()
+      && value.paths
+      && typeof value.paths==='object'
+      && !Array.isArray(value.paths)
+    );
+  }
+
+  function clearOpenapiReview(){
+    const file=$('openapiFile');
+    const documentInput=$('openapiDocument');
+    const fileStatus=$('openapiFileStatus');
+    const status=$('openapiStatus');
+    if(file)file.value='';
+    if(documentInput)documentInput.value='';
+    $('openapiSummary')?.replaceChildren();
+    if(fileStatus)fileStatus.textContent='Fichier JSON optionnel · 2 Mio maximum · lecture locale uniquement.';
+    if(status){
+      status.textContent='Aucune spécification analysée.';
+      status.className='simple-status muted';
+    }
+  }
+
   async function loadOpenapiFile(){
     const input=$('openapiFile');
     const status=$('openapiFileStatus');
@@ -1164,12 +1198,23 @@
     }
     try{
       const text=await file.text();
-      JSON.parse(text);
+      const parsed=JSON.parse(text);
+      if(!validOpenapiDocument(parsed)){
+        if(status)status.textContent='Fichier refusé : document OpenAPI/Swagger incomplet.';
+        if(input)input.value='';
+        return;
+      }
       const target=$('openapiDocument');
       if(target)target.value=text;
+      $('openapiSummary')?.replaceChildren();
+      const analysisStatus=$('openapiStatus');
+      if(analysisStatus){
+        analysisStatus.textContent='Spécification valide · prête à analyser.';
+        analysisStatus.className='simple-status ok';
+      }
       if(status)status.textContent=
-        'Fichier chargé localement · '+String(file.name||'openapi.json')+
-        ' · '+String(file.size||0)+' octets.';
+        'Fichier prêt · '+String(file.name||'openapi.json')+
+        ' · '+formatOpenapiFileSize(file.size)+'.';
     }catch(_error){
       if(status)status.textContent='Fichier refusé : JSON invalide ou illisible.';
       if(input)input.value='';
@@ -1194,6 +1239,13 @@
     let documentValue;
     try{
       documentValue=JSON.parse(raw);
+      if(!validOpenapiDocument(documentValue)){
+        if(status){
+          status.textContent='Document OpenAPI/Swagger incomplet : version et paths requis.';
+          status.className='simple-status err';
+        }
+        return;
+      }
     }catch(_error){
       if(status){
         status.textContent='JSON invalide. Corrige la spécification avant analyse.';
@@ -1236,7 +1288,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=92',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=93',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
@@ -1252,6 +1304,7 @@
     $('htbCancel')?.addEventListener('click',()=>void cancelHtbLab());
     $('openapiAnalyze')?.addEventListener('click',()=>void analyzeOpenapi());
     $('openapiFile')?.addEventListener('change',()=>void loadOpenapiFile());
+    $('openapiClear')?.addEventListener('click',clearOpenapiReview);
     try{
       if(localStorage.getItem(HTB_ACTIVE_KEY))$('htbFeedback')?.classList.remove('hidden');
     }catch(_error){}
