@@ -6565,6 +6565,7 @@ READ_ONLY_METHODS = ("get", "head", "options")
 MAX_PATHS = 250
 MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
+MAX_OPERATION_ID_LENGTH = 160
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 ⋮----
 @dataclass(frozen=True)
@@ -6743,9 +6744,10 @@ path = str(raw_path)
 normalized = str(method).lower()
 ⋮----
 tags = _operation_tags(operation)
-operation_id = operation.get("operationId")
+raw_operation_id = operation.get("operationId")
+operation_id = None
 ⋮----
-operation_id = str(operation_id)[:160]
+operation_id = str(raw_operation_id).strip()
 ⋮----
 operation_has_security = "security" in operation
 security = operation.get("security") if operation_has_security else document.get("security")
@@ -16474,6 +16476,14 @@ oversized = "x" * (2 * 1024 * 1024)
 def test_openapi_preview_accepts_normal_document_under_size_bound()
 ⋮----
 def test_openapi_preview_api_maps_oversized_document_to_bad_request()
+⋮----
+def test_openapi_preview_normalizes_blank_operation_id_to_none()
+⋮----
+def test_openapi_preview_preserves_operation_id_at_maximum_length()
+⋮----
+operation_id = "a" * 160
+⋮----
+def test_openapi_preview_rejects_operation_id_above_maximum_length()
 ```
 
 ## File: tests/test_operational_alerts.py

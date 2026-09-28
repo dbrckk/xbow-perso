@@ -1,14 +1,18 @@
 # CI status
 
-Summary: 3 success / 0 failure / 5 active
+Summary: 2 success / 1 failure / 5 active
 
-- ci: queued / pending (6acc643d)
-- security: queued / pending (6acc643d)
-- ci: in_progress / pending (6acc643d)
-- supply-chain: in_progress / pending (6acc643d)
-- security: in_progress / pending (6acc643d)
-- ci: completed / success (2736152c)
-- supply-chain: completed / success (2736152c)
-- security: completed / success (2736152c)
+- security: queued / pending (41863b26)
+- ci: queued / pending (41863b26)
+- security: in_progress / pending (41863b26)
+- ci: in_progress / pending (41863b26)
+- supply-chain: in_progress / pending (41863b26)
+- security: completed / failure (ab2662da)
+- Precise semantic refresh: completed / success (ab2662da)
+- supply-chain: completed / success (0111f5b4)
+
+## Latest failed run structure
+- Job: secret-scan
+  - Failed step: Run gitleaks/gitleaks-action@v2
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.
