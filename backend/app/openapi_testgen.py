@@ -54,8 +54,8 @@ RISK_TERMS = {
         "customer_id", "project_id", "document_id", "resource_id",
     ),
     "ssrf": (
-        "url", "uri", "callback", "webhook", "redirect", "return_url", "target",
-        "destination", "endpoint", "host",
+        "url", "uri", "callback", "callback_url", "webhook", "redirect", "return_url",
+        "target", "destination", "endpoint", "host",
     ),
     "auth_session": (
         "token", "jwt", "oauth", "authorization", "session", "refresh_token",
