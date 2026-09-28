@@ -61,7 +61,7 @@ def test_openapi_preview_api_is_read_only_and_bounded():
         )
     )
 
-    assert result["schema"] == "openapi-read-only-preview-v5"
+    assert result["schema"] == "openapi-read-only-preview-v6"
     assert [item["method"] for item in result["cases"]] == ["GET"]
     assert result["summary"]["mutating_operations_skipped"] == 1
 
@@ -131,7 +131,7 @@ def test_openapi_preview_extracts_passive_parameter_and_response_metadata():
     )
 
     case = result["cases"][0]
-    assert result["schema"] == "openapi-read-only-preview-v5"
+    assert result["schema"] == "openapi-read-only-preview-v6"
     assert case["method"] == "GET"
     assert case["parameters"] == [
         {
@@ -216,7 +216,7 @@ def test_openapi_preview_emits_advisory_api_risk_signals_only():
 
     case = result["cases"][0]
     categories = {item["category"] for item in case["risk_signals"]}
-    assert result["schema"] == "openapi-read-only-preview-v5"
+    assert result["schema"] == "openapi-read-only-preview-v6"
     assert "bola_idor_review" in categories
     assert "ssrf_input_review" in categories
     assert "auth_session_review" in categories
@@ -283,7 +283,7 @@ def test_openapi_preview_prioritizes_review_without_execution_effect():
         }
     )
 
-    assert result["schema"] == "openapi-read-only-preview-v5"
+    assert result["schema"] == "openapi-read-only-preview-v6"
     assert result["network_requests_sent"] == 0
     assert result["execution_mode"] == "preview_only"
     assert result["cases"][0]["path"] == "/users/{user_id}/callback"
@@ -360,7 +360,7 @@ def test_openapi_preview_exposes_advisory_review_summary():
     )
 
     review = result["summary"]["review"]
-    assert result["schema"] == "openapi-read-only-preview-v5"
+    assert result["schema"] == "openapi-read-only-preview-v6"
     assert result["network_requests_sent"] == 0
     assert review["advisory"] is True
     assert review["vulnerabilities_confirmed"] == 0
@@ -398,3 +398,138 @@ def test_openapi_review_summary_is_empty_for_unflagged_spec():
         "category_counts": {},
         "top_review_operations": [],
     }
+
+
+def test_openapi_preview_inventories_openapi3_authentication_metadata():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "components": {
+                "securitySchemes": {
+                    "bearerAuth": {
+                        "type": "http",
+                        "scheme": "bearer",
+                        "bearerFormat": "JWT",
+                    },
+                    "oauth2": {
+                        "type": "oauth2",
+                        "flows": {
+                            "authorizationCode": {
+                                "authorizationUrl": "https://auth.example.invalid/authorize",
+                                "tokenUrl": "https://auth.example.invalid/token",
+                                "scopes": {"read": "Read access"},
+                            }
+                        },
+                    },
+                    "oidc": {
+                        "type": "openIdConnect",
+                        "openIdConnectUrl": "https://auth.example.invalid/.well-known/openid-configuration",
+                    },
+                }
+            },
+            "security": [{"bearerAuth": []}],
+            "paths": {
+                "/account": {
+                    "get": {
+                        "security": [{"oauth2": ["read"]}],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                },
+                "/public": {
+                    "get": {
+                        "security": [],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                },
+            },
+        }
+    )
+
+    assert result["schema"] == "openapi-read-only-preview-v6"
+    auth = result["summary"]["authentication"]
+    assert auth["advisory"] is True
+    assert auth["vulnerabilities_confirmed"] == 0
+    assert auth["defined_scheme_count"] == 3
+    assert auth["referenced_scheme_names"] == ["oauth2"]
+    assert auth["unknown_scheme_references"] == []
+    assert auth["explicit_public_overrides"] == [{"method": "GET", "path": "/public"}]
+
+    schemes = {item["name"]: item for item in auth["security_schemes"]}
+    assert schemes["bearerAuth"]["type"] == "http"
+    assert schemes["bearerAuth"]["scheme"] == "bearer"
+    assert schemes["bearerAuth"]["bearer_format"] == "JWT"
+    assert schemes["oauth2"]["oauth_flows"] == ["authorizationCode"]
+    assert schemes["oidc"]["open_id_connect"] is True
+    rendered = str(auth)
+    assert "authorizationUrl" not in rendered
+    assert "tokenUrl" not in rendered
+    assert ".well-known" not in rendered
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_flags_unknown_auth_scheme_reference_advisory_only():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "components": {
+                "securitySchemes": {
+                    "known": {"type": "apiKey", "in": "header", "name": "X-API-Key"}
+                }
+            },
+            "paths": {
+                "/reports": {
+                    "get": {
+                        "security": [{"missingScheme": []}],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    case = result["cases"][0]
+    auth = result["summary"]["authentication"]
+    assert case["security_scheme_names"] == ["missingScheme"]
+    assert case["security_source"] == "operation"
+    assert case["explicitly_public"] is False
+    assert auth["unknown_scheme_references"] == ["missingScheme"]
+    assert auth["vulnerabilities_confirmed"] == 0
+    assert result["network_requests_sent"] == 0
+
+
+def test_swagger2_auth_inventory_is_metadata_only():
+    result = build_openapi_read_only_preview(
+        {
+            "swagger": "2.0",
+            "securityDefinitions": {
+                "legacyOauth": {
+                    "type": "oauth2",
+                    "flow": "accessCode",
+                    "authorizationUrl": "https://auth.example.invalid/authorize",
+                    "tokenUrl": "https://auth.example.invalid/token",
+                    "scopes": {"read": "Read"},
+                },
+                "apiKey": {
+                    "type": "apiKey",
+                    "name": "X-API-Key",
+                    "in": "header",
+                },
+            },
+            "security": [{"legacyOauth": ["read"]}],
+            "paths": {
+                "/items": {
+                    "get": {"responses": {"200": {"description": "ok"}}}
+                }
+            },
+        }
+    )
+
+    auth = result["summary"]["authentication"]
+    assert auth["defined_scheme_count"] == 2
+    schemes = {item["name"]: item for item in auth["security_schemes"]}
+    assert schemes["legacyOauth"]["oauth_flows"] == ["accessCode"]
+    assert schemes["apiKey"]["type"] == "apikey"
+    assert schemes["apiKey"]["in"] == "header"
+    assert auth["referenced_scheme_names"] == ["legacyOauth"]
+    assert result["cases"][0]["security_source"] == "document"
+    assert result["network_requests_sent"] == 0
