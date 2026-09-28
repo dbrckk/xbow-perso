@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-28T06:20:54Z
+Generated: 2026-09-28T06:38:27Z
 
 ### Git
 - Branch: `main`
-- Head: `30f827706012`
-- Commit date: 2026-09-28T08:20:44+02:00
-- Commit: feat: add bounded local OpenAPI file import (#423)
+- Head: `547d4939424b`
+- Commit date: 2026-09-28T08:38:15+02:00
+- Commit: feat: improve OpenAPI file review UX (#424)
 - Tracked files: 582
 
 ### Recently changed files

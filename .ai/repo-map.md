@@ -13983,6 +13983,10 @@ def test_dashboard_openapi_file_import_is_local_and_bounded()
 def test_openapi_file_import_does_not_add_target_network_fetch()
 ⋮----
 block = script.split("async function loadOpenapiFile()", 1)[1].split("async function analyzeOpenapi()", 1)[0]
+⋮----
+def test_openapi_file_ux_validates_and_resets_locally()
+⋮----
+def test_pwa_precache_matches_v93_assets()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -20905,6 +20909,12 @@ async function refreshHtbFocus(
 function openapiCategoryLabel(category)
 ⋮----
 function renderOpenapiSummary(payload)
+⋮----
+function formatOpenapiFileSize(bytes)
+⋮----
+function validOpenapiDocument(value)
+⋮----
+function clearOpenapiReview()
 ⋮----
 async function loadOpenapiFile()
 ⋮----

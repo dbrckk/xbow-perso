@@ -443,6 +443,12 @@ function openapiCategoryLabel(category)
 ⋮----
 function renderOpenapiSummary(payload)
 ⋮----
+function formatOpenapiFileSize(bytes)
+⋮----
+function validOpenapiDocument(value)
+⋮----
+function clearOpenapiReview()
+⋮----
 async function loadOpenapiFile()
 ⋮----
 async function analyzeOpenapi()
