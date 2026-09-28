@@ -640,3 +640,41 @@ def test_openapi_string_tags_are_ignored_instead_of_iterated():
     assert case["risk_signals"] == []
     assert case["review_priority"] == 0
     assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_preserves_path_at_maximum_length():
+    path = "/" + ("a" * 2047)
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                path: {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    assert len(path) == 2048
+    assert result["cases"][0]["path"] == path
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_path_above_maximum_length():
+    path = "/" + ("a" * 2048)
+
+    with pytest.raises(OpenApiPreviewError, match="2048 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "paths": {
+                    path: {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
