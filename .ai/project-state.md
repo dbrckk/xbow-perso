@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-28T07:28:41Z
+Generated: 2026-09-28T07:33:23Z
 
 ### Git
 - Branch: `main`
-- Head: `a1f9443f1a86`
-- Commit date: 2026-09-28T09:28:30+02:00
-- Commit: fix: reduce passive OpenAPI risk false positives (#427)
+- Head: `bb3271443745`
+- Commit date: 2026-09-28T09:33:13+02:00
+- Commit: fix: bound OpenAPI path identity safely (#428)
 - Tracked files: 582
 
 ### Recently changed files

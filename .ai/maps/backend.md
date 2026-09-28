@@ -6564,6 +6564,7 @@ class OpenApiPreviewError(ValueError)
 READ_ONLY_METHODS = ("get", "head", "options")
 MAX_PATHS = 250
 MAX_CASES = 500
+MAX_PATH_LENGTH = 2048
 ⋮----
 @dataclass(frozen=True)
 class OpenApiTestCase
@@ -16452,6 +16453,14 @@ def test_openapi_risk_matching_keeps_compound_ssrf_input_signal()
 ssrf = next(item for item in signals if item["category"] == "ssrf_input_review")
 ⋮----
 def test_openapi_string_tags_are_ignored_instead_of_iterated()
+⋮----
+def test_openapi_preview_preserves_path_at_maximum_length()
+⋮----
+path = "/" + ("a" * 2047)
+⋮----
+def test_openapi_preview_rejects_path_above_maximum_length()
+⋮----
+path = "/" + ("a" * 2048)
 ```
 
 ## File: tests/test_operational_alerts.py
