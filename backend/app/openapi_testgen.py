@@ -16,6 +16,7 @@ MAX_PATHS = 250
 MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
+MAX_OPERATION_SUMMARY_LENGTH = 300
 MAX_PARAMETER_NAME_LENGTH = 160
 MAX_PARAMETER_SCHEMA_TYPE_LENGTH = 80
 MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
@@ -35,6 +36,8 @@ class OpenApiTestCase:
     method: str
     path: str
     operation_id: str | None
+    summary: str | None
+    deprecated: bool
     tags: tuple[str, ...]
     authentication_declared: bool
     security_scheme_names: tuple[str, ...]
@@ -831,6 +834,19 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                         f"OpenAPI operationId exceeds {MAX_OPERATION_ID_LENGTH} characters"
                     )
 
+            raw_summary = operation.get("summary")
+            operation_summary = None
+            if raw_summary is not None:
+                operation_summary = str(raw_summary).strip()
+                if not operation_summary:
+                    operation_summary = None
+                elif len(operation_summary) > MAX_OPERATION_SUMMARY_LENGTH:
+                    raise OpenApiPreviewError(
+                        "OpenAPI operation summary exceeds "
+                        f"{MAX_OPERATION_SUMMARY_LENGTH} characters"
+                    )
+            deprecated = operation.get("deprecated") is True
+
             operation_has_security = "security" in operation
             security = operation.get("security") if operation_has_security else document.get("security")
             authentication_declared = bool(security)
@@ -865,6 +881,8 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                     method=normalized.upper(),
                     path=path,
                     operation_id=operation_id,
+                    summary=operation_summary,
+                    deprecated=deprecated,
                     tags=tags,
                     authentication_declared=authentication_declared,
                     security_scheme_names=security_scheme_names,
@@ -884,7 +902,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v9",
+        "schema": "openapi-read-only-preview-v10",
         "source_version": version,
         "execution_mode": "preview_only",
         "read_only": True,
