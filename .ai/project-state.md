@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T15:31:34Z
+Generated: 2026-09-30T15:37:08Z
 
 ### Git
 - Branch: `main`
-- Head: `11b127854710`
-- Commit date: 2026-09-30T17:31:17+02:00
-- Commit: feat: inventory Swagger consumes metadata (#441)
+- Head: `de93773f785c`
+- Commit date: 2026-09-30T17:36:52+02:00
+- Commit: feat: inventory OpenAPI 3 request content metadata (#442)
 - Tracked files: 582
 
 ### Recently changed files

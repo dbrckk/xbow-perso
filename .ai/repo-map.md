@@ -7345,11 +7345,15 @@ key = (location, name.lower())
 schema = item.get("schema") if isinstance(item.get("schema"), dict) else {}
 schema_type = str(schema.get("type") or "").strip()
 ⋮----
-consumes_source = (
-⋮----
 content_types: set[str] = set()
 ⋮----
+request_body = operation.get("requestBody")
+⋮----
+content = request_body.get("content")
+⋮----
 normalized_media_type = media_type.strip()
+⋮----
+consumes_source = (
 ⋮----
 responses = operation.get("responses")
 ⋮----
@@ -17213,6 +17217,14 @@ def test_swagger_preview_operation_consumes_overrides_document_consumes()
 def test_swagger_preview_deduplicates_consumes_metadata()
 ⋮----
 def test_swagger_preview_rejects_overlong_consumes_content_type()
+⋮----
+def test_openapi3_preview_inventories_request_body_content_types()
+⋮----
+def test_openapi3_preview_unions_request_body_content_with_consumes_metadata()
+⋮----
+def test_openapi3_preview_skips_referenced_request_body_metadata()
+⋮----
+def test_openapi3_preview_rejects_overlong_request_content_type()
 ````
 
 ## File: backend/tests/test_operational_alerts.py
