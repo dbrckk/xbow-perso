@@ -7196,6 +7196,7 @@ explicitly_public: bool
 parameters: tuple[dict[str, Any], ...]
 response_codes: tuple[str, ...]
 response_content_types: tuple[str, ...]
+request_content_types: tuple[str, ...]
 risk_signals: tuple[dict[str, Any], ...]
 review_priority: int
 review_priority_reasons: tuple[str, ...]
@@ -7344,16 +7345,19 @@ key = (location, name.lower())
 schema = item.get("schema") if isinstance(item.get("schema"), dict) else {}
 schema_type = str(schema.get("type") or "").strip()
 ⋮----
+consumes_source = (
+⋮----
+content_types: set[str] = set()
+⋮----
+normalized_media_type = media_type.strip()
+⋮----
 responses = operation.get("responses")
 ⋮----
 codes: list[str] = []
-content_types: set[str] = set()
 ⋮----
 code = str(raw_code).strip()
 ⋮----
 content = response.get("content")
-⋮----
-normalized_media_type = media_type.strip()
 ⋮----
 produces_source = (
 ⋮----
@@ -7397,6 +7401,7 @@ security_source = (
 explicitly_public = operation_has_security and operation.get("security") == []
 parameters = _normalized_parameters(raw_item, operation)
 ⋮----
+request_content_types = _request_content_types(operation, document)
 risk_signals = _operation_risk_signals(
 ````
 
@@ -17200,6 +17205,14 @@ def test_swagger_preview_operation_produces_overrides_document_produces()
 def test_swagger_preview_deduplicates_produces_metadata()
 ⋮----
 def test_swagger_preview_rejects_overlong_produces_content_type()
+⋮----
+def test_swagger_preview_uses_document_consumes_as_request_content_types()
+⋮----
+def test_swagger_preview_operation_consumes_overrides_document_consumes()
+⋮----
+def test_swagger_preview_deduplicates_consumes_metadata()
+⋮----
+def test_swagger_preview_rejects_overlong_consumes_content_type()
 ````
 
 ## File: backend/tests/test_operational_alerts.py

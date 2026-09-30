@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T15:14:50Z
+Generated: 2026-09-30T15:31:34Z
 
 ### Git
 - Branch: `main`
-- Head: `c512054aefea`
-- Commit date: 2026-09-30T17:14:37+02:00
-- Commit: feat: inventory Swagger produces metadata (#440)
+- Head: `11b127854710`
+- Commit date: 2026-09-30T17:31:17+02:00
+- Commit: feat: inventory Swagger consumes metadata (#441)
 - Tracked files: 582
 
 ### Recently changed files
