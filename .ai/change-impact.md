@@ -1,18 +1,13 @@
 # Change impact
 
-Base: ea059cd4e99f8da53ecb0aa78f6545502544e3e9
-Head: 19dbf2ec9e0707c83cc7fcba87ff8c7bf04952d5
+Base: e3012d4df373ae71df633c58159d3629e9016de0
+Head: f59667b35f37ecb01efcdff6423485bc84e7bf8c
 
 ## Changed files
-- M backend/tests/test_frontend_auth_proxy.py
-- M backend/tests/test_frontend_policy_launcher.py
-- M frontend/index.html
-- M frontend/simple.js
-- M frontend/sw.js
+- M .github/workflows/security.yml
 
 ## Affected areas
-- backend
-- frontend
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

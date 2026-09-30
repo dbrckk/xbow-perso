@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T22:01:29Z
+Generated: 2026-09-30T22:57:10Z
 
 ### Git
 - Branch: `main`
-- Head: `19dbf2ec9e07`
-- Commit date: 2026-10-01T00:01:18+02:00
-- Commit: feat: surface OpenAPI operation review metadata (#452)
+- Head: `f59667b35f37`
+- Commit date: 2026-10-01T00:56:59+02:00
+- Commit: chore(security): move gitleaks action to Node 24 (#453)
 - Tracked files: 582
 
 ### Recently changed files
+- `.github/workflows/security.yml`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
