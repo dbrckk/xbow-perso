@@ -6736,8 +6736,6 @@ key = (location, name.lower())
 schema = item.get("schema") if isinstance(item.get("schema"), dict) else {}
 schema_type = str(schema.get("type") or "").strip()
 ⋮----
-def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tuple[str, ...]]
-⋮----
 responses = operation.get("responses")
 ⋮----
 codes: list[str] = []
@@ -6748,6 +6746,8 @@ code = str(raw_code).strip()
 content = response.get("content")
 ⋮----
 normalized_media_type = media_type.strip()
+⋮----
+produces_source = (
 ⋮----
 def _document_size_bytes(document: dict[str, Any]) -> int
 ⋮----
@@ -16584,6 +16584,14 @@ def test_openapi_preview_preserves_source_version_at_maximum_length()
 version = "v" * 40
 ⋮----
 def test_openapi_preview_rejects_source_version_above_maximum_length()
+⋮----
+def test_swagger_preview_uses_document_produces_as_response_content_types()
+⋮----
+def test_swagger_preview_operation_produces_overrides_document_produces()
+⋮----
+def test_swagger_preview_deduplicates_produces_metadata()
+⋮----
+def test_swagger_preview_rejects_overlong_produces_content_type()
 ```
 
 ## File: tests/test_operational_alerts.py
