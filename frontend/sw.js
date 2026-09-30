@@ -1,5 +1,5 @@
-const CACHE='xbow-perso-v95';
-const PRECACHE=['/','/app.css?v=95','/simple.js?v=95','/manifest.webmanifest'];
+const CACHE='xbow-perso-v96';
+const PRECACHE=['/','/app.css?v=96','/simple.js?v=96','/manifest.webmanifest'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(
