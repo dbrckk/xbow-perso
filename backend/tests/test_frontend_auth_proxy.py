@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=97' in index
-    assert '/app.css?v=97' in index
-    assert "xbow-perso-v97" in sw
+    assert '/simple.js?v=98' in index
+    assert '/app.css?v=98' in index
+    assert "xbow-perso-v98" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=97" defer></script>' in index
+    assert '<script src="/simple.js?v=98" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v94';" in script
-    assert "serviceWorker.register('/sw.js?v=97',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v98';" in script
+    assert "serviceWorker.register('/sw.js?v=98',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v94" in html
+    assert "Interface v98" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -396,14 +396,14 @@ def test_openapi_file_ux_validates_and_resets_locally():
     assert "openapiClear')?.addEventListener('click',clearOpenapiReview)" in script
 
 
-def test_pwa_precache_matches_v97_assets():
+def test_pwa_precache_matches_v98_assets():
     sw = _text("frontend/sw.js")
     index = _text("frontend/index.html")
-    assert "xbow-perso-v97" in sw
-    assert "/app.css?v=97" in sw
-    assert "/simple.js?v=97" in sw
-    assert '/app.css?v=97' in index
-    assert '/simple.js?v=97' in index
+    assert "xbow-perso-v98" in sw
+    assert "/app.css?v=98" in sw
+    assert "/simple.js?v=98" in sw
+    assert '/app.css?v=98' in index
+    assert '/simple.js?v=98' in index
 
 
 def test_dashboard_surfaces_passive_openapi_auth_inventory():
@@ -425,3 +425,20 @@ def test_openapi_auth_dashboard_remains_render_only():
     assert "api(" not in block
     assert "innerHTML" not in block
     assert "textContent" in block
+
+
+def test_openapi_dashboard_surfaces_passive_review_observability():
+    script = _text("frontend/simple.js")
+    for phrase in (
+        "Spécification ",
+        "opération(s) en lecture seule",
+        "mutation(s) ignorée(s)",
+        "entrée(s) invalide(s) ignorée(s)",
+        "requête(s) réseau.",
+        "Overrides publics : ",
+        "Surfaces sensibles sans auth : ",
+        "Codes : ",
+        "Sortie : ",
+        "Entrée : ",
+    ):
+        assert phrase in script
