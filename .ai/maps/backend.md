@@ -6572,6 +6572,11 @@ MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
 MAX_RESPONSE_CODE_LENGTH = 20
 MAX_TAG_LENGTH = 80
 MAX_SOURCE_VERSION_LENGTH = 40
+MAX_SERVER_ENTRIES = 20
+MAX_SERVER_URL_LENGTH = 2048
+MAX_SWAGGER_HOST_LENGTH = 255
+MAX_SWAGGER_SCHEME_LENGTH = 20
+MAX_SWAGGER_BASE_PATH_LENGTH = 2048
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 ⋮----
 @dataclass(frozen=True)
@@ -6759,6 +6764,41 @@ code = str(raw_code).strip()
 content = response.get("content")
 ⋮----
 produces_source = (
+⋮----
+def _sanitize_declared_server_url(raw_url: str) -> str
+⋮----
+value = raw_url.strip()
+⋮----
+parsed = urlsplit(value)
+⋮----
+netloc = parsed.netloc
+⋮----
+netloc = netloc.rsplit("@", 1)[1]
+⋮----
+def _passive_server_inventory(document: dict[str, Any]) -> dict[str, Any]
+⋮----
+declared: list[dict[str, str]] = []
+⋮----
+servers = document.get("servers")
+⋮----
+raw_url = server.get("url")
+⋮----
+raw_host = document.get("host")
+host = raw_host.strip() if isinstance(raw_host, str) else ""
+⋮----
+raw_base_path = document.get("basePath")
+base_path = raw_base_path.strip() if isinstance(raw_base_path, str) else ""
+⋮----
+base_path = "/" + base_path
+⋮----
+schemes = document.get("schemes")
+normalized_schemes: list[str] = []
+⋮----
+normalized = scheme.strip().lower()
+⋮----
+unique: list[dict[str, str]] = []
+⋮----
+key = (item["source"], item["url"])
 ⋮----
 def _document_size_bytes(document: dict[str, Any]) -> int
 ⋮----
@@ -13498,7 +13538,7 @@ block = script.split("async function loadOpenapiFile()", 1)[1].split("async func
 ⋮----
 def test_openapi_file_ux_validates_and_resets_locally()
 ⋮----
-def test_pwa_precache_matches_v98_assets()
+def test_pwa_precache_matches_v99_assets()
 ⋮----
 def test_dashboard_surfaces_passive_openapi_auth_inventory()
 ⋮----
@@ -13509,6 +13549,8 @@ block = script.split("const auth=payload?.summary?.authentication||{};", 1)[1].s
 def test_openapi_dashboard_surfaces_passive_review_observability()
 ⋮----
 def test_openapi_dashboard_keeps_operations_visible_without_risk_signals()
+⋮----
+def test_openapi_dashboard_surfaces_passive_declared_servers()
 ```
 
 ## File: tests/test_frontend_policy_launcher.py
@@ -16431,206 +16473,6 @@ exposed = []
 def test_capability_manifest_is_authenticated_and_conservative()
 ⋮----
 capabilities = system_capabilities()
-```
-
-## File: tests/test_openapi_testgen.py
-```python
-def test_openapi_preview_generates_only_read_only_cases()
-⋮----
-result = build_openapi_read_only_preview(
-⋮----
-by_method = {case["method"]: case for case in result["cases"]}
-⋮----
-def test_openapi_preview_rejects_missing_version()
-⋮----
-def test_openapi_preview_rejects_excessive_paths()
-⋮----
-paths = {f"/p{index}": {"get": {}} for index in range(251)}
-⋮----
-def test_openapi_preview_api_is_read_only_and_bounded()
-⋮----
-result = main.preview_openapi_tests(
-⋮----
-def test_expansion_catalog_keeps_active_authority_unchanged()
-⋮----
-catalog = offensive_expansion_catalog()
-by_id = {item["id"]: item for item in catalog["capabilities"]}
-⋮----
-def test_expansion_routes_are_present_in_openapi()
-⋮----
-paths = main.app.openapi()["paths"]
-⋮----
-def test_openapi_preview_extracts_passive_parameter_and_response_metadata()
-⋮----
-case = result["cases"][0]
-⋮----
-def test_openapi_preview_ignores_external_parameter_refs()
-⋮----
-def test_openapi_preview_emits_advisory_api_risk_signals_only()
-⋮----
-categories = {item["category"] for item in case["risk_signals"]}
-⋮----
-def test_openapi_preview_does_not_claim_vulnerability_from_path_name_only()
-⋮----
-signals = result["cases"][0]["risk_signals"]
-⋮----
-def test_openapi_preview_prioritizes_review_without_execution_effect()
-⋮----
-def test_openapi_preview_zero_priority_without_risk_signals()
-⋮----
-def test_openapi_preview_exposes_advisory_review_summary()
-⋮----
-review = result["summary"]["review"]
-⋮----
-def test_openapi_review_summary_is_empty_for_unflagged_spec()
-⋮----
-def test_openapi_preview_inventories_openapi3_authentication_metadata()
-⋮----
-auth = result["summary"]["authentication"]
-⋮----
-schemes = {item["name"]: item for item in auth["security_schemes"]}
-⋮----
-rendered = str(auth)
-⋮----
-def test_openapi_preview_flags_unknown_auth_scheme_reference_advisory_only()
-⋮----
-def test_swagger2_auth_inventory_is_metadata_only()
-⋮----
-def test_openapi_risk_matching_avoids_id_substring_false_positives()
-⋮----
-categories = {
-⋮----
-def test_openapi_risk_matching_keeps_structured_object_identifier_signal()
-⋮----
-bola = next(item for item in signals if item["category"] == "bola_idor_review")
-⋮----
-def test_openapi_risk_matching_keeps_compound_ssrf_input_signal()
-⋮----
-ssrf = next(item for item in signals if item["category"] == "ssrf_input_review")
-⋮----
-def test_openapi_string_tags_are_ignored_instead_of_iterated()
-⋮----
-def test_openapi_preview_preserves_path_at_maximum_length()
-⋮----
-path = "/" + ("a" * 2047)
-⋮----
-def test_openapi_preview_rejects_path_above_maximum_length()
-⋮----
-path = "/" + ("a" * 2048)
-⋮----
-def test_openapi_preview_rejects_document_above_two_mib()
-⋮----
-oversized = "x" * (2 * 1024 * 1024)
-⋮----
-def test_openapi_preview_accepts_normal_document_under_size_bound()
-⋮----
-def test_openapi_preview_api_maps_oversized_document_to_bad_request()
-⋮----
-def test_openapi_preview_normalizes_blank_operation_id_to_none()
-⋮----
-def test_openapi_preview_preserves_operation_id_at_maximum_length()
-⋮----
-operation_id = "a" * 160
-⋮----
-def test_openapi_preview_rejects_operation_id_above_maximum_length()
-⋮----
-def test_openapi_preview_preserves_parameter_name_at_maximum_length()
-⋮----
-parameter_name = "p" * 160
-⋮----
-def test_openapi_preview_rejects_parameter_name_above_maximum_length()
-⋮----
-def test_openapi_preview_preserves_response_content_type_at_maximum_length()
-⋮----
-media_type = "application/" + ("a" * 108)
-⋮----
-def test_openapi_preview_rejects_response_content_type_above_maximum_length()
-⋮----
-media_type = "application/" + ("a" * 109)
-⋮----
-def test_openapi_preview_preserves_response_code_at_maximum_length()
-⋮----
-response_code = "X" * 20
-⋮----
-def test_openapi_preview_rejects_response_code_above_maximum_length()
-⋮----
-response_code = "X" * 21
-⋮----
-def test_openapi_preview_preserves_parameter_schema_type_at_maximum_length()
-⋮----
-schema_type = "t" * 80
-⋮----
-def test_openapi_preview_rejects_parameter_schema_type_above_maximum_length()
-⋮----
-schema_type = "t" * 81
-⋮----
-def test_openapi_preview_preserves_security_scheme_name_at_maximum_length()
-⋮----
-scheme_name = "s" * 160
-⋮----
-def test_openapi_preview_rejects_security_scheme_name_above_maximum_length()
-⋮----
-scheme_name = "s" * 161
-⋮----
-def test_openapi_preview_rejects_security_scheme_reference_above_maximum_length()
-⋮----
-def test_openapi_preview_preserves_auth_metadata_at_maximum_lengths()
-⋮----
-scheme_type = "t" * 80
-http_scheme = "h" * 80
-bearer_format = "b" * 80
-location = "i" * 40
-flow_name = "f" * 80
-⋮----
-scheme = result["summary"]["authentication"]["security_schemes"][0]
-⋮----
-def test_openapi_preview_rejects_overlong_auth_metadata(field, value, message)
-⋮----
-def test_openapi_preview_rejects_overlong_oauth_flow_name()
-⋮----
-flow_name = "f" * 81
-⋮----
-def test_openapi_preview_preserves_tag_at_maximum_length()
-⋮----
-tag = "t" * 80
-⋮----
-def test_openapi_preview_rejects_tag_above_maximum_length()
-⋮----
-def test_openapi_preview_preserves_source_version_at_maximum_length()
-⋮----
-version = "v" * 40
-⋮----
-def test_openapi_preview_rejects_source_version_above_maximum_length()
-⋮----
-def test_swagger_preview_uses_document_produces_as_response_content_types()
-⋮----
-def test_swagger_preview_operation_produces_overrides_document_produces()
-⋮----
-def test_swagger_preview_deduplicates_produces_metadata()
-⋮----
-def test_swagger_preview_rejects_overlong_produces_content_type()
-⋮----
-def test_swagger_preview_uses_document_consumes_as_request_content_types()
-⋮----
-def test_swagger_preview_operation_consumes_overrides_document_consumes()
-⋮----
-def test_swagger_preview_deduplicates_consumes_metadata()
-⋮----
-def test_swagger_preview_rejects_overlong_consumes_content_type()
-⋮----
-def test_openapi3_preview_inventories_request_body_content_types()
-⋮----
-def test_openapi3_preview_unions_request_body_content_with_consumes_metadata()
-⋮----
-def test_openapi3_preview_skips_referenced_request_body_metadata()
-⋮----
-def test_openapi3_preview_rejects_overlong_request_content_type()
-⋮----
-def test_openapi3_preview_marks_required_request_body()
-⋮----
-def test_openapi3_preview_marks_optional_request_body_false()
-⋮----
-def test_openapi3_preview_does_not_follow_required_request_body_ref()
 ```
 
 ## File: tests/test_operational_alerts.py

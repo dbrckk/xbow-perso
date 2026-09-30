@@ -2,6 +2,29 @@
   "area": "backend",
   "files": [
     {
+      "path": "backend/app/main.py",
+      "reasons": [
+        "dependency-neighbor",
+        "entrypoint",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 795
+    },
+    {
+      "path": "backend/tests/test_openapi_testgen.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 795
+    },
+    {
       "path": "backend/tests/test_frontend_auth_proxy.py",
       "reasons": [
         "changed",
@@ -10,7 +33,18 @@
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 590
+      "score": 595
+    },
+    {
+      "path": "backend/app/openapi_testgen.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 505
     },
     {
       "path": "backend/tests/test_frontend_policy_launcher.py",
@@ -18,18 +52,20 @@
         "changed",
         "changed-source",
         "impact",
+        "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 420
+      "score": 450
     },
     {
       "path": "backend/tests/test_auth.py",
       "reasons": [
+        "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 230
+      "score": 260
     },
     {
       "path": "backend/tests/test_hackerone_simple_review_package.py",
@@ -40,12 +76,38 @@
       "score": 180
     },
     {
-      "path": "backend/app/main.py",
+      "path": "backend/tests/test_recon_swarm.py",
       "reasons": [
-        "dependency-neighbor",
-        "entrypoint"
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
       ],
       "score": 165
+    },
+    {
+      "path": "backend/app/recon_swarm.py",
+      "reasons": [
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
+      ],
+      "score": 135
+    },
+    {
+      "path": "backend/tests/test_simple_selection_cached.py",
+      "reasons": [
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 135
+    },
+    {
+      "path": "backend/app/observation_graph.py",
+      "reasons": [
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
+      ],
+      "score": 130
     },
     {
       "path": "backend/tests/test_simple_selection_cache_only.py",
@@ -64,71 +126,28 @@
       "score": 115
     },
     {
-      "path": "backend/tests/test_recon_swarm.py",
+      "path": "backend/app/hackerone_scope_import.py",
       "reasons": [
-        "selected-test",
-        "symbol-indexed"
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
       ],
-      "score": 105
+      "score": 110
     },
     {
-      "path": "backend/tests/test_simple_selection_cached.py",
+      "path": "backend/app/pentagi_adapter.py",
       "reasons": [
-        "selected-test",
-        "symbol-indexed"
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
       ],
-      "score": 105
+      "score": 110
     },
     {
-      "path": "backend/tests/test_simple_portfolio.py",
+      "path": "backend/app/pentagi_admission.py",
       "reasons": [
-        "selected-test",
-        "symbol-indexed"
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
       ],
-      "score": 100
-    },
-    {
-      "path": "backend/tests/test_pipeline_swarm.py",
-      "reasons": [
-        "selected-test",
-        "symbol-indexed"
-      ],
-      "score": 95
-    },
-    {
-      "path": "backend/app/recon_swarm.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 75
-    },
-    {
-      "path": "backend/app/auth.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "backend/app/observation_graph.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "backend/app/planner_budget.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "backend/app/swarm_coordinator.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
+      "score": 110
     }
   ],
   "generated_by": "dbrckk/repo-brain-v6",

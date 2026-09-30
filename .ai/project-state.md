@@ -22,23 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T21:20:33Z
+Generated: 2026-09-30T21:25:29Z
 
 ### Git
 - Branch: `main`
-- Head: `7ba48179eeb1`
-- Commit date: 2026-09-30T23:20:21+02:00
-- Commit: feat: improve OpenAPI review observability (#447)
+- Head: `cd1b5401e9f9`
+- Commit date: 2026-09-30T23:25:17+02:00
+- Commit: feat: inventory passive OpenAPI server origins (#448)
 - Tracked files: 582
 
 ### Recently changed files
+- `backend/app/openapi_testgen.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
+- `backend/tests/test_openapi_testgen.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/openapi_testgen.py`
-- `backend/tests/test_openapi_testgen.py`
 
 ### Project signals
 - `pyproject.toml`
