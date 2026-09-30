@@ -844,3 +844,53 @@ def test_openapi_preview_rejects_parameter_name_above_maximum_length():
                 },
             }
         )
+
+
+def test_openapi_preview_preserves_response_content_type_at_maximum_length():
+    media_type = "application/" + ("a" * 108)
+    assert len(media_type) == 120
+
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/items": {
+                    "get": {
+                        "responses": {
+                            "200": {
+                                "description": "ok",
+                                "content": {media_type: {}},
+                            }
+                        }
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["response_content_types"] == [media_type]
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_response_content_type_above_maximum_length():
+    media_type = "application/" + ("a" * 109)
+    assert len(media_type) == 121
+
+    with pytest.raises(OpenApiPreviewError, match="120 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "responses": {
+                                "200": {
+                                    "description": "ok",
+                                    "content": {media_type: {}},
+                                }
+                            }
+                        }
+                    }
+                },
+            }
+        )

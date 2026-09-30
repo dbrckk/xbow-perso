@@ -16,6 +16,7 @@ MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
 MAX_PARAMETER_NAME_LENGTH = 160
+MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
@@ -458,7 +459,13 @@ def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tupl
             if isinstance(content, dict):
                 for media_type in content:
                     if isinstance(media_type, str) and media_type.strip():
-                        content_types.add(media_type.strip()[:120])
+                        normalized_media_type = media_type.strip()
+                        if len(normalized_media_type) > MAX_RESPONSE_CONTENT_TYPE_LENGTH:
+                            raise OpenApiPreviewError(
+                                "OpenAPI response content type exceeds "
+                                f"{MAX_RESPONSE_CONTENT_TYPE_LENGTH} characters"
+                            )
+                        content_types.add(normalized_media_type)
         if len(codes) >= 50:
             break
     return tuple(codes), tuple(sorted(content_types)[:50])
