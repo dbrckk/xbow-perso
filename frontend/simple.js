@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v100';
+  const UI_VERSION='v101';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1241,7 +1241,17 @@
         row.appendChild(detail);
       }
 
+      if(operationCase?.summary){
+        const summaryDetail=document.createElement('div');
+        summaryDetail.className='muted compact';
+        summaryDetail.textContent=String(operationCase.summary);
+        row.appendChild(summaryDetail);
+      }
+
       const metadataParts=[];
+      if(operationCase?.deprecated===true){
+        metadataParts.push('dépréciée');
+      }
       if(operationCase?.operation_id){
         metadataParts.push('operationId '+String(operationCase.operation_id));
       }
@@ -1465,7 +1475,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=100',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=101',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
