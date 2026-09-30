@@ -22,23 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T21:30:16Z
+Generated: 2026-09-30T21:32:18Z
 
 ### Git
 - Branch: `main`
-- Head: `12c55ca0113d`
-- Commit date: 2026-09-30T23:30:04+02:00
-- Commit: feat: surface OpenAPI parameters in mobile review (#450)
+- Head: `21d62875e21e`
+- Commit date: 2026-09-30T23:32:07+02:00
+- Commit: feat: inventory OpenAPI operation review metadata (#451)
 - Tracked files: 582
 
 ### Recently changed files
+- `backend/app/openapi_testgen.py`
+- `backend/tests/test_openapi_testgen.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/openapi_testgen.py`
-- `backend/tests/test_openapi_testgen.py`
 
 ### Project signals
 - `pyproject.toml`

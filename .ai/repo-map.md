@@ -7174,6 +7174,7 @@ MAX_PATHS = 250
 MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
+MAX_OPERATION_SUMMARY_LENGTH = 300
 MAX_PARAMETER_NAME_LENGTH = 160
 MAX_PARAMETER_SCHEMA_TYPE_LENGTH = 80
 MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
@@ -7193,6 +7194,8 @@ class OpenApiTestCase
 method: str
 path: str
 operation_id: str | None
+summary: str | None
+deprecated: bool
 tags: tuple[str, ...]
 authentication_declared: bool
 security_scheme_names: tuple[str, ...]
@@ -7439,6 +7442,13 @@ raw_operation_id = operation.get("operationId")
 operation_id = None
 ⋮----
 operation_id = str(raw_operation_id).strip()
+⋮----
+raw_summary = operation.get("summary")
+operation_summary = None
+⋮----
+operation_summary = str(raw_summary).strip()
+⋮----
+deprecated = operation.get("deprecated") is True
 ⋮----
 operation_has_security = "security" in operation
 security = operation.get("security") if operation_has_security else document.get("security")

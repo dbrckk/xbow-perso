@@ -1,18 +1,14 @@
 # Change impact
 
-Base: 6239d2c6c0444beaea9fb0a0357d1f8700d7f2d2
-Head: 12c55ca0113d0b6bb7d0cf9ba8f6d63990092710
+Base: 1462e89ac3dacced45c834acdf5ed4306ffdafb5
+Head: 21d62875e21e2c112089331b02664c1f97bd29c1
 
 ## Changed files
-- M backend/tests/test_frontend_auth_proxy.py
-- M backend/tests/test_frontend_policy_launcher.py
-- M frontend/index.html
-- M frontend/simple.js
-- M frontend/sw.js
+- M backend/app/openapi_testgen.py
+- M backend/tests/test_openapi_testgen.py
 
 ## Affected areas
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
