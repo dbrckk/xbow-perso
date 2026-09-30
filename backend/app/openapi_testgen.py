@@ -530,27 +530,44 @@ def _request_content_types(
     operation: dict[str, Any],
     document: dict[str, Any],
 ) -> tuple[str, ...]:
+    content_types: set[str] = set()
+
+    request_body = operation.get("requestBody")
+    if isinstance(request_body, dict) and "$ref" not in request_body:
+        content = request_body.get("content")
+        if isinstance(content, dict):
+            for media_type in content:
+                if not isinstance(media_type, str) or not media_type.strip():
+                    continue
+                normalized_media_type = media_type.strip()
+                if len(normalized_media_type) > MAX_RESPONSE_CONTENT_TYPE_LENGTH:
+                    raise OpenApiPreviewError(
+                        "OpenAPI request content type exceeds "
+                        f"{MAX_RESPONSE_CONTENT_TYPE_LENGTH} characters"
+                    )
+                content_types.add(normalized_media_type)
+                if len(content_types) >= 50:
+                    break
+
     consumes_source = (
         operation.get("consumes")
         if "consumes" in operation
         else document.get("consumes")
     )
-    if not isinstance(consumes_source, list):
-        return ()
+    if isinstance(consumes_source, list) and len(content_types) < 50:
+        for media_type in consumes_source:
+            if not isinstance(media_type, str) or not media_type.strip():
+                continue
+            normalized_media_type = media_type.strip()
+            if len(normalized_media_type) > MAX_RESPONSE_CONTENT_TYPE_LENGTH:
+                raise OpenApiPreviewError(
+                    "OpenAPI request content type exceeds "
+                    f"{MAX_RESPONSE_CONTENT_TYPE_LENGTH} characters"
+                )
+            content_types.add(normalized_media_type)
+            if len(content_types) >= 50:
+                break
 
-    content_types: set[str] = set()
-    for media_type in consumes_source:
-        if not isinstance(media_type, str) or not media_type.strip():
-            continue
-        normalized_media_type = media_type.strip()
-        if len(normalized_media_type) > MAX_RESPONSE_CONTENT_TYPE_LENGTH:
-            raise OpenApiPreviewError(
-                "OpenAPI request content type exceeds "
-                f"{MAX_RESPONSE_CONTENT_TYPE_LENGTH} characters"
-            )
-        content_types.add(normalized_media_type)
-        if len(content_types) >= 50:
-            break
     return tuple(sorted(content_types))
 
 
