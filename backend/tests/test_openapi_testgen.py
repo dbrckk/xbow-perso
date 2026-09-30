@@ -935,3 +935,54 @@ def test_openapi_preview_rejects_response_code_above_maximum_length():
                 },
             }
         )
+
+
+def test_openapi_preview_preserves_parameter_schema_type_at_maximum_length():
+    schema_type = "t" * 80
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/items": {
+                    "get": {
+                        "parameters": [
+                            {
+                                "name": "filter",
+                                "in": "query",
+                                "schema": {"type": schema_type},
+                            }
+                        ],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["parameters"][0]["schema_type"] == schema_type
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_parameter_schema_type_above_maximum_length():
+    schema_type = "t" * 81
+
+    with pytest.raises(OpenApiPreviewError, match="80 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "parameters": [
+                                {
+                                    "name": "filter",
+                                    "in": "query",
+                                    "schema": {"type": schema_type},
+                                }
+                            ],
+                            "responses": {"200": {"description": "ok"}},
+                        }
+                    }
+                },
+            }
+        )
