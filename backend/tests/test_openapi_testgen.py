@@ -61,7 +61,7 @@ def test_openapi_preview_api_is_read_only_and_bounded():
         )
     )
 
-    assert result["schema"] == "openapi-read-only-preview-v6"
+    assert result["schema"] == "openapi-read-only-preview-v7"
     assert [item["method"] for item in result["cases"]] == ["GET"]
     assert result["summary"]["mutating_operations_skipped"] == 1
 
@@ -131,7 +131,7 @@ def test_openapi_preview_extracts_passive_parameter_and_response_metadata():
     )
 
     case = result["cases"][0]
-    assert result["schema"] == "openapi-read-only-preview-v6"
+    assert result["schema"] == "openapi-read-only-preview-v7"
     assert case["method"] == "GET"
     assert case["parameters"] == [
         {
@@ -216,7 +216,7 @@ def test_openapi_preview_emits_advisory_api_risk_signals_only():
 
     case = result["cases"][0]
     categories = {item["category"] for item in case["risk_signals"]}
-    assert result["schema"] == "openapi-read-only-preview-v6"
+    assert result["schema"] == "openapi-read-only-preview-v7"
     assert "bola_idor_review" in categories
     assert "ssrf_input_review" in categories
     assert "auth_session_review" in categories
@@ -283,7 +283,7 @@ def test_openapi_preview_prioritizes_review_without_execution_effect():
         }
     )
 
-    assert result["schema"] == "openapi-read-only-preview-v6"
+    assert result["schema"] == "openapi-read-only-preview-v7"
     assert result["network_requests_sent"] == 0
     assert result["execution_mode"] == "preview_only"
     assert result["cases"][0]["path"] == "/users/{user_id}/callback"
@@ -360,7 +360,7 @@ def test_openapi_preview_exposes_advisory_review_summary():
     )
 
     review = result["summary"]["review"]
-    assert result["schema"] == "openapi-read-only-preview-v6"
+    assert result["schema"] == "openapi-read-only-preview-v7"
     assert result["network_requests_sent"] == 0
     assert review["advisory"] is True
     assert review["vulnerabilities_confirmed"] == 0
@@ -445,7 +445,7 @@ def test_openapi_preview_inventories_openapi3_authentication_metadata():
         }
     )
 
-    assert result["schema"] == "openapi-read-only-preview-v6"
+    assert result["schema"] == "openapi-read-only-preview-v7"
     auth = result["summary"]["authentication"]
     assert auth["advisory"] is True
     assert auth["vulnerabilities_confirmed"] == 0
@@ -1309,6 +1309,87 @@ def test_swagger_preview_rejects_overlong_produces_content_type():
             {
                 "swagger": "2.0",
                 "produces": [media_type],
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
+
+
+def test_swagger_preview_uses_document_consumes_as_request_content_types():
+    result = build_openapi_read_only_preview(
+        {
+            "swagger": "2.0",
+            "consumes": ["application/json", "application/x-www-form-urlencoded"],
+            "paths": {
+                "/items": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["schema"] == "openapi-read-only-preview-v7"
+    assert result["cases"][0]["request_content_types"] == [
+        "application/json",
+        "application/x-www-form-urlencoded",
+    ]
+    assert result["network_requests_sent"] == 0
+
+
+def test_swagger_preview_operation_consumes_overrides_document_consumes():
+    result = build_openapi_read_only_preview(
+        {
+            "swagger": "2.0",
+            "consumes": ["application/json"],
+            "paths": {
+                "/items": {
+                    "get": {
+                        "consumes": ["application/xml"],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["request_content_types"] == ["application/xml"]
+    assert result["network_requests_sent"] == 0
+
+
+def test_swagger_preview_deduplicates_consumes_metadata():
+    result = build_openapi_read_only_preview(
+        {
+            "swagger": "2.0",
+            "consumes": ["application/json", "application/json"],
+            "paths": {
+                "/items": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["request_content_types"] == ["application/json"]
+
+
+def test_swagger_preview_rejects_overlong_consumes_content_type():
+    media_type = "application/" + ("a" * 109)
+    assert len(media_type) == 121
+
+    with pytest.raises(OpenApiPreviewError, match="request content type exceeds 120 characters"):
+        build_openapi_read_only_preview(
+            {
+                "swagger": "2.0",
+                "consumes": [media_type],
                 "paths": {
                     "/items": {
                         "get": {

@@ -37,6 +37,7 @@ class OpenApiTestCase:
     parameters: tuple[dict[str, Any], ...]
     response_codes: tuple[str, ...]
     response_content_types: tuple[str, ...]
+    request_content_types: tuple[str, ...]
     risk_signals: tuple[dict[str, Any], ...]
     review_priority: int
     review_priority_reasons: tuple[str, ...]
@@ -51,6 +52,7 @@ class OpenApiTestCase:
         payload["parameters"] = [dict(item) for item in self.parameters]
         payload["response_codes"] = list(self.response_codes)
         payload["response_content_types"] = list(self.response_content_types)
+        payload["request_content_types"] = list(self.request_content_types)
         payload["risk_signals"] = [dict(item) for item in self.risk_signals]
         payload["review_priority_reasons"] = list(self.review_priority_reasons)
         return payload
@@ -524,6 +526,34 @@ def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any])
     return tuple(normalized)
 
 
+def _request_content_types(
+    operation: dict[str, Any],
+    document: dict[str, Any],
+) -> tuple[str, ...]:
+    consumes_source = (
+        operation.get("consumes")
+        if "consumes" in operation
+        else document.get("consumes")
+    )
+    if not isinstance(consumes_source, list):
+        return ()
+
+    content_types: set[str] = set()
+    for media_type in consumes_source:
+        if not isinstance(media_type, str) or not media_type.strip():
+            continue
+        normalized_media_type = media_type.strip()
+        if len(normalized_media_type) > MAX_RESPONSE_CONTENT_TYPE_LENGTH:
+            raise OpenApiPreviewError(
+                "OpenAPI request content type exceeds "
+                f"{MAX_RESPONSE_CONTENT_TYPE_LENGTH} characters"
+            )
+        content_types.add(normalized_media_type)
+        if len(content_types) >= 50:
+            break
+    return tuple(sorted(content_types))
+
+
 def _response_metadata(
     operation: dict[str, Any],
     document: dict[str, Any],
@@ -673,6 +703,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 operation,
                 document,
             )
+            request_content_types = _request_content_types(operation, document)
             risk_signals = _operation_risk_signals(
                 path,
                 operation,
@@ -698,6 +729,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                     parameters=parameters,
                     response_codes=response_codes,
                     response_content_types=response_content_types,
+                    request_content_types=request_content_types,
                     risk_signals=tuple(risk_signals),
                     review_priority=review_priority,
                     review_priority_reasons=review_priority_reasons,
@@ -707,7 +739,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v6",
+        "schema": "openapi-read-only-preview-v7",
         "source_version": version,
         "execution_mode": "preview_only",
         "read_only": True,
