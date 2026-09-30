@@ -19,6 +19,8 @@ MAX_PARAMETER_NAME_LENGTH = 160
 MAX_PARAMETER_SCHEMA_TYPE_LENGTH = 80
 MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
 MAX_RESPONSE_CODE_LENGTH = 20
+MAX_TAG_LENGTH = 80
+MAX_SOURCE_VERSION_LENGTH = 40
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
@@ -80,11 +82,20 @@ def _operation_tags(operation: dict[str, Any]) -> tuple[str, ...]:
     raw_tags = operation.get("tags")
     if not isinstance(raw_tags, list):
         return ()
-    return tuple(
-        str(tag).strip()[:80]
-        for tag in raw_tags
-        if isinstance(tag, str) and tag.strip()
-    )[:20]
+
+    tags: list[str] = []
+    for tag in raw_tags:
+        if not isinstance(tag, str) or not tag.strip():
+            continue
+        normalized_tag = tag.strip()
+        if len(normalized_tag) > MAX_TAG_LENGTH:
+            raise OpenApiPreviewError(
+                f"OpenAPI tag exceeds {MAX_TAG_LENGTH} characters"
+            )
+        tags.append(normalized_tag)
+        if len(tags) >= 20:
+            break
+    return tuple(tags)
 
 
 def _signal_identifiers(value: str) -> tuple[set[str], set[str]]:
@@ -575,6 +586,10 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
     version = str(document.get("openapi") or document.get("swagger") or "").strip()
     if not version:
         raise OpenApiPreviewError("OpenAPI/Swagger version is required")
+    if len(version) > MAX_SOURCE_VERSION_LENGTH:
+        raise OpenApiPreviewError(
+            f"OpenAPI/Swagger version exceeds {MAX_SOURCE_VERSION_LENGTH} characters"
+        )
 
     paths = document.get("paths")
     if not isinstance(paths, dict):
@@ -667,7 +682,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
 
     return {
         "schema": "openapi-read-only-preview-v6",
-        "source_version": version[:40],
+        "source_version": version,
         "execution_mode": "preview_only",
         "read_only": True,
         "network_requests_sent": 0,
