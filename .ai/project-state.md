@@ -22,16 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T19:44:01Z
+Generated: 2026-09-30T20:22:00Z
 
 ### Git
 - Branch: `main`
-- Head: `89d410baeaba`
-- Commit date: 2026-09-30T21:43:49+02:00
-- Commit: feat: inventory required OpenAPI request bodies (#443)
+- Head: `3fb614dd48fe`
+- Commit date: 2026-09-30T22:21:49+02:00
+- Commit: feat: surface OpenAPI request metadata in dashboard (#444)
 - Tracked files: 582
 
 ### Recently changed files
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `backend/app/openapi_testgen.py`
 - `backend/tests/test_openapi_testgen.py`
 
