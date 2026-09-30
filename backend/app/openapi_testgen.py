@@ -16,6 +16,7 @@ MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
 MAX_PARAMETER_NAME_LENGTH = 160
+MAX_PARAMETER_SCHEMA_TYPE_LENGTH = 80
 MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
 MAX_RESPONSE_CODE_LENGTH = 20
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
@@ -432,12 +433,18 @@ def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any])
             continue
         seen.add(key)
         schema = item.get("schema") if isinstance(item.get("schema"), dict) else {}
+        schema_type = str(schema.get("type") or "").strip()
+        if len(schema_type) > MAX_PARAMETER_SCHEMA_TYPE_LENGTH:
+            raise OpenApiPreviewError(
+                "OpenAPI parameter schema type exceeds "
+                f"{MAX_PARAMETER_SCHEMA_TYPE_LENGTH} characters"
+            )
         normalized.append(
             {
                 "name": name,
                 "in": location,
                 "required": bool(item.get("required")) or location == "path",
-                "schema_type": str(schema.get("type") or "")[:80] or None,
+                "schema_type": schema_type or None,
             }
         )
         if len(normalized) >= 100:
