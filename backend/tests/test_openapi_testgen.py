@@ -795,3 +795,52 @@ def test_openapi_preview_rejects_operation_id_above_maximum_length():
                 },
             }
         )
+
+
+def test_openapi_preview_preserves_parameter_name_at_maximum_length():
+    parameter_name = "p" * 160
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/items": {
+                    "get": {
+                        "parameters": [
+                            {
+                                "name": parameter_name,
+                                "in": "query",
+                                "schema": {"type": "string"},
+                            }
+                        ],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["parameters"][0]["name"] == parameter_name
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_parameter_name_above_maximum_length():
+    with pytest.raises(OpenApiPreviewError, match="160 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "parameters": [
+                                {
+                                    "name": "p" * 161,
+                                    "in": "query",
+                                    "schema": {"type": "string"},
+                                }
+                            ],
+                            "responses": {"200": {"description": "ok"}},
+                        }
+                    }
+                },
+            }
+        )

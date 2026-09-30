@@ -15,6 +15,7 @@ MAX_PATHS = 250
 MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
+MAX_PARAMETER_NAME_LENGTH = 160
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
@@ -416,10 +417,14 @@ def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any])
     for item in combined:
         if not isinstance(item, dict) or "$ref" in item:
             continue
-        name = str(item.get("name") or "").strip()[:160]
+        name = str(item.get("name") or "").strip()
         location = str(item.get("in") or "").strip().lower()
         if not name or location not in {"path", "query", "header", "cookie"}:
             continue
+        if len(name) > MAX_PARAMETER_NAME_LENGTH:
+            raise OpenApiPreviewError(
+                f"OpenAPI parameter name exceeds {MAX_PARAMETER_NAME_LENGTH} characters"
+            )
         key = (location, name.lower())
         if key in seen:
             continue
