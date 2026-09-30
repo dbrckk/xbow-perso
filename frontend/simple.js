@@ -1159,15 +1159,24 @@
       root.appendChild(warning);
     }
 
+    const cases=Array.isArray(payload?.cases)?payload.cases:[];
+    const caseByOperation=new Map(
+      cases.map(item=>[
+        String(item?.method||'').toUpperCase()+' '+String(item?.path||''),
+        item,
+      ])
+    );
     const top=Array.isArray(review?.top_review_operations)
       ?review.top_review_operations.slice(0,10)
       :[];
     for(const item of top){
       const row=document.createElement('div');
       row.className='simple-log';
+      const method=String(item?.method||'GET').toUpperCase();
+      const path=String(item?.path||'/');
       const head=document.createElement('strong');
       head.textContent=
-        String(item?.method||'GET')+' '+String(item?.path||'/')+
+        method+' '+path+
         ' · priorité '+String(item?.review_priority||0)+'/100';
       row.appendChild(head);
       const reasons=Array.isArray(item?.review_priority_reasons)
@@ -1178,6 +1187,24 @@
         detail.className='muted compact';
         detail.textContent=reasons.join(' · ');
         row.appendChild(detail);
+      }
+
+      const operationCase=caseByOperation.get(method+' '+path);
+      const requestTypes=Array.isArray(operationCase?.request_content_types)
+        ?operationCase.request_content_types.slice(0,8)
+        :[];
+      if(requestTypes.length||operationCase?.request_body_required===true){
+        const requestDetail=document.createElement('div');
+        requestDetail.className='muted compact';
+        const requestParts=[];
+        if(requestTypes.length){
+          requestParts.push('Entrée : '+requestTypes.join(', '));
+        }
+        if(operationCase?.request_body_required===true){
+          requestParts.push('body requis');
+        }
+        requestDetail.textContent=requestParts.join(' · ');
+        row.appendChild(requestDetail);
       }
       root.appendChild(row);
     }
@@ -1328,7 +1355,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=94',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=95',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
