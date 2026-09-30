@@ -7178,6 +7178,8 @@ MAX_PARAMETER_NAME_LENGTH = 160
 MAX_PARAMETER_SCHEMA_TYPE_LENGTH = 80
 MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
 MAX_RESPONSE_CODE_LENGTH = 20
+MAX_TAG_LENGTH = 80
+MAX_SOURCE_VERSION_LENGTH = 40
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 ⋮----
 @dataclass(frozen=True)
@@ -7210,6 +7212,10 @@ RISK_TERMS = {
 def _operation_tags(operation: dict[str, Any]) -> tuple[str, ...]
 ⋮----
 raw_tags = operation.get("tags")
+⋮----
+tags: list[str] = []
+⋮----
+normalized_tag = tag.strip()
 ⋮----
 def _signal_identifiers(value: str) -> tuple[set[str], set[str]]
 ⋮----
@@ -17174,6 +17180,18 @@ def test_openapi_preview_rejects_overlong_auth_metadata(field, value, message)
 def test_openapi_preview_rejects_overlong_oauth_flow_name()
 ⋮----
 flow_name = "f" * 81
+⋮----
+def test_openapi_preview_preserves_tag_at_maximum_length()
+⋮----
+tag = "t" * 80
+⋮----
+def test_openapi_preview_rejects_tag_above_maximum_length()
+⋮----
+def test_openapi_preview_preserves_source_version_at_maximum_length()
+⋮----
+version = "v" * 40
+⋮----
+def test_openapi_preview_rejects_source_version_above_maximum_length()
 ````
 
 ## File: backend/tests/test_operational_alerts.py

@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T14:53:04Z
+Generated: 2026-09-30T14:59:35Z
 
 ### Git
 - Branch: `main`
-- Head: `6e055a39efc7`
-- Commit date: 2026-09-30T16:52:47+02:00
-- Commit: fix: bound OpenAPI auth metadata fields (#438)
+- Head: `58736a316f76`
+- Commit date: 2026-09-30T16:59:22+02:00
+- Commit: fix: bound OpenAPI tags and source version (#439)
 - Tracked files: 582
 
 ### Recently changed files
