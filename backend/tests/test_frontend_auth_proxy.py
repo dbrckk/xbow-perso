@@ -442,3 +442,14 @@ def test_openapi_dashboard_surfaces_passive_review_observability():
         "Entrée : ",
     ):
         assert phrase in script
+
+
+def test_openapi_dashboard_keeps_operations_visible_without_risk_signals():
+    script = _text("frontend/simple.js")
+    assert "const visibleOperations=prioritized.length" in script
+    assert "?prioritized" in script
+    assert ":cases.slice(0,10);" in script
+    assert "operationId " in script
+    assert "tags " in script
+    assert "public explicite" in script
+    assert "auth déclarée" in script
