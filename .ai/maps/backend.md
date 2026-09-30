@@ -6659,6 +6659,12 @@ top = [
 MAX_SECURITY_SCHEMES = 100
 MAX_SECURITY_REFERENCES = 100
 MAX_SECURITY_SCHEME_NAME_LENGTH = 160
+MAX_SECURITY_SCHEME_TYPE_LENGTH = 80
+MAX_SECURITY_HTTP_SCHEME_LENGTH = 80
+MAX_SECURITY_BEARER_FORMAT_LENGTH = 80
+MAX_SECURITY_LOCATION_LENGTH = 40
+MAX_SECURITY_FLOW_NAME_LENGTH = 80
+MAX_SECURITY_FLOW_COUNT = 20
 ⋮----
 def _security_requirement_names(value: Any) -> tuple[str, ...]
 ⋮----
@@ -6677,16 +6683,28 @@ source = document.get("securityDefinitions")
 ⋮----
 inventory: list[dict[str, Any]] = []
 ⋮----
-scheme_type = str(raw_scheme.get("type") or "").strip().lower()[:80] or None
-http_scheme = str(raw_scheme.get("scheme") or "").strip().lower()[:80] or None
-bearer_format = str(raw_scheme.get("bearerFormat") or "").strip()[:80] or None
-location = str(raw_scheme.get("in") or "").strip().lower()[:40] or None
+scheme_type_value = str(raw_scheme.get("type") or "").strip().lower()
+⋮----
+scheme_type = scheme_type_value or None
+⋮----
+http_scheme_value = str(raw_scheme.get("scheme") or "").strip().lower()
+⋮----
+http_scheme = http_scheme_value or None
+⋮----
+bearer_format_value = str(raw_scheme.get("bearerFormat") or "").strip()
+⋮----
+bearer_format = bearer_format_value or None
+⋮----
+location_value = str(raw_scheme.get("in") or "").strip().lower()
+⋮----
+location = location_value or None
 ⋮----
 flows: list[str] = []
 raw_flows = raw_scheme.get("flows")
 ⋮----
-flows = sorted(
-swagger_flow = str(raw_scheme.get("flow") or "").strip()[:80]
+flow_name = flow.strip()
+⋮----
+swagger_flow = str(raw_scheme.get("flow") or "").strip()
 ⋮----
 inventory = _security_scheme_inventory(document)
 defined = {str(item.get("name") or "") for item in inventory}
@@ -16532,6 +16550,22 @@ def test_openapi_preview_rejects_security_scheme_name_above_maximum_length()
 scheme_name = "s" * 161
 ⋮----
 def test_openapi_preview_rejects_security_scheme_reference_above_maximum_length()
+⋮----
+def test_openapi_preview_preserves_auth_metadata_at_maximum_lengths()
+⋮----
+scheme_type = "t" * 80
+http_scheme = "h" * 80
+bearer_format = "b" * 80
+location = "i" * 40
+flow_name = "f" * 80
+⋮----
+scheme = result["summary"]["authentication"]["security_schemes"][0]
+⋮----
+def test_openapi_preview_rejects_overlong_auth_metadata(field, value, message)
+⋮----
+def test_openapi_preview_rejects_overlong_oauth_flow_name()
+⋮----
+flow_name = "f" * 81
 ```
 
 ## File: tests/test_operational_alerts.py
