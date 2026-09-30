@@ -1206,6 +1206,16 @@
         requestDetail.textContent=requestParts.join(' · ');
         row.appendChild(requestDetail);
       }
+
+      const responseTypes=Array.isArray(operationCase?.response_content_types)
+        ?operationCase.response_content_types.slice(0,8)
+        :[];
+      if(responseTypes.length){
+        const responseDetail=document.createElement('div');
+        responseDetail.className='muted compact';
+        responseDetail.textContent='Sortie : '+responseTypes.join(', ');
+        row.appendChild(responseDetail);
+      }
       root.appendChild(row);
     }
   }
@@ -1355,7 +1365,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=95',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=96',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
