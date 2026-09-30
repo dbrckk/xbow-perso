@@ -986,3 +986,72 @@ def test_openapi_preview_rejects_parameter_schema_type_above_maximum_length():
                 },
             }
         )
+
+
+def test_openapi_preview_preserves_security_scheme_name_at_maximum_length():
+    scheme_name = "s" * 160
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "components": {
+                "securitySchemes": {
+                    scheme_name: {"type": "http", "scheme": "bearer"}
+                }
+            },
+            "security": [{scheme_name: []}],
+            "paths": {
+                "/items": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    auth = result["summary"]["authentication"]
+    assert auth["security_schemes"][0]["name"] == scheme_name
+    assert auth["referenced_scheme_names"] == [scheme_name]
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_security_scheme_name_above_maximum_length():
+    scheme_name = "s" * 161
+
+    with pytest.raises(OpenApiPreviewError, match="scheme name exceeds 160 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "components": {
+                    "securitySchemes": {
+                        scheme_name: {"type": "http", "scheme": "bearer"}
+                    }
+                },
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
+
+
+def test_openapi_preview_rejects_security_scheme_reference_above_maximum_length():
+    scheme_name = "s" * 161
+
+    with pytest.raises(OpenApiPreviewError, match="scheme reference exceeds 160 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "security": [{scheme_name: []}],
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
