@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v98';
+  const UI_VERSION='v99';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1112,6 +1112,19 @@
       String(payload?.network_requests_sent||0)+' requête(s) réseau.';
     root.appendChild(coverage);
 
+    const serverSummary=summary?.servers||{};
+    const declaredServers=Array.isArray(serverSummary?.declared_servers)
+      ?serverSummary.declared_servers
+      :[];
+    if(declaredServers.length){
+      const serverLine=document.createElement('p');
+      serverLine.className='muted compact';
+      serverLine.textContent='Serveurs déclarés : '+
+        declaredServers.slice(0,10).map(item=>String(item?.url||'')).filter(Boolean).join(' · ')+
+        ' · aucune résolution réseau · aucune décision de scope.';
+      root.appendChild(serverLine);
+    }
+
     const headline=document.createElement('p');
     headline.className='muted compact';
     headline.textContent=
@@ -1435,7 +1448,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=98',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=99',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
