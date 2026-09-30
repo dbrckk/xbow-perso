@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=99' in index
-    assert '/app.css?v=99' in index
-    assert "xbow-perso-v99" in sw
+    assert '/simple.js?v=100' in index
+    assert '/app.css?v=100' in index
+    assert "xbow-perso-v100" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=99" defer></script>' in index
+    assert '<script src="/simple.js?v=100" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v99';" in script
-    assert "serviceWorker.register('/sw.js?v=99',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v100';" in script
+    assert "serviceWorker.register('/sw.js?v=100',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v99" in html
+    assert "Interface v100" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -396,14 +396,14 @@ def test_openapi_file_ux_validates_and_resets_locally():
     assert "openapiClear')?.addEventListener('click',clearOpenapiReview)" in script
 
 
-def test_pwa_precache_matches_v99_assets():
+def test_pwa_precache_matches_v100_assets():
     sw = _text("frontend/sw.js")
     index = _text("frontend/index.html")
-    assert "xbow-perso-v99" in sw
-    assert "/app.css?v=99" in sw
-    assert "/simple.js?v=99" in sw
-    assert '/app.css?v=99' in index
-    assert '/simple.js?v=99' in index
+    assert "xbow-perso-v100" in sw
+    assert "/app.css?v=100" in sw
+    assert "/simple.js?v=100" in sw
+    assert '/app.css?v=100' in index
+    assert '/simple.js?v=100' in index
 
 
 def test_dashboard_surfaces_passive_openapi_auth_inventory():
@@ -462,3 +462,12 @@ def test_openapi_dashboard_surfaces_passive_declared_servers():
     assert "Serveurs déclarés : " in script
     assert "aucune résolution réseau" in script
     assert "aucune décision de scope" in script
+
+
+def test_openapi_dashboard_surfaces_bounded_parameter_metadata():
+    script = _text("frontend/simple.js")
+    assert "operationCase?.parameters" in script
+    assert ".slice(0,12)" in script
+    assert "Paramètres : " in script
+    assert "parameter?.schema_type" in script
+    assert "parameter?.required===true?' requis':''" in script
