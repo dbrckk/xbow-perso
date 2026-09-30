@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v94';
+  const UI_VERSION='v98';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1096,7 +1096,22 @@
     if(!root)return;
     root.replaceChildren();
 
-    const review=payload?.summary?.review||{};
+    const summary=payload?.summary||{};
+    const review=summary?.review||{};
+
+    const coverage=document.createElement('p');
+    coverage.className='muted compact';
+    const schemaLabel=String(payload?.schema||'preview inconnu');
+    const sourceVersion=String(payload?.source_version||'version inconnue');
+    coverage.textContent=
+      'Spécification '+sourceVersion+' · '+schemaLabel+' · '+
+      String(summary?.paths_seen||0)+' chemin(s) · '+
+      String(summary?.cases_generated||0)+' opération(s) en lecture seule · '+
+      String(summary?.mutating_operations_skipped||0)+' mutation(s) ignorée(s) · '+
+      String(summary?.invalid_entries_skipped||0)+' entrée(s) invalide(s) ignorée(s) · '+
+      String(payload?.network_requests_sent||0)+' requête(s) réseau.';
+    root.appendChild(coverage);
+
     const headline=document.createElement('p');
     headline.className='muted compact';
     headline.textContent=
@@ -1159,6 +1174,26 @@
       root.appendChild(warning);
     }
 
+    if(publicOverrides.length){
+      const publicLine=document.createElement('p');
+      publicLine.className='muted compact state-review';
+      publicLine.textContent='Overrides publics : '+
+        publicOverrides.slice(0,12).map(item=>
+          String(item?.method||'GET')+' '+String(item?.path||'/')
+        ).join(' · ');
+      root.appendChild(publicLine);
+    }
+
+    if(unauthenticated.length){
+      const unauthLine=document.createElement('p');
+      unauthLine.className='muted compact state-review';
+      unauthLine.textContent='Surfaces sensibles sans auth : '+
+        unauthenticated.slice(0,12).map(item=>
+          String(item?.method||'GET')+' '+String(item?.path||'/')
+        ).join(' · ');
+      root.appendChild(unauthLine);
+    }
+
     const cases=Array.isArray(payload?.cases)?payload.cases:[];
     const caseByOperation=new Map(
       cases.map(item=>[
@@ -1166,18 +1201,22 @@
         item,
       ])
     );
-    const top=Array.isArray(review?.top_review_operations)
+    const prioritized=Array.isArray(review?.top_review_operations)
       ?review.top_review_operations.slice(0,10)
       :[];
-    for(const item of top){
+    const visibleOperations=prioritized.length
+      ?prioritized
+      :cases.slice(0,10);
+    for(const item of visibleOperations){
       const row=document.createElement('div');
       row.className='simple-log';
       const method=String(item?.method||'GET').toUpperCase();
       const path=String(item?.path||'/');
+      const operationCase=caseByOperation.get(method+' '+path)||item;
       const head=document.createElement('strong');
       head.textContent=
         method+' '+path+
-        ' · priorité '+String(item?.review_priority||0)+'/100';
+        ' · priorité '+String(item?.review_priority||operationCase?.review_priority||0)+'/100';
       row.appendChild(head);
       const reasons=Array.isArray(item?.review_priority_reasons)
         ?item.review_priority_reasons.map(openapiCategoryLabel)
@@ -1189,7 +1228,28 @@
         row.appendChild(detail);
       }
 
-      const operationCase=caseByOperation.get(method+' '+path);
+      const metadataParts=[];
+      if(operationCase?.operation_id){
+        metadataParts.push('operationId '+String(operationCase.operation_id));
+      }
+      const operationTags=Array.isArray(operationCase?.tags)
+        ?operationCase.tags.slice(0,6)
+        :[];
+      if(operationTags.length){
+        metadataParts.push('tags '+operationTags.join(', '));
+      }
+      if(operationCase?.explicitly_public===true){
+        metadataParts.push('public explicite');
+      }else if(operationCase?.authentication_declared===true){
+        metadataParts.push('auth déclarée');
+      }
+      if(metadataParts.length){
+        const metadataDetail=document.createElement('div');
+        metadataDetail.className='muted compact';
+        metadataDetail.textContent=metadataParts.join(' · ');
+        row.appendChild(metadataDetail);
+      }
+
       const requestTypes=Array.isArray(operationCase?.request_content_types)
         ?operationCase.request_content_types.slice(0,8)
         :[];
@@ -1375,7 +1435,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=97',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=98',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
