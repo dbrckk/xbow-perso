@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v99';
+  const UI_VERSION='v100';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1263,6 +1263,23 @@
         row.appendChild(metadataDetail);
       }
 
+      const parameters=Array.isArray(operationCase?.parameters)
+        ?operationCase.parameters.slice(0,12)
+        :[];
+      if(parameters.length){
+        const parameterDetail=document.createElement('div');
+        parameterDetail.className='muted compact';
+        parameterDetail.textContent='Paramètres : '+
+          parameters.map(parameter=>{
+            const name=String(parameter?.name||'paramètre');
+            const location=String(parameter?.in||'');
+            const schemaType=String(parameter?.schema_type||'').trim();
+            const required=parameter?.required===true?' requis':'';
+            return name+' ['+location+(schemaType?' · '+schemaType:'')+required+']';
+          }).join(' · ');
+        row.appendChild(parameterDetail);
+      }
+
       const requestTypes=Array.isArray(operationCase?.request_content_types)
         ?operationCase.request_content_types.slice(0,8)
         :[];
@@ -1448,7 +1465,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=99',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=100',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
