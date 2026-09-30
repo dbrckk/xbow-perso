@@ -894,3 +894,44 @@ def test_openapi_preview_rejects_response_content_type_above_maximum_length():
                 },
             }
         )
+
+
+def test_openapi_preview_preserves_response_code_at_maximum_length():
+    response_code = "X" * 20
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/items": {
+                    "get": {
+                        "responses": {
+                            response_code: {"description": "ok"}
+                        }
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["response_codes"] == [response_code]
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_response_code_above_maximum_length():
+    response_code = "X" * 21
+
+    with pytest.raises(OpenApiPreviewError, match="20 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "responses": {
+                                response_code: {"description": "ok"}
+                            }
+                        }
+                    }
+                },
+            }
+        )
