@@ -1055,3 +1055,114 @@ def test_openapi_preview_rejects_security_scheme_reference_above_maximum_length(
                 },
             }
         )
+
+
+def test_openapi_preview_preserves_auth_metadata_at_maximum_lengths():
+    scheme_type = "t" * 80
+    http_scheme = "h" * 80
+    bearer_format = "b" * 80
+    location = "i" * 40
+    flow_name = "f" * 80
+
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "components": {
+                "securitySchemes": {
+                    "auth": {
+                        "type": scheme_type,
+                        "scheme": http_scheme,
+                        "bearerFormat": bearer_format,
+                        "in": location,
+                        "flows": {
+                            flow_name: {
+                                "authorizationUrl": "https://example.invalid/auth",
+                                "tokenUrl": "https://example.invalid/token",
+                                "scopes": {},
+                            }
+                        },
+                    }
+                }
+            },
+            "paths": {
+                "/items": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    scheme = result["summary"]["authentication"]["security_schemes"][0]
+    assert scheme["type"] == scheme_type
+    assert scheme["scheme"] == http_scheme
+    assert scheme["bearer_format"] == bearer_format
+    assert scheme["in"] == location
+    assert scheme["oauth_flows"] == [flow_name]
+    assert result["network_requests_sent"] == 0
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("type", "t" * 81, "scheme type exceeds 80 characters"),
+        ("scheme", "h" * 81, "HTTP auth scheme exceeds 80 characters"),
+        ("bearerFormat", "b" * 81, "bearer format exceeds 80 characters"),
+        ("in", "i" * 41, "scheme location exceeds 40 characters"),
+    ],
+)
+def test_openapi_preview_rejects_overlong_auth_metadata(field, value, message):
+    with pytest.raises(OpenApiPreviewError, match=message):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "components": {
+                    "securitySchemes": {
+                        "auth": {
+                            "type": "http",
+                            field: value,
+                        }
+                    }
+                },
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
+
+
+def test_openapi_preview_rejects_overlong_oauth_flow_name():
+    flow_name = "f" * 81
+
+    with pytest.raises(OpenApiPreviewError, match="OAuth flow name exceeds 80 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "components": {
+                    "securitySchemes": {
+                        "oauth": {
+                            "type": "oauth2",
+                            "flows": {
+                                flow_name: {
+                                    "authorizationUrl": "https://example.invalid/auth",
+                                    "tokenUrl": "https://example.invalid/token",
+                                    "scopes": {},
+                                }
+                            },
+                        }
+                    }
+                },
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
