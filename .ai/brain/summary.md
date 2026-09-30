@@ -3,7 +3,7 @@
 - Index mode: incremental
 - Files indexed: 389
 - Files reparsed this run: 2
-- Symbols: 3649
+- Symbols: 3651
 - Internal import edges: 1271
 - Impacted files: 3
 - Selected tests: 1
@@ -22,11 +22,11 @@
 - backend/tests/test_storage.py: 38 symbols
 - backend/tests/test_recon_worker.py: 36 symbols
 - backend/tests/test_htb_lab.py: 33 symbols
+- backend/tests/test_openapi_testgen.py: 33 symbols
 - backend/app/storage_backend.py: 32 symbols
 - backend/tests/test_auth.py: 32 symbols
 - backend/tests/test_browser.py: 32 symbols
 - backend/tests/test_jobqueue.py: 32 symbols
-- backend/tests/test_openapi_testgen.py: 31 symbols
 - backend/app/recon_worker.py: 29 symbols
 - backend/app/redis_jobqueue.py: 27 symbols
 - backend/tests/test_pentagi_worker_service.py: 27 symbols
@@ -45,7 +45,7 @@
 - AST index mode: incremental
 - AST files reparsed this run: 2
 - outline files retained: 387
-- top-level items retained: 4949
+- top-level items retained: 4952
 - direct members retained: 1099
 - symbol shards: 25
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard

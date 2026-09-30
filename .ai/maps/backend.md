@@ -6567,6 +6567,7 @@ MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
 MAX_PARAMETER_NAME_LENGTH = 160
+MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 ⋮----
 @dataclass(frozen=True)
@@ -6717,6 +6718,8 @@ content_types: set[str] = set()
 code = str(raw_code)[:20]
 ⋮----
 content = response.get("content")
+⋮----
+normalized_media_type = media_type.strip()
 ⋮----
 def _document_size_bytes(document: dict[str, Any]) -> int
 ⋮----
@@ -16491,6 +16494,14 @@ def test_openapi_preview_preserves_parameter_name_at_maximum_length()
 parameter_name = "p" * 160
 ⋮----
 def test_openapi_preview_rejects_parameter_name_above_maximum_length()
+⋮----
+def test_openapi_preview_preserves_response_content_type_at_maximum_length()
+⋮----
+media_type = "application/" + ("a" * 108)
+⋮----
+def test_openapi_preview_rejects_response_content_type_above_maximum_length()
+⋮----
+media_type = "application/" + ("a" * 109)
 ```
 
 ## File: tests/test_operational_alerts.py
