@@ -524,7 +524,10 @@ def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any])
     return tuple(normalized)
 
 
-def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+def _response_metadata(
+    operation: dict[str, Any],
+    document: dict[str, Any],
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
     responses = operation.get("responses")
     if not isinstance(responses, dict):
         return (), ()
@@ -552,6 +555,26 @@ def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tupl
                         content_types.add(normalized_media_type)
         if len(codes) >= 50:
             break
+
+    produces_source = (
+        operation.get("produces")
+        if "produces" in operation
+        else document.get("produces")
+    )
+    if isinstance(produces_source, list):
+        for media_type in produces_source:
+            if not isinstance(media_type, str) or not media_type.strip():
+                continue
+            normalized_media_type = media_type.strip()
+            if len(normalized_media_type) > MAX_RESPONSE_CONTENT_TYPE_LENGTH:
+                raise OpenApiPreviewError(
+                    "OpenAPI response content type exceeds "
+                    f"{MAX_RESPONSE_CONTENT_TYPE_LENGTH} characters"
+                )
+            content_types.add(normalized_media_type)
+            if len(content_types) >= 50:
+                break
+
     return tuple(codes), tuple(sorted(content_types)[:50])
 
 def _document_size_bytes(document: dict[str, Any]) -> int:
@@ -646,7 +669,10 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
             )
             explicitly_public = operation_has_security and operation.get("security") == []
             parameters = _normalized_parameters(raw_item, operation)
-            response_codes, response_content_types = _response_metadata(operation)
+            response_codes, response_content_types = _response_metadata(
+                operation,
+                document,
+            )
             risk_signals = _operation_risk_signals(
                 path,
                 operation,
