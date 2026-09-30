@@ -1238,3 +1238,83 @@ def test_openapi_preview_rejects_source_version_above_maximum_length():
                 },
             }
         )
+
+
+def test_swagger_preview_uses_document_produces_as_response_content_types():
+    result = build_openapi_read_only_preview(
+        {
+            "swagger": "2.0",
+            "produces": ["application/json", "text/plain"],
+            "paths": {
+                "/items": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["response_content_types"] == [
+        "application/json",
+        "text/plain",
+    ]
+    assert result["network_requests_sent"] == 0
+
+
+def test_swagger_preview_operation_produces_overrides_document_produces():
+    result = build_openapi_read_only_preview(
+        {
+            "swagger": "2.0",
+            "produces": ["application/json"],
+            "paths": {
+                "/items": {
+                    "get": {
+                        "produces": ["application/xml"],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["response_content_types"] == ["application/xml"]
+    assert result["network_requests_sent"] == 0
+
+
+def test_swagger_preview_deduplicates_produces_metadata():
+    result = build_openapi_read_only_preview(
+        {
+            "swagger": "2.0",
+            "produces": ["application/json", "application/json"],
+            "paths": {
+                "/items": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["response_content_types"] == ["application/json"]
+
+
+def test_swagger_preview_rejects_overlong_produces_content_type():
+    media_type = "application/" + ("a" * 109)
+    assert len(media_type) == 121
+
+    with pytest.raises(OpenApiPreviewError, match="120 characters"):
+        build_openapi_read_only_preview(
+            {
+                "swagger": "2.0",
+                "produces": [media_type],
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
