@@ -6658,12 +6658,13 @@ top = [
 ⋮----
 MAX_SECURITY_SCHEMES = 100
 MAX_SECURITY_REFERENCES = 100
+MAX_SECURITY_SCHEME_NAME_LENGTH = 160
 ⋮----
 def _security_requirement_names(value: Any) -> tuple[str, ...]
 ⋮----
 names: set[str] = set()
 ⋮----
-name = str(raw_name).strip()[:160]
+name = str(raw_name).strip()
 ⋮----
 def _security_scheme_inventory(document: dict[str, Any]) -> tuple[dict[str, Any], ...]
 ⋮----
@@ -16521,6 +16522,16 @@ schema_type = "t" * 80
 def test_openapi_preview_rejects_parameter_schema_type_above_maximum_length()
 ⋮----
 schema_type = "t" * 81
+⋮----
+def test_openapi_preview_preserves_security_scheme_name_at_maximum_length()
+⋮----
+scheme_name = "s" * 160
+⋮----
+def test_openapi_preview_rejects_security_scheme_name_above_maximum_length()
+⋮----
+scheme_name = "s" * 161
+⋮----
+def test_openapi_preview_rejects_security_scheme_reference_above_maximum_length()
 ```
 
 ## File: tests/test_operational_alerts.py
