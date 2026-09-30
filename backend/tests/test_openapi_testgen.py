@@ -1166,3 +1166,75 @@ def test_openapi_preview_rejects_overlong_oauth_flow_name():
                 },
             }
         )
+
+
+def test_openapi_preview_preserves_tag_at_maximum_length():
+    tag = "t" * 80
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/items": {
+                    "get": {
+                        "tags": [tag],
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["tags"] == [tag]
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_tag_above_maximum_length():
+    with pytest.raises(OpenApiPreviewError, match="tag exceeds 80 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "tags": ["t" * 81],
+                            "responses": {"200": {"description": "ok"}},
+                        }
+                    }
+                },
+            }
+        )
+
+
+def test_openapi_preview_preserves_source_version_at_maximum_length():
+    version = "v" * 40
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": version,
+            "paths": {
+                "/health": {
+                    "get": {
+                        "responses": {"200": {"description": "ok"}}
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["source_version"] == version
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi_preview_rejects_source_version_above_maximum_length():
+    with pytest.raises(OpenApiPreviewError, match="version exceeds 40 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "v" * 41,
+                "paths": {
+                    "/health": {
+                        "get": {
+                            "responses": {"200": {"description": "ok"}}
+                        }
+                    }
+                },
+            }
+        )
