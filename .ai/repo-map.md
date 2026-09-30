@@ -7174,6 +7174,7 @@ MAX_PATHS = 250
 MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
+MAX_PARAMETER_NAME_LENGTH = 160
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 ⋮----
 @dataclass(frozen=True)
@@ -7307,7 +7308,7 @@ combined: list[Any] = []
 normalized: list[dict[str, Any]] = []
 seen: set[tuple[str, str]] = set()
 ⋮----
-name = str(item.get("name") or "").strip()[:160]
+name = str(item.get("name") or "").strip()
 location = str(item.get("in") or "").strip().lower()
 ⋮----
 key = (location, name.lower())
@@ -17092,6 +17093,12 @@ def test_openapi_preview_preserves_operation_id_at_maximum_length()
 operation_id = "a" * 160
 ⋮----
 def test_openapi_preview_rejects_operation_id_above_maximum_length()
+⋮----
+def test_openapi_preview_preserves_parameter_name_at_maximum_length()
+⋮----
+parameter_name = "p" * 160
+⋮----
+def test_openapi_preview_rejects_parameter_name_above_maximum_length()
 ````
 
 ## File: backend/tests/test_operational_alerts.py

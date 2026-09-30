@@ -22,23 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-28T11:16:44Z
+Generated: 2026-09-30T13:08:58Z
 
 ### Git
 - Branch: `main`
-- Head: `41863b266a7f`
-- Commit date: 2026-09-28T13:15:58+02:00
-- Commit: fix: bound OpenAPI operation identifiers (#430)
+- Head: `63b4ab6be620`
+- Commit date: 2026-09-30T15:08:45+02:00
+- Commit: fix: bound OpenAPI parameter names (#431)
 - Tracked files: 582
 
 ### Recently changed files
 - `backend/app/openapi_testgen.py`
 - `backend/tests/test_openapi_testgen.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`
