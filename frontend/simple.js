@@ -1355,7 +1355,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=94',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=95',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
