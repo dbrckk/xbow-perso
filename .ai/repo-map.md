@@ -7175,6 +7175,7 @@ MAX_CASES = 500
 MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
 MAX_PARAMETER_NAME_LENGTH = 160
+MAX_PARAMETER_SCHEMA_TYPE_LENGTH = 80
 MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
 MAX_RESPONSE_CODE_LENGTH = 20
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
@@ -7316,6 +7317,7 @@ location = str(item.get("in") or "").strip().lower()
 key = (location, name.lower())
 ⋮----
 schema = item.get("schema") if isinstance(item.get("schema"), dict) else {}
+schema_type = str(schema.get("type") or "").strip()
 ⋮----
 def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tuple[str, ...]]
 ⋮----
@@ -17119,6 +17121,14 @@ response_code = "X" * 20
 def test_openapi_preview_rejects_response_code_above_maximum_length()
 ⋮----
 response_code = "X" * 21
+⋮----
+def test_openapi_preview_preserves_parameter_schema_type_at_maximum_length()
+⋮----
+schema_type = "t" * 80
+⋮----
+def test_openapi_preview_rejects_parameter_schema_type_above_maximum_length()
+⋮----
+schema_type = "t" * 81
 ````
 
 ## File: backend/tests/test_operational_alerts.py
