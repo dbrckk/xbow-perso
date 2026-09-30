@@ -294,6 +294,12 @@ def _review_summary(cases: list[OpenApiTestCase]) -> dict[str, Any]:
 MAX_SECURITY_SCHEMES = 100
 MAX_SECURITY_REFERENCES = 100
 MAX_SECURITY_SCHEME_NAME_LENGTH = 160
+MAX_SECURITY_SCHEME_TYPE_LENGTH = 80
+MAX_SECURITY_HTTP_SCHEME_LENGTH = 80
+MAX_SECURITY_BEARER_FORMAT_LENGTH = 80
+MAX_SECURITY_LOCATION_LENGTH = 40
+MAX_SECURITY_FLOW_NAME_LENGTH = 80
+MAX_SECURITY_FLOW_COUNT = 20
 
 
 def _security_requirement_names(value: Any) -> tuple[str, ...]:
@@ -343,21 +349,65 @@ def _security_scheme_inventory(document: dict[str, Any]) -> tuple[dict[str, Any]
             )
         if not name:
             continue
-        scheme_type = str(raw_scheme.get("type") or "").strip().lower()[:80] or None
-        http_scheme = str(raw_scheme.get("scheme") or "").strip().lower()[:80] or None
-        bearer_format = str(raw_scheme.get("bearerFormat") or "").strip()[:80] or None
-        location = str(raw_scheme.get("in") or "").strip().lower()[:40] or None
+        scheme_type_value = str(raw_scheme.get("type") or "").strip().lower()
+        if len(scheme_type_value) > MAX_SECURITY_SCHEME_TYPE_LENGTH:
+            raise OpenApiPreviewError(
+                "OpenAPI security scheme type exceeds "
+                f"{MAX_SECURITY_SCHEME_TYPE_LENGTH} characters"
+            )
+        scheme_type = scheme_type_value or None
+
+        http_scheme_value = str(raw_scheme.get("scheme") or "").strip().lower()
+        if len(http_scheme_value) > MAX_SECURITY_HTTP_SCHEME_LENGTH:
+            raise OpenApiPreviewError(
+                "OpenAPI HTTP auth scheme exceeds "
+                f"{MAX_SECURITY_HTTP_SCHEME_LENGTH} characters"
+            )
+        http_scheme = http_scheme_value or None
+
+        bearer_format_value = str(raw_scheme.get("bearerFormat") or "").strip()
+        if len(bearer_format_value) > MAX_SECURITY_BEARER_FORMAT_LENGTH:
+            raise OpenApiPreviewError(
+                "OpenAPI bearer format exceeds "
+                f"{MAX_SECURITY_BEARER_FORMAT_LENGTH} characters"
+            )
+        bearer_format = bearer_format_value or None
+
+        location_value = str(raw_scheme.get("in") or "").strip().lower()
+        if len(location_value) > MAX_SECURITY_LOCATION_LENGTH:
+            raise OpenApiPreviewError(
+                "OpenAPI security scheme location exceeds "
+                f"{MAX_SECURITY_LOCATION_LENGTH} characters"
+            )
+        location = location_value or None
 
         flows: list[str] = []
         raw_flows = raw_scheme.get("flows")
         if isinstance(raw_flows, dict):
-            flows = sorted(
-                str(flow).strip()[:80]
-                for flow, value in raw_flows.items()
-                if isinstance(flow, str) and flow.strip() and isinstance(value, dict)
-            )[:20]
-        swagger_flow = str(raw_scheme.get("flow") or "").strip()[:80]
-        if swagger_flow and swagger_flow not in flows:
+            for flow, value in sorted(raw_flows.items(), key=lambda item: str(item[0])):
+                if not isinstance(flow, str) or not flow.strip() or not isinstance(value, dict):
+                    continue
+                flow_name = flow.strip()
+                if len(flow_name) > MAX_SECURITY_FLOW_NAME_LENGTH:
+                    raise OpenApiPreviewError(
+                        "OpenAPI OAuth flow name exceeds "
+                        f"{MAX_SECURITY_FLOW_NAME_LENGTH} characters"
+                    )
+                flows.append(flow_name)
+                if len(flows) >= MAX_SECURITY_FLOW_COUNT:
+                    break
+
+        swagger_flow = str(raw_scheme.get("flow") or "").strip()
+        if len(swagger_flow) > MAX_SECURITY_FLOW_NAME_LENGTH:
+            raise OpenApiPreviewError(
+                "OpenAPI OAuth flow name exceeds "
+                f"{MAX_SECURITY_FLOW_NAME_LENGTH} characters"
+            )
+        if (
+            swagger_flow
+            and swagger_flow not in flows
+            and len(flows) < MAX_SECURITY_FLOW_COUNT
+        ):
             flows.append(swagger_flow)
 
         inventory.append(
@@ -367,7 +417,7 @@ def _security_scheme_inventory(document: dict[str, Any]) -> tuple[dict[str, Any]
                 "scheme": http_scheme,
                 "bearer_format": bearer_format,
                 "in": location,
-                "oauth_flows": flows[:20],
+                "oauth_flows": flows,
                 "open_id_connect": bool(str(raw_scheme.get("openIdConnectUrl") or "").strip()),
             }
         )
