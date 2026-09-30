@@ -293,6 +293,7 @@ def _review_summary(cases: list[OpenApiTestCase]) -> dict[str, Any]:
 
 MAX_SECURITY_SCHEMES = 100
 MAX_SECURITY_REFERENCES = 100
+MAX_SECURITY_SCHEME_NAME_LENGTH = 160
 
 
 def _security_requirement_names(value: Any) -> tuple[str, ...]:
@@ -303,7 +304,12 @@ def _security_requirement_names(value: Any) -> tuple[str, ...]:
         if not isinstance(item, dict):
             continue
         for raw_name in item:
-            name = str(raw_name).strip()[:160]
+            name = str(raw_name).strip()
+            if len(name) > MAX_SECURITY_SCHEME_NAME_LENGTH:
+                raise OpenApiPreviewError(
+                    "OpenAPI security scheme reference exceeds "
+                    f"{MAX_SECURITY_SCHEME_NAME_LENGTH} characters"
+                )
             if name:
                 names.add(name)
             if len(names) >= MAX_SECURITY_REFERENCES:
@@ -329,7 +335,12 @@ def _security_scheme_inventory(document: dict[str, Any]) -> tuple[dict[str, Any]
             break
         if not isinstance(raw_scheme, dict) or "$ref" in raw_scheme:
             continue
-        name = str(raw_name).strip()[:160]
+        name = str(raw_name).strip()
+        if len(name) > MAX_SECURITY_SCHEME_NAME_LENGTH:
+            raise OpenApiPreviewError(
+                "OpenAPI security scheme name exceeds "
+                f"{MAX_SECURITY_SCHEME_NAME_LENGTH} characters"
+            )
         if not name:
             continue
         scheme_type = str(raw_scheme.get("type") or "").strip().lower()[:80] or None
