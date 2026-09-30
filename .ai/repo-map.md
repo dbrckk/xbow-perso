@@ -14106,7 +14106,7 @@ block = script.split("async function loadOpenapiFile()", 1)[1].split("async func
 ⋮----
 def test_openapi_file_ux_validates_and_resets_locally()
 ⋮----
-def test_pwa_precache_matches_v96_assets()
+def test_pwa_precache_matches_v97_assets()
 ⋮----
 def test_dashboard_surfaces_passive_openapi_auth_inventory()
 ⋮----
