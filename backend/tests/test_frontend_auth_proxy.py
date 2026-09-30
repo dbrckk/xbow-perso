@@ -420,7 +420,7 @@ def test_dashboard_surfaces_passive_openapi_auth_inventory():
 
 def test_openapi_auth_dashboard_remains_render_only():
     script = _text("frontend/simple.js")
-    block = script.split("const auth=payload?.summary?.authentication||{};", 1)[1].split("const top=Array.isArray", 1)[0]
+    block = script.split("const auth=payload?.summary?.authentication||{};", 1)[1].split("const cases=Array.isArray", 1)[0]
     assert "fetch(" not in block
     assert "api(" not in block
     assert "innerHTML" not in block
