@@ -1399,3 +1399,102 @@ def test_swagger_preview_rejects_overlong_consumes_content_type():
                 },
             }
         )
+
+
+def test_openapi3_preview_inventories_request_body_content_types():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/items": {
+                    "get": {
+                        "requestBody": {
+                            "content": {
+                                "application/json": {},
+                                "application/problem+json": {},
+                            }
+                        },
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["schema"] == "openapi-read-only-preview-v7"
+    assert result["cases"][0]["request_content_types"] == [
+        "application/json",
+        "application/problem+json",
+    ]
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi3_preview_unions_request_body_content_with_consumes_metadata():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "consumes": ["application/json", "text/plain"],
+            "paths": {
+                "/items": {
+                    "get": {
+                        "requestBody": {
+                            "content": {
+                                "application/json": {},
+                                "application/xml": {},
+                            }
+                        },
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["request_content_types"] == [
+        "application/json",
+        "application/xml",
+        "text/plain",
+    ]
+
+
+def test_openapi3_preview_skips_referenced_request_body_metadata():
+    result = build_openapi_read_only_preview(
+        {
+            "openapi": "3.1.0",
+            "paths": {
+                "/items": {
+                    "get": {
+                        "requestBody": {
+                            "$ref": "https://example.invalid/request-body.json"
+                        },
+                        "responses": {"200": {"description": "ok"}},
+                    }
+                }
+            },
+        }
+    )
+
+    assert result["cases"][0]["request_content_types"] == []
+    assert result["network_requests_sent"] == 0
+
+
+def test_openapi3_preview_rejects_overlong_request_content_type():
+    media_type = "application/" + ("a" * 109)
+    assert len(media_type) == 121
+
+    with pytest.raises(OpenApiPreviewError, match="request content type exceeds 120 characters"):
+        build_openapi_read_only_preview(
+            {
+                "openapi": "3.1.0",
+                "paths": {
+                    "/items": {
+                        "get": {
+                            "requestBody": {
+                                "content": {media_type: {}}
+                            },
+                            "responses": {"200": {"description": "ok"}},
+                        }
+                    }
+                },
+            }
+        )
