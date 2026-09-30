@@ -38,6 +38,7 @@ class OpenApiTestCase:
     response_codes: tuple[str, ...]
     response_content_types: tuple[str, ...]
     request_content_types: tuple[str, ...]
+    request_body_required: bool
     risk_signals: tuple[dict[str, Any], ...]
     review_priority: int
     review_priority_reasons: tuple[str, ...]
@@ -526,6 +527,13 @@ def _normalized_parameters(path_item: dict[str, Any], operation: dict[str, Any])
     return tuple(normalized)
 
 
+def _request_body_required(operation: dict[str, Any]) -> bool:
+    request_body = operation.get("requestBody")
+    if not isinstance(request_body, dict) or "$ref" in request_body:
+        return False
+    return request_body.get("required") is True
+
+
 def _request_content_types(
     operation: dict[str, Any],
     document: dict[str, Any],
@@ -721,6 +729,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 document,
             )
             request_content_types = _request_content_types(operation, document)
+            request_body_required = _request_body_required(operation)
             risk_signals = _operation_risk_signals(
                 path,
                 operation,
@@ -747,6 +756,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                     response_codes=response_codes,
                     response_content_types=response_content_types,
                     request_content_types=request_content_types,
+                    request_body_required=request_body_required,
                     risk_signals=tuple(risk_signals),
                     review_priority=review_priority,
                     review_priority_reasons=review_priority_reasons,
@@ -756,7 +766,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v7",
+        "schema": "openapi-read-only-preview-v8",
         "source_version": version,
         "execution_mode": "preview_only",
         "read_only": True,
