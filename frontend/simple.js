@@ -1201,18 +1201,22 @@
         item,
       ])
     );
-    const top=Array.isArray(review?.top_review_operations)
+    const prioritized=Array.isArray(review?.top_review_operations)
       ?review.top_review_operations.slice(0,10)
       :[];
-    for(const item of top){
+    const visibleOperations=prioritized.length
+      ?prioritized
+      :cases.slice(0,10);
+    for(const item of visibleOperations){
       const row=document.createElement('div');
       row.className='simple-log';
       const method=String(item?.method||'GET').toUpperCase();
       const path=String(item?.path||'/');
+      const operationCase=caseByOperation.get(method+' '+path)||item;
       const head=document.createElement('strong');
       head.textContent=
         method+' '+path+
-        ' · priorité '+String(item?.review_priority||0)+'/100';
+        ' · priorité '+String(item?.review_priority||operationCase?.review_priority||0)+'/100';
       row.appendChild(head);
       const reasons=Array.isArray(item?.review_priority_reasons)
         ?item.review_priority_reasons.map(openapiCategoryLabel)
@@ -1224,7 +1228,28 @@
         row.appendChild(detail);
       }
 
-      const operationCase=caseByOperation.get(method+' '+path);
+      const metadataParts=[];
+      if(operationCase?.operation_id){
+        metadataParts.push('operationId '+String(operationCase.operation_id));
+      }
+      const operationTags=Array.isArray(operationCase?.tags)
+        ?operationCase.tags.slice(0,6)
+        :[];
+      if(operationTags.length){
+        metadataParts.push('tags '+operationTags.join(', '));
+      }
+      if(operationCase?.explicitly_public===true){
+        metadataParts.push('public explicite');
+      }else if(operationCase?.authentication_declared===true){
+        metadataParts.push('auth déclarée');
+      }
+      if(metadataParts.length){
+        const metadataDetail=document.createElement('div');
+        metadataDetail.className='muted compact';
+        metadataDetail.textContent=metadataParts.join(' · ');
+        row.appendChild(metadataDetail);
+      }
+
       const requestTypes=Array.isArray(operationCase?.request_content_types)
         ?operationCase.request_content_types.slice(0,8)
         :[];
