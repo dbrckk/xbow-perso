@@ -1210,10 +1210,20 @@
       const responseTypes=Array.isArray(operationCase?.response_content_types)
         ?operationCase.response_content_types.slice(0,8)
         :[];
-      if(responseTypes.length){
+      const responseCodes=Array.isArray(operationCase?.response_codes)
+        ?operationCase.response_codes.slice(0,12)
+        :[];
+      if(responseTypes.length||responseCodes.length){
         const responseDetail=document.createElement('div');
         responseDetail.className='muted compact';
-        responseDetail.textContent='Sortie : '+responseTypes.join(', ');
+        const responseParts=[];
+        if(responseCodes.length){
+          responseParts.push('Codes : '+responseCodes.join(', '));
+        }
+        if(responseTypes.length){
+          responseParts.push('Sortie : '+responseTypes.join(', '));
+        }
+        responseDetail.textContent=responseParts.join(' · ');
         row.appendChild(responseDetail);
       }
       root.appendChild(row);
@@ -1365,7 +1375,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=96',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=97',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
