@@ -7176,6 +7176,7 @@ MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
 MAX_PARAMETER_NAME_LENGTH = 160
 MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
+MAX_RESPONSE_CODE_LENGTH = 20
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 ⋮----
 @dataclass(frozen=True)
@@ -7323,7 +7324,7 @@ responses = operation.get("responses")
 codes: list[str] = []
 content_types: set[str] = set()
 ⋮----
-code = str(raw_code)[:20]
+code = str(raw_code).strip()
 ⋮----
 content = response.get("content")
 ⋮----
@@ -17110,6 +17111,14 @@ media_type = "application/" + ("a" * 108)
 def test_openapi_preview_rejects_response_content_type_above_maximum_length()
 ⋮----
 media_type = "application/" + ("a" * 109)
+⋮----
+def test_openapi_preview_preserves_response_code_at_maximum_length()
+⋮----
+response_code = "X" * 20
+⋮----
+def test_openapi_preview_rejects_response_code_above_maximum_length()
+⋮----
+response_code = "X" * 21
 ````
 
 ## File: backend/tests/test_operational_alerts.py

@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T14:25:56Z
+Generated: 2026-09-30T14:34:18Z
 
 ### Git
 - Branch: `main`
-- Head: `89edcdc6884b`
-- Commit date: 2026-09-30T16:25:44+02:00
-- Commit: fix: bound OpenAPI response content types (#434)
+- Head: `2a78b617af0e`
+- Commit date: 2026-09-30T16:34:03+02:00
+- Commit: fix: bound OpenAPI response codes (#435)
 - Tracked files: 582
 
 ### Recently changed files
