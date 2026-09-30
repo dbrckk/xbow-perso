@@ -7197,6 +7197,7 @@ parameters: tuple[dict[str, Any], ...]
 response_codes: tuple[str, ...]
 response_content_types: tuple[str, ...]
 request_content_types: tuple[str, ...]
+request_body_required: bool
 risk_signals: tuple[dict[str, Any], ...]
 review_priority: int
 review_priority_reasons: tuple[str, ...]
@@ -7345,9 +7346,11 @@ key = (location, name.lower())
 schema = item.get("schema") if isinstance(item.get("schema"), dict) else {}
 schema_type = str(schema.get("type") or "").strip()
 ⋮----
-content_types: set[str] = set()
+def _request_body_required(operation: dict[str, Any]) -> bool
 ⋮----
 request_body = operation.get("requestBody")
+⋮----
+content_types: set[str] = set()
 ⋮----
 content = request_body.get("content")
 ⋮----
@@ -7406,6 +7409,7 @@ explicitly_public = operation_has_security and operation.get("security") == []
 parameters = _normalized_parameters(raw_item, operation)
 ⋮----
 request_content_types = _request_content_types(operation, document)
+request_body_required = _request_body_required(operation)
 risk_signals = _operation_risk_signals(
 ````
 
@@ -17225,6 +17229,12 @@ def test_openapi3_preview_unions_request_body_content_with_consumes_metadata()
 def test_openapi3_preview_skips_referenced_request_body_metadata()
 ⋮----
 def test_openapi3_preview_rejects_overlong_request_content_type()
+⋮----
+def test_openapi3_preview_marks_required_request_body()
+⋮----
+def test_openapi3_preview_marks_optional_request_body_false()
+⋮----
+def test_openapi3_preview_does_not_follow_required_request_body_ref()
 ````
 
 ## File: backend/tests/test_operational_alerts.py

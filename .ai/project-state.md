@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T15:37:08Z
+Generated: 2026-09-30T19:44:01Z
 
 ### Git
 - Branch: `main`
-- Head: `de93773f785c`
-- Commit date: 2026-09-30T17:36:52+02:00
-- Commit: feat: inventory OpenAPI 3 request content metadata (#442)
+- Head: `89d410baeaba`
+- Commit date: 2026-09-30T21:43:49+02:00
+- Commit: feat: inventory required OpenAPI request bodies (#443)
 - Tracked files: 582
 
 ### Recently changed files
