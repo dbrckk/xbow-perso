@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T20:22:00Z
+Generated: 2026-09-30T20:28:44Z
 
 ### Git
 - Branch: `main`
-- Head: `3fb614dd48fe`
-- Commit date: 2026-09-30T22:21:49+02:00
-- Commit: feat: surface OpenAPI request metadata in dashboard (#444)
+- Head: `a79b44d30dfc`
+- Commit date: 2026-09-30T22:28:32+02:00
+- Commit: feat: surface OpenAPI response metadata in dashboard (#445)
 - Tracked files: 582
 
 ### Recently changed files
