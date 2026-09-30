@@ -17,6 +17,7 @@ MAX_PATH_LENGTH = 2048
 MAX_OPERATION_ID_LENGTH = 160
 MAX_PARAMETER_NAME_LENGTH = 160
 MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
+MAX_RESPONSE_CODE_LENGTH = 20
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
@@ -452,7 +453,11 @@ def _response_metadata(operation: dict[str, Any]) -> tuple[tuple[str, ...], tupl
     codes: list[str] = []
     content_types: set[str] = set()
     for raw_code, response in sorted(responses.items(), key=lambda item: str(item[0])):
-        code = str(raw_code)[:20]
+        code = str(raw_code).strip()
+        if len(code) > MAX_RESPONSE_CODE_LENGTH:
+            raise OpenApiPreviewError(
+                f"OpenAPI response code exceeds {MAX_RESPONSE_CODE_LENGTH} characters"
+            )
         codes.append(code)
         if isinstance(response, dict):
             content = response.get("content")
