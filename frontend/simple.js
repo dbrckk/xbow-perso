@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v94';
+  const UI_VERSION='v98';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -1096,7 +1096,22 @@
     if(!root)return;
     root.replaceChildren();
 
-    const review=payload?.summary?.review||{};
+    const summary=payload?.summary||{};
+    const review=summary?.review||{};
+
+    const coverage=document.createElement('p');
+    coverage.className='muted compact';
+    const schemaLabel=String(payload?.schema||'preview inconnu');
+    const sourceVersion=String(payload?.source_version||'version inconnue');
+    coverage.textContent=
+      'Spécification '+sourceVersion+' · '+schemaLabel+' · '+
+      String(summary?.paths_seen||0)+' chemin(s) · '+
+      String(summary?.cases_generated||0)+' opération(s) en lecture seule · '+
+      String(summary?.mutating_operations_skipped||0)+' mutation(s) ignorée(s) · '+
+      String(summary?.invalid_entries_skipped||0)+' entrée(s) invalide(s) ignorée(s) · '+
+      String(payload?.network_requests_sent||0)+' requête(s) réseau.';
+    root.appendChild(coverage);
+
     const headline=document.createElement('p');
     headline.className='muted compact';
     headline.textContent=
@@ -1157,6 +1172,26 @@
       warning.className='muted compact state-review';
       warning.textContent='Références auth inconnues : '+unknown.slice(0,12).join(', ')+'.';
       root.appendChild(warning);
+    }
+
+    if(publicOverrides.length){
+      const publicLine=document.createElement('p');
+      publicLine.className='muted compact state-review';
+      publicLine.textContent='Overrides publics : '+
+        publicOverrides.slice(0,12).map(item=>
+          String(item?.method||'GET')+' '+String(item?.path||'/')
+        ).join(' · ');
+      root.appendChild(publicLine);
+    }
+
+    if(unauthenticated.length){
+      const unauthLine=document.createElement('p');
+      unauthLine.className='muted compact state-review';
+      unauthLine.textContent='Surfaces sensibles sans auth : '+
+        unauthenticated.slice(0,12).map(item=>
+          String(item?.method||'GET')+' '+String(item?.path||'/')
+        ).join(' · ');
+      root.appendChild(unauthLine);
     }
 
     const cases=Array.isArray(payload?.cases)?payload.cases:[];
@@ -1375,7 +1410,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=97',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=98',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
