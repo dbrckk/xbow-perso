@@ -4,6 +4,7 @@ from dataclasses import asdict, dataclass
 import json
 import re
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 
 class OpenApiPreviewError(ValueError):
@@ -21,6 +22,11 @@ MAX_RESPONSE_CONTENT_TYPE_LENGTH = 120
 MAX_RESPONSE_CODE_LENGTH = 20
 MAX_TAG_LENGTH = 80
 MAX_SOURCE_VERSION_LENGTH = 40
+MAX_SERVER_ENTRIES = 20
+MAX_SERVER_URL_LENGTH = 2048
+MAX_SWAGGER_HOST_LENGTH = 255
+MAX_SWAGGER_SCHEME_LENGTH = 20
+MAX_SWAGGER_BASE_PATH_LENGTH = 2048
 MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
 
 
@@ -632,6 +638,118 @@ def _response_metadata(
 
     return tuple(codes), tuple(sorted(content_types)[:50])
 
+def _sanitize_declared_server_url(raw_url: str) -> str:
+    value = raw_url.strip()
+    if len(value) > MAX_SERVER_URL_LENGTH:
+        raise OpenApiPreviewError(
+            f"OpenAPI server URL exceeds {MAX_SERVER_URL_LENGTH} characters"
+        )
+    try:
+        parsed = urlsplit(value)
+    except ValueError as exc:
+        raise OpenApiPreviewError("OpenAPI server URL is invalid") from exc
+
+    netloc = parsed.netloc
+    if "@" in netloc:
+        netloc = netloc.rsplit("@", 1)[1]
+    return urlunsplit((parsed.scheme, netloc, parsed.path, "", ""))
+
+
+def _passive_server_inventory(document: dict[str, Any]) -> dict[str, Any]:
+    declared: list[dict[str, str]] = []
+
+    servers = document.get("servers")
+    if isinstance(servers, list):
+        for server in servers:
+            if not isinstance(server, dict):
+                continue
+            raw_url = server.get("url")
+            if not isinstance(raw_url, str) or not raw_url.strip():
+                continue
+            declared.append(
+                {
+                    "source": "openapi3.servers",
+                    "url": _sanitize_declared_server_url(raw_url),
+                }
+            )
+            if len(declared) >= MAX_SERVER_ENTRIES:
+                break
+
+    if not declared and str(document.get("swagger") or "").strip().startswith("2."):
+        raw_host = document.get("host")
+        host = raw_host.strip() if isinstance(raw_host, str) else ""
+        if len(host) > MAX_SWAGGER_HOST_LENGTH:
+            raise OpenApiPreviewError(
+                f"Swagger host exceeds {MAX_SWAGGER_HOST_LENGTH} characters"
+            )
+
+        raw_base_path = document.get("basePath")
+        base_path = raw_base_path.strip() if isinstance(raw_base_path, str) else ""
+        if len(base_path) > MAX_SWAGGER_BASE_PATH_LENGTH:
+            raise OpenApiPreviewError(
+                f"Swagger basePath exceeds {MAX_SWAGGER_BASE_PATH_LENGTH} characters"
+            )
+        if base_path and not base_path.startswith("/"):
+            base_path = "/" + base_path
+
+        schemes = document.get("schemes")
+        normalized_schemes: list[str] = []
+        if isinstance(schemes, list):
+            for scheme in schemes:
+                if not isinstance(scheme, str) or not scheme.strip():
+                    continue
+                normalized = scheme.strip().lower()
+                if len(normalized) > MAX_SWAGGER_SCHEME_LENGTH:
+                    raise OpenApiPreviewError(
+                        f"Swagger scheme exceeds {MAX_SWAGGER_SCHEME_LENGTH} characters"
+                    )
+                if normalized not in normalized_schemes:
+                    normalized_schemes.append(normalized)
+                if len(normalized_schemes) >= MAX_SERVER_ENTRIES:
+                    break
+
+        if host:
+            if normalized_schemes:
+                for scheme in normalized_schemes:
+                    declared.append(
+                        {
+                            "source": "swagger2.host",
+                            "url": _sanitize_declared_server_url(
+                                f"{scheme}://{host}{base_path}"
+                            ),
+                        }
+                    )
+                    if len(declared) >= MAX_SERVER_ENTRIES:
+                        break
+            else:
+                declared.append(
+                    {
+                        "source": "swagger2.host",
+                        "url": _sanitize_declared_server_url(
+                            f"//{host}{base_path}"
+                        ),
+                    }
+                )
+
+    unique: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in declared:
+        key = (item["source"], item["url"])
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(item)
+        if len(unique) >= MAX_SERVER_ENTRIES:
+            break
+
+    return {
+        "declared_servers": unique,
+        "declared_server_count": len(unique),
+        "network_resolution_performed": False,
+        "scope_decision_performed": False,
+    }
+
+
 def _document_size_bytes(document: dict[str, Any]) -> int:
     try:
         encoded = json.dumps(
@@ -766,7 +884,7 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
                 raise OpenApiPreviewError(f"OpenAPI preview exceeds {MAX_CASES} cases")
 
     return {
-        "schema": "openapi-read-only-preview-v8",
+        "schema": "openapi-read-only-preview-v9",
         "source_version": version,
         "execution_mode": "preview_only",
         "read_only": True,
@@ -785,5 +903,6 @@ def build_openapi_read_only_preview(document: dict[str, Any]) -> dict[str, Any]:
             "invalid_entries_skipped": skipped_invalid,
             "review": _review_summary(cases),
             "authentication": _authentication_summary(document, cases),
+            "servers": _passive_server_inventory(document),
         },
     }
