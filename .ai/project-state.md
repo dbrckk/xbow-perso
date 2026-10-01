@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T07:52:34Z
+Generated: 2026-10-01T07:57:22Z
 
 ### Git
 - Branch: `main`
-- Head: `8e4882364259`
-- Commit date: 2026-10-01T09:52:22+02:00
-- Commit: feat: refresh advisory submission quality score (#458)
-- Tracked files: 582
+- Head: `389ed8b83085`
+- Commit date: 2026-10-01T09:57:10+02:00
+- Commit: feat: refresh advisory public duplicate similarity (#459)
+- Tracked files: 584
 
 ### Recently changed files
+- `backend/app/finding_intelligence.py`
+- `backend/app/public_duplicate_intelligence.py`
+- `backend/tests/test_finding_intelligence.py`
+- `backend/tests/test_public_duplicate_intelligence.py`
 - `backend/app/report_readiness.py`
 - `backend/tests/test_report_readiness.py`
 - `.github/workflows/release-images.yml`

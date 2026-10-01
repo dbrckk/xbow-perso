@@ -579,7 +579,8 @@
         "backend/app/finding_readiness.py",
         "backend/app/finding_triage.py",
         "backend/app/main.py",
-        "backend/app/observation_graph.py"
+        "backend/app/observation_graph.py",
+        "backend/app/public_duplicate_intelligence.py"
       ],
       "dependents": [
         "backend/app/main.py",
@@ -587,7 +588,7 @@
         "backend/tests/test_finding_intelligence.py"
       ],
       "in_degree": 3,
-      "out_degree": 8
+      "out_degree": 9
     },
     "backend/app/finding_lifecycle.py": {
       "dependencies": [
@@ -1348,6 +1349,7 @@
         "backend/app/planner_advisory.py",
         "backend/app/planner_limits.py",
         "backend/app/postgres_storage.py",
+        "backend/app/public_duplicate_intelligence.py",
         "backend/app/queue_backend.py",
         "backend/app/recon_swarm.py",
         "backend/app/recon_worker.py",
@@ -1474,7 +1476,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 189,
+      "in_degree": 190,
       "out_degree": 57
     },
     "backend/app/metrics.py": {
@@ -2222,6 +2224,17 @@
       ],
       "in_degree": 1,
       "out_degree": 2
+    },
+    "backend/app/public_duplicate_intelligence.py": {
+      "dependencies": [
+        "backend/app/main.py"
+      ],
+      "dependents": [
+        "backend/app/finding_intelligence.py",
+        "backend/tests/test_public_duplicate_intelligence.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
     },
     "backend/app/queue_backend.py": {
       "dependencies": [
@@ -4819,6 +4832,15 @@
       "in_degree": 0,
       "out_degree": 4
     },
+    "backend/tests/test_public_duplicate_intelligence.py": {
+      "dependencies": [
+        "backend/app/public_duplicate_intelligence.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_queue_age_metrics.py": {
       "dependencies": [
         "backend/app/metrics.py",
@@ -5604,6 +5626,7 @@
         "backend/tests/test_postgres_integration.py",
         "backend/tests/test_postgres_storage.py",
         "backend/tests/test_production_migration.py",
+        "backend/tests/test_public_duplicate_intelligence.py",
         "backend/tests/test_queue_age_metrics.py",
         "backend/tests/test_queue_backend.py",
         "backend/tests/test_queue_health.py",
@@ -5665,7 +5688,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 215,
+      "in_degree": 216,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

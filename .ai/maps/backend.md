@@ -155,6 +155,7 @@ app/
   policy_integrity.py
   postgres_storage.py
   production_migration.py
+  public_duplicate_intelligence.py
   queue_backend.py
   readiness.py
   recon_priority.py
@@ -363,6 +364,7 @@ tests/
   test_postgres_integration.py
   test_postgres_storage.py
   test_production_migration.py
+  test_public_duplicate_intelligence.py
   test_queue_age_metrics.py
   test_queue_backend.py
   test_queue_health.py
@@ -2494,6 +2496,7 @@ triage_item = triage_by_id.get(finding_id)
 cluster = cluster_by_member.get(finding_id)
 cluster_id = cluster.cluster_id if cluster else None
 differential_item = differential_signals.get(
+duplicate_similarity = rank_public_duplicate_risk(
 ⋮----
 cluster_rows = []
 ⋮----
@@ -2507,6 +2510,16 @@ campaign = assert_campaign_exists(campaign_id)
 store = storage()
 graph = load_observation_graph(store, campaign.id)
 snapshots = store.list_hypothesis_snapshots(campaign.id, limit=50)
+intelligence = store.get_hackerone_intelligence_state() or {}
+public_reports = (
+program_handle = None
+⋮----
+binding = event.get("remote_binding")
+⋮----
+handle = str(binding.get("handle") or "").strip()
+⋮----
+program_handle = handle
+⋮----
 payload = build_finding_intelligence(
 ```
 
@@ -8319,6 +8332,55 @@ args = parser.parse_args()
 result = plan_migration() if args.command == "plan" else apply_migration()
 ```
 
+## File: app/public_duplicate_intelligence.py
+```python
+_TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9_-]{2,}", re.IGNORECASE)
+_STOP = {
+MAX_PUBLIC_REPORTS_COMPARED = 500
+MAX_MATCHES = 10
+MAX_LOCAL_TEXT = 1200
+⋮----
+def _bounded(value: Any, limit: int = MAX_LOCAL_TEXT) -> str
+⋮----
+text = str(value or "").replace("\x00", "").strip()
+⋮----
+def _tokens(*values: Any) -> set[str]
+⋮----
+joined = " ".join(_bounded(value) for value in values).lower()
+⋮----
+def _similarity(left: set[str], right: set[str]) -> float
+⋮----
+union = left | right
+⋮----
+"""Compare a finding with the cached public disclosed Hacktivity subset.
+
+    The result is advisory similarity only. It never predicts HackerOne's
+    duplicate decision, blocks reporting, expands scope, or performs network I/O.
+    """
+⋮----
+finding_tokens = _tokens(
+expected_handle = _bounded(program_handle, 128).lower()
+matches: list[dict[str, Any]] = []
+⋮----
+report_tokens = _tokens(
+base_similarity = _similarity(finding_tokens, report_tokens)
+⋮----
+report_handle = _bounded(report.get("program_handle"), 128).lower()
+same_program = bool(expected_handle and report_handle == expected_handle)
+similarity_signal = min(1.0, base_similarity + (0.10 if same_program else 0.0))
+⋮----
+top = matches[:limit]
+max_signal = float(top[0]["similarity_signal"]) if top else 0.0
+⋮----
+band = "high_public_similarity"
+⋮----
+band = "medium_public_similarity"
+⋮----
+band = "low_public_similarity"
+⋮----
+band = "no_public_similarity"
+```
+
 ## File: app/queue_backend.py
 ```python
 @runtime_checkable
@@ -13296,6 +13358,14 @@ def test_finding_intelligence_does_not_expose_query_values()
 serialized = str(result)
 ⋮----
 def test_finding_intelligence_route_is_exposed()
+⋮----
+def test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking()
+⋮----
+findings = [_finding("f1", "https://example.test/graphql", severity="high")]
+⋮----
+public_reports = [
+⋮----
+duplicate = result["findings"][0]["public_duplicate_similarity"]
 ```
 
 ## File: tests/test_finding_lifecycle.py
@@ -17617,6 +17687,21 @@ def test_postgres_storage_requires_database_url(monkeypatch)
 def test_postgres_storage_rejects_non_postgres_url(monkeypatch)
 ⋮----
 def test_postgres_storage_rejects_url_without_host(monkeypatch)
+```
+
+## File: tests/test_public_duplicate_intelligence.py
+```python
+def test_same_program_public_match_raises_similarity_without_blocking()
+⋮----
+reports = [
+⋮----
+result = rank_public_duplicate_risk(
+⋮----
+def test_unrelated_public_reports_keep_low_similarity()
+⋮----
+def test_public_duplicate_similarity_is_bounded_and_read_only()
+⋮----
+def test_public_duplicate_similarity_rejects_unbounded_match_limit()
 ```
 
 ## File: tests/test_queue_age_metrics.py

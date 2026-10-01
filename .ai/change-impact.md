@@ -1,11 +1,13 @@
 # Change impact
 
-Base: a019aa619b433295712549c6c2465b177f3eac87
-Head: 8e488236425914d9103c96c48bdd2c547fcf1021
+Base: 3610a78e49a2be8814818255c683a4415818c45f
+Head: 389ed8b830858a98966e3314d377aec6506f0aa1
 
 ## Changed files
-- M backend/app/report_readiness.py
-- M backend/tests/test_report_readiness.py
+- M backend/app/finding_intelligence.py
+- A backend/app/public_duplicate_intelligence.py
+- M backend/tests/test_finding_intelligence.py
+- A backend/tests/test_public_duplicate_intelligence.py
 
 ## Affected areas
 - backend
