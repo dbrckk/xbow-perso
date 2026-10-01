@@ -121,3 +121,33 @@ def test_finding_intelligence_does_not_expose_query_values():
 
 def test_finding_intelligence_route_is_exposed():
     assert "/api/campaigns/{campaign_id}/finding-intelligence" in app.openapi()["paths"]
+
+
+def test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking():
+    findings = [_finding("f1", "https://example.test/graphql", severity="high")]
+    findings[0].summary = "GraphQL authorization bypass exposes admin object"
+    findings[0].cwe = "CWE-862"
+    public_reports = [
+        {
+            "id": "pub-1",
+            "title": "GraphQL authorization bypass exposes admin object",
+            "summary": "Authorization bypass on admin object",
+            "cwe": "CWE-862",
+            "program_handle": "alpha",
+            "url": "https://hackerone.com/reports/1",
+            "severity": "high",
+        }
+    ]
+
+    result = build_finding_intelligence(
+        findings,
+        _graph(),
+        public_reports=public_reports,
+        program_handle="alpha",
+    )
+
+    duplicate = result["findings"][0]["public_duplicate_similarity"]
+    assert duplicate["similarity_signal"] > 0.35
+    assert duplicate["automatic_report_block"] is False
+    assert result["findings"][0]["status"] == "validation_required"
+    assert result["summary"]["high_public_similarity_findings"] == 1
