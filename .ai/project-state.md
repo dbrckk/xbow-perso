@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T04:56:10Z
+Generated: 2026-10-01T07:52:34Z
 
 ### Git
 - Branch: `main`
-- Head: `a7c2deed743c`
-- Commit date: 2026-10-01T06:55:58+02:00
-- Commit: chore(ci): move artifact uploads to Node 24 (#457)
+- Head: `8e4882364259`
+- Commit date: 2026-10-01T09:52:22+02:00
+- Commit: feat: refresh advisory submission quality score (#458)
 - Tracked files: 582
 
 ### Recently changed files
+- `backend/app/report_readiness.py`
+- `backend/tests/test_report_readiness.py`
 - `.github/workflows/release-images.yml`
 - `.github/workflows/release-quality-gate.yml`
 - `.github/workflows/supply-chain.yml`
-- `.github/workflows/security.yml`
 
 ### Project signals
 - `pyproject.toml`

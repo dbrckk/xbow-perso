@@ -1,25 +1,229 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "03ae20742a701339a5a4df8f6e896329aca96ec2",
-  "head": "a7c2deed743c89b01ecd0c85d244b9b34fd25993",
+  "base": "a7c2deed743c89b01ecd0c85d244b9b34fd25993",
+  "head": "8e488236425914d9103c96c48bdd2c547fcf1021",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/release-images.yml",
+      "path": "backend/app/report_readiness.py",
       "status": "M"
     },
     {
-      "path": ".github/workflows/release-quality-gate.yml",
-      "status": "M"
-    },
-    {
-      "path": ".github/workflows/supply-chain.yml",
+      "path": "backend/tests/test_report_readiness.py",
       "status": "M"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "backend/app/report_readiness.py",
+    "backend/tests/test_report_readiness.py"
+  ],
+  "impacted_files": [
+    "backend/app/campaign_overview.py",
+    "backend/app/campaign_review_state.py",
+    "backend/app/report_readiness.py",
+    "backend/app/submission_api.py",
+    "backend/tests/test_report_metadata_normalization.py",
+    "backend/tests/test_report_readiness.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "campaign_overview",
+      "kind": "function",
+      "file": "backend/app/campaign_overview.py",
+      "line": 45
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/campaign_overview.py",
+      "line": 54
+    },
+    {
+      "name": "build_campaign_review_state",
+      "kind": "function",
+      "file": "backend/app/campaign_review_state.py",
+      "line": 15
+    },
+    {
+      "name": "campaign_review_state",
+      "kind": "function",
+      "file": "backend/app/campaign_review_state.py",
+      "line": 82
+    },
+    {
+      "name": "ReportReadiness",
+      "kind": "class",
+      "file": "backend/app/report_readiness.py",
+      "line": 20
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/report_readiness.py",
+      "line": 43
+    },
+    {
+      "name": "build_report_readiness",
+      "kind": "function",
+      "file": "backend/app/report_readiness.py",
+      "line": 50
+    },
+    {
+      "name": "campaign_report_readiness",
+      "kind": "function",
+      "file": "backend/app/report_readiness.py",
+      "line": 186
+    },
+    {
+      "name": "_context",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 26
+    },
+    {
+      "name": "_verified_report",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 33
+    },
+    {
+      "name": "_save",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 45
+    },
+    {
+      "name": "_assert_report_review_ready",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 51
+    },
+    {
+      "name": "list_submission_states",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 74
+    },
+    {
+      "name": "get_submission_state",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 98
+    },
+    {
+      "name": "approve_report",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 105
+    },
+    {
+      "name": "revoke_report_approval",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 136
+    },
+    {
+      "name": "mark_report_submitted",
+      "kind": "function",
+      "file": "backend/app/submission_api.py",
+      "line": 162
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_report_metadata_normalization.py",
+      "line": 7
+    },
+    {
+      "name": "test_report_readiness_exposes_canonical_metadata",
+      "kind": "function",
+      "file": "backend/tests/test_report_metadata_normalization.py",
+      "line": 25
+    },
+    {
+      "name": "test_report_readiness_flags_cvss_severity_mismatch",
+      "kind": "function",
+      "file": "backend/tests/test_report_metadata_normalization.py",
+      "line": 39
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 8
+    },
+    {
+      "name": "test_report_readiness_blocks_unvalidated_finding",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 26
+    },
+    {
+      "name": "test_report_readiness_requires_complete_independent_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 47
+    },
+    {
+      "name": "test_observed_but_unevidenced_validation_remains_blocked",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 87
+    },
+    {
+      "name": "test_report_readiness_duplicate_requires_review",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 118
+    },
+    {
+      "name": "test_report_readiness_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 130
+    },
+    {
+      "name": "test_report_readiness_distinguishes_human_review_from_submission_completeness",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 134
+    },
+    {
+      "name": "test_report_readiness_rejects_invalid_cwe_shape_for_submission",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 183
+    },
+    {
+      "name": "test_review_queue_and_report_readiness_routes_are_registered",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 195
+    },
+    {
+      "name": "test_submission_quality_score_separates_low_signal_from_reviewable_reports",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 202
+    },
+    {
+      "name": "test_submission_quality_score_rewards_complete_evidence_and_metadata",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 222
+    },
+    {
+      "name": "test_submission_quality_is_advisory_and_cannot_override_submission_blockers",
+      "kind": "function",
+      "file": "backend/tests/test_report_readiness.py",
+      "line": 267
+    }
+  ],
+  "selected_tests": [
+    "backend/tests/test_readiness.py",
+    "backend/tests/test_report.py",
+    "backend/tests/test_report_metadata_normalization.py",
+    "backend/tests/test_report_readiness.py"
+  ]
 }

@@ -9904,6 +9904,9 @@ metadata_checks: dict[str, bool]
 canonical_cwe: str | None
 cvss_rating: str | None
 severity_cvss_consistent: bool
+submission_quality_score: float
+submission_quality_band: str
+quality_components: dict[str, float]
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -9942,6 +9945,16 @@ metadata_blockers = tuple(
 completeness = round(
 ⋮----
 score = round(
+⋮----
+evidence_quality_score = min(
+quality_components = {
+submission_quality_score = round(
+⋮----
+submission_quality_band = "high_signal"
+⋮----
+submission_quality_band = "review"
+⋮----
+submission_quality_band = "low_signal"
 ⋮----
 @router.get("/api/campaigns/{campaign_id}/report-readiness")
 def campaign_report_readiness(campaign_id: str)
@@ -19033,6 +19046,14 @@ def test_report_readiness_rejects_invalid_cwe_shape_for_submission()
 def test_review_queue_and_report_readiness_routes_are_registered()
 ⋮----
 paths = app.openapi()["paths"]
+⋮----
+def test_submission_quality_score_separates_low_signal_from_reviewable_reports()
+⋮----
+low = build_report_readiness([_finding("f1")], graph)[0]
+⋮----
+def test_submission_quality_score_rewards_complete_evidence_and_metadata()
+⋮----
+def test_submission_quality_is_advisory_and_cannot_override_submission_blockers()
 ````
 
 ## File: backend/tests/test_report.py

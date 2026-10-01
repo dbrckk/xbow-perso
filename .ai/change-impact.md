@@ -1,15 +1,14 @@
 # Change impact
 
-Base: f875060272a057bb67830bb6d4e532e1d07c3662
-Head: a7c2deed743c89b01ecd0c85d244b9b34fd25993
+Base: a019aa619b433295712549c6c2465b177f3eac87
+Head: 8e488236425914d9103c96c48bdd2c547fcf1021
 
 ## Changed files
-- M .github/workflows/release-images.yml
-- M .github/workflows/release-quality-gate.yml
-- M .github/workflows/supply-chain.yml
+- M backend/app/report_readiness.py
+- M backend/tests/test_report_readiness.py
 
 ## Affected areas
-- .github
+- backend
 
 ## Related test candidates
 - No direct filename-based test match detected.
