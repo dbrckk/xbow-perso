@@ -82,6 +82,7 @@ def test_correlation_route_is_exposed_and_does_not_auto_merge(tmp_path, monkeypa
         "groups": 1,
         "duplicate_groups": 1,
         "findings_in_duplicate_groups": 2,
+        "multi_scanner_groups": 0,
     }
     assert "one" not in str(result)
     assert "two" not in str(result)
