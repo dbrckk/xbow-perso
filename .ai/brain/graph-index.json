@@ -1064,6 +1064,40 @@
     },
     {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/secret_vault.py"
+      ],
+      "dependents": [
+        "backend/app/browser.py",
+        "backend/app/campaign_control.py",
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_binding.py",
+        "backend/app/hackerone_report_sync_worker.py",
+        "backend/app/htb_lab.py",
+        "backend/app/main.py",
+        "backend/app/metrics.py",
+        "backend/app/report_approval_api.py",
+        "backend/app/submission_api.py",
+        "backend/app/worker_service.py",
+        "backend/tests/test_api_idempotency.py",
+        "backend/tests/test_browser.py",
+        "backend/tests/test_campaign_audit.py",
+        "backend/tests/test_campaign_circuit_breaker.py",
+        "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_report_sync_worker.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_metrics.py",
+        "backend/tests/test_outbox_chaos.py",
+        "backend/tests/test_submission_api.py",
+        "backend/tests/test_worker_outcome_memory.py"
+      ],
+      "in_degree": 23,
+      "out_degree": 2,
+      "path": "backend/app/campaign_audit.py"
+    },
+    {
+      "dependencies": [
         "backend/app/hackerone_scope_import.py",
         "backend/app/secret_vault.py",
         "backend/tests/test_alert_delivery.py"
@@ -1094,38 +1128,6 @@
       "in_degree": 21,
       "out_degree": 3,
       "path": "backend/app/hackerone_client.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/main.py",
-        "backend/app/secret_vault.py"
-      ],
-      "dependents": [
-        "backend/app/browser.py",
-        "backend/app/hackerone_api.py",
-        "backend/app/hackerone_binding.py",
-        "backend/app/hackerone_report_sync_worker.py",
-        "backend/app/htb_lab.py",
-        "backend/app/main.py",
-        "backend/app/metrics.py",
-        "backend/app/report_approval_api.py",
-        "backend/app/submission_api.py",
-        "backend/app/worker_service.py",
-        "backend/tests/test_api_idempotency.py",
-        "backend/tests/test_browser.py",
-        "backend/tests/test_campaign_audit.py",
-        "backend/tests/test_hackerone_needs_info.py",
-        "backend/tests/test_hackerone_outbound_submission.py",
-        "backend/tests/test_hackerone_report_sync_worker.py",
-        "backend/tests/test_hackerone_report_tracking.py",
-        "backend/tests/test_metrics.py",
-        "backend/tests/test_outbox_chaos.py",
-        "backend/tests/test_submission_api.py",
-        "backend/tests/test_worker_outcome_memory.py"
-      ],
-      "in_degree": 21,
-      "out_degree": 2,
-      "path": "backend/app/campaign_audit.py"
     },
     {
       "dependencies": [
@@ -1601,6 +1603,27 @@
     {
       "dependencies": [
         "backend/app/campaign_audit.py",
+        "backend/app/campaign_runtime.py",
+        "backend/app/circuit_breaker.py",
+        "backend/app/decision_timeline.py",
+        "backend/app/hackerone_api.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/planner_budget.py",
+        "backend/app/planner_limits.py",
+        "backend/app/runtime_capabilities.py"
+      ],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/tests/test_campaign_circuit_breaker.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 10,
+      "path": "backend/app/campaign_control.py"
+    },
+    {
+      "dependencies": [
+        "backend/app/campaign_audit.py",
         "backend/app/campaign_overview.py",
         "backend/app/campaign_review_state.py",
         "backend/app/main.py",
@@ -1861,26 +1884,6 @@
     },
     {
       "dependencies": [
-        "backend/app/campaign_runtime.py",
-        "backend/app/circuit_breaker.py",
-        "backend/app/decision_timeline.py",
-        "backend/app/hackerone_api.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/planner_budget.py",
-        "backend/app/planner_limits.py",
-        "backend/app/runtime_capabilities.py"
-      ],
-      "dependents": [
-        "backend/app/main.py",
-        "backend/tests/test_campaign_circuit_breaker.py"
-      ],
-      "in_degree": 2,
-      "out_degree": 9,
-      "path": "backend/app/campaign_control.py"
-    },
-    {
-      "dependencies": [
         "backend/app/main.py"
       ],
       "dependents": [
@@ -2031,6 +2034,24 @@
       "path": "backend/tests/test_browser.py"
     },
     {
+      "dependencies": [
+        "backend/app/campaign_audit.py",
+        "backend/app/campaign_control.py",
+        "backend/app/campaign_runtime.py",
+        "backend/app/circuit_breaker.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/orchestrator.py",
+        "backend/app/storage.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 10,
+      "path": "backend/tests/test_campaign_circuit_breaker.py"
+    },
+    {
       "dependencies": [],
       "dependents": [
         "backend/app/incident_api.py",
@@ -2121,23 +2142,6 @@
     },
     {
       "dependencies": [
-        "backend/app/campaign_control.py",
-        "backend/app/campaign_runtime.py",
-        "backend/app/circuit_breaker.py",
-        "backend/app/jobqueue.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/orchestrator.py",
-        "backend/app/storage.py",
-        "frontend/app.js"
-      ],
-      "dependents": [],
-      "in_degree": 0,
-      "out_degree": 9,
-      "path": "backend/tests/test_campaign_circuit_breaker.py"
-    },
-    {
-      "dependencies": [
         "backend/app/campaign_runtime.py",
         "backend/app/circuit_breaker.py",
         "backend/app/jobqueue.py",
@@ -2188,7 +2192,7 @@
       "path": "backend/app/hackerone_scope_import.py"
     }
   ],
-  "edge_count": 1851,
+  "edge_count": 1853,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 383,
   "schema_version": 1

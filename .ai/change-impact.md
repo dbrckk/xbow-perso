@@ -1,13 +1,11 @@
 # Change impact
 
-Base: 9d7073fbe52c4754c84acab04e704a38e854e7ec
-Head: cf7b749dd7207b9e15e8ba68818b929c9b7bdcf1
+Base: 994ddd57a05ac6ab66e4d7d00053e20897be8e1c
+Head: ac9312a15919bb774d0f4619de9ca9a7fb307023
 
 ## Changed files
-- M backend/app/metrics.py
-- M backend/app/operational_alerts.py
-- M backend/tests/test_metrics.py
-- M backend/tests/test_operational_alerts.py
+- M backend/app/campaign_control.py
+- M backend/tests/test_campaign_circuit_breaker.py
 
 ## Affected areas
 - backend

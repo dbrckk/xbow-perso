@@ -670,28 +670,56 @@
       "language": "python",
       "kind": "function",
       "name": "_recon_telemetry",
-      "line": 18
+      "line": 21
     },
     {
       "file": "backend/app/campaign_control.py",
       "language": "python",
       "kind": "function",
-      "name": "_autonomy_block_reasons",
-      "line": 56
+      "name": "_breaker_reset_request_id",
+      "line": 59
     },
     {
       "file": "backend/app/campaign_control.py",
       "language": "python",
       "kind": "function",
-      "name": "campaign_control_status",
+      "name": "_event_exists",
       "line": 68
     },
     {
       "file": "backend/app/campaign_control.py",
       "language": "python",
       "kind": "function",
+      "name": "_pending_breaker_reset",
+      "line": 76
+    },
+    {
+      "file": "backend/app/campaign_control.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_persist_breaker_reset_event",
+      "line": 93
+    },
+    {
+      "file": "backend/app/campaign_control.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_autonomy_block_reasons",
+      "line": 127
+    },
+    {
+      "file": "backend/app/campaign_control.py",
+      "language": "python",
+      "kind": "function",
+      "name": "campaign_control_status",
+      "line": 139
+    },
+    {
+      "file": "backend/app/campaign_control.py",
+      "language": "python",
+      "kind": "function",
       "name": "reset_campaign_circuit_breaker",
-      "line": 111
+      "line": 182
     },
     {
       "file": "backend/app/campaign_overview.py",
@@ -10960,42 +10988,56 @@
       "language": "python",
       "kind": "function",
       "name": "_campaign",
-      "line": 13
+      "line": 14
     },
     {
       "file": "backend/tests/test_campaign_circuit_breaker.py",
       "language": "python",
       "kind": "function",
       "name": "test_circuit_breaker_persists_and_resets",
-      "line": 26
+      "line": 27
     },
     {
       "file": "backend/tests/test_campaign_circuit_breaker.py",
       "language": "python",
       "kind": "function",
       "name": "test_runtime_exhaustion_opens_breaker_and_future_advance_stays_blocked",
-      "line": 54
+      "line": 55
     },
     {
       "file": "backend/tests/test_campaign_circuit_breaker.py",
       "language": "python",
       "kind": "function",
       "name": "test_control_routes_are_exposed",
-      "line": 89
+      "line": 90
     },
     {
       "file": "backend/tests/test_campaign_circuit_breaker.py",
       "language": "python",
       "kind": "function",
       "name": "test_control_status_reports_budget_blocker_consistently",
-      "line": 97
+      "line": 98
     },
     {
       "file": "backend/tests/test_campaign_circuit_breaker.py",
       "language": "python",
       "kind": "function",
       "name": "test_control_status_exposes_scanner_stability_and_recon_telemetry",
-      "line": 129
+      "line": 130
+    },
+    {
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_breaker_reset_endpoint_seals_requested_and_completed_audit_events",
+      "line": 195
+    },
+    {
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_breaker_reset_reconciles_completion_after_reset_already_happened",
+      "line": 236
     },
     {
       "file": "backend/tests/test_campaign_overview.py",

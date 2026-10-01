@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T09:01:23Z
+Generated: 2026-10-01T09:15:21Z
 
 ### Git
 - Branch: `main`
-- Head: `cf7b749dd720`
-- Commit date: 2026-10-01T11:01:12+02:00
-- Commit: feat: refresh campaign audit integrity alerts (#461)
+- Head: `ac9312a15919`
+- Commit date: 2026-10-01T11:15:10+02:00
+- Commit: feat(audit): refresh crash-reconcilable breaker reset (#462)
 - Tracked files: 584
 
 ### Recently changed files
+- `backend/app/campaign_control.py`
+- `backend/tests/test_campaign_circuit_breaker.py`
 - `backend/app/metrics.py`
 - `backend/app/operational_alerts.py`
 - `backend/tests/test_metrics.py`
@@ -44,9 +46,6 @@ Generated: 2026-10-01T09:01:23Z
 - `backend/tests/test_public_duplicate_intelligence.py`
 - `backend/app/report_readiness.py`
 - `backend/tests/test_report_readiness.py`
-- `.github/workflows/release-images.yml`
-- `.github/workflows/release-quality-gate.yml`
-- `.github/workflows/supply-chain.yml`
 
 ### Project signals
 - `pyproject.toml`

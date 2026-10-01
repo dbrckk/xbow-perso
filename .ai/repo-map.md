@@ -1785,6 +1785,18 @@ def _recon_telemetry(events: list[dict]) -> dict
 ⋮----
 completed = [event for event in events if event.get("type") == "recon_task_completed"]
 ⋮----
+def _breaker_reset_request_id(breaker: dict) -> str
+⋮----
+opened_at = str(breaker.get("opened_at") or "")
+reason = str(breaker.get("reason") or "")
+digest = hashlib.sha256(
+⋮----
+def _event_exists(events: list[dict], event_type: str, request_id: str) -> bool
+⋮----
+def _pending_breaker_reset(events: list[dict]) -> str | None
+⋮----
+completed = {
+⋮----
 def _autonomy_block_reasons(breaker: dict, runtime: object, usage: object) -> list[str]
 ⋮----
 reasons: list[str] = []
@@ -1810,7 +1822,13 @@ block_reasons = _autonomy_block_reasons(breaker, runtime, usage)
 @router.post("/api/campaigns/{campaign_id}/circuit-breaker/reset")
 def reset_campaign_circuit_breaker(campaign_id: str)
 ⋮----
-state = record_circuit_reset(storage(), campaign.id, at=utcnow())
+pending_request_id = _pending_breaker_reset(campaign.events)
+⋮----
+request_id = pending_request_id or _breaker_reset_request_id(breaker)
+⋮----
+state = record_circuit_reset(store, campaign.id, at=utcnow())
+⋮----
+state = breaker
 ````
 
 ## File: backend/app/campaign_overview.py
@@ -13044,6 +13062,20 @@ claimed = queue.claim("fixture-worker")
 result = campaign_control_status(campaign.id)
 ⋮----
 def test_control_status_exposes_scanner_stability_and_recon_telemetry(tmp_path, monkeypatch)
+⋮----
+def test_breaker_reset_endpoint_seals_requested_and_completed_audit_events(tmp_path, monkeypatch)
+⋮----
+result = reset_campaign_circuit_breaker(campaign.id)
+saved = store.get_campaign(campaign.id)
+⋮----
+request_id = result["request_id"]
+⋮----
+repeated = reset_campaign_circuit_breaker(campaign.id)
+saved_again = store.get_campaign(campaign.id)
+⋮----
+def test_breaker_reset_reconciles_completion_after_reset_already_happened(tmp_path, monkeypatch)
+⋮----
+request_id = "breaker-reset:fixture-reconcile"
 ````
 
 ## File: backend/tests/test_campaign_overview.py

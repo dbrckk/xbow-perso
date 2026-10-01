@@ -5,28 +5,55 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_age_seconds": {
+    "_recon_telemetry": {
       "source": {
-        "file": "backend/app/metrics.py",
-        "start": 16,
-        "end": 29
+        "file": "backend/app/campaign_control.py",
+        "start": 21,
+        "end": 56
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "build_operational_metrics": {
+    "_breaker_reset_request_id": {
       "source": {
-        "file": "backend/app/metrics.py",
-        "start": 32,
-        "end": 107
+        "file": "backend/app/campaign_control.py",
+        "start": 59,
+        "end": 65
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_event_exists": {
+      "source": {
+        "file": "backend/app/campaign_control.py",
+        "start": 68,
+        "end": 73
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_pending_breaker_reset": {
+      "source": {
+        "file": "backend/app/campaign_control.py",
+        "start": 76,
+        "end": 90
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_persist_breaker_reset_event": {
+      "source": {
+        "file": "backend/app/campaign_control.py",
+        "start": 93,
+        "end": 124
       },
       "symbol_dependencies": [
         {
-          "symbol": "_age_seconds",
+          "symbol": "_event_exists",
           "definitions": [
             {
-              "file": "backend/app/metrics.py",
-              "line": 16,
+              "file": "backend/app/campaign_control.py",
+              "line": 68,
               "kind": "function",
               "language": "python"
             }
@@ -34,11 +61,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_worker_watchdog",
+          "symbol": "append_campaign_event",
           "definitions": [
             {
-              "file": "backend/app/worker_watchdog.py",
-              "line": 18,
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
@@ -46,11 +73,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "list_campaigns",
+          "symbol": "assert_campaign_record",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 542,
+              "line": 213,
               "kind": "function",
               "language": "python"
             }
@@ -58,11 +85,210 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "outbox_snapshot",
+          "symbol": "save_campaign",
           "definitions": [
             {
-              "file": "backend/app/api_outbox.py",
-              "line": 124,
+              "file": "backend/app/main.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_autonomy_block_reasons": {
+      "source": {
+        "file": "backend/app/campaign_control.py",
+        "start": 127,
+        "end": 135
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "campaign_control_status": {
+      "source": {
+        "file": "backend/app/campaign_control.py",
+        "start": 139,
+        "end": 178
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_autonomy_block_reasons",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_recon_telemetry",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 221,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_usage",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_runtime_limit_from_env",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "circuit_breaker_state",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planner_budget_from_env",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planner_limits",
+          "definitions": [
+            {
+              "file": "backend/app/planner_limits.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planner_stability",
+          "definitions": [
+            {
+              "file": "backend/app/decision_timeline.py",
+              "line": 115,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planner_stability_from_graph",
+          "definitions": [
+            {
+              "file": "backend/app/decision_timeline.py",
+              "line": 190,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "runtime_status",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 178,
               "kind": "function",
               "language": "python"
             }
@@ -75,6 +301,728 @@
             {
               "file": "backend/app/main.py",
               "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 16
+    },
+    "reset_campaign_circuit_breaker": {
+      "source": {
+        "file": "backend/app/campaign_control.py",
+        "start": 182,
+        "end": 230
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_breaker_reset_request_id",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_pending_breaker_reset",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_persist_breaker_reset_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 93,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 221,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "circuit_breaker_state",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_circuit_reset",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "_campaign": {
+      "source": {
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "start": 14,
+        "end": 24
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_circuit_breaker_persists_and_resets": {
+      "source": {
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "start": 27,
+        "end": 52
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/tests/test_campaign_circuit_breaker.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "circuit_breaker_state",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "from_records",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_circuit_open",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_circuit_reset",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "test_runtime_exhaustion_opens_breaker_and_future_advance_stays_blocked": {
+      "source": {
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "start": 55,
+        "end": 87
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignRuntimeLimit",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/tests/test_campaign_circuit_breaker.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 661,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "circuit_breaker_state",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "from_records",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "test_control_routes_are_exposed": {
+      "source": {
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "start": 90,
+        "end": 94
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_control_status_reports_budget_blocker_consistently": {
+      "source": {
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "start": 98,
+        "end": 126
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/tests/test_campaign_circuit_breaker.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "campaign_control_status",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 139,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "claim",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enqueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 122,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finish",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 429,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "test_control_status_exposes_scanner_stability_and_recon_telemetry": {
+      "source": {
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "start": 130,
+        "end": 192
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/tests/test_campaign_circuit_breaker.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "campaign_control_status",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 139,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_breaker_reset_endpoint_seals_requested_and_completed_audit_events": {
+      "source": {
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "start": 195,
+        "end": 233
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/tests/test_campaign_circuit_breaker.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 547,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_circuit_open",
+          "definitions": [
+            {
+              "file": "backend/app/circuit_breaker.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reset_campaign_circuit_breaker",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 206,
               "kind": "function",
               "language": "python"
             }
@@ -94,418 +1042,39 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 8
     },
-    "operational_metrics": {
+    "test_breaker_reset_reconciles_completion_after_reset_already_happened": {
       "source": {
-        "file": "backend/app/metrics.py",
-        "start": 111,
-        "end": 114
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "start": 236,
+        "end": 282
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_operational_metrics",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/metrics.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "storage",
+          "symbol": "_campaign",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_threshold": {
-      "source": {
-        "file": "backend/app/operational_alerts.py",
-        "start": 14,
-        "end": 22
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "build_operational_alerts": {
-      "source": {
-        "file": "backend/app/operational_alerts.py",
-        "start": 25,
-        "end": 133
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_threshold",
-          "definitions": [
-            {
-              "file": "backend/app/operational_alerts.py",
+              "file": "backend/tests/test_campaign_circuit_breaker.py",
               "line": 14,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "operational_alerts": {
-      "source": {
-        "file": "backend/app/operational_alerts.py",
-        "start": 137,
-        "end": 141
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_operational_alerts",
-          "definitions": [
-            {
-              "file": "backend/app/operational_alerts.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
-        {
-          "symbol": "build_operational_metrics",
-          "definitions": [
-            {
-              "file": "backend/app/metrics.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "deliver_operational_alerts": {
-      "source": {
-        "file": "backend/app/operational_alerts.py",
-        "start": 145,
-        "end": 150
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_operational_alerts",
-          "definitions": [
-            {
-              "file": "backend/app/operational_alerts.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_operational_metrics",
-          "definitions": [
-            {
-              "file": "backend/app/metrics.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "deliver_alerts",
-          "definitions": [
-            {
-              "file": "backend/app/alert_delivery.py",
-              "line": 90,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "Queue": {
-      "source": {
-        "file": "backend/tests/test_metrics.py",
-        "start": 8,
-        "end": 18
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "stats",
-          "definitions": [
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "stats": {
-      "source": {
-        "file": "backend/tests/test_metrics.py",
-        "start": 9,
-        "end": 18
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "Storage": {
-      "source": {
-        "file": "backend/tests/test_metrics.py",
-        "start": 21,
-        "end": 27
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "list_campaigns",
-          "definitions": [
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "list_campaigns": {
-      "source": {
-        "file": "backend/tests/test_metrics.py",
-        "start": 22,
-        "end": 27
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_operational_metrics_are_aggregate_only": {
-      "source": {
-        "file": "backend/tests/test_metrics.py",
-        "start": 30,
-        "end": 51
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Queue",
-          "definitions": [
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 8,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 21,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_operational_metrics",
-          "definitions": [
-            {
-              "file": "backend/app/metrics.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_metrics_route_is_exposed_under_authenticated_api": {
-      "source": {
-        "file": "backend/tests/test_metrics.py",
-        "start": 54,
-        "end": 55
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "AuditStorage": {
-      "source": {
-        "file": "backend/tests/test_metrics.py",
-        "start": 58,
-        "end": 76
-      },
-      "symbol_dependencies": [
         {
           "symbol": "append_campaign_event",
           "definitions": [
@@ -519,75 +1088,83 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "list_campaigns",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "backend/tests/test_metrics.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 59,
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "ready",
+          "symbol": "get_campaign",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 318,
+              "line": 547,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_metrics_distinguish_invalid_and_legacy_audit_chains": {
-      "source": {
-        "file": "backend/tests/test_metrics.py",
-        "start": 79,
-        "end": 89
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "AuditStorage",
-          "definitions": [
-            {
-              "file": "backend/tests/test_metrics.py",
-              "line": 58,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "Queue",
+          "symbol": "record_circuit_open",
           "definitions": [
             {
-              "file": "backend/tests/test_metrics.py",
-              "line": 8,
-              "kind": "class",
+              "file": "backend/app/circuit_breaker.py",
+              "line": 35,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "build_operational_metrics",
+          "symbol": "record_circuit_reset",
           "definitions": [
             {
-              "file": "backend/app/metrics.py",
-              "line": 32,
+              "file": "backend/app/circuit_breaker.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reset_campaign_circuit_breaker",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_control.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verify_campaign_event_chain",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 42,
               "kind": "function",
               "language": "python"
             }
@@ -595,117 +1172,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
-    },
-    "test_operational_alerts_are_aggregate_only": {
-      "source": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "start": 7,
-        "end": 28
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_operational_alerts",
-          "definitions": [
-            {
-              "file": "backend/app/operational_alerts.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_operational_alerts_ok_below_thresholds": {
-      "source": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "start": 31,
-        "end": 47
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_operational_alerts",
-          "definitions": [
-            {
-              "file": "backend/app/operational_alerts.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_operational_alert_thresholds_fail_closed": {
-      "source": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "start": 50,
-        "end": 54
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_operational_alerts",
-          "definitions": [
-            {
-              "file": "backend/app/operational_alerts.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_alerts_route_is_exposed_under_authenticated_api": {
-      "source": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "start": 57,
-        "end": 58
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_operational_alerts_flag_invalid_campaign_audit_chain": {
-      "source": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "start": 61,
-        "end": 90
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_operational_alerts",
-          "definitions": [
-            {
-              "file": "backend/app/operational_alerts.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
+      "dependency_count": 10
     }
   }
 }

@@ -5,1407 +5,262 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "_age_seconds": {
+    "_recon_telemetry": {
       "definition": {
-        "file": "backend/app/metrics.py",
-        "line": 16,
+        "file": "backend/app/campaign_control.py",
+        "line": 21,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/metrics.py",
-          "line": 16,
-          "preview": "def _age_seconds(value: Any, *, now: datetime | None = None) -> int | None:",
+          "file": "backend/app/campaign_control.py",
+          "line": 21,
+          "preview": "def _recon_telemetry(events: list[dict]) -> dict:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/metrics.py",
-          "line": 38,
-          "preview": "oldest_queued_age_seconds = _age_seconds(queue_stats.get(\"oldest_queued_at\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/metrics.py",
-          "line": 39,
-          "preview": "oldest_running_lease_age_seconds = _age_seconds(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/metrics.py",
-          "line": 64,
-          "preview": "age = _age_seconds(snapshot.get(\"oldest_pending_at\"))",
+          "file": "backend/app/campaign_control.py",
+          "line": 154,
+          "preview": "recon = _recon_telemetry(campaign.events)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 4
+      "occurrence_count": 2
     },
-    "build_operational_metrics": {
+    "_breaker_reset_request_id": {
       "definition": {
-        "file": "backend/app/metrics.py",
-        "line": 32,
+        "file": "backend/app/campaign_control.py",
+        "line": 59,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/metrics.py",
-          "line": 32,
-          "preview": "def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:",
+          "file": "backend/app/campaign_control.py",
+          "line": 59,
+          "preview": "def _breaker_reset_request_id(breaker: dict) -> str:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/metrics.py",
-          "line": 114,
-          "preview": "return build_operational_metrics(queue(), storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 9,
-          "preview": "from .metrics import build_operational_metrics",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 140,
-          "preview": "metrics = build_operational_metrics(queue(), storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 148,
-          "preview": "metrics = build_operational_metrics(queue(), storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/readiness.py",
-          "line": 9,
-          "preview": "from .metrics import build_operational_metrics",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/readiness.py",
-          "line": 54,
-          "preview": "build_operational_metrics(queue_backend=JobQueue(), storage_backend=store)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 5,
-          "preview": "from app.metrics import build_operational_metrics",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 31,
-          "preview": "result = build_operational_metrics(Queue(), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 83,
-          "preview": "result = build_operational_metrics(Queue(), AuditStorage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 3,
-          "preview": "from app.metrics import build_operational_metrics",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 29,
-          "preview": "metrics = build_operational_metrics(Queue(oldest), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 37,
-          "preview": "metrics = build_operational_metrics(Queue(\"not-a-date\"), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 64,
-          "preview": "metrics = build_operational_metrics(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 108,
-          "preview": "metrics = build_operational_metrics(Queue(None), OutboxStorage(requested_at))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 177,
-          "preview": "metrics = build_operational_metrics(Queue(None, running), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 183,
-          "preview": "metrics = build_operational_metrics(Queue(None, \"not-a-date\"), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_readiness.py",
-          "line": 37,
-          "preview": "\"build_operational_metrics\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 1,
-          "preview": "from app.metrics import build_operational_metrics",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 37,
-          "preview": "result = build_operational_metrics(Queue(), Store())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 47,
-          "preview": "result = build_operational_metrics(Queue(), Store())",
+          "file": "backend/app/campaign_control.py",
+          "line": 205,
+          "preview": "request_id = pending_request_id or _breaker_reset_request_id(breaker)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 21
+      "occurrence_count": 2
     },
-    "operational_metrics": {
+    "_event_exists": {
       "definition": {
-        "file": "backend/app/metrics.py",
-        "line": 111,
+        "file": "backend/app/campaign_control.py",
+        "line": 68,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/metrics.py",
-          "line": 111,
-          "preview": "def operational_metrics():",
+          "file": "backend/app/campaign_control.py",
+          "line": 68,
+          "preview": "def _event_exists(events: list[dict], event_type: str, request_id: str) -> bool:",
           "definition_candidate": true
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 103,
+          "preview": "if _event_exists(campaign.events, event_type, request_id):",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 2
     },
-    "_threshold": {
+    "_pending_breaker_reset": {
       "definition": {
-        "file": "backend/app/operational_alerts.py",
+        "file": "backend/app/campaign_control.py",
+        "line": 76,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 76,
+          "preview": "def _pending_breaker_reset(events: list[dict]) -> str | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 195,
+          "preview": "pending_request_id = _pending_breaker_reset(campaign.events)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_persist_breaker_reset_event": {
+      "definition": {
+        "file": "backend/app/campaign_control.py",
+        "line": 93,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 93,
+          "preview": "def _persist_breaker_reset_event(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 207,
+          "preview": "_persist_breaker_reset_event(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 218,
+          "preview": "_persist_breaker_reset_event(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_autonomy_block_reasons": {
+      "definition": {
+        "file": "backend/app/campaign_control.py",
+        "line": 127,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 127,
+          "preview": "def _autonomy_block_reasons(breaker: dict, runtime: object, usage: object) -> list[str]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 155,
+          "preview": "block_reasons = _autonomy_block_reasons(breaker, runtime, usage)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "campaign_control_status": {
+      "definition": {
+        "file": "backend/app/campaign_control.py",
+        "line": 139,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 139,
+          "preview": "def campaign_control_status(campaign_id: str):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 4,
+          "preview": "from app.campaign_control import campaign_control_status, reset_campaign_circuit_breaker",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 121,
+          "preview": "result = campaign_control_status(campaign.id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 173,
+          "preview": "from app.campaign_control import campaign_control_status",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 175,
+          "preview": "result = campaign_control_status(campaign.id)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "reset_campaign_circuit_breaker": {
+      "definition": {
+        "file": "backend/app/campaign_control.py",
+        "line": 182,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 182,
+          "preview": "def reset_campaign_circuit_breaker(campaign_id: str):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 4,
+          "preview": "from app.campaign_control import campaign_control_status, reset_campaign_circuit_breaker",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 211,
+          "preview": "result = reset_campaign_circuit_breaker(campaign.id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 230,
+          "preview": "repeated = reset_campaign_circuit_breaker(campaign.id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 271,
+          "preview": "result = reset_campaign_circuit_breaker(campaign.id)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "_campaign": {
+      "definition": {
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
         "line": 14,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/operational_alerts.py",
-          "line": 14,
-          "preview": "def _threshold(name: str, default: int, low: int, high: int) -> int:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 26,
-          "preview": "failed_limit = _threshold(\"XBOW_ALERT_FAILED_JOBS\", 1, 1, 100000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 27,
-          "preview": "queued_limit = _threshold(\"XBOW_ALERT_QUEUED_JOBS\", 20, 1, 100000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 28,
-          "preview": "running_limit = _threshold(\"XBOW_ALERT_RUNNING_JOBS\", 20, 1, 100000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 29,
-          "preview": "queue_age_limit = _threshold(\"XBOW_ALERT_QUEUE_AGE_SECONDS\", 300, 30, 86400)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 30,
-          "preview": "running_lease_age_limit = _threshold(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 36,
-          "preview": "outbox_limit = _threshold(\"XBOW_ALERT_PENDING_OUTBOX\", 20, 1, 100000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 37,
-          "preview": "outbox_age_limit = _threshold(\"XBOW_ALERT_OUTBOX_AGE_SECONDS\", 300, 30, 86400)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_slo.py",
-          "line": 7,
-          "preview": "def _threshold(name: str, default: int, minimum: int, maximum: int) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_slo.py",
-          "line": 20,
-          "preview": "warn_queue = _threshold(\"XBOW_SLO_WARN_QUEUE_AGE_SECONDS\", 120, 1, 86400)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_slo.py",
-          "line": 21,
-          "preview": "critical_queue = _threshold(\"XBOW_SLO_CRITICAL_QUEUE_AGE_SECONDS\", 600, 1, 86400)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_slo.py",
-          "line": 22,
-          "preview": "warn_failed = _threshold(\"XBOW_SLO_WARN_FAILED_JOBS\", 2, 0, 100000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_slo.py",
-          "line": 23,
-          "preview": "critical_failed = _threshold(\"XBOW_SLO_CRITICAL_FAILED_JOBS\", 10, 0, 100000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_slo.py",
-          "line": 24,
-          "preview": "warn_outbox = _threshold(\"XBOW_SLO_WARN_OUTBOX_AGE_SECONDS\", 60, 1, 86400)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_slo.py",
-          "line": 25,
-          "preview": "critical_outbox = _threshold(\"XBOW_SLO_CRITICAL_OUTBOX_AGE_SECONDS\", 300, 1, 86400)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 15
-    },
-    "build_operational_alerts": {
-      "definition": {
-        "file": "backend/app/operational_alerts.py",
-        "line": 25,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 25,
-          "preview": "def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 141,
-          "preview": "return build_operational_alerts(metrics)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 149,
-          "preview": "alerts = build_operational_alerts(metrics)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 4,
-          "preview": "from app.operational_alerts import build_operational_alerts",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 12,
-          "preview": "result = build_operational_alerts(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 36,
-          "preview": "result = build_operational_alerts(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 54,
-          "preview": "build_operational_alerts({\"jobs_by_status\": {}})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 66,
-          "preview": "result = build_operational_alerts(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 4,
-          "preview": "from app.operational_alerts import build_operational_alerts",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 43,
-          "preview": "result = build_operational_alerts(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 56,
-          "preview": "build_operational_alerts({\"jobs_by_status\": {}})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 122,
-          "preview": "result = build_operational_alerts(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 144,
-          "preview": "result = build_operational_alerts(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 167,
-          "preview": "build_operational_alerts({\"jobs_by_status\": {}})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 190,
-          "preview": "result = build_operational_alerts(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 216,
-          "preview": "build_operational_alerts({\"jobs_by_status\": {}})",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 16
-    },
-    "operational_alerts": {
-      "definition": {
-        "file": "backend/app/operational_alerts.py",
-        "line": 137,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/main.py",
-          "line": 1904,
-          "preview": "from .operational_alerts import router as alerts_router  # noqa: E402",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/operational_alerts.py",
-          "line": 137,
-          "preview": "def operational_alerts():",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 4,
-          "preview": "from app.operational_alerts import build_operational_alerts",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 4,
-          "preview": "from app.operational_alerts import build_operational_alerts",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "deliver_operational_alerts": {
-      "definition": {
-        "file": "backend/app/operational_alerts.py",
-        "line": 145,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/operational_alerts.py",
+          "file": "backend/app/browser.py",
           "line": 145,
-          "preview": "def deliver_operational_alerts():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "Queue": {
-      "definition": {
-        "file": "backend/tests/test_metrics.py",
-        "line": 8,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 8,
-          "preview": "class Queue:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 31,
-          "preview": "result = build_operational_metrics(Queue(), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 83,
-          "preview": "result = build_operational_metrics(Queue(), AuditStorage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 7,
-          "preview": "class Queue:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 29,
-          "preview": "metrics = build_operational_metrics(Queue(oldest), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 37,
-          "preview": "metrics = build_operational_metrics(Queue(\"not-a-date\"), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 65,
-          "preview": "Queue(\"9999-12-31T23:59:59-01:00\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 108,
-          "preview": "metrics = build_operational_metrics(Queue(None), OutboxStorage(requested_at))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 177,
-          "preview": "metrics = build_operational_metrics(Queue(None, running), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 183,
-          "preview": "metrics = build_operational_metrics(Queue(None, \"not-a-date\"), Storage())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 5,
-          "preview": "class Queue:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 37,
-          "preview": "result = build_operational_metrics(Queue(), Store())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 47,
-          "preview": "result = build_operational_metrics(Queue(), Store())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 56,
-          "preview": "queue = Queue()",
-          "definition_candidate": false
-        },
-        {
-          "file": "frontend/hackerone.js",
-          "line": 2043,
-          "preview": "el('h1BatchSummary').textContent='Auto Queue bloqu\u00e9e : '+error.message;",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 15
-    },
-    "stats": {
-      "definition": {
-        "file": "backend/tests/test_metrics.py",
-        "line": 9,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 422,
-          "preview": "stats: dict[str, dict[str, Any]] = {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 425,
-          "preview": "item = stats.setdefault(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 459,
-          "preview": "for item in stats.values():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_intelligence.py",
-          "line": 470,
-          "preview": "stats.values(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 269,
-          "preview": "stats = {",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 282,
-          "preview": "stats[\"campaigns_checked\"] += 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 284,
-          "preview": "stats[\"reports_checked\"] += 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 287,
-          "preview": "stats[\"changes_recorded\"] += 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 289,
-          "preview": "stats[\"errors\"] += 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 290,
-          "preview": "return stats",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 301,
-          "preview": "stats = sync_once()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 304,
-          "preview": "f\"campaigns={stats['campaigns_checked']} \"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 305,
-          "preview": "f\"reports={stats['reports_checked']} \"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 306,
-          "preview": "f\"changes={stats['changes_recorded']} errors={stats['errors']}\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/jobqueue.py",
-          "line": 204,
-          "preview": "def stats(self) -> dict[str, Any]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/metrics.py",
-          "line": 33,
-          "preview": "queue_stats = queue_backend.stats()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/production_migration.py",
-          "line": 238,
-          "preview": "return int(queue.stats().get(\"total\") or 0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/queue_backend.py",
-          "line": 15,
-          "preview": "def stats(self) -> dict: ...",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/redis_jobqueue.py",
-          "line": 200,
-          "preview": "def stats(self) -> dict[str, Any]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 97,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 118,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 138,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 207,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 250,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 306,
-          "preview": "assert jobs.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 409,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 530,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 180,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 272,
-          "preview": "assert jobs.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 315,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_outbox.py",
-          "line": 413,
-          "preview": "assert jobs.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 308,
-          "preview": "assert jobs.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 346,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 389,
-          "preview": "assert jobs.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_distributed_concurrency.py",
-          "line": 134,
-          "preview": "assert queue.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_distributed_concurrency.py",
-          "line": 332,
-          "preview": "stats = queue.stats()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_distributed_concurrency.py",
-          "line": 333,
-          "preview": "assert stats[\"by_status\"][\"queued\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_distributed_concurrency.py",
-          "line": 334,
-          "preview": "assert stats[\"by_status\"][\"running\"] == workers",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 78,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 140,
-          "preview": "assert jobs.stats()[\"total\"] >= 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 194,
-          "preview": "assert jobs.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 98,
-          "preview": "stats = sync_once(store, client)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 100,
-          "preview": "assert stats == {",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 143,
-          "preview": "stats = sync_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 148,
-          "preview": "assert stats[\"changes_recorded\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 188,
-          "preview": "stats = sync_once(store, client)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 190,
-          "preview": "assert stats[\"campaigns_checked\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 191,
-          "preview": "assert stats[\"reports_checked\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 254,
-          "preview": "stats = sync_once(store, _Client([second]))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_report_sync_worker.py",
-          "line": 256,
-          "preview": "assert stats[\"changes_recorded\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_incident_lifecycle.py",
-          "line": 58,
-          "preview": "stats = incident_reliability_stats(history)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_incident_lifecycle.py",
-          "line": 59,
-          "preview": "assert stats[\"mttr_seconds\"] == 45.0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_incident_lifecycle.py",
-          "line": 60,
-          "preview": "assert stats[\"mtbf_seconds\"] == 120.0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 110,
-          "preview": "stats = q.stats()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 111,
-          "preview": "assert stats[\"total\"] == 2",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 112,
-          "preview": "assert stats[\"by_status\"][\"completed\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 113,
-          "preview": "assert stats[\"by_status\"][\"queued\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 114,
-          "preview": "assert stats[\"oldest_queued_at\"] is not None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 115,
-          "preview": "assert \"secret\" not in str(stats)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 116,
-          "preview": "assert \"must-not-leak\" not in str(stats)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 131,
-          "preview": "stats = q.stats()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 133,
-          "preview": "assert stats[\"oldest_running_claimed_at\"] == \"2026-09-13T10:00:00+00:00\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 134,
-          "preview": "assert \"worker-secret-name\" not in str(stats)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 198,
-          "preview": "stats = q.stats()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 199,
-          "preview": "assert stats[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 200,
-          "preview": "assert stats[\"by_status\"][\"queued\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 201,
-          "preview": "assert stats[\"by_status\"][\"running\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 202,
-          "preview": "assert stats[\"oldest_queued_at\"] is not None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_jobqueue.py",
-          "line": 212,
-          "preview": "assert q.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 9,
-          "preview": "def stats(self):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_orchestrator.py",
-          "line": 43,
-          "preview": "assert queue.stats()[\"total\"] == 2",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_orchestrator.py",
-          "line": 67,
-          "preview": "assert queue.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_orchestrator.py",
-          "line": 89,
-          "preview": "assert queue.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_orchestrator.py",
-          "line": 836,
-          "preview": "assert queue.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_orchestrator.py",
-          "line": 946,
-          "preview": "assert queue.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_orchestrator.py",
-          "line": 972,
-          "preview": "assert queue.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_outbox_chaos.py",
-          "line": 57,
-          "preview": "assert restarted_queue.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_outbox_chaos.py",
-          "line": 62,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_outbox_chaos.py",
-          "line": 114,
-          "preview": "assert before_restart.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_outbox_chaos.py",
-          "line": 128,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_outbox_chaos.py",
-          "line": 182,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_outbox_chaos.py",
-          "line": 212,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_outbox_chaos.py",
-          "line": 219,
-          "preview": "assert JobQueue(db).stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_outbox_chaos.py",
-          "line": 252,
-          "preview": "assert restarted.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_pentagi_control_api.py",
-          "line": 73,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_pentagi_control_api.py",
-          "line": 126,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_pentagi_control_api.py",
-          "line": 283,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_pentagi_control_api.py",
-          "line": 361,
-          "preview": "assert jobs.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_pentagi_dispatch.py",
-          "line": 59,
-          "preview": "assert queue.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_pentagi_dispatch.py",
-          "line": 92,
-          "preview": "assert queue.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_pentagi_dispatch.py",
-          "line": 108,
-          "preview": "assert queue.stats()[\"total\"] == 2",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_production_migration.py",
-          "line": 28,
-          "preview": "def stats(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 12,
-          "preview": "def stats(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_redis_chaos.py",
-          "line": 54,
-          "preview": "assert restarted.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_redis_chaos.py",
-          "line": 185,
-          "preview": "assert third.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_redis_integration.py",
-          "line": 43,
-          "preview": "assert redis_queue.stats()[\"by_status\"][\"completed\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_redis_jobqueue_integration.py",
-          "line": 63,
-          "preview": "assert restarted.stats()[\"total\"] == 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_redis_jobqueue_integration.py",
-          "line": 162,
-          "preview": "stats = redis_queue.stats()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_redis_jobqueue_integration.py",
-          "line": 164,
-          "preview": "assert stats[\"oldest_running_claimed_at\"] == \"2026-09-13T10:00:00+00:00\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_redis_jobqueue_integration.py",
-          "line": 165,
-          "preview": "assert \"redis-worker-secret-name\" not in str(stats)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_runtime_budget_config.py",
-          "line": 141,
-          "preview": "assert queue.stats()[\"total\"] == 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 9,
-          "preview": "def stats(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 64,
-          "preview": "result = queue.stats()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 68,
-          "preview": "queue.stats = stale_stats",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 104
-    },
-    "Storage": {
-      "definition": {
-        "file": "backend/tests/test_metrics.py",
-        "line": 21,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/observation_writer.py",
-          "line": 8,
-          "preview": "from .storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/observation_writer.py",
-          "line": 17,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/observation_writer.py",
-          "line": 33,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/observation_writer.py",
-          "line": 52,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/observation_writer.py",
-          "line": 109,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/observation_writer.py",
-          "line": 137,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/observation_writer.py",
-          "line": 177,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 46,
-          "preview": "from .storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 73,
-          "preview": "def _load_graph(store: Storage, campaign_id: str) -> ObservationGraph:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 77,
-          "preview": "def _seed_primary_target(store: Storage, campaign: Campaign) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 133,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 547,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 595,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 664,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/postgres_storage.py",
-          "line": 12,
-          "preview": "from .storage import Storage, _harden_private_path",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/postgres_storage.py",
-          "line": 30,
-          "preview": "class PostgresStorage(Storage):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/postgres_storage.py",
-          "line": 31,
-          "preview": "\"\"\"PostgreSQL-backed campaign metadata with the same artifact semantics as Storage.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/readiness.py",
-          "line": 13,
-          "preview": "def Storage():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/readiness.py",
-          "line": 41,
-          "preview": "store = Storage()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/report_approval.py",
-          "line": 77,
-          "preview": "\"\"\"Create approval only after Storage has verified the exact report bytes.",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/scanner_ingestion.py",
-          "line": 11,
-          "preview": "from .storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/scanner_ingestion.py",
-          "line": 37,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/scanner_worker.py",
-          "line": 13,
-          "preview": "from .storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/scanner_worker.py",
-          "line": 26,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/scanner_worker.py",
-          "line": 65,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/scanner_worker.py",
-          "line": 141,
-          "preview": "store: Storage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage.py",
-          "line": 19,
-          "preview": "class Storage(_core.Storage):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage.py",
-          "line": 20,
-          "preview": "\"\"\"Storage core extended with durable PentAGI flow-to-campaign bindings.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage_backend.py",
-          "line": 6,
-          "preview": "from .storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage_backend.py",
-          "line": 60,
-          "preview": "return Storage()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage_core.py",
-          "line": 90,
-          "preview": "class Storage:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker.py",
-          "line": 16,
-          "preview": "from .storage import Storage",
+          "preview": "def _campaign(campaign_id: str, store: StorageBackend | None = None):",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/worker.py",
-          "line": 388,
-          "preview": "def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) -> list[dict]:",
+          "file": "backend/app/browser.py",
+          "line": 195,
+          "preview": "campaign, version = _campaign(campaign_id, store)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/worker_service.py",
-          "line": 40,
-          "preview": "from .storage import CampaignConflictError, Storage",
+          "file": "backend/app/browser.py",
+          "line": 345,
+          "preview": "campaign, version = _campaign(campaign_id, store)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/worker_service.py",
-          "line": 64,
-          "preview": "def _save(store: Storage, campaign: Campaign, version: int) -> int:",
+          "file": "backend/app/browser.py",
+          "line": 381,
+          "preview": "latest, _latest_version = _campaign(campaign.id, store)",
           "definition_candidate": false
         },
         {
@@ -1416,868 +271,811 @@
         },
         {
           "file": "backend/app/worker_service.py",
-          "line": 125,
-          "preview": "def _process_scanner_job(job: dict, queue: JobQueue, store: Storage, runner) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 132,
-          "preview": "def process_strix_scan(job: dict, queue: JobQueue, store: Storage) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 136,
-          "preview": "def process_nuclei_scan(job: dict, queue: JobQueue, store: Storage) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 140,
-          "preview": "def process_validation(job: dict, store: Storage) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 213,
-          "preview": "def process_browser_flow(job: dict, store: Storage) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 317,
-          "preview": "def process_recon_task(job: dict, store: Storage) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 420,
-          "preview": "def process_report(job: dict, store: Storage) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 462,
-          "preview": "def _record_worker_outcome(store: Storage, job: dict, *, success: bool, status: str) -> bool:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 508,
-          "preview": "def _verify_policy_bound_job(job: dict, store: Storage) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/worker_service.py",
-          "line": 549,
-          "preview": "def process_one(queue: JobQueue, store: Storage, worker_id: str) -> bool:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 21,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 41,
-          "preview": "Storage(db, artifacts).save_campaign(campaign.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 46,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 95,
-          "preview": "stored = Storage(db).get_campaign(\"c1\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 116,
-          "preview": "stored = Storage(db).get_campaign(\"c1\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 152,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 167,
-          "preview": "assert Storage(db).get_campaign(\"c1\")[\"findings\"][0][\"status\"] == \"validation_required\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 178,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 187,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 206,
-          "preview": "assert Storage(db).get_campaign(\"c1\")[\"findings\"] == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 266,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 426,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_api_idempotency.py",
-          "line": 544,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_attack_surface.py",
-          "line": 4,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_attack_surface.py",
-          "line": 167,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_attack_surface_scope.py",
-          "line": 4,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_attack_surface_scope.py",
-          "line": 73,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 27,
-          "preview": "from app.storage import CampaignConflictError, Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 98,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_browser.py",
-          "line": 288,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_cancel.py",
-          "line": 6,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_cancel.py",
-          "line": 28,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 10,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 27,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 56,
-          "preview": "store = Storage(db, str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 104,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_circuit_breaker.py",
-          "line": 169,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_overview.py",
-          "line": 6,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_overview.py",
-          "line": 36,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_risk.py",
-          "line": 4,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_campaign_risk.py",
-          "line": 76,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_control_views.py",
-          "line": 13,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_control_views.py",
-          "line": 45,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 6,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 43,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_evidence_integration.py",
-          "line": 94,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_distributed_concurrency.py",
-          "line": 13,
-          "preview": "from app.storage import CampaignConflictError, Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_distributed_concurrency.py",
-          "line": 343,
-          "preview": "store = Storage(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_chain.py",
-          "line": 4,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_chain.py",
-          "line": 191,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_quality.py",
-          "line": 4,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_evidence_quality.py",
-          "line": 138,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 9,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 73,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_correlation.py",
-          "line": 167,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_review_metadata.py",
-          "line": 4,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_review_metadata.py",
-          "line": 43,
-          "preview": "Storage(db, artifacts).save_campaign(campaign.model_dump(mode=\"json\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_review_metadata.py",
-          "line": 80,
-          "preview": "persisted = Storage(db, artifacts).get_campaign(\"h1-review\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_review_metadata.py",
-          "line": 93,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 4,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_triage.py",
-          "line": 112,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 6,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 66,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 98,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
           "line": 126,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 147,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 174,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 221,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch.py",
-          "line": 255,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch_api.py",
-          "line": 7,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch_api.py",
-          "line": 115,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch_api.py",
-          "line": 147,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 8,
-          "preview": "from app.storage import Storage",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 64,
-          "preview": "store = Storage(db, artifacts)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_binding.py",
+          "file": "backend/app/worker_service.py",
           "line": 142,
-          "preview": "persisted = Storage(db, artifacts).get_campaign(campaign_id)",
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_binding.py",
-          "line": 183,
-          "preview": "Storage(db, artifacts).save_campaign(campaign.model_dump(mode=\"json\"))",
+          "file": "backend/app/worker_service.py",
+          "line": 214,
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_catalog.py",
-          "line": 2,
-          "preview": "from app.storage import Storage",
+          "file": "backend/app/worker_service.py",
+          "line": 318,
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_catalog.py",
-          "line": 38,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
+          "file": "backend/app/worker_service.py",
+          "line": 421,
+          "preview": "campaign, version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_catalog.py",
-          "line": 61,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
+          "file": "backend/app/worker_service.py",
+          "line": 521,
+          "preview": "campaign, _version = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_catalog.py",
-          "line": 92,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
+          "file": "backend/app/worker_service.py",
+          "line": 573,
+          "preview": "latest_campaign, _ = _campaign(store, job[\"campaign_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_intelligence.py",
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 9,
+          "preview": "def _campaign(events):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 131,
+          "preview": "campaign = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 151,
+          "preview": "campaign = _campaign([])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 162,
+          "preview": "campaign = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 188,
+          "preview": "campaign = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 230,
+          "preview": "campaign = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 286,
+          "preview": "campaign = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 321,
+          "preview": "campaign = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 371,
+          "preview": "campaign = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 432,
+          "preview": "base = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_api_outbox.py",
+          "line": 500,
+          "preview": "campaign = _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 30,
+          "preview": "def _campaign() -> Campaign:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 47,
+          "preview": "validate_flow(_campaign(), flow)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 53,
+          "preview": "validate_flow(_campaign(), flow)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 71,
+          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 99,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 122,
+          "preview": "execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 131,
+          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 137,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 157,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 290,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 465,
+          "preview": "_campaign(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 499,
+          "preview": "_campaign(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 517,
+          "preview": "_campaign(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_browser.py",
+          "line": 530,
+          "preview": "result = execute_browser_flow(_campaign(), flow.model_dump(mode=\"json\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_cancel.py",
+          "line": 7,
+          "preview": "from app.worker_service import _campaign as load_worker_campaign, process_one",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 14,
+          "preview": "def _campaign():",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 29,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 59,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 107,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 137,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 202,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 243,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_control_views.py",
+          "line": 16,
+          "preview": "def _campaign() -> Campaign:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_control_views.py",
+          "line": 46,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
           "line": 8,
-          "preview": "from app.storage import Storage",
+          "preview": "def _campaign():",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_intelligence.py",
-          "line": 209,
-          "preview": "store = Storage(str(tmp_path / \"db.sqlite3\"), str(tmp_path / \"artifacts\"))",
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 64,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_launch_api.py",
-          "line": 5,
-          "preview": "from app.storage import Storage",
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 94,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hackerone_launch_api.py",
-          "line": 66,
-          "preview": "persisted = Storage(db, artifacts).get_campaign(result[\"campaign\"][\"id\"])",
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 138,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 199,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 271,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 316,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 338,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 357,
+          "preview": "result = build_decision_timeline(_campaign(), graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 23,
+          "preview": "def _campaign(*findings: Finding) -> Campaign:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 42,
+          "preview": "campaign = _campaign(finding)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 48,
+          "preview": "lambda _campaign, _finding: ProbeResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 93,
+          "preview": "campaign = _campaign(finding)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 99,
+          "preview": "lambda _campaign, _finding: ProbeResult(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_evidence_backed_planner.py",
+          "line": 6,
+          "preview": "def _campaign(status=\"validation_required\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_evidence_backed_planner.py",
+          "line": 60,
+          "preview": "action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=False))[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_evidence_backed_planner.py",
+          "line": 67,
+          "preview": "action = AdaptivePlanner().plan(_campaign(), _observed_graph(with_evidence=True))[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_evidence_backed_planner.py",
+          "line": 75,
+          "preview": "_campaign(status=\"confirmed\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 7,
+          "preview": "def _campaign(campaign_id, state, *, activity=None, nmi=None, bounty=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 75,
+          "preview": "_campaign(\"c1\", \"needs-more-info\", nmi=True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 76,
+          "preview": "_campaign(\"c2\", \"triaged\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 77,
+          "preview": "_campaign(\"c3\", \"resolved\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 78,
+          "preview": "_campaign(\"c4\", \"duplicate\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 79,
+          "preview": "_campaign(\"c5\", \"informative\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 102,
+          "preview": "[_campaign(\"c1\", \"triaged\", bounty=True)]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 117,
+          "preview": "result = build_hackerone_attention_center([_campaign(\"c1\", None)])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 141,
+          "preview": "campaign = _campaign(\"c1\", \"triaged\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 165,
+          "preview": "return [_campaign(\"c1\", \"needs-more-info\", nmi=True)]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 177,
+          "preview": "first = _campaign(\"c1\", \"triaged\", activity=\"activity-comment\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 178,
+          "preview": "second = _campaign(\"c1\", \"triaged\", activity=\"activity-comment\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 192,
+          "preview": "campaign = _campaign(\"c1\", \"needs-more-info\", nmi=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_attention.py",
+          "line": 213,
+          "preview": "campaign = _campaign(\"c1\", \"triaged\", bounty=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 24,
+          "preview": "def _campaign(campaign_id, state=\"running\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 67,
+          "preview": "store.save_campaign(_campaign(\"c1\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 68,
+          "preview": "store.save_campaign(_campaign(\"c2\", state=\"ready\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 100,
+          "preview": "store.save_campaign(_campaign(campaign_id))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 127,
+          "preview": "store.save_campaign(_campaign(\"c1\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 148,
+          "preview": "store.save_campaign(_campaign(\"c1\", state=\"ready\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 175,
+          "preview": "store.save_campaign(_campaign(\"c1\", state=\"ready\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 222,
+          "preview": "store.save_campaign(_campaign(\"c1\", state=\"ready\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 223,
+          "preview": "store.save_campaign(_campaign(\"c2\", state=\"ready\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_batch.py",
+          "line": 256,
+          "preview": "store.save_campaign(_campaign(\"active-campaign\", state=\"ready\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 17,
+          "preview": "def _campaign(*, allowed_targets=None, rps=2.0):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 34,
+          "preview": "first = _campaign(allowed_targets=[\"example.test\", \"*.example.test\"])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 35,
+          "preview": "second = _campaign(allowed_targets=[\"*.example.test\", \"example.test\"])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 41,
+          "preview": "base = _campaign(rps=2.0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 42,
+          "preview": "changed = _campaign(rps=1.0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 48,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 69,
+          "preview": "campaign = _campaign(rps=2.0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 93,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 112,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 128,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance.py",
+          "line": 158,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_api_integration.py",
+          "line": 12,
+          "preview": "def _campaign(*, findings=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_api_integration.py",
+          "line": 35,
+          "preview": "campaign = campaign or _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_api_integration.py",
+          "line": 111,
+          "preview": "campaign=_campaign(findings=[finding]),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_api_integration.py",
+          "line": 147,
+          "preview": "campaign=_campaign(findings=[finding]),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 10,
+          "preview": "def _campaign(*, findings=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 37,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 50,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 74,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_job_provenance_integration.py",
+          "line": 112,
+          "preview": "campaign = _campaign(findings=[finding])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_local_outcome_intelligence.py",
+          "line": 4,
+          "preview": "def _campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_local_outcome_intelligence.py",
+          "line": 34,
+          "preview": "_campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_local_outcome_intelligence.py",
+          "line": 43,
+          "preview": "_campaign(\"alpha\", findings=[], submitted=0),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_local_outcome_intelligence.py",
+          "line": 78,
+          "preview": "_campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_local_outcome_intelligence.py",
+          "line": 96,
+          "preview": "_campaign(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 13,
+          "preview": "def _campaign():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 56,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+          "line": 82,
+          "preview": "campaign = _campaign()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 9,
+          "preview": "def _campaign(*, rps: float = 2.0):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 54,
+          "preview": "plan = build_nuclei_plan(_campaign(), str(root / \"job-1\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_worker_plan.py",
+          "line": 67,
+          "preview": "assert build_nuclei_plan(_campaign(), str(root / \"job-1\")).dry_run is True",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 120
     },
-    "list_campaigns": {
+    "test_circuit_breaker_persists_and_resets": {
       "definition": {
-        "file": "backend/tests/test_metrics.py",
-        "line": 22,
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "line": 27,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/hackerone_api.py",
-          "line": 386,
-          "preview": "campaigns = storage().list_campaigns(limit=limit)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 563,
-          "preview": "store.list_campaigns(limit=1000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_api.py",
-          "line": 637,
-          "preview": "local_outcomes = build_local_outcome_signals(store.list_campaigns(limit=1000))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/hackerone_report_sync_worker.py",
-          "line": 268,
-          "preview": "campaigns = store.list_campaigns(limit=_max_campaigns())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/htb_lab.py",
-          "line": 186,
-          "preview": "for campaign in store.list_campaigns(limit=500):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/htb_lab.py",
-          "line": 468,
-          "preview": "for campaign in store.list_campaigns(limit=limit_campaigns):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/htb_lab.py",
-          "line": 526,
-          "preview": "for campaign in store.list_campaigns(limit=limit_campaigns)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/main.py",
-          "line": 542,
-          "preview": "def list_campaigns():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/main.py",
-          "line": 543,
-          "preview": "return [Campaign.model_validate(x) for x in storage().list_campaigns()]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/metrics.py",
-          "line": 34,
-          "preview": "campaigns = storage_backend.list_campaigns()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage_backend.py",
-          "line": 17,
-          "preview": "def list_campaigns(self, *, limit: int | None = None) -> list[dict]: ...",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/storage_core.py",
-          "line": 333,
-          "preview": "def list_campaigns(self, *, limit: int | None = None) -> list[dict[str, Any]]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/surface_temporal.py",
-          "line": 84,
-          "preview": "for candidate in store.list_campaigns(limit=min(500, max_campaigns * 5)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/target_memory.py",
-          "line": 135,
-          "preview": "for candidate in store.list_campaigns(limit=min(500, max_campaigns * 5)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_attention.py",
-          "line": 163,
-          "preview": "def list_campaigns(self, *, limit=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_batch_api.py",
-          "line": 186,
-          "preview": "assert store.list_campaigns() == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
-          "line": 191,
-          "preview": "assert store.list_campaigns() == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
-          "line": 230,
-          "preview": "assert store.list_campaigns() == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
-          "line": 334,
-          "preview": "assert store.list_campaigns() == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
-          "line": 384,
-          "preview": "assert store.list_campaigns() == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_reviewed_batch_api.py",
-          "line": 420,
-          "preview": "assert store.list_campaigns() == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hackerone_scope_preview_api.py",
-          "line": 341,
-          "preview": "assert Storage(db, artifacts).list_campaigns() == []",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 22,
-          "preview": "def list_campaigns(self):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 59,
-          "preview": "def list_campaigns(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 23,
-          "preview": "def list_campaigns(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_queue_age_metrics.py",
-          "line": 76,
-          "preview": "def list_campaigns(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_simple_selection_cached.py",
-          "line": 40,
-          "preview": "def list_campaigns(self, *, limit):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_storage.py",
-          "line": 560,
-          "preview": "recent = store.list_campaigns(limit=2)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_storage.py",
-          "line": 564,
-          "preview": "store.list_campaigns(limit=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_surface_temporal.py",
-          "line": 11,
-          "preview": "def list_campaigns(self, *, limit=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_target_memory.py",
-          "line": 14,
-          "preview": "def list_campaigns(self, *, limit=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_watchdog_observability.py",
-          "line": 25,
-          "preview": "def list_campaigns(self):",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 32
-    },
-    "test_operational_metrics_are_aggregate_only": {
-      "definition": {
-        "file": "backend/tests/test_metrics.py",
-        "line": 30,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 30,
-          "preview": "def test_operational_metrics_are_aggregate_only():",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 27,
+          "preview": "def test_circuit_breaker_persists_and_resets(tmp_path):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_metrics_route_is_exposed_under_authenticated_api": {
+    "test_runtime_exhaustion_opens_breaker_and_future_advance_stays_blocked": {
       "definition": {
-        "file": "backend/tests/test_metrics.py",
-        "line": 54,
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "line": 55,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_metrics.py",
-          "line": 54,
-          "preview": "def test_metrics_route_is_exposed_under_authenticated_api():",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 55,
+          "preview": "def test_runtime_exhaustion_opens_breaker_and_future_advance_stays_blocked(tmp_path):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "AuditStorage": {
+    "test_control_routes_are_exposed": {
       "definition": {
-        "file": "backend/tests/test_metrics.py",
-        "line": 58,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 58,
-          "preview": "class AuditStorage:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_metrics.py",
-          "line": 83,
-          "preview": "result = build_operational_metrics(Queue(), AuditStorage())",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "test_metrics_distinguish_invalid_and_legacy_audit_chains": {
-      "definition": {
-        "file": "backend/tests/test_metrics.py",
-        "line": 79,
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "line": 90,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_metrics.py",
-          "line": 79,
-          "preview": "def test_metrics_distinguish_invalid_and_legacy_audit_chains(monkeypatch):",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 90,
+          "preview": "def test_control_routes_are_exposed():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_operational_alerts_are_aggregate_only": {
+    "test_control_status_reports_budget_blocker_consistently": {
       "definition": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "line": 7,
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "line": 98,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 7,
-          "preview": "def test_operational_alerts_are_aggregate_only(monkeypatch):",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 98,
+          "preview": "def test_control_status_reports_budget_blocker_consistently(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_operational_alerts_ok_below_thresholds": {
+    "test_control_status_exposes_scanner_stability_and_recon_telemetry": {
       "definition": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "line": 31,
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "line": 130,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 31,
-          "preview": "def test_operational_alerts_ok_below_thresholds(monkeypatch):",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 130,
+          "preview": "def test_control_status_exposes_scanner_stability_and_recon_telemetry(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_operational_alert_thresholds_fail_closed": {
+    "test_breaker_reset_endpoint_seals_requested_and_completed_audit_events": {
       "definition": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "line": 50,
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "line": 195,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 50,
-          "preview": "def test_operational_alert_thresholds_fail_closed(monkeypatch):",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 195,
+          "preview": "def test_breaker_reset_endpoint_seals_requested_and_completed_audit_events(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_alerts_route_is_exposed_under_authenticated_api": {
+    "test_breaker_reset_reconciles_completion_after_reset_already_happened": {
       "definition": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "line": 57,
+        "file": "backend/tests/test_campaign_circuit_breaker.py",
+        "line": 236,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 57,
-          "preview": "def test_alerts_route_is_exposed_under_authenticated_api():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_operational_alerts_flag_invalid_campaign_audit_chain": {
-      "definition": {
-        "file": "backend/tests/test_operational_alerts.py",
-        "line": 61,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_operational_alerts.py",
-          "line": 61,
-          "preview": "def test_operational_alerts_flag_invalid_campaign_audit_chain(monkeypatch):",
+          "file": "backend/tests/test_campaign_circuit_breaker.py",
+          "line": 236,
+          "preview": "def test_breaker_reset_reconciles_completion_after_reset_already_happened(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
       ],
