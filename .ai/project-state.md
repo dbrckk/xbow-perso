@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T08:52:54Z
+Generated: 2026-10-01T09:01:23Z
 
 ### Git
 - Branch: `main`
-- Head: `57ac7346ec6c`
-- Commit date: 2026-10-01T10:52:42+02:00
-- Commit: fix(dr): preserve temporary manifest ownership (#460)
+- Head: `cf7b749dd720`
+- Commit date: 2026-10-01T11:01:12+02:00
+- Commit: feat: refresh campaign audit integrity alerts (#461)
 - Tracked files: 584
 
 ### Recently changed files
+- `backend/app/metrics.py`
+- `backend/app/operational_alerts.py`
+- `backend/tests/test_metrics.py`
+- `backend/tests/test_operational_alerts.py`
 - `backend/app/dr_manifest.py`
 - `backend/tests/test_dr_manifest.py`
 - `backend/app/finding_intelligence.py`

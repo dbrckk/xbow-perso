@@ -1,217 +1,950 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "389ed8b830858a98966e3314d377aec6506f0aa1",
-  "head": "57ac7346ec6cd50e7eaf74fde495c96f39d38575",
+  "base": "57ac7346ec6cd50e7eaf74fde495c96f39d38575",
+  "head": "cf7b749dd7207b9e15e8ba68818b929c9b7bdcf1",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/dr_manifest.py",
+      "path": "backend/app/metrics.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_dr_manifest.py",
+      "path": "backend/app/operational_alerts.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_metrics.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_operational_alerts.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/dr_manifest.py",
-    "backend/tests/test_dr_manifest.py"
+    "backend/app/metrics.py",
+    "backend/app/operational_alerts.py",
+    "backend/tests/test_metrics.py",
+    "backend/tests/test_operational_alerts.py"
   ],
   "impacted_files": [
-    "backend/app/dr_cli.py",
-    "backend/app/dr_manifest.py",
-    "backend/tests/test_dr_manifest.py"
+    "backend/app/main.py",
+    "backend/app/metrics.py",
+    "backend/app/operational_alerts.py",
+    "backend/app/readiness.py",
+    "backend/tests/test_metrics.py",
+    "backend/tests/test_operational_alerts.py",
+    "backend/tests/test_queue_age_metrics.py",
+    "backend/tests/test_watchdog_observability.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_parser",
+      "name": "authenticate_control_api",
       "kind": "function",
-      "file": "backend/app/dr_cli.py",
-      "line": 15
+      "file": "backend/app/main.py",
+      "line": 35
+    },
+    {
+      "name": "utcnow",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 48
+    },
+    {
+      "name": "storage",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 52
+    },
+    {
+      "name": "queue",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 56
+    },
+    {
+      "name": "incident_store",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 60
+    },
+    {
+      "name": "_stable_key",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 68
+    },
+    {
+      "name": "CampaignState",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 73
+    },
+    {
+      "name": "ProgramRules",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 83
+    },
+    {
+      "name": "TargetInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 96
+    },
+    {
+      "name": "primary_target_must_be_allowed",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 103
+    },
+    {
+      "name": "Finding",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 117
+    },
+    {
+      "name": "FindingReviewMetadataInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 135
+    },
+    {
+      "name": "normalize_review_metadata",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 145
+    },
+    {
+      "name": "Campaign",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 160
+    },
+    {
+      "name": "EvidenceInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 170
+    },
+    {
+      "name": "HackerOneScopePreviewInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 177
+    },
+    {
+      "name": "OpenApiPreviewInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 181
+    },
+    {
+      "name": "IncidentAcknowledgeInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 185
+    },
+    {
+      "name": "normalize_pattern",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 190
+    },
+    {
+      "name": "is_host_allowed",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 197
+    },
+    {
+      "name": "save_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 206
+    },
+    {
+      "name": "assert_campaign_record",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 213
+    },
+    {
+      "name": "assert_campaign_exists",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 221
+    },
+    {
+      "name": "_reject_cancelled_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 225
+    },
+    {
+      "name": "_reject_new_findings_for_closed_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 230
+    },
+    {
+      "name": "_campaign_graph",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 238
+    },
+    {
+      "name": "_has_evidence_backed_independent_validation",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 245
+    },
+    {
+      "name": "policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 250
+    },
+    {
+      "name": "sanitized_scan_payload",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 276
+    },
+    {
+      "name": "live",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 313
+    },
+    {
+      "name": "ready",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 318
+    },
+    {
+      "name": "auth_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 331
+    },
+    {
+      "name": "health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 340
+    },
+    {
+      "name": "deployment_preflight",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 356
+    },
+    {
+      "name": "system_capabilities",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 363
+    },
+    {
+      "name": "preview_openapi_tests",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 450
+    },
+    {
+      "name": "get_offensive_expansion",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 460
+    },
+    {
+      "name": "get_observer_health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 467
+    },
+    {
+      "name": "get_incidents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 472
+    },
+    {
+      "name": "acknowledge_incident",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 477
+    },
+    {
+      "name": "list_agents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 492
+    },
+    {
+      "name": "preview_hackerone_scope",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 498
+    },
+    {
+      "name": "create_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 534
+    },
+    {
+      "name": "list_campaigns",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 542
+    },
+    {
+      "name": "get_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 547
+    },
+    {
+      "name": "get_campaign_target_memory",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 552
+    },
+    {
+      "name": "get_campaign_surface_diff",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 564
+    },
+    {
+      "name": "get_campaign_surface_temporal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 578
+    },
+    {
+      "name": "get_campaign_surface_confidence",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 590
+    },
+    {
+      "name": "campaign_outbox_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 607
+    },
+    {
+      "name": "campaign_outbox_recovery",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 621
+    },
+    {
+      "name": "_apply_local_outbox_repairs",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 642
+    },
+    {
+      "name": "reconcile_campaign_outbox_local",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 681
+    },
+    {
+      "name": "preview_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 739
+    },
+    {
+      "name": "_pentagi_dispatch_fingerprint",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 770
+    },
+    {
+      "name": "_record_pentagi_dispatch_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 774
+    },
+    {
+      "name": "_reconcile_pentagi_queued_event",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 800
+    },
+    {
+      "name": "dispatch_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 847
+    },
+    {
+      "name": "pentagi_campaign_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 921
+    },
+    {
+      "name": "list_campaign_observations",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 951
+    },
+    {
+      "name": "campaign_decision_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 957
+    },
+    {
+      "name": "campaign_event_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 969
+    },
+    {
+      "name": "campaign_worker_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 979
+    },
+    {
+      "name": "campaign_knowledge",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 991
+    },
+    {
+      "name": "campaign_finding_ranking",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1006
+    },
+    {
+      "name": "campaign_advisory_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1033
+    },
+    {
+      "name": "campaign_advisory_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1042
+    },
+    {
+      "name": "campaign_advisory_journal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1053
+    },
+    {
+      "name": "campaign_hypothesis_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1065
+    },
+    {
+      "name": "campaign_hypothesis_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1074
+    },
+    {
+      "name": "campaign_hypothesis_stability",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1085
+    },
+    {
+      "name": "campaign_plan",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1097
+    },
+    {
+      "name": "check_policy",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1147
+    },
+    {
+      "name": "verify_campaign_policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1157
+    },
+    {
+      "name": "_pending_campaign_start_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1162
+    },
+    {
+      "name": "_record_campaign_start_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1170
+    },
+    {
+      "name": "_reconcile_campaign_started",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1196
+    },
+    {
+      "name": "start_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1248
+    },
+    {
+      "name": "cancel_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1338
+    },
+    {
+      "name": "get_job",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1371
+    },
+    {
+      "name": "get_job_provenance_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1379
+    },
+    {
+      "name": "_validation_request_id",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1396
+    },
+    {
+      "name": "_reconcile_validation_queued",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1400
+    },
+    {
+      "name": "add_finding",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1449
+    },
+    {
+      "name": "_record_report_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1534
+    },
+    {
+      "name": "_reconcile_report_job",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1561
+    },
+    {
+      "name": "_ensure_completion_report",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1607
+    },
+    {
+      "name": "update_finding_review_metadata",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1675
+    },
+    {
+      "name": "validate_finding",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1726
+    },
+    {
+      "name": "queue_report",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1792
+    },
+    {
+      "name": "add_text_artifact",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1835
+    },
+    {
+      "name": "list_artifacts",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1866
+    },
+    {
+      "name": "download_artifact",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1872
+    },
+    {
+      "name": "_age_seconds",
+      "kind": "function",
+      "file": "backend/app/metrics.py",
+      "line": 16
+    },
+    {
+      "name": "build_operational_metrics",
+      "kind": "function",
+      "file": "backend/app/metrics.py",
+      "line": 32
+    },
+    {
+      "name": "operational_metrics",
+      "kind": "function",
+      "file": "backend/app/metrics.py",
+      "line": 111
+    },
+    {
+      "name": "_threshold",
+      "kind": "function",
+      "file": "backend/app/operational_alerts.py",
+      "line": 14
+    },
+    {
+      "name": "build_operational_alerts",
+      "kind": "function",
+      "file": "backend/app/operational_alerts.py",
+      "line": 25
+    },
+    {
+      "name": "operational_alerts",
+      "kind": "function",
+      "file": "backend/app/operational_alerts.py",
+      "line": 137
+    },
+    {
+      "name": "deliver_operational_alerts",
+      "kind": "function",
+      "file": "backend/app/operational_alerts.py",
+      "line": 145
+    },
+    {
+      "name": "Storage",
+      "kind": "function",
+      "file": "backend/app/readiness.py",
+      "line": 13
+    },
+    {
+      "name": "JobQueue",
+      "kind": "function",
+      "file": "backend/app/readiness.py",
+      "line": 18
+    },
+    {
+      "name": "_artifact_store_ready",
+      "kind": "function",
+      "file": "backend/app/readiness.py",
+      "line": 22
+    },
+    {
+      "name": "readiness",
+      "kind": "function",
+      "file": "backend/app/readiness.py",
+      "line": 33
     },
     {
       "name": "main",
       "kind": "function",
-      "file": "backend/app/dr_cli.py",
-      "line": 37
+      "file": "backend/app/readiness.py",
+      "line": 76
     },
     {
-      "name": "DisasterRecoveryError",
+      "name": "Queue",
       "kind": "class",
-      "file": "backend/app/dr_manifest.py",
+      "file": "backend/tests/test_metrics.py",
+      "line": 8
+    },
+    {
+      "name": "stats",
+      "kind": "function",
+      "file": "backend/tests/test_metrics.py",
+      "line": 9
+    },
+    {
+      "name": "Storage",
+      "kind": "class",
+      "file": "backend/tests/test_metrics.py",
+      "line": 21
+    },
+    {
+      "name": "list_campaigns",
+      "kind": "function",
+      "file": "backend/tests/test_metrics.py",
       "line": 22
     },
     {
-      "name": "_canonical_manifest",
+      "name": "test_operational_metrics_are_aggregate_only",
       "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 26
+      "file": "backend/tests/test_metrics.py",
+      "line": 30
     },
     {
-      "name": "_seal_manifest",
+      "name": "test_metrics_route_is_exposed_under_authenticated_api",
       "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 46
+      "file": "backend/tests/test_metrics.py",
+      "line": 54
     },
     {
-      "name": "_verification_secret",
-      "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 74
+      "name": "AuditStorage",
+      "kind": "class",
+      "file": "backend/tests/test_metrics.py",
+      "line": 58
     },
     {
-      "name": "_verify_manifest_signature",
+      "name": "list_campaigns",
       "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 84
+      "file": "backend/tests/test_metrics.py",
+      "line": 59
     },
     {
-      "name": "_safe_backup_file",
+      "name": "test_metrics_distinguish_invalid_and_legacy_audit_chains",
       "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 135
+      "file": "backend/tests/test_metrics.py",
+      "line": 79
     },
     {
-      "name": "_sha256",
+      "name": "test_operational_alerts_are_aggregate_only",
       "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 150
+      "file": "backend/tests/test_operational_alerts.py",
+      "line": 7
     },
     {
-      "name": "build_backup_manifest",
+      "name": "test_operational_alerts_ok_below_thresholds",
       "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 161
+      "file": "backend/tests/test_operational_alerts.py",
+      "line": 31
     },
     {
-      "name": "write_backup_manifest",
+      "name": "test_operational_alert_thresholds_fail_closed",
       "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 191
+      "file": "backend/tests/test_operational_alerts.py",
+      "line": 50
     },
     {
-      "name": "verify_backup_manifest",
+      "name": "test_alerts_route_is_exposed_under_authenticated_api",
       "kind": "function",
-      "file": "backend/app/dr_manifest.py",
-      "line": 219
+      "file": "backend/tests/test_operational_alerts.py",
+      "line": 57
     },
     {
-      "name": "test_manifest_write_preserves_preexisting_temporary_file",
+      "name": "test_operational_alerts_flag_invalid_campaign_audit_chain",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 19
+      "file": "backend/tests/test_operational_alerts.py",
+      "line": 61
     },
     {
-      "name": "test_manifest_write_cleans_owned_temporary_after_replace_failure",
+      "name": "Queue",
+      "kind": "class",
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 7
+    },
+    {
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 8
+    },
+    {
+      "name": "stats",
+      "kind": "function",
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 12
+    },
+    {
+      "name": "Storage",
+      "kind": "class",
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 22
+    },
+    {
+      "name": "list_campaigns",
+      "kind": "function",
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 23
+    },
+    {
+      "name": "test_metrics_expose_queue_age_without_payloads",
+      "kind": "function",
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 27
+    },
+    {
+      "name": "test_invalid_queue_timestamp_does_not_break_metrics",
+      "kind": "function",
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 36
+    },
+    {
+      "name": "test_alerts_detect_stalled_queue",
+      "kind": "function",
+      "file": "backend/tests/test_queue_age_metrics.py",
       "line": 41
     },
     {
-      "name": "_files",
+      "name": "test_queue_age_threshold_fails_closed_on_invalid_config",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 56
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 53
     },
     {
-      "name": "_canonical_legacy_v1",
+      "name": "test_overflowing_queue_timestamp_does_not_break_metrics",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 66
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 63
     },
     {
-      "name": "test_backup_manifest_contains_only_integrity_metadata",
-      "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 85
+      "name": "OutboxStorage",
+      "kind": "class",
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 72
     },
     {
-      "name": "test_manifest_roundtrip_verifies",
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 108
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 73
     },
     {
-      "name": "test_manifest_detects_modified_backup",
+      "name": "list_campaigns",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 130
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 76
     },
     {
-      "name": "test_manifest_rejects_symlink_backup",
+      "name": "test_metrics_expose_outbox_age_and_counts_without_identities",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 152
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 106
     },
     {
-      "name": "test_manifest_rejects_empty_backup",
+      "name": "test_alerts_detect_stalled_outbox",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 165
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 119
     },
     {
-      "name": "test_manifest_rejects_symlink_destination",
+      "name": "test_alerts_detect_outbox_backlog",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 177
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 141
     },
     {
-      "name": "test_manifest_rejects_invalid_artifact_size_schema",
+      "name": "test_outbox_alert_thresholds_fail_closed",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 193
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 163
     },
     {
-      "name": "test_signed_manifest_detects_manifest_rewrite",
+      "name": "test_metrics_expose_running_lease_age",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 213
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 175
     },
     {
-      "name": "test_signed_manifest_rejects_signature_field_stripping",
+      "name": "test_invalid_running_lease_timestamp_does_not_break_metrics",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 245
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 182
     },
     {
-      "name": "test_signed_manifest_authenticates_integrity_mode",
+      "name": "test_alerts_detect_stale_running_lease",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 281
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 188
     },
     {
-      "name": "test_signed_manifest_requires_matching_verification_key",
+      "name": "test_running_lease_alert_threshold_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 311
+      "file": "backend/tests/test_queue_age_metrics.py",
+      "line": 212
     },
     {
-      "name": "test_unsigned_manifest_remains_backward_compatible",
-      "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 337
+      "name": "Queue",
+      "kind": "class",
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 5
     },
     {
-      "name": "test_legacy_signed_v1_manifest_remains_backward_compatible",
+      "name": "health",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 366
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 6
     },
     {
-      "name": "test_legacy_v1_rejects_partial_signature_stripping",
+      "name": "stats",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 396
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 9
     },
     {
-      "name": "test_signed_manifest_fails_closed_when_key_becomes_unavailable",
+      "name": "Store",
+      "kind": "class",
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 19
+    },
+    {
+      "name": "health",
       "kind": "function",
-      "file": "backend/tests/test_dr_manifest.py",
-      "line": 423
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 22
+    },
+    {
+      "name": "list_campaigns",
+      "kind": "function",
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 25
+    },
+    {
+      "name": "test_metrics_include_watchdog",
+      "kind": "function",
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 29
+    },
+    {
+      "name": "test_invalid_watchdog_config_is_redacted_error",
+      "kind": "function",
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 44
+    },
+    {
+      "name": "test_readiness_fails_on_critical_watchdog",
+      "kind": "function",
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 55
+    },
+    {
+      "name": "stale_stats",
+      "kind": "function",
+      "file": "backend/tests/test_watchdog_observability.py",
+      "line": 63
     }
   ],
   "selected_tests": [
-    "backend/tests/test_dr_manifest.py"
+    "backend/tests/test_metrics.py",
+    "backend/tests/test_observer_health_metrics.py",
+    "backend/tests/test_operational_alerts.py",
+    "backend/tests/test_queue_age_metrics.py",
+    "backend/tests/test_watchdog_observability.py"
   ]
 }

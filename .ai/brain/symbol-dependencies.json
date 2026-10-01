@@ -5,37 +5,433 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "DisasterRecoveryError": {
+    "_age_seconds": {
       "source": {
-        "file": "backend/app/dr_manifest.py",
+        "file": "backend/app/metrics.py",
+        "start": 16,
+        "end": 29
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_operational_metrics": {
+      "source": {
+        "file": "backend/app/metrics.py",
+        "start": 32,
+        "end": 107
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_age_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/metrics.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_worker_watchdog",
+          "definitions": [
+            {
+              "file": "backend/app/worker_watchdog.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_campaigns",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 542,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "outbox_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/api_outbox.py",
+              "line": 124,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verify_campaign_event_chain",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "operational_metrics": {
+      "source": {
+        "file": "backend/app/metrics.py",
+        "start": 111,
+        "end": 114
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_operational_metrics",
+          "definitions": [
+            {
+              "file": "backend/app/metrics.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_threshold": {
+      "source": {
+        "file": "backend/app/operational_alerts.py",
+        "start": 14,
+        "end": 22
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_operational_alerts": {
+      "source": {
+        "file": "backend/app/operational_alerts.py",
+        "start": 25,
+        "end": 133
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_threshold",
+          "definitions": [
+            {
+              "file": "backend/app/operational_alerts.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "operational_alerts": {
+      "source": {
+        "file": "backend/app/operational_alerts.py",
+        "start": 137,
+        "end": 141
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_operational_alerts",
+          "definitions": [
+            {
+              "file": "backend/app/operational_alerts.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_operational_metrics",
+          "definitions": [
+            {
+              "file": "backend/app/metrics.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "deliver_operational_alerts": {
+      "source": {
+        "file": "backend/app/operational_alerts.py",
+        "start": 145,
+        "end": 150
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_operational_alerts",
+          "definitions": [
+            {
+              "file": "backend/app/operational_alerts.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_operational_metrics",
+          "definitions": [
+            {
+              "file": "backend/app/metrics.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "deliver_alerts",
+          "definitions": [
+            {
+              "file": "backend/app/alert_delivery.py",
+              "line": 90,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "Queue": {
+      "source": {
+        "file": "backend/tests/test_metrics.py",
+        "start": 8,
+        "end": 18
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "stats",
+          "definitions": [
+            {
+              "file": "backend/tests/test_metrics.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "stats": {
+      "source": {
+        "file": "backend/tests/test_metrics.py",
+        "start": 9,
+        "end": 18
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "Storage": {
+      "source": {
+        "file": "backend/tests/test_metrics.py",
+        "start": 21,
+        "end": 27
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "list_campaigns",
+          "definitions": [
+            {
+              "file": "backend/tests/test_metrics.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/tests/test_metrics.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 318,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "list_campaigns": {
+      "source": {
+        "file": "backend/tests/test_metrics.py",
         "start": 22,
-        "end": 23
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_canonical_manifest": {
-      "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 26,
-        "end": 43
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_seal_manifest": {
-      "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 46,
-        "end": 71
+        "end": 27
       },
       "symbol_dependencies": [
         {
-          "symbol": "DisasterRecoveryError",
+          "symbol": "ready",
           "definitions": [
             {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
+              "file": "backend/app/main.py",
+              "line": 318,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_operational_metrics_are_aggregate_only": {
+      "source": {
+        "file": "backend/tests/test_metrics.py",
+        "start": 30,
+        "end": 51
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Queue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_metrics.py",
+              "line": 8,
               "kind": "class",
               "language": "python"
             }
@@ -43,35 +439,35 @@
           "relation": "same_file"
         },
         {
-          "symbol": "SecretVaultError",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/secret_vault.py",
-              "line": 12,
+              "file": "backend/tests/test_metrics.py",
+              "line": 21,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_operational_metrics",
+          "definitions": [
+            {
+              "file": "backend/app/metrics.py",
+              "line": 32,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "_canonical_manifest",
+          "symbol": "ready",
           "definitions": [
             {
-              "file": "backend/app/dr_manifest.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "resolve_secret",
-          "definitions": [
-            {
-              "file": "backend/app/secret_vault.py",
-              "line": 152,
+              "file": "backend/app/main.py",
+              "line": 318,
               "kind": "function",
               "language": "python"
             }
@@ -81,281 +477,161 @@
       ],
       "dependency_count": 4
     },
-    "_verification_secret": {
+    "test_metrics_route_is_exposed_under_authenticated_api": {
       "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 74,
-        "end": 81
+        "file": "backend/tests/test_metrics.py",
+        "start": 54,
+        "end": 55
       },
       "symbol_dependencies": [
         {
-          "symbol": "DisasterRecoveryError",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "SecretVaultError",
-          "definitions": [
-            {
-              "file": "backend/app/secret_vault.py",
-              "line": 12,
-              "kind": "class",
-              "language": "python"
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "resolve_secret",
-          "definitions": [
-            {
-              "file": "backend/app/secret_vault.py",
-              "line": 152,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_verify_manifest_signature": {
-      "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 84,
-        "end": 132
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_canonical_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_verification_secret",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 74,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_safe_backup_file": {
-      "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 135,
-        "end": 147
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
       "dependency_count": 1
     },
-    "_sha256": {
+    "AuditStorage": {
       "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 150,
-        "end": 158
+        "file": "backend/tests/test_metrics.py",
+        "start": 58,
+        "end": 76
       },
       "symbol_dependencies": [
         {
-          "symbol": "DisasterRecoveryError",
+          "symbol": "append_campaign_event",
           "definitions": [
             {
-              "file": "backend/app/dr_manifest.py",
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_campaigns",
+          "definitions": [
+            {
+              "file": "backend/tests/test_metrics.py",
               "line": 22,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/tests/test_metrics.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 318,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_metrics_distinguish_invalid_and_legacy_audit_chains": {
+      "source": {
+        "file": "backend/tests/test_metrics.py",
+        "start": 79,
+        "end": 89
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AuditStorage",
+          "definitions": [
+            {
+              "file": "backend/tests/test_metrics.py",
+              "line": 58,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "Queue",
+          "definitions": [
+            {
+              "file": "backend/tests/test_metrics.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_operational_metrics",
+          "definitions": [
+            {
+              "file": "backend/app/metrics.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_operational_alerts_are_aggregate_only": {
+      "source": {
+        "file": "backend/tests/test_operational_alerts.py",
+        "start": 7,
+        "end": 28
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_operational_alerts",
+          "definitions": [
+            {
+              "file": "backend/app/operational_alerts.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
       "dependency_count": 1
     },
-    "build_backup_manifest": {
+    "test_operational_alerts_ok_below_thresholds": {
       "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 161,
-        "end": 188
+        "file": "backend/tests/test_operational_alerts.py",
+        "start": 31,
+        "end": 47
       },
       "symbol_dependencies": [
         {
-          "symbol": "_safe_backup_file",
+          "symbol": "build_operational_alerts",
           "definitions": [
             {
-              "file": "backend/app/dr_manifest.py",
-              "line": 135,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_sha256",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "write_backup_manifest": {
-      "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 191,
-        "end": 216
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_seal_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "verify_backup_manifest": {
-      "source": {
-        "file": "backend/app/dr_manifest.py",
-        "start": 219,
-        "end": 289
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_verify_manifest_signature",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_manifest_write_preserves_preexisting_temporary_file": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 19,
-        "end": 38
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
+              "file": "backend/app/operational_alerts.py",
+              "line": 25,
               "kind": "function",
               "language": "python"
             }
@@ -363,33 +639,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 1
     },
-    "test_manifest_write_cleans_owned_temporary_after_replace_failure": {
+    "test_operational_alert_thresholds_fail_closed": {
       "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 41,
-        "end": 53
+        "file": "backend/tests/test_operational_alerts.py",
+        "start": 50,
+        "end": 54
       },
       "symbol_dependencies": [
         {
-          "symbol": "DisasterRecoveryError",
+          "symbol": "build_operational_alerts",
           "definitions": [
             {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
+              "file": "backend/app/operational_alerts.py",
+              "line": 25,
               "kind": "function",
               "language": "python"
             }
@@ -397,51 +661,43 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 1
     },
-    "_files": {
+    "test_alerts_route_is_exposed_under_authenticated_api": {
       "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 56,
-        "end": 63
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_canonical_legacy_v1": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 66,
-        "end": 82
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_backup_manifest_contains_only_integrity_metadata": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 85,
-        "end": 105
+        "file": "backend/tests/test_operational_alerts.py",
+        "start": 57,
+        "end": 58
       },
       "symbol_dependencies": [
         {
-          "symbol": "_files",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
+              "file": "frontend/app.js",
+              "line": 60,
               "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
-          "relation": "same_file"
-        },
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_operational_alerts_flag_invalid_campaign_audit_chain": {
+      "source": {
+        "file": "backend/tests/test_operational_alerts.py",
+        "start": 61,
+        "end": 90
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "build_backup_manifest",
+          "symbol": "build_operational_alerts",
           "definitions": [
             {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
+              "file": "backend/app/operational_alerts.py",
+              "line": 25,
               "kind": "function",
               "language": "python"
             }
@@ -449,831 +705,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
-    },
-    "test_manifest_roundtrip_verifies": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 108,
-        "end": 127
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_manifest_detects_modified_backup": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 130,
-        "end": 149
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_manifest_rejects_symlink_backup": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 152,
-        "end": 162
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_manifest_rejects_empty_backup": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 165,
-        "end": 174
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_manifest_rejects_symlink_destination": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 177,
-        "end": 190
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_manifest_rejects_invalid_artifact_size_schema": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 193,
-        "end": 210
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_signed_manifest_detects_manifest_rewrite": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 213,
-        "end": 242
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_signed_manifest_rejects_signature_field_stripping": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 245,
-        "end": 278
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_signed_manifest_authenticates_integrity_mode": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 281,
-        "end": 308
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_signed_manifest_requires_matching_verification_key": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 311,
-        "end": 334
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_unsigned_manifest_remains_backward_compatible": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 337,
-        "end": 363
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_legacy_signed_v1_manifest_remains_backward_compatible": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 366,
-        "end": 393
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_canonical_legacy_v1",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 66,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_legacy_v1_rejects_partial_signature_stripping": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 396,
-        "end": 420
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_signed_manifest_fails_closed_when_key_becomes_unavailable": {
-      "source": {
-        "file": "backend/tests/test_dr_manifest.py",
-        "start": 423,
-        "end": 444
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DisasterRecoveryError",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_files",
-          "definitions": [
-            {
-              "file": "backend/tests/test_dr_manifest.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verify_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "write_backup_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/dr_manifest.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
+      "dependency_count": 1
     }
   }
 }

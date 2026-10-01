@@ -6849,8 +6849,15 @@ oldest_running_lease_age_seconds = _age_seconds(
 pending_outbox_total = 0
 pending_outbox_by_kind: Counter[str] = Counter()
 oldest_outbox_age_seconds = None
+invalid_campaign_audit_chains = 0
+campaigns_with_legacy_audit_events = 0
+legacy_audit_events_total = 0
 ⋮----
 events = campaign.get("events") or []
+⋮----
+audit = verify_campaign_event_chain(events)
+⋮----
+legacy_count = int(audit.get("legacy_unsealed") or 0)
 ⋮----
 snapshot = outbox_snapshot(events, max_items=1)
 ⋮----
@@ -7507,6 +7514,7 @@ queue_age = metrics.get("oldest_queued_age_seconds")
 running_lease_age = metrics.get("oldest_running_lease_age_seconds")
 pending_outbox = int(metrics.get("pending_outbox_total") or 0)
 outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
+invalid_audit_chains = int(metrics.get("invalid_campaign_audit_chains") or 0)
 ⋮----
 alerts: list[dict[str, Any]] = []
 ⋮----
@@ -16705,6 +16713,18 @@ result = build_operational_metrics(Queue(), Storage())
 rendered = str(result)
 ⋮----
 def test_metrics_route_is_exposed_under_authenticated_api()
+⋮----
+class AuditStorage
+⋮----
+valid = []
+⋮----
+invalid = copy.deepcopy(valid)
+⋮----
+legacy = [{"type": "legacy_event", "at": "old"}]
+⋮----
+def test_metrics_distinguish_invalid_and_legacy_audit_chains(monkeypatch)
+⋮----
+result = build_operational_metrics(Queue(), AuditStorage())
 ````
 
 ## File: backend/tests/test_mobile_production_update_script.py
@@ -17206,6 +17226,10 @@ def test_operational_alerts_ok_below_thresholds(monkeypatch)
 def test_operational_alert_thresholds_fail_closed(monkeypatch)
 ⋮----
 def test_alerts_route_is_exposed_under_authenticated_api()
+⋮----
+def test_operational_alerts_flag_invalid_campaign_audit_chain(monkeypatch)
+⋮----
+audit_alerts = [
 ````
 
 ## File: backend/tests/test_operational_slo.py

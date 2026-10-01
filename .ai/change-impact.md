@@ -1,11 +1,13 @@
 # Change impact
 
-Base: 2cd1aaf18ce66b042b3144ab877cce9f6b27282a
-Head: 57ac7346ec6cd50e7eaf74fde495c96f39d38575
+Base: 9d7073fbe52c4754c84acab04e704a38e854e7ec
+Head: cf7b749dd7207b9e15e8ba68818b929c9b7bdcf1
 
 ## Changed files
-- M backend/app/dr_manifest.py
-- M backend/tests/test_dr_manifest.py
+- M backend/app/metrics.py
+- M backend/app/operational_alerts.py
+- M backend/tests/test_metrics.py
+- M backend/tests/test_operational_alerts.py
 
 ## Affected areas
 - backend

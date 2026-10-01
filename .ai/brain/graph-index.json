@@ -1098,6 +1098,38 @@
     {
       "dependencies": [
         "backend/app/main.py",
+        "backend/app/secret_vault.py"
+      ],
+      "dependents": [
+        "backend/app/browser.py",
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_binding.py",
+        "backend/app/hackerone_report_sync_worker.py",
+        "backend/app/htb_lab.py",
+        "backend/app/main.py",
+        "backend/app/metrics.py",
+        "backend/app/report_approval_api.py",
+        "backend/app/submission_api.py",
+        "backend/app/worker_service.py",
+        "backend/tests/test_api_idempotency.py",
+        "backend/tests/test_browser.py",
+        "backend/tests/test_campaign_audit.py",
+        "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_outbound_submission.py",
+        "backend/tests/test_hackerone_report_sync_worker.py",
+        "backend/tests/test_hackerone_report_tracking.py",
+        "backend/tests/test_metrics.py",
+        "backend/tests/test_outbox_chaos.py",
+        "backend/tests/test_submission_api.py",
+        "backend/tests/test_worker_outcome_memory.py"
+      ],
+      "in_degree": 21,
+      "out_degree": 2,
+      "path": "backend/app/campaign_audit.py"
+    },
+    {
+      "dependencies": [
+        "backend/app/main.py",
         "backend/app/observation_graph.py",
         "backend/tests/test_hackerone_prelaunch.py"
       ],
@@ -1155,36 +1187,6 @@
       "in_degree": 21,
       "out_degree": 0,
       "path": "backend/app/secret_vault.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/main.py",
-        "backend/app/secret_vault.py"
-      ],
-      "dependents": [
-        "backend/app/browser.py",
-        "backend/app/hackerone_api.py",
-        "backend/app/hackerone_binding.py",
-        "backend/app/hackerone_report_sync_worker.py",
-        "backend/app/htb_lab.py",
-        "backend/app/main.py",
-        "backend/app/report_approval_api.py",
-        "backend/app/submission_api.py",
-        "backend/app/worker_service.py",
-        "backend/tests/test_api_idempotency.py",
-        "backend/tests/test_browser.py",
-        "backend/tests/test_campaign_audit.py",
-        "backend/tests/test_hackerone_needs_info.py",
-        "backend/tests/test_hackerone_outbound_submission.py",
-        "backend/tests/test_hackerone_report_sync_worker.py",
-        "backend/tests/test_hackerone_report_tracking.py",
-        "backend/tests/test_outbox_chaos.py",
-        "backend/tests/test_submission_api.py",
-        "backend/tests/test_worker_outcome_memory.py"
-      ],
-      "in_degree": 19,
-      "out_degree": 2,
-      "path": "backend/app/campaign_audit.py"
     },
     {
       "dependencies": [
@@ -1719,6 +1721,26 @@
     },
     {
       "dependencies": [
+        "backend/app/api_outbox.py",
+        "backend/app/campaign_audit.py",
+        "backend/app/main.py",
+        "backend/app/worker_watchdog.py",
+        "backend/tests/test_hackerone_prelaunch.py"
+      ],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/app/operational_alerts.py",
+        "backend/app/readiness.py",
+        "backend/tests/test_metrics.py",
+        "backend/tests/test_queue_age_metrics.py",
+        "backend/tests/test_watchdog_observability.py"
+      ],
+      "in_degree": 6,
+      "out_degree": 5,
+      "path": "backend/app/metrics.py"
+    },
+    {
+      "dependencies": [
         "backend/app/evidence_quality.py",
         "backend/app/finding_consensus.py",
         "backend/app/hypothesis_memory.py",
@@ -1954,25 +1976,6 @@
     },
     {
       "dependencies": [
-        "backend/app/api_outbox.py",
-        "backend/app/main.py",
-        "backend/app/worker_watchdog.py",
-        "backend/tests/test_hackerone_prelaunch.py"
-      ],
-      "dependents": [
-        "backend/app/main.py",
-        "backend/app/operational_alerts.py",
-        "backend/app/readiness.py",
-        "backend/tests/test_metrics.py",
-        "backend/tests/test_queue_age_metrics.py",
-        "backend/tests/test_watchdog_observability.py"
-      ],
-      "in_degree": 6,
-      "out_degree": 4,
-      "path": "backend/app/metrics.py"
-    },
-    {
-      "dependencies": [
         "backend/app/pentagi_adapter.py",
         "backend/app/pentagi_auth.py",
         "backend/app/pentagi_execution_guard.py",
@@ -2185,7 +2188,7 @@
       "path": "backend/app/hackerone_scope_import.py"
     }
   ],
-  "edge_count": 1849,
+  "edge_count": 1851,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 383,
   "schema_version": 1
