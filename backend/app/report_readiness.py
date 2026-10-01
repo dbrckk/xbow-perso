@@ -36,6 +36,9 @@ class ReportReadiness:
     canonical_cwe: str | None
     cvss_rating: str | None
     severity_cvss_consistent: bool
+    submission_quality_score: float
+    submission_quality_band: str
+    quality_components: dict[str, float]
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -127,6 +130,29 @@ def build_report_readiness(
             + (0.15 if not duplicate else 0.0),
             4,
         )
+
+        evidence_quality_score = min(
+            1.0,
+            max(0.0, float(quality.score if quality else 0.0)),
+        )
+        quality_components = {
+            "evidence_quality": round(evidence_quality_score * 0.30, 4),
+            "metadata_completeness": round(completeness * 0.25, 4),
+            "confirmed": 0.15 if confirmed else 0.0,
+            "evidence_backed_validation": 0.15 if evidence_backed else 0.0,
+            "evidence_chain": 0.10 if chain_complete else 0.0,
+            "local_duplicate_clean": 0.05 if not duplicate else 0.0,
+        }
+        submission_quality_score = round(
+            min(1.0, sum(quality_components.values())),
+            4,
+        )
+        if submission_quality_score >= 0.85:
+            submission_quality_band = "high_signal"
+        elif submission_quality_score >= 0.65:
+            submission_quality_band = "review"
+        else:
+            submission_quality_band = "low_signal"
         readiness.append(
             ReportReadiness(
                 finding_id=finding_id,
@@ -147,6 +173,9 @@ def build_report_readiness(
                 canonical_cwe=metadata.canonical_cwe,
                 cvss_rating=metadata.cvss_rating,
                 severity_cvss_consistent=metadata.severity_cvss_consistent,
+                submission_quality_score=submission_quality_score,
+                submission_quality_band=submission_quality_band,
+                quality_components=quality_components,
             )
         )
 
@@ -186,6 +215,24 @@ def campaign_report_readiness(campaign_id: str):
             )
             if readiness
             else 0.0,
+            "average_submission_quality": round(
+                sum(item.submission_quality_score for item in readiness) / len(readiness),
+                4,
+            )
+            if readiness
+            else 0.0,
+            "high_signal": sum(
+                item.submission_quality_band == "high_signal"
+                for item in readiness
+            ),
+            "review_quality": sum(
+                item.submission_quality_band == "review"
+                for item in readiness
+            ),
+            "low_signal": sum(
+                item.submission_quality_band == "low_signal"
+                for item in readiness
+            ),
         },
         "read_only": True,
         "advisory_only": True,
