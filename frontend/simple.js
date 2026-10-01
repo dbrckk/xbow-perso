@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v101';
+  const UI_VERSION='v102';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -701,6 +701,19 @@
     }
   }
 
+  function autonomyReasonLabel(reason){
+    return {
+      circuit_breaker_open:'circuit breaker ouvert',
+      runtime_exhausted:'durée maximale atteinte',
+      budget_blocked:'budget de sécurité atteint'
+    }[reason]||String(reason||'blocage inconnu');
+  }
+
+  function campaignNeedsControlStatus(member){
+    const state=String(member?.campaign_state||member?.status||'').toLowerCase();
+    return Boolean(member?.campaign_id)&&!['completed','cancelled','done'].includes(state);
+  }
+
   function repoSyncLabel(entry){
     const sync=entry?.repository_sync||{};
     if(sync.status==='synced'){
@@ -711,7 +724,7 @@
     return '';
   }
 
-  function renderJournal(payload){
+  async function renderJournal(payload){
     const entries=Array.isArray(payload?.journal)?payload.journal:[];
     const root=$('journal');
     root.replaceChildren();
@@ -736,6 +749,14 @@
             ' · '+String(member?.brief||'aucun brief')+reason;
           card.appendChild(line);
 
+          if(campaignNeedsControlStatus(member)){
+            const controlLine=document.createElement('div');
+            controlLine.className='muted compact';
+            controlLine.textContent='Contrôle : vérification…';
+            card.appendChild(controlLine);
+            controlLine.dataset.campaignId=String(member.campaign_id);
+          }
+
           for(const finding of (member?.finding_brief||[]).slice(0,5)){
             const f=document.createElement('div');
             f.className='simple-finding';
@@ -748,6 +769,29 @@
         root.appendChild(card);
       }
     }
+
+    const controlNodes=[...root.querySelectorAll('[data-campaign-id]')].slice(0,8);
+    await Promise.all(controlNodes.map(async node=>{
+      const campaignId=String(node.dataset.campaignId||'');
+      if(!campaignId)return;
+      try{
+        const control=await api('/campaigns/'+encodeURIComponent(campaignId)+'/control-status');
+        const reasons=Array.isArray(control?.autonomy_block_reasons)
+          ?control.autonomy_block_reasons
+          :[];
+        const labels=reasons.map(autonomyReasonLabel);
+        const breaker=control?.circuit_breaker||{};
+        if(breaker.open&&breaker.reason){
+          labels.push('détail : '+String(breaker.reason));
+        }
+        node.textContent=control?.autonomy_blocked
+          ?'Contrôle : autonomie bloquée · '+(labels.length?labels.join(' · '):'raison non précisée')
+          :'Contrôle : autonomie disponible';
+        node.className='muted compact'+(control?.autonomy_blocked?' state-review':'');
+      }catch(_error){
+        node.textContent='Contrôle : état momentanément indisponible';
+      }
+    }));
 
     const digest=payload?.learning_digest||{};
     const sync=payload?.repository_sync||{};
@@ -766,7 +810,7 @@
     }
     try{
       const payload=await api('/hackerone/journal?limit=50');
-      renderJournal(payload);
+      await renderJournal(payload);
       const entries=Array.isArray(payload?.journal)?payload.journal:[];
       const active=entries.find(item=>!['completed','cancelled'].includes(String(item?.state||'')));
       batchActive=Boolean(active);
@@ -1475,7 +1519,7 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=101',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=102',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }

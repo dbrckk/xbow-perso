@@ -25,9 +25,9 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=101' in index
-    assert '/app.css?v=101' in index
-    assert "xbow-perso-v101" in sw
+    assert '/simple.js?v=102' in index
+    assert '/app.css?v=102' in index
+    assert "xbow-perso-v102" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=101" defer></script>' in index
+    assert '<script src="/simple.js?v=102" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v101';" in script
-    assert "serviceWorker.register('/sw.js?v=101',{updateViaCache:'none'})" in script
+    assert "const UI_VERSION='v102';" in script
+    assert "serviceWorker.register('/sw.js?v=102',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v101" in html
+    assert "Interface v102" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -396,14 +396,14 @@ def test_openapi_file_ux_validates_and_resets_locally():
     assert "openapiClear')?.addEventListener('click',clearOpenapiReview)" in script
 
 
-def test_pwa_precache_matches_v101_assets():
+def test_pwa_precache_matches_v102_assets():
     sw = _text("frontend/sw.js")
     index = _text("frontend/index.html")
-    assert "xbow-perso-v101" in sw
-    assert "/app.css?v=101" in sw
-    assert "/simple.js?v=101" in sw
-    assert '/app.css?v=101' in index
-    assert '/simple.js?v=101' in index
+    assert "xbow-perso-v102" in sw
+    assert "/app.css?v=102" in sw
+    assert "/simple.js?v=102" in sw
+    assert '/app.css?v=102' in index
+    assert '/simple.js?v=102' in index
 
 
 def test_dashboard_surfaces_passive_openapi_auth_inventory():
@@ -479,3 +479,15 @@ def test_openapi_dashboard_surfaces_operation_summary_and_deprecation():
     assert "String(operationCase.summary)" in script
     assert "operationCase?.deprecated===true" in script
     assert "dépréciée" in script
+
+
+def test_mobile_journal_explains_bounded_autonomy_block_reasons():
+    script = _text("frontend/simple.js")
+    assert "function autonomyReasonLabel(reason)" in script
+    assert "circuit breaker ouvert" in script
+    assert "durée maximale atteinte" in script
+    assert "budget de sécurité atteint" in script
+    assert "[...root.querySelectorAll('[data-campaign-id]')].slice(0,8)" in script
+    assert "/control-status" in script
+    assert "autonomie bloquée" in script
+    assert "état momentanément indisponible" in script
