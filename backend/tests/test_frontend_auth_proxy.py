@@ -487,7 +487,7 @@ def test_mobile_journal_explains_bounded_autonomy_block_reasons():
     assert "circuit breaker ouvert" in script
     assert "durée maximale atteinte" in script
     assert "budget de sécurité atteint" in script
-    assert "querySelectorAll('[data-campaign-id]').slice(0,8)" in script
+    assert "[...root.querySelectorAll('[data-campaign-id]')].slice(0,8)" in script
     assert "/control-status" in script
     assert "autonomie bloquée" in script
     assert "état momentanément indisponible" in script
