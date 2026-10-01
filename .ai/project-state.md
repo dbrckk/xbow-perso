@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T12:22:02Z
+Generated: 2026-10-01T15:13:10Z
 
 ### Git
 - Branch: `main`
-- Head: `ba7b2f6c3d59`
-- Commit date: 2026-10-01T14:21:50+02:00
-- Commit: feat(frontend): explain autonomy block reasons in mobile journal (#463)
+- Head: `ee847a355b9c`
+- Commit date: 2026-10-01T17:12:53+02:00
+- Commit: feat(correlation): refresh multi-scanner corroboration (#464)
 - Tracked files: 584
 
 ### Recently changed files
+- `backend/app/finding_correlation.py`
+- `backend/app/finding_triage.py`
+- `backend/tests/test_finding_correlation.py`
+- `backend/tests/test_finding_triage.py`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
@@ -45,10 +49,6 @@ Generated: 2026-10-01T12:22:02Z
 - `backend/tests/test_operational_alerts.py`
 - `backend/app/dr_manifest.py`
 - `backend/tests/test_dr_manifest.py`
-- `backend/app/finding_intelligence.py`
-- `backend/app/public_duplicate_intelligence.py`
-- `backend/tests/test_finding_intelligence.py`
-- `backend/tests/test_public_duplicate_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -2993,6 +2993,9 @@ endpoint: str | None
 cwe: str | None
 highest_severity: str
 duplicate_candidate: bool
+discovery_sources: tuple[str, ...]
+discovery_source_count: int
+multi_scanner_corroborated: bool
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -3015,6 +3018,8 @@ ordered = sorted(items, key=lambda item: str(item.id))
 highest = max(
 key = "|".join((asset, endpoint or "-", cwe or "-", strong_identity or "-"))
 duplicate_candidate = len(ordered) > 1 and bool(endpoint or cwe)
+discovery_sources = tuple(
+multi_scanner_corroborated = (
 ⋮----
 @router.get("/api/campaigns/{campaign_id}/finding-correlations")
 def campaign_finding_correlations(campaign_id: str)
@@ -3354,6 +3359,8 @@ evidence_quality_score: float
 evidence_quality_grade: str
 duplicate_candidate: bool
 duplicate_group_size: int
+correlated_discovery_source_count: int
+multi_scanner_corroborated: bool
 recommended_state: str
 ⋮----
 def to_dict(self) -> dict[str, Any]
@@ -3371,6 +3378,8 @@ chains = {item.finding_id: item for item in build_evidence_chains(graph)}
 quality_by_id = {item.finding_id: item for item in build_evidence_quality(graph)}
 observed_finding_ids = {item.id for item in graph.by_kind("finding")}
 duplicate_size: dict[str, int] = {}
+correlated_source_count: dict[str, int] = {}
+multi_scanner: dict[str, bool] = {}
 ⋮----
 size = len(group.finding_ids)
 ⋮----
@@ -13991,6 +14000,15 @@ def test_cluster_route_is_exposed(tmp_path, monkeypatch)
 db = str(tmp_path / "clusters.sqlite3")
 ⋮----
 result = campaign_finding_clusters(campaign.id)
+⋮----
+def test_correlated_duplicate_group_tracks_multiple_discovery_engines()
+⋮----
+first = _finding("f1", "https://example.test/account?id=one")
+second = _finding("f2", "https://example.test/account?id=two")
+⋮----
+group = correlate_findings([first, second])[0]
+⋮----
+def test_correlation_ignores_blank_or_none_discovery_sources()
 ````
 
 ## File: backend/tests/test_finding_intelligence.py
@@ -14163,6 +14181,13 @@ triage = build_finding_triage([finding], graph)[0]
 def test_triage_allows_report_review_with_high_quality_artifact_backed_evidence()
 ⋮----
 finding = _finding("quality-high", "high")
+⋮----
+def test_triage_surfaces_multi_scanner_corroboration_without_auto_resolution()
+⋮----
+first = _finding(
+second = _finding(
+⋮----
+triage = build_finding_triage([first, second], ObservationGraph())
 ````
 
 ## File: backend/tests/test_form_waf_reasoning.py

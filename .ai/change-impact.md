@@ -1,18 +1,16 @@
 # Change impact
 
-Base: 65492dae31b7ae48cba7e459843732fbbf2120e0
-Head: ba7b2f6c3d59fc17721bb2f0d946433a52c1b8b3
+Base: 4b29b3389f778b9e066d95ad7b60bd146327ec87
+Head: ee847a355b9cf0ef71911aa8ac19b4487b6f77e5
 
 ## Changed files
-- M backend/tests/test_frontend_auth_proxy.py
-- M backend/tests/test_frontend_policy_launcher.py
-- M frontend/index.html
-- M frontend/simple.js
-- M frontend/sw.js
+- M backend/app/finding_correlation.py
+- M backend/app/finding_triage.py
+- M backend/tests/test_finding_correlation.py
+- M backend/tests/test_finding_triage.py
 
 ## Affected areas
 - backend
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
