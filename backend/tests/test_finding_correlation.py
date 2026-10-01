@@ -82,6 +82,7 @@ def test_correlation_route_is_exposed_and_does_not_auto_merge(tmp_path, monkeypa
         "groups": 1,
         "duplicate_groups": 1,
         "findings_in_duplicate_groups": 2,
+        "multi_scanner_groups": 0,
     }
     assert "one" not in str(result)
     assert "two" not in str(result)
@@ -176,3 +177,30 @@ def test_cluster_route_is_exposed(tmp_path, monkeypatch):
     assert result["summary"]["clusters"] == 1
     assert "one" not in str(result)
     assert "two" not in str(result)
+
+
+def test_correlated_duplicate_group_tracks_multiple_discovery_engines():
+    first = _finding("f1", "https://example.test/account?id=one")
+    second = _finding("f2", "https://example.test/account?id=two")
+    first.discovered_by = "strix"
+    second.discovered_by = "nuclei"
+
+    group = correlate_findings([first, second])[0]
+
+    assert group.duplicate_candidate is True
+    assert group.discovery_sources == ("nuclei", "strix")
+    assert group.discovery_source_count == 2
+    assert group.multi_scanner_corroborated is True
+
+
+def test_correlation_ignores_blank_or_none_discovery_sources():
+    first = _finding("f1", "https://example.test/account?id=one")
+    second = _finding("f2", "https://example.test/account?id=two")
+    first.discovered_by = None
+    second.discovered_by = "   "
+
+    group = correlate_findings([first, second])[0]
+
+    assert group.discovery_sources == ()
+    assert group.discovery_source_count == 0
+    assert group.multi_scanner_corroborated is False
