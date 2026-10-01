@@ -22,16 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T09:15:21Z
+Generated: 2026-10-01T12:22:02Z
 
 ### Git
 - Branch: `main`
-- Head: `ac9312a15919`
-- Commit date: 2026-10-01T11:15:10+02:00
-- Commit: feat(audit): refresh crash-reconcilable breaker reset (#462)
+- Head: `ba7b2f6c3d59`
+- Commit date: 2026-10-01T14:21:50+02:00
+- Commit: feat(frontend): explain autonomy block reasons in mobile journal (#463)
 - Tracked files: 584
 
 ### Recently changed files
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `backend/app/campaign_control.py`
 - `backend/tests/test_campaign_circuit_breaker.py`
 - `backend/app/metrics.py`
@@ -44,8 +49,6 @@ Generated: 2026-10-01T09:15:21Z
 - `backend/app/public_duplicate_intelligence.py`
 - `backend/tests/test_finding_intelligence.py`
 - `backend/tests/test_public_duplicate_intelligence.py`
-- `backend/app/report_readiness.py`
-- `backend/tests/test_report_readiness.py`
 
 ### Project signals
 - `pyproject.toml`

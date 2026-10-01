@@ -415,9 +415,13 @@ function preflightBlockerMessage(preflight)
 ⋮----
 async function start()
 ⋮----
+function autonomyReasonLabel(reason)
+⋮----
+function campaignNeedsControlStatus(member)
+⋮----
 function repoSyncLabel(entry)
 ⋮----
-function renderJournal(payload)
+async function renderJournal(payload)
 ⋮----
 async function refreshJournal(
 ⋮----

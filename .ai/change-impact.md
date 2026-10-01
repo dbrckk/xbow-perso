@@ -1,14 +1,18 @@
 # Change impact
 
-Base: 994ddd57a05ac6ab66e4d7d00053e20897be8e1c
-Head: ac9312a15919bb774d0f4619de9ca9a7fb307023
+Base: 65492dae31b7ae48cba7e459843732fbbf2120e0
+Head: ba7b2f6c3d59fc17721bb2f0d946433a52c1b8b3
 
 ## Changed files
-- M backend/app/campaign_control.py
-- M backend/tests/test_campaign_circuit_breaker.py
+- M backend/tests/test_frontend_auth_proxy.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M frontend/index.html
+- M frontend/simple.js
+- M frontend/sw.js
 
 ## Affected areas
 - backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

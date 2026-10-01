@@ -14294,7 +14294,7 @@ block = script.split("async function loadOpenapiFile()", 1)[1].split("async func
 ⋮----
 def test_openapi_file_ux_validates_and_resets_locally()
 ⋮----
-def test_pwa_precache_matches_v101_assets()
+def test_pwa_precache_matches_v102_assets()
 ⋮----
 def test_dashboard_surfaces_passive_openapi_auth_inventory()
 ⋮----
@@ -14311,6 +14311,8 @@ def test_openapi_dashboard_surfaces_passive_declared_servers()
 def test_openapi_dashboard_surfaces_bounded_parameter_metadata()
 ⋮----
 def test_openapi_dashboard_surfaces_operation_summary_and_deprecation()
+⋮----
+def test_mobile_journal_explains_bounded_autonomy_block_reasons()
 ````
 
 ## File: backend/tests/test_frontend_policy_launcher.py
@@ -21193,9 +21195,13 @@ function preflightBlockerMessage(preflight)
 ⋮----
 async function start()
 ⋮----
+function autonomyReasonLabel(reason)
+⋮----
+function campaignNeedsControlStatus(member)
+⋮----
 function repoSyncLabel(entry)
 ⋮----
-function renderJournal(payload)
+async function renderJournal(payload)
 ⋮----
 async function refreshJournal(
 ⋮----
