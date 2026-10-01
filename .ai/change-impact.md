@@ -1,13 +1,11 @@
 # Change impact
 
-Base: 3610a78e49a2be8814818255c683a4415818c45f
-Head: 389ed8b830858a98966e3314d377aec6506f0aa1
+Base: 2cd1aaf18ce66b042b3144ab877cce9f6b27282a
+Head: 57ac7346ec6cd50e7eaf74fde495c96f39d38575
 
 ## Changed files
-- M backend/app/finding_intelligence.py
-- A backend/app/public_duplicate_intelligence.py
-- M backend/tests/test_finding_intelligence.py
-- A backend/tests/test_public_duplicate_intelligence.py
+- M backend/app/dr_manifest.py
+- M backend/tests/test_dr_manifest.py
 
 ## Affected areas
 - backend

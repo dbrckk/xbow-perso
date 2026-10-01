@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T07:57:22Z
+Generated: 2026-10-01T08:52:54Z
 
 ### Git
 - Branch: `main`
-- Head: `389ed8b83085`
-- Commit date: 2026-10-01T09:57:10+02:00
-- Commit: feat: refresh advisory public duplicate similarity (#459)
+- Head: `57ac7346ec6c`
+- Commit date: 2026-10-01T10:52:42+02:00
+- Commit: fix(dr): preserve temporary manifest ownership (#460)
 - Tracked files: 584
 
 ### Recently changed files
+- `backend/app/dr_manifest.py`
+- `backend/tests/test_dr_manifest.py`
 - `backend/app/finding_intelligence.py`
 - `backend/app/public_duplicate_intelligence.py`
 - `backend/tests/test_finding_intelligence.py`

@@ -1994,6 +1994,9 @@ path = Path(destination)
 tmp = path.with_name(path.name + ".tmp")
 sealed = _seal_manifest(manifest)
 encoded = json.dumps(sealed, sort_keys=True, indent=2)
+owns_tmp = False
+⋮----
+owns_tmp = True
 ⋮----
 path = Path(manifest_path)
 ⋮----
@@ -13033,6 +13036,18 @@ output = capsys.readouterr().out
 
 ## File: tests/test_dr_manifest.py
 ```python
+@pytest.mark.parametrize("symlink", [False, True])
+def test_manifest_write_preserves_preexisting_temporary_file(tmp_path, monkeypatch, symlink)
+⋮----
+destination = tmp_path / "manifest.json"
+⋮----
+temporary = tmp_path / "manifest.json.tmp"
+existing = tmp_path / "other-writer"
+⋮----
+def test_manifest_write_cleans_owned_temporary_after_replace_failure(tmp_path, monkeypatch)
+⋮----
+marker = destination / "keep"
+⋮----
 def _files(tmp_path)
 ⋮----
 postgres = tmp_path / "postgres.dump"
