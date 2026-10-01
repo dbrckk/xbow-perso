@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T02:02:33Z
+Generated: 2026-10-01T04:01:12Z
 
 ### Git
 - Branch: `main`
-- Head: `d3f90b4fb7bb`
-- Commit date: 2026-10-01T04:02:22+02:00
-- Commit: chore(ci): move registry login action to Node 24 (#455)
+- Head: `03ae20742a70`
+- Commit date: 2026-10-01T06:01:01+02:00
+- Commit: chore(ci): move provenance attestation to Node 24 (#456)
 - Tracked files: 582
 
 ### Recently changed files
@@ -40,8 +40,6 @@ Generated: 2026-10-01T02:02:33Z
 - `frontend/index.html`
 - `frontend/simple.js`
 - `frontend/sw.js`
-- `backend/app/openapi_testgen.py`
-- `backend/tests/test_openapi_testgen.py`
 
 ### Project signals
 - `pyproject.toml`
