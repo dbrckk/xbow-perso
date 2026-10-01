@@ -57,7 +57,7 @@ jobs:
             ghcr.io/${{ steps.owner.outputs.value }}/xbow-perso-${{ matrix.component }}:sha-${{ github.sha }}
 
       - name: Attest published image
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: ghcr.io/${{ steps.owner.outputs.value }}/xbow-perso-${{ matrix.component }}
           subject-digest: ${{ steps.build.outputs.digest }}
