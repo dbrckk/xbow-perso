@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-30T22:57:10Z
+Generated: 2026-10-01T01:01:59Z
 
 ### Git
 - Branch: `main`
-- Head: `f59667b35f37`
-- Commit date: 2026-10-01T00:56:59+02:00
-- Commit: chore(security): move gitleaks action to Node 24 (#453)
+- Head: `8bf763b11100`
+- Commit date: 2026-10-01T03:01:48+02:00
+- Commit: chore(ci): move buildx action to Node 24 (#454)
 - Tracked files: 582
 
 ### Recently changed files
+- `.github/workflows/release-images.yml`
+- `.github/workflows/supply-chain.yml`
 - `.github/workflows/security.yml`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`

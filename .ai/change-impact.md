@@ -1,10 +1,11 @@
 # Change impact
 
-Base: e3012d4df373ae71df633c58159d3629e9016de0
-Head: f59667b35f37ecb01efcdff6423485bc84e7bf8c
+Base: ecc34d645ca56cf2af607e8f0e85f5f535deda23
+Head: 8bf763b11100b1a72dc210b76a97aee82b153b37
 
 ## Changed files
-- M .github/workflows/security.yml
+- M .github/workflows/release-images.yml
+- M .github/workflows/supply-chain.yml
 
 ## Affected areas
 - .github
