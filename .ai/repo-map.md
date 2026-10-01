@@ -723,7 +723,7 @@ jobs:
             "${{ steps.build.outputs.digest }}" \
             > "release-manifest/${{ matrix.component }}.image"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.component }}-${{ github.ref_name }}
           path: release-manifest/${{ matrix.component }}.image
@@ -833,7 +833,7 @@ jobs:
           printf '%s\n' "frontend=$FRONTEND_IMAGE" >> release-gate/manifest.txt
           printf '%s\n' "validated_commit=${{ github.sha }}" >> release-gate/manifest.txt
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: production-candidate-${{ github.run_id }}
           path: release-gate/manifest.txt
@@ -940,7 +940,7 @@ jobs:
       - run: pip install cyclonedx-bom==7.1.0
       - name: Generate CycloneDX SBOM
         run: cyclonedx-py environment --output-format JSON --output-file backend-sbom.cdx.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: backend-sbom
           path: backend-sbom.cdx.json

@@ -1,10 +1,12 @@
 # Change impact
 
-Base: 6f0deaa1944ab460980c787950795251df8347ab
-Head: 03ae20742a701339a5a4df8f6e896329aca96ec2
+Base: f875060272a057bb67830bb6d4e532e1d07c3662
+Head: a7c2deed743c89b01ecd0c85d244b9b34fd25993
 
 ## Changed files
 - M .github/workflows/release-images.yml
+- M .github/workflows/release-quality-gate.yml
+- M .github/workflows/supply-chain.yml
 
 ## Affected areas
 - .github

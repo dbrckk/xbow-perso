@@ -22,24 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T04:01:12Z
+Generated: 2026-10-01T04:56:10Z
 
 ### Git
 - Branch: `main`
-- Head: `03ae20742a70`
-- Commit date: 2026-10-01T06:01:01+02:00
-- Commit: chore(ci): move provenance attestation to Node 24 (#456)
+- Head: `a7c2deed743c`
+- Commit date: 2026-10-01T06:55:58+02:00
+- Commit: chore(ci): move artifact uploads to Node 24 (#457)
 - Tracked files: 582
 
 ### Recently changed files
 - `.github/workflows/release-images.yml`
+- `.github/workflows/release-quality-gate.yml`
 - `.github/workflows/supply-chain.yml`
 - `.github/workflows/security.yml`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`

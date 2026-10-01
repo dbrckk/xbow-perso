@@ -2,13 +2,13 @@
 
 Summary: 5 success / 0 failure / 3 active
 
-- ci: in_progress / pending (03ae2074)
-- supply-chain: in_progress / pending (03ae2074)
-- security: in_progress / pending (03ae2074)
-- supply-chain: completed / success (0795e1c3)
-- security: completed / success (0795e1c3)
-- ci: completed / success (0795e1c3)
-- ci: completed / success (0795e1c3)
-- security: completed / success (0795e1c3)
+- security: in_progress / pending (a7c2deed)
+- ci: queued / pending (a7c2deed)
+- supply-chain: queued / pending (a7c2deed)
+- supply-chain: completed / success (25ceb155)
+- security: completed / success (25ceb155)
+- ci: completed / success (25ceb155)
+- ci: completed / success (25ceb155)
+- security: completed / success (25ceb155)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.
