@@ -8,6 +8,8 @@ from fastapi import APIRouter
 
 from .api_outbox import outbox_snapshot
 from .campaign_audit import verify_campaign_event_chain
+from .jobqueue import _job_lease_seconds
+from .queue_recovery import MAX_RECOVERY_JOBS, analyze_queue_recovery
 from .worker_watchdog import build_worker_watchdog
 
 router = APIRouter()
@@ -69,6 +71,33 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
                 else max(oldest_outbox_age_seconds, age)
             )
 
+    queue_recovery_available = False
+    queue_recovery_safe_to_resume = None
+    queue_recovery_issues_total = 0
+    queue_recovery_critical_issues = 0
+    queue_recovery_warning_issues = 0
+    queue_recovery_assessment_truncated = False
+    recovery_snapshot = getattr(queue_backend, "recovery_snapshot", None)
+    if callable(recovery_snapshot):
+        try:
+            recovery = analyze_queue_recovery(
+                recovery_snapshot(limit=MAX_RECOVERY_JOBS),
+                lease_seconds=_job_lease_seconds(),
+                total_jobs=int(queue_stats.get("total") or 0),
+            )
+        except (TypeError, ValueError, RuntimeError):
+            pass
+        else:
+            queue_recovery_available = True
+            queue_recovery_safe_to_resume = bool(recovery.get("safe_to_resume"))
+            queue_recovery_issues_total = int(recovery.get("issues_total") or 0)
+            severities = recovery.get("issues_by_severity") or {}
+            queue_recovery_critical_issues = int(severities.get("critical") or 0)
+            queue_recovery_warning_issues = int(severities.get("warning") or 0)
+            queue_recovery_assessment_truncated = bool(
+                recovery.get("assessment_truncated")
+            )
+
     metrics = {
         "campaigns_total": len(campaigns),
         "campaigns_by_state": dict(sorted(states.items())),
@@ -86,6 +115,12 @@ def build_operational_metrics(queue_backend, storage_backend) -> dict[str, Any]:
         "invalid_campaign_audit_chains": invalid_campaign_audit_chains,
         "campaigns_with_legacy_audit_events": campaigns_with_legacy_audit_events,
         "legacy_audit_events_total": legacy_audit_events_total,
+        "queue_recovery_available": queue_recovery_available,
+        "queue_recovery_safe_to_resume": queue_recovery_safe_to_resume,
+        "queue_recovery_issues_total": queue_recovery_issues_total,
+        "queue_recovery_critical_issues": queue_recovery_critical_issues,
+        "queue_recovery_warning_issues": queue_recovery_warning_issues,
+        "queue_recovery_assessment_truncated": queue_recovery_assessment_truncated,
         "read_only": True,
         "contains_targets": False,
         "contains_payloads": False,
