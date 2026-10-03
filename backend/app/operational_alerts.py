@@ -45,8 +45,42 @@ def build_operational_alerts(metrics: dict[str, Any]) -> dict[str, Any]:
     pending_outbox = int(metrics.get("pending_outbox_total") or 0)
     outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
     invalid_audit_chains = int(metrics.get("invalid_campaign_audit_chains") or 0)
+    queue_recovery_available = metrics.get("queue_recovery_available")
+    queue_recovery_critical = int(
+        metrics.get("queue_recovery_critical_issues") or 0
+    )
+    queue_recovery_warning = int(
+        metrics.get("queue_recovery_warning_issues") or 0
+    )
 
     alerts: list[dict[str, Any]] = []
+    if queue_recovery_critical:
+        alerts.append(
+            {
+                "code": "queue_consistency_invalid",
+                "severity": "critical",
+                "value": queue_recovery_critical,
+                "threshold": 1,
+            }
+        )
+    elif queue_recovery_warning:
+        alerts.append(
+            {
+                "code": "queue_recovery_review",
+                "severity": "warning",
+                "value": queue_recovery_warning,
+                "threshold": 1,
+            }
+        )
+    if queue_recovery_available is False:
+        alerts.append(
+            {
+                "code": "queue_recovery_unavailable",
+                "severity": "warning",
+                "value": 1,
+                "threshold": 1,
+            }
+        )
     if invalid_audit_chains:
         alerts.append(
             {
