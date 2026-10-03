@@ -442,3 +442,33 @@ def test_signed_manifest_fails_closed_when_key_becomes_unavailable(tmp_path, mon
             redis_snapshot=str(redis),
             vault_copy=str(vault),
         )
+
+
+def test_signed_manifest_authenticates_created_at(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "freshness-key")
+    postgres, redis, vault = _files(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    write_backup_manifest(
+        build_backup_manifest(
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+        ),
+        str(manifest_path),
+    )
+
+    saved = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert isinstance(saved.get("created_at"), str)
+    saved["created_at"] = "2000-01-01T00:00:00+00:00"
+    manifest_path.write_text(json.dumps(saved), encoding="utf-8")
+
+    result = verify_backup_manifest(
+        str(manifest_path),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+
+    assert result["valid"] is False
+    assert result["manifest_signature_valid"] is False
