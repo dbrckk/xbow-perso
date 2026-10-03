@@ -27,33 +27,35 @@ Le téléphone ne doit pas exécuter les scanners lourds. Il reste l'interface o
 
 Utiliser un VPS Linux x86_64 ou arm64 capable d'exécuter Docker et Docker Compose. Le compte d'exploitation doit pouvoir gérer Docker.
 
-Depuis une application SSH Android, préparer une seule fois le serveur :
+Depuis une application SSH Android, utiliser le bootstrap maintenu du dépôt :
 
 ```bash
-sudo mkdir -p /opt/xbow-perso
-sudo chown "$USER":"$USER" /opt/xbow-perso
-git clone https://github.com/dbrckk/xbow-perso.git /opt/xbow-perso
-cd /opt/xbow-perso
-cp .env.example .env
+curl -fsSL https://raw.githubusercontent.com/dbrckk/xbow-perso/main/scripts/bootstrap-mobile-ubuntu.sh -o /tmp/xbow-bootstrap.sh
+sudo bash /tmp/xbow-bootstrap.sh
 ```
 
-Configurer ensuite les secrets uniquement dans `/opt/xbow-perso/.env`. Ne jamais les écrire dans GitHub, une issue ou un chat.
+Le bootstrap installe Docker/Compose si nécessaire, clone ou actualise `/opt/xbow-perso`, génère un `XBOW_API_TOKEN` aléatoire et démarre uniquement la stack de base avec les verrous sûrs fermés. Le token initial est écrit temporairement dans `/root/xbow-bootstrap-secrets.txt` (mode 600).
 
-Pour le premier démarrage, conserver :
+Le lire une fois depuis SSH, le stocker dans un gestionnaire de mots de passe sur Android, puis supprimer ce fichier :
+
+```bash
+sudo cat /root/xbow-bootstrap-secrets.txt
+sudo rm /root/xbow-bootstrap-secrets.txt
+```
+
+Le baseline doit rester :
 
 ```env
 DRY_RUN=true
 XBOW_ENABLE_ACTIVE_SCANS=false
 XBOW_ENABLE_NUCLEI=false
+XBOW_ENABLE_RECON=false
+XBOW_ENABLE_EXTERNAL_RECON=false
+XBOW_ENABLE_BROWSER_AUTOMATION=false
 XBOW_ENABLE_HACKERONE_SUBMISSION=false
 ```
 
-Puis :
-
-```bash
-docker compose up -d --build
-docker compose ps
-```
+Ne pas transformer `.env` en profil live permanent. Les scripts production utilisent un overlay root-only séparé pour l'armement Nuclei.
 
 ## 2. Interface graphique sur Android
 
@@ -123,42 +125,54 @@ Dans **Connexion HackerOne** :
 
 ## 5. Passage au scanner réel
 
-Ne modifier les verrous qu'après revue du programme.
-
-```env
-XBOW_ENABLE_ACTIVE_SCANS=true
-DRY_RUN=false
-XBOW_ENABLE_NUCLEI=true
-XBOW_NUCLEI_ALLOWED_VERSION=3.11.1
-XBOW_SCANNER_ALLOWED_ENGINES=nuclei
-XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
-```
-
-Puis depuis SSH Android :
+Ne pas éditer manuellement les verrous live dans `.env`. Après revue du programme exact dans la PWA et uniquement si sa policy autorise l'automatisation, utiliser le chemin d'armement maintenu :
 
 ```bash
-cd /opt/xbow-perso
-docker compose --profile scanner up -d --build
+sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh
 ```
 
-La PWA doit afficher **PRÊT SCAN RÉEL** avant une exécution.
+Ce script :
+- remet d'abord le VPS sur le `main` courant et le baseline sûr ;
+- refuse l'armement si la file ou un batch est encore actif ;
+- conserve `.env` en fail-safe ;
+- écrit le profil live dans `/root/xbow-live-scanner.env` avec permissions privées ;
+- limite le moteur à Nuclei et au profil sandbox `restricted-v1` ;
+- garde la soumission HackerOne désactivée ;
+- vérifie readiness, API HackerOne et verdict final avant de déclarer le runtime prêt.
 
-Pour le premier programme, garder PentAGI et la soumission HackerOne automatique désactivés.
+La PWA doit afficher **PRÊT SCAN RÉEL** avant toute exécution. PentAGI reste désactivé.
 
 ## 6. Arrêt immédiat depuis Android
 
-Depuis SSH Android :
+Utiliser le désarmement maintenu :
 
 ```bash
-cd /opt/xbow-perso
-sed -i 's/^XBOW_ENABLE_ACTIVE_SCANS=.*/XBOW_ENABLE_ACTIVE_SCANS=false/' .env
-sed -i 's/^DRY_RUN=.*/DRY_RUN=true/' .env
-docker compose stop scanner-worker || true
-docker compose up -d
+sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh
 ```
 
-Vérifier ensuite dans la PWA que le pré-vol indique de nouveau le mode bloqué/sûr.
+Ce script supprime le profil live root-only puis redéploie le baseline fail-safe. Vérifier ensuite :
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-production-status.sh
+```
+
+La sortie doit confirmer que le profil scanner est désarmé et que les gates live sont de nouveau fermés.
 
 ## Ce qui nécessite encore une action manuelle
 
 Le repo peut être préparé automatiquement, mais il faut encore fournir un serveur distant et ses accès. Aucun PC n'est nécessaire : la création du VPS, l'ajout des secrets GitHub, le lancement des Actions et l'exploitation de la PWA peuvent tous être faits depuis Android.
+
+
+## 7. Passage en production distribuée depuis Android
+
+Pour une installation durable, utiliser les scripts de migration plutôt que d'improviser la configuration PostgreSQL/Redis/TLS :
+
+```bash
+sudo bash /opt/xbow-perso/scripts/mobile-production-preflight.sh
+sudo bash /opt/xbow-perso/scripts/mobile-production-cutover.sh
+sudo bash /opt/xbow-perso/scripts/mobile-production-status.sh
+```
+
+Le preflight est en lecture seule et refuse de continuer si les gates sûrs ne sont pas fermés. Le cutover migre vers PostgreSQL/Redis et démarre la stack distribuée sans profil scanner. En cas de problème après migration, utiliser `mobile-production-rollback.sh`.
+
+Le vault reste une étape séparée via `mobile-vault-cutover.sh`, avec son rollback dédié. Ne jamais copier ni afficher dans un chat les fichiers root-only de secrets.
