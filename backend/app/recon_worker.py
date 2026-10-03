@@ -375,7 +375,6 @@ def _katana_surface(campaign, target: str) -> set[str]:
     ]
     output = _run_external_tool(command, timeout=min(_max_wall_seconds(), 180.0))
     endpoints: set[str] = set()
-    endpoint_sources: dict[str, set[str]] = {}
     for raw in output.splitlines():
         candidate = raw.strip()
         if not candidate or len(candidate) > 4096:
@@ -529,6 +528,7 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
     visited: set[str] = set()
     assets: set[str] = set()
     endpoints: set[str] = set()
+    endpoint_sources: dict[str, set[str]] = {}
     forms: list[dict] = []
     technologies: set[str] = set()
     waf: set[str] = set()
