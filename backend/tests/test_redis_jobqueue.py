@@ -140,3 +140,80 @@ def test_redis_claim_allowed_selects_oldest_kind(monkeypatch):
 
     assert claimed["kind"] == "report"
     assert claimed_kinds == [("worker-a", "report")]
+
+
+
+class RecoveryPipeline:
+    def __init__(self, rows):
+        self.rows = rows
+        self.commands = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def hmget(self, key, *fields):
+        self.commands.append((key, fields))
+        return self
+
+    def execute(self):
+        return [
+            [self.rows.get(key, {}).get(field) for field in fields]
+            for key, fields in self.commands
+        ]
+
+
+class RecoveryRedis(DummyRedis):
+    def __init__(self):
+        self.ids = {"job-b", "job-a"}
+        self.rows = {}
+
+    def smembers(self, _key):
+        return set(self.ids)
+
+    def pipeline(self, transaction=False):
+        assert transaction is False
+        return RecoveryPipeline(self.rows)
+
+
+def test_redis_recovery_snapshot_is_bounded_and_payload_free(monkeypatch):
+    monkeypatch.setenv("XBOW_REDIS_URL", "redis://localhost:6379/0")
+    fake = RecoveryRedis()
+    monkeypatch.setattr(
+        "app.redis_jobqueue.redis.Redis.from_url",
+        lambda *args, **kwargs: fake,
+    )
+    queue = RedisJobQueue()
+    fake.rows[queue._job_key("job-a")] = {
+        "status": "queued",
+        "attempts": "0",
+        "max_attempts": "2",
+        "claimed_by": "",
+        "claimed_at": "",
+        "payload": '{"secret":"must-not-leak"}',
+    }
+    fake.rows[queue._job_key("job-b")] = {
+        "status": "running",
+        "attempts": "1",
+        "max_attempts": "2",
+        "claimed_by": "worker-b",
+        "claimed_at": "2026-10-03T12:00:00+00:00",
+        "payload": '{"secret":"must-not-leak"}',
+    }
+
+    snapshot = queue.recovery_snapshot(limit=1)
+
+    assert snapshot == [
+        {
+            "id": "job-a",
+            "status": "queued",
+            "attempts": "0",
+            "max_attempts": "2",
+            "claimed_by": None,
+            "claimed_at": None,
+        }
+    ]
+    assert "payload" not in str(snapshot)
+    assert "must-not-leak" not in str(snapshot)
