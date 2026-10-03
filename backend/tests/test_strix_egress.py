@@ -104,8 +104,8 @@ def test_egress_fetch_calls_transport_only_when_enabled(monkeypatch):
 @pytest.mark.parametrize(
     ("error", "status"),
     [
-        (StrixEgressPolicyError("blocked"), 403),
-        (StrixEgressNetworkError("failed"), 502),
+        (StrixEgressPolicyError("policy-detail"), 403),
+        (StrixEgressNetworkError("network-internal-detail"), 502),
     ],
 )
 def test_egress_fetch_maps_failures_without_internal_details(
@@ -126,7 +126,7 @@ def test_egress_fetch_maps_failures_without_internal_details(
 
     assert exc_info.value.status_code == status
     if status == 502:
-        assert "failed" in str(exc_info.value.detail)
+        assert exc_info.value.detail == "Strix egress request failed"
         assert str(error) not in str(exc_info.value.detail)
 
 
