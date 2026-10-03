@@ -144,7 +144,7 @@ def _public_ip(value: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address:
     except ValueError as exc:
         raise StrixEgressPolicyError("Strix egress resolved an invalid IP address") from exc
     if not address.is_global:
-        raise StrixEgressError(
+        raise StrixEgressPolicyError(
             "Strix egress target resolved to a non-public IP address"
         )
     return address
