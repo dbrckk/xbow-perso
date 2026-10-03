@@ -41,6 +41,8 @@ def _parser() -> argparse.ArgumentParser:
     verify.add_argument("--redis-snapshot", required=True)
     verify.add_argument("--vault-copy", required=True)
 
+    sub.add_parser("queue-check")
+
     attest = sub.add_parser("attest")
     attest.add_argument("--manifest", required=True)
     attest.add_argument("--postgres-dump", required=True)
@@ -88,6 +90,12 @@ def main() -> int:
             )
             result = {"ok": verification["valid"], **verification}
             if not verification["valid"]:
+                print(json.dumps(result, sort_keys=True))
+                return 1
+        elif args.command == "queue-check":
+            assessment = build_queue_recovery_assessment(create_queue())
+            result = {"ok": assessment["safe_to_resume"], **assessment}
+            if not assessment["safe_to_resume"]:
                 print(json.dumps(result, sort_keys=True))
                 return 1
         elif args.command == "attest":
