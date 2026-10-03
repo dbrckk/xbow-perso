@@ -301,6 +301,8 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_binary_available"] is True
     assert result["strix_docker_runtime_available"] is True
     assert result["strix_runtime_contract_enforceable"] is False
+    assert result["strix_execution_contract_schema"] == "strix-execution-contract-v1"
+    assert result["strix_execution_contract_required"] is True
     assert "strix_runtime_contract_not_enforceable" in result["dispatch_block_reasons"]
 
 
