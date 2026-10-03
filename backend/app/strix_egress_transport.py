@@ -304,13 +304,13 @@ def perform_bounded_http_request(
     except ValueError as exc:
         raise StrixEgressPolicyError("Strix egress target port is invalid") from exc
 
+    headers = _normalize_headers(request.headers)
     endpoint = resolve_public_endpoint(host, port)
     _enforce_rate(
         authorized.contract_hash,
         authorized.max_requests_per_second,
     )
     timeout = _timeout_seconds()
-    headers = _normalize_headers(request.headers)
     target_path = parsed.path or "/"
     if parsed.query:
         target_path += f"?{parsed.query}"
