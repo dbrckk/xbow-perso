@@ -1,13 +1,10 @@
 # Change impact
 
-Base: a6740b47c8928101ba16f56c1588dcf31a6b3560
-Head: 1c766dfaa0835fdbfa2db70abb4326b099f0f20c
+Base: 0e6bba285060b2be79c4cf5225bc4d34872a0bdb
+Head: cc0953d4ee03b052b4e7b97a3b03321ced74e25f
 
 ## Changed files
-- M backend/app/metrics.py
-- M backend/app/operational_alerts.py
-- M backend/tests/test_metrics.py
-- M backend/tests/test_operational_alerts.py
+- M backend/requirements-dev.txt
 
 ## Affected areas
 - backend

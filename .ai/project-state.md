@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T16:49:59Z
+Generated: 2026-10-03T17:04:47Z
 
 ### Git
 - Branch: `main`
-- Head: `1c766dfaa083`
-- Commit date: 2026-10-03T18:49:48+02:00
-- Commit: feat(observability): surface queue consistency health (#470)
+- Head: `cc0953d4ee03`
+- Commit date: 2026-10-03T19:04:36+02:00
+- Commit: chore(deps-dev): bump pip-audit to 2.10.1 (#472)
 - Tracked files: 588
 
 ### Recently changed files
+- `backend/requirements-dev.txt`
 - `backend/app/metrics.py`
 - `backend/app/operational_alerts.py`
 - `backend/tests/test_metrics.py`
@@ -51,7 +52,6 @@ Generated: 2026-10-03T16:49:59Z
 - `backend/tests/test_outbox_chaos.py`
 - `backend/app/orchestrator.py`
 - `backend/app/recon_worker.py`
-- `backend/app/scanner_sandbox.py`
 
 ### Project signals
 - `pyproject.toml`
