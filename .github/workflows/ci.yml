@@ -126,3 +126,25 @@ jobs:
           docker compose down -v
       - run: docker compose --profile scanner build --pull scanner-worker
       - run: docker compose --profile strix-broker build --pull strix-broker strix-egress
+      - run: docker compose --profile strix-runner build --pull strix-runner
+      - name: Smoke-test pinned Strix runner attestation
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose --profile strix-runner up -d strix-runner
+          container_id="$(docker compose ps -q strix-runner)"
+          ok=0
+          for _ in $(seq 1 30); do
+            status="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
+            if [ "$status" = "healthy" ]; then
+              ok=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ok" -ne 1 ]; then
+            docker compose ps
+            docker compose logs --no-color strix-runner
+            exit 1
+          fi
+          docker compose --profile strix-runner down

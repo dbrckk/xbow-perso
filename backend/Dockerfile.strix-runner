@@ -1,0 +1,49 @@
+FROM debian:bookworm-slim AS strix-fetch
+
+ARG TARGETARCH
+ARG STRIX_VERSION=1.6.2
+ARG STRIX_UPSTREAM_COMMIT=ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && case "$TARGETARCH" in \
+         amd64) \
+           STRIX_ARCH="x86_64"; \
+           STRIX_SHA256="f3f29fa64bee420bf64f8911fb9f38e20270d406f6df44cc2436252c2af0bc81" \
+           ;; \
+         arm64) \
+           STRIX_ARCH="arm64"; \
+           STRIX_SHA256="4a4cba115bda8b89d7bbfabe960246a480ff43563144959b2e33477955aa6df2" \
+           ;; \
+         *) echo "unsupported TARGETARCH: $TARGETARCH" >&2; exit 1 ;; \
+       esac \
+    && STRIX_ASSET="strix-${STRIX_VERSION}-linux-${STRIX_ARCH}.tar.gz" \
+    && STRIX_BINARY="strix-${STRIX_VERSION}-linux-${STRIX_ARCH}" \
+    && STRIX_URL="https://github.com/usestrix/strix/releases/download/v${STRIX_VERSION}/${STRIX_ASSET}" \
+    && curl --fail --location --proto '=https' --tlsv1.2 \
+       "$STRIX_URL" -o "/tmp/$STRIX_ASSET" \
+    && printf '%s  %s\n' "$STRIX_SHA256" "/tmp/$STRIX_ASSET" | sha256sum -c - \
+    && mkdir -p /opt/strix /tmp/strix-release \
+    && tar -xzf "/tmp/$STRIX_ASSET" -C /tmp/strix-release \
+    && install -m 0555 "/tmp/strix-release/$STRIX_BINARY" /opt/strix/strix \
+    && test "$(/opt/strix/strix --version)" = "strix ${STRIX_VERSION}" \
+    && printf '%s\n' \
+       "{\"schema\":\"xbow-strix-runner-manifest-v1\",\"version\":\"${STRIX_VERSION}\",\"upstream_commit\":\"${STRIX_UPSTREAM_COMMIT}\",\"architecture\":\"${TARGETARCH}\",\"asset\":\"${STRIX_ASSET}\",\"sha256\":\"${STRIX_SHA256}\"}" \
+       > /opt/strix/manifest.json \
+    && chmod 0444 /opt/strix/manifest.json \
+    && rm -rf /tmp/* /var/lib/apt/lists/*
+
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY --from=strix-fetch /opt/strix /opt/strix
+COPY app/strix_runner.py ./app/strix_runner.py
+
+ENV PYTHONUNBUFFERED=1 \
+    XBOW_STRIX_RUNNER_HOST=0.0.0.0 \
+    XBOW_STRIX_RUNNER_PORT=8092
+
+USER 65532:65532
+EXPOSE 8092
+
+CMD ["python", "-m", "app.strix_runner"]

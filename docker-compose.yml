@@ -260,7 +260,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    networks: [strix-broker, strix-egress-control]
+    networks: [strix-broker, strix-egress-control, strix-runner-control]
 
   strix-egress:
     profiles: ["strix-broker"]
@@ -308,6 +308,41 @@ services:
       retries: 3
       start_period: 5s
     networks: [strix-egress-control, strix-external]
+
+
+  strix-runner:
+    profiles: ["strix-runner"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.strix-runner
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 10s
+    expose:
+      - "8092"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 32
+    mem_limit: 192m
+    cpus: 0.20
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8092/readyz', timeout=2).read()",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks: [strix-runner-control]
 
 
   pentagi-worker:
@@ -461,6 +496,9 @@ networks:
     driver: bridge
     internal: true
   strix-egress-control:
+    driver: bridge
+    internal: true
+  strix-runner-control:
     driver: bridge
     internal: true
   strix-external:
