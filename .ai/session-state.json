@@ -1,18 +1,22 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-03",
-  "task": "Harden Strix lifecycle and active runtime admission",
+  "task": "Build an enforceable isolated Strix runtime contract",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
     "Made active Strix scanner admission fail closed while its downstream runtime contract is not enforceable.",
-    "Exposed the Strix runtime-contract blocker through scanner capability diagnostics."
+    "Exposed the Strix runtime-contract blocker through scanner capability diagnostics.",
+    "Added strix-execution-contract-v1 bound to job id, campaign policy fingerprint, normalized scope and exact request-rate ceiling.",
+    "Added canonical SHA-256 integrity and optional HMAC-SHA256 authentication using the existing audit signing key with domain separation.",
+    "Added a broker-bound request authorizer that rejects unsigned contracts, out-of-scope targets and request rates above the contract cap without performing network I/O.",
+    "Added redacted execution-contract trace metadata to Strix dry-run and result-ingestion events."
   ],
-  "current_branch": "codex/strix-runtime-contract-gate",
-  "current_priority": "Implement an isolated Strix execution contract without exposing the host container socket.",
+  "current_branch": "codex/strix-execution-contract-v1",
+  "current_priority": "Implement an isolated Strix runtime/egress broker that consumes the signed contract without exposing the host container socket.",
   "blockers": [
-    "Current Strix runtime contract cannot yet attest downstream scope enforcement.",
-    "Current Strix runtime contract cannot yet attest the campaign request-rate ceiling end-to-end."
+    "The signed contract exists, but no isolated broker currently mediates every downstream Strix request.",
+    "The Strix runtime itself is not yet pinned/attested inside a dedicated execution image."
   ],
   "safety_invariants": [
     "Authorized targets only.",
@@ -21,8 +25,9 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the runtime-contract gate.",
-    "Design a dedicated isolated Strix backend or sidecar with enforceable scope and rate controls.",
-    "Attest exact Strix runtime version and deterministic artifact handoff before enabling active dispatch."
+    "Validate and merge execution-contract v1.",
+    "Design and implement an isolated broker/runtime topology with no host Docker socket and no direct Strix egress.",
+    "Require authenticated contract verification at the broker boundary for every target/rate admission.",
+    "Pin and attest the exact Strix runtime version before active dispatch can be enabled."
   ]
 }
