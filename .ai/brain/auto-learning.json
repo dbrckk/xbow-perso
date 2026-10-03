@@ -5,29 +5,31 @@
     "example_count": 64,
     "rejected_count": 0,
     "terms": [
-      "468",
-      "all",
-      "campaign",
-      "hardening",
-      "make",
-      "orchestration",
-      "recon-first",
-      "starts"
+      "469",
+      "add",
+      "assessment",
+      "consistency",
+      "feat",
+      "queue",
+      "read-only",
+      "recovery"
     ],
     "test_count": 0,
-    "useful_count": 6
+    "useful_count": 8
   },
   "note": "Selected tests are routing hints; this artifact does not claim they executed successfully.",
   "rejected": [],
   "schema_version": 1,
-  "task": "hardening(orchestration): make all campaign starts recon-first (#468)",
+  "task": "feat(recovery): add read-only queue consistency assessment (#469)",
   "tests_selected": [],
   "useful": [
+    "backend/app/jobqueue.py",
     "backend/app/main.py",
-    "backend/tests/test_api_idempotency.py",
-    "backend/tests/test_hackerone_binding.py",
-    "backend/tests/test_htb_lab.py",
-    "backend/tests/test_job_provenance_api_integration.py",
-    "backend/tests/test_outbox_chaos.py"
+    "backend/app/queue_backend.py",
+    "backend/app/queue_recovery.py",
+    "backend/app/redis_jobqueue.py",
+    "backend/tests/test_jobqueue.py",
+    "backend/tests/test_queue_recovery.py",
+    "backend/tests/test_redis_jobqueue.py"
   ]
 }

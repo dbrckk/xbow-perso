@@ -173,6 +173,7 @@ backend/
     production_migration.py
     public_duplicate_intelligence.py
     queue_backend.py
+    queue_recovery.py
     readiness.py
     recon_priority.py
     recon_swarm.py
@@ -384,6 +385,7 @@ backend/
     test_queue_age_metrics.py
     test_queue_backend.py
     test_queue_health.py
+    test_queue_recovery.py
     test_readiness.py
     test_recon_priority.py
     test_recon_swarm.py
@@ -6031,6 +6033,12 @@ kind = _bounded_identifier(kind, "kind")
 ⋮----
 row = db.execute(
 ⋮----
+def recovery_snapshot(self, limit: int = 5000) -> list[dict[str, Any]]
+⋮----
+"""Return bounded lease/retry state without reading job payloads."""
+⋮----
+rows = db.execute(
+⋮----
 def stats(self) -> dict[str, Any]
 ⋮----
 """Return bounded operational queue telemetry without exposing payloads."""
@@ -6045,7 +6053,6 @@ def campaign_job_counts(self, campaign_id: str) -> dict[str, int]
 ⋮----
 """Return durable job counts for one campaign without exposing payloads."""
 ⋮----
-rows = db.execute(
 counts = {kind: 0 for kind in ("strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status")}
 ⋮----
 def campaign_job_status_counts(self, campaign_id: str) -> dict[str, int]
@@ -6854,6 +6861,7 @@ from .htb_lab import router as htb_lab_router  # noqa: E402
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
+from .queue_recovery import router as queue_recovery_router  # noqa: E402
 from .report_approval_api import router as report_approval_router  # noqa: E402
 ````
 
@@ -9042,6 +9050,7 @@ def enqueue(self, campaign_id: str, kind: str, payload: dict, max_attempts: int 
 def get(self, job_id: str) -> dict | None: ...
 def get_by_dedupe(self, campaign_id: str, kind: str, dedupe_key: str) -> dict | None: ...
 def stats(self) -> dict: ...
+def recovery_snapshot(self, limit: int = 5000) -> list[dict]: ...
 def campaign_job_counts(self, campaign_id: str) -> dict[str, int]: ...
 def campaign_job_status_counts(self, campaign_id: str) -> dict[str, int]: ...
 def cancel_queued(self, campaign_id: str) -> int: ...
@@ -9062,6 +9071,60 @@ value = aliases.get(value, value)
 def create_queue() -> QueueBackend
 ⋮----
 backend = queue_backend_name()
+````
+
+## File: backend/app/queue_recovery.py
+````python
+router = APIRouter()
+⋮----
+MAX_RECOVERY_JOBS = 5000
+MAX_ISSUE_DETAILS = 200
+_KNOWN_STATUSES = {"queued", "running", "completed", "failed", "cancelled"}
+⋮----
+def _parse_timestamp(value: Any) -> datetime | None
+⋮----
+parsed = datetime.fromisoformat(str(value))
+⋮----
+parsed = parsed.replace(tzinfo=timezone.utc)
+⋮----
+def _parse_int(value: Any) -> int | None
+⋮----
+"""Assess queue consistency without mutating or exposing job payloads."""
+⋮----
+current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+cutoff = current - timedelta(seconds=lease_seconds)
+future_tolerance = current + timedelta(minutes=5)
+total = len(jobs) if total_jobs is None else max(0, int(total_jobs))
+truncated = total > len(jobs)
+⋮----
+issues: list[dict[str, Any]] = []
+status_counts = {status: 0 for status in sorted(_KNOWN_STATUSES)}
+⋮----
+seen_ids: set[str] = set()
+⋮----
+job = raw if isinstance(raw, dict) else {}
+job_id = str(job.get("id") or "")[:200]
+status = str(job.get("status") or "unknown").strip().lower()
+⋮----
+claimed_by = bool(str(job.get("claimed_by") or "").strip())
+claimed_at_raw = job.get("claimed_at")
+claimed_at = _parse_timestamp(claimed_at_raw)
+attempts = _parse_int(job.get("attempts"))
+max_attempts = _parse_int(job.get("max_attempts"))
+⋮----
+retry_valid = (
+⋮----
+severity_counts = {
+issue_details_truncated = len(issues) > MAX_ISSUE_DETAILS
+⋮----
+@router.get("/api/recovery/queue")
+def queue_recovery_assessment()
+⋮----
+backend = queue()
+⋮----
+lease_seconds = _job_lease_seconds()
+stats = backend.stats()
+jobs = backend.recovery_snapshot(limit=MAX_RECOVERY_JOBS)
 ````
 
 ## File: backend/app/readiness.py
@@ -9851,6 +9914,15 @@ kind = _bounded_identifier(kind, "kind")
 job_id = self.redis.hget(self._dedupe_key(campaign_id, kind), dedupe_key)
 ⋮----
 job = self.get(job_id)
+⋮----
+def recovery_snapshot(self, limit: int = 5000) -> list[dict[str, Any]]
+⋮----
+"""Return bounded lease/retry state without reading job payloads."""
+⋮----
+job_ids = sorted(str(value) for value in self.redis.smembers(self._all))[:limit]
+⋮----
+rows = pipe.execute()
+snapshots: list[dict[str, Any]] = []
 ⋮----
 def stats(self) -> dict[str, Any]
 ⋮----
@@ -16655,6 +16727,12 @@ newer = q.enqueue("campaign-1", "independent_validation", {"finding_id": "f1"})
 claimed = q.claim_allowed(
 ⋮----
 def test_claim_allowed_rejects_empty_and_unknown_kind_sets(tmp_path)
+⋮----
+def test_recovery_snapshot_is_bounded_and_never_reads_payloads(tmp_path)
+⋮----
+q = JobQueue(str(tmp_path / "recovery.sqlite3"))
+⋮----
+snapshot = q.recovery_snapshot(limit=1)
 ````
 
 ## File: backend/tests/test_knowledge_memory.py
@@ -18565,6 +18643,45 @@ path = tmp_path / "q.sqlite3"
 q = JobQueue(str(path))
 ````
 
+## File: backend/tests/test_queue_recovery.py
+````python
+def _job(**overrides)
+⋮----
+payload = {
+⋮----
+def test_queue_recovery_is_safe_for_consistent_snapshot()
+⋮----
+result = analyze_queue_recovery(
+⋮----
+def test_queue_recovery_detects_expired_running_lease_without_leaking_owner()
+⋮----
+now = datetime.now(timezone.utc)
+⋮----
+def test_queue_recovery_detects_invalid_retry_and_stale_lease_fields()
+⋮----
+codes = {item["code"] for item in result["issues"]}
+⋮----
+def test_queue_recovery_detects_future_timestamp_and_unknown_status()
+⋮----
+def test_queue_recovery_fails_closed_when_snapshot_is_truncated()
+⋮----
+def test_queue_recovery_route_is_exposed()
+⋮----
+def test_queue_recovery_route_never_returns_payloads_or_worker_identity(monkeypatch)
+⋮----
+class Backend
+⋮----
+def stats(self)
+⋮----
+def recovery_snapshot(self, limit=5000)
+⋮----
+result = queue_recovery_assessment()
+⋮----
+def test_queue_recovery_bounds_issue_details_but_keeps_exact_counts()
+⋮----
+jobs = [
+````
+
 ## File: backend/tests/test_readiness.py
 ````python
 class HealthyQueue
@@ -19169,6 +19286,30 @@ claimed_kinds = []
 def fake_claim_kind(worker_id, kind)
 ⋮----
 claimed = queue.claim_allowed(
+⋮----
+class RecoveryPipeline
+⋮----
+def __init__(self, rows)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, exc_type, exc, tb)
+⋮----
+def hmget(self, key, *fields)
+⋮----
+def execute(self)
+⋮----
+class RecoveryRedis(DummyRedis)
+⋮----
+def smembers(self, _key)
+⋮----
+def pipeline(self, transaction=False)
+⋮----
+def test_redis_recovery_snapshot_is_bounded_and_payload_free(monkeypatch)
+⋮----
+fake = RecoveryRedis()
+⋮----
+snapshot = queue.recovery_snapshot(limit=1)
 ````
 
 ## File: backend/tests/test_report_approval_api.py

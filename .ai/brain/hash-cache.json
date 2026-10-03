@@ -8,6 +8,10 @@
       "sha256": "bde95633e3f36f9c79009c2786694770bbcc4ea6b97fba08d4362073d1021dba",
       "size": 4680
     },
+    "backend/app/browser.py": {
+      "sha256": "b85ab2c32ed4799ff52219d7f99602742af8c9a8da9503985bf067b73a5829c1",
+      "size": 25947
+    },
     "backend/app/campaign_audit.py": {
       "sha256": "5a55a7a2de7673177053f01a2c0255606f437de5e27c5a03c8630c3b42e1a8ab",
       "size": 3697
@@ -20,10 +24,6 @@
       "sha256": "ad65ee8bd4c4639b366cad364e1daf1b7bfb258cd4bb6f6ea70a95415174df77",
       "size": 4529
     },
-    "backend/app/evidence_chain.py": {
-      "sha256": "9fb5e1fe66a2994f8c1de4acd4777dccd0f70054b01de10533ce5d9707d4ba73",
-      "size": 5494
-    },
     "backend/app/finding_correlation.py": {
       "sha256": "3f4b2e8138337edb74b9672bbc8c810c03c7a4c00dcf17ae0f7a5e2cda2b8bf5",
       "size": 11064
@@ -33,12 +33,12 @@
       "size": 78869
     },
     "backend/app/jobqueue.py": {
-      "sha256": "07febe2d58d46158f259e8719035c6b7d0e512f413ed635f8c7f736f4c430132",
-      "size": 20783
+      "sha256": "a2fdeec6c3ee06667441eebc66fcceee26dd757fbe2d068ff4980ac6e93a279a",
+      "size": 21359
     },
     "backend/app/main.py": {
-      "sha256": "177ee0fcae4f2144dab4504346c376847094b076ca573fb125b9c8e0cebf26a5",
-      "size": 67751
+      "sha256": "2635b00b7fce1c7ff44a77fa0cf122277bfd364036e4d8c5cb0f5a00803d9142",
+      "size": 67867
     },
     "backend/app/observation_graph.py": {
       "sha256": "d4ec8c8ccee2f7b8edcbccb7df673e6b4a7b5999bb2a71a7dea99f1a5e171c20",
@@ -64,6 +64,14 @@
       "sha256": "af369d9c21a21504a2ec2c53ccb9a2a8b4cb389913de82c4fc1ca06b9e86c23f",
       "size": 9936
     },
+    "backend/app/planner_budget.py": {
+      "sha256": "c360020189588f7ff2678a22412a41220ad76c9540c369d1920aeeebfa375f14",
+      "size": 7125
+    },
+    "backend/app/queue_backend.py": {
+      "sha256": "5d3df9b8c2d4ad318ab053997f956587f99593693e9bf00f3aabe0fff3a92137",
+      "size": 1924
+    },
     "backend/app/recon_worker.py": {
       "sha256": "5731b0ba49abc2f40407059e82c6e9e0c80e7bc1b817242a4c39e1c0d1b45013",
       "size": 29145
@@ -71,6 +79,10 @@
     "backend/app/red_team_decision.py": {
       "sha256": "dd0a9e6a75e0610baddad538f6ce6cdfa30af9b14f5df98e26f7d8579cbe9334",
       "size": 8880
+    },
+    "backend/app/redis_jobqueue.py": {
+      "sha256": "3d301a7de0bbbc488d184c7c296846240af3bd6654562eb68a88bd6bda7f40be",
+      "size": 25640
     },
     "backend/app/storage.py": {
       "sha256": "d7f2fb67ba1fc45e52caef22d921e6a35da47dcdf1e746a1d5bcf3c6514af60f",
@@ -92,37 +104,25 @@
       "sha256": "6928989d17fc938369052081818c7b5a7e3765fcdfa74270c57adbe9b6e6aafd",
       "size": 4004
     },
-    "backend/tests/test_api_idempotency.py": {
-      "sha256": "1a1976afccc1e0ad22e1200f1a0b1251e668ebde40737f73f8751c0a28c4655c",
-      "size": 19569
-    },
-    "backend/tests/test_browser.py": {
-      "sha256": "64e777a33b98641bf294aec38faa186a490bed29b3c63a5776e2954308864855",
-      "size": 17781
-    },
-    "backend/tests/test_hackerone_binding.py": {
-      "sha256": "96d8d07fdcd74d7fbfb9dfcc95eb2080ad9e28cd404ebe0387ce01787afd2967",
-      "size": 9000
-    },
     "backend/tests/test_htb_lab.py": {
       "sha256": "d0091e376c486e5d0b74c9a3addcb2eabfca4e6e858b20405840f8c8a100e18e",
       "size": 26939
     },
-    "backend/tests/test_job_provenance_api_integration.py": {
-      "sha256": "873ee46100ee7596c77a8ba845c62c3a5211cc11f1cc563aa5c83b216c9c05f4",
-      "size": 5763
-    },
-    "backend/tests/test_outbox_chaos.py": {
-      "sha256": "2e53bf82a839f242db502e048a7a42e14c1ee7ff919f1ac5b2f46cc60708ae69",
-      "size": 8626
+    "backend/tests/test_jobqueue.py": {
+      "sha256": "9ca56645d623fce51006a496f707399fbeeeefe0747996440ed158f73731613f",
+      "size": 18444
     },
     "backend/tests/test_pentagi_worker_service.py": {
       "sha256": "b3219217a999832511011c7d5c73e6f3ee903d500e31e4e1fc6b33761974e3a3",
       "size": 10097
     },
-    "backend/tests/test_recon_worker.py": {
-      "sha256": "266c5bcb105292f7bb2c013ee89ae4a2e186ecafd937ce2e01ace464a847b370",
-      "size": 29704
+    "backend/tests/test_queue_recovery.py": {
+      "sha256": "5c84a690b7c8a6a63912063a8219ea87261d5629da6eea79cd05f371ebab480a",
+      "size": 4700
+    },
+    "backend/tests/test_redis_jobqueue.py": {
+      "sha256": "d024ea3d0d344268064879a50f69563e4b773db30026320f20496b7f478d7572",
+      "size": 6494
     },
     "frontend/app.js": {
       "sha256": "ea1f672474f020848dd04abbc740ed0fbea763cd565327893a5ff0e4a1c89abf",

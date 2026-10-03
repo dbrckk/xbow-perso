@@ -1,15 +1,15 @@
 # Repo Brain
 
 - Index mode: incremental
-- Files indexed: 391
-- Files reparsed this run: 6
-- Symbols: 3746
-- Internal import edges: 1278
-- Impacted files: 156
-- Selected tests: 100
+- Files indexed: 393
+- Files reparsed this run: 8
+- Symbols: 3777
+- Internal import edges: 1284
+- Impacted files: 179
+- Selected tests: 114
 
 ## Languages
-- python: 387 files
+- python: 389 files
 - javascript: 4 files
 
 ## Highest-density symbol files
@@ -24,15 +24,15 @@
 - backend/tests/test_storage.py: 38 symbols
 - backend/app/recon_worker.py: 34 symbols
 - backend/tests/test_htb_lab.py: 34 symbols
+- backend/tests/test_jobqueue.py: 33 symbols
 - backend/app/storage_backend.py: 32 symbols
 - backend/tests/test_auth.py: 32 symbols
 - backend/tests/test_browser.py: 32 symbols
-- backend/tests/test_jobqueue.py: 32 symbols
-- backend/app/redis_jobqueue.py: 27 symbols
+- backend/app/redis_jobqueue.py: 28 symbols
+- backend/tests/test_redis_jobqueue.py: 28 symbols
+- backend/app/jobqueue.py: 27 symbols
 - backend/tests/test_pentagi_worker_service.py: 27 symbols
 - backend/app/hackerone_client.py: 26 symbols
-- backend/app/jobqueue.py: 26 symbols
-- backend/tests/test_orchestrator.py: 26 symbols
 
 ## Agent routing
 - Read impact.json first after project/change context.
@@ -43,10 +43,10 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 6
-- outline files retained: 389
-- top-level items retained: 5077
-- direct members retained: 1116
+- AST files reparsed this run: 8
+- outline files retained: 391
+- top-level items retained: 5106
+- direct members retained: 1127
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
 

@@ -22,17 +22,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T16:28:08Z
+Generated: 2026-10-03T16:40:08Z
 
 ### Git
 - Branch: `main`
-- Head: `1cdc97b7f40f`
-- Commit date: 2026-10-03T18:27:57+02:00
-- Commit: hardening(orchestration): make all campaign starts recon-first (#468)
-- Tracked files: 586
+- Head: `23fd9319931f`
+- Commit date: 2026-10-03T18:39:48+02:00
+- Commit: feat(recovery): add read-only queue consistency assessment (#469)
+- Tracked files: 588
 
 ### Recently changed files
+- `backend/app/jobqueue.py`
 - `backend/app/main.py`
+- `backend/app/queue_backend.py`
+- `backend/app/queue_recovery.py`
+- `backend/app/redis_jobqueue.py`
+- `backend/tests/test_jobqueue.py`
+- `backend/tests/test_queue_recovery.py`
+- `backend/tests/test_redis_jobqueue.py`
 - `backend/tests/test_api_idempotency.py`
 - `backend/tests/test_hackerone_binding.py`
 - `backend/tests/test_htb_lab.py`
@@ -45,13 +52,6 @@ Generated: 2026-10-03T16:28:08Z
 - `backend/tests/test_nuclei_worker_plan.py`
 - `backend/tests/test_recon_worker.py`
 - `backend/tests/test_scanner_sandbox.py`
-- `backend/tests/test_worker_observations.py`
-- `AWS_MOBILE_ONLY.md`
-- `MOBILE_ONLY.md`
-- `.env.example`
-- `backend/app/observation_writer.py`
-- `backend/app/finding_correlation.py`
-- `backend/app/finding_triage.py`
 
 ### Project signals
 - `pyproject.toml`

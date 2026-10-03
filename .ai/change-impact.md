@@ -1,15 +1,17 @@
 # Change impact
 
-Base: fd31a2c06c175f0b654ee734a1e602666d017024
-Head: 1cdc97b7f40f5c89f793397ec71942fc45ef4a5d
+Base: 55934376f4314bc2c293a3d1c7041f21a6daf448
+Head: 23fd9319931f63937b4a1949127c654f64fcd0b3
 
 ## Changed files
+- M backend/app/jobqueue.py
 - M backend/app/main.py
-- M backend/tests/test_api_idempotency.py
-- M backend/tests/test_hackerone_binding.py
-- M backend/tests/test_htb_lab.py
-- M backend/tests/test_job_provenance_api_integration.py
-- M backend/tests/test_outbox_chaos.py
+- M backend/app/queue_backend.py
+- A backend/app/queue_recovery.py
+- M backend/app/redis_jobqueue.py
+- M backend/tests/test_jobqueue.py
+- A backend/tests/test_queue_recovery.py
+- M backend/tests/test_redis_jobqueue.py
 
 ## Affected areas
 - backend
