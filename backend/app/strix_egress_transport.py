@@ -14,7 +14,11 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from urllib.parse import urlsplit
 
-from .strix_broker_models import BrokerHttpRequest, BrokerHttpResponse
+from .strix_broker_models import (
+    BrokerHeader,
+    BrokerHttpRequest,
+    BrokerHttpResponse,
+)
 from .strix_execution_contract import (
     StrixExecutionContractError,
     authorize_strix_contract_request,
@@ -252,11 +256,10 @@ def reset_rate_limits_for_tests() -> None:
         _LAST_REQUEST_AT.clear()
 
 
-def _response_headers(response: http.client.HTTPResponse) -> dict[str, str]:
-    sanitized: dict[str, str] = {}
-    total = 0
+def _response_headers(response: http.client.HTTPResponse) -> list[BrokerHeader]:
+    sanitized: list[BrokerHeader] = []
     for name, value in response.getheaders():
-        if total >= 64:
+        if len(sanitized) >= 64:
             break
         clean_name = str(name).strip()
         clean_value = str(value).strip()
@@ -267,16 +270,22 @@ def _response_headers(response: http.client.HTTPResponse) -> dict[str, str]:
             or clean_name.lower() in _FORBIDDEN_RESPONSE_HEADERS
         ):
             continue
+        if any(
+            ord(ch) < 32 and ch != "\t" or ord(ch) == 127
+            for ch in clean_value
+        ):
+            continue
         if len(clean_value.encode("utf-8")) > 4096:
             clean_value = clean_value.encode("utf-8")[:4096].decode(
                 "utf-8",
                 errors="replace",
             )
-        existing = sanitized.get(clean_name)
-        sanitized[clean_name] = (
-            f"{existing}, {clean_value}" if existing else clean_value
+        sanitized.append(
+            BrokerHeader(
+                name=clean_name,
+                value=clean_value,
+            )
         )
-        total += 1
     return sanitized
 
 
@@ -294,6 +303,11 @@ def perform_bounded_http_request(
         )
     except StrixExecutionContractError as exc:
         raise StrixEgressPolicyError(str(exc)) from exc
+
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in authorized.target):
+        raise StrixEgressPolicyError("unsafe control character in Strix egress URL")
+    if "\\" in authorized.target:
+        raise StrixEgressPolicyError("backslashes in Strix egress URLs are forbidden")
 
     parsed = urlsplit(authorized.target)
     host = authorized.host
