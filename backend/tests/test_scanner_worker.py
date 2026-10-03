@@ -44,6 +44,12 @@ def test_scanner_worker_dry_run_stays_ready_and_records_event(tmp_path, monkeypa
     assert result.ingestion is None
     assert result.event["type"] == "scan_dry_run"
     assert result.event["engine"] == "strix"
+    contract = result.event["execution_contract"]
+    assert contract["schema"] == "strix-execution-contract-v1"
+    assert contract["contract_hash"]
+    assert contract["direct_egress_allowed"] is False
+    assert contract["host_container_socket_allowed"] is False
+    assert contract["independent_validation_required"] is True
     assert campaign.state.value == "ready"
     observations = store.list_observations(campaign.id)
     assert len(observations) == 1
@@ -144,6 +150,7 @@ def test_scanner_worker_binds_status_findings_and_evidence_to_same_strix_run(
     assert result.status == "completed"
     assert result.ingestion is not None
     assert result.ingestion.findings_seen == 1
+    assert result.event["execution_contract"]["contract_hash"]
     assert [finding.title for finding in campaign.findings] == ["Selected run finding"]
 
     evidence = [
