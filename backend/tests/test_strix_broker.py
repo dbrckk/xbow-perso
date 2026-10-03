@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from pydantic import ValidationError
 
 from app.main import Campaign, ProgramRules, TargetInput
+from app.strix_broker_client import StrixBrokerClientError
 from app.strix_broker import (
     BrokerAdmissionRequest,
     BrokerContractDocument,
@@ -263,10 +264,7 @@ def test_broker_readiness_requires_egress_when_proxy_enabled(monkeypatch):
     monkeypatch.setattr(
         "app.strix_broker.check_egress_ready",
         lambda: (_ for _ in ()).throw(
-            __import__(
-                "app.strix_broker_client",
-                fromlist=["StrixBrokerClientError"],
-            ).StrixBrokerClientError(
+            StrixBrokerClientError(
                 "fixture unavailable",
                 status_code=503,
             )
