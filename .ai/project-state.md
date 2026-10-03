@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T15:19:02Z
+Generated: 2026-10-03T15:24:42Z
 
 ### Git
 - Branch: `main`
-- Head: `1e094ee54e06`
-- Commit date: 2026-10-03T17:18:50+02:00
-- Commit: feat(recon): refresh bounded sitemap discovery provenance (#465)
-- Tracked files: 584
+- Head: `198a318d517b`
+- Commit date: 2026-10-03T17:24:31+02:00
+- Commit: docs(mobile): align smartphone operation with hardened scripts (#466)
+- Tracked files: 585
 
 ### Recently changed files
+- `AWS_MOBILE_ONLY.md`
+- `MOBILE_ONLY.md`
 - `.env.example`
 - `backend/app/observation_writer.py`
 - `backend/app/recon_worker.py`
@@ -49,9 +51,6 @@ Generated: 2026-10-03T15:19:02Z
 - `frontend/sw.js`
 - `backend/app/campaign_control.py`
 - `backend/tests/test_campaign_circuit_breaker.py`
-- `backend/app/metrics.py`
-- `backend/app/operational_alerts.py`
-- `backend/tests/test_metrics.py`
 
 ### Project signals
 - `pyproject.toml`

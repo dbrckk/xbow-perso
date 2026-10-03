@@ -1,19 +1,14 @@
 # Change impact
 
-Base: 1595155e65128670f04a81e5038a6a67193c8f24
-Head: 1e094ee54e063776dabeee80045a9a9e27434303
+Base: 137856ce2495ae91784f7edb8b93efdfa86646c5
+Head: 198a318d517be556b4ee2fa6626ca2d829b162a5
 
 ## Changed files
-- M .env.example
-- M backend/app/observation_writer.py
-- M backend/app/recon_worker.py
-- M backend/app/worker_service.py
-- M backend/tests/test_recon_worker.py
-- M backend/tests/test_worker_observations.py
+- M AWS_MOBILE_ONLY.md
+- M MOBILE_ONLY.md
 
 ## Affected areas
 - (root)
-- backend
 
 ## Related test candidates
 - No direct filename-based test match detected.
