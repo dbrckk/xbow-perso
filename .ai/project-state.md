@@ -25,19 +25,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T18:14:51Z
+Generated: 2026-10-03T18:51:56Z
 
 ### Git
 - Branch: `main`
-- Head: `8d71a633abc9`
-- Commit date: 2026-10-03T20:14:40+02:00
-- Commit: chore(deps): bump Uvicorn to 0.52.4 (#481)
+- Head: `9b816a3c171c`
+- Commit date: 2026-10-03T20:51:46+02:00
+- Commit: fix(strix): bind lifecycle artifacts to the completed run
 - Tracked files: 592
 
 ### Recently changed files
+- `backend/app/scanner_worker.py`
+- `backend/app/worker.py`
+- `backend/tests/test_scanner_worker.py`
 - `backend/requirements.txt`
 - `backend/requirements-dev.txt`
-- `frontend/Dockerfile`
 
 ### Project signals
 - `pyproject.toml`
