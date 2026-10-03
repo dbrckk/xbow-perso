@@ -100,7 +100,6 @@ def test_supply_chain_builds_runner_with_provenance_and_sbom():
     assert "sbom: true" in workflow
 
 
-
 def test_ci_smoke_tests_runner_attestation_without_scan_execution():
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 
@@ -110,7 +109,6 @@ def test_ci_smoke_tests_runner_attestation_without_scan_execution():
     assert ".State.Health.Status" in workflow
     assert '"healthy"' in workflow
     assert "strix scan" not in workflow
-
 
 
 def test_supply_chain_cancels_superseded_branch_runs():
