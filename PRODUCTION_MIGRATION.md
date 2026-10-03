@@ -121,3 +121,20 @@ Confirm:
 - Redis queue counts match the migrated history.
 
 Only after the storage migration and vault migration are separately verified should the installation be considered ready for the production-hardening profile.
+
+
+## Non-destructive DR restore preflight
+
+After creating the PostgreSQL dump, Redis RDB snapshot, encrypted vault copy, and DR manifest, verify both integrity and recognizable restore structure without loading data:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli preflight \
+  --manifest /path/to/manifest.json \
+  --postgres-dump /path/to/postgres.dump \
+  --redis-snapshot /path/to/dump.rdb \
+  --vault-copy /path/to/secrets.vault.json
+```
+
+The preflight checks manifest/hash integrity, a recognized PostgreSQL dump format, the Redis RDB header/version, and the encrypted vault-v1 record structure. It never restores PostgreSQL, loads Redis, decrypts secrets, or modifies backup files. A successful result therefore means **the backup set passed structural preflight**, not that a real restore has been proven.
+
+A production DR procedure should still periodically restore into an isolated disposable environment and validate application-level readiness before considering the recovery path fully tested.
