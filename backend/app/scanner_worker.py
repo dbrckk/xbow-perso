@@ -69,7 +69,12 @@ def run_strix_job(
     )
     plan = build_strix_plan(campaign, run_dir)
     execution = execute(plan)
-    persist_execution_artifacts(store, campaign.id, execution)
+    persist_execution_artifacts(
+        store,
+        campaign.id,
+        execution,
+        include_scanner_artifact=False,
+    )
 
     if execution["status"] == "dry_run":
         record_asset(
@@ -102,9 +107,17 @@ def run_strix_job(
     if not strix_status.completed:
         raise RuntimeError(f"Strix run did not complete: {strix_status.status}")
 
+    selected_run_dir = Path(strix_status.run_json_path).parent
+    persist_execution_artifacts(
+        store,
+        campaign.id,
+        execution,
+        include_streams=False,
+        scanner_output_dir=selected_run_dir,
+    )
     ingestion = ingest_scanner_run(
         "strix",
-        run_dir,
+        selected_run_dir,
         campaign,
         queue,
         store,
