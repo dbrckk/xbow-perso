@@ -80,7 +80,7 @@ def test_egress_fetch_calls_transport_only_when_enabled(monkeypatch):
         return BrokerHttpResponse(
             status_code=200,
             reason="OK",
-            headers={},
+            headers=[],
             body_base64="",
             body_bytes=0,
             truncated=False,
