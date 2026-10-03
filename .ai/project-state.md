@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T17:50:21Z
+Generated: 2026-10-03T17:54:44Z
 
 ### Git
 - Branch: `main`
-- Head: `37b0a7ec93bb`
-- Commit date: 2026-10-03T19:50:11+02:00
-- Commit: feat(frontend): surface aggregate control-plane health (#475)
+- Head: `c28af430d07e`
+- Commit date: 2026-10-03T19:54:33+02:00
+- Commit: chore(deps): bump nginx-unprivileged to 1.29-alpine (#478)
 - Tracked files: 592
 
 ### Recently changed files
+- `frontend/Dockerfile`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
@@ -46,7 +47,6 @@ Generated: 2026-10-03T17:50:21Z
 - `backend/app/control_plane_health.py`
 - `backend/app/main.py`
 - `backend/tests/test_control_plane_health.py`
-- `backend/requirements-dev.txt`
 
 ### Project signals
 - `pyproject.toml`
