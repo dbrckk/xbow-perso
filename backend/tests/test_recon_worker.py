@@ -638,3 +638,205 @@ def test_external_recon_is_disabled_unless_explicitly_enabled(monkeypatch):
 
     assert result.status == "observed"
     assert result.assets == ()
+
+
+def test_recon_discovers_same_origin_sitemaps_with_shared_budget_and_provenance(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_DISCOVERY_DOCUMENTS", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "5")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": _Response(
+                b'<a href="/html-page">html</a>',
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/robots.txt": _Response(
+                b"Sitemap: https://example.test/custom.xml\n"
+                b"Sitemap: https://outside.test/ignored.xml\n",
+                {"Content-Type": "text/plain"},
+            ),
+            "https://example.test/sitemap.xml": _Response(
+                b'<?xml version="1.0"?><urlset><url><loc>https://example.test/from-default</loc></url></urlset>',
+                {"Content-Type": "application/xml"},
+            ),
+            "https://example.test/html-page": _Response(
+                b"<html></html>",
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/custom.xml": _Response(
+                b'<?xml version="1.0"?><urlset><url><loc>https://example.test/from-custom</loc></url></urlset>',
+                {"Content-Type": "application/xml"},
+            ),
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 5,
+        },
+    )
+
+    assert result.requests_made == 5
+    assert len(opener.calls) == 5
+    assert "https://outside.test/ignored.xml" not in opener.calls
+    assert "https://example.test/from-default" in result.endpoints
+    assert "https://example.test/from-custom" in result.endpoints
+    assert "https://example.test/html-page" in result.endpoints
+
+    provenance = {
+        item["endpoint"]: set(item["sources"])
+        for item in result.endpoint_provenance
+    }
+    assert provenance["https://example.test/from-default"] == {"sitemap"}
+    assert provenance["https://example.test/from-custom"] == {"sitemap"}
+    assert provenance["https://example.test/html-page"] == {"html"}
+
+
+def test_recon_discovery_documents_are_disabled_by_default(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.delenv("XBOW_RECON_DISCOVERY_DOCUMENTS", raising=False)
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "3")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": _Response(
+                b"<html></html>",
+                {"Content-Type": "text/html"},
+            ),
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 3,
+        },
+    )
+
+    assert result.requests_made == 1
+    assert opener.calls == ["https://example.test/"]
+
+
+def test_sitemap_parser_rejects_dtd_entity_documents(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_DISCOVERY_DOCUMENTS", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "3")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": _Response(
+                b"<html></html>",
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/robots.txt": _Response(
+                b"",
+                {"Content-Type": "text/plain"},
+            ),
+            "https://example.test/sitemap.xml": _Response(
+                b'<!DOCTYPE x [<!ENTITY a "https://example.test/evil">]><urlset><url><loc>&a;</loc></url></urlset>',
+                {"Content-Type": "application/xml"},
+            ),
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 3,
+        },
+    )
+
+    assert result.requests_made == 3
+    assert "evil" not in str(result)
+
+
+def test_recon_same_origin_normalizes_default_https_port(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "2")
+    monkeypatch.setenv("XBOW_RECON_MAX_DEPTH", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    opener = _RoutingOpener(
+        {
+            "https://example.test:443/": _Response(
+                b'<a href="https://example.test/page">page</a>',
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/page": _Response(
+                b"<html></html>",
+                {"Content-Type": "text/html"},
+            ),
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test:443",
+            "max_requests": 2,
+        },
+    )
+
+    assert result.requests_made == 2
+    assert "https://example.test/page" in result.endpoints
+
+
+def test_duplicate_sitemap_directive_does_not_fake_request_budget_saturation(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+    monkeypatch.setenv("XBOW_RECON_DISCOVERY_DOCUMENTS", "1")
+    monkeypatch.setenv("XBOW_RECON_MAX_REQUESTS", "3")
+    monkeypatch.setenv("XBOW_RECON_MAX_RPS", "10")
+    monkeypatch.setattr("app.recon_worker.time.sleep", lambda _seconds: None)
+
+    opener = _RoutingOpener(
+        {
+            "https://example.test/": _Response(
+                b"<html></html>",
+                {"Content-Type": "text/html"},
+            ),
+            "https://example.test/robots.txt": _Response(
+                b"Sitemap: https://example.test/sitemap.xml\n",
+                {"Content-Type": "text/plain"},
+            ),
+            "https://example.test/sitemap.xml": _Response(
+                b'<?xml version="1.0"?><urlset></urlset>',
+                {"Content-Type": "application/xml"},
+            ),
+        }
+    )
+    monkeypatch.setattr("app.recon_worker.build_opener", lambda *_args, **_kwargs: opener)
+
+    result = execute_recon_task(
+        _campaign(),
+        {
+            "kind": "crawl",
+            "target": "https://example.test",
+            "max_requests": 3,
+        },
+    )
+
+    assert result.requests_made == 3
+    assert result.deferred_by_request_budget == 0
+    assert result.stopped_by_request_budget is False
+    assert result.coverage_complete is True

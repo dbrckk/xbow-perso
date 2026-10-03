@@ -107,3 +107,69 @@ def test_recon_observed_primary_target_is_recorded_as_endpoint(tmp_path, monkeyp
     assert len(endpoints) == 1
     assert endpoints[0].value == "https://example.test/"
     assert endpoints[0].source == "recon:crawl"
+    assert endpoints[0].metadata == {}
+
+
+def test_recon_endpoint_provenance_is_persisted_and_telemetry_is_counted(tmp_path, monkeypatch):
+    store = Storage(str(tmp_path / "recon-provenance.sqlite3"), str(tmp_path / "artifacts"))
+    campaign = Campaign(
+        id="recon-provenance",
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="explicit-test-authorization",
+                allowed_targets=["example.test"],
+            ),
+        ),
+    )
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    monkeypatch.setattr(
+        "app.worker_service.execute_recon_task",
+        lambda _campaign, _payload: ReconResult(
+            status="observed",
+            target="https://example.test/",
+            endpoints=(
+                "https://example.test/html",
+                "https://example.test/from-sitemap",
+            ),
+            endpoint_provenance=(
+                {
+                    "endpoint": "https://example.test/html",
+                    "sources": ["html"],
+                },
+                {
+                    "endpoint": "https://example.test/from-sitemap",
+                    "sources": ["sitemap"],
+                },
+            ),
+            http_status=200,
+            requests_made=3,
+            request_budget=3,
+            coverage_complete=True,
+        ),
+    )
+
+    process_recon_task(
+        {
+            "id": "recon-provenance-job",
+            "campaign_id": campaign.id,
+            "payload": {"kind": "crawl", "target": "https://example.test"},
+        },
+        store,
+    )
+
+    graph = load_observation_graph(store, campaign.id)
+    endpoints = {item.value: item for item in graph.by_kind("endpoint")}
+    assert endpoints["https://example.test/html"].metadata["discovery_sources"] == ["html"]
+    assert endpoints["https://example.test/from-sitemap"].metadata["discovery_sources"] == ["sitemap"]
+
+    saved = store.get_campaign(campaign.id)
+    event = next(
+        item
+        for item in saved["events"]
+        if item.get("type") == "recon_task_completed"
+        and item.get("job_id") == "recon-provenance-job"
+    )
+    assert event["sitemap_endpoints"] == 1

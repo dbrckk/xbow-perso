@@ -36,6 +36,7 @@ def record_endpoint(
     *,
     source: str,
     parent_id: str,
+    metadata: dict | None = None,
 ) -> str:
     observation = Observation(
         id=observation_id("endpoint", f"{source}\x1f{endpoint}"),
@@ -43,6 +44,7 @@ def record_endpoint(
         value=endpoint,
         source=source,
         parent_ids=(parent_id,),
+        metadata=metadata or {},
     )
     store.put_observation(campaign.id, observation.to_dict())
     return observation.id
