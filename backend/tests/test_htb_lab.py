@@ -39,6 +39,16 @@ class _FakeQueue:
     def get(self, job_id):
         return self.jobs.get(job_id)
 
+    def get_by_dedupe(self, campaign_id, kind, dedupe_key):
+        for job in self.jobs.values():
+            if (
+                job["campaign_id"] == campaign_id
+                and job["kind"] == kind
+                and job.get("dedupe_key") == dedupe_key
+            ):
+                return job
+        return None
+
 
 def test_htb_lab_route_is_exposed():
     assert "/api/labs/htb/campaigns" in main.app.openapi()["paths"]
