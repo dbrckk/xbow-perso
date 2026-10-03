@@ -640,7 +640,13 @@ def test_fresh_generic_campaign_start_is_recon_first(tmp_path, monkeypatch):
     result = start_campaign(campaign.id)
 
     assert result["job"]["kind"] == "recon_task"
-    assert result["planner"]["job_ids"] == [result["job"]["id"]]
+    assert result["jobs"]
+    assert all(job["kind"] == "recon_task" for job in result["jobs"])
+    assert result["job"]["id"] == result["planner"]["job_ids"][0]
+    assert [job["id"] for job in result["jobs"]] == result["planner"]["job_ids"]
     jobs = JobQueue(db)
     assert jobs.campaign_job_counts(campaign.id).get("strix_scan", 0) == 0
-    assert jobs.campaign_job_counts(campaign.id).get("recon_task", 0) == 1
+    assert (
+        jobs.campaign_job_counts(campaign.id).get("recon_task", 0)
+        == len(result["planner"]["job_ids"])
+    )
