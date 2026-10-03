@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException
 
 from .strix_broker_models import BrokerHttpRequest, BrokerHttpResponse
 from .strix_egress_transport import (
@@ -85,7 +85,7 @@ def readyz() -> dict:
 
 
 @app.post("/v1/fetch", response_model=BrokerHttpResponse)
-def fetch(request: BrokerHttpRequest, response: Response) -> BrokerHttpResponse:
+def fetch(request: BrokerHttpRequest) -> BrokerHttpResponse:
     if not _enabled():
         raise HTTPException(
             status_code=503,
@@ -98,12 +98,12 @@ def fetch(request: BrokerHttpRequest, response: Response) -> BrokerHttpResponse:
             verification_secret=secret,
         )
     except StrixEgressRateLimitError as exc:
-        response.headers["Retry-After"] = (
-            f"{exc.retry_after_seconds:.3f}"
-        )
         raise HTTPException(
             status_code=429,
             detail="Strix egress request rate exceeded",
+            headers={
+                "Retry-After": f"{exc.retry_after_seconds:.3f}",
+            },
         ) from exc
     except StrixEgressPolicyError as exc:
         raise HTTPException(
