@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import re
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -125,6 +126,8 @@ def assess_restore_preflight(
     postgres_dump: str,
     redis_snapshot: str,
     vault_copy: str,
+    max_age_hours: float = 24.0,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     """Perform a non-destructive structural preflight for a DR backup set.
 
@@ -154,6 +157,37 @@ def assess_restore_preflight(
         blockers.append("vault_backup_format_unrecognized")
 
     signature_state = verification.get("manifest_signature_valid")
+    freshness = {
+        "status": "unknown",
+        "trusted": False,
+        "age_hours": None,
+        "max_age_hours": float(max_age_hours),
+    }
+    created_at = verification.get("manifest_created_at")
+    if signature_state is True and isinstance(created_at, str):
+        try:
+            created = datetime.fromisoformat(created_at)
+            if created.tzinfo is None:
+                raise ValueError("timestamp must be timezone-aware")
+            reference = now or datetime.now(UTC)
+            if reference.tzinfo is None:
+                raise ValueError("reference time must be timezone-aware")
+            age_hours = max(0.0, (reference - created).total_seconds() / 3600.0)
+            freshness = {
+                "status": "fresh" if age_hours <= max_age_hours else "stale",
+                "trusted": True,
+                "age_hours": round(age_hours, 3),
+                "max_age_hours": float(max_age_hours),
+            }
+            if age_hours > max_age_hours:
+                blockers.append("backup_set_stale")
+        except (ValueError, TypeError):
+            warnings.append("manifest_timestamp_invalid")
+    elif signature_state is True:
+        warnings.append("manifest_timestamp_missing")
+    else:
+        warnings.append("backup_freshness_untrusted")
+
     if signature_state is None:
         warnings.append("manifest_unsigned_legacy")
     if vault.get("secret_count") == 0 and vault["recognized"] is True:
@@ -163,6 +197,7 @@ def assess_restore_preflight(
         "restore_preflight_ready": not blockers,
         "integrity_valid": verification.get("valid") is True,
         "manifest_signature_valid": signature_state,
+        "backup_freshness": freshness,
         "artifacts": {
             "postgres": postgres,
             "redis": redis,
