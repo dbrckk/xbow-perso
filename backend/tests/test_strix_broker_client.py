@@ -137,7 +137,6 @@ def test_client_rejects_invalid_response_shape(monkeypatch):
         forward_read_only_request(request)
 
 
-
 def test_client_checks_fixed_internal_readiness_endpoint(monkeypatch):
     opener = _Opener(
         _Response(
@@ -169,7 +168,6 @@ def test_client_readiness_rejects_oversized_response(monkeypatch):
         check_egress_ready()
 
     assert exc_info.value.status_code == 503
-
 
 
 @pytest.mark.parametrize(
