@@ -9,6 +9,7 @@ from .main import Campaign, CampaignState, utcnow
 from .observation_graph import Observation
 from .observation_writer import record_asset
 from .scanner_ingestion import ScannerIngestionResult, ingest_scanner_run
+from .strix_execution_contract import build_strix_execution_contract
 from .strix_run_status import StrixRunStatusError, load_strix_run_status
 from .storage import Storage
 from .worker import build_nuclei_plan, build_strix_plan, execute, persist_execution_artifacts
@@ -64,6 +65,10 @@ def run_strix_job(
     queue: JobQueue,
     store: Storage,
 ) -> ScannerJobResult:
+    contract = build_strix_execution_contract(
+        campaign,
+        job_id=str(job["id"]),
+    )
     run_dir = str(
         Path(os.getenv("XBOW_STRIX_RUN_ROOT", "/data/strix_runs")) / job["id"]
     )
@@ -88,6 +93,7 @@ def run_strix_job(
             "type": "scan_dry_run",
             "engine": "strix",
             "job_id": job["id"],
+            "execution_contract": contract.redacted_summary(),
             "at": utcnow(),
         }
         return ScannerJobResult(
@@ -137,6 +143,7 @@ def run_strix_job(
         "findings": ingestion.findings_seen,
         "findings_added": ingestion.findings_added,
         "validation_jobs": ingestion.validation_jobs,
+        "execution_contract": contract.redacted_summary(),
         "at": utcnow(),
     }
     return ScannerJobResult(
