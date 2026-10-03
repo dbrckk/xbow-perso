@@ -5,6 +5,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from .scanner_sandbox import strix_runtime_contract_enforceable
+
 
 class CapabilityConfigError(ValueError):
     pass
@@ -130,6 +132,7 @@ def scanner_runtime_capability() -> dict[str, Any]:
     )
     strix_binary_available = bool(shutil.which("strix"))
     docker_cli_available = bool(shutil.which("docker"))
+    strix_contract_enforceable = strix_runtime_contract_enforceable()
 
     reasons: list[str] = []
     if not active_scans_enabled:
@@ -152,6 +155,8 @@ def scanner_runtime_capability() -> dict[str, Any]:
         reasons.append("strix_binary_unavailable")
     if strix_execution_intent and not docker_cli_available:
         reasons.append("strix_docker_runtime_unavailable")
+    if strix_execution_intent and not strix_contract_enforceable:
+        reasons.append("strix_runtime_contract_not_enforceable")
 
     return {
         "mode": "active_gated" if active_scans_enabled else "disabled",
@@ -165,6 +170,7 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_allowlisted": strix_allowlisted,
         "strix_binary_available": strix_binary_available,
         "strix_docker_runtime_available": docker_cli_available,
+        "strix_runtime_contract_enforceable": strix_contract_enforceable,
         "dry_run": dry_run,
         "sandbox_profile": profile or "unconfigured",
         "allowed_engines": list(engines),
@@ -191,6 +197,7 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_allowlisted": False,
             "strix_binary_available": False,
             "strix_docker_runtime_available": False,
+            "strix_runtime_contract_enforceable": False,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
             "allowed_engines": [],

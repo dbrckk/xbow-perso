@@ -284,19 +284,24 @@ def test_strix_runtime_capability_fails_closed_without_binary_or_docker(monkeypa
     assert "strix_docker_runtime_unavailable" in result["dispatch_block_reasons"]
 
 
-def test_strix_runtime_capability_reports_ready_when_runtime_exists(monkeypatch):
+def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     monkeypatch.setenv("XBOW_ENABLE_ACTIVE_SCANS", "true")
     monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
     monkeypatch.setenv("DRY_RUN", "false")
     monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
     monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "strix")
-    monkeypatch.setattr("app.runtime_capabilities.shutil.which", lambda name: f"/usr/local/bin/{name}")
+    monkeypatch.setattr(
+        "app.runtime_capabilities.shutil.which",
+        lambda name: f"/usr/local/bin/{name}",
+    )
 
     result = scanner_runtime_capability()
 
-    assert result["dispatch_ready"] is True
+    assert result["dispatch_ready"] is False
     assert result["strix_binary_available"] is True
     assert result["strix_docker_runtime_available"] is True
+    assert result["strix_runtime_contract_enforceable"] is False
+    assert "strix_runtime_contract_not_enforceable" in result["dispatch_block_reasons"]
 
 
 def test_browser_runtime_capability_fails_closed_without_runtime_marker(monkeypatch, tmp_path):

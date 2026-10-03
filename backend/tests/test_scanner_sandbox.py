@@ -78,6 +78,28 @@ def test_engine_must_be_explicitly_allowlisted(monkeypatch):
         require_scanner_sandbox("strix")
 
 
+def test_strix_stays_blocked_without_enforceable_runtime_contract(monkeypatch):
+    monkeypatch.setenv("XBOW_WORKER_ROLE", "scanner")
+    monkeypatch.setenv("XBOW_ENABLE_SCANNER_WORKER", "true")
+    monkeypatch.setenv("XBOW_SCANNER_SANDBOX_PROFILE", "restricted-v1")
+    monkeypatch.setenv("XBOW_SANDBOX_READ_ONLY_ROOTFS", "true")
+    monkeypatch.setenv("XBOW_SANDBOX_NO_NEW_PRIVILEGES", "true")
+    monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "true")
+    monkeypatch.setenv("XBOW_SCANNER_ALLOWED_ENGINES", "strix")
+    _attest_runtime(monkeypatch)
+
+    admission = scanner_sandbox_admission("strix")
+
+    assert admission.ready is False
+    assert admission.block_reasons == ("strix_runtime_contract_not_enforceable",)
+
+    with pytest.raises(
+        ScannerSandboxConfigError,
+        match="strix_runtime_contract_not_enforceable",
+    ):
+        require_scanner_sandbox("strix")
+
+
 def test_invalid_sandbox_boolean_fails_closed(monkeypatch):
     _clear(monkeypatch)
     monkeypatch.setenv("XBOW_SANDBOX_CAP_DROP_ALL", "maybe")

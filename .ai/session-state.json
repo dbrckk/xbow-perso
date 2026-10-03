@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-03",
+  "task": "Harden Strix lifecycle and active runtime admission",
+  "completed": [
+    "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
+    "Added regression coverage preventing cross-run artifact/provenance mixing.",
+    "Made active Strix scanner admission fail closed while its downstream runtime contract is not enforceable.",
+    "Exposed the Strix runtime-contract blocker through scanner capability diagnostics."
+  ],
+  "current_branch": "codex/strix-runtime-contract-gate",
+  "current_priority": "Implement an isolated Strix execution contract without exposing the host container socket.",
+  "blockers": [
+    "Current Strix runtime contract cannot yet attest downstream scope enforcement.",
+    "Current Strix runtime contract cannot yet attest the campaign request-rate ceiling end-to-end."
+  ],
+  "safety_invariants": [
+    "Authorized targets only.",
+    "Fail closed on unknown scope or execution contract.",
+    "No host Docker socket exposure.",
+    "Independent validation remains required before confirmed findings."
+  ],
+  "next_steps": [
+    "Validate and merge the runtime-contract gate.",
+    "Design a dedicated isolated Strix backend or sidecar with enforceable scope and rate controls.",
+    "Attest exact Strix runtime version and deterministic artifact handoff before enabling active dispatch."
+  ]
+}

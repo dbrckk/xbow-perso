@@ -5,19 +5,22 @@ Status: active
 ## Working
 - Central AI repo-map generation is configured through dbrckk/repo-standards.
 - Repository agent instructions are present.
+- Strix lifecycle status, result ingestion, and persisted vulnerability evidence are bound to the same completed run directory.
+- Nuclei remains the reviewed active scanner path in the dedicated restricted scanner worker.
 
 ## Broken / blockers
-- None documented here yet.
+- Active Strix execution does not yet have an enforceable isolated runtime contract for downstream scope, request-rate, and sandbox guarantees.
+- The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Restore task-specific state here when substantial work resumes.
+- Keep Strix active dispatch fail-closed while implementing a dedicated isolated runtime contract that can enforce campaign scope/rate limits and return deterministic evidence.
 
 ## Validation
-- Standards workflow: configured.
-- Tests/build: use this repository's existing validation commands.
+- PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
+- Runtime-contract changes require the same full CI/security/supply-chain gates before merge.
 
 ## Last verified
-- 2026-09-18
+- 2026-10-03
 
 <!-- AUTO:START -->
 ## Automatic repository state
