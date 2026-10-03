@@ -6115,29 +6115,34 @@ def verify_campaign_policy_receipt(campaign_id: str, receipt: dict[str, Any] = B
 ⋮----
 def _pending_campaign_start_request(campaign: Campaign) -> str | None
 ⋮----
+normalized_jobs = [jobs] if isinstance(jobs, dict) else list(jobs)
+job_ids = [
+primary_job_id = job_ids[0] if job_ids else None
+⋮----
+action = dict((planner_result or {}).get("action") or {})
+⋮----
 @app.post("/api/campaigns/{campaign_id}/start")
 def start_campaign(campaign_id: str)
 ⋮----
 host = (urlparse(str(campaign.target.primary_url)).hostname or "").lower()
 receipt = policy_receipt(campaign, host, "automated_scan")
 ⋮----
-hackerone_bound = any(
-htb_lab_bound = any(
 request_id = _pending_campaign_start_request(campaign) or str(uuid4())
 ⋮----
+legacy_job = jobs.get_by_dedupe(
 planner_result = None
 ⋮----
+start_jobs = [legacy_job]
+⋮----
 planner_result = advance_campaign(campaign, jobs, storage())
-job_ids = [
 ⋮----
 action = dict(planner_result.get("action") or {})
 ⋮----
-job = jobs.get(job_ids[0])
+start_jobs = []
 ⋮----
-job_kind = "strix_scan"
-payload = sanitized_scan_payload(campaign, receipt, job_kind=job_kind)
-job = jobs.enqueue(
+queued_job = jobs.get(job_id)
 ⋮----
+job = start_jobs[0]
 campaign = _reconcile_campaign_started(
 result = {
 ⋮----
@@ -11945,6 +11950,8 @@ result = queue_report(campaign.id, "generic")
 original_save = main.save_campaign
 ⋮----
 def fail_save(value, expected_version=None)
+⋮----
+def test_fresh_generic_campaign_start_is_recon_first(tmp_path, monkeypatch)
 ```
 
 ## File: tests/test_api_outbox.py
@@ -14077,7 +14084,7 @@ queued = [jobs.get(job_id) for job_id in start_result["planner"]["job_ids"]]
 ⋮----
 verification = verify_job_provenance(job, started)
 ⋮----
-def test_non_hackerone_start_keeps_strix_routing(tmp_path, monkeypatch)
+def test_non_hackerone_start_is_recon_first(tmp_path, monkeypatch)
 ⋮----
 campaign = main.Campaign(
 ⋮----
@@ -15290,6 +15297,8 @@ job = {
 ⋮----
 def get(self, job_id)
 ⋮----
+def get_by_dedupe(self, campaign_id, kind, dedupe_key)
+⋮----
 def test_htb_lab_route_is_exposed()
 ⋮----
 def test_htb_lab_rejects_public_targets()
@@ -15776,7 +15785,7 @@ campaign = campaign or _campaign()
 ⋮----
 def _assert_bound(job, campaign, expected_kind)
 ⋮----
-def test_campaign_start_direct_enqueue_is_provenanced(tmp_path, monkeypatch)
+def test_campaign_start_recon_first_jobs_are_provenanced(tmp_path, monkeypatch)
 ⋮----
 result = main.start_campaign(campaign.id)
 latest = main.assert_campaign_exists(campaign.id)
@@ -16942,6 +16951,8 @@ result = main.start_campaign(campaign.id)
 ⋮----
 persisted = Storage(db, artifacts).get_campaign(campaign.id)
 ⋮----
+started = [
+⋮----
 def test_restart_after_enqueue_reuses_same_start_job(tmp_path, monkeypatch)
 ⋮----
 request_id = "chaos-start-after-enqueue"
@@ -16953,8 +16964,6 @@ existing = before_restart.enqueue(
 # Simulate losing all process memory after enqueue but before audit reconciliation.
 after_restart = JobQueue(db)
 recovered = after_restart.get_by_dedupe(
-⋮----
-started = [
 ⋮----
 def test_restart_after_manual_report_enqueue_is_repaired_locally(tmp_path, monkeypatch)
 ⋮----

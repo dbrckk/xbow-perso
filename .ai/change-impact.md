@@ -1,17 +1,15 @@
 # Change impact
 
-Base: a5305fe879b14ea40d372aa4b652d1bf9f3824b8
-Head: 8dcfa3e0c88b2b754f3f363916a0f0157bd9b5d9
+Base: fd31a2c06c175f0b654ee734a1e602666d017024
+Head: 1cdc97b7f40f5c89f793397ec71942fc45ef4a5d
 
 ## Changed files
-- M backend/app/orchestrator.py
-- M backend/app/recon_worker.py
-- M backend/app/scanner_sandbox.py
-- M backend/app/worker_service.py
-- M backend/tests/test_nuclei_worker_plan.py
-- M backend/tests/test_recon_worker.py
-- M backend/tests/test_scanner_sandbox.py
-- M backend/tests/test_worker_observations.py
+- M backend/app/main.py
+- M backend/tests/test_api_idempotency.py
+- M backend/tests/test_hackerone_binding.py
+- M backend/tests/test_htb_lab.py
+- M backend/tests/test_job_provenance_api_integration.py
+- M backend/tests/test_outbox_chaos.py
 
 ## Affected areas
 - backend

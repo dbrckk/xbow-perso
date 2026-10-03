@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 391
-- Files reparsed this run: 8
-- Symbols: 3744
+- Files reparsed this run: 6
+- Symbols: 3746
 - Internal import edges: 1278
-- Impacted files: 26
-- Selected tests: 22
+- Impacted files: 156
+- Selected tests: 100
 
 ## Languages
 - python: 387 files
@@ -23,7 +23,7 @@
 - backend/app/storage_core.py: 44 symbols
 - backend/tests/test_storage.py: 38 symbols
 - backend/app/recon_worker.py: 34 symbols
-- backend/tests/test_htb_lab.py: 33 symbols
+- backend/tests/test_htb_lab.py: 34 symbols
 - backend/app/storage_backend.py: 32 symbols
 - backend/tests/test_auth.py: 32 symbols
 - backend/tests/test_browser.py: 32 symbols
@@ -43,10 +43,10 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 8
+- AST files reparsed this run: 6
 - outline files retained: 389
-- top-level items retained: 5076
-- direct members retained: 1115
+- top-level items retained: 5077
+- direct members retained: 1116
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
 

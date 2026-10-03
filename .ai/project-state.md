@@ -22,16 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T16:08:45Z
+Generated: 2026-10-03T16:28:08Z
 
 ### Git
 - Branch: `main`
-- Head: `8dcfa3e0c88b`
-- Commit date: 2026-10-03T18:08:34+02:00
-- Commit: security(recon): refresh immutable runtime contracts (#467)
+- Head: `1cdc97b7f40f`
+- Commit date: 2026-10-03T18:27:57+02:00
+- Commit: hardening(orchestration): make all campaign starts recon-first (#468)
 - Tracked files: 586
 
 ### Recently changed files
+- `backend/app/main.py`
+- `backend/tests/test_api_idempotency.py`
+- `backend/tests/test_hackerone_binding.py`
+- `backend/tests/test_htb_lab.py`
+- `backend/tests/test_job_provenance_api_integration.py`
+- `backend/tests/test_outbox_chaos.py`
 - `backend/app/orchestrator.py`
 - `backend/app/recon_worker.py`
 - `backend/app/scanner_sandbox.py`
@@ -46,12 +52,6 @@ Generated: 2026-10-03T16:08:45Z
 - `backend/app/observation_writer.py`
 - `backend/app/finding_correlation.py`
 - `backend/app/finding_triage.py`
-- `backend/tests/test_finding_correlation.py`
-- `backend/tests/test_finding_triage.py`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
-- `frontend/simple.js`
 
 ### Project signals
 - `pyproject.toml`
