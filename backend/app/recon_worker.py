@@ -612,11 +612,9 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                 (origin + "/robots.txt", "robots"),
                 (origin + "/sitemap.xml", "sitemap"),
             ):
-                if (
-                    candidate not in visited
-                    and all(item[0] != candidate for item in pending)
-                    and len(pending) + len(visited) < request_budget
-                ):
+                if candidate in visited or any(item[0] == candidate for item in pending):
+                    continue
+                if len(pending) + len(visited) < request_budget:
                     pending.append((candidate, 0, source_name))
                 else:
                     deferred_by_request_budget += 1
@@ -631,11 +629,9 @@ def execute_recon_task(campaign, payload: dict) -> ReconResult:
                 if not _same_origin(target, safe):
                     skipped_cross_origin += 1
                     continue
-                if (
-                    safe not in visited
-                    and all(item[0] != safe for item in pending)
-                    and len(pending) + len(visited) < request_budget
-                ):
+                if safe in visited or any(item[0] == safe for item in pending):
+                    continue
+                if len(pending) + len(visited) < request_budget:
                     pending.append((safe, 0, "sitemap"))
                 else:
                     deferred_by_request_budget += 1
