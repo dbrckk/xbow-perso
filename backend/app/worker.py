@@ -385,20 +385,43 @@ def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Fi
         raise WorkerPolicyError(str(exc)) from exc
 
 
-def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) -> list[dict]:
+def persist_execution_artifacts(
+    store: Storage,
+    campaign_id: str,
+    result: dict,
+    *,
+    include_streams: bool = True,
+    include_scanner_artifact: bool = True,
+    scanner_output_dir: str | Path | None = None,
+) -> list[dict]:
     artifacts: list[dict] = []
-    for key, kind in (("stdout", "scanner_stdout"), ("stderr", "scanner_stderr")):
-        content = result.get(key)
-        if content:
-            artifacts.append(store.put_artifact(campaign_id, kind, str(content).encode(), media_type="text/plain"))
-    vuln_path = locate_vulnerabilities_json(str(result.get("output_dir") or ""))
-    if vuln_path:
-        artifacts.append(
-            store.put_artifact(
-                campaign_id,
-                "http_evidence",
-                vuln_path.read_bytes(),
-                media_type="application/json",
-            )
+    if include_streams:
+        for key, kind in (("stdout", "scanner_stdout"), ("stderr", "scanner_stderr")):
+            content = result.get(key)
+            if content:
+                artifacts.append(
+                    store.put_artifact(
+                        campaign_id,
+                        kind,
+                        str(content).encode(),
+                        media_type="text/plain",
+                    )
+                )
+
+    if include_scanner_artifact:
+        artifact_root = (
+            scanner_output_dir
+            if scanner_output_dir is not None
+            else str(result.get("output_dir") or "")
         )
+        vuln_path = locate_vulnerabilities_json(str(artifact_root))
+        if vuln_path:
+            artifacts.append(
+                store.put_artifact(
+                    campaign_id,
+                    "http_evidence",
+                    vuln_path.read_bytes(),
+                    media_type="application/json",
+                )
+            )
     return artifacts
