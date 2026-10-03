@@ -1195,14 +1195,19 @@ def _record_campaign_start_intent(
 
 def _reconcile_campaign_started(
     campaign_id: str,
-    jobs: list[dict[str, Any]],
+    jobs: dict[str, Any] | list[dict[str, Any]],
     *,
     request_id: str,
     receipt: dict[str, Any],
     planner_result: dict[str, Any] | None = None,
     attempts: int = 3,
 ) -> Campaign:
-    job_ids = [str(job["id"]) for job in jobs if job.get("id")]
+    normalized_jobs = [jobs] if isinstance(jobs, dict) else list(jobs)
+    job_ids = [
+        str(job["id"])
+        for job in normalized_jobs
+        if isinstance(job, dict) and job.get("id")
+    ]
     primary_job_id = job_ids[0] if job_ids else None
     for _ in range(attempts):
         campaign, version = assert_campaign_record(campaign_id)
