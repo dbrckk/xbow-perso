@@ -10,6 +10,7 @@ from .dr_manifest import (
     verify_backup_manifest,
     write_backup_manifest,
 )
+from .dr_restore_preflight import assess_restore_preflight
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -30,6 +31,12 @@ def _parser() -> argparse.ArgumentParser:
     verify.add_argument("--postgres-dump", required=True)
     verify.add_argument("--redis-snapshot", required=True)
     verify.add_argument("--vault-copy", required=True)
+
+    preflight = sub.add_parser("preflight")
+    preflight.add_argument("--manifest", required=True)
+    preflight.add_argument("--postgres-dump", required=True)
+    preflight.add_argument("--redis-snapshot", required=True)
+    preflight.add_argument("--vault-copy", required=True)
 
     return parser
 
@@ -59,7 +66,7 @@ def main() -> int:
                 "manifest": args.output,
                 "artifacts": len(manifest["artifacts"]),
             }
-        else:
+        elif args.command == "verify":
             verification = verify_backup_manifest(
                 args.manifest,
                 postgres_dump=args.postgres_dump,
@@ -68,6 +75,17 @@ def main() -> int:
             )
             result = {"ok": verification["valid"], **verification}
             if not verification["valid"]:
+                print(json.dumps(result, sort_keys=True))
+                return 1
+        else:
+            preflight = assess_restore_preflight(
+                args.manifest,
+                postgres_dump=args.postgres_dump,
+                redis_snapshot=args.redis_snapshot,
+                vault_copy=args.vault_copy,
+            )
+            result = {"ok": preflight["restore_preflight_ready"], **preflight}
+            if not preflight["restore_preflight_ready"]:
                 print(json.dumps(result, sort_keys=True))
                 return 1
     except DisasterRecoveryError as exc:
