@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-03",
-  "task": "Build a controlled Strix egress boundary and isolate the future runner",
+  "task": "Pin and attest an isolated Strix runner before enabling execution",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -21,14 +21,21 @@
     "Added double contract verification at broker and egress boundaries and preserved repeated response headers such as Set-Cookie.",
     "Added three-zone Compose isolation tests and CI build coverage for both broker and egress services.",
     "Added one-in-flight-request-per-contract enforcement on top of the signed RPS ceiling to bound slow-target concurrency.",
-    "Made broker readiness fail closed on the isolated egress service when the read-only proxy is enabled."
+    "Made broker readiness fail closed on the isolated egress service when the read-only proxy is enabled.",
+    "Added an attestation-only Strix runner image pinned to v1.6.2 with architecture-specific GitHub release SHA-256 verification.",
+    "Recorded upstream Strix commit ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2 and verify exact `strix --version` at build and readiness.",
+    "Added a dependency-free runner health/readiness service that recomputes binary SHA-256 at runtime and exposes no scan endpoint.",
+    "Placed the runner on a dedicated internal runner-to-broker network with no data volume, host port, Docker socket or runtime secrets.",
+    "Added CI runner image build plus supply-chain provenance/SBOM generation."
   ],
-  "current_branch": "codex/strix-egress-concurrency-readiness",
-  "current_priority": "Build a separately pinned/attested Strix runner with no direct target-network egress and force all supported target HTTP traffic through the broker.",
+  "current_branch": "codex/strix-runner-attestation-v1",
+  "current_priority": "Validate the attestation-only runner, then design a non-Docker Strix execution backend whose supported target traffic is broker-mediated.",
   "blockers": [
-    "The current scanner-worker is not the final isolated Strix runner and still participates in the general control network.",
-    "The bounded broker path currently supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
-    "The exact Strix runtime version/image is not yet pinned and attested.",
+    "PR #489 egress concurrency/readiness checks are still queued and must land before this dependent runner PR can target main.",
+    "The runner is attestation-only and has no scan execution endpoint by design.",
+    "Upstream Strix v1.6.2 defaults to a Docker-backed sandbox; xbow will not mount the host Docker socket.",
+    "The bounded broker currently supports only GET/HEAD target traffic, not the full Strix tool/method surface.",
+    "The runner has no broker-mediated LLM provider path yet.",
     "Contract v1 still uses symmetric HMAC verification rather than asymmetric verification."
   ],
   "safety_invariants": [
@@ -38,11 +45,12 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the egress concurrency/readiness hardening.",
-    "Create a dedicated Strix runner image/service attached only to internal runtime networks.",
-    "Pin the exact Strix source/version and attest it at runtime.",
-    "Route supported Strix HTTP traffic through the broker and prove direct target-network access is unavailable.",
-    "Expand the contract deliberately for any additional HTTP methods only after method-specific safety controls are defined.",
+    "Validate the dependent runner PR with full CI/security/supply-chain gates.",
+    "Merge PR #489 first, then retarget/rebase the runner PR onto main.",
+    "Design and implement a non-host-Docker Strix backend/runtime adapter.",
+    "Route every supported target-network action through the broker and prove direct target access is unavailable.",
+    "Add a broker-mediated LLM/provider path without granting general runner egress.",
+    "Expand HTTP methods only with method-specific safety controls and contract semantics.",
     "Evaluate asymmetric contract signatures so verification services do not possess the signing secret."
   ]
 }
