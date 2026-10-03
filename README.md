@@ -426,7 +426,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- real Strix job lifecycle + result parser
+- enforceable isolated Strix runtime contract and active execution
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -473,4 +473,4 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 - worker runtime attests read-only root filesystem, no-new-privileges and all Linux capabilities dropped;
 - engine-specific runtime checks such as the pinned Nuclei version.
 
-The default allowlist contains only Nuclei. Strix must be explicitly added after its runtime contract has been reviewed. `GET /api/capabilities` reports the non-secret scanner admission state.
+The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, but **active Strix dispatch remains fail-closed** until xbow can attest an enforceable isolated runtime contract for downstream scope, request-rate, and sandbox guarantees. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable`. Dry-run planning remains available.
