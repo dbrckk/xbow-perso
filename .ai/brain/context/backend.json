@@ -5,13 +5,24 @@
       "path": "backend/app/main.py",
       "reasons": [
         "dependency-neighbor",
-        "entrypoint",
-        "reverse-dependency-neighbor"
+        "entrypoint"
       ],
-      "score": 860
+      "score": 765
     },
     {
-      "path": "backend/app/finding_correlation.py",
+      "path": "backend/app/worker_service.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 740
+    },
+    {
+      "path": "backend/app/recon_worker.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -19,147 +30,133 @@
         "impact",
         "symbol-indexed"
       ],
-      "score": 620
+      "score": 640
+    },
+    {
+      "path": "backend/tests/test_recon_worker.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 580
+    },
+    {
+      "path": "backend/tests/test_worker_observations.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 475
+    },
+    {
+      "path": "backend/app/observation_writer.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 435
     },
     {
       "path": "backend/app/observation_graph.py",
       "reasons": [
         "dependency-neighbor"
       ],
-      "score": 550
+      "score": 300
     },
     {
-      "path": "backend/app/finding_triage.py",
+      "path": "backend/app/storage.py",
       "reasons": [
-        "changed",
-        "changed-source",
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 500
-    },
-    {
-      "path": "backend/tests/test_finding_correlation.py",
-      "reasons": [
-        "changed",
-        "changed-source",
-        "impact",
-        "reverse-dependency-neighbor",
-        "selected-test",
-        "symbol-indexed"
-      ],
-      "score": 455
-    },
-    {
-      "path": "backend/tests/test_finding_triage.py",
-      "reasons": [
-        "changed",
-        "changed-source",
-        "impact",
-        "reverse-dependency-neighbor",
-        "selected-test",
-        "symbol-indexed"
-      ],
-      "score": 440
-    },
-    {
-      "path": "backend/app/campaign_overview.py",
-      "reasons": [
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
+        "dependency-neighbor"
       ],
       "score": 300
     },
     {
-      "path": "backend/app/red_team_decision.py",
+      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 240
+    },
+    {
+      "path": "backend/app/scanner_worker.py",
       "reasons": [
         "dependency-neighbor",
         "impact",
         "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 270
+      "score": 220
     },
     {
-      "path": "backend/app/evidence_chain.py",
+      "path": "backend/tests/test_worker_concurrency.py",
       "reasons": [
-        "dependency-neighbor",
         "impact",
         "reverse-dependency-neighbor",
+        "selected-test",
         "symbol-indexed"
       ],
-      "score": 265
+      "score": 220
     },
     {
-      "path": "backend/app/orchestrator.py",
+      "path": "backend/tests/test_campaign_cancel.py",
       "reasons": [
         "impact",
         "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 255
-    },
-    {
-      "path": "backend/app/campaign_risk.py",
-      "reasons": [
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
+        "selected-test",
         "symbol-indexed"
       ],
       "score": 215
     },
     {
-      "path": "backend/app/finding_intelligence.py",
+      "path": "backend/tests/test_worker_roles.py",
       "reasons": [
         "impact",
         "reverse-dependency-neighbor",
+        "selected-test",
         "symbol-indexed"
       ],
       "score": 210
     },
     {
-      "path": "backend/app/finding_lifecycle.py",
+      "path": "backend/tests/test_differential_evidence_integration.py",
       "reasons": [
-        "dependency-neighbor",
         "impact",
         "reverse-dependency-neighbor",
+        "selected-test",
         "symbol-indexed"
       ],
-      "score": 185
+      "score": 205
     },
     {
-      "path": "backend/app/finding_cluster_consensus.py",
+      "path": "backend/tests/test_worker_outcome_memory.py",
       "reasons": [
-        "dependency-neighbor",
         "impact",
         "reverse-dependency-neighbor",
+        "selected-test",
         "symbol-indexed"
       ],
-      "score": 180
+      "score": 205
     },
     {
-      "path": "backend/app/report_readiness.py",
+      "path": "backend/app/jobqueue.py",
       "reasons": [
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
+        "dependency-neighbor"
       ],
-      "score": 180
-    },
-    {
-      "path": "backend/app/finding_cluster_saturation.py",
-      "reasons": [
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 155
+      "score": 200
     }
   ],
   "generated_by": "dbrckk/repo-brain-v6",

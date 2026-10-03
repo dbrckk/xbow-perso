@@ -5,40 +5,469 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_canonical_url": {
+    "observation_id": {
       "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 21,
-        "end": 39
+        "file": "backend/app/observation_writer.py",
+        "start": 11,
+        "end": 13
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "FindingCorrelation": {
+    "record_asset": {
       "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 43,
-        "end": 58
+        "file": "backend/app/observation_writer.py",
+        "start": 16,
+        "end": 29
       },
       "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observation_id",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
         {
           "symbol": "to_dict",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
+              "file": "backend/app/differential_intelligence.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
-            },
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "record_endpoint": {
+      "source": {
+        "file": "backend/app/observation_writer.py",
+        "start": 32,
+        "end": 50
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observation_id",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 11,
               "kind": "function",
               "language": "python"
-            },
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 186,
+              "file": "backend/app/differential_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "record_finding_chain": {
+      "source": {
+        "file": "backend/app/observation_writer.py",
+        "start": 53,
+        "end": 107
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 117,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observation_id",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/differential_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "_differential_artifact_metadata": {
+      "source": {
+        "file": "backend/app/observation_writer.py",
+        "start": 110,
+        "end": 135
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "differential_signal_metadata",
+          "definitions": [
+            {
+              "file": "backend/app/differential_intelligence.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "record_artifact": {
+      "source": {
+        "file": "backend/app/observation_writer.py",
+        "start": 138,
+        "end": 175
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_differential_artifact_metadata",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/differential_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "record_typed_child": {
+      "source": {
+        "file": "backend/app/observation_writer.py",
+        "start": 178,
+        "end": 198
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observation_id",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/differential_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "ReconPolicyError": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 17,
+        "end": 18
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_NoRedirect": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 21,
+        "end": 23
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "redirect_request",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 22,
               "kind": "function",
               "language": "python"
             }
@@ -48,43 +477,37 @@
       ],
       "dependency_count": 1
     },
-    "to_dict": {
+    "redirect_request": {
       "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 55,
-        "end": 175
+        "file": "backend/app/recon_worker.py",
+        "start": 22,
+        "end": 23
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "ReconResult": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 27,
+        "end": 49
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_SurfaceParser": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 57,
+        "end": 93
       },
       "symbol_dependencies": [
         {
-          "symbol": "FindingCorrelation",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 43,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "FindingSimilarity",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 162,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_canonical_url",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 21,
+              "file": "backend/app/recon_worker.py",
+              "line": 58,
               "kind": "function",
               "language": "python"
             }
@@ -92,11 +515,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_jaccard",
+          "symbol": "handle_endtag",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 155,
+              "file": "backend/app/recon_worker.py",
+              "line": 91,
               "kind": "function",
               "language": "python"
             }
@@ -104,47 +527,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_title_tokens",
+          "symbol": "handle_starttag",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 144,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign_finding_correlations",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 120,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "correlate_findings",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 61,
+              "file": "backend/app/recon_worker.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -152,21 +539,21 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 3
     },
-    "correlate_findings": {
+    "__init__": {
       "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 61,
-        "end": 116
+        "file": "backend/app/recon_worker.py",
+        "start": 58,
+        "end": 178
       },
       "symbol_dependencies": [
         {
-          "symbol": "FindingCorrelation",
+          "symbol": "ReconPolicyError",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 43,
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
               "kind": "class",
               "language": "python"
             }
@@ -174,11 +561,492 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_canonical_url",
+          "symbol": "_discovery_documents_enabled",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 21,
+              "file": "backend/app/recon_worker.py",
+              "line": 168,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 107,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_crawl_depth",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_crawl_requests",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 118,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_wall_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_recon_rps",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 151,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_robots_sitemaps",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_timeout_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "handle_endtag",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 91,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "handle_starttag",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "handle_starttag": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 65,
+        "end": 89
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "handle_endtag": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 91,
+        "end": 93
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_timeout_seconds": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 96,
+        "end": 104
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_max_bytes": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 107,
+        "end": 115
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_max_crawl_requests": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 118,
+        "end": 126
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_max_crawl_depth": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 129,
+        "end": 137
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_max_wall_seconds": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 140,
+        "end": 148
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_recon_rps": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 151,
+        "end": 165
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_discovery_documents_enabled": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 168,
+        "end": 174
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_robots_sitemaps": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 177,
+        "end": 187
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_sitemap_locations": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 190,
+        "end": 207
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_enabled": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 210,
+        "end": 216
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_safe_url": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 219,
+        "end": 231
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "is_host_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 197,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_origin_port": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 234,
+        "end": 241
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_same_origin": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 244,
+        "end": 254
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_origin_port",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 234,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_fetch_page": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 257,
+        "end": 283
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_external_recon_enabled": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 286,
+        "end": 292
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_external_output_limit": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 295,
+        "end": 305
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_external_tool_env": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 308,
+        "end": 315
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_run_external_tool": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 318,
+        "end": 335
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_external_output_limit",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 295,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_external_tool_env",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 308,
               "kind": "function",
               "language": "python"
             }
@@ -188,107 +1056,41 @@
       ],
       "dependency_count": 2
     },
-    "campaign_finding_correlations": {
+    "_scope_regex": {
       "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 120,
-        "end": 140
+        "file": "backend/app/recon_worker.py",
+        "start": 338,
+        "end": 343
       },
       "symbol_dependencies": [
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "ReconPolicyError",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 221,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "correlate_findings",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 186,
-              "kind": "function",
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 1
     },
-    "_title_tokens": {
+    "_external_rate": {
       "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 144,
-        "end": 152
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_jaccard": {
-      "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 155,
-        "end": 158
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "FindingSimilarity": {
-      "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 162,
-        "end": 175
+        "file": "backend/app/recon_worker.py",
+        "start": 346,
+        "end": 350
       },
       "symbol_dependencies": [
         {
-          "symbol": "to_dict",
+          "symbol": "_recon_rps",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 186,
+              "file": "backend/app/recon_worker.py",
+              "line": 151,
               "kind": "function",
               "language": "python"
             }
@@ -298,53 +1100,19 @@
       ],
       "dependency_count": 1
     },
-    "FindingCluster": {
+    "_katana_surface": {
       "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 179,
-        "end": 190
+        "file": "backend/app/recon_worker.py",
+        "start": 353,
+        "end": 390
       },
       "symbol_dependencies": [
         {
-          "symbol": "to_dict",
+          "symbol": "ReconPolicyError",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 186,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "score_finding_similarity": {
-      "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 193,
-        "end": 235
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FindingSimilarity",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 162,
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
               "kind": "class",
               "language": "python"
             }
@@ -352,11 +1120,339 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_canonical_url",
+          "symbol": "_external_rate",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
+              "file": "backend/app/recon_worker.py",
+              "line": 346,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_crawl_depth",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_wall_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_external_tool",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 318,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_url",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_same_origin",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_scope_regex",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 338,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_timeout_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "_httpx_context": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 393,
+        "end": 443
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_external_rate",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 346,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_wall_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_external_tool",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 318,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_url",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_same_origin",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_timeout_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "_passive_domain": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 446,
+        "end": 459
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_passive_subdomains": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 462,
+        "end": 488
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_max_wall_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_passive_domain",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 446,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_external_tool",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 318,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "is_host_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 197,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "execute_recon_task": {
+      "source": {
+        "file": "backend/app/recon_worker.py",
+        "start": 491,
+        "end": 784
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconResult",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_NoRedirect",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
               "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_SurfaceParser",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 57,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_discovery_documents_enabled",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 168,
               "kind": "function",
               "language": "python"
             }
@@ -364,11 +1460,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_jaccard",
+          "symbol": "_enabled",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 155,
+              "file": "backend/app/recon_worker.py",
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -376,11 +1472,800 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_title_tokens",
+          "symbol": "_external_recon_enabled",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 144,
+              "file": "backend/app/recon_worker.py",
+              "line": 286,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_fetch_page",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 257,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_httpx_context",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 393,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_katana_surface",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 353,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 107,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_crawl_depth",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_crawl_requests",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 118,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_max_wall_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_passive_subdomains",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 462,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_recon_rps",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 151,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_robots_sitemaps",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_url",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_same_origin",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_sitemap_locations",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 190,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_timeout_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 21
+    },
+    "CampaignCancelledError": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 48,
+        "end": 49
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "StaleValidationJobError": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 52,
+        "end": 53
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "StaleBrowserJobError": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 56,
+        "end": 57
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "BrowserPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_save": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 64,
+        "end": 66
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_campaign": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 69,
+        "end": 189
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignCancelledError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 48,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleValidationJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 52,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_lease_heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 97,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_process_scanner_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 416,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "json_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observation_id",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "process_nuclei_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_strix_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_validation",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "put_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_finding_chain",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "renew",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_nuclei_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_strix_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_http_probe",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 226,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 30
+    },
+    "_append_event_once": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 80,
+        "end": 85
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_lease_heartbeat": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 97,
+        "end": 122
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 416,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "renew",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 104,
               "kind": "function",
               "language": "python"
             }
@@ -390,175 +2275,1133 @@
       ],
       "dependency_count": 4
     },
-    "cluster_findings": {
+    "renew": {
       "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 238,
-        "end": 303
+        "file": "backend/app/worker_service.py",
+        "start": 104,
+        "end": 224
       },
       "symbol_dependencies": [
         {
-          "symbol": "FindingCluster",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 179,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "FindingSimilarity",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 162,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "score_finding_similarity",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 193,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "campaign_finding_clusters": {
-      "source": {
-        "file": "backend/app/finding_correlation.py",
-        "start": 307,
-        "end": 334
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
+          "symbol": "CampaignState",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 221,
-              "kind": "function",
+              "line": 73,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "cluster_findings",
+          "symbol": "JobQueue",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 238,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 186,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "FindingTriage": {
-      "source": {
-        "file": "backend/app/finding_triage.py",
-        "start": 28,
-        "end": 45
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/evidence_chain.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/evidence_quality.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_consensus.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
-              "kind": "function",
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_finding_triage": {
-      "source": {
-        "file": "backend/app/finding_triage.py",
-        "start": 48,
-        "end": 147
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "FindingTriage",
+          "symbol": "StaleBrowserJobError",
           "definitions": [
             {
-              "file": "backend/app/finding_triage.py",
-              "line": 28,
+              "file": "backend/app/worker_service.py",
+              "line": 56,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
+        {
+          "symbol": "StaleValidationJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 52,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_process_scanner_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "execute_browser_flow",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 415,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 416,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "json_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_browser_result",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 629,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "process_browser_flow",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 213,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_nuclei_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_strix_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_validation",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "put_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_finding_chain",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_nuclei_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_strix_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_http_probe",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 226,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 29
+    },
+    "_process_scanner_job": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 125,
+        "end": 129
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "process_strix_scan": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 132,
+        "end": 133
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_process_scanner_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_strix_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "process_nuclei_scan": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 136,
+        "end": 137
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_process_scanner_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_nuclei_job",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_worker.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "process_validation": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 140,
+        "end": 210
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleValidationJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 52,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "json_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "put_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_finding_chain",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_http_probe",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 226,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "process_browser_flow": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 213,
+        "end": 314
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleBrowserJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 56,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "execute_browser_flow",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 415,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_browser_result",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 629,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_typed_child",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 178,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "process_recon_task": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 317,
+        "end": 438
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "execute_recon_task",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_asset",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_typed_child",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 178,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "process_report": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 441,
+        "end": 480
+      },
+      "symbol_dependencies": [
         {
           "symbol": "ObservationGraph",
           "definitions": [
@@ -572,16 +3415,52 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_chains",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/evidence_chain.py",
-              "line": 67,
-              "kind": "function",
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "_append_event_once",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         },
         {
           "symbol": "build_evidence_quality",
@@ -596,35 +3475,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_finding_consensus",
-          "definitions": [
-            {
-              "file": "backend/app/finding_consensus.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_knowledge_snapshot",
-          "definitions": [
-            {
-              "file": "backend/app/knowledge_memory.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "by_kind",
+          "symbol": "from_records",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
-              "line": 95,
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -632,11 +3487,17 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "cluster_findings",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 238,
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
               "kind": "function",
               "language": "python"
             }
@@ -644,11 +3505,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "correlate_findings",
+          "symbol": "list_observations",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 61,
+              "file": "backend/app/storage_backend.py",
+              "line": 30,
               "kind": "function",
               "language": "python"
             }
@@ -656,11 +3517,213 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "severity_weight",
+          "symbol": "put_artifact",
           "definitions": [
             {
-              "file": "backend/app/knowledge_memory.py",
-              "line": 33,
+              "file": "backend/app/storage_backend.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_artifact",
+          "definitions": [
+            {
+              "file": "backend/app/observation_writer.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "render_markdown",
+          "definitions": [
+            {
+              "file": "backend/app/report.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_quality.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "_record_worker_outcome": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 483,
+        "end": 510
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 160,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignConflictError",
+          "definitions": [
+            {
+              "file": "backend/app/storage_core.py",
+              "line": 22,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 206,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "seal_worker_outcome_event",
+          "definitions": [
+            {
+              "file": "backend/app/worker_audit.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "worker_outcome_event",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 123,
               "kind": "function",
               "language": "python"
             }
@@ -670,31 +3733,86 @@
       ],
       "dependency_count": 10
     },
-    "campaign_finding_triage": {
+    "_worker_bool": {
       "source": {
-        "file": "backend/app/finding_triage.py",
-        "start": 151,
-        "end": 173
+        "file": "backend/app/worker_service.py",
+        "start": 513,
+        "end": 522
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_legacy_unprovenanced_jobs_allowed": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 525,
+        "end": 526
       },
       "symbol_dependencies": [
         {
-          "symbol": "assert_campaign_exists",
+          "symbol": "_worker_bool",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 221,
+              "file": "backend/app/worker_service.py",
+              "line": 513,
               "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_verify_policy_bound_job": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 529,
+        "end": 546
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobProvenanceError",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 16,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "build_finding_triage",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/finding_triage.py",
-              "line": 48,
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "WorkerPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 30,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 69,
               "kind": "function",
               "language": "python"
             }
@@ -702,11 +3820,29 @@
           "relation": "same_file"
         },
         {
-          "symbol": "load_observation_graph",
+          "symbol": "_legacy_unprovenanced_jobs_allowed",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 99,
+              "file": "backend/app/worker_service.py",
+              "line": 525,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
               "kind": "function",
               "language": "python"
             }
@@ -714,47 +3850,127 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "storage",
+          "symbol": "provenance_required_for_job_kind",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 184,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "require_job_provenance",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 163,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "_active_scanner_execution_requested": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 549,
+        "end": 553
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_worker_bool",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 513,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_claim_for_role": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 556,
+        "end": 567
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_active_scanner_execution_requested",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 549,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "claim",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "claim_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 338,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/evidence_chain.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/evidence_quality.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_consensus.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
+              "line": 56,
               "kind": "function",
               "language": "python"
             }
@@ -764,20 +3980,657 @@
       ],
       "dependency_count": 5
     },
-    "_finding": {
+    "process_one": {
       "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 12,
-        "end": 22
+        "file": "backend/app/worker_service.py",
+        "start": 570,
+        "end": 624
       },
       "symbol_dependencies": [
         {
-          "symbol": "Finding",
+          "symbol": "BrowserPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/browser.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignCancelledError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 48,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignConflictError",
+          "definitions": [
+            {
+              "file": "backend/app/storage_core.py",
+              "line": 22,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "JobQueue",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 61,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ReconPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StaleBrowserJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 56,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StaleValidationJobError",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 52,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ValidationPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/validator.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "WorkerPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/worker.py",
+              "line": 30,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_claim_for_role",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 556,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_lease_heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 97,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_record_worker_outcome",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 483,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verify_policy_bound_job",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 529,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "advance_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/orchestrator.py",
+              "line": 661,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_planner_lock",
+          "definitions": [
+            {
+              "file": "backend/app/planner_lock.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "cancel_owned",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 264,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finish",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 429,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "process_browser_flow",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 213,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_nuclei_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 136,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_recon_task",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 317,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_report",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 441,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_strix_scan",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_validation",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 117,
-              "kind": "class",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 26
+    },
+    "_worker_poll_seconds": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 627,
+        "end": 635
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "main": {
+      "source": {
+        "file": "backend/app/worker_service.py",
+        "start": 638,
+        "end": 680
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_worker_poll_seconds",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 627,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "claim",
+          "definitions": [
+            {
+              "file": "backend/app/jobqueue.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_queue",
+          "definitions": [
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create_storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "maybe_refresh_hackerone_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_catalog.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "maybe_refresh_hackerone_feasibility",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_feasibility.py",
+              "line": 298,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "maybe_refresh_hackerone_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_intelligence.py",
+              "line": 623,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "process_one",
+          "definitions": [
+            {
+              "file": "backend/app/worker_service.py",
+              "line": 570,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reconcile_hackerone_batches",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_batch.py",
+              "line": 281,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "start_worker_heartbeat",
+          "definitions": [
+            {
+              "file": "backend/app/worker_liveness.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sync_completed_learning_batches",
+          "definitions": [
+            {
+              "file": "backend/app/github_learning_sync.py",
+              "line": 387,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 12
+    },
+    "_Response": {
+      "source": {
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 7,
+        "end": 23
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "__enter__",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__exit__",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "read",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "read": {
+      "source": {
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 16,
+        "end": 17
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "__enter__": {
+      "source": {
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 19,
+        "end": 20
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "__exit__": {
+      "source": {
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 22,
+        "end": 23
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_Opener": {
+      "source": {
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 26,
+        "end": 32
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "open": {
+      "source": {
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 30,
+        "end": 32
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_recon_worker_is_dry_run_by_default": {
+      "source": {
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 49,
+        "end": 59
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "execute_recon_task",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -786,55 +4639,43 @@
       ],
       "dependency_count": 1
     },
-    "test_correlates_canonical_duplicate_findings_without_query_values": {
+    "test_recon_worker_extracts_only_same_origin_read_only_surface": {
       "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 25,
-        "end": 39
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 62,
+        "end": 96
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "_Opener",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 26,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "correlate_findings",
+          "symbol": "_Response",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 61,
-              "kind": "function",
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 7,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "to_dict",
+          "symbol": "execute_recon_task",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 186,
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
               "kind": "function",
               "language": "python"
             }
@@ -844,195 +4685,43 @@
       ],
       "dependency_count": 3
     },
-    "test_different_cwe_or_endpoint_stays_separate": {
+    "test_recon_worker_detects_bounded_technology_headers": {
       "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 42,
-        "end": 50
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 99,
+        "end": 124
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "_Opener",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 26,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "correlate_findings",
+          "symbol": "_Response",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_correlation_route_is_exposed_and_does_not_auto_merge": {
-      "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 53,
-        "end": 88
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 7,
               "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "api",
+          "symbol": "execute_recon_task",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign_finding_correlations",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 120,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 206,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "test_similarity_scores_same_asset_endpoint_and_cwe_highly": {
-      "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 92,
-        "end": 106
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "score_finding_similarity",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 193,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 172,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 186,
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
               "kind": "function",
               "language": "python"
             }
@@ -1042,31 +4731,19 @@
       ],
       "dependency_count": 3
     },
-    "test_similarity_caps_cross_asset_generic_matches": {
+    "test_recon_worker_rejects_out_of_scope_target": {
       "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 109,
-        "end": 118
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 127,
+        "end": 138
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "execute_recon_task",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "score_finding_similarity",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 193,
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
               "kind": "function",
               "language": "python"
             }
@@ -1074,287 +4751,45 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 1
     },
-    "test_cluster_findings_groups_high_confidence_pairs_without_merging": {
+    "test_recon_worker_enriches_same_origin_resources_without_extra_requests": {
       "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 121,
-        "end": 133
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 141,
+        "end": 181
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "_Opener",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 26,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "cluster_findings",
+          "symbol": "_Response",
           "definitions": [
             {
-              "file": "backend/app/finding_correlation.py",
-              "line": 238,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_cluster_threshold_fails_closed": {
-      "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 136,
-        "end": 145
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "cluster_findings",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 238,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_cluster_route_is_exposed": {
-      "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 148,
-        "end": 179
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign_finding_clusters",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 307,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 206,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "test_correlated_duplicate_group_tracks_multiple_discovery_engines": {
-      "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 182,
-        "end": 193
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "correlate_findings",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_correlation_ignores_blank_or_none_discovery_sources": {
-      "source": {
-        "file": "backend/tests/test_finding_correlation.py",
-        "start": 196,
-        "end": 206
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_correlation.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "correlate_findings",
-          "definitions": [
-            {
-              "file": "backend/app/finding_correlation.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_triage_prioritizes_critical_unvalidated_finding": {
-      "source": {
-        "file": "backend/tests/test_finding_triage.py",
-        "start": 21,
-        "end": 43
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_triage.py",
+              "file": "backend/tests/test_recon_worker.py",
               "line": 7,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_open",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 157,
               "kind": "function",
               "language": "python"
             }
@@ -1362,11 +4797,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "execute_recon_task",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
               "kind": "function",
               "language": "python"
             }
@@ -1374,45 +4809,105 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_finding_triage",
+          "symbol": "open",
           "definitions": [
             {
-              "file": "backend/app/finding_triage.py",
-              "line": 48,
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
       "dependency_count": 5
     },
-    "test_triage_marks_duplicate_candidates_without_merging": {
+    "_open": {
       "source": {
-        "file": "backend/tests/test_finding_triage.py",
-        "start": 46,
-        "end": 60
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 157,
+        "end": 277
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "_Opener",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 26,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_Response",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 7,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_RoutingOpener",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 205,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "backend/app/recon_worker.py",
+              "line": 58,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "_finding",
+          "symbol": "execute_recon_task",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_triage.py",
-              "line": 7,
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "open",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -1420,93 +4915,81 @@
           "relation": "same_file"
         },
         {
-          "symbol": "api",
+          "symbol": "test_recon_surface_parser_bounds_discovered_links_and_form_inputs",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_triage",
-          "definitions": [
-            {
-              "file": "backend/app/finding_triage.py",
-              "line": 48,
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 184,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_recon_worker_crawls_multiple_pages_with_explicit_budget",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_recon_worker_respects_local_request_cap",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 275,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 9
     },
-    "test_triage_resolves_only_terminal_finding_with_complete_chain": {
+    "test_recon_surface_parser_bounds_discovered_links_and_form_inputs": {
       "source": {
-        "file": "backend/tests/test_finding_triage.py",
-        "start": 63,
-        "end": 92
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 184,
+        "end": 202
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "_Opener",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 26,
               "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_triage.py",
-              "line": 7,
-              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "_Response",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 7,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "build_finding_triage",
+          "symbol": "execute_recon_task",
           "definitions": [
             {
-              "file": "backend/app/finding_triage.py",
-              "line": 48,
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
               "kind": "function",
               "language": "python"
             }
@@ -1514,175 +4997,85 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 3
     },
-    "test_finding_triage_route_is_exposed": {
+    "_RoutingOpener": {
       "source": {
-        "file": "backend/tests/test_finding_triage.py",
-        "start": 95,
-        "end": 120
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 205,
+        "end": 214
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
+              "file": "backend/app/recon_worker.py",
+              "line": 58,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "ProgramRules",
+          "symbol": "open",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 30,
+              "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
+            },
             {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_triage.py",
-              "line": 7,
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign_finding_triage",
-          "definitions": [
-            {
-              "file": "backend/app/finding_triage.py",
-              "line": 151,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 206,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 2
     },
-    "test_triage_requires_high_quality_evidence_before_report_review": {
+    "test_recon_worker_crawls_multiple_pages_with_explicit_budget": {
       "source": {
-        "file": "backend/tests/test_finding_triage.py",
-        "start": 123,
-        "end": 162
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 217,
+        "end": 272
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "_Response",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_triage.py",
+              "file": "backend/tests/test_recon_worker.py",
               "line": 7,
-              "kind": "function",
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "_RoutingOpener",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 205,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "build_finding_triage",
+          "symbol": "execute_recon_task",
           "definitions": [
             {
-              "file": "backend/app/finding_triage.py",
-              "line": 48,
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
               "kind": "function",
               "language": "python"
             }
@@ -1690,69 +5083,45 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 3
     },
-    "test_triage_allows_report_review_with_high_quality_artifact_backed_evidence": {
+    "test_recon_worker_respects_local_request_cap": {
       "source": {
-        "file": "backend/tests/test_finding_triage.py",
-        "start": 165,
-        "end": 206
+        "file": "backend/tests/test_recon_worker.py",
+        "start": 275,
+        "end": 306
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "_Response",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_triage.py",
+              "file": "backend/tests/test_recon_worker.py",
               "line": 7,
-              "kind": "function",
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "_RoutingOpener",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
+              "file": "backend/tests/test_recon_worker.py",
+              "line": 205,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "build_finding_triage",
+          "symbol": "execute_recon_task",
           "definitions": [
             {
-              "file": "backend/app/finding_triage.py",
-              "line": 48,
+              "file": "backend/app/recon_worker.py",
+              "line": 491,
               "kind": "function",
               "language": "python"
             }
@@ -1760,65 +5129,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
-    },
-    "test_triage_surfaces_multi_scanner_corroboration_without_auto_resolution": {
-      "source": {
-        "file": "backend/tests/test_finding_triage.py",
-        "start": 209,
-        "end": 230
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_triage.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_triage",
-          "definitions": [
-            {
-              "file": "backend/app/finding_triage.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
+      "dependency_count": 3
     }
   }
 }

@@ -8754,6 +8754,7 @@ frontier_remaining: int = 0
 stopped_by_request_budget: bool = False
 deferred_by_request_budget: int = 0
 coverage_complete: bool = False
+endpoint_provenance: tuple[dict, ...] = ()
 ⋮----
 _MAX_DISCOVERED_LINKS = 500
 _MAX_DISCOVERED_FORMS = 100
@@ -8811,6 +8812,25 @@ raw = os.getenv("XBOW_RECON_MAX_RPS", "2.0")
 ⋮----
 local_cap = float(raw)
 ⋮----
+def _discovery_documents_enabled() -> bool
+⋮----
+raw = os.getenv("XBOW_RECON_DISCOVERY_DOCUMENTS", "0").strip().lower()
+⋮----
+def _robots_sitemaps(body: bytes, base_url: str) -> list[str]
+⋮----
+values: list[str] = []
+text = body.decode("utf-8", errors="replace")
+⋮----
+candidate = urljoin(base_url, value.strip())
+⋮----
+def _sitemap_locations(body: bytes) -> list[str]
+⋮----
+upper = body[:4096].upper()
+⋮----
+root = ET.fromstring(body)
+⋮----
+value = (element.text or "").strip()
+⋮----
 def _enabled() -> bool
 ⋮----
 raw = os.getenv("XBOW_ENABLE_RECON", "0").strip().lower()
@@ -8821,6 +8841,8 @@ parsed = urlparse(candidate)
 ⋮----
 host = parsed.hostname.lower().rstrip(".")
 rules = campaign.target.rules
+⋮----
+def _origin_port(parsed) -> int | None
 ⋮----
 def _same_origin(base: str, candidate: str) -> bool
 ⋮----
@@ -8929,9 +8951,10 @@ started_at = time.monotonic()
 deadline = started_at + _max_wall_seconds()
 opener = build_opener(_NoRedirect())
 ⋮----
-pending: list[tuple[str, int]] = [(target, 0)]
+pending: list[tuple[str, int, str]] = [(target, 0, "root")]
 visited: set[str] = set()
 ⋮----
+endpoint_sources: dict[str, set[str]] = {}
 forms: list[dict] = []
 ⋮----
 first_status: int | None = None
@@ -8963,6 +8986,8 @@ first_error = first_error or error
 content_type = (headers.get("Content-Type") or "").lower() if headers else ""
 text = body.decode("utf-8", errors="replace") if "html" in content_type else ""
 parser = _SurfaceParser(current)
+⋮----
+origin = urlunparse(
 ⋮----
 action = _safe_url(campaign, form["action"])
 ⋮----
@@ -11502,6 +11527,10 @@ def process_recon_task(job: dict, store: Storage) -> None
 result = execute_recon_task(campaign, job["payload"])
 source = f"recon:{job['payload'].get('kind', 'unknown')}"
 asset_id = record_asset(
+⋮----
+provenance = {
+⋮----
+discovery_sources = provenance.get(endpoint, [])
 ⋮----
 def process_report(job: dict, store: Storage) -> None
 ⋮----
@@ -18180,6 +18209,18 @@ response = _Response(b"", {"Content-Type": "text/plain"})
 payload = (
 ⋮----
 def test_external_recon_is_disabled_unless_explicitly_enabled(monkeypatch)
+⋮----
+def test_recon_discovers_same_origin_sitemaps_with_shared_budget_and_provenance(monkeypatch)
+⋮----
+provenance = {
+⋮----
+def test_recon_discovery_documents_are_disabled_by_default(monkeypatch)
+⋮----
+def test_sitemap_parser_rejects_dtd_entity_documents(monkeypatch)
+⋮----
+def test_recon_same_origin_normalizes_default_https_port(monkeypatch)
+⋮----
+def test_duplicate_sitemap_directive_does_not_fake_request_budget_saturation(monkeypatch)
 ```
 
 ## File: tests/test_red_team_coverage.py
@@ -20080,6 +20121,15 @@ campaign = Campaign(
 ⋮----
 graph = load_observation_graph(store, campaign.id)
 endpoints = graph.by_kind("endpoint")
+⋮----
+def test_recon_endpoint_provenance_is_persisted_and_telemetry_is_counted(tmp_path, monkeypatch)
+⋮----
+store = Storage(str(tmp_path / "recon-provenance.sqlite3"), str(tmp_path / "artifacts"))
+⋮----
+endpoints = {item.value: item for item in graph.by_kind("endpoint")}
+⋮----
+saved = store.get_campaign(campaign.id)
+event = next(
 ```
 
 ## File: tests/test_worker_outcome_memory.py

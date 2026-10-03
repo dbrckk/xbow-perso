@@ -1,15 +1,18 @@
 # Change impact
 
-Base: 4b29b3389f778b9e066d95ad7b60bd146327ec87
-Head: ee847a355b9cf0ef71911aa8ac19b4487b6f77e5
+Base: 1595155e65128670f04a81e5038a6a67193c8f24
+Head: 1e094ee54e063776dabeee80045a9a9e27434303
 
 ## Changed files
-- M backend/app/finding_correlation.py
-- M backend/app/finding_triage.py
-- M backend/tests/test_finding_correlation.py
-- M backend/tests/test_finding_triage.py
+- M .env.example
+- M backend/app/observation_writer.py
+- M backend/app/recon_worker.py
+- M backend/app/worker_service.py
+- M backend/tests/test_recon_worker.py
+- M backend/tests/test_worker_observations.py
 
 ## Affected areas
+- (root)
 - backend
 
 ## Related test candidates

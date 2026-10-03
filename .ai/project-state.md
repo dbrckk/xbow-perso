@@ -22,16 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-01T15:13:10Z
+Generated: 2026-10-03T15:19:02Z
 
 ### Git
 - Branch: `main`
-- Head: `ee847a355b9c`
-- Commit date: 2026-10-01T17:12:53+02:00
-- Commit: feat(correlation): refresh multi-scanner corroboration (#464)
+- Head: `1e094ee54e06`
+- Commit date: 2026-10-03T17:18:50+02:00
+- Commit: feat(recon): refresh bounded sitemap discovery provenance (#465)
 - Tracked files: 584
 
 ### Recently changed files
+- `.env.example`
+- `backend/app/observation_writer.py`
+- `backend/app/recon_worker.py`
+- `backend/app/worker_service.py`
+- `backend/tests/test_recon_worker.py`
+- `backend/tests/test_worker_observations.py`
 - `backend/app/finding_correlation.py`
 - `backend/app/finding_triage.py`
 - `backend/tests/test_finding_correlation.py`
@@ -46,9 +52,6 @@ Generated: 2026-10-01T15:13:10Z
 - `backend/app/metrics.py`
 - `backend/app/operational_alerts.py`
 - `backend/tests/test_metrics.py`
-- `backend/tests/test_operational_alerts.py`
-- `backend/app/dr_manifest.py`
-- `backend/tests/test_dr_manifest.py`
 
 ### Project signals
 - `pyproject.toml`
