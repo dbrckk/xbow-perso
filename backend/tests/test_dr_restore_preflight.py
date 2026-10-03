@@ -256,3 +256,23 @@ def test_restore_preflight_rejects_invalid_freshness_threshold(
             vault_copy=str(vault),
             max_age_hours=value,
         )
+
+
+def test_signed_future_backup_timestamp_blocks_preflight(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "freshness-key")
+    manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)
+    saved = json.loads(manifest.read_text(encoding="utf-8"))
+    created = datetime.fromisoformat(saved["created_at"])
+
+    result = assess_restore_preflight(
+        str(manifest),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+        now=created - timedelta(minutes=10),
+    )
+
+    assert result["restore_preflight_ready"] is False
+    assert result["backup_freshness"]["status"] == "invalid"
+    assert "manifest_timestamp_in_future" in result["blockers"]
