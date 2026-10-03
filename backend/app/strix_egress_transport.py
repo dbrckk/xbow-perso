@@ -25,7 +25,15 @@ class StrixEgressError(RuntimeError):
     pass
 
 
-class StrixEgressRateLimitError(StrixEgressError):
+class StrixEgressPolicyError(StrixEgressError):
+    pass
+
+
+class StrixEgressNetworkError(StrixEgressError):
+    pass
+
+
+class StrixEgressRateLimitError(StrixEgressPolicyError):
     def __init__(self, retry_after_seconds: float):
         self.retry_after_seconds = max(0.001, retry_after_seconds)
         super().__init__("Strix egress request rate exceeded")
@@ -101,7 +109,7 @@ def _max_response_bytes() -> int:
 
 def _normalize_headers(headers: dict[str, str]) -> dict[str, str]:
     if len(headers) > 32:
-        raise StrixEgressError("too many Strix egress request headers")
+        raise StrixEgressPolicyError("too many Strix egress request headers")
     normalized: dict[str, str] = {}
     for raw_name, raw_value in headers.items():
         name = str(raw_name).strip()
@@ -112,12 +120,12 @@ def _normalize_headers(headers: dict[str, str]) -> dict[str, str]:
             or not _HEADER_NAME.fullmatch(name)
             or name.lower() in _FORBIDDEN_REQUEST_HEADERS
         ):
-            raise StrixEgressError("unsafe Strix egress request header")
+            raise StrixEgressPolicyError("unsafe Strix egress request header")
         if len(value.encode("utf-8")) > 4096 or any(
             ord(ch) < 32 and ch != "\t" or ord(ch) == 127
             for ch in value
         ):
-            raise StrixEgressError("unsafe Strix egress request header value")
+            raise StrixEgressPolicyError("unsafe Strix egress request header value")
         normalized[name] = value
     if not any(name.lower() == "user-agent" for name in normalized):
         normalized["User-Agent"] = "xbow-strix-egress/1.0"
@@ -130,7 +138,7 @@ def _public_ip(value: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address:
     try:
         address = ipaddress.ip_address(value)
     except ValueError as exc:
-        raise StrixEgressError("Strix egress resolved an invalid IP address") from exc
+        raise StrixEgressPolicyError("Strix egress resolved an invalid IP address") from exc
     if not address.is_global:
         raise StrixEgressError(
             "Strix egress target resolved to a non-public IP address"
@@ -167,7 +175,7 @@ def resolve_public_endpoint(host: str, port: int) -> ResolvedEndpoint:
             type=socket.SOCK_STREAM,
         )
     except socket.gaierror as exc:
-        raise StrixEgressError("Strix egress DNS resolution failed") from exc
+        raise StrixEgressNetworkError("Strix egress DNS resolution failed") from exc
 
     candidates: list[ResolvedEndpoint] = []
     seen: set[tuple[int, str]] = set()
@@ -193,7 +201,7 @@ def resolve_public_endpoint(host: str, port: int) -> ResolvedEndpoint:
         )
 
     if not candidates:
-        raise StrixEgressError("Strix egress DNS resolution returned no usable address")
+        raise StrixEgressNetworkError(\n            "Strix egress DNS resolution returned no usable address"\n        )
     candidates.sort(key=lambda item: (item.address_type, item.address))
     return candidates[0]
 
@@ -202,7 +210,11 @@ def _pinned_create_connection(
     endpoint: ResolvedEndpoint,
     timeout: float,
 ):
-    def create_connection(_address, timeout_override=socket._GLOBAL_DEFAULT_TIMEOUT, source_address=None):
+    def create_connection(
+        _address,
+        timeout_override=socket._GLOBAL_DEFAULT_TIMEOUT,
+        source_address=None,
+    ):
         actual_timeout = timeout
         if timeout_override is not socket._GLOBAL_DEFAULT_TIMEOUT:
             actual_timeout = float(timeout_override)
@@ -281,16 +293,16 @@ def perform_bounded_http_request(
             verification_secret=verification_secret,
         )
     except StrixExecutionContractError as exc:
-        raise StrixEgressError(str(exc)) from exc
+        raise StrixEgressPolicyError(str(exc)) from exc
 
     parsed = urlsplit(authorized.target)
     host = authorized.host
     if parsed.scheme not in {"http", "https"}:
-        raise StrixEgressError("Strix egress requires HTTP(S)")
+        raise StrixEgressPolicyError("Strix egress requires HTTP(S)")
     try:
         port = parsed.port or (443 if parsed.scheme == "https" else 80)
     except ValueError as exc:
-        raise StrixEgressError("Strix egress target port is invalid") from exc
+        raise StrixEgressPolicyError("Strix egress target port is invalid") from exc
 
     endpoint = resolve_public_endpoint(host, port)
     _enforce_rate(
@@ -348,6 +360,6 @@ def perform_bounded_http_request(
         http.client.HTTPException,
         ssl.SSLError,
     ) as exc:
-        raise StrixEgressError("Strix egress request failed") from exc
+        raise StrixEgressNetworkError("Strix egress request failed") from exc
     finally:
         connection.close()
