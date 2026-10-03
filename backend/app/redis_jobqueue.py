@@ -95,6 +95,7 @@ class RedisJobQueue:
         max_attempts: int = 2,
         *,
         dedupe_key: str | None = None,
+        job_id: str | None = None,
     ) -> dict[str, Any]:
         campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         if kind not in _ALLOWED_KINDS:
@@ -103,12 +104,16 @@ class RedisJobQueue:
             raise ValueError("max_attempts must be 1..5")
         if dedupe_key is not None:
             dedupe_key = _bounded_identifier(dedupe_key, "dedupe_key")
+        if job_id is not None:
+            if dedupe_key is None:
+                raise ValueError("prepared job_id requires dedupe_key")
+            job_id = _bounded_identifier(job_id, "job_id", max_length=128)
 
         encoded_payload = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
         if len(encoded_payload.encode("utf-8")) > _max_job_payload_bytes():
             raise ValueError("job payload exceeds size limit")
 
-        job_id = str(uuid4())
+        job_id = job_id or str(uuid4())
         now = utcnow()
         score = time.time()
         row = {
