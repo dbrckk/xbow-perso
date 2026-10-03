@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 
 from .strix_broker_client import (
     StrixBrokerClientError,
+    check_egress_ready,
     forward_read_only_request,
 )
 from .strix_broker_models import (
@@ -107,6 +108,14 @@ def healthz() -> dict:
 def readyz() -> dict:
     _broker_verification_secret()
     egress_enabled = _read_only_egress_enabled()
+    if egress_enabled:
+        try:
+            check_egress_ready()
+        except StrixBrokerClientError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail="Strix read-only egress is not ready",
+            ) from exc
     return {
         "status": "ready",
         "mode": (
