@@ -98,3 +98,15 @@ def test_supply_chain_builds_runner_with_provenance_and_sbom():
     assert "file: ./backend/Dockerfile.strix-runner" in workflow
     assert "provenance: mode=max" in workflow
     assert "sbom: true" in workflow
+
+
+
+def test_ci_smoke_tests_runner_attestation_without_scan_execution():
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+
+    assert "Smoke-test pinned Strix runner attestation" in workflow
+    assert "docker compose --profile strix-runner up -d strix-runner" in workflow
+    assert "docker compose exec -T strix-runner python -c" in workflow
+    assert '"execution_enabled"] is False' in workflow
+    assert '"version"] == "1.6.2"' in workflow
+    assert "strix scan" not in workflow
