@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import json
+import math
 import re
 from datetime import UTC, datetime
 from pathlib import Path
@@ -134,6 +135,14 @@ def assess_restore_preflight(
     This verifies integrity and recognizable backup structure only. It never
     restores PostgreSQL, loads Redis, decrypts vault secrets, or modifies data.
     """
+    if (
+        isinstance(max_age_hours, bool)
+        or not isinstance(max_age_hours, (int, float))
+        or not math.isfinite(float(max_age_hours))
+        or float(max_age_hours) <= 0
+    ):
+        raise DisasterRecoveryError("max_age_hours must be a positive finite number")
+
     verification = verify_backup_manifest(
         manifest_path,
         postgres_dump=postgres_dump,
