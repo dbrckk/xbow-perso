@@ -107,6 +107,7 @@ def test_recon_observed_primary_target_is_recorded_as_endpoint(tmp_path, monkeyp
     assert len(endpoints) == 1
     assert endpoints[0].value == "https://example.test/"
     assert endpoints[0].source == "recon:crawl"
+    assert endpoints[0].metadata == {}
 
 
 def test_recon_endpoint_provenance_is_persisted_and_telemetry_is_counted(tmp_path, monkeypatch):
