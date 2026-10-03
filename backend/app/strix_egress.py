@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 
 from .strix_broker_models import BrokerHttpRequest, BrokerHttpResponse
 from .strix_egress_transport import (
+    StrixEgressConcurrencyError,
     StrixEgressNetworkError,
     StrixEgressPolicyError,
     StrixEgressRateLimitError,
@@ -104,6 +105,12 @@ def fetch(request: BrokerHttpRequest) -> BrokerHttpResponse:
             headers={
                 "Retry-After": f"{exc.retry_after_seconds:.3f}",
             },
+        ) from exc
+    except StrixEgressConcurrencyError as exc:
+        raise HTTPException(
+            status_code=429,
+            detail="Strix egress request already in flight",
+            headers={"Retry-After": "0.100"},
         ) from exc
     except StrixEgressPolicyError as exc:
         raise HTTPException(
