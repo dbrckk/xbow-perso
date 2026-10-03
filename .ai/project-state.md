@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T18:01:33Z
+Generated: 2026-10-03T18:05:47Z
 
 ### Git
 - Branch: `main`
-- Head: `e9ec5308a51a`
-- Commit date: 2026-10-03T20:01:21+02:00
-- Commit: chore(deps): bump Starlette to 1.6.0 (#480)
+- Head: `d600e6204ef2`
+- Commit date: 2026-10-03T20:05:35+02:00
+- Commit: chore(deps-dev): refresh Ruff to 0.16.9 (#479)
 - Tracked files: 592
 
 ### Recently changed files
+- `backend/requirements-dev.txt`
 - `backend/requirements.txt`
 - `frontend/Dockerfile`
 - `backend/tests/test_frontend_auth_proxy.py`
