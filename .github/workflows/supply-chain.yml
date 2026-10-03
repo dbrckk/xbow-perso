@@ -56,3 +56,14 @@ jobs:
           provenance: mode=max
           sbom: true
           tags: xbow-perso-frontend:ci
+
+      - name: Build Strix runner without publishing
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.strix-runner
+          push: false
+          load: false
+          provenance: mode=max
+          sbom: true
+          tags: xbow-perso-strix-runner:ci
