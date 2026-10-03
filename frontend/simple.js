@@ -3,7 +3,7 @@
   const ACTIVE_KEY='xbow:simple-bounty:active-batch:v1';
   const HTB_ACTIVE_KEY='xbow:htb:last-campaign:v1';
   const REVIEW_CONCURRENCY=2;
-  const UI_VERSION='v102';
+  const UI_VERSION='v103';
   let selection=[];
   let selectionResult=null;
   let reviewDrafts=[];
@@ -11,6 +11,7 @@
   let batchActive=false;
   let activeBatchId='';
   let timer=null;
+  let healthTimer=null;
 
   const $=id=>document.getElementById(id);
 
@@ -257,6 +258,65 @@
       const actionNode=$('runtimeAction');
       if(actionNode)actionNode.textContent='Vérifie la stack de production puis relance le diagnostic.';
       if(!quiet)setStatus('État scanner indisponible : '+error.message,'warn');
+      return null;
+    }
+  }
+
+  function controlPlaneDomainLabel(name){
+    return {
+      governance:'gouvernance',
+      queue_integrity:'intégrité de file',
+      worker_runtime:'workers',
+      queue_flow:'flux de file',
+      delivery:'livraison'
+    }[String(name||'')]||String(name||'domaine');
+  }
+
+  async function refreshControlPlaneHealth({quiet=true}={}){
+    const statusNode=$('controlPlaneHealthStatus');
+    const detailNode=$('controlPlaneHealthDetail');
+    if(!statusNode||!detailNode||!token())return null;
+    try{
+      const health=await api('/operations/health');
+      const status=String(health?.status||'').toUpperCase();
+      const score=Math.max(0,Math.min(100,Number(health?.score||0)));
+      const domains=health?.domains&&typeof health.domains==='object'
+        ?health.domains
+        :{};
+      const degraded=Object.entries(domains)
+        .filter(([_name,item])=>String(item?.status||'').toUpperCase()!=='HEALTHY')
+        .slice(0,5)
+        .map(([name,item])=>
+          controlPlaneDomainLabel(name)+' '+Math.max(0,Math.min(100,Number(item?.score||0)))+'%'
+        );
+      const blockers=(Array.isArray(health?.hard_blockers)?health.hard_blockers:[])
+        .slice(0,4)
+        .map(value=>String(value||'').slice(0,80))
+        .filter(Boolean);
+
+      if(status==='HEALTHY'){
+        statusNode.textContent='Control plane : sain · '+score.toFixed(0)+'%';
+        statusNode.className='simple-status ok';
+      }else if(status==='BLOCKED'){
+        statusNode.textContent='Control plane : bloqué · '+score.toFixed(0)+'%';
+        statusNode.className='simple-status err';
+      }else{
+        statusNode.textContent='Control plane : dégradé · '+score.toFixed(0)+'%';
+        statusNode.className='simple-status warn';
+      }
+
+      const details=[];
+      if(degraded.length)details.push('Domaines : '+degraded.join(' · '));
+      if(blockers.length)details.push('Blockers : '+blockers.join(' · '));
+      detailNode.textContent=details.length
+        ?details.join(' — ')
+        :'Aucune dégradation agrégée détectée.';
+      return health;
+    }catch(error){
+      statusNode.textContent='Control plane : état indisponible.';
+      statusNode.className='simple-status warn';
+      detailNode.textContent='Impossible de charger le diagnostic agrégé.';
+      if(!quiet)setStatus('Santé du control plane indisponible : '+error.message,'warn');
       return null;
     }
   }
@@ -1519,12 +1579,12 @@
     const versionNode=$('buildVersion');
     if(versionNode)versionNode.textContent='Interface '+UI_VERSION;
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js?v=102',{updateViaCache:'none'})
+      navigator.serviceWorker.register('/sw.js?v=103',{updateViaCache:'none'})
         .then(registration=>registration.update())
         .catch(()=>{});
     }
     $('token').addEventListener('input',saveToken);
-    $('token').addEventListener('change',()=>void refreshRuntimeReadiness({quiet:true}));
+    $('token').addEventListener('change',()=>{void refreshRuntimeReadiness({quiet:true});void refreshControlPlaneHealth({quiet:true});});
     $('prepare').addEventListener('click',()=>void prepare());
     $('saveReviews').addEventListener('click',()=>void saveReviews());
     $('start').addEventListener('click',()=>void start());
@@ -1547,6 +1607,7 @@
       if(event?.message)setStatus('Erreur interface : '+event.message,'err');
     });
     void refreshRuntimeReadiness({quiet:true});
+    void refreshControlPlaneHealth({quiet:true});
     void refreshBrowserReadiness({quiet:true});
     void refreshJournal({quiet:true});
     void refreshHtbBenchmark({quiet:true});
@@ -1558,9 +1619,10 @@
       void refreshJournal({quiet:true});
       void refreshHtbSession({quiet:true});
     },15000);
+    healthTimer=setInterval(()=>void refreshControlPlaneHealth({quiet:true}),30000);
   }
 
-  window.addEventListener('beforeunload',()=>{if(timer)clearInterval(timer);});
+  window.addEventListener('beforeunload',()=>{if(timer)clearInterval(timer);if(healthTimer)clearInterval(healthTimer);});
   if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded',bind,{once:true});
   }else{
