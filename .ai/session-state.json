@@ -19,9 +19,11 @@
     "Added GET/HEAD-only public-network egress with DNS resolution pinning, private/reserved IP rejection, TLS hostname preservation, no redirect following, bounded timeout/body and safe header handling.",
     "Added actual per-contract request-start rate enforcement at the egress boundary.",
     "Added double contract verification at broker and egress boundaries and preserved repeated response headers such as Set-Cookie.",
-    "Added three-zone Compose isolation tests and CI build coverage for both broker and egress services."
+    "Added three-zone Compose isolation tests and CI build coverage for both broker and egress services.",
+    "Added one-in-flight-request-per-contract enforcement on top of the signed RPS ceiling to bound slow-target concurrency.",
+    "Made broker readiness fail closed on the isolated egress service when the read-only proxy is enabled."
   ],
-  "current_branch": "codex/strix-broker-readonly-egress",
+  "current_branch": "codex/strix-egress-concurrency-readiness",
   "current_priority": "Build a separately pinned/attested Strix runner with no direct target-network egress and force all supported target HTTP traffic through the broker.",
   "blockers": [
     "The current scanner-worker is not the final isolated Strix runner and still participates in the general control network.",
@@ -36,7 +38,7 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the bounded read-only egress boundary.",
+    "Validate and merge the egress concurrency/readiness hardening.",
     "Create a dedicated Strix runner image/service attached only to internal runtime networks.",
     "Pin the exact Strix source/version and attest it at runtime.",
     "Route supported Strix HTTP traffic through the broker and prove direct target-network access is unavailable.",
