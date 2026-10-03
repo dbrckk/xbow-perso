@@ -22,24 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T18:10:29Z
+Generated: 2026-10-03T18:14:51Z
 
 ### Git
 - Branch: `main`
-- Head: `3e05de18ac9d`
-- Commit date: 2026-10-03T20:10:18+02:00
-- Commit: chore(deps-dev): bump pytest to 9.1.1 (#482)
+- Head: `8d71a633abc9`
+- Commit date: 2026-10-03T20:14:40+02:00
+- Commit: chore(deps): bump Uvicorn to 0.52.4 (#481)
 - Tracked files: 592
 
 ### Recently changed files
-- `backend/requirements-dev.txt`
 - `backend/requirements.txt`
+- `backend/requirements-dev.txt`
 - `frontend/Dockerfile`
-- `backend/tests/test_frontend_auth_proxy.py`
-- `backend/tests/test_frontend_policy_launcher.py`
-- `frontend/index.html`
-- `frontend/simple.js`
-- `frontend/sw.js`
 
 ### Project signals
 - `pyproject.toml`
