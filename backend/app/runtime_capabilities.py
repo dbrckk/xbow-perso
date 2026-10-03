@@ -7,6 +7,10 @@ from typing import Any
 
 from .scanner_sandbox import strix_runtime_contract_enforceable
 from .strix_execution_contract import STRIX_EXECUTION_CONTRACT_SCHEMA
+from .strix_runner import (
+    PINNED_STRIX_UPSTREAM_COMMIT,
+    PINNED_STRIX_VERSION,
+)
 
 
 class CapabilityConfigError(ValueError):
@@ -183,6 +187,11 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_broker_dns_pinning": True,
         "strix_broker_redirects_followed": False,
         "strix_runner_network_isolated": False,
+        "strix_runner_expected_version": PINNED_STRIX_VERSION,
+        "strix_runner_expected_upstream_commit": PINNED_STRIX_UPSTREAM_COMMIT,
+        "strix_runner_attestation_required": True,
+        "strix_runner_execution_enabled": False,
+        "strix_runner_mode": "attestation_only",
         "dry_run": dry_run,
         "sandbox_profile": profile or "unconfigured",
         "allowed_engines": list(engines),
@@ -221,6 +230,11 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_broker_dns_pinning": True,
             "strix_broker_redirects_followed": False,
             "strix_runner_network_isolated": False,
+            "strix_runner_expected_version": PINNED_STRIX_VERSION,
+            "strix_runner_expected_upstream_commit": PINNED_STRIX_UPSTREAM_COMMIT,
+            "strix_runner_attestation_required": True,
+            "strix_runner_execution_enabled": False,
+            "strix_runner_mode": "attestation_only",
             "dry_run": True,
             "sandbox_profile": "configuration_error",
             "allowed_engines": [],
