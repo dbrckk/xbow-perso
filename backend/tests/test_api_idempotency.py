@@ -624,3 +624,23 @@ def test_final_validation_conflict_before_completion_intent_never_enqueues_repor
     assert jobs.campaign_job_counts("c1")["report"] == 0
 
     monkeypatch.setattr(main, "save_campaign", original_save)
+
+
+def test_fresh_generic_campaign_start_is_recon_first(tmp_path, monkeypatch):
+    db, artifacts = _setup(tmp_path, monkeypatch)
+    store = Storage(db, artifacts)
+    document, version = store.get_campaign_record("c1")
+    campaign = Campaign.model_validate(document)
+    campaign.state = CampaignState.ready
+    store.save_campaign(
+        campaign.model_dump(mode="json"),
+        expected_version=version,
+    )
+
+    result = start_campaign(campaign.id)
+
+    assert result["job"]["kind"] == "recon_task"
+    assert result["planner"]["job_ids"] == [result["job"]["id"]]
+    jobs = JobQueue(db)
+    assert jobs.campaign_job_counts(campaign.id).get("strix_scan", 0) == 0
+    assert jobs.campaign_job_counts(campaign.id).get("recon_task", 0) == 1
