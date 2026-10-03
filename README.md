@@ -426,7 +426,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- isolated Strix egress/runtime enforcement consuming the signed execution contract
+- controlled Strix HTTP(S) egress enforcement behind the isolated admission broker
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -475,4 +475,14 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 
 The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, and each Strix job now gets a deterministic `strix-execution-contract-v1` bound to the job id, campaign policy fingerprint, normalized allow/deny scope and exact request-rate ceiling. The contract forbids direct egress and host-container-socket access, requires independent validation, and is HMAC-authenticated when the audit signing key is configured. Future broker requests must present an authenticated contract and are rejected when the target is out of scope or the requested RPS exceeds the contract cap.
 
-**Active Strix dispatch remains fail-closed** until an isolated runtime/egress broker can enforce that contract for every downstream request. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable` while also advertising the required contract schema. Dry-run planning remains available.
+A dedicated `strix-broker` Compose profile now provides the first isolated runtime boundary. It runs on an `internal: true` Docker network, publishes no host port, mounts no data volume or Docker socket, drops all Linux capabilities, and operates in `admission_only` mode. Its `/v1/admit` endpoint verifies the signed contract with `XBOW_STRIX_BROKER_HMAC_KEY`, then applies the scope and RPS checks without performing network I/O.
+
+Start the admission-only broker only after provisioning its verification secret:
+
+```bash
+docker compose --profile strix-broker up -d --build strix-broker
+```
+
+For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` must match the HMAC secret used to sign the contract. This shared-key arrangement is an intermediate boundary; it does not make active Strix execution production-ready.
+
+**Active Strix dispatch remains fail-closed** until controlled HTTP(S) egress is mediated behind this broker for every downstream request and the Strix runtime itself is pinned/attested. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable`, `strix_broker_mode=admission_only`, and `strix_broker_egress_enforced=false`. Dry-run planning remains available.
