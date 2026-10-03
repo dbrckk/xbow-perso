@@ -2,30 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "feat: expose live HTB session status in the dashboard (#392)",
-      "terms": [
-        "392",
-        "dashboard",
-        "expose",
-        "feat",
-        "htb",
-        "live",
-        "session",
-        "status"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/app/htb_lab.py",
-        "backend/tests/test_frontend_auth_proxy.py",
-        "backend/tests/test_frontend_policy_launcher.py",
-        "backend/tests/test_htb_lab.py",
-        "backend/tests/test_mobile_production_update_script.py",
-        "frontend/simple.js",
-        "frontend/sw.js"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "fix: make the first real HackerOne attempt easier to reach (#393)",
       "terms": [
         "393",
@@ -1243,6 +1219,30 @@
         "backend/tests/test_recon_worker.py",
         "backend/tests/test_worker_observations.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "security(recon): refresh immutable runtime contracts (#467)",
+      "terms": [
+        "467",
+        "contracts",
+        "immutable",
+        "recon",
+        "refresh",
+        "runtime",
+        "security"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/orchestrator.py",
+        "backend/app/recon_worker.py",
+        "backend/app/scanner_sandbox.py",
+        "backend/app/worker_service.py",
+        "backend/tests/test_nuclei_worker_plan.py",
+        "backend/tests/test_recon_worker.py",
+        "backend/tests/test_scanner_sandbox.py",
+        "backend/tests/test_worker_observations.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -2093,6 +2093,16 @@
       "backend/tests/test_recon_worker.py": 4,
       "backend/tests/test_worker_observations.py": 4
     },
+    "467": {
+      "backend/app/orchestrator.py": 4,
+      "backend/app/recon_worker.py": 4,
+      "backend/app/scanner_sandbox.py": 4,
+      "backend/app/worker_service.py": 4,
+      "backend/tests/test_nuclei_worker_plan.py": 4,
+      "backend/tests/test_recon_worker.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 4,
+      "backend/tests/test_worker_observations.py": 4
+    },
     "accelerate": {
       "backend/app/hackerone_feasibility.py": 4,
       "backend/tests/test_hackerone_feasibility.py": 4
@@ -2904,6 +2914,16 @@
       "backend/tests/test_mobile_production_update_script.py": 8,
       "backend/tests/test_runtime_capabilities.py": 4,
       "backend/tests/test_strix_run_status.py": 4
+    },
+    "contracts": {
+      "backend/app/orchestrator.py": 4,
+      "backend/app/recon_worker.py": 4,
+      "backend/app/scanner_sandbox.py": 4,
+      "backend/app/worker_service.py": 4,
+      "backend/tests/test_nuclei_worker_plan.py": 4,
+      "backend/tests/test_recon_worker.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 4,
+      "backend/tests/test_worker_observations.py": 4
     },
     "control": {
       "backend/app/main.py": 4,
@@ -3873,6 +3893,16 @@
     "identity": {
       "backend/app/openapi_testgen.py": 4,
       "backend/tests/test_openapi_testgen.py": 4
+    },
+    "immutable": {
+      "backend/app/orchestrator.py": 4,
+      "backend/app/recon_worker.py": 4,
+      "backend/app/scanner_sandbox.py": 4,
+      "backend/app/worker_service.py": 4,
+      "backend/tests/test_nuclei_worker_plan.py": 4,
+      "backend/tests/test_recon_worker.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 4,
+      "backend/tests/test_worker_observations.py": 4
     },
     "import": {
       "backend/app/hackerone_scope_import.py": 4,
@@ -4988,13 +5018,14 @@
       "backend/app/identity_access.py": 4,
       "backend/app/main.py": 28,
       "backend/app/observation_writer.py": 4,
-      "backend/app/orchestrator.py": 28,
+      "backend/app/orchestrator.py": 32,
       "backend/app/recon_priority.py": 20,
       "backend/app/recon_swarm.py": 16,
-      "backend/app/recon_worker.py": 8,
+      "backend/app/recon_worker.py": 12,
       "backend/app/runtime_capabilities.py": 8,
+      "backend/app/scanner_sandbox.py": 4,
       "backend/app/surface_diff.py": 4,
-      "backend/app/worker_service.py": 12,
+      "backend/app/worker_service.py": 16,
       "backend/tests/test_browser.py": 4,
       "backend/tests/test_hackerone_batch_api.py": 4,
       "backend/tests/test_hackerone_binding.py": 4,
@@ -5007,13 +5038,15 @@
       "backend/tests/test_identity_access.py": 4,
       "backend/tests/test_job_provenance_integration.py": 4,
       "backend/tests/test_live_activation_profile.py": 4,
+      "backend/tests/test_nuclei_worker_plan.py": 4,
       "backend/tests/test_orchestrator.py": 4,
       "backend/tests/test_recon_priority.py": 20,
-      "backend/tests/test_recon_worker.py": 8,
+      "backend/tests/test_recon_worker.py": 12,
       "backend/tests/test_runtime_capabilities.py": 4,
       "backend/tests/test_scanner_runtime_contract.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 4,
       "backend/tests/test_surface_diff.py": 4,
-      "backend/tests/test_worker_observations.py": 8,
+      "backend/tests/test_worker_observations.py": 12,
       "frontend/app.js": 4,
       "frontend/sw.js": 4
     },
@@ -5051,20 +5084,24 @@
       "backend/app/metrics.py": 4,
       "backend/app/observation_writer.py": 4,
       "backend/app/operational_alerts.py": 4,
+      "backend/app/orchestrator.py": 4,
       "backend/app/public_duplicate_intelligence.py": 4,
-      "backend/app/recon_worker.py": 4,
+      "backend/app/recon_worker.py": 8,
       "backend/app/report_readiness.py": 4,
-      "backend/app/worker_service.py": 4,
+      "backend/app/scanner_sandbox.py": 4,
+      "backend/app/worker_service.py": 8,
       "backend/tests/test_campaign_circuit_breaker.py": 4,
       "backend/tests/test_finding_correlation.py": 4,
       "backend/tests/test_finding_intelligence.py": 4,
       "backend/tests/test_finding_triage.py": 4,
       "backend/tests/test_metrics.py": 4,
+      "backend/tests/test_nuclei_worker_plan.py": 4,
       "backend/tests/test_operational_alerts.py": 4,
       "backend/tests/test_public_duplicate_intelligence.py": 4,
-      "backend/tests/test_recon_worker.py": 4,
+      "backend/tests/test_recon_worker.py": 8,
       "backend/tests/test_report_readiness.py": 4,
-      "backend/tests/test_worker_observations.py": 4
+      "backend/tests/test_scanner_sandbox.py": 4,
+      "backend/tests/test_worker_observations.py": 8
     },
     "registration": {
       "backend/app/main.py": 4,
@@ -5304,22 +5341,29 @@
       "backend/app/hackerone_intelligence.py": 8,
       "backend/app/hackerone_live_readiness.py": 4,
       "backend/app/main.py": 4,
-      "backend/app/orchestrator.py": 4,
+      "backend/app/orchestrator.py": 8,
+      "backend/app/recon_worker.py": 4,
       "backend/app/runtime_capabilities.py": 12,
       "backend/app/runtime_gap_analysis.py": 4,
+      "backend/app/scanner_sandbox.py": 4,
       "backend/app/scanner_worker.py": 4,
       "backend/app/strix_run_status.py": 4,
+      "backend/app/worker_service.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 12,
       "backend/tests/test_frontend_policy_launcher.py": 12,
       "backend/tests/test_github_learning_sync.py": 4,
       "backend/tests/test_hackerone_live_readiness.py": 4,
       "backend/tests/test_job_provenance_integration.py": 8,
       "backend/tests/test_live_activation_profile.py": 4,
+      "backend/tests/test_nuclei_worker_plan.py": 4,
       "backend/tests/test_orchestrator.py": 8,
+      "backend/tests/test_recon_worker.py": 4,
       "backend/tests/test_runtime_capabilities.py": 12,
       "backend/tests/test_runtime_gap_analysis.py": 4,
       "backend/tests/test_scanner_runtime_contract.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 4,
       "backend/tests/test_strix_run_status.py": 4,
+      "backend/tests/test_worker_observations.py": 4,
       "frontend/simple.js": 12,
       "frontend/sw.js": 12
     },
@@ -5427,7 +5471,15 @@
     },
     "security": {
       "backend/app/openapi_testgen.py": 12,
-      "backend/tests/test_openapi_testgen.py": 12
+      "backend/app/orchestrator.py": 4,
+      "backend/app/recon_worker.py": 4,
+      "backend/app/scanner_sandbox.py": 4,
+      "backend/app/worker_service.py": 4,
+      "backend/tests/test_nuclei_worker_plan.py": 4,
+      "backend/tests/test_openapi_testgen.py": 12,
+      "backend/tests/test_recon_worker.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 4,
+      "backend/tests/test_worker_observations.py": 4
     },
     "selection": {
       "backend/app/hackerone_api.py": 20,

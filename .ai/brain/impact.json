@@ -1,21 +1,1905 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "1e094ee54e063776dabeee80045a9a9e27434303",
-  "head": "198a318d517be556b4ee2fa6626ca2d829b162a5",
+  "base": "198a318d517be556b4ee2fa6626ca2d829b162a5",
+  "head": "8dcfa3e0c88b2b754f3f363916a0f0157bd9b5d9",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "AWS_MOBILE_ONLY.md",
+      "path": "backend/app/orchestrator.py",
       "status": "M"
     },
     {
-      "path": "MOBILE_ONLY.md",
+      "path": "backend/app/recon_worker.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/scanner_sandbox.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/worker_service.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_nuclei_worker_plan.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_recon_worker.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_scanner_sandbox.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_worker_observations.py",
       "status": "M"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "backend/app/orchestrator.py",
+    "backend/app/recon_worker.py",
+    "backend/app/scanner_sandbox.py",
+    "backend/app/worker_service.py",
+    "backend/tests/test_nuclei_worker_plan.py",
+    "backend/tests/test_recon_worker.py",
+    "backend/tests/test_scanner_sandbox.py",
+    "backend/tests/test_worker_observations.py"
+  ],
+  "impacted_files": [
+    "backend/app/main.py",
+    "backend/app/orchestrator.py",
+    "backend/app/recon_worker.py",
+    "backend/app/scanner_sandbox.py",
+    "backend/app/worker.py",
+    "backend/app/worker_service.py",
+    "backend/tests/test_campaign_cancel.py",
+    "backend/tests/test_campaign_circuit_breaker.py",
+    "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_hackerone_nuclei_e2e.py",
+    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+    "backend/tests/test_htb_lab.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_nuclei_worker_plan.py",
+    "backend/tests/test_orchestrator.py",
+    "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_recon_worker.py",
+    "backend/tests/test_runtime_budget_config.py",
+    "backend/tests/test_scanner_observation_chain.py",
+    "backend/tests/test_scanner_sandbox.py",
+    "backend/tests/test_worker_concurrency.py",
+    "backend/tests/test_worker_observations.py",
+    "backend/tests/test_worker_outcome_memory.py",
+    "backend/tests/test_worker_roles.py",
+    "backend/tests/test_worker_state.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "authenticate_control_api",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 35
+    },
+    {
+      "name": "utcnow",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 48
+    },
+    {
+      "name": "storage",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 52
+    },
+    {
+      "name": "queue",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 56
+    },
+    {
+      "name": "incident_store",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 60
+    },
+    {
+      "name": "_stable_key",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 68
+    },
+    {
+      "name": "CampaignState",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 73
+    },
+    {
+      "name": "ProgramRules",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 83
+    },
+    {
+      "name": "TargetInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 96
+    },
+    {
+      "name": "primary_target_must_be_allowed",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 103
+    },
+    {
+      "name": "Finding",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 117
+    },
+    {
+      "name": "FindingReviewMetadataInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 135
+    },
+    {
+      "name": "normalize_review_metadata",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 145
+    },
+    {
+      "name": "Campaign",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 160
+    },
+    {
+      "name": "EvidenceInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 170
+    },
+    {
+      "name": "HackerOneScopePreviewInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 177
+    },
+    {
+      "name": "OpenApiPreviewInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 181
+    },
+    {
+      "name": "IncidentAcknowledgeInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 185
+    },
+    {
+      "name": "normalize_pattern",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 190
+    },
+    {
+      "name": "is_host_allowed",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 197
+    },
+    {
+      "name": "save_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 206
+    },
+    {
+      "name": "assert_campaign_record",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 213
+    },
+    {
+      "name": "assert_campaign_exists",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 221
+    },
+    {
+      "name": "_reject_cancelled_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 225
+    },
+    {
+      "name": "_reject_new_findings_for_closed_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 230
+    },
+    {
+      "name": "_campaign_graph",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 238
+    },
+    {
+      "name": "_has_evidence_backed_independent_validation",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 245
+    },
+    {
+      "name": "policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 250
+    },
+    {
+      "name": "sanitized_scan_payload",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 276
+    },
+    {
+      "name": "live",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 313
+    },
+    {
+      "name": "ready",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 318
+    },
+    {
+      "name": "auth_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 331
+    },
+    {
+      "name": "health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 340
+    },
+    {
+      "name": "deployment_preflight",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 356
+    },
+    {
+      "name": "system_capabilities",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 363
+    },
+    {
+      "name": "preview_openapi_tests",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 450
+    },
+    {
+      "name": "get_offensive_expansion",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 460
+    },
+    {
+      "name": "get_observer_health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 467
+    },
+    {
+      "name": "get_incidents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 472
+    },
+    {
+      "name": "acknowledge_incident",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 477
+    },
+    {
+      "name": "list_agents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 492
+    },
+    {
+      "name": "preview_hackerone_scope",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 498
+    },
+    {
+      "name": "create_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 534
+    },
+    {
+      "name": "list_campaigns",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 542
+    },
+    {
+      "name": "get_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 547
+    },
+    {
+      "name": "get_campaign_target_memory",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 552
+    },
+    {
+      "name": "get_campaign_surface_diff",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 564
+    },
+    {
+      "name": "get_campaign_surface_temporal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 578
+    },
+    {
+      "name": "get_campaign_surface_confidence",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 590
+    },
+    {
+      "name": "campaign_outbox_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 607
+    },
+    {
+      "name": "campaign_outbox_recovery",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 621
+    },
+    {
+      "name": "_apply_local_outbox_repairs",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 642
+    },
+    {
+      "name": "reconcile_campaign_outbox_local",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 681
+    },
+    {
+      "name": "preview_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 739
+    },
+    {
+      "name": "_pentagi_dispatch_fingerprint",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 770
+    },
+    {
+      "name": "_record_pentagi_dispatch_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 774
+    },
+    {
+      "name": "_reconcile_pentagi_queued_event",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 800
+    },
+    {
+      "name": "dispatch_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 847
+    },
+    {
+      "name": "pentagi_campaign_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 921
+    },
+    {
+      "name": "list_campaign_observations",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 951
+    },
+    {
+      "name": "campaign_decision_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 957
+    },
+    {
+      "name": "campaign_event_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 969
+    },
+    {
+      "name": "campaign_worker_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 979
+    },
+    {
+      "name": "campaign_knowledge",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 991
+    },
+    {
+      "name": "campaign_finding_ranking",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1006
+    },
+    {
+      "name": "campaign_advisory_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1033
+    },
+    {
+      "name": "campaign_advisory_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1042
+    },
+    {
+      "name": "campaign_advisory_journal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1053
+    },
+    {
+      "name": "campaign_hypothesis_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1065
+    },
+    {
+      "name": "campaign_hypothesis_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1074
+    },
+    {
+      "name": "campaign_hypothesis_stability",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1085
+    },
+    {
+      "name": "campaign_plan",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1097
+    },
+    {
+      "name": "check_policy",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1147
+    },
+    {
+      "name": "verify_campaign_policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1157
+    },
+    {
+      "name": "_pending_campaign_start_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1162
+    },
+    {
+      "name": "_record_campaign_start_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1170
+    },
+    {
+      "name": "_reconcile_campaign_started",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1196
+    },
+    {
+      "name": "start_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1248
+    },
+    {
+      "name": "cancel_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1338
+    },
+    {
+      "name": "get_job",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1371
+    },
+    {
+      "name": "get_job_provenance_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1379
+    },
+    {
+      "name": "_validation_request_id",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1396
+    },
+    {
+      "name": "_reconcile_validation_queued",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1400
+    },
+    {
+      "name": "add_finding",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1449
+    },
+    {
+      "name": "_record_report_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1534
+    },
+    {
+      "name": "_reconcile_report_job",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1561
+    },
+    {
+      "name": "_ensure_completion_report",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1607
+    },
+    {
+      "name": "update_finding_review_metadata",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1675
+    },
+    {
+      "name": "validate_finding",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1726
+    },
+    {
+      "name": "queue_report",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1792
+    },
+    {
+      "name": "add_text_artifact",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1835
+    },
+    {
+      "name": "list_artifacts",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1866
+    },
+    {
+      "name": "download_artifact",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1872
+    },
+    {
+      "name": "_stable_id",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 51
+    },
+    {
+      "name": "_graph_fingerprint",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 56
+    },
+    {
+      "name": "_load_graph",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 73
+    },
+    {
+      "name": "_seed_primary_target",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 77
+    },
+    {
+      "name": "_minimum_enrichment_score",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 94
+    },
+    {
+      "name": "_surface_enrichment",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 105
+    },
+    {
+      "name": "_intelligence_context",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 129
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 140
+    },
+    {
+      "name": "_validation_saturated_cluster_ids",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 259
+    },
+    {
+      "name": "_pending_findings",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 299
+    },
+    {
+      "name": "_enqueue_recon_tasks",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 345
+    },
+    {
+      "name": "_scan_engines",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 411
+    },
+    {
+      "name": "_enqueue_action",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 422
+    },
+    {
+      "name": "_decision_explanation",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 500
+    },
+    {
+      "name": "_record_decision",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 547
+    },
+    {
+      "name": "_result",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 590
+    },
+    {
+      "name": "advance_campaign",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 662
+    },
+    {
+      "name": "ReconPolicyError",
+      "kind": "class",
+      "file": "backend/app/recon_worker.py",
+      "line": 18
+    },
+    {
+      "name": "_NoRedirect",
+      "kind": "class",
+      "file": "backend/app/recon_worker.py",
+      "line": 22
+    },
+    {
+      "name": "redirect_request",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 23
+    },
+    {
+      "name": "ReconResult",
+      "kind": "class",
+      "file": "backend/app/recon_worker.py",
+      "line": 28
+    },
+    {
+      "name": "_SurfaceParser",
+      "kind": "class",
+      "file": "backend/app/recon_worker.py",
+      "line": 59
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 60
+    },
+    {
+      "name": "handle_starttag",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 67
+    },
+    {
+      "name": "handle_endtag",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 93
+    },
+    {
+      "name": "_timeout_seconds",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 98
+    },
+    {
+      "name": "_max_bytes",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 109
+    },
+    {
+      "name": "_max_crawl_requests",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 120
+    },
+    {
+      "name": "_max_crawl_depth",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 131
+    },
+    {
+      "name": "_max_wall_seconds",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 142
+    },
+    {
+      "name": "_recon_rps",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 153
+    },
+    {
+      "name": "_discovery_documents_enabled",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 170
+    },
+    {
+      "name": "_robots_sitemaps",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 179
+    },
+    {
+      "name": "_sitemap_locations",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 192
+    },
+    {
+      "name": "_enabled",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 212
+    },
+    {
+      "name": "_safe_url",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 221
+    },
+    {
+      "name": "_origin_port",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 236
+    },
+    {
+      "name": "_same_origin",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 246
+    },
+    {
+      "name": "_fetch_page",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 259
+    },
+    {
+      "name": "_external_recon_enabled",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 288
+    },
+    {
+      "name": "_external_output_limit",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 297
+    },
+    {
+      "name": "_external_tool_env",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 310
+    },
+    {
+      "name": "_run_external_tool",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 320
+    },
+    {
+      "name": "_scope_regex",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 340
+    },
+    {
+      "name": "_external_rate",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 348
+    },
+    {
+      "name": "_katana_surface",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 355
+    },
+    {
+      "name": "_httpx_context",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 395
+    },
+    {
+      "name": "_passive_domain",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 448
+    },
+    {
+      "name": "_passive_subdomains",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 464
+    },
+    {
+      "name": "_execution_contract",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 493
+    },
+    {
+      "name": "execute_recon_task",
+      "kind": "function",
+      "file": "backend/app/recon_worker.py",
+      "line": 534
+    },
+    {
+      "name": "ScannerSandboxConfigError",
+      "kind": "class",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 9
+    },
+    {
+      "name": "ScannerSandboxAdmission",
+      "kind": "class",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 14
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 30
+    },
+    {
+      "name": "_strict_bool",
+      "kind": "function",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 37
+    },
+    {
+      "name": "_runtime_hardening_attestation",
+      "kind": "function",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 49
+    },
+    {
+      "name": "_allowed_engines",
+      "kind": "function",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 92
+    },
+    {
+      "name": "scanner_sandbox_admission",
+      "kind": "function",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 105
+    },
+    {
+      "name": "safe_scanner_sandbox_admission",
+      "kind": "function",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 167
+    },
+    {
+      "name": "require_scanner_sandbox",
+      "kind": "function",
+      "file": "backend/app/scanner_sandbox.py",
+      "line": 190
+    },
+    {
+      "name": "WorkerPlan",
+      "kind": "class",
+      "file": "backend/app/worker.py",
+      "line": 20
+    },
+    {
+      "name": "WorkerPolicyError",
+      "kind": "class",
+      "file": "backend/app/worker.py",
+      "line": 30
+    },
+    {
+      "name": "_strict_bool_env",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 34
+    },
+    {
+      "name": "_safe_strix_output_dir",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 46
+    },
+    {
+      "name": "_max_autonomous_rps",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 59
+    },
+    {
+      "name": "_safe_nuclei_output_dir",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 69
+    },
+    {
+      "name": "_nuclei_rate_limit",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 82
+    },
+    {
+      "name": "build_nuclei_plan",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 91
+    },
+    {
+      "name": "build_strix_plan",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 166
+    },
+    {
+      "name": "_bounded_timeout",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 200
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 211
+    },
+    {
+      "name": "_verify_nuclei_runtime",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 219
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 244
+    },
+    {
+      "name": "_worker_env",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 320
+    },
+    {
+      "name": "_max_strix_json_bytes",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 364
+    },
+    {
+      "name": "locate_vulnerabilities_json",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 371
+    },
+    {
+      "name": "parse_strix_vulnerabilities",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 380
+    },
+    {
+      "name": "persist_execution_artifacts",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 388
+    },
+    {
+      "name": "CampaignCancelledError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 48
+    },
+    {
+      "name": "StaleValidationJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 52
+    },
+    {
+      "name": "StaleBrowserJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 56
+    },
+    {
+      "name": "_save",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 64
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 69
+    },
+    {
+      "name": "_append_event_once",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 80
+    },
+    {
+      "name": "_lease_heartbeat",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 97
+    },
+    {
+      "name": "renew",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 104
+    },
+    {
+      "name": "_process_scanner_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 125
+    },
+    {
+      "name": "process_strix_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 132
+    },
+    {
+      "name": "process_nuclei_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 136
+    },
+    {
+      "name": "process_validation",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 140
+    },
+    {
+      "name": "process_browser_flow",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 213
+    },
+    {
+      "name": "process_recon_task",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 317
+    },
+    {
+      "name": "process_report",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 442
+    },
+    {
+      "name": "_record_worker_outcome",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 484
+    },
+    {
+      "name": "_worker_bool",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 514
+    },
+    {
+      "name": "_legacy_unprovenanced_jobs_allowed",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 526
+    },
+    {
+      "name": "_verify_policy_bound_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 530
+    },
+    {
+      "name": "_active_scanner_execution_requested",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 550
+    },
+    {
+      "name": "_claim_for_role",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 557
+    },
+    {
+      "name": "process_one",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 571
+    },
+    {
+      "name": "_worker_poll_seconds",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 628
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 639
+    },
+    {
+      "name": "_setup",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 10
+    },
+    {
+      "name": "test_cancel_campaign_cancels_queued_jobs_but_preserves_running_lease",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 33
+    },
+    {
+      "name": "test_cancel_campaign_is_idempotent",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 60
+    },
+    {
+      "name": "test_worker_refuses_cancelled_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 76
+    },
+    {
+      "name": "test_completed_campaign_cannot_be_cancelled",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 84
+    },
+    {
+      "name": "test_running_job_becomes_cancelled_when_worker_observes_cancelled_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 98
+    },
+    {
+      "name": "test_cancelled_campaign_rejects_new_mutations",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_cancel.py",
+      "line": 134
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 14
+    },
+    {
+      "name": "test_circuit_breaker_persists_and_resets",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 27
+    },
+    {
+      "name": "test_runtime_exhaustion_opens_breaker_and_future_advance_stays_blocked",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 55
+    },
+    {
+      "name": "test_control_routes_are_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 90
+    },
+    {
+      "name": "test_control_status_reports_budget_blocker_consistently",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 98
+    },
+    {
+      "name": "test_control_status_exposes_scanner_stability_and_recon_telemetry",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 130
+    },
+    {
+      "name": "test_breaker_reset_endpoint_seals_requested_and_completed_audit_events",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 195
+    },
+    {
+      "name": "test_breaker_reset_reconciles_completion_after_reset_already_happened",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 236
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 10
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 23
+    },
+    {
+      "name": "test_validation_worker_persists_sanitized_differential_signal_without_confirming",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 40
+    },
+    {
+      "name": "test_finding_intelligence_surfaces_differential_signal_and_summary",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 91
+    },
+    {
+      "name": "test_red_team_decision_prioritizes_strong_signal_inside_existing_review_work",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 133
+    },
+    {
+      "name": "_resource",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 17
+    },
+    {
+      "name": "_launch_payload",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 28
+    },
+    {
+      "name": "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 51
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 70
+    },
+    {
+      "name": "test_hackerone_worker_automatically_advances_from_recon_to_nuclei",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 212
+    },
+    {
+      "name": "fake_recon",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 230
+    },
+    {
+      "name": "_resource",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 18
+    },
+    {
+      "name": "_launch_payload",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 29
+    },
+    {
+      "name": "_headers",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 52
+    },
+    {
+      "name": "test_hackerone_full_lifecycle_produces_downloadable_report",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 56
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 78
+    },
+    {
+      "name": "_FakeQueue",
+      "kind": "class",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 22
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 23
+    },
+    {
+      "name": "enqueue",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 26
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 39
+    },
+    {
+      "name": "test_htb_lab_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 43
+    },
+    {
+      "name": "test_htb_lab_rejects_public_targets",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 47
+    },
+    {
+      "name": "test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 62
+    },
+    {
+      "name": "test_htb_lab_accepts_private_lab_ip_and_htb_hostname",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 80
+    },
+    {
+      "name": "test_htb_lab_requires_explicit_authorization_confirmation",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 93
+    },
+    {
+      "name": "test_htb_lab_campaign_is_exact_scope_and_training_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 105
+    },
+    {
+      "name": "test_htb_lab_start_uses_bounded_planner",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 135
+    },
+    {
+      "name": "fake_advance",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 153
+    },
+    {
+      "name": "test_htb_outcome_feedback_becomes_learning_memory",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 182
+    },
+    {
+      "name": "test_htb_outcome_rejects_overlapping_techniques",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 221
+    },
+    {
+      "name": "test_htb_learning_routes_are_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 234
+    },
+    {
+      "name": "test_htb_global_learning_aggregates_authorized_labs_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 240
+    },
+    {
+      "name": "test_htb_global_learning_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 292
+    },
+    {
+      "name": "test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 297
+    },
+    {
+      "name": "test_non_htb_campaign_does_not_receive_htb_cross_lab_learning",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 377
+    },
+    {
+      "name": "test_htb_outcome_is_idempotent_for_identical_feedback",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 421
+    },
+    {
+      "name": "test_htb_corrected_feedback_replaces_prior_learning_revision",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 461
+    },
+    {
+      "name": "test_htb_benchmark_reports_objective_progress_metrics",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 504
+    },
+    {
+      "name": "test_htb_benchmark_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 557
+    },
+    {
+      "name": "test_htb_session_status_is_redacted_and_operational",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 562
+    },
+    {
+      "name": "test_htb_session_status_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 591
+    },
+    {
+      "name": "test_htb_duplicate_exact_active_target_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 596
+    },
+    {
+      "name": "test_htb_finish_records_learning_and_cancels_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 626
+    },
+    {
+      "name": "test_htb_finish_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 664
+    },
+    {
+      "name": "test_htb_training_end_to_end_create_start_learn_finish_and_benchmark",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 669
+    },
+    {
+      "name": "fake_advance",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 690
+    },
+    {
+      "name": "test_htb_focus_ranks_repeated_misses_without_automatic_execution",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 752
+    },
+    {
+      "name": "test_htb_focus_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 800
+    },
+    {
+      "name": "test_htb_readiness_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 805
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 10
+    },
+    {
+      "name": "_assert_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 28
+    },
+    {
+      "name": "test_sanitized_scan_payload_is_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 36
+    },
+    {
+      "name": "test_orchestrator_scan_jobs_bind_each_engine_kind",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 48
+    },
+    {
+      "name": "test_orchestrator_recon_and_browser_jobs_are_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 68
+    },
+    {
+      "name": "test_orchestrator_validation_and_report_jobs_are_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 102
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 13
+    },
+    {
+      "name": "test_scan_engines_default_preserves_strix",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 27
+    },
+    {
+      "name": "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 32
+    },
+    {
+      "name": "test_sqlite_queue_accepts_nuclei_scan",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 41
+    },
+    {
+      "name": "test_nuclei_worker_dry_run_preserves_safe_default",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 52
+    },
+    {
+      "name": "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 78
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 90
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 9
+    },
+    {
+      "name": "_configure_run_root",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 24
+    },
+    {
+      "name": "_admit_scanner_sandbox",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 30
+    },
+    {
+      "name": "test_nuclei_plan_is_dry_run_by_default",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 49
+    },
+    {
+      "name": "test_nuclei_plan_requires_both_activation_gates",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 62
+    },
+    {
+      "name": "test_nuclei_plan_is_http_only_bounded_and_non_destructive",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 75
+    },
+    {
+      "name": "test_nuclei_plan_preserves_sub_one_rps_limits",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 107
+    },
+    {
+      "name": "test_nuclei_plan_fails_closed_outside_scope",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 115
+    },
+    {
+      "name": "test_nuclei_execution_uses_isolated_home_and_blocks_template_downloads",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 124
+    },
+    {
+      "name": "Result",
+      "kind": "class",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 136
+    },
+    {
+      "name": "fake_run",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 141
+    },
+    {
+      "name": "test_nuclei_active_execution_requires_allowlisted_runtime",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 170
+    },
+    {
+      "name": "test_nuclei_active_execution_rejects_version_mismatch",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 183
+    },
+    {
+      "name": "Result",
+      "kind": "class",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 190
+    },
+    {
+      "name": "make_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 13
+    },
+    {
+      "name": "test_advance_bootstraps_asset_and_queues_bounded_recon",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 29
+    },
+    {
+      "name": "test_advance_stops_when_automation_disabled",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 54
+    },
+    {
+      "name": "test_advance_stops_when_runtime_budget_is_exhausted",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 70
+    },
+    {
+      "name": "test_advance_queues_only_unvalidated_findings_then_waits_for_resolution_and_reports",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 92
+    },
+    {
+      "name": "test_validation_jobs_are_ordered_by_adaptive_priority",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 171
+    },
+    {
+      "name": "test_validation_priority_prefers_less_supported_hypothesis_on_tie",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 214
+    },
+    {
+      "name": "test_orchestrator_exposes_integrated_intelligence_context",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 272
+    },
+    {
+      "name": "test_orchestrator_gate_blocks_progress_after_failed_job",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 291
+    },
+    {
+      "name": "test_orchestrator_learning_memory_reaches_adaptive_cycle",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 317
+    },
+    {
+      "name": "test_orchestrator_blocks_scan_below_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 354
+    },
+    {
+      "name": "test_orchestrator_includes_browser_recon_only_when_enabled",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 382
+    },
+    {
+      "name": "test_orchestrator_allows_scan_after_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 410
+    },
+    {
+      "name": "test_orchestrator_rejects_invalid_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 451
+    }
+  ],
+  "selected_tests": [
+    "backend/tests/test_campaign_cancel.py",
+    "backend/tests/test_campaign_circuit_breaker.py",
+    "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_hackerone_nuclei_e2e.py",
+    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+    "backend/tests/test_htb_lab.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_nuclei_worker_plan.py",
+    "backend/tests/test_orchestrator.py",
+    "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_pentagi_status_worker_service.py",
+    "backend/tests/test_pentagi_worker_service.py",
+    "backend/tests/test_recon_worker.py",
+    "backend/tests/test_runtime_budget_config.py",
+    "backend/tests/test_scanner_observation_chain.py",
+    "backend/tests/test_scanner_sandbox.py",
+    "backend/tests/test_worker_concurrency.py",
+    "backend/tests/test_worker_observations.py",
+    "backend/tests/test_worker_outcome_memory.py",
+    "backend/tests/test_worker_roles.py",
+    "backend/tests/test_worker_state.py"
+  ]
 }

@@ -22,24 +22,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T15:24:42Z
+Generated: 2026-10-03T16:08:45Z
 
 ### Git
 - Branch: `main`
-- Head: `198a318d517b`
-- Commit date: 2026-10-03T17:24:31+02:00
-- Commit: docs(mobile): align smartphone operation with hardened scripts (#466)
-- Tracked files: 585
+- Head: `8dcfa3e0c88b`
+- Commit date: 2026-10-03T18:08:34+02:00
+- Commit: security(recon): refresh immutable runtime contracts (#467)
+- Tracked files: 586
 
 ### Recently changed files
+- `backend/app/orchestrator.py`
+- `backend/app/recon_worker.py`
+- `backend/app/scanner_sandbox.py`
+- `backend/app/worker_service.py`
+- `backend/tests/test_nuclei_worker_plan.py`
+- `backend/tests/test_recon_worker.py`
+- `backend/tests/test_scanner_sandbox.py`
+- `backend/tests/test_worker_observations.py`
 - `AWS_MOBILE_ONLY.md`
 - `MOBILE_ONLY.md`
 - `.env.example`
 - `backend/app/observation_writer.py`
-- `backend/app/recon_worker.py`
-- `backend/app/worker_service.py`
-- `backend/tests/test_recon_worker.py`
-- `backend/tests/test_worker_observations.py`
 - `backend/app/finding_correlation.py`
 - `backend/app/finding_triage.py`
 - `backend/tests/test_finding_correlation.py`
@@ -48,9 +52,6 @@ Generated: 2026-10-03T15:24:42Z
 - `backend/tests/test_frontend_policy_launcher.py`
 - `frontend/index.html`
 - `frontend/simple.js`
-- `frontend/sw.js`
-- `backend/app/campaign_control.py`
-- `backend/tests/test_campaign_circuit_breaker.py`
 
 ### Project signals
 - `pyproject.toml`

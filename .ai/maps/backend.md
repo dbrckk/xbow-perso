@@ -8755,6 +8755,7 @@ stopped_by_request_budget: bool = False
 deferred_by_request_budget: int = 0
 coverage_complete: bool = False
 endpoint_provenance: tuple[dict, ...] = ()
+execution_contract: str = ""
 ⋮----
 _MAX_DISCOVERED_LINKS = 500
 _MAX_DISCOVERED_FORMS = 100
@@ -8932,13 +8933,26 @@ assets: set[str] = set()
 ⋮----
 host = raw.strip().lower().rstrip(".")
 ⋮----
+def _execution_contract(payload: dict, target: str) -> str
+⋮----
+"""Validate the immutable read-only recon contract and return its digest."""
+raw_methods = payload.get("allowed_methods", ["GET", "HEAD"])
+⋮----
+methods = tuple(sorted({str(item).upper() for item in raw_methods}))
+⋮----
+requested = payload.get("max_requests", 1)
+⋮----
+requested_int = int(requested)
+⋮----
+material = {
+encoded = json.dumps(
+⋮----
 def execute_recon_task(campaign, payload: dict) -> ReconResult
 ⋮----
 kind = str(payload.get("kind") or "")
 ⋮----
 target = _safe_url(campaign, str(payload.get("target") or ""))
-⋮----
-requested = payload.get("max_requests", 1)
+execution_contract = _execution_contract(payload, target)
 ⋮----
 requested = int(requested)
 ⋮----
@@ -9918,6 +9932,7 @@ allowed_engines: tuple[str, ...]
 runtime_read_only_rootfs: bool
 runtime_no_new_privileges: bool
 runtime_cap_drop_all: bool
+runtime_seccomp_filter: bool
 runtime_attested: bool
 block_reasons: tuple[str, ...]
 ⋮----
@@ -9941,6 +9956,7 @@ status_fields = {}
 no_new_privileges = status_fields.get("NoNewPrivs") == "1"
 cap_eff_raw = status_fields.get("CapEff")
 cap_drop_all = bool(cap_eff_raw) and int(cap_eff_raw, 16) == 0
+seccomp_filter = status_fields.get("Seccomp") == "2"
 ⋮----
 mountinfo = Path("/proc/self/mountinfo").read_text(encoding="utf-8")
 rootfs_read_only = False
@@ -9970,6 +9986,7 @@ runtime = _runtime_hardening_attestation()
 runtime_read_only_rootfs = bool(runtime.get("read_only_rootfs"))
 runtime_no_new_privileges = bool(runtime.get("no_new_privileges"))
 runtime_cap_drop_all = bool(runtime.get("cap_drop_all"))
+runtime_seccomp_filter = bool(runtime.get("seccomp_filter"))
 runtime_attested = (
 ⋮----
 reasons: list[str] = []
@@ -18221,6 +18238,24 @@ def test_sitemap_parser_rejects_dtd_entity_documents(monkeypatch)
 def test_recon_same_origin_normalizes_default_https_port(monkeypatch)
 ⋮----
 def test_duplicate_sitemap_directive_does_not_fake_request_budget_saturation(monkeypatch)
+⋮----
+def test_recon_worker_rejects_mutating_execution_contract_before_network(monkeypatch)
+⋮----
+called = {"count": 0}
+⋮----
+class _NeverCalled
+⋮----
+def open(self, *_args, **_kwargs)
+⋮----
+cases = [
+⋮----
+def test_recon_execution_contract_is_stable_and_binds_budget(monkeypatch)
+⋮----
+base = {
+⋮----
+first = execute_recon_task(_campaign(), base)
+second = execute_recon_task(
+changed_budget = execute_recon_task(
 ```
 
 ## File: tests/test_red_team_coverage.py
@@ -19140,7 +19175,7 @@ _NAMES = (
 ⋮----
 def _clear(monkeypatch)
 ⋮----
-def _attest_runtime(monkeypatch, *, rootfs=True, nnp=True, caps=True)
+def _attest_runtime(monkeypatch, *, rootfs=True, nnp=True, caps=True, seccomp=True)
 ⋮----
 def test_scanner_sandbox_defaults_fail_closed(monkeypatch)
 ⋮----
@@ -20122,14 +20157,14 @@ campaign = Campaign(
 graph = load_observation_graph(store, campaign.id)
 endpoints = graph.by_kind("endpoint")
 ⋮----
+saved = store.get_campaign(campaign.id)
+event = next(
+⋮----
 def test_recon_endpoint_provenance_is_persisted_and_telemetry_is_counted(tmp_path, monkeypatch)
 ⋮----
 store = Storage(str(tmp_path / "recon-provenance.sqlite3"), str(tmp_path / "artifacts"))
 ⋮----
 endpoints = {item.value: item for item in graph.by_kind("endpoint")}
-⋮----
-saved = store.get_campaign(campaign.id)
-event = next(
 ```
 
 ## File: tests/test_worker_outcome_memory.py
