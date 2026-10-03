@@ -181,19 +181,26 @@ def assess_restore_preflight(
             reference = now or datetime.now(UTC)
             if reference.tzinfo is None:
                 raise ValueError("reference time must be timezone-aware")
-            age_hours = max(0.0, (reference - created).total_seconds() / 3600.0)
-            freshness = {
-                "status": "fresh" if age_hours <= max_age_hours else "stale",
-                "trusted": True,
-                "age_hours": round(age_hours, 3),
-                "max_age_hours": float(max_age_hours),
-            }
-            if age_hours > max_age_hours:
-                blockers.append("backup_set_stale")
+            age_seconds = (reference - created).total_seconds()
+            if age_seconds < -300:
+                freshness["status"] = "invalid"
+                blockers.append("manifest_timestamp_in_future")
+            else:
+                age_hours = max(0.0, age_seconds / 3600.0)
+                freshness = {
+                    "status": "fresh" if age_hours <= max_age_hours else "stale",
+                    "trusted": True,
+                    "age_hours": round(age_hours, 3),
+                    "max_age_hours": float(max_age_hours),
+                }
+                if age_hours > max_age_hours:
+                    blockers.append("backup_set_stale")
         except (ValueError, TypeError):
-            warnings.append("manifest_timestamp_invalid")
+            freshness["status"] = "invalid"
+            blockers.append("manifest_timestamp_invalid")
     elif signature_state is True:
-        warnings.append("manifest_timestamp_missing")
+        freshness["status"] = "invalid"
+        blockers.append("manifest_timestamp_missing")
     else:
         warnings.append("backup_freshness_untrusted")
 
