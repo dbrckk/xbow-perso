@@ -230,11 +230,18 @@ class StrixRunnerHandler(BaseHTTPRequestHandler):
 
     def do_HEAD(self):
         path = urlsplit(self.path).path
-        if path not in {"/healthz", "/readyz"}:
-            self.send_response(HTTPStatus.NOT_FOUND.value)
-            self.end_headers()
-            return
-        self.send_response(HTTPStatus.OK.value)
+        if path == "/healthz":
+            status = HTTPStatus.OK
+        elif path == "/readyz":
+            try:
+                attest_strix_runtime()
+            except StrixRunnerAttestationError:
+                status = HTTPStatus.SERVICE_UNAVAILABLE
+            else:
+                status = HTTPStatus.OK
+        else:
+            status = HTTPStatus.NOT_FOUND
+        self.send_response(status.value)
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
 
