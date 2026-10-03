@@ -205,7 +205,9 @@ def resolve_public_endpoint(host: str, port: int) -> ResolvedEndpoint:
         )
 
     if not candidates:
-        raise StrixEgressNetworkError(\n            "Strix egress DNS resolution returned no usable address"\n        )
+        raise StrixEgressNetworkError(
+            "Strix egress DNS resolution returned no usable address"
+        )
     candidates.sort(key=lambda item: (item.address_type, item.address))
     return candidates[0]
 
