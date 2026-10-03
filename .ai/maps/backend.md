@@ -186,6 +186,7 @@ app/
   storage_backend.py
   storage_core.py
   storage.py
+  strix_execution_contract.py
   strix_parser.py
   strix_run_status.py
   submission_api.py
@@ -410,6 +411,7 @@ tests/
   test_simple_selection_cached.py
   test_storage_backend.py
   test_storage.py
+  test_strix_execution_contract.py
   test_strix_run_status.py
   test_submission_api.py
   test_submission_state.py
@@ -10300,6 +10302,7 @@ def _state_after_scan(campaign: Campaign) -> CampaignState
 ⋮----
 unresolved = any(
 ⋮----
+contract = build_strix_execution_contract(
 run_dir = str(
 plan = build_strix_plan(campaign, run_dir)
 execution = execute(plan)
@@ -10761,6 +10764,94 @@ def get_pentagi_flow_binding(self, flow_id: str) -> dict[str, str] | None
 flow_id = _bounded_identifier(flow_id, "flow_id")
 ⋮----
 row = db.execute(
+```
+
+## File: app/strix_execution_contract.py
+```python
+STRIX_EXECUTION_CONTRACT_SCHEMA = "strix-execution-contract-v1"
+_SIGNATURE_DOMAIN = b"xbow:strix-execution-contract:v1\x00"
+⋮----
+class StrixExecutionContractError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class StrixExecutionContract
+⋮----
+schema: str
+engine: str
+campaign_id: str
+job_id: str
+primary_target: str
+policy_fingerprint: str
+allowed_targets: tuple[str, ...]
+denied_targets: tuple[str, ...]
+max_requests_per_second: float
+direct_egress_allowed: bool
+host_container_socket_allowed: bool
+independent_validation_required: bool
+contract_hash: str
+signature_alg: str | None
+signature: str | None
+⋮----
+def to_dict(self) -> dict
+⋮----
+payload = asdict(self)
+⋮----
+def redacted_summary(self) -> dict
+⋮----
+@dataclass(frozen=True)
+class StrixAuthorizedRequest
+⋮----
+target: str
+host: str
+⋮----
+def _validate_job_id(job_id: str) -> str
+⋮----
+value = str(job_id).strip()
+⋮----
+def _canonical_payload(contract: StrixExecutionContract) -> bytes
+⋮----
+payload = {
+⋮----
+def _contract_secret() -> str | None
+⋮----
+def _unsafe_campaign_reasons(campaign: Campaign) -> list[str]
+⋮----
+rules = campaign.target.rules
+reasons: list[str] = []
+⋮----
+parsed = urlparse(str(campaign.target.primary_url))
+host = (parsed.hostname or "").lower().rstrip(".")
+⋮----
+reasons = _unsafe_campaign_reasons(campaign)
+⋮----
+job_id = _validate_job_id(job_id)
+allowed_targets = tuple(
+denied_targets = tuple(
+unsigned = StrixExecutionContract(
+canonical = _canonical_payload(unsigned)
+digest = hashlib.sha256(canonical).hexdigest()
+secret = _contract_secret()
+signature = (
+⋮----
+canonical = _canonical_payload(contract)
+expected_hash = hashlib.sha256(canonical).hexdigest()
+⋮----
+expected_signature = hmac.new(
+⋮----
+expected_allowed = tuple(
+expected_denied = tuple(
+⋮----
+"""Authorize one future broker request against a signed immutable contract.
+
+    This function performs no network I/O. It is intended for the isolated
+    Strix runtime/broker boundary, where unsigned contracts fail closed.
+    """
+⋮----
+parsed = urlparse(str(target))
+⋮----
+port = parsed.port
+⋮----
+rate = float(requested_rps)
 ```
 
 ## File: app/strix_parser.py
@@ -19667,6 +19758,8 @@ campaign = _campaign()
 ⋮----
 result = run_strix_job(
 ⋮----
+contract = result.event["execution_contract"]
+⋮----
 observations = store.list_observations(campaign.id)
 ⋮----
 run_root = tmp_path / "runs"
@@ -20015,6 +20108,44 @@ batch = {
 record = store.get_hackerone_batch_record("batch-1")
 ⋮----
 stale = dict(document)
+```
+
+## File: tests/test_strix_execution_contract.py
+```python
+def _campaign(*, rps=1.5, denied=None)
+⋮----
+def test_contract_is_deterministic_and_binds_policy_and_job(monkeypatch)
+⋮----
+campaign = _campaign()
+⋮----
+first = build_strix_execution_contract(campaign, job_id="job-1")
+second = build_strix_execution_contract(campaign, job_id="job-1")
+⋮----
+def test_contract_summary_is_redacted(monkeypatch)
+⋮----
+contract = build_strix_execution_contract(_campaign(), job_id="job-1")
+⋮----
+summary = contract.redacted_summary()
+⋮----
+def test_unsigned_contract_can_be_previewed_but_not_used_by_runtime(monkeypatch)
+⋮----
+def test_signed_contract_authorizes_only_in_scope_rate_bounded_requests(monkeypatch)
+⋮----
+authorized = authorize_strix_contract_request(
+⋮----
+def test_contract_tampering_fails_before_request_authorization(monkeypatch)
+⋮----
+forged = replace(contract, max_requests_per_second=20.0)
+⋮----
+def test_policy_change_invalidates_existing_contract(monkeypatch)
+⋮----
+contract = build_strix_execution_contract(campaign, job_id="job-1")
+⋮----
+def test_job_change_invalidates_existing_contract(monkeypatch)
+⋮----
+def test_unsafe_campaign_flags_block_contract_issuance(monkeypatch, flag)
+⋮----
+def test_automated_scanning_must_remain_enabled(monkeypatch)
 ```
 
 ## File: tests/test_strix_run_status.py

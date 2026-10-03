@@ -27,24 +27,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T18:57:44Z
+Generated: 2026-10-03T19:10:50Z
 
 ### Git
 - Branch: `main`
-- Head: `d557c56fc8a8`
-- Commit date: 2026-10-03T20:57:33+02:00
-- Commit: security(strix): fail closed until runtime contract is enforceable
-- Tracked files: 593
+- Head: `723a0ee4d80e`
+- Commit date: 2026-10-03T21:10:39+02:00
+- Commit: feat(strix): add signed execution contract v1
+- Tracked files: 595
 
 ### Recently changed files
 - `README.md`
 - `backend/app/runtime_capabilities.py`
-- `backend/app/scanner_sandbox.py`
-- `backend/tests/test_runtime_capabilities.py`
-- `backend/tests/test_scanner_sandbox.py`
 - `backend/app/scanner_worker.py`
-- `backend/app/worker.py`
+- `backend/app/strix_execution_contract.py`
+- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_scanner_worker.py`
+- `backend/tests/test_strix_execution_contract.py`
+- `backend/app/scanner_sandbox.py`
+- `backend/tests/test_scanner_sandbox.py`
+- `backend/app/worker.py`
 - `backend/requirements.txt`
 - `backend/requirements-dev.txt`
 

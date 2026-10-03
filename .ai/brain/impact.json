@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "9b816a3c171cea546e7448a39d627d715b24d542",
-  "head": "d557c56fc8a899dc1839ed1b48ab966c06ebd1d0",
+  "base": "d557c56fc8a899dc1839ed1b48ab966c06ebd1d0",
+  "head": "723a0ee4d80ec807cd97ff5f2563b99f2a786072",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -14,23 +14,33 @@
       "status": "M"
     },
     {
-      "path": "backend/app/scanner_sandbox.py",
+      "path": "backend/app/scanner_worker.py",
       "status": "M"
+    },
+    {
+      "path": "backend/app/strix_execution_contract.py",
+      "status": "A"
     },
     {
       "path": "backend/tests/test_runtime_capabilities.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_scanner_sandbox.py",
+      "path": "backend/tests/test_scanner_worker.py",
       "status": "M"
+    },
+    {
+      "path": "backend/tests/test_strix_execution_contract.py",
+      "status": "A"
     }
   ],
   "changed_source_files": [
     "backend/app/runtime_capabilities.py",
-    "backend/app/scanner_sandbox.py",
+    "backend/app/scanner_worker.py",
+    "backend/app/strix_execution_contract.py",
     "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_scanner_sandbox.py"
+    "backend/tests/test_scanner_worker.py",
+    "backend/tests/test_strix_execution_contract.py"
   ],
   "impacted_files": [
     "backend/app/campaign_control.py",
@@ -41,11 +51,14 @@
     "backend/app/main.py",
     "backend/app/orchestrator.py",
     "backend/app/runtime_capabilities.py",
-    "backend/app/scanner_sandbox.py",
-    "backend/app/worker.py",
+    "backend/app/scanner_worker.py",
+    "backend/app/strix_execution_contract.py",
+    "backend/app/worker_service.py",
     "backend/tests/test_nuclei_preflight.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
     "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_scanner_sandbox.py"
+    "backend/tests/test_scanner_worker.py",
+    "backend/tests/test_strix_execution_contract.py"
   ],
   "impacted_symbols": [
     {
@@ -1060,229 +1073,313 @@
       "name": "CapabilityConfigError",
       "kind": "class",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 11
+      "line": 12
     },
     {
       "name": "_strict_bool",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 15
+      "line": 16
     },
     {
       "name": "pentagi_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 27
+      "line": 28
     },
     {
       "name": "safe_pentagi_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 80
+      "line": 81
     },
     {
       "name": "scanner_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 105
+      "line": 106
     },
     {
       "name": "safe_scanner_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 184
+      "line": 187
     },
     {
       "name": "browser_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 213
+      "line": 218
     },
     {
       "name": "safe_browser_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 237
+      "line": 242
     },
     {
       "name": "recon_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 252
+      "line": 257
     },
     {
       "name": "safe_recon_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 290
+      "line": 295
     },
     {
-      "name": "ScannerSandboxConfigError",
+      "name": "ScannerJobResult",
       "kind": "class",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 9
+      "file": "backend/app/scanner_worker.py",
+      "line": 19
     },
     {
-      "name": "ScannerSandboxAdmission",
+      "name": "_record_scan_observation",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 26
+    },
+    {
+      "name": "_state_after_scan",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 54
+    },
+    {
+      "name": "run_strix_job",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 62
+    },
+    {
+      "name": "run_nuclei_job",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 157
+    },
+    {
+      "name": "StrixExecutionContractError",
       "kind": "class",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 14
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 18
+    },
+    {
+      "name": "StrixExecutionContract",
+      "kind": "class",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 23
     },
     {
       "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 30
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 40
     },
     {
-      "name": "_strict_bool",
+      "name": "redacted_summary",
       "kind": "function",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 37
-    },
-    {
-      "name": "_runtime_hardening_attestation",
-      "kind": "function",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 49
-    },
-    {
-      "name": "strix_runtime_contract_enforceable",
-      "kind": "function",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 92
-    },
-    {
-      "name": "_allowed_engines",
-      "kind": "function",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 104
-    },
-    {
-      "name": "scanner_sandbox_admission",
-      "kind": "function",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 117
-    },
-    {
-      "name": "safe_scanner_sandbox_admission",
-      "kind": "function",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 182
-    },
-    {
-      "name": "require_scanner_sandbox",
-      "kind": "function",
-      "file": "backend/app/scanner_sandbox.py",
-      "line": 205
-    },
-    {
-      "name": "WorkerPlan",
-      "kind": "class",
-      "file": "backend/app/worker.py",
-      "line": 20
-    },
-    {
-      "name": "WorkerPolicyError",
-      "kind": "class",
-      "file": "backend/app/worker.py",
-      "line": 30
-    },
-    {
-      "name": "_strict_bool_env",
-      "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 34
-    },
-    {
-      "name": "_safe_strix_output_dir",
-      "kind": "function",
-      "file": "backend/app/worker.py",
+      "file": "backend/app/strix_execution_contract.py",
       "line": 46
     },
     {
-      "name": "_max_autonomous_rps",
-      "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 59
+      "name": "StrixAuthorizedRequest",
+      "kind": "class",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 60
     },
     {
-      "name": "_safe_nuclei_output_dir",
+      "name": "_validate_job_id",
       "kind": "function",
-      "file": "backend/app/worker.py",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 67
+    },
+    {
+      "name": "_canonical_payload",
+      "kind": "function",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 78
+    },
+    {
+      "name": "_contract_secret",
+      "kind": "function",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 101
+    },
+    {
+      "name": "_unsafe_campaign_reasons",
+      "kind": "function",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 110
+    },
+    {
+      "name": "build_strix_execution_contract",
+      "kind": "function",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 135
+    },
+    {
+      "name": "verify_strix_contract_integrity",
+      "kind": "function",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 196
+    },
+    {
+      "name": "verify_strix_execution_contract",
+      "kind": "function",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 235
+    },
+    {
+      "name": "authorize_strix_contract_request",
+      "kind": "function",
+      "file": "backend/app/strix_execution_contract.py",
+      "line": 279
+    },
+    {
+      "name": "CampaignCancelledError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 48
+    },
+    {
+      "name": "StaleValidationJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 52
+    },
+    {
+      "name": "StaleBrowserJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 56
+    },
+    {
+      "name": "_save",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 64
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
       "line": 69
     },
     {
-      "name": "_nuclei_rate_limit",
+      "name": "_append_event_once",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 82
+      "file": "backend/app/worker_service.py",
+      "line": 80
     },
     {
-      "name": "build_nuclei_plan",
+      "name": "_lease_heartbeat",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 91
+      "file": "backend/app/worker_service.py",
+      "line": 97
     },
     {
-      "name": "build_strix_plan",
+      "name": "renew",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 166
+      "file": "backend/app/worker_service.py",
+      "line": 104
     },
     {
-      "name": "_bounded_timeout",
+      "name": "_process_scanner_job",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 200
+      "file": "backend/app/worker_service.py",
+      "line": 125
     },
     {
-      "name": "_text",
+      "name": "process_strix_scan",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 211
+      "file": "backend/app/worker_service.py",
+      "line": 132
     },
     {
-      "name": "_verify_nuclei_runtime",
+      "name": "process_nuclei_scan",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 219
+      "file": "backend/app/worker_service.py",
+      "line": 136
     },
     {
-      "name": "execute",
+      "name": "process_validation",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 244
+      "file": "backend/app/worker_service.py",
+      "line": 140
     },
     {
-      "name": "_worker_env",
+      "name": "process_browser_flow",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 320
+      "file": "backend/app/worker_service.py",
+      "line": 213
     },
     {
-      "name": "_max_strix_json_bytes",
+      "name": "process_recon_task",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 364
+      "file": "backend/app/worker_service.py",
+      "line": 317
     },
     {
-      "name": "locate_vulnerabilities_json",
+      "name": "process_report",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 371
+      "file": "backend/app/worker_service.py",
+      "line": 442
     },
     {
-      "name": "parse_strix_vulnerabilities",
+      "name": "_record_worker_outcome",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 380
+      "file": "backend/app/worker_service.py",
+      "line": 484
     },
     {
-      "name": "persist_execution_artifacts",
+      "name": "_worker_bool",
       "kind": "function",
-      "file": "backend/app/worker.py",
-      "line": 388
+      "file": "backend/app/worker_service.py",
+      "line": 514
+    },
+    {
+      "name": "_legacy_unprovenanced_jobs_allowed",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 526
+    },
+    {
+      "name": "_verify_policy_bound_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 530
+    },
+    {
+      "name": "_active_scanner_execution_requested",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 550
+    },
+    {
+      "name": "_claim_for_role",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 557
+    },
+    {
+      "name": "process_one",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 571
+    },
+    {
+      "name": "_worker_poll_seconds",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 628
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 639
     },
     {
       "name": "_clear",
@@ -1319,6 +1416,48 @@
       "kind": "function",
       "file": "backend/tests/test_nuclei_preflight.py",
       "line": 89
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 13
+    },
+    {
+      "name": "test_scan_engines_default_preserves_strix",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 27
+    },
+    {
+      "name": "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 32
+    },
+    {
+      "name": "test_sqlite_queue_accepts_nuclei_scan",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 41
+    },
+    {
+      "name": "test_nuclei_worker_dry_run_preserves_safe_default",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 52
+    },
+    {
+      "name": "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 78
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 90
     },
     {
       "name": "_clear",
@@ -1432,84 +1571,116 @@
       "name": "test_browser_runtime_capability_fails_closed_without_runtime_marker",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 307
+      "line": 309
     },
     {
       "name": "test_browser_runtime_capability_ready_with_runtime_marker",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 320
+      "line": 322
     },
     {
       "name": "test_browser_runtime_capability_disabled_even_when_runtime_exists",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 333
+      "line": 335
     },
     {
       "name": "test_capabilities_api_exposes_browser_runtime_detail",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 346
+      "line": 348
     },
     {
-      "name": "_clear",
+      "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
-      "line": 22
+      "file": "backend/tests/test_scanner_worker.py",
+      "line": 12
     },
     {
-      "name": "_attest_runtime",
+      "name": "test_scanner_worker_dry_run_stays_ready_and_records_event",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
-      "line": 27
+      "file": "backend/tests/test_scanner_worker.py",
+      "line": 26
     },
     {
-      "name": "test_scanner_sandbox_defaults_fail_closed",
+      "name": "test_scanner_worker_binds_status_findings_and_evidence_to_same_strix_run",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
-      "line": 39
+      "file": "backend/tests/test_scanner_worker.py",
+      "line": 60
     },
     {
-      "name": "test_restricted_scanner_worker_can_admit_allowlisted_engine",
+      "name": "fake_execute",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
-      "line": 50
+      "file": "backend/tests/test_scanner_worker.py",
+      "line": 98
     },
     {
-      "name": "test_engine_must_be_explicitly_allowlisted",
+      "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 15
+    },
+    {
+      "name": "test_contract_is_deterministic_and_binds_policy_and_job",
+      "kind": "function",
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 31
+    },
+    {
+      "name": "test_contract_summary_is_redacted",
+      "kind": "function",
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 53
+    },
+    {
+      "name": "test_unsigned_contract_can_be_previewed_but_not_used_by_runtime",
+      "kind": "function",
+      "file": "backend/tests/test_strix_execution_contract.py",
       "line": 67
     },
     {
-      "name": "test_strix_stays_blocked_without_enforceable_runtime_contract",
+      "name": "test_signed_contract_authorizes_only_in_scope_rate_bounded_requests",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
-      "line": 81
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 84
     },
     {
-      "name": "test_invalid_sandbox_boolean_fails_closed",
+      "name": "test_contract_tampering_fails_before_request_authorization",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
-      "line": 103
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 120
     },
     {
-      "name": "test_scanner_worker_kill_switch_blocks_execution_admission",
+      "name": "test_policy_change_invalidates_existing_contract",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
-      "line": 115
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 133
     },
     {
-      "name": "test_runtime_hardening_is_verified_not_just_declared",
+      "name": "test_job_change_invalidates_existing_contract",
       "kind": "function",
-      "file": "backend/tests/test_scanner_sandbox.py",
-      "line": 138
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 144
+    },
+    {
+      "name": "test_unsafe_campaign_flags_block_contract_issuance",
+      "kind": "function",
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 162
+    },
+    {
+      "name": "test_automated_scanning_must_remain_enabled",
+      "kind": "function",
+      "file": "backend/tests/test_strix_execution_contract.py",
+      "line": 172
     }
   ],
   "selected_tests": [
     "backend/tests/test_nuclei_preflight.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
     "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_scanner_sandbox.py"
+    "backend/tests/test_scanner_worker.py",
+    "backend/tests/test_strix_execution_contract.py"
   ]
 }
