@@ -89,6 +89,18 @@ def _runtime_hardening_attestation() -> dict[str, bool]:
         }
 
 
+def strix_runtime_contract_enforceable() -> bool:
+    """Return whether active Strix execution has an enforceable runtime contract.
+
+    The current OSS Strix path requires a nested execution runtime, while xbow's
+    scanner worker intentionally does not expose a host container socket. Until
+    scope, request-rate, and sandbox guarantees can be attested end-to-end,
+    active Strix dispatch must remain fail-closed.
+    """
+
+    return False
+
+
 def _allowed_engines() -> tuple[str, ...]:
     raw = os.getenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei").strip()
     if not raw:
@@ -143,8 +155,11 @@ def scanner_sandbox_admission(engine: str | None = None) -> ScannerSandboxAdmiss
         reasons.append("runtime_capabilities_present")
     if profile == "restricted-v1" and not runtime_seccomp_filter:
         reasons.append("runtime_seccomp_filter_missing")
-    if engine is not None and engine.lower() not in allowed_engines:
+    requested_engine = (engine or "").strip().lower()
+    if requested_engine and requested_engine not in allowed_engines:
         reasons.append("engine_not_allowlisted")
+    if requested_engine == "strix" and not strix_runtime_contract_enforceable():
+        reasons.append("strix_runtime_contract_not_enforceable")
 
     return ScannerSandboxAdmission(
         ready=not reasons,
