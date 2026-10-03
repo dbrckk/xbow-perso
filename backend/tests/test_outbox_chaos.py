@@ -59,7 +59,10 @@ def test_restart_after_start_intent_resumes_with_single_job(tmp_path, monkeypatc
     result = main.start_campaign(campaign.id)
 
     assert result["request_id"] == request_id
-    assert JobQueue(db).stats()["total"] == 1
+    assert result["orchestrated_start"] is True
+    assert result["jobs"]
+    assert all(job["kind"] == "recon_task" for job in result["jobs"])
+    assert JobQueue(db).stats()["total"] == len(result["jobs"])
     persisted = Storage(db, artifacts).get_campaign(campaign.id)
     assert persisted["state"] == "running"
     assert len(
@@ -70,14 +73,15 @@ def test_restart_after_start_intent_resumes_with_single_job(tmp_path, monkeypatc
             and event.get("request_id") == request_id
         ]
     ) == 1
-    assert len(
-        [
-            event
-            for event in persisted["events"]
-            if event.get("type") == "campaign_started"
-            and event.get("request_id") == request_id
-        ]
-    ) == 1
+    started = [
+        event
+        for event in persisted["events"]
+        if event.get("type") == "campaign_started"
+        and event.get("request_id") == request_id
+    ]
+    assert len(started) == 1
+    assert started[0]["job_id"] == result["job"]["id"]
+    assert started[0]["job_ids"] == [job["id"] for job in result["jobs"]]
 
 
 def test_restart_after_enqueue_reuses_same_start_job(tmp_path, monkeypatch):
@@ -125,6 +129,8 @@ def test_restart_after_enqueue_reuses_same_start_job(tmp_path, monkeypatch):
     result = main.start_campaign(campaign.id)
 
     assert result["job"]["id"] == existing["id"]
+    assert result["jobs"] == [result["job"]]
+    assert result["orchestrated_start"] is False
     assert JobQueue(db).stats()["total"] == 1
     persisted = Storage(db, artifacts).get_campaign(campaign.id)
     started = [
