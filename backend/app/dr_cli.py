@@ -37,6 +37,12 @@ def _parser() -> argparse.ArgumentParser:
     preflight.add_argument("--postgres-dump", required=True)
     preflight.add_argument("--redis-snapshot", required=True)
     preflight.add_argument("--vault-copy", required=True)
+    preflight.add_argument(
+        "--max-age-hours",
+        type=float,
+        default=24.0,
+        help="maximum trusted signed-backup age before preflight is blocked (default: 24)",
+    )
 
     return parser
 
@@ -59,6 +65,7 @@ def main() -> int:
                 postgres_dump=args.postgres_dump,
                 redis_snapshot=args.redis_snapshot,
                 vault_copy=args.vault_copy,
+                max_age_hours=args.max_age_hours,
             )
             write_backup_manifest(manifest, args.output)
             result = {
