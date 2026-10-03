@@ -312,6 +312,14 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_broker_dns_pinning"] is True
     assert result["strix_broker_redirects_followed"] is False
     assert result["strix_runner_network_isolated"] is False
+    assert result["strix_runner_expected_version"] == "1.6.2"
+    assert (
+        result["strix_runner_expected_upstream_commit"]
+        == "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+    )
+    assert result["strix_runner_attestation_required"] is True
+    assert result["strix_runner_execution_enabled"] is False
+    assert result["strix_runner_mode"] == "attestation_only"
     assert "strix_runtime_contract_not_enforceable" in result["dispatch_block_reasons"]
 
 
