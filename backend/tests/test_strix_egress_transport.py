@@ -344,7 +344,6 @@ def test_rate_limit_is_enforced_per_contract(monkeypatch):
     assert exc_info.value.retry_after_seconds > 0.8
 
 
-
 def test_concurrency_limit_is_enforced_per_contract(monkeypatch):
     request = _request(monkeypatch, requested_rps=2.0)
     monkeypatch.setattr(
@@ -418,7 +417,6 @@ def test_request_slot_is_released_after_network_failure(monkeypatch):
         verification_secret="egress-secret",
     )
     assert result.status_code == 200
-
 
 
 def test_concurrency_rejection_happens_before_dns(monkeypatch):
