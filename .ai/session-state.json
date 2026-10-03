@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-03",
-  "task": "Build an isolated Strix admission and egress boundary",
+  "task": "Build a controlled Strix egress boundary and isolate the future runner",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -14,14 +14,20 @@
     "Added an admission-only Strix broker API that verifies a signed contract with a broker-scoped verification secret and performs no network I/O.",
     "Placed the broker on an internal-only Docker network with no host port, data volume, Docker socket or Linux capabilities.",
     "Added broker readiness, signed contract admission, wrong-key, out-of-scope, denied-host, rate-cap and unsafe-invariant tests.",
-    "Added CI coverage that builds the dedicated strix-broker Compose profile."
+    "Added CI coverage that builds the dedicated strix-broker Compose profile.",
+    "Added a separate read-only Strix egress service reachable from the broker but not directly from the scanner network.",
+    "Added GET/HEAD-only public-network egress with DNS resolution pinning, private/reserved IP rejection, TLS hostname preservation, no redirect following, bounded timeout/body and safe header handling.",
+    "Added actual per-contract request-start rate enforcement at the egress boundary.",
+    "Added double contract verification at broker and egress boundaries and preserved repeated response headers such as Set-Cookie.",
+    "Added three-zone Compose isolation tests and CI build coverage for both broker and egress services."
   ],
-  "current_branch": "codex/strix-admission-broker",
-  "current_priority": "Add controlled HTTP(S) egress behind the internal broker while preserving per-request signed scope and rate enforcement.",
+  "current_branch": "codex/strix-broker-readonly-egress",
+  "current_priority": "Build a separately pinned/attested Strix runner with no direct target-network egress and force all supported target HTTP traffic through the broker.",
   "blockers": [
-    "The broker is admission-only and does not yet mediate outbound HTTP(S) traffic.",
-    "The Strix runtime itself is not yet pinned/attested inside a dedicated execution image.",
-    "Contract v1 uses symmetric HMAC verification; the broker receives a shared verification secret rather than a public verification key."
+    "The current scanner-worker is not the final isolated Strix runner and still participates in the general control network.",
+    "The bounded broker path currently supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
+    "The exact Strix runtime version/image is not yet pinned and attested.",
+    "Contract v1 still uses symmetric HMAC verification rather than asymmetric verification."
   ],
   "safety_invariants": [
     "Authorized targets only.",
@@ -30,10 +36,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the admission-only broker boundary.",
-    "Implement a bounded HTTP(S) egress executor behind the broker with per-request scope validation and rate limiting.",
-    "Keep direct egress unavailable to the future Strix runtime.",
-    "Pin and attest the exact Strix runtime version before active dispatch can be enabled.",
-    "Evaluate asymmetric signing so the broker can verify contracts without possessing a signing secret."
+    "Validate and merge the bounded read-only egress boundary.",
+    "Create a dedicated Strix runner image/service attached only to internal runtime networks.",
+    "Pin the exact Strix source/version and attest it at runtime.",
+    "Route supported Strix HTTP traffic through the broker and prove direct target-network access is unavailable.",
+    "Expand the contract deliberately for any additional HTTP methods only after method-specific safety controls are defined.",
+    "Evaluate asymmetric contract signatures so verification services do not possess the signing secret."
   ]
 }
