@@ -46,13 +46,15 @@ def _assert_bound(job, campaign, expected_kind):
     assert verify_job_provenance(job, campaign)["valid"] is True
 
 
-def test_campaign_start_direct_enqueue_is_provenanced(tmp_path, monkeypatch):
+def test_campaign_start_recon_first_jobs_are_provenanced(tmp_path, monkeypatch):
     campaign, _store, _jobs = _runtime(tmp_path, monkeypatch)
 
     result = main.start_campaign(campaign.id)
     latest = main.assert_campaign_exists(campaign.id)
 
-    _assert_bound(result["job"], latest, "strix_scan")
+    assert result["jobs"]
+    for job in result["jobs"]:
+        _assert_bound(job, latest, "recon_task")
 
 
 def test_add_finding_direct_validation_enqueue_is_provenanced(tmp_path, monkeypatch):
