@@ -113,6 +113,28 @@ def check_egress_ready() -> None:
                     "Strix egress service is not ready",
                     status_code=503,
                 )
+            try:
+                readiness = json.loads(payload.decode("utf-8"))
+            except (UnicodeError, json.JSONDecodeError) as exc:
+                raise StrixBrokerClientError(
+                    "Strix egress readiness payload is invalid",
+                    status_code=503,
+                ) from exc
+            expected = {
+                "status": "ready",
+                "mode": "read_only_http",
+                "methods": ["GET", "HEAD"],
+                "public_network_only": True,
+                "redirects_followed": False,
+            }
+            if not isinstance(readiness, dict) or any(
+                readiness.get(key) != value
+                for key, value in expected.items()
+            ):
+                raise StrixBrokerClientError(
+                    "Strix egress readiness posture is unexpected",
+                    status_code=503,
+                )
     except urllib.error.HTTPError as exc:
         raise StrixBrokerClientError(
             "Strix egress service is not ready",
