@@ -840,3 +840,91 @@ def test_duplicate_sitemap_directive_does_not_fake_request_budget_saturation(mon
     assert result.deferred_by_request_budget == 0
     assert result.stopped_by_request_budget is False
     assert result.coverage_complete is True
+
+
+def test_recon_worker_rejects_mutating_execution_contract_before_network(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_RECON", "1")
+
+    called = {"count": 0}
+
+    class _NeverCalled:
+        def open(self, *_args, **_kwargs):
+            called["count"] += 1
+            raise AssertionError("network must not be reached for an unsafe contract")
+
+    monkeypatch.setattr(
+        "app.recon_worker.build_opener",
+        lambda *_args, **_kwargs: _NeverCalled(),
+    )
+
+    cases = [
+        (
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "allowed_methods": ["GET", "POST"],
+            },
+            "permits only GET and HEAD",
+        ),
+        (
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "allowed_methods": ["GET", "HEAD"],
+                "same_origin_only": False,
+            },
+            "requires same_origin_only=true",
+        ),
+        (
+            {
+                "kind": "crawl",
+                "target": "https://example.test",
+                "allowed_methods": ["GET", "HEAD"],
+                "read_only": False,
+            },
+            "requires read_only=true",
+        ),
+    ]
+
+    for payload, expected in cases:
+        try:
+            execute_recon_task(_campaign(), payload)
+        except Exception as exc:
+            assert expected in str(exc)
+        else:
+            raise AssertionError("unsafe recon execution contract must fail closed")
+
+    assert called["count"] == 0
+
+
+def test_recon_execution_contract_is_stable_and_binds_budget(monkeypatch):
+    monkeypatch.delenv("XBOW_ENABLE_RECON", raising=False)
+
+    base = {
+        "kind": "crawl",
+        "target": "https://example.test",
+        "max_requests": 4,
+        "allowed_methods": ["HEAD", "GET", "GET"],
+        "same_origin_only": True,
+        "read_only": True,
+    }
+
+    first = execute_recon_task(_campaign(), base)
+    second = execute_recon_task(
+        _campaign(),
+        {
+            **base,
+            "allowed_methods": ["GET", "HEAD"],
+        },
+    )
+    changed_budget = execute_recon_task(
+        _campaign(),
+        {
+            **base,
+            "max_requests": 5,
+        },
+    )
+
+    assert first.execution_contract.startswith("recon:")
+    assert first.execution_contract == second.execution_contract
+    assert first.execution_contract != changed_budget.execution_contract

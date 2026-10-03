@@ -90,6 +90,7 @@ def test_recon_observed_primary_target_is_recorded_as_endpoint(tmp_path, monkeyp
             requests_made=1,
             request_budget=1,
             coverage_complete=True,
+            execution_contract="recon:fixture-contract",
         ),
     )
 
@@ -108,6 +109,14 @@ def test_recon_observed_primary_target_is_recorded_as_endpoint(tmp_path, monkeyp
     assert endpoints[0].value == "https://example.test/"
     assert endpoints[0].source == "recon:crawl"
     assert endpoints[0].metadata == {}
+
+    saved = store.get_campaign(campaign.id)
+    event = next(
+        item
+        for item in saved["events"]
+        if item.get("type") == "recon_task_completed"
+    )
+    assert event["execution_contract"] == "recon:fixture-contract"
 
 
 def test_recon_endpoint_provenance_is_persisted_and_telemetry_is_counted(tmp_path, monkeypatch):

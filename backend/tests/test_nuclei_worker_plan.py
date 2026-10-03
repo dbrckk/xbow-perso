@@ -41,6 +41,7 @@ def _admit_scanner_sandbox(monkeypatch):
             "read_only_rootfs": True,
             "no_new_privileges": True,
             "cap_drop_all": True,
+            "seccomp_filter": True,
         },
     )
 
