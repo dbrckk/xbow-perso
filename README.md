@@ -426,7 +426,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- isolated Strix runner forced through the broker, plus pinned/attested Strix runtime
+- broker-mediated Strix runtime execution on top of the pinned/attested runner
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -475,7 +475,7 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 
 The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, and each Strix job now gets a deterministic `strix-execution-contract-v1` bound to the job id, campaign policy fingerprint, normalized allow/deny scope and exact request-rate ceiling. The contract forbids direct egress and host-container-socket access, requires independent validation, and is HMAC-authenticated when the audit signing key is configured. Future broker requests must present an authenticated contract and are rejected when the target is out of scope or the requested RPS exceeds the contract cap.
 
-The `strix-broker` profile now uses three Strix-specific network zones. Within those zones, `scanner-worker` can reach only the broker network; the broker can reach a second internal broker-to-egress network; only the separate `strix-egress` service is attached to an external bridge. The current `scanner-worker` still also uses the general `control` network for the reviewed Nuclei path, so it is **not** yet the final network-isolated Strix runner. Neither service publishes a host port or mounts data volumes or a Docker socket, and both run read-only with no-new-privileges and all Linux capabilities dropped.
+The Strix boundary now uses four Strix-specific network zones. Within those zones, `scanner-worker` can reach only the broker network; the broker can reach a second internal broker-to-egress network; only the separate `strix-egress` service is attached to an external bridge. The current `scanner-worker` still also uses the general `control` network for the reviewed Nuclei path, so it is **not** yet the final network-isolated Strix runner. Neither service publishes a host port or mounts data volumes or a Docker socket, and both run read-only with no-new-privileges and all Linux capabilities dropped.
 
 The broker keeps `/v1/admit` for policy-only checks and adds an optional `/v1/request` path for read-only HTTP. Every request is verified once by the broker and again by `strix-egress`. The egress service permits only GET/HEAD, rejects private/reserved/link-local destinations, resolves DNS before connecting and pins the validated IP to prevent rebinding, preserves the original hostname for TLS verification, follows no redirects, bounds timeout/response size, filters unsafe hop-by-hop headers, enforces the signed per-contract RPS ceiling before opening the connection, and permits at most one in-flight target request per contract.
 
@@ -487,4 +487,12 @@ docker compose --profile strix-broker up -d --build
 
 For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` must match the HMAC secret used to sign the contract. The symmetric-key arrangement is still intermediate and should eventually be replaced by asymmetric verification.
 
-**Active Strix dispatch remains fail-closed.** The controlled GET/HEAD egress path exists, but the current Strix execution runtime is not yet a separately pinned/attested runner whose only network path is the broker, and full Strix behavior cannot be represented by this read-only subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
+A separate `strix-runner` profile now packages the official Strix **v1.6.2** Linux release. The build verifies the GitHub release asset against the pinned SHA-256 for amd64 or arm64, records upstream commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and verifies `strix --version` before producing the final image. At runtime, `/readyz` recomputes the binary SHA-256 and rechecks the exact version and manifest. The image contains no application dependency set, Docker CLI/socket, LLM secret, data volume, or scan endpoint; it is attached only to the internal `strix-runner-control` network shared with the broker.
+
+Build/start the attestation-only runner with:
+
+```bash
+docker compose --profile strix-runner up -d --build strix-runner
+```
+
+**Active Strix dispatch remains fail-closed.** The runner is deliberately `attestation_only`: it does not execute scans, does not yet route the full Strix tool/method surface through the broker, and the upstream Strix sandbox backend still assumes Docker unless replaced. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_runner_execution_enabled=false`. Dry-run planning remains available.
