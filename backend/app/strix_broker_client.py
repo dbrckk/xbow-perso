@@ -47,7 +47,7 @@ def _egress_endpoint() -> EgressEndpoint:
     if (
         parsed.scheme != "http"
         or parsed.hostname != "strix-egress"
-        or port not in {None, 8091}
+        or port != 8091
         or parsed.path != "/v1/fetch"
         or parsed.query
         or parsed.fragment
