@@ -102,6 +102,7 @@ def test_client_posts_only_to_fixed_internal_egress_endpoint(monkeypatch):
     [
         "https://strix-egress:8091/v1/fetch",
         "http://127.0.0.1:8091/v1/fetch",
+        "http://strix-egress/v1/fetch",
         "http://strix-egress:8092/v1/fetch",
         "http://strix-egress:8091/other",
         "http://user:pass@strix-egress:8091/v1/fetch",
