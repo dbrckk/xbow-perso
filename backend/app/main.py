@@ -1257,14 +1257,6 @@ def start_campaign(campaign_id: str):
         save_campaign(campaign, expected_version=version)
         raise HTTPException(status_code=403, detail={"message": "Policy blocked campaign", "receipt": receipt})
 
-    hackerone_bound = any(
-        isinstance(event, dict) and event.get("type") == "hackerone_policy_bound"
-        for event in campaign.events
-    )
-    htb_lab_bound = any(
-        isinstance(event, dict) and event.get("type") == "htb_lab_bound"
-        for event in campaign.events
-    )
     request_id = _pending_campaign_start_request(campaign) or str(uuid4())
     _record_campaign_start_intent(
         campaign,
@@ -1273,43 +1265,31 @@ def start_campaign(campaign_id: str):
         receipt=receipt,
     )
 
-    planner_result = None
-    jobs = queue()
-    if hackerone_bound or htb_lab_bound:
-        from .orchestrator import advance_campaign
+    from .orchestrator import advance_campaign
 
-        campaign, _current_version = assert_campaign_record(campaign.id)
-        planner_result = advance_campaign(campaign, jobs, storage())
-        job_ids = [
-            str(job_id)
-            for job_id in list(planner_result.get("job_ids") or [])
-            if str(job_id)
-        ]
-        if not job_ids:
-            action = dict(planner_result.get("action") or {})
-            raise HTTPException(
-                status_code=409,
-                detail={
-                    "message": "Authorized planner could not schedule bounded recon",
-                    "reason": "planner_start_blocked",
-                    "action": action,
-                },
-            )
-        job = jobs.get(job_ids[0])
-        if job is None:
-            raise HTTPException(
-                status_code=500,
-                detail="HackerOne planner queued job disappeared",
-            )
-    else:
-        job_kind = "strix_scan"
-        payload = sanitized_scan_payload(campaign, receipt, job_kind=job_kind)
-        job = jobs.enqueue(
-            campaign.id,
-            job_kind,
-            payload,
-            max_attempts=2,
-            dedupe_key=f"api:start:{request_id}",
+    jobs = queue()
+    campaign, _current_version = assert_campaign_record(campaign.id)
+    planner_result = advance_campaign(campaign, jobs, storage())
+    job_ids = [
+        str(job_id)
+        for job_id in list(planner_result.get("job_ids") or [])
+        if str(job_id)
+    ]
+    if not job_ids:
+        action = dict(planner_result.get("action") or {})
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Authorized planner could not schedule bounded recon",
+                "reason": "planner_start_blocked",
+                "action": action,
+            },
+        )
+    job = jobs.get(job_ids[0])
+    if job is None:
+        raise HTTPException(
+            status_code=500,
+            detail="Planner queued job disappeared",
         )
 
     campaign = _reconcile_campaign_started(
