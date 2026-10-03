@@ -2,30 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "improve: make HTB session lifecycle explicit and safer (#401)",
-      "terms": [
-        "401",
-        "explicit",
-        "htb",
-        "improve",
-        "lifecycle",
-        "make",
-        "safer",
-        "session"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/app/htb_lab.py",
-        "backend/tests/test_frontend_auth_proxy.py",
-        "backend/tests/test_frontend_policy_launcher.py",
-        "backend/tests/test_htb_lab.py",
-        "backend/tests/test_mobile_production_update_script.py",
-        "frontend/simple.js",
-        "frontend/sw.js"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "fix: verify deployed routes through OpenAPI and warm feasibility (#402)",
       "terms": [
         "402",
@@ -1233,6 +1209,25 @@
         "backend/app/worker.py",
         "backend/tests/test_scanner_worker.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Harden Strix lifecycle and active runtime admission",
+      "terms": [
+        "active",
+        "admission",
+        "harden",
+        "lifecycle",
+        "runtime",
+        "strix"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/runtime_capabilities.py",
+        "backend/app/scanner_sandbox.py",
+        "backend/tests/test_runtime_capabilities.py",
+        "backend/tests/test_scanner_sandbox.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -2207,11 +2202,15 @@
     },
     "active": {
       "backend/app/hackerone_api.py": 4,
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/scanner_sandbox.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 8,
       "backend/tests/test_frontend_policy_launcher.py": 8,
       "backend/tests/test_hackerone_batch_api.py": 4,
       "backend/tests/test_hackerone_prelaunch.py": 4,
       "backend/tests/test_hackerone_reviewed_batch_api.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 4,
       "frontend/hackerone.js": 4,
       "frontend/simple.js": 8,
       "frontend/sw.js": 12
@@ -2279,6 +2278,12 @@
     "address": {
       "backend/app/htb_lab.py": 4,
       "backend/tests/test_htb_lab.py": 4
+    },
+    "admission": {
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/scanner_sandbox.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 4
     },
     "advisory": {
       "backend/app/finding_intelligence.py": 4,
@@ -3913,11 +3918,13 @@
     },
     "harden": {
       "backend/app/hackerone_api.py": 4,
-      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/runtime_capabilities.py": 8,
+      "backend/app/scanner_sandbox.py": 4,
       "backend/app/scanner_worker.py": 4,
       "backend/app/strix_run_status.py": 4,
       "backend/tests/test_hackerone_prelaunch.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 8,
+      "backend/tests/test_scanner_sandbox.py": 4,
       "backend/tests/test_strix_run_status.py": 4,
       "frontend/hackerone.js": 4,
       "frontend/sw.js": 4
@@ -4253,7 +4260,8 @@
     },
     "lifecycle": {
       "backend/app/htb_lab.py": 4,
-      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/runtime_capabilities.py": 8,
+      "backend/app/scanner_sandbox.py": 4,
       "backend/app/scanner_worker.py": 8,
       "backend/app/strix_run_status.py": 4,
       "backend/app/worker.py": 4,
@@ -4261,7 +4269,8 @@
       "backend/tests/test_frontend_policy_launcher.py": 4,
       "backend/tests/test_htb_lab.py": 4,
       "backend/tests/test_mobile_production_update_script.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 8,
+      "backend/tests/test_scanner_sandbox.py": 4,
       "backend/tests/test_scanner_worker.py": 4,
       "backend/tests/test_strix_run_status.py": 4,
       "frontend/simple.js": 4,
@@ -5577,9 +5586,9 @@
       "backend/app/main.py": 4,
       "backend/app/orchestrator.py": 8,
       "backend/app/recon_worker.py": 4,
-      "backend/app/runtime_capabilities.py": 12,
+      "backend/app/runtime_capabilities.py": 16,
       "backend/app/runtime_gap_analysis.py": 4,
-      "backend/app/scanner_sandbox.py": 4,
+      "backend/app/scanner_sandbox.py": 8,
       "backend/app/scanner_worker.py": 4,
       "backend/app/strix_run_status.py": 4,
       "backend/app/worker_service.py": 4,
@@ -5592,10 +5601,10 @@
       "backend/tests/test_nuclei_worker_plan.py": 4,
       "backend/tests/test_orchestrator.py": 8,
       "backend/tests/test_recon_worker.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 12,
+      "backend/tests/test_runtime_capabilities.py": 16,
       "backend/tests/test_runtime_gap_analysis.py": 4,
       "backend/tests/test_scanner_runtime_contract.py": 4,
-      "backend/tests/test_scanner_sandbox.py": 4,
+      "backend/tests/test_scanner_sandbox.py": 8,
       "backend/tests/test_strix_run_status.py": 4,
       "backend/tests/test_worker_observations.py": 4,
       "frontend/simple.js": 12,
@@ -5990,11 +5999,13 @@
       "backend/tests/test_mobile_production_update_script.py": 4
     },
     "strix": {
-      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/runtime_capabilities.py": 8,
+      "backend/app/scanner_sandbox.py": 4,
       "backend/app/scanner_worker.py": 8,
       "backend/app/strix_run_status.py": 4,
       "backend/app/worker.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 8,
+      "backend/tests/test_scanner_sandbox.py": 4,
       "backend/tests/test_scanner_worker.py": 4,
       "backend/tests/test_strix_run_status.py": 4
     },

@@ -25,16 +25,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T18:51:56Z
+Generated: 2026-10-03T18:57:44Z
 
 ### Git
 - Branch: `main`
-- Head: `9b816a3c171c`
-- Commit date: 2026-10-03T20:51:46+02:00
-- Commit: fix(strix): bind lifecycle artifacts to the completed run
-- Tracked files: 592
+- Head: `d557c56fc8a8`
+- Commit date: 2026-10-03T20:57:33+02:00
+- Commit: security(strix): fail closed until runtime contract is enforceable
+- Tracked files: 593
 
 ### Recently changed files
+- `README.md`
+- `backend/app/runtime_capabilities.py`
+- `backend/app/scanner_sandbox.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_scanner_sandbox.py`
 - `backend/app/scanner_worker.py`
 - `backend/app/worker.py`
 - `backend/tests/test_scanner_worker.py`

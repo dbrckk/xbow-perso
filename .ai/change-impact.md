@@ -1,14 +1,17 @@
 # Change impact
 
-Base: da36946e1846e3c244aef53c03c1bd3bc73e2765
-Head: 9b816a3c171cea546e7448a39d627d715b24d542
+Base: d9042a715adf6e9e2125e3190f3542f522a63ff9
+Head: d557c56fc8a899dc1839ed1b48ab966c06ebd1d0
 
 ## Changed files
-- M backend/app/scanner_worker.py
-- M backend/app/worker.py
-- M backend/tests/test_scanner_worker.py
+- M README.md
+- M backend/app/runtime_capabilities.py
+- M backend/app/scanner_sandbox.py
+- M backend/tests/test_runtime_capabilities.py
+- M backend/tests/test_scanner_sandbox.py
 
 ## Affected areas
+- (root)
 - backend
 
 ## Related test candidates

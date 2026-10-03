@@ -10551,6 +10551,7 @@ strix_allowlisted = "strix" in engines
 strix_execution_intent = bool(
 strix_binary_available = bool(shutil.which("strix"))
 docker_cli_available = bool(shutil.which("docker"))
+strix_contract_enforceable = strix_runtime_contract_enforceable()
 ⋮----
 reasons: list[str] = []
 ⋮----
@@ -10849,6 +10850,16 @@ parts = line.split()
 mount_options = set(parts[5].split(","))
 rootfs_read_only = "ro" in mount_options and "rw" not in mount_options
 ⋮----
+def strix_runtime_contract_enforceable() -> bool
+⋮----
+"""Return whether active Strix execution has an enforceable runtime contract.
+
+    The current OSS Strix path requires a nested execution runtime, while xbow's
+    scanner worker intentionally does not expose a host container socket. Until
+    scope, request-rate, and sandbox guarantees can be attested end-to-end,
+    active Strix dispatch must remain fail-closed.
+    """
+⋮----
 def _allowed_engines() -> tuple[str, ...]
 ⋮----
 raw = os.getenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei").strip()
@@ -10873,6 +10884,8 @@ runtime_seccomp_filter = bool(runtime.get("seccomp_filter"))
 runtime_attested = (
 ⋮----
 reasons: list[str] = []
+⋮----
+requested_engine = (engine or "").strip().lower()
 ⋮----
 def safe_scanner_sandbox_admission(engine: str | None = None) -> dict[str, Any]
 ⋮----
@@ -19984,7 +19997,7 @@ recon = result["execution"]["recon_detail"]
 ⋮----
 def test_strix_runtime_capability_fails_closed_without_binary_or_docker(monkeypatch)
 ⋮----
-def test_strix_runtime_capability_reports_ready_when_runtime_exists(monkeypatch)
+def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch)
 ⋮----
 def test_browser_runtime_capability_fails_closed_without_runtime_marker(monkeypatch, tmp_path)
 ⋮----
@@ -20237,6 +20250,10 @@ def test_restricted_scanner_worker_can_admit_allowlisted_engine(monkeypatch)
 result = require_scanner_sandbox("nuclei")
 ⋮----
 def test_engine_must_be_explicitly_allowlisted(monkeypatch)
+⋮----
+def test_strix_stays_blocked_without_enforceable_runtime_contract(monkeypatch)
+⋮----
+admission = scanner_sandbox_admission("strix")
 ⋮----
 def test_invalid_sandbox_boolean_fails_closed(monkeypatch)
 ⋮----
@@ -24864,7 +24881,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- real Strix job lifecycle + result parser
+- enforceable isolated Strix runtime contract and active execution
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -24911,5 +24928,5 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 - worker runtime attests read-only root filesystem, no-new-privileges and all Linux capabilities dropped;
 - engine-specific runtime checks such as the pinned Nuclei version.
 
-The default allowlist contains only Nuclei. Strix must be explicitly added after its runtime contract has been reviewed. `GET /api/capabilities` reports the non-secret scanner admission state.
+The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, but **active Strix dispatch remains fail-closed** until xbow can attest an enforceable isolated runtime contract for downstream scope, request-rate, and sandbox guarantees. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable`. Dry-run planning remains available.
 ````

@@ -5,100 +5,119 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "ScannerJobResult": {
+    "CapabilityConfigError": {
       "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 18,
-        "end": 22
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 11,
+        "end": 12
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_strict_bool": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 15,
+        "end": 24
       },
       "symbol_dependencies": [
         {
-          "symbol": "ScannerIngestionResult",
+          "symbol": "CapabilityConfigError",
           "definitions": [
             {
-              "file": "backend/app/scanner_ingestion.py",
-              "line": 15,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 11,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
       "dependency_count": 1
     },
-    "_record_scan_observation": {
+    "pentagi_runtime_capability": {
       "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 25,
-        "end": 50
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 27,
+        "end": 77
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "_strict_bool",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 15,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 1
     },
-    "_state_after_scan": {
+    "safe_pentagi_runtime_capability": {
       "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 53,
-        "end": 58
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 80,
+        "end": 102
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "CapabilityConfigError",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 160,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 11,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "CampaignState",
+          "symbol": "pentagi_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "scanner_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 105,
+        "end": 181
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "strix_runtime_contract_enforceable",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 92,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -107,55 +126,19 @@
       ],
       "dependency_count": 2
     },
-    "run_strix_job": {
+    "safe_scanner_runtime_capability": {
       "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 61,
-        "end": 147
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 184,
+        "end": 209
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "CapabilityConfigError",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ScannerJobResult",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 18,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 11,
               "kind": "class",
               "language": "python"
             }
@@ -163,35 +146,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "Storage",
+          "symbol": "scanner_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixRunStatusError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_run_status.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_record_scan_observation",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 25,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 105,
               "kind": "function",
               "language": "python"
             }
@@ -199,149 +158,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_state_after_scan",
+          "symbol": "strix_runtime_contract_enforceable",
           "definitions": [
             {
-              "file": "backend/app/scanner_worker.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_strix_plan",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 166,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 244,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 182,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ingest_scanner_run",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_ingestion.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_strix_run_status",
-          "definitions": [
-            {
-              "file": "backend/app/strix_run_status.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_execution_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 388,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_asset",
-          "definitions": [
-            {
-              "file": "backend/app/observation_writer.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 92,
               "kind": "function",
               "language": "python"
             }
@@ -349,453 +170,393 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 19
+      "dependency_count": 3
     },
-    "run_nuclei_job": {
+    "browser_runtime_capability": {
       "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 150,
-        "end": 226
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 213,
+        "end": 234
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "_strict_bool",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ScannerJobResult",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_record_scan_observation",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_state_after_scan",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_nuclei_plan",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 91,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 244,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 182,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ingest_scanner_run",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_ingestion.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_execution_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 388,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_asset",
-          "definitions": [
-            {
-              "file": "backend/app/observation_writer.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
+              "file": "backend/app/runtime_capabilities.py",
               "line": 15,
               "kind": "function",
               "language": "python"
-            },
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "safe_browser_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 237,
+        "end": 249
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 48,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 213,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 17
+      "dependency_count": 2
     },
-    "WorkerPlan": {
+    "recon_runtime_capability": {
       "source": {
-        "file": "backend/app/worker.py",
-        "start": 20,
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 252,
+        "end": 287
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "safe_recon_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 290,
+        "end": 309
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "ScannerSandboxConfigError": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 9,
+        "end": 10
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "ScannerSandboxAdmission": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 14,
+        "end": 34
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "to_dict": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 30,
+        "end": 34
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_runtime_hardening_attestation": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 49,
+        "end": 89
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "strix_runtime_contract_enforceable": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 92,
+        "end": 101
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_allowed_engines": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 104,
+        "end": 114
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ScannerSandboxConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 9,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "scanner_sandbox_admission": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 117,
+        "end": 179
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ScannerSandboxAdmission",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_allowed_engines",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_hardening_attestation",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "strix_runtime_contract_enforceable",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "safe_scanner_sandbox_admission": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 182,
+        "end": 202
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ScannerSandboxConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 9,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "scanner_sandbox_admission",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "require_scanner_sandbox": {
+      "source": {
+        "file": "backend/app/scanner_sandbox.py",
+        "start": 205,
+        "end": 211
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ScannerSandboxAdmission",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ScannerSandboxConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 9,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "scanner_sandbox_admission",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_clear": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 25,
         "end": 27
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "WorkerPolicyError": {
+    "test_pentagi_capability_defaults_fail_closed": {
       "source": {
-        "file": "backend/app/worker.py",
+        "file": "backend/tests/test_runtime_capabilities.py",
         "start": 30,
-        "end": 31
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_strict_bool_env": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 34,
         "end": 43
       },
       "symbol_dependencies": [
         {
-          "symbol": "WorkerPolicyError",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 25,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 2
     },
-    "_safe_strix_output_dir": {
+    "test_all_operator_gates_still_do_not_claim_pentagi_execution": {
       "source": {
-        "file": "backend/app/worker.py",
+        "file": "backend/tests/test_runtime_capabilities.py",
         "start": 46,
-        "end": 56
+        "end": 65
       },
       "symbol_dependencies": [
         {
-          "symbol": "WorkerPolicyError",
+          "symbol": "pentagi_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_max_autonomous_rps": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 59,
-        "end": 66
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_safe_nuclei_output_dir": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 69,
-        "end": 79
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_nuclei_rate_limit": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 82,
-        "end": 88
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_nuclei_plan": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 91,
-        "end": 163
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "WorkerPlan",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_max_autonomous_rps",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_nuclei_rate_limit",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_safe_nuclei_output_dir",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 69,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_strict_bool_env",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "is_host_allowed",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 197,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -803,147 +564,123 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 8
-    },
-    "build_strix_plan": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 166,
-        "end": 197
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "WorkerPlan",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_max_autonomous_rps",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_safe_strix_output_dir",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_strict_bool_env",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "is_host_allowed",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 197,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "_bounded_timeout": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 200,
-        "end": 208
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
       "dependency_count": 1
     },
-    "_text": {
+    "test_status_tracking_requires_integration_and_status_worker": {
       "source": {
-        "file": "backend/app/worker.py",
-        "start": 211,
-        "end": 216
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 68,
+        "end": 78
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_invalid_boolean_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 81,
+        "end": 93
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 96,
+        "end": 113
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_verify_nuclei_runtime": {
+    "test_capabilities_api_reports_configuration_error_without_raising": {
       "source": {
-        "file": "backend/app/worker.py",
-        "start": 219,
-        "end": 241
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 116,
+        "end": 125
       },
       "symbol_dependencies": [
         {
-          "symbol": "WorkerPolicyError",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 25,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -952,11 +689,392 @@
       ],
       "dependency_count": 1
     },
-    "execute": {
+    "test_scanner_runtime_capability_defaults_fail_closed": {
       "source": {
-        "file": "backend/app/worker.py",
-        "start": 244,
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 129,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 148,
+        "end": 159
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_scanner_worker_admission": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 162,
+        "end": 174
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_scanner_runtime_capability_rejects_unsupported_engine": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 178,
+        "end": 188
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_runtime_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 192,
+        "end": 202
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_external_recon_preflight_reports_missing_tools": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 205,
+        "end": 223
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_external_recon_preflight_ready_when_every_tool_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 226,
+        "end": 237
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_capability_invalid_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 240,
+        "end": 247
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "safe_recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_recon_preflight": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 250,
+        "end": 267
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_strix_runtime_capability_fails_closed_without_binary_or_docker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 270,
+        "end": 284
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_strix_runtime_capability_stays_blocked_when_cli_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 287,
+        "end": 304
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_fails_closed_without_runtime_marker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 307,
         "end": 317
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 213,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_ready_with_runtime_marker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 320,
+        "end": 330
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 213,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_disabled_even_when_runtime_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 333,
+        "end": 343
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 213,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_browser_runtime_detail": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 346,
+        "end": 359
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_attest_runtime": {
+      "source": {
+        "file": "backend/tests/test_scanner_sandbox.py",
+        "start": 27,
+        "end": 36
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_runtime_hardening_attestation",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_scanner_sandbox_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_scanner_sandbox.py",
+        "start": 39,
+        "end": 47
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_scanner_sandbox.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "scanner_sandbox_admission",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_restricted_scanner_worker_can_admit_allowlisted_engine": {
+      "source": {
+        "file": "backend/tests/test_scanner_sandbox.py",
+        "start": 50,
+        "end": 64
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_attest_runtime",
+          "definitions": [
+            {
+              "file": "backend/tests/test_scanner_sandbox.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "require_scanner_sandbox",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_engine_must_be_explicitly_allowlisted": {
+      "source": {
+        "file": "backend/tests/test_scanner_sandbox.py",
+        "start": 67,
+        "end": 78
       },
       "symbol_dependencies": [
         {
@@ -972,71 +1090,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "WorkerPlan",
+          "symbol": "_attest_runtime",
           "definitions": [
             {
-              "file": "backend/app/worker.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_bounded_timeout",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 200,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 211,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_verify_nuclei_runtime",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 219,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_worker_env",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 320,
+              "file": "backend/tests/test_scanner_sandbox.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -1048,7 +1106,7 @@
           "definitions": [
             {
               "file": "backend/app/scanner_sandbox.py",
-              "line": 190,
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -1056,21 +1114,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 3
     },
-    "_worker_env": {
+    "test_strix_stays_blocked_without_enforceable_runtime_contract": {
       "source": {
-        "file": "backend/app/worker.py",
-        "start": 320,
-        "end": 361
+        "file": "backend/tests/test_scanner_sandbox.py",
+        "start": 81,
+        "end": 100
       },
       "symbol_dependencies": [
         {
-          "symbol": "SecretVaultError",
+          "symbol": "ScannerSandboxConfigError",
           "definitions": [
             {
-              "file": "backend/app/secret_vault.py",
-              "line": 12,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 9,
               "kind": "class",
               "language": "python"
             }
@@ -1078,23 +1136,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "WorkerPolicyError",
+          "symbol": "_attest_runtime",
           "definitions": [
             {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
+              "file": "backend/tests/test_scanner_sandbox.py",
+              "line": 27,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "get_secret",
+          "symbol": "require_scanner_sandbox",
           "definitions": [
             {
-              "file": "backend/app/secret_vault.py",
-              "line": 129,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -1102,11 +1160,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "vault_enabled",
+          "symbol": "scanner_sandbox_admission",
           "definitions": [
             {
-              "file": "backend/app/secret_vault.py",
-              "line": 145,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 117,
               "kind": "function",
               "language": "python"
             }
@@ -1116,65 +1174,19 @@
       ],
       "dependency_count": 4
     },
-    "_max_strix_json_bytes": {
+    "test_invalid_sandbox_boolean_fails_closed": {
       "source": {
-        "file": "backend/app/worker.py",
-        "start": 364,
-        "end": 368
+        "file": "backend/tests/test_scanner_sandbox.py",
+        "start": 103,
+        "end": 111
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixParserError",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/app/strix_parser.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "max_strix_json_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/strix_parser.py",
-              "line": 19,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "locate_vulnerabilities_json": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 371,
-        "end": 377
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_max_strix_json_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 364,
+              "file": "backend/tests/test_scanner_sandbox.py",
+              "line": 22,
               "kind": "function",
               "language": "python"
             }
@@ -1182,11 +1194,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "latest_scanner_artifact",
+          "symbol": "safe_scanner_sandbox_admission",
           "definitions": [
             {
-              "file": "backend/app/scanner_registry.py",
-              "line": 95,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 182,
               "kind": "function",
               "language": "python"
             }
@@ -1196,19 +1208,19 @@
       ],
       "dependency_count": 2
     },
-    "parse_strix_vulnerabilities": {
+    "test_scanner_worker_kill_switch_blocks_execution_admission": {
       "source": {
-        "file": "backend/app/worker.py",
-        "start": 380,
-        "end": 385
+        "file": "backend/tests/test_scanner_sandbox.py",
+        "start": 115,
+        "end": 125
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "ScannerSandboxConfigError",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 160,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 9,
               "kind": "class",
               "language": "python"
             }
@@ -1216,209 +1228,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "Finding",
+          "symbol": "require_scanner_sandbox",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 117,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixParserError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_parser.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "WorkerPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 30,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "parse_strix_json",
-          "definitions": [
-            {
-              "file": "backend/app/strix_parser.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "persist_execution_artifacts": {
-      "source": {
-        "file": "backend/app/worker.py",
-        "start": 388,
-        "end": 427
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "locate_vulnerabilities_json",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 371,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_campaign": {
-      "source": {
-        "file": "backend/tests/test_scanner_worker.py",
-        "start": 12,
-        "end": 23
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_scanner_worker_dry_run_stays_ready_and_records_event": {
-      "source": {
-        "file": "backend/tests/test_scanner_worker.py",
-        "start": 26,
-        "end": 51
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_strix_job",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 206,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -1426,21 +1240,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 2
     },
-    "test_scanner_worker_binds_status_findings_and_evidence_to_same_strix_run": {
+    "test_runtime_hardening_is_verified_not_just_declared": {
       "source": {
-        "file": "backend/tests/test_scanner_worker.py",
-        "start": 54,
+        "file": "backend/tests/test_scanner_sandbox.py",
+        "start": 138,
         "end": 157
       },
       "symbol_dependencies": [
         {
-          "symbol": "JobQueue",
+          "symbol": "ScannerSandboxConfigError",
           "definitions": [
             {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 9,
               "kind": "class",
               "language": "python"
             }
@@ -1448,23 +1262,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "Storage",
+          "symbol": "_attest_runtime",
           "definitions": [
             {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fake_execute",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_worker.py",
-              "line": 92,
+              "file": "backend/tests/test_scanner_sandbox.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -1472,93 +1274,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "list_artifacts",
+          "symbol": "require_scanner_sandbox",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 1874,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_strix_job",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 206,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "fake_execute": {
-      "source": {
-        "file": "backend/tests/test_scanner_worker.py",
-        "start": 92,
-        "end": 212
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "list_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 1874,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_strix_job",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 61,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }

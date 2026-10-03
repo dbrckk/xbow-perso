@@ -9943,6 +9943,7 @@ strix_allowlisted = "strix" in engines
 strix_execution_intent = bool(
 strix_binary_available = bool(shutil.which("strix"))
 docker_cli_available = bool(shutil.which("docker"))
+strix_contract_enforceable = strix_runtime_contract_enforceable()
 ⋮----
 reasons: list[str] = []
 ⋮----
@@ -10241,6 +10242,16 @@ parts = line.split()
 mount_options = set(parts[5].split(","))
 rootfs_read_only = "ro" in mount_options and "rw" not in mount_options
 ⋮----
+def strix_runtime_contract_enforceable() -> bool
+⋮----
+"""Return whether active Strix execution has an enforceable runtime contract.
+
+    The current OSS Strix path requires a nested execution runtime, while xbow's
+    scanner worker intentionally does not expose a host container socket. Until
+    scope, request-rate, and sandbox guarantees can be attested end-to-end,
+    active Strix dispatch must remain fail-closed.
+    """
+⋮----
 def _allowed_engines() -> tuple[str, ...]
 ⋮----
 raw = os.getenv("XBOW_SCANNER_ALLOWED_ENGINES", "nuclei").strip()
@@ -10265,6 +10276,8 @@ runtime_seccomp_filter = bool(runtime.get("seccomp_filter"))
 runtime_attested = (
 ⋮----
 reasons: list[str] = []
+⋮----
+requested_engine = (engine or "").strip().lower()
 ⋮----
 def safe_scanner_sandbox_admission(engine: str | None = None) -> dict[str, Any]
 ⋮----
@@ -19376,7 +19389,7 @@ recon = result["execution"]["recon_detail"]
 ⋮----
 def test_strix_runtime_capability_fails_closed_without_binary_or_docker(monkeypatch)
 ⋮----
-def test_strix_runtime_capability_reports_ready_when_runtime_exists(monkeypatch)
+def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch)
 ⋮----
 def test_browser_runtime_capability_fails_closed_without_runtime_marker(monkeypatch, tmp_path)
 ⋮----
@@ -19629,6 +19642,10 @@ def test_restricted_scanner_worker_can_admit_allowlisted_engine(monkeypatch)
 result = require_scanner_sandbox("nuclei")
 ⋮----
 def test_engine_must_be_explicitly_allowlisted(monkeypatch)
+⋮----
+def test_strix_stays_blocked_without_enforceable_runtime_contract(monkeypatch)
+⋮----
+admission = scanner_sandbox_admission("strix")
 ⋮----
 def test_invalid_sandbox_boolean_fails_closed(monkeypatch)
 ⋮----
