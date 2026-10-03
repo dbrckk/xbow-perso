@@ -27,7 +27,7 @@ def test_frontend_assets_are_explicitly_cache_busted():
     sw = _text("frontend/sw.js")
     assert '/simple.js?v=102' in index
     assert '/app.css?v=102' in index
-    assert "xbow-perso-v102" in sw
+    assert "xbow-perso-v103" in sw
 
 
 def test_api_token_is_persisted_across_browser_sessions():
@@ -178,10 +178,10 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     script = _text("frontend/simple.js")
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
-    assert "const UI_VERSION='v102';" in script
+    assert "const UI_VERSION='v103';" in script
     assert "serviceWorker.register('/sw.js?v=102',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
-    assert "Interface v102" in html
+    assert "Interface v103" in html
     assert "location = /index.html" in nginx
     assert "location = /simple.js" in nginx
     assert "location = /sw.js" in nginx
@@ -396,10 +396,10 @@ def test_openapi_file_ux_validates_and_resets_locally():
     assert "openapiClear')?.addEventListener('click',clearOpenapiReview)" in script
 
 
-def test_pwa_precache_matches_v102_assets():
+def test_pwa_precache_matches_v103_assets():
     sw = _text("frontend/sw.js")
     index = _text("frontend/index.html")
-    assert "xbow-perso-v102" in sw
+    assert "xbow-perso-v103" in sw
     assert "/app.css?v=102" in sw
     assert "/simple.js?v=102" in sw
     assert '/app.css?v=102' in index
@@ -491,3 +491,29 @@ def test_mobile_journal_explains_bounded_autonomy_block_reasons():
     assert "/control-status" in script
     assert "autonomie bloquée" in script
     assert "état momentanément indisponible" in script
+
+
+def test_mobile_dashboard_surfaces_aggregate_control_plane_health_read_only():
+    html = _text("frontend/index.html")
+    script = _text("frontend/simple.js")
+
+    assert 'id="controlPlaneHealthStatus"' in html
+    assert 'id="controlPlaneHealthDetail"' in html
+    assert "async function refreshControlPlaneHealth" in script
+    assert "/operations/health" in script
+    assert "Control plane : sain" in script
+    assert "Control plane : dégradé" in script
+    assert "Control plane : bloqué" in script
+    assert ".slice(0,4)" in script
+    assert "Lecture seule" in html
+    assert "healthTimer=setInterval" in script
+    assert "30000" in script
+
+
+def test_control_plane_health_is_informative_not_a_launch_gate():
+    script = _text("frontend/simple.js")
+    gate = script.split("function updateStartAvailability()", 1)[1].split("function requireToken()", 1)[0]
+
+    assert "controlPlane" not in gate
+    assert "operations/health" not in gate
+    assert "runtimeReady===true" in gate
