@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .scanner_sandbox import strix_runtime_contract_enforceable
+from .strix_execution_contract import STRIX_EXECUTION_CONTRACT_SCHEMA
 
 
 class CapabilityConfigError(ValueError):
@@ -171,6 +172,8 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_binary_available": strix_binary_available,
         "strix_docker_runtime_available": docker_cli_available,
         "strix_runtime_contract_enforceable": strix_contract_enforceable,
+        "strix_execution_contract_schema": STRIX_EXECUTION_CONTRACT_SCHEMA,
+        "strix_execution_contract_required": True,
         "dry_run": dry_run,
         "sandbox_profile": profile or "unconfigured",
         "allowed_engines": list(engines),
@@ -198,6 +201,8 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_binary_available": False,
             "strix_docker_runtime_available": False,
             "strix_runtime_contract_enforceable": False,
+            "strix_execution_contract_schema": STRIX_EXECUTION_CONTRACT_SCHEMA,
+            "strix_execution_contract_required": True,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
             "allowed_engines": [],
