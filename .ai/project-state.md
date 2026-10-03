@@ -8,18 +8,20 @@ Status: active
 - Strix lifecycle status, result ingestion, and persisted vulnerability evidence are bound to the same completed run directory.
 - Nuclei remains the reviewed active scanner path in the dedicated restricted scanner worker.
 - Strix jobs now produce a deterministic execution contract bound to job id, policy fingerprint, scope and request-rate ceiling; broker authorization requires an authenticated contract.
+- An admission-only Strix broker runs without host ports, data volumes, Docker socket access or external egress on an internal Docker network.
 
 ## Broken / blockers
 - Active Strix execution does not yet have an enforceable isolated runtime contract for downstream scope, request-rate, and sandbox guarantees.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed while implementing an isolated runtime/egress broker that consumes the signed contract and enforces scope/rate limits for every downstream request.
+- Keep Strix active dispatch fail-closed while adding a controlled HTTP(S) egress path behind the internal broker and enforcing the signed scope/RPS contract on every request.
 
 ## Validation
 - PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
 - Runtime-contract changes require the same full CI/security/supply-chain gates before merge.
 - Execution-contract v1 adds deterministic hashing, optional HMAC authentication, policy/job binding, scope checks, rate-cap checks and redacted scan-event tracing.
+- Broker isolation is asserted by tests and CI builds the dedicated `strix-broker` Compose profile.
 
 ## Last verified
 - 2026-10-03

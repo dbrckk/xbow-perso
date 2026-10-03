@@ -209,8 +209,52 @@ services:
       nofile:
         soft: 1024
         hard: 2048
-    networks: [control]
+    networks: [control, strix-broker]
 
+
+  strix-broker:
+    profiles: ["strix-broker"]
+    build: ./backend
+    command:
+      [
+        "uvicorn",
+        "app.strix_broker:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8090",
+        "--no-access-log",
+      ]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    environment:
+      XBOW_STRIX_BROKER_HMAC_KEY: ${XBOW_STRIX_BROKER_HMAC_KEY:-}
+    expose:
+      - "8090"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 0.25
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/readyz', timeout=2).read()",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks: [strix-broker]
 
 
   pentagi-worker:
@@ -360,3 +404,6 @@ volumes:
 networks:
   control:
     driver: bridge
+  strix-broker:
+    driver: bridge
+    internal: true

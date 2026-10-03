@@ -197,6 +197,7 @@ def verify_strix_contract_integrity(
     contract: StrixExecutionContract,
     *,
     require_signature: bool,
+    verification_secret: str | None = None,
 ) -> None:
     canonical = _canonical_payload(contract)
     expected_hash = hashlib.sha256(canonical).hexdigest()
@@ -218,7 +219,11 @@ def verify_strix_contract_integrity(
         raise StrixExecutionContractError(
             "Strix execution contract signature algorithm is unsupported"
         )
-    secret = _contract_secret()
+    secret = (
+        verification_secret
+        if verification_secret is not None
+        else _contract_secret()
+    )
     if not secret:
         raise StrixExecutionContractError(
             "Strix execution contract verification key is unavailable"
@@ -281,6 +286,7 @@ def authorize_strix_contract_request(
     *,
     target: str,
     requested_rps: float,
+    verification_secret: str | None = None,
 ) -> StrixAuthorizedRequest:
     """Authorize one future broker request against a signed immutable contract.
 
@@ -288,9 +294,21 @@ def authorize_strix_contract_request(
     Strix runtime/broker boundary, where unsigned contracts fail closed.
     """
 
-    verify_strix_contract_integrity(contract, require_signature=True)
+    verify_strix_contract_integrity(
+        contract,
+        require_signature=True,
+        verification_secret=verification_secret,
+    )
     if contract.schema != STRIX_EXECUTION_CONTRACT_SCHEMA or contract.engine != "strix":
         raise StrixExecutionContractError("Strix execution contract schema is unsupported")
+    if (
+        contract.direct_egress_allowed
+        or contract.host_container_socket_allowed
+        or not contract.independent_validation_required
+    ):
+        raise StrixExecutionContractError(
+            "Strix execution contract safety invariants changed"
+        )
 
     try:
         parsed = urlparse(str(target))

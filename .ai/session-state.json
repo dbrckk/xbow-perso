@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-03",
-  "task": "Build an enforceable isolated Strix runtime contract",
+  "task": "Build an isolated Strix admission and egress boundary",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -10,13 +10,18 @@
     "Added strix-execution-contract-v1 bound to job id, campaign policy fingerprint, normalized scope and exact request-rate ceiling.",
     "Added canonical SHA-256 integrity and optional HMAC-SHA256 authentication using the existing audit signing key with domain separation.",
     "Added a broker-bound request authorizer that rejects unsigned contracts, out-of-scope targets and request rates above the contract cap without performing network I/O.",
-    "Added redacted execution-contract trace metadata to Strix dry-run and result-ingestion events."
+    "Added redacted execution-contract trace metadata to Strix dry-run and result-ingestion events.",
+    "Added an admission-only Strix broker API that verifies a signed contract with a broker-scoped verification secret and performs no network I/O.",
+    "Placed the broker on an internal-only Docker network with no host port, data volume, Docker socket or Linux capabilities.",
+    "Added broker readiness, signed contract admission, wrong-key, out-of-scope, denied-host, rate-cap and unsafe-invariant tests.",
+    "Added CI coverage that builds the dedicated strix-broker Compose profile."
   ],
-  "current_branch": "codex/strix-execution-contract-v1",
-  "current_priority": "Implement an isolated Strix runtime/egress broker that consumes the signed contract without exposing the host container socket.",
+  "current_branch": "codex/strix-admission-broker",
+  "current_priority": "Add controlled HTTP(S) egress behind the internal broker while preserving per-request signed scope and rate enforcement.",
   "blockers": [
-    "The signed contract exists, but no isolated broker currently mediates every downstream Strix request.",
-    "The Strix runtime itself is not yet pinned/attested inside a dedicated execution image."
+    "The broker is admission-only and does not yet mediate outbound HTTP(S) traffic.",
+    "The Strix runtime itself is not yet pinned/attested inside a dedicated execution image.",
+    "Contract v1 uses symmetric HMAC verification; the broker receives a shared verification secret rather than a public verification key."
   ],
   "safety_invariants": [
     "Authorized targets only.",
@@ -25,9 +30,10 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge execution-contract v1.",
-    "Design and implement an isolated broker/runtime topology with no host Docker socket and no direct Strix egress.",
-    "Require authenticated contract verification at the broker boundary for every target/rate admission.",
-    "Pin and attest the exact Strix runtime version before active dispatch can be enabled."
+    "Validate and merge the admission-only broker boundary.",
+    "Implement a bounded HTTP(S) egress executor behind the broker with per-request scope validation and rate limiting.",
+    "Keep direct egress unavailable to the future Strix runtime.",
+    "Pin and attest the exact Strix runtime version before active dispatch can be enabled.",
+    "Evaluate asymmetric signing so the broker can verify contracts without possessing a signing secret."
   ]
 }
