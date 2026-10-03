@@ -117,6 +117,32 @@ def test_signed_contract_authorizes_only_in_scope_rate_bounded_requests(monkeypa
         )
 
 
+
+
+
+def test_runtime_can_verify_with_explicit_broker_secret(monkeypatch):
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "fixture-contract-key")
+    contract = build_strix_execution_contract(_campaign(), job_id="job-1")
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+
+    authorized = authorize_strix_contract_request(
+        contract,
+        target="https://app.example.test/profile",
+        requested_rps=1.0,
+        verification_secret="fixture-contract-key",
+    )
+
+    assert authorized.host == "app.example.test"
+
+    with pytest.raises(StrixExecutionContractError, match="signature mismatch"):
+        authorize_strix_contract_request(
+            contract,
+            target="https://app.example.test/profile",
+            requested_rps=1.0,
+            verification_secret="wrong-key",
+        )
+
+
 def test_contract_tampering_fails_before_request_authorization(monkeypatch):
     monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "fixture-contract-key")
     contract = build_strix_execution_contract(_campaign(), job_id="job-1")
