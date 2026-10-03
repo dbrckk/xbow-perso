@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "f10996ec6f6641d2f88a6ebebfccca1d2b476d64",
-  "head": "edd4f78737cafca5a34680433fe5bc8267f55cf3",
+  "base": "edd4f78737cafca5a34680433fe5bc8267f55cf3",
+  "head": "2e21cee0caab1fd64b1589b46d38e7a77cbac554",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -14,22 +14,34 @@
       "status": "M"
     },
     {
+      "path": "backend/app/dr_manifest.py",
+      "status": "M"
+    },
+    {
       "path": "backend/app/dr_restore_preflight.py",
-      "status": "A"
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_dr_manifest.py",
+      "status": "M"
     },
     {
       "path": "backend/tests/test_dr_restore_preflight.py",
-      "status": "A"
+      "status": "M"
     }
   ],
   "changed_source_files": [
     "backend/app/dr_cli.py",
+    "backend/app/dr_manifest.py",
     "backend/app/dr_restore_preflight.py",
+    "backend/tests/test_dr_manifest.py",
     "backend/tests/test_dr_restore_preflight.py"
   ],
   "impacted_files": [
     "backend/app/dr_cli.py",
+    "backend/app/dr_manifest.py",
     "backend/app/dr_restore_preflight.py",
+    "backend/tests/test_dr_manifest.py",
     "backend/tests/test_dr_restore_preflight.py"
   ],
   "impacted_symbols": [
@@ -43,83 +55,294 @@
       "name": "main",
       "kind": "function",
       "file": "backend/app/dr_cli.py",
-      "line": 44
+      "line": 50
+    },
+    {
+      "name": "DisasterRecoveryError",
+      "kind": "class",
+      "file": "backend/app/dr_manifest.py",
+      "line": 23
+    },
+    {
+      "name": "_canonical_manifest",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 27
+    },
+    {
+      "name": "_seal_manifest",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 47
+    },
+    {
+      "name": "_verification_secret",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 75
+    },
+    {
+      "name": "_verify_manifest_signature",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 85
+    },
+    {
+      "name": "_safe_backup_file",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 136
+    },
+    {
+      "name": "_sha256",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 151
+    },
+    {
+      "name": "build_backup_manifest",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 162
+    },
+    {
+      "name": "write_backup_manifest",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 193
+    },
+    {
+      "name": "verify_backup_manifest",
+      "kind": "function",
+      "file": "backend/app/dr_manifest.py",
+      "line": 221
     },
     {
       "name": "_safe_file",
       "kind": "function",
       "file": "backend/app/dr_restore_preflight.py",
-      "line": 16
+      "line": 18
     },
     {
       "name": "_inspect_postgres_dump",
       "kind": "function",
       "file": "backend/app/dr_restore_preflight.py",
-      "line": 29
+      "line": 31
     },
     {
       "name": "_inspect_redis_snapshot",
       "kind": "function",
       "file": "backend/app/dr_restore_preflight.py",
-      "line": 52
+      "line": 54
     },
     {
       "name": "_decode_vault_field",
       "kind": "function",
       "file": "backend/app/dr_restore_preflight.py",
-      "line": 72
+      "line": 74
     },
     {
       "name": "_inspect_vault_copy",
       "kind": "function",
       "file": "backend/app/dr_restore_preflight.py",
-      "line": 81
+      "line": 83
     },
     {
       "name": "assess_restore_preflight",
       "kind": "function",
       "file": "backend/app/dr_restore_preflight.py",
-      "line": 122
+      "line": 124
+    },
+    {
+      "name": "test_manifest_write_preserves_preexisting_temporary_file",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 19
+    },
+    {
+      "name": "test_manifest_write_cleans_owned_temporary_after_replace_failure",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 41
+    },
+    {
+      "name": "_files",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 56
+    },
+    {
+      "name": "_canonical_legacy_v1",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 66
+    },
+    {
+      "name": "test_backup_manifest_contains_only_integrity_metadata",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 85
+    },
+    {
+      "name": "test_manifest_roundtrip_verifies",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 108
+    },
+    {
+      "name": "test_manifest_detects_modified_backup",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 130
+    },
+    {
+      "name": "test_manifest_rejects_symlink_backup",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 152
+    },
+    {
+      "name": "test_manifest_rejects_empty_backup",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 165
+    },
+    {
+      "name": "test_manifest_rejects_symlink_destination",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 177
+    },
+    {
+      "name": "test_manifest_rejects_invalid_artifact_size_schema",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 193
+    },
+    {
+      "name": "test_signed_manifest_detects_manifest_rewrite",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 213
+    },
+    {
+      "name": "test_signed_manifest_rejects_signature_field_stripping",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 245
+    },
+    {
+      "name": "test_signed_manifest_authenticates_integrity_mode",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 281
+    },
+    {
+      "name": "test_signed_manifest_requires_matching_verification_key",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 311
+    },
+    {
+      "name": "test_unsigned_manifest_remains_backward_compatible",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 337
+    },
+    {
+      "name": "test_legacy_signed_v1_manifest_remains_backward_compatible",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 366
+    },
+    {
+      "name": "test_legacy_v1_rejects_partial_signature_stripping",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 396
+    },
+    {
+      "name": "test_signed_manifest_fails_closed_when_key_becomes_unavailable",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 423
+    },
+    {
+      "name": "test_signed_manifest_authenticates_created_at",
+      "kind": "function",
+      "file": "backend/tests/test_dr_manifest.py",
+      "line": 447
     },
     {
       "name": "_write_valid_backup_set",
       "kind": "function",
       "file": "backend/tests/test_dr_restore_preflight.py",
-      "line": 8
+      "line": 11
     },
     {
       "name": "test_restore_preflight_accepts_recognized_integrity_valid_backup_set",
       "kind": "function",
       "file": "backend/tests/test_dr_restore_preflight.py",
-      "line": 41
+      "line": 44
     },
     {
       "name": "test_restore_preflight_rejects_checksum_valid_but_unrecognized_redis_snapshot",
       "kind": "function",
       "file": "backend/tests/test_dr_restore_preflight.py",
-      "line": 65
+      "line": 68
     },
     {
       "name": "test_restore_preflight_rejects_unrecognized_postgres_dump",
       "kind": "function",
       "file": "backend/tests/test_dr_restore_preflight.py",
-      "line": 92
+      "line": 95
     },
     {
       "name": "test_restore_preflight_rejects_invalid_vault_structure",
       "kind": "function",
       "file": "backend/tests/test_dr_restore_preflight.py",
-      "line": 118
+      "line": 121
     },
     {
       "name": "test_restore_preflight_does_not_expose_secret_names_or_backup_contents",
       "kind": "function",
       "file": "backend/tests/test_dr_restore_preflight.py",
-      "line": 157
+      "line": 160
+    },
+    {
+      "name": "test_signed_recent_backup_has_trusted_freshness",
+      "kind": "function",
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "line": 181
+    },
+    {
+      "name": "test_signed_stale_backup_blocks_restore_preflight",
+      "kind": "function",
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "line": 203
+    },
+    {
+      "name": "test_unsigned_legacy_backup_never_claims_trusted_freshness",
+      "kind": "function",
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "line": 225
+    },
+    {
+      "name": "test_restore_preflight_rejects_invalid_freshness_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "line": 244
+    },
+    {
+      "name": "test_signed_future_backup_timestamp_blocks_preflight",
+      "kind": "function",
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "line": 261
     }
   ],
   "selected_tests": [
     "backend/tests/test_dr_cli.py",
+    "backend/tests/test_dr_manifest.py",
     "backend/tests/test_dr_restore_preflight.py"
   ]
 }

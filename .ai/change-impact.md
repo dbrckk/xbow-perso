@@ -1,13 +1,15 @@
 # Change impact
 
-Base: 86b81a36bde4d7f217ce39c6188bd373b525821b
-Head: edd4f78737cafca5a34680433fe5bc8267f55cf3
+Base: fb41fc13472c71909d6084d210d28ac8fd274831
+Head: 2e21cee0caab1fd64b1589b46d38e7a77cbac554
 
 ## Changed files
 - M PRODUCTION_MIGRATION.md
 - M backend/app/dr_cli.py
-- A backend/app/dr_restore_preflight.py
-- A backend/tests/test_dr_restore_preflight.py
+- M backend/app/dr_manifest.py
+- M backend/app/dr_restore_preflight.py
+- M backend/tests/test_dr_manifest.py
+- M backend/tests/test_dr_restore_preflight.py
 
 ## Affected areas
 - (root)

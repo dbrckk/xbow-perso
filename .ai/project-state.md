@@ -22,19 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T17:23:17Z
+Generated: 2026-10-03T17:44:30Z
 
 ### Git
 - Branch: `main`
-- Head: `edd4f78737ca`
-- Commit date: 2026-10-03T19:23:03+02:00
-- Commit: feat(dr): add non-destructive restore preflight (#474)
+- Head: `2e21cee0caab`
+- Commit date: 2026-10-03T19:44:18+02:00
+- Commit: feat(dr): attest signed backup freshness (#476)
 - Tracked files: 592
 
 ### Recently changed files
 - `PRODUCTION_MIGRATION.md`
 - `backend/app/dr_cli.py`
+- `backend/app/dr_manifest.py`
 - `backend/app/dr_restore_preflight.py`
+- `backend/tests/test_dr_manifest.py`
 - `backend/tests/test_dr_restore_preflight.py`
 - `backend/app/control_plane_health.py`
 - `backend/app/main.py`
@@ -44,13 +46,6 @@ Generated: 2026-10-03T17:23:17Z
 - `backend/app/operational_alerts.py`
 - `backend/tests/test_metrics.py`
 - `backend/tests/test_operational_alerts.py`
-- `backend/app/jobqueue.py`
-- `backend/app/queue_backend.py`
-- `backend/app/queue_recovery.py`
-- `backend/app/redis_jobqueue.py`
-- `backend/tests/test_jobqueue.py`
-- `backend/tests/test_queue_recovery.py`
-- `backend/tests/test_redis_jobqueue.py`
 
 ### Project signals
 - `pyproject.toml`

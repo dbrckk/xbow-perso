@@ -2194,6 +2194,7 @@ ciphertext = _decode_vault_field(record.get("ciphertext"))
     This verifies integrity and recognizable backup structure only. It never
     restores PostgreSQL, loads Redis, decrypts vault secrets, or modifies data.
     """
+⋮----
 verification = verify_backup_manifest(
 ⋮----
 postgres = _inspect_postgres_dump(postgres_dump)
@@ -2204,6 +2205,16 @@ blockers: list[str] = []
 warnings: list[str] = []
 ⋮----
 signature_state = verification.get("manifest_signature_valid")
+freshness = {
+created_at = verification.get("manifest_created_at")
+⋮----
+created = datetime.fromisoformat(created_at)
+⋮----
+reference = now or datetime.now(UTC)
+⋮----
+age_seconds = (reference - created).total_seconds()
+⋮----
+age_hours = max(0.0, age_seconds / 3600.0)
 ```
 
 ## File: app/error_budget.py
@@ -13495,6 +13506,8 @@ def test_legacy_signed_v1_manifest_remains_backward_compatible(tmp_path, monkeyp
 def test_legacy_v1_rejects_partial_signature_stripping(tmp_path, monkeypatch)
 ⋮----
 def test_signed_manifest_fails_closed_when_key_becomes_unavailable(tmp_path, monkeypatch)
+⋮----
+def test_signed_manifest_authenticates_created_at(tmp_path, monkeypatch)
 ```
 
 ## File: tests/test_dr_restore_preflight.py
@@ -13519,6 +13532,17 @@ def test_restore_preflight_rejects_invalid_vault_structure(tmp_path, monkeypatch
 def test_restore_preflight_does_not_expose_secret_names_or_backup_contents(tmp_path, monkeypatch)
 ⋮----
 rendered = json.dumps(result, sort_keys=True)
+⋮----
+def test_signed_recent_backup_has_trusted_freshness(tmp_path, monkeypatch)
+⋮----
+saved = json.loads(manifest.read_text(encoding="utf-8"))
+created = datetime.fromisoformat(saved["created_at"])
+⋮----
+def test_signed_stale_backup_blocks_restore_preflight(tmp_path, monkeypatch)
+⋮----
+def test_unsigned_legacy_backup_never_claims_trusted_freshness(tmp_path, monkeypatch)
+⋮----
+def test_signed_future_backup_timestamp_blocks_preflight(tmp_path, monkeypatch)
 ```
 
 ## File: tests/test_error_budget.py

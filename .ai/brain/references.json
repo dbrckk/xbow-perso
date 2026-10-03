@@ -21,7 +21,7 @@
         },
         {
           "file": "backend/app/dr_cli.py",
-          "line": 45,
+          "line": 51,
           "preview": "args = _parser().parse_args()",
           "definition_candidate": false
         }
@@ -31,7 +31,7 @@
     "main": {
       "definition": {
         "file": "backend/app/dr_cli.py",
-        "line": 44,
+        "line": 50,
         "kind": "function",
         "language": "python"
       },
@@ -134,13 +134,13 @@
         },
         {
           "file": "backend/app/dr_cli.py",
-          "line": 44,
+          "line": 50,
           "preview": "def main() -> int:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/dr_cli.py",
-          "line": 100,
+          "line": 107,
           "preview": "raise SystemExit(main())",
           "definition_candidate": false
         },
@@ -759,35 +759,877 @@
       ],
       "occurrence_count": 120
     },
+    "DisasterRecoveryError": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 23,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 8,
+          "preview": "DisasterRecoveryError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 61,
+          "preview": "raise DisasterRecoveryError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 98,
+          "preview": "except DisasterRecoveryError as exc:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 23,
+          "preview": "class DisasterRecoveryError(RuntimeError):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 52,
+          "preview": "raise DisasterRecoveryError(\"DR manifest signing key is unavailable\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 79,
+          "preview": "raise DisasterRecoveryError(\"DR manifest verification key is unavailable\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 81,
+          "preview": "raise DisasterRecoveryError(\"DR manifest verification key is unavailable\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 98,
+          "preview": "raise DisasterRecoveryError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 104,
+          "preview": "raise DisasterRecoveryError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 112,
+          "preview": "raise DisasterRecoveryError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 116,
+          "preview": "raise DisasterRecoveryError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 121,
+          "preview": "raise DisasterRecoveryError(\"unsupported DR manifest signature algorithm\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 123,
+          "preview": "raise DisasterRecoveryError(\"legacy DR manifest signature is invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 125,
+          "preview": "raise DisasterRecoveryError(\"unsupported manifest format\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 143,
+          "preview": "raise DisasterRecoveryError(f\"{label} backup file is unavailable\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 145,
+          "preview": "raise DisasterRecoveryError(f\"{label} backup file is empty\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 147,
+          "preview": "raise DisasterRecoveryError(f\"{label} backup file exceeds 50 GiB safety limit\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 158,
+          "preview": "raise DisasterRecoveryError(\"backup file could not be read\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 196,
+          "preview": "raise DisasterRecoveryError(\"manifest path must not be a symlink\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 218,
+          "preview": "raise DisasterRecoveryError(\"manifest write failed\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 234,
+          "preview": "raise DisasterRecoveryError(\"manifest is invalid\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 240,
+          "preview": "raise DisasterRecoveryError(\"unsupported manifest format\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 272,
+          "preview": "raise DisasterRecoveryError(\"manifest artifact size is invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 274,
+          "preview": "raise DisasterRecoveryError(\"manifest artifact metadata is invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 11,
+          "preview": "from .dr_manifest import DisasterRecoveryError, verify_backup_manifest",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 25,
+          "preview": "raise DisasterRecoveryError(f\"{label} backup file is unavailable\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 27,
+          "preview": "raise DisasterRecoveryError(f\"{label} backup file is empty\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 37,
+          "preview": "raise DisasterRecoveryError(\"postgres backup file could not be read\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 60,
+          "preview": "raise DisasterRecoveryError(\"redis backup file could not be read\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 90,
+          "preview": "raise DisasterRecoveryError(\"vault backup structure is invalid\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 144,
+          "preview": "raise DisasterRecoveryError(\"max_age_hours must be a positive finite number\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 8,
+          "preview": "DisasterRecoveryError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 32,
+          "preview": "with pytest.raises(DisasterRecoveryError, match=\"manifest write failed\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 49,
+          "preview": "with pytest.raises(DisasterRecoveryError, match=\"manifest write failed\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 157,
+          "preview": "with pytest.raises(DisasterRecoveryError, match=\"postgres backup file is unavailable\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 169,
+          "preview": "with pytest.raises(DisasterRecoveryError, match=\"postgres backup file is empty\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 189,
+          "preview": "with pytest.raises(DisasterRecoveryError, match=\"must not be a symlink\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 204,
+          "preview": "with pytest.raises(DisasterRecoveryError, match=\"artifact size is invalid\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 270,
+          "preview": "DisasterRecoveryError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 300,
+          "preview": "DisasterRecoveryError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 412,
+          "preview": "DisasterRecoveryError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 438,
+          "preview": "with pytest.raises(DisasterRecoveryError, match=\"verification key is unavailable\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 7,
+          "preview": "from app.dr_manifest import DisasterRecoveryError, build_backup_manifest, write_backup_manifest",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 251,
+          "preview": "with pytest.raises(DisasterRecoveryError, match=\"max_age_hours must be a positive finite number\"):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 44
+    },
+    "_canonical_manifest": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 27,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 27,
+          "preview": "def _canonical_manifest(manifest: dict[str, Any]) -> bytes:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 66,
+          "preview": "canonical = _canonical_manifest(sealed)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 130,
+          "preview": "_canonical_manifest(manifest),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_seal_manifest": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 47,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 47,
+          "preview": "def _seal_manifest(manifest: dict[str, Any]) -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 199,
+          "preview": "sealed = _seal_manifest(manifest)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_verification_secret": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 75,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 75,
+          "preview": "def _verification_secret() -> str:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 127,
+          "preview": "secret = _verification_secret()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_verify_manifest_signature": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 85,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 85,
+          "preview": "def _verify_manifest_signature(manifest: dict[str, Any]) -> bool | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 242,
+          "preview": "signature_valid = _verify_manifest_signature(manifest)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_safe_backup_file": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 136,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 136,
+          "preview": "def _safe_backup_file(path_value: str, label: str) -> Path:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 174,
+          "preview": "path = _safe_backup_file(value, kind)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_sha256": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 151,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 151,
+          "preview": "def _sha256(path: Path) -> str:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 181,
+          "preview": "\"sha256\": _sha256(path),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "build_backup_manifest": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 162,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 9,
+          "preview": "build_backup_manifest,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 64,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 162,
+          "preview": "def build_backup_manifest(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 252,
+          "preview": "current = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 9,
+          "preview": "build_backup_manifest,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 88,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 111,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 133,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 158,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 170,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 179,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 196,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 218,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 251,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 287,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 317,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 343,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 371,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 401,
+          "preview": "manifest = build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 429,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 453,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 7,
+          "preview": "from app.dr_manifest import DisasterRecoveryError, build_backup_manifest, write_backup_manifest",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 34,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 75,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 102,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 141,
+          "preview": "build_backup_manifest(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 26
+    },
+    "write_backup_manifest": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 193,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 11,
+          "preview": "write_backup_manifest,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 70,
+          "preview": "write_backup_manifest(manifest, args.output)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 193,
+          "preview": "def write_backup_manifest(manifest: dict[str, Any], destination: str) -> None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 11,
+          "preview": "write_backup_manifest,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 33,
+          "preview": "write_backup_manifest({\"version\": 1, \"artifacts\": []}, str(destination))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 50,
+          "preview": "write_backup_manifest({\"version\": 1, \"artifacts\": []}, str(destination))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 116,
+          "preview": "write_backup_manifest(manifest, str(manifest_path))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 138,
+          "preview": "write_backup_manifest(manifest, str(manifest_path))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 190,
+          "preview": "write_backup_manifest(manifest, str(link))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 223,
+          "preview": "write_backup_manifest(manifest, str(manifest_path))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 250,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 286,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 316,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 342,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 428,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 452,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 7,
+          "preview": "from app.dr_manifest import DisasterRecoveryError, build_backup_manifest, write_backup_manifest",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 33,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 74,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 101,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 140,
+          "preview": "write_backup_manifest(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 21
+    },
+    "verify_backup_manifest": {
+      "definition": {
+        "file": "backend/app/dr_manifest.py",
+        "line": 221,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 10,
+          "preview": "verify_backup_manifest,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_cli.py",
+          "line": 77,
+          "preview": "verification = verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_manifest.py",
+          "line": 221,
+          "preview": "def verify_backup_manifest(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 11,
+          "preview": "from .dr_manifest import DisasterRecoveryError, verify_backup_manifest",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/dr_restore_preflight.py",
+          "line": 146,
+          "preview": "verification = verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 10,
+          "preview": "verify_backup_manifest,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 118,
+          "preview": "result = verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 141,
+          "preview": "result = verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 205,
+          "preview": "verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 234,
+          "preview": "result = verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 273,
+          "preview": "verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 303,
+          "preview": "verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 326,
+          "preview": "result = verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 355,
+          "preview": "result = verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 385,
+          "preview": "result = verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 415,
+          "preview": "verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 439,
+          "preview": "verify_backup_manifest(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 466,
+          "preview": "result = verify_backup_manifest(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 18
+    },
     "_safe_file": {
       "definition": {
         "file": "backend/app/dr_restore_preflight.py",
-        "line": 16,
+        "line": 18,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 16,
+          "line": 18,
           "preview": "def _safe_file(path_value: str, label: str) -> Path:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 30,
+          "line": 32,
           "preview": "path = _safe_file(path_value, \"postgres\")",
           "definition_candidate": false
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 53,
+          "line": 55,
           "preview": "path = _safe_file(path_value, \"redis\")",
           "definition_candidate": false
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 82,
+          "line": 84,
           "preview": "path = _safe_file(path_value, \"vault\")",
           "definition_candidate": false
         }
@@ -797,20 +1639,20 @@
     "_inspect_postgres_dump": {
       "definition": {
         "file": "backend/app/dr_restore_preflight.py",
-        "line": 29,
+        "line": 31,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 29,
+          "line": 31,
           "preview": "def _inspect_postgres_dump(path_value: str) -> dict[str, Any]:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 141,
+          "line": 153,
           "preview": "postgres = _inspect_postgres_dump(postgres_dump)",
           "definition_candidate": false
         }
@@ -820,20 +1662,20 @@
     "_inspect_redis_snapshot": {
       "definition": {
         "file": "backend/app/dr_restore_preflight.py",
-        "line": 52,
+        "line": 54,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 52,
+          "line": 54,
           "preview": "def _inspect_redis_snapshot(path_value: str) -> dict[str, Any]:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 142,
+          "line": 154,
           "preview": "redis = _inspect_redis_snapshot(redis_snapshot)",
           "definition_candidate": false
         }
@@ -843,26 +1685,26 @@
     "_decode_vault_field": {
       "definition": {
         "file": "backend/app/dr_restore_preflight.py",
-        "line": 72,
+        "line": 74,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 72,
+          "line": 74,
           "preview": "def _decode_vault_field(value: Any) -> bytes | None:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 106,
+          "line": 108,
           "preview": "nonce = _decode_vault_field(record.get(\"nonce\"))",
           "definition_candidate": false
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 107,
+          "line": 109,
           "preview": "ciphertext = _decode_vault_field(record.get(\"ciphertext\"))",
           "definition_candidate": false
         }
@@ -872,20 +1714,20 @@
     "_inspect_vault_copy": {
       "definition": {
         "file": "backend/app/dr_restore_preflight.py",
-        "line": 81,
+        "line": 83,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 81,
+          "line": 83,
           "preview": "def _inspect_vault_copy(path_value: str) -> dict[str, Any]:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 143,
+          "line": 155,
           "preview": "vault = _inspect_vault_copy(vault_copy)",
           "definition_candidate": false
         }
@@ -895,7 +1737,7 @@
     "assess_restore_preflight": {
       "definition": {
         "file": "backend/app/dr_restore_preflight.py",
-        "line": 122,
+        "line": 124,
         "kind": "function",
         "language": "python"
       },
@@ -908,113 +1750,615 @@
         },
         {
           "file": "backend/app/dr_cli.py",
-          "line": 81,
+          "line": 88,
           "preview": "preflight = assess_restore_preflight(",
           "definition_candidate": false
         },
         {
           "file": "backend/app/dr_restore_preflight.py",
-          "line": 122,
+          "line": 124,
           "preview": "def assess_restore_preflight(",
           "definition_candidate": true
         },
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 5,
+          "line": 8,
           "preview": "from app.dr_restore_preflight import assess_restore_preflight",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 46,
+          "line": 49,
           "preview": "result = assess_restore_preflight(",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 80,
+          "line": 83,
           "preview": "result = assess_restore_preflight(",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 107,
+          "line": 110,
           "preview": "result = assess_restore_preflight(",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 146,
+          "line": 149,
           "preview": "result = assess_restore_preflight(",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 162,
+          "line": 165,
+          "preview": "result = assess_restore_preflight(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 188,
+          "preview": "result = assess_restore_preflight(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 210,
+          "preview": "result = assess_restore_preflight(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 230,
+          "preview": "result = assess_restore_preflight(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 252,
+          "preview": "assess_restore_preflight(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 268,
           "preview": "result = assess_restore_preflight(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 9
+      "occurrence_count": 14
     },
-    "_write_valid_backup_set": {
+    "test_manifest_write_preserves_preexisting_temporary_file": {
       "definition": {
-        "file": "backend/tests/test_dr_restore_preflight.py",
-        "line": 8,
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 19,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 8,
-          "preview": "def _write_valid_backup_set(tmp_path):",
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 19,
+          "preview": "def test_manifest_write_preserves_preexisting_temporary_file(tmp_path, monkeypatch, symlink):",
           "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 44,
-          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 68,
-          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 95,
-          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 121,
-          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 160,
-          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
-          "definition_candidate": false
         }
       ],
-      "occurrence_count": 6
+      "occurrence_count": 1
     },
-    "test_restore_preflight_accepts_recognized_integrity_valid_backup_set": {
+    "test_manifest_write_cleans_owned_temporary_after_replace_failure": {
       "definition": {
-        "file": "backend/tests/test_dr_restore_preflight.py",
+        "file": "backend/tests/test_dr_manifest.py",
         "line": 41,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_dr_restore_preflight.py",
+          "file": "backend/tests/test_dr_manifest.py",
           "line": 41,
+          "preview": "def test_manifest_write_cleans_owned_temporary_after_replace_failure(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "_files": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 56,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 56,
+          "preview": "def _files(tmp_path):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 86,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 109,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 131,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 153,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 166,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 178,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 194,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 216,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 248,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 284,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 314,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 340,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 369,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 399,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 426,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 450,
+          "preview": "postgres, redis, vault = _files(tmp_path)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 17
+    },
+    "_canonical_legacy_v1": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 66,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 66,
+          "preview": "def _canonical_legacy_v1(manifest):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 380,
+          "preview": "_canonical_legacy_v1(manifest),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "test_backup_manifest_contains_only_integrity_metadata": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 85,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 85,
+          "preview": "def test_backup_manifest_contains_only_integrity_metadata(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_manifest_roundtrip_verifies": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 108,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 108,
+          "preview": "def test_manifest_roundtrip_verifies(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_manifest_detects_modified_backup": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 130,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 130,
+          "preview": "def test_manifest_detects_modified_backup(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_manifest_rejects_symlink_backup": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 152,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 152,
+          "preview": "def test_manifest_rejects_symlink_backup(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_manifest_rejects_empty_backup": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 165,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 165,
+          "preview": "def test_manifest_rejects_empty_backup(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_manifest_rejects_symlink_destination": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 177,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 177,
+          "preview": "def test_manifest_rejects_symlink_destination(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_manifest_rejects_invalid_artifact_size_schema": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 193,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 193,
+          "preview": "def test_manifest_rejects_invalid_artifact_size_schema(tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_manifest_detects_manifest_rewrite": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 213,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 213,
+          "preview": "def test_signed_manifest_detects_manifest_rewrite(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_manifest_rejects_signature_field_stripping": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 245,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 245,
+          "preview": "def test_signed_manifest_rejects_signature_field_stripping(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_manifest_authenticates_integrity_mode": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 281,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 281,
+          "preview": "def test_signed_manifest_authenticates_integrity_mode(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_manifest_requires_matching_verification_key": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 311,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 311,
+          "preview": "def test_signed_manifest_requires_matching_verification_key(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_unsigned_manifest_remains_backward_compatible": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 337,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 337,
+          "preview": "def test_unsigned_manifest_remains_backward_compatible(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_legacy_signed_v1_manifest_remains_backward_compatible": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 366,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 366,
+          "preview": "def test_legacy_signed_v1_manifest_remains_backward_compatible(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_legacy_v1_rejects_partial_signature_stripping": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 396,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 396,
+          "preview": "def test_legacy_v1_rejects_partial_signature_stripping(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_manifest_fails_closed_when_key_becomes_unavailable": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 423,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 423,
+          "preview": "def test_signed_manifest_fails_closed_when_key_becomes_unavailable(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_manifest_authenticates_created_at": {
+      "definition": {
+        "file": "backend/tests/test_dr_manifest.py",
+        "line": 447,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_manifest.py",
+          "line": 447,
+          "preview": "def test_signed_manifest_authenticates_created_at(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "_write_valid_backup_set": {
+      "definition": {
+        "file": "backend/tests/test_dr_restore_preflight.py",
+        "line": 11,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 11,
+          "preview": "def _write_valid_backup_set(tmp_path):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 47,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 71,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 98,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 124,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 163,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 184,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 206,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 228,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 249,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 264,
+          "preview": "manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 11
+    },
+    "test_restore_preflight_accepts_recognized_integrity_valid_backup_set": {
+      "definition": {
+        "file": "backend/tests/test_dr_restore_preflight.py",
+        "line": 44,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 44,
           "preview": "def test_restore_preflight_accepts_recognized_integrity_valid_backup_set(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
@@ -1024,14 +2368,14 @@
     "test_restore_preflight_rejects_checksum_valid_but_unrecognized_redis_snapshot": {
       "definition": {
         "file": "backend/tests/test_dr_restore_preflight.py",
-        "line": 65,
+        "line": 68,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 65,
+          "line": 68,
           "preview": "def test_restore_preflight_rejects_checksum_valid_but_unrecognized_redis_snapshot(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
@@ -1041,14 +2385,14 @@
     "test_restore_preflight_rejects_unrecognized_postgres_dump": {
       "definition": {
         "file": "backend/tests/test_dr_restore_preflight.py",
-        "line": 92,
+        "line": 95,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 92,
+          "line": 95,
           "preview": "def test_restore_preflight_rejects_unrecognized_postgres_dump(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
@@ -1058,14 +2402,14 @@
     "test_restore_preflight_rejects_invalid_vault_structure": {
       "definition": {
         "file": "backend/tests/test_dr_restore_preflight.py",
-        "line": 118,
+        "line": 121,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 118,
+          "line": 121,
           "preview": "def test_restore_preflight_rejects_invalid_vault_structure(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
@@ -1075,15 +2419,100 @@
     "test_restore_preflight_does_not_expose_secret_names_or_backup_contents": {
       "definition": {
         "file": "backend/tests/test_dr_restore_preflight.py",
-        "line": 157,
+        "line": 160,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/tests/test_dr_restore_preflight.py",
-          "line": 157,
+          "line": 160,
           "preview": "def test_restore_preflight_does_not_expose_secret_names_or_backup_contents(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_recent_backup_has_trusted_freshness": {
+      "definition": {
+        "file": "backend/tests/test_dr_restore_preflight.py",
+        "line": 181,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 181,
+          "preview": "def test_signed_recent_backup_has_trusted_freshness(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_stale_backup_blocks_restore_preflight": {
+      "definition": {
+        "file": "backend/tests/test_dr_restore_preflight.py",
+        "line": 203,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 203,
+          "preview": "def test_signed_stale_backup_blocks_restore_preflight(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_unsigned_legacy_backup_never_claims_trusted_freshness": {
+      "definition": {
+        "file": "backend/tests/test_dr_restore_preflight.py",
+        "line": 225,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 225,
+          "preview": "def test_unsigned_legacy_backup_never_claims_trusted_freshness(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_restore_preflight_rejects_invalid_freshness_threshold": {
+      "definition": {
+        "file": "backend/tests/test_dr_restore_preflight.py",
+        "line": 244,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 244,
+          "preview": "def test_restore_preflight_rejects_invalid_freshness_threshold(",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_signed_future_backup_timestamp_blocks_preflight": {
+      "definition": {
+        "file": "backend/tests/test_dr_restore_preflight.py",
+        "line": 261,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_dr_restore_preflight.py",
+          "line": 261,
+          "preview": "def test_signed_future_backup_timestamp_blocks_preflight(tmp_path, monkeypatch):",
           "definition_candidate": true
         }
       ],

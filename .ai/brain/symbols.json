@@ -1202,119 +1202,119 @@
       "language": "python",
       "kind": "function",
       "name": "main",
-      "line": 44
+      "line": 50
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "class",
       "name": "DisasterRecoveryError",
-      "line": 22
+      "line": 23
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "_canonical_manifest",
-      "line": 26
+      "line": 27
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "_seal_manifest",
-      "line": 46
+      "line": 47
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "_verification_secret",
-      "line": 74
+      "line": 75
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "_verify_manifest_signature",
-      "line": 84
+      "line": 85
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "_safe_backup_file",
-      "line": 135
+      "line": 136
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "_sha256",
-      "line": 150
+      "line": 151
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "build_backup_manifest",
-      "line": 161
+      "line": 162
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "write_backup_manifest",
-      "line": 191
+      "line": 193
     },
     {
       "file": "backend/app/dr_manifest.py",
       "language": "python",
       "kind": "function",
       "name": "verify_backup_manifest",
-      "line": 219
+      "line": 221
     },
     {
       "file": "backend/app/dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "_safe_file",
-      "line": 16
+      "line": 18
     },
     {
       "file": "backend/app/dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "_inspect_postgres_dump",
-      "line": 29
+      "line": 31
     },
     {
       "file": "backend/app/dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "_inspect_redis_snapshot",
-      "line": 52
+      "line": 54
     },
     {
       "file": "backend/app/dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "_decode_vault_field",
-      "line": 72
+      "line": 74
     },
     {
       "file": "backend/app/dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "_inspect_vault_copy",
-      "line": 81
+      "line": 83
     },
     {
       "file": "backend/app/dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "assess_restore_preflight",
-      "line": 122
+      "line": 124
     },
     {
       "file": "backend/app/error_budget.py",
@@ -12328,46 +12328,88 @@
       "line": 423
     },
     {
+      "file": "backend/tests/test_dr_manifest.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_signed_manifest_authenticates_created_at",
+      "line": 447
+    },
+    {
       "file": "backend/tests/test_dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "_write_valid_backup_set",
-      "line": 8
+      "line": 11
     },
     {
       "file": "backend/tests/test_dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "test_restore_preflight_accepts_recognized_integrity_valid_backup_set",
-      "line": 41
+      "line": 44
     },
     {
       "file": "backend/tests/test_dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "test_restore_preflight_rejects_checksum_valid_but_unrecognized_redis_snapshot",
-      "line": 65
+      "line": 68
     },
     {
       "file": "backend/tests/test_dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "test_restore_preflight_rejects_unrecognized_postgres_dump",
-      "line": 92
+      "line": 95
     },
     {
       "file": "backend/tests/test_dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "test_restore_preflight_rejects_invalid_vault_structure",
-      "line": 118
+      "line": 121
     },
     {
       "file": "backend/tests/test_dr_restore_preflight.py",
       "language": "python",
       "kind": "function",
       "name": "test_restore_preflight_does_not_expose_secret_names_or_backup_contents",
-      "line": 157
+      "line": 160
+    },
+    {
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_signed_recent_backup_has_trusted_freshness",
+      "line": 181
+    },
+    {
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_signed_stale_backup_blocks_restore_preflight",
+      "line": 203
+    },
+    {
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unsigned_legacy_backup_never_claims_trusted_freshness",
+      "line": 225
+    },
+    {
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_restore_preflight_rejects_invalid_freshness_threshold",
+      "line": 244
+    },
+    {
+      "file": "backend/tests/test_dr_restore_preflight.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_signed_future_backup_timestamp_blocks_preflight",
+      "line": 261
     },
     {
       "file": "backend/tests/test_error_budget.py",
