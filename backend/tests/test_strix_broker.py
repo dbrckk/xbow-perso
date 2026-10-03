@@ -3,7 +3,6 @@ from fastapi import HTTPException
 from pydantic import ValidationError
 
 from app.main import Campaign, ProgramRules, TargetInput
-from app.strix_broker_client import StrixBrokerClientError
 from app.strix_broker import (
     BrokerAdmissionRequest,
     BrokerContractDocument,
@@ -14,6 +13,7 @@ from app.strix_broker import (
     readyz,
     request_http,
 )
+from app.strix_broker_client import StrixBrokerClientError
 from app.strix_execution_contract import build_strix_execution_contract
 
 
