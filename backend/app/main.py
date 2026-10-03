@@ -1195,18 +1195,20 @@ def _record_campaign_start_intent(
 
 def _reconcile_campaign_started(
     campaign_id: str,
-    job: dict[str, Any],
+    jobs: list[dict[str, Any]],
     *,
     request_id: str,
     receipt: dict[str, Any],
+    planner_result: dict[str, Any] | None = None,
     attempts: int = 3,
 ) -> Campaign:
+    job_ids = [str(job["id"]) for job in jobs if job.get("id")]
+    primary_job_id = job_ids[0] if job_ids else None
     for _ in range(attempts):
         campaign, version = assert_campaign_record(campaign_id)
         if any(
             event.get("type") == "campaign_started"
             and event.get("request_id") == request_id
-            and event.get("job_id") == job["id"]
             for event in campaign.events
         ):
             return campaign
@@ -1220,6 +1222,7 @@ def _reconcile_campaign_started(
                 status_code=409,
                 detail=f"Cannot reconcile campaign start from {campaign.state.value}",
             )
+        action = dict((planner_result or {}).get("action") or {})
         append_campaign_event(
             campaign.events,
             {
@@ -1227,10 +1230,14 @@ def _reconcile_campaign_started(
                 "request_id": request_id,
                 "at": utcnow(),
                 "policy": receipt,
-                "job_id": job["id"],
+                "job_id": primary_job_id,
+                "job_ids": job_ids,
+                "planner_action": action.get("kind"),
+                "planner_reason": action.get("reason"),
             },
         )
-        campaign.state = CampaignState.running
+        if job_ids:
+            campaign.state = CampaignState.running
         campaign.updated_at = utcnow()
         try:
             save_campaign(campaign, expected_version=version)
@@ -1240,7 +1247,7 @@ def _reconcile_campaign_started(
                 raise
     raise HTTPException(
         status_code=409,
-        detail="Campaign start job queued but audit reconciliation conflicted; retry safely",
+        detail="Campaign start jobs queued but audit reconciliation conflicted; retry safely",
     )
 
 
@@ -1275,7 +1282,7 @@ def start_campaign(campaign_id: str):
     )
     planner_result = None
     if legacy_job is not None:
-        job = legacy_job
+        start_jobs = [legacy_job]
     else:
         campaign, _current_version = assert_campaign_record(campaign.id)
         planner_result = advance_campaign(campaign, jobs, storage())
@@ -1294,26 +1301,33 @@ def start_campaign(campaign_id: str):
                     "action": action,
                 },
             )
-        job = jobs.get(job_ids[0])
-        if job is None:
-            raise HTTPException(
-                status_code=500,
-                detail="Planner queued job disappeared",
-            )
+        start_jobs = []
+        for job_id in job_ids:
+            queued_job = jobs.get(job_id)
+            if queued_job is None:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Planner queued job disappeared",
+                )
+            start_jobs.append(queued_job)
 
+    job = start_jobs[0]
     campaign = _reconcile_campaign_started(
         campaign.id,
-        job,
+        start_jobs,
         request_id=request_id,
         receipt=receipt,
+        planner_result=planner_result,
     )
     result = {
         "campaign_id": campaign.id,
         "state": campaign.state,
         "policy": receipt,
         "job": job,
+        "jobs": start_jobs,
         "request_id": request_id,
         "audit_reconciled": True,
+        "orchestrated_start": planner_result is not None,
     }
     if planner_result is not None:
         result["planner"] = {
