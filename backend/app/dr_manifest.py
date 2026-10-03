@@ -4,6 +4,7 @@ import hashlib
 import hmac
 import json
 import os
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -182,6 +183,7 @@ def build_backup_manifest(
         )
     return {
         "version": 1,
+        "created_at": datetime.now(UTC).isoformat(),
         "artifacts": entries,
         "contains_secrets": False,
         "contains_backup_contents": False,
@@ -284,6 +286,7 @@ def verify_backup_manifest(
         "valid": valid,
         "artifacts": results,
         "manifest_signature_valid": signature_valid,
+        "manifest_created_at": manifest.get("created_at"),
         "contains_secrets": False,
         "contains_backup_contents": False,
     }
