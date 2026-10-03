@@ -224,7 +224,7 @@ def test_broker_forwards_only_after_local_admission(monkeypatch):
         return BrokerHttpResponse(
             status_code=200,
             reason="OK",
-            headers={"Content-Type": "text/plain"},
+            headers=[],
             body_base64="b2s=",
             body_bytes=2,
             truncated=False,
