@@ -1,13 +1,13 @@
 # Change impact
 
-Base: e4faf5af52101ef638ad49ce0dd099ddfb76ff27
-Head: c28af430d07ee4ef9edde976b5f55f47fd6e707e
+Base: e001e26e1d1cd8d2e441c0187f9739eb70dbf5ea
+Head: e9ec5308a51a7e6e27d2948af7c3852a2c169748
 
 ## Changed files
-- M frontend/Dockerfile
+- M backend/requirements.txt
 
 ## Affected areas
-- frontend
+- backend
 
 ## Related test candidates
 - No direct filename-based test match detected.

@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T17:54:44Z
+Generated: 2026-10-03T18:01:33Z
 
 ### Git
 - Branch: `main`
-- Head: `c28af430d07e`
-- Commit date: 2026-10-03T19:54:33+02:00
-- Commit: chore(deps): bump nginx-unprivileged to 1.29-alpine (#478)
+- Head: `e9ec5308a51a`
+- Commit date: 2026-10-03T20:01:21+02:00
+- Commit: chore(deps): bump Starlette to 1.6.0 (#480)
 - Tracked files: 592
 
 ### Recently changed files
+- `backend/requirements.txt`
 - `frontend/Dockerfile`
 - `backend/tests/test_frontend_auth_proxy.py`
 - `backend/tests/test_frontend_policy_launcher.py`
@@ -44,9 +45,6 @@ Generated: 2026-10-03T17:54:44Z
 - `backend/app/dr_restore_preflight.py`
 - `backend/tests/test_dr_manifest.py`
 - `backend/tests/test_dr_restore_preflight.py`
-- `backend/app/control_plane_health.py`
-- `backend/app/main.py`
-- `backend/tests/test_control_plane_health.py`
 
 ### Project signals
 - `pyproject.toml`
