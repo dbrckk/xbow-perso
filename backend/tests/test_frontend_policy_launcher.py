@@ -17,6 +17,7 @@ def test_hackerone_reviewed_batch_routes_exist():
     assert "/api/hackerone/simple-selection" in schema["paths"]
     assert "/api/hackerone/simple-review-package" in schema["paths"]
     assert "/api/hackerone/journal" in schema["paths"]
+    assert "/api/operations/health" in schema["paths"]
 
 
 def test_minimal_frontend_exposes_only_primary_operator_flow():
