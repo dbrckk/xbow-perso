@@ -106,7 +106,7 @@ def test_ci_smoke_tests_runner_attestation_without_scan_execution():
 
     assert "Smoke-test pinned Strix runner attestation" in workflow
     assert "docker compose --profile strix-runner up -d strix-runner" in workflow
-    assert "docker compose exec -T strix-runner python -c" in workflow
-    assert '"execution_enabled"] is False' in workflow
-    assert '"version"] == "1.6.2"' in workflow
+    assert "docker inspect --format" in workflow
+    assert ".State.Health.Status" in workflow
+    assert '"healthy"' in workflow
     assert "strix scan" not in workflow
