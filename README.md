@@ -426,7 +426,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- enforceable isolated Strix runtime contract and active execution
+- isolated Strix egress/runtime enforcement consuming the signed execution contract
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -473,4 +473,6 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 - worker runtime attests read-only root filesystem, no-new-privileges and all Linux capabilities dropped;
 - engine-specific runtime checks such as the pinned Nuclei version.
 
-The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, but **active Strix dispatch remains fail-closed** until xbow can attest an enforceable isolated runtime contract for downstream scope, request-rate, and sandbox guarantees. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable`. Dry-run planning remains available.
+The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, and each Strix job now gets a deterministic `strix-execution-contract-v1` bound to the job id, campaign policy fingerprint, normalized allow/deny scope and exact request-rate ceiling. The contract forbids direct egress and host-container-socket access, requires independent validation, and is HMAC-authenticated when the audit signing key is configured. Future broker requests must present an authenticated contract and are rejected when the target is out of scope or the requested RPS exceeds the contract cap.
+
+**Active Strix dispatch remains fail-closed** until an isolated runtime/egress broker can enforce that contract for every downstream request. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable` while also advertising the required contract schema. Dry-run planning remains available.
