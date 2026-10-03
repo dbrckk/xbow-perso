@@ -228,8 +228,14 @@ services:
     restart: unless-stopped
     init: true
     stop_grace_period: 15s
+    depends_on:
+      strix-egress:
+        condition: service_healthy
     environment:
       XBOW_STRIX_BROKER_HMAC_KEY: ${XBOW_STRIX_BROKER_HMAC_KEY:-}
+      XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS: ${XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS:-false}
+      XBOW_STRIX_EGRESS_URL: http://strix-egress:8091/v1/fetch
+      XBOW_STRIX_BROKER_EGRESS_TIMEOUT_SECONDS: ${XBOW_STRIX_BROKER_EGRESS_TIMEOUT_SECONDS:-15}
     expose:
       - "8090"
     read_only: true
@@ -254,7 +260,54 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    networks: [strix-broker]
+    networks: [strix-broker, strix-egress-control]
+
+  strix-egress:
+    profiles: ["strix-broker"]
+    build: ./backend
+    command:
+      [
+        "uvicorn",
+        "app.strix_egress:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8091",
+        "--no-access-log",
+      ]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    environment:
+      XBOW_STRIX_EGRESS_HMAC_KEY: ${XBOW_STRIX_EGRESS_HMAC_KEY:-}
+      XBOW_STRIX_EGRESS_ENABLED: ${XBOW_STRIX_EGRESS_ENABLED:-false}
+      XBOW_STRIX_EGRESS_TIMEOUT_SECONDS: ${XBOW_STRIX_EGRESS_TIMEOUT_SECONDS:-10}
+      XBOW_STRIX_EGRESS_MAX_RESPONSE_BYTES: ${XBOW_STRIX_EGRESS_MAX_RESPONSE_BYTES:-262144}
+    expose:
+      - "8091"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 0.25
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8091/healthz', timeout=2).read()",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks: [strix-egress-control, strix-external]
 
 
   pentagi-worker:
@@ -407,3 +460,8 @@ networks:
   strix-broker:
     driver: bridge
     internal: true
+  strix-egress-control:
+    driver: bridge
+    internal: true
+  strix-external:
+    driver: bridge
