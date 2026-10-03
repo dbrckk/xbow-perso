@@ -10295,6 +10295,8 @@ event = {
 ⋮----
 strix_status = load_strix_run_status(run_dir)
 ⋮----
+selected_run_dir = Path(strix_status.run_json_path).parent
+⋮----
 ingestion = ingest_scanner_run(
 ⋮----
 plan = build_nuclei_plan(campaign, run_dir)
@@ -12047,13 +12049,12 @@ def parse_strix_vulnerabilities(path: str | Path, campaign: Campaign) -> list[Fi
 ⋮----
 """Compatibility wrapper around the isolated Strix parser."""
 ⋮----
-def persist_execution_artifacts(store: Storage, campaign_id: str, result: dict) -> list[dict]
-⋮----
 artifacts: list[dict] = []
 ⋮----
 content = result.get(key)
 ⋮----
-vuln_path = locate_vulnerabilities_json(str(result.get("output_dir") or ""))
+artifact_root = (
+vuln_path = locate_vulnerabilities_json(str(artifact_root))
 ```
 
 ## File: tests/test_adaptive_cycle.py
@@ -19650,6 +19651,24 @@ campaign = _campaign()
 result = run_strix_job(
 ⋮----
 observations = store.list_observations(campaign.id)
+⋮----
+run_root = tmp_path / "runs"
+⋮----
+selected_payload = json.dumps(
+newer_artifact_payload = json.dumps(
+⋮----
+def fake_execute(plan)
+⋮----
+output = Path(plan.output_dir)
+selected = output / "selected-run"
+different = output / "different-run"
+⋮----
+selected_run_json = selected / "run.json"
+different_run_json = different / "run.json"
+selected_vulnerabilities = selected / "vulnerabilities.json"
+different_vulnerabilities = different / "vulnerabilities.json"
+⋮----
+evidence = [
 ```
 
 ## File: tests/test_scope.py

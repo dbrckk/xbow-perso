@@ -1,17 +1,633 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "3e05de18ac9dee7b357a456acb4d91ecaac6c4b9",
-  "head": "8d71a633abc956eb4e4e7ebebfe47c40f2e0e019",
+  "base": "8d71a633abc956eb4e4e7ebebfe47c40f2e0e019",
+  "head": "9b816a3c171cea546e7448a39d627d715b24d542",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/requirements.txt",
+      "path": "backend/app/scanner_worker.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/worker.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_scanner_worker.py",
       "status": "M"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "backend/app/scanner_worker.py",
+    "backend/app/worker.py",
+    "backend/tests/test_scanner_worker.py"
+  ],
+  "impacted_files": [
+    "backend/app/scanner_worker.py",
+    "backend/app/worker.py",
+    "backend/app/worker_service.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_nuclei_worker_plan.py",
+    "backend/tests/test_scanner_worker.py",
+    "backend/tests/test_worker_parser.py",
+    "backend/tests/test_worker_secrets.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "ScannerJobResult",
+      "kind": "class",
+      "file": "backend/app/scanner_worker.py",
+      "line": 18
+    },
+    {
+      "name": "_record_scan_observation",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 25
+    },
+    {
+      "name": "_state_after_scan",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 53
+    },
+    {
+      "name": "run_strix_job",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 61
+    },
+    {
+      "name": "run_nuclei_job",
+      "kind": "function",
+      "file": "backend/app/scanner_worker.py",
+      "line": 150
+    },
+    {
+      "name": "WorkerPlan",
+      "kind": "class",
+      "file": "backend/app/worker.py",
+      "line": 20
+    },
+    {
+      "name": "WorkerPolicyError",
+      "kind": "class",
+      "file": "backend/app/worker.py",
+      "line": 30
+    },
+    {
+      "name": "_strict_bool_env",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 34
+    },
+    {
+      "name": "_safe_strix_output_dir",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 46
+    },
+    {
+      "name": "_max_autonomous_rps",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 59
+    },
+    {
+      "name": "_safe_nuclei_output_dir",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 69
+    },
+    {
+      "name": "_nuclei_rate_limit",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 82
+    },
+    {
+      "name": "build_nuclei_plan",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 91
+    },
+    {
+      "name": "build_strix_plan",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 166
+    },
+    {
+      "name": "_bounded_timeout",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 200
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 211
+    },
+    {
+      "name": "_verify_nuclei_runtime",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 219
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 244
+    },
+    {
+      "name": "_worker_env",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 320
+    },
+    {
+      "name": "_max_strix_json_bytes",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 364
+    },
+    {
+      "name": "locate_vulnerabilities_json",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 371
+    },
+    {
+      "name": "parse_strix_vulnerabilities",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 380
+    },
+    {
+      "name": "persist_execution_artifacts",
+      "kind": "function",
+      "file": "backend/app/worker.py",
+      "line": 388
+    },
+    {
+      "name": "CampaignCancelledError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 48
+    },
+    {
+      "name": "StaleValidationJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 52
+    },
+    {
+      "name": "StaleBrowserJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 56
+    },
+    {
+      "name": "_save",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 64
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 69
+    },
+    {
+      "name": "_append_event_once",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 80
+    },
+    {
+      "name": "_lease_heartbeat",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 97
+    },
+    {
+      "name": "renew",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 104
+    },
+    {
+      "name": "_process_scanner_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 125
+    },
+    {
+      "name": "process_strix_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 132
+    },
+    {
+      "name": "process_nuclei_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 136
+    },
+    {
+      "name": "process_validation",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 140
+    },
+    {
+      "name": "process_browser_flow",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 213
+    },
+    {
+      "name": "process_recon_task",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 317
+    },
+    {
+      "name": "process_report",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 442
+    },
+    {
+      "name": "_record_worker_outcome",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 484
+    },
+    {
+      "name": "_worker_bool",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 514
+    },
+    {
+      "name": "_legacy_unprovenanced_jobs_allowed",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 526
+    },
+    {
+      "name": "_verify_policy_bound_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 530
+    },
+    {
+      "name": "_active_scanner_execution_requested",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 550
+    },
+    {
+      "name": "_claim_for_role",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 557
+    },
+    {
+      "name": "process_one",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 571
+    },
+    {
+      "name": "_worker_poll_seconds",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 628
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 639
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 13
+    },
+    {
+      "name": "test_scan_engines_default_preserves_strix",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 27
+    },
+    {
+      "name": "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 32
+    },
+    {
+      "name": "test_sqlite_queue_accepts_nuclei_scan",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 41
+    },
+    {
+      "name": "test_nuclei_worker_dry_run_preserves_safe_default",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 52
+    },
+    {
+      "name": "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 78
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 90
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 9
+    },
+    {
+      "name": "_configure_run_root",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 24
+    },
+    {
+      "name": "_admit_scanner_sandbox",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 30
+    },
+    {
+      "name": "test_nuclei_plan_is_dry_run_by_default",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 49
+    },
+    {
+      "name": "test_nuclei_plan_requires_both_activation_gates",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 62
+    },
+    {
+      "name": "test_nuclei_plan_is_http_only_bounded_and_non_destructive",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 75
+    },
+    {
+      "name": "test_nuclei_plan_preserves_sub_one_rps_limits",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 107
+    },
+    {
+      "name": "test_nuclei_plan_fails_closed_outside_scope",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 115
+    },
+    {
+      "name": "test_nuclei_execution_uses_isolated_home_and_blocks_template_downloads",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 124
+    },
+    {
+      "name": "Result",
+      "kind": "class",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 136
+    },
+    {
+      "name": "fake_run",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 141
+    },
+    {
+      "name": "test_nuclei_active_execution_requires_allowlisted_runtime",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 170
+    },
+    {
+      "name": "test_nuclei_active_execution_rejects_version_mismatch",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 183
+    },
+    {
+      "name": "Result",
+      "kind": "class",
+      "file": "backend/tests/test_nuclei_worker_plan.py",
+      "line": 190
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_worker.py",
+      "line": 12
+    },
+    {
+      "name": "test_scanner_worker_dry_run_stays_ready_and_records_event",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_worker.py",
+      "line": 26
+    },
+    {
+      "name": "test_scanner_worker_binds_status_findings_and_evidence_to_same_strix_run",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_worker.py",
+      "line": 54
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_worker.py",
+      "line": 92
+    },
+    {
+      "name": "campaign",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 9
+    },
+    {
+      "name": "test_parser_normalizes_and_filters_scope",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 23
+    },
+    {
+      "name": "test_parser_uses_stable_ids_and_deduplicates_same_result",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 56
+    },
+    {
+      "name": "test_locator_rejects_symlink_escape",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 77
+    },
+    {
+      "name": "test_parser_rejects_oversized_json",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 86
+    },
+    {
+      "name": "test_invalid_strix_size_limit_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 98
+    },
+    {
+      "name": "test_active_scan_rejects_campaign_rate_above_autonomous_cap",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 110
+    },
+    {
+      "name": "test_dry_run_does_not_require_active_rate_admission",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 119
+    },
+    {
+      "name": "test_invalid_active_rate_cap_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 128
+    },
+    {
+      "name": "test_strix_plan_exposes_rate_admission_telemetry",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 137
+    },
+    {
+      "name": "test_dry_run_rate_telemetry_does_not_claim_active_cap",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 149
+    },
+    {
+      "name": "test_invalid_worker_boolean_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 168
+    },
+    {
+      "name": "test_worker_boolean_parser_accepts_explicit_common_values",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 175
+    },
+    {
+      "name": "test_strix_output_dir_must_stay_under_run_root",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 185
+    },
+    {
+      "name": "test_strix_output_dir_rejects_symlink",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 193
+    },
+    {
+      "name": "test_strix_output_dir_accepts_child_of_run_root",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 206
+    },
+    {
+      "name": "test_non_integer_worker_limits_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_worker_parser.py",
+      "line": 222
+    },
+    {
+      "name": "_clear",
+      "kind": "function",
+      "file": "backend/tests/test_worker_secrets.py",
+      "line": 9
+    },
+    {
+      "name": "_configure_vault",
+      "kind": "function",
+      "file": "backend/tests/test_worker_secrets.py",
+      "line": 24
+    },
+    {
+      "name": "test_worker_env_preserves_legacy_provider_secrets_when_vault_disabled",
+      "kind": "function",
+      "file": "backend/tests/test_worker_secrets.py",
+      "line": 33
+    },
+    {
+      "name": "test_worker_env_loads_scanner_secrets_from_vault",
+      "kind": "function",
+      "file": "backend/tests/test_worker_secrets.py",
+      "line": 44
+    },
+    {
+      "name": "test_worker_env_keeps_unused_vault_secrets_optional",
+      "kind": "function",
+      "file": "backend/tests/test_worker_secrets.py",
+      "line": 56
+    },
+    {
+      "name": "test_worker_env_refuses_legacy_secret_fallback_when_vault_enabled",
+      "kind": "function",
+      "file": "backend/tests/test_worker_secrets.py",
+      "line": 67
+    },
+    {
+      "name": "test_worker_env_does_not_inherit_unrelated_secrets",
+      "kind": "function",
+      "file": "backend/tests/test_worker_secrets.py",
+      "line": 76
+    }
+  ],
+  "selected_tests": [
+    "backend/tests/test_hackerone_report_sync_worker.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_nuclei_worker_plan.py",
+    "backend/tests/test_pentagi_status_worker_service.py",
+    "backend/tests/test_pentagi_worker_service.py",
+    "backend/tests/test_recon_worker.py",
+    "backend/tests/test_scanner_worker.py",
+    "backend/tests/test_worker_concurrency.py",
+    "backend/tests/test_worker_job_provenance.py",
+    "backend/tests/test_worker_liveness.py",
+    "backend/tests/test_worker_observations.py",
+    "backend/tests/test_worker_outcome_memory.py",
+    "backend/tests/test_worker_parser.py",
+    "backend/tests/test_worker_roles.py",
+    "backend/tests/test_worker_secrets.py",
+    "backend/tests/test_worker_state.py",
+    "backend/tests/test_worker_watchdog.py"
+  ]
 }

@@ -1,10 +1,12 @@
 # Change impact
 
-Base: 2b8459993a1f674f33b18e5b9197be08bd665c1c
-Head: 8d71a633abc956eb4e4e7ebebfe47c40f2e0e019
+Base: da36946e1846e3c244aef53c03c1bd3bc73e2765
+Head: 9b816a3c171cea546e7448a39d627d715b24d542
 
 ## Changed files
-- M backend/requirements.txt
+- M backend/app/scanner_worker.py
+- M backend/app/worker.py
+- M backend/tests/test_scanner_worker.py
 
 ## Affected areas
 - backend
