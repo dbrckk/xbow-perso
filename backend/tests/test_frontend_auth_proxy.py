@@ -25,8 +25,8 @@ def test_diagnostic_routes_bypass_service_worker_cache():
 def test_frontend_assets_are_explicitly_cache_busted():
     index = _text("frontend/index.html")
     sw = _text("frontend/sw.js")
-    assert '/simple.js?v=102' in index
-    assert '/app.css?v=102' in index
+    assert '/simple.js?v=103' in index
+    assert '/app.css?v=103' in index
     assert "xbow-perso-v103" in sw
 
 
@@ -52,7 +52,7 @@ def test_simple_dashboard_runtime_is_shipped_in_frontend_image():
     dockerfile = _text("frontend/Dockerfile")
     index = _text("frontend/index.html")
     assert "COPY simple.js /usr/share/nginx/html/simple.js" in dockerfile
-    assert '<script src="/simple.js?v=102" defer></script>' in index
+    assert '<script src="/simple.js?v=103" defer></script>' in index
 
 
 def test_service_worker_matches_precache_assets_by_path():
@@ -179,7 +179,7 @@ def test_dashboard_forces_fresh_mobile_shell_and_exposes_version():
     html = _text("frontend/index.html")
     nginx = _text("frontend/nginx.conf")
     assert "const UI_VERSION='v103';" in script
-    assert "serviceWorker.register('/sw.js?v=102',{updateViaCache:'none'})" in script
+    assert "serviceWorker.register('/sw.js?v=103',{updateViaCache:'none'})" in script
     assert 'id="buildVersion"' in html
     assert "Interface v103" in html
     assert "location = /index.html" in nginx
@@ -400,10 +400,10 @@ def test_pwa_precache_matches_v103_assets():
     sw = _text("frontend/sw.js")
     index = _text("frontend/index.html")
     assert "xbow-perso-v103" in sw
-    assert "/app.css?v=102" in sw
-    assert "/simple.js?v=102" in sw
-    assert '/app.css?v=102' in index
-    assert '/simple.js?v=102' in index
+    assert "/app.css?v=103" in sw
+    assert "/simple.js?v=103" in sw
+    assert '/app.css?v=103' in index
+    assert '/simple.js?v=103' in index
 
 
 def test_dashboard_surfaces_passive_openapi_auth_inventory():
