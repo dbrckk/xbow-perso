@@ -8,6 +8,7 @@ from app.strix_broker_models import BrokerContractDocument, BrokerHttpRequest
 from app.strix_egress_transport import (
     ResolvedEndpoint,
     StrixEgressConcurrencyError,
+    StrixEgressNetworkError,
     StrixEgressPolicyError,
     StrixEgressRateLimitError,
     _acquire_request_slot,
@@ -402,7 +403,7 @@ def test_request_slot_is_released_after_network_failure(monkeypatch):
         lambda: next(times),
     )
 
-    with pytest.raises(Exception, match="Strix egress request failed"):
+    with pytest.raises(StrixEgressNetworkError, match="Strix egress request failed"):
         perform_bounded_http_request(
             request,
             verification_secret="egress-secret",
