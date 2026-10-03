@@ -1,6 +1,5 @@
 import hashlib
 import json
-import os
 import stat
 import subprocess
 
@@ -16,13 +15,18 @@ from app.strix_runner import (
 )
 
 
-def _write_runtime(tmp_path, *, architecture="amd64"):
+def _write_runtime(tmp_path, monkeypatch, *, architecture="amd64"):
     binary = tmp_path / "strix"
     binary.write_bytes(b"fixture-strix-binary")
     binary.chmod(binary.stat().st_mode | stat.S_IXUSR)
 
     digest = hashlib.sha256(binary.read_bytes()).hexdigest()
     asset = PINNED_STRIX_ASSETS[architecture]["asset"]
+    monkeypatch.setitem(
+        PINNED_STRIX_ASSETS[architecture],
+        "sha256",
+        digest,
+    )
     manifest = {
         "schema": "xbow-strix-runner-manifest-v1",
         "version": PINNED_STRIX_VERSION,
@@ -47,7 +51,7 @@ def test_runner_health_is_explicitly_attestation_only():
 
 
 def test_attestation_accepts_exact_binary_manifest_and_version(monkeypatch, tmp_path):
-    binary, manifest_path, manifest = _write_runtime(tmp_path)
+    binary, manifest_path, manifest = _write_runtime(tmp_path, monkeypatch)
 
     def run(args, **kwargs):
         assert args == [str(binary), "--version"]
@@ -81,7 +85,7 @@ def test_attestation_accepts_exact_binary_manifest_and_version(monkeypatch, tmp_
 
 
 def test_attestation_rejects_manifest_with_unexpected_version(monkeypatch, tmp_path):
-    binary, manifest_path, manifest = _write_runtime(tmp_path)
+    binary, manifest_path, manifest = _write_runtime(tmp_path, monkeypatch)
     manifest["version"] = "9.9.9"
     manifest_path.write_text(json.dumps(manifest))
 
@@ -96,7 +100,7 @@ def test_attestation_rejects_manifest_with_unexpected_upstream_commit(
     monkeypatch,
     tmp_path,
 ):
-    binary, manifest_path, manifest = _write_runtime(tmp_path)
+    binary, manifest_path, manifest = _write_runtime(tmp_path, monkeypatch)
     manifest["upstream_commit"] = "0" * 40
     manifest_path.write_text(json.dumps(manifest))
 
@@ -111,7 +115,7 @@ def test_attestation_rejects_manifest_asset_not_pinned_for_architecture(
     monkeypatch,
     tmp_path,
 ):
-    binary, manifest_path, manifest = _write_runtime(tmp_path)
+    binary, manifest_path, manifest = _write_runtime(tmp_path, monkeypatch)
     manifest["asset"] = "strix-1.6.2-linux-wrong.tar.gz"
     manifest_path.write_text(json.dumps(manifest))
 
@@ -123,7 +127,7 @@ def test_attestation_rejects_manifest_asset_not_pinned_for_architecture(
 
 
 def test_attestation_rejects_binary_hash_mismatch(monkeypatch, tmp_path):
-    binary, manifest_path, manifest = _write_runtime(tmp_path)
+    binary, manifest_path, manifest = _write_runtime(tmp_path, monkeypatch)
     manifest["sha256"] = "f" * 64
     manifest_path.write_text(json.dumps(manifest))
 
@@ -135,7 +139,7 @@ def test_attestation_rejects_binary_hash_mismatch(monkeypatch, tmp_path):
 
 
 def test_attestation_rejects_symlink_binary(monkeypatch, tmp_path):
-    binary, manifest_path, _manifest = _write_runtime(tmp_path)
+    binary, manifest_path, _manifest = _write_runtime(tmp_path, monkeypatch)
     symlink = tmp_path / "strix-link"
     symlink.symlink_to(binary)
 
@@ -147,7 +151,7 @@ def test_attestation_rejects_symlink_binary(monkeypatch, tmp_path):
 
 
 def test_attestation_rejects_non_executable_binary(monkeypatch, tmp_path):
-    binary, manifest_path, _manifest = _write_runtime(tmp_path)
+    binary, manifest_path, _manifest = _write_runtime(tmp_path, monkeypatch)
     binary.chmod(stat.S_IRUSR | stat.S_IWUSR)
 
     with pytest.raises(StrixRunnerAttestationError, match="executable"):
@@ -158,7 +162,7 @@ def test_attestation_rejects_non_executable_binary(monkeypatch, tmp_path):
 
 
 def test_attestation_rejects_wrong_runtime_version(monkeypatch, tmp_path):
-    binary, manifest_path, _manifest = _write_runtime(tmp_path)
+    binary, manifest_path, _manifest = _write_runtime(tmp_path, monkeypatch)
 
     monkeypatch.setattr(
         "app.strix_runner.subprocess.run",
@@ -178,7 +182,7 @@ def test_attestation_rejects_wrong_runtime_version(monkeypatch, tmp_path):
 
 
 def test_attestation_rejects_extra_manifest_fields(monkeypatch, tmp_path):
-    binary, manifest_path, manifest = _write_runtime(tmp_path)
+    binary, manifest_path, manifest = _write_runtime(tmp_path, monkeypatch)
     manifest["unexpected"] = "value"
     manifest_path.write_text(json.dumps(manifest))
 
