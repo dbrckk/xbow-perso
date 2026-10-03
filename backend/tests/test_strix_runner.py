@@ -203,7 +203,6 @@ def test_pinned_release_assets_have_exact_sha256(architecture):
     int(item["sha256"], 16)
 
 
-
 def test_head_readyz_fails_closed_when_runtime_attestation_fails(monkeypatch):
     handler = StrixRunnerHandler.__new__(StrixRunnerHandler)
     handler.path = "/readyz"
