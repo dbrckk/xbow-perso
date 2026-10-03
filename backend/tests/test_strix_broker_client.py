@@ -139,7 +139,19 @@ def test_client_rejects_invalid_response_shape(monkeypatch):
 
 
 def test_client_checks_fixed_internal_readiness_endpoint(monkeypatch):
-    opener = _Opener(_Response(b'{"status":"ready"}'))
+    opener = _Opener(
+        _Response(
+            json.dumps(
+                {
+                    "status": "ready",
+                    "mode": "read_only_http",
+                    "methods": ["GET", "HEAD"],
+                    "public_network_only": True,
+                    "redirects_followed": False,
+                }
+            ).encode()
+        )
+    )
     monkeypatch.setattr("app.strix_broker_client._opener", lambda: opener)
 
     check_egress_ready()
@@ -151,6 +163,48 @@ def test_client_checks_fixed_internal_readiness_endpoint(monkeypatch):
 
 def test_client_readiness_rejects_oversized_response(monkeypatch):
     opener = _Opener(_Response(b"x" * 4097))
+    monkeypatch.setattr("app.strix_broker_client._opener", lambda: opener)
+
+    with pytest.raises(StrixBrokerClientError) as exc_info:
+        check_egress_ready()
+
+    assert exc_info.value.status_code == 503
+
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {},
+        {"status": "ok"},
+        {
+            "status": "ready",
+            "mode": "read_only_http",
+            "methods": ["GET", "POST"],
+            "public_network_only": True,
+            "redirects_followed": False,
+        },
+        {
+            "status": "ready",
+            "mode": "read_only_http",
+            "methods": ["GET", "HEAD"],
+            "public_network_only": False,
+            "redirects_followed": False,
+        },
+        {
+            "status": "ready",
+            "mode": "read_only_http",
+            "methods": ["GET", "HEAD"],
+            "public_network_only": True,
+            "redirects_followed": True,
+        },
+    ],
+)
+def test_client_readiness_rejects_unexpected_egress_posture(
+    monkeypatch,
+    payload,
+):
+    opener = _Opener(_Response(json.dumps(payload).encode()))
     monkeypatch.setattr("app.strix_broker_client._opener", lambda: opener)
 
     with pytest.raises(StrixBrokerClientError) as exc_info:
