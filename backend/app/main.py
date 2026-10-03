@@ -1268,29 +1268,38 @@ def start_campaign(campaign_id: str):
     from .orchestrator import advance_campaign
 
     jobs = queue()
-    campaign, _current_version = assert_campaign_record(campaign.id)
-    planner_result = advance_campaign(campaign, jobs, storage())
-    job_ids = [
-        str(job_id)
-        for job_id in list(planner_result.get("job_ids") or [])
-        if str(job_id)
-    ]
-    if not job_ids:
-        action = dict(planner_result.get("action") or {})
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "message": "Authorized planner could not schedule bounded recon",
-                "reason": "planner_start_blocked",
-                "action": action,
-            },
-        )
-    job = jobs.get(job_ids[0])
-    if job is None:
-        raise HTTPException(
-            status_code=500,
-            detail="Planner queued job disappeared",
-        )
+    legacy_job = jobs.get_by_dedupe(
+        campaign.id,
+        "strix_scan",
+        f"api:start:{request_id}",
+    )
+    planner_result = None
+    if legacy_job is not None:
+        job = legacy_job
+    else:
+        campaign, _current_version = assert_campaign_record(campaign.id)
+        planner_result = advance_campaign(campaign, jobs, storage())
+        job_ids = [
+            str(job_id)
+            for job_id in list(planner_result.get("job_ids") or [])
+            if str(job_id)
+        ]
+        if not job_ids:
+            action = dict(planner_result.get("action") or {})
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "Authorized planner could not schedule bounded recon",
+                    "reason": "planner_start_blocked",
+                    "action": action,
+                },
+            )
+        job = jobs.get(job_ids[0])
+        if job is None:
+            raise HTTPException(
+                status_code=500,
+                detail="Planner queued job disappeared",
+            )
 
     campaign = _reconcile_campaign_started(
         campaign.id,
