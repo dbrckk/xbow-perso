@@ -10,10 +10,9 @@ def _compose() -> str:
 
 def _service_block(name: str, next_name: str) -> str:
     compose = _compose()
-    return compose.split(f"  {name}:", 1)[1].split(
-        f"\n  {next_name}:",
-        1,
-    )[0]
+    marker = f"\n  {name}:\n"
+    next_marker = f"\n  {next_name}:\n"
+    return compose.split(marker, 1)[1].split(next_marker, 1)[0]
 
 
 def test_strix_broker_is_internal_and_unpublished():
