@@ -30,14 +30,14 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T19:20:07Z
+Generated: 2026-10-03T19:45:11Z
 
 ### Git
 - Branch: `main`
-- Head: `8132dc67a68b`
-- Commit date: 2026-10-03T21:19:57+02:00
-- Commit: feat(strix): add isolated admission-only broker
-- Tracked files: 598
+- Head: `52917ab83a52`
+- Commit date: 2026-10-03T21:44:54+02:00
+- Commit: feat(strix): add bounded read-only egress boundary
+- Tracked files: 605
 
 ### Recently changed files
 - `.env.example`
@@ -45,18 +45,21 @@ Generated: 2026-10-03T19:20:07Z
 - `README.md`
 - `backend/app/runtime_capabilities.py`
 - `backend/app/strix_broker.py`
-- `backend/app/strix_execution_contract.py`
+- `backend/app/strix_broker_client.py`
+- `backend/app/strix_broker_models.py`
+- `backend/app/strix_egress.py`
+- `backend/app/strix_egress_transport.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_broker.py`
+- `backend/tests/test_strix_broker_client.py`
 - `backend/tests/test_strix_broker_runtime.py`
-- `backend/tests/test_strix_execution_contract.py`
+- `backend/tests/test_strix_egress.py`
+- `backend/tests/test_strix_egress_transport.py`
 - `docker-compose.yml`
+- `backend/app/strix_execution_contract.py`
+- `backend/tests/test_strix_execution_contract.py`
 - `backend/app/scanner_worker.py`
 - `backend/tests/test_scanner_worker.py`
-- `backend/app/scanner_sandbox.py`
-- `backend/tests/test_scanner_sandbox.py`
-- `backend/app/worker.py`
-- `backend/requirements.txt`
 
 ### Project signals
 - `pyproject.toml`

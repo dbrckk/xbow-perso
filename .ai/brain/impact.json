@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "723a0ee4d80ec807cd97ff5f2563b99f2a786072",
-  "head": "8132dc67a68b066a5fdd9509c096db24f7731741",
+  "base": "8132dc67a68b066a5fdd9509c096db24f7731741",
+  "head": "52917ab83a52c6a6ad95b5746705e0d03cebeffd",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -23,11 +23,23 @@
     },
     {
       "path": "backend/app/strix_broker.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/strix_broker_client.py",
       "status": "A"
     },
     {
-      "path": "backend/app/strix_execution_contract.py",
-      "status": "M"
+      "path": "backend/app/strix_broker_models.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/app/strix_egress.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/app/strix_egress_transport.py",
+      "status": "A"
     },
     {
       "path": "backend/tests/test_runtime_capabilities.py",
@@ -35,15 +47,23 @@
     },
     {
       "path": "backend/tests/test_strix_broker.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_strix_broker_client.py",
       "status": "A"
     },
     {
       "path": "backend/tests/test_strix_broker_runtime.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_strix_egress.py",
       "status": "A"
     },
     {
-      "path": "backend/tests/test_strix_execution_contract.py",
-      "status": "M"
+      "path": "backend/tests/test_strix_egress_transport.py",
+      "status": "A"
     },
     {
       "path": "docker-compose.yml",
@@ -53,11 +73,16 @@
   "changed_source_files": [
     "backend/app/runtime_capabilities.py",
     "backend/app/strix_broker.py",
-    "backend/app/strix_execution_contract.py",
+    "backend/app/strix_broker_client.py",
+    "backend/app/strix_broker_models.py",
+    "backend/app/strix_egress.py",
+    "backend/app/strix_egress_transport.py",
     "backend/tests/test_runtime_capabilities.py",
     "backend/tests/test_strix_broker.py",
+    "backend/tests/test_strix_broker_client.py",
     "backend/tests/test_strix_broker_runtime.py",
-    "backend/tests/test_strix_execution_contract.py"
+    "backend/tests/test_strix_egress.py",
+    "backend/tests/test_strix_egress_transport.py"
   ],
   "impacted_files": [
     "backend/app/campaign_control.py",
@@ -68,14 +93,18 @@
     "backend/app/main.py",
     "backend/app/orchestrator.py",
     "backend/app/runtime_capabilities.py",
-    "backend/app/scanner_worker.py",
     "backend/app/strix_broker.py",
-    "backend/app/strix_execution_contract.py",
+    "backend/app/strix_broker_client.py",
+    "backend/app/strix_broker_models.py",
+    "backend/app/strix_egress.py",
+    "backend/app/strix_egress_transport.py",
     "backend/tests/test_nuclei_preflight.py",
     "backend/tests/test_runtime_capabilities.py",
     "backend/tests/test_strix_broker.py",
+    "backend/tests/test_strix_broker_client.py",
     "backend/tests/test_strix_broker_runtime.py",
-    "backend/tests/test_strix_execution_contract.py"
+    "backend/tests/test_strix_egress.py",
+    "backend/tests/test_strix_egress_transport.py"
   ],
   "impacted_symbols": [
     {
@@ -1120,193 +1149,307 @@
       "name": "safe_scanner_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 190
+      "line": 196
     },
     {
       "name": "browser_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 224
+      "line": 236
     },
     {
       "name": "safe_browser_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 248
+      "line": 260
     },
     {
       "name": "recon_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 263
+      "line": 275
     },
     {
       "name": "safe_recon_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 301
-    },
-    {
-      "name": "ScannerJobResult",
-      "kind": "class",
-      "file": "backend/app/scanner_worker.py",
-      "line": 19
-    },
-    {
-      "name": "_record_scan_observation",
-      "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 26
-    },
-    {
-      "name": "_state_after_scan",
-      "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 54
-    },
-    {
-      "name": "run_strix_job",
-      "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 62
-    },
-    {
-      "name": "run_nuclei_job",
-      "kind": "function",
-      "file": "backend/app/scanner_worker.py",
-      "line": 157
-    },
-    {
-      "name": "BrokerContractDocument",
-      "kind": "class",
-      "file": "backend/app/strix_broker.py",
-      "line": 26
-    },
-    {
-      "name": "normalize_scope",
-      "kind": "function",
-      "file": "backend/app/strix_broker.py",
-      "line": 46
-    },
-    {
-      "name": "to_contract",
-      "kind": "function",
-      "file": "backend/app/strix_broker.py",
-      "line": 51
-    },
-    {
-      "name": "BrokerAdmissionRequest",
-      "kind": "class",
-      "file": "backend/app/strix_broker.py",
-      "line": 71
-    },
-    {
-      "name": "BrokerAdmissionResponse",
-      "kind": "class",
-      "file": "backend/app/strix_broker.py",
-      "line": 79
+      "line": 313
     },
     {
       "name": "_broker_verification_secret",
       "kind": "function",
       "file": "backend/app/strix_broker.py",
-      "line": 90
+      "line": 34
+    },
+    {
+      "name": "_read_only_egress_enabled",
+      "kind": "function",
+      "file": "backend/app/strix_broker.py",
+      "line": 49
+    },
+    {
+      "name": "_authorize",
+      "kind": "function",
+      "file": "backend/app/strix_broker.py",
+      "line": 64
     },
     {
       "name": "healthz",
       "kind": "function",
       "file": "backend/app/strix_broker.py",
-      "line": 106
+      "line": 86
     },
     {
       "name": "readyz",
       "kind": "function",
       "file": "backend/app/strix_broker.py",
-      "line": 118
+      "line": 107
     },
     {
       "name": "admit",
       "kind": "function",
       "file": "backend/app/strix_broker.py",
-      "line": 129
+      "line": 124
     },
     {
-      "name": "StrixExecutionContractError",
-      "kind": "class",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 18
+      "name": "request_http",
+      "kind": "function",
+      "file": "backend/app/strix_broker.py",
+      "line": 136
     },
     {
-      "name": "StrixExecutionContract",
+      "name": "StrixBrokerClientError",
       "kind": "class",
-      "file": "backend/app/strix_execution_contract.py",
+      "file": "backend/app/strix_broker_client.py",
+      "line": 16
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/app/strix_broker_client.py",
+      "line": 17
+    },
+    {
+      "name": "_NoRedirect",
+      "kind": "class",
+      "file": "backend/app/strix_broker_client.py",
+      "line": 22
+    },
+    {
+      "name": "redirect_request",
+      "kind": "function",
+      "file": "backend/app/strix_broker_client.py",
       "line": 23
     },
     {
-      "name": "to_dict",
+      "name": "EgressEndpoint",
+      "kind": "class",
+      "file": "backend/app/strix_broker_client.py",
+      "line": 28
+    },
+    {
+      "name": "_egress_endpoint",
       "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
+      "file": "backend/app/strix_broker_client.py",
+      "line": 34
+    },
+    {
+      "name": "_timeout_seconds",
+      "kind": "function",
+      "file": "backend/app/strix_broker_client.py",
+      "line": 68
+    },
+    {
+      "name": "_opener",
+      "kind": "function",
+      "file": "backend/app/strix_broker_client.py",
+      "line": 85
+    },
+    {
+      "name": "forward_read_only_request",
+      "kind": "function",
+      "file": "backend/app/strix_broker_client.py",
+      "line": 92
+    },
+    {
+      "name": "BrokerContractDocument",
+      "kind": "class",
+      "file": "backend/app/strix_broker_models.py",
+      "line": 10
+    },
+    {
+      "name": "normalize_scope",
+      "kind": "function",
+      "file": "backend/app/strix_broker_models.py",
+      "line": 30
+    },
+    {
+      "name": "to_contract",
+      "kind": "function",
+      "file": "backend/app/strix_broker_models.py",
+      "line": 35
+    },
+    {
+      "name": "BrokerAdmissionRequest",
+      "kind": "class",
+      "file": "backend/app/strix_broker_models.py",
+      "line": 55
+    },
+    {
+      "name": "BrokerAdmissionResponse",
+      "kind": "class",
+      "file": "backend/app/strix_broker_models.py",
+      "line": 63
+    },
+    {
+      "name": "BrokerHttpRequest",
+      "kind": "class",
+      "file": "backend/app/strix_broker_models.py",
+      "line": 74
+    },
+    {
+      "name": "BrokerHeader",
+      "kind": "class",
+      "file": "backend/app/strix_broker_models.py",
+      "line": 84
+    },
+    {
+      "name": "BrokerHttpResponse",
+      "kind": "class",
+      "file": "backend/app/strix_broker_models.py",
+      "line": 91
+    },
+    {
+      "name": "_verification_secret",
+      "kind": "function",
+      "file": "backend/app/strix_egress.py",
+      "line": 25
+    },
+    {
+      "name": "_enabled",
+      "kind": "function",
+      "file": "backend/app/strix_egress.py",
       "line": 40
     },
     {
-      "name": "redacted_summary",
+      "name": "healthz",
       "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 46
+      "file": "backend/app/strix_egress.py",
+      "line": 53
     },
     {
-      "name": "StrixAuthorizedRequest",
+      "name": "readyz",
+      "kind": "function",
+      "file": "backend/app/strix_egress.py",
+      "line": 71
+    },
+    {
+      "name": "fetch",
+      "kind": "function",
+      "file": "backend/app/strix_egress.py",
+      "line": 88
+    },
+    {
+      "name": "StrixEgressError",
       "kind": "class",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 60
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 28
     },
     {
-      "name": "_validate_job_id",
-      "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 67
+      "name": "StrixEgressPolicyError",
+      "kind": "class",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 32
     },
     {
-      "name": "_canonical_payload",
-      "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 78
+      "name": "StrixEgressNetworkError",
+      "kind": "class",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 36
     },
     {
-      "name": "_contract_secret",
-      "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 101
+      "name": "StrixEgressRateLimitError",
+      "kind": "class",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 40
     },
     {
-      "name": "_unsafe_campaign_reasons",
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 110
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 41
     },
     {
-      "name": "build_strix_execution_contract",
-      "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 135
+      "name": "ResolvedEndpoint",
+      "kind": "class",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 77
     },
     {
-      "name": "verify_strix_contract_integrity",
+      "name": "_timeout_seconds",
       "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 196
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 84
     },
     {
-      "name": "verify_strix_execution_contract",
+      "name": "_max_response_bytes",
       "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 240
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 99
     },
     {
-      "name": "authorize_strix_contract_request",
+      "name": "_normalize_headers",
       "kind": "function",
-      "file": "backend/app/strix_execution_contract.py",
-      "line": 284
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 114
+    },
+    {
+      "name": "_public_ip",
+      "kind": "function",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 141
+    },
+    {
+      "name": "resolve_public_endpoint",
+      "kind": "function",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 153
+    },
+    {
+      "name": "_pinned_create_connection",
+      "kind": "function",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 215
+    },
+    {
+      "name": "create_connection",
+      "kind": "function",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 219
+    },
+    {
+      "name": "_enforce_rate",
+      "kind": "function",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 241
+    },
+    {
+      "name": "reset_rate_limits_for_tests",
+      "kind": "function",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 256
+    },
+    {
+      "name": "_response_headers",
+      "kind": "function",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 261
+    },
+    {
+      "name": "perform_bounded_http_request",
+      "kind": "function",
+      "file": "backend/app/strix_egress_transport.py",
+      "line": 294
     },
     {
       "name": "_clear",
@@ -1456,176 +1599,322 @@
       "name": "test_browser_runtime_capability_fails_closed_without_runtime_marker",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 312
+      "line": 318
     },
     {
       "name": "test_browser_runtime_capability_ready_with_runtime_marker",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 325
+      "line": 331
     },
     {
       "name": "test_browser_runtime_capability_disabled_even_when_runtime_exists",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 338
+      "line": 344
     },
     {
       "name": "test_capabilities_api_exposes_browser_runtime_detail",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 351
+      "line": 357
     },
     {
       "name": "_campaign",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 16
+      "line": 19
     },
     {
       "name": "_signed_contract",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 32
+      "line": 35
     },
     {
       "name": "test_broker_health_is_explicitly_admission_only",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 38
+      "line": 41
     },
     {
       "name": "test_broker_readiness_requires_verification_key",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 51
+      "line": 54
     },
     {
       "name": "test_broker_admits_signed_in_scope_request_without_egress",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 60
+      "line": 63
     },
     {
       "name": "test_broker_rejects_wrong_verification_key",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 80
+      "line": 83
     },
     {
       "name": "test_broker_rejects_out_of_scope_and_denied_hosts",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 97
+      "line": 100
     },
     {
       "name": "test_broker_rejects_rate_above_signed_contract",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 116
+      "line": 119
     },
     {
       "name": "test_broker_contract_model_forbids_unsafe_runtime_invariants",
       "kind": "function",
       "file": "backend/tests/test_strix_broker.py",
-      "line": 133
+      "line": 136
     },
     {
-      "name": "_broker_compose_block",
+      "name": "test_broker_health_reports_read_only_proxy_when_enabled",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker.py",
+      "line": 146
+    },
+    {
+      "name": "test_broker_request_path_is_disabled_by_default",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker.py",
+      "line": 161
+    },
+    {
+      "name": "test_broker_revalidates_contract_before_forwarding",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker.py",
+      "line": 187
+    },
+    {
+      "name": "test_broker_forwards_only_after_local_admission",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker.py",
+      "line": 213
+    },
+    {
+      "name": "fake_forward",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker.py",
+      "line": 222
+    },
+    {
+      "name": "_Response",
+      "kind": "class",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 15
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 16
+    },
+    {
+      "name": "__enter__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 22
+    },
+    {
+      "name": "__exit__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 25
+    },
+    {
+      "name": "read",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 28
+    },
+    {
+      "name": "_Opener",
+      "kind": "class",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 34
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 35
+    },
+    {
+      "name": "open",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 40
+    },
+    {
+      "name": "_request",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 46
+    },
+    {
+      "name": "test_client_posts_only_to_fixed_internal_egress_endpoint",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 68
+    },
+    {
+      "name": "test_client_rejects_non_internal_endpoint_configuration",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 110
+    },
+    {
+      "name": "test_client_rejects_oversized_egress_service_response",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 120
+    },
+    {
+      "name": "test_client_rejects_invalid_response_shape",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_client.py",
+      "line": 129
+    },
+    {
+      "name": "_compose",
       "kind": "function",
       "file": "backend/tests/test_strix_broker_runtime.py",
       "line": 7
     },
     {
+      "name": "_service_block",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_runtime.py",
+      "line": 11
+    },
+    {
       "name": "test_strix_broker_is_internal_and_unpublished",
       "kind": "function",
       "file": "backend/tests/test_strix_broker_runtime.py",
-      "line": 12
+      "line": 18
     },
     {
-      "name": "test_scanner_worker_can_reach_only_broker_internal_boundary_additionally",
+      "name": "test_strix_egress_is_only_dual_homed_external_boundary",
       "kind": "function",
       "file": "backend/tests/test_strix_broker_runtime.py",
-      "line": 29
+      "line": 39
     },
     {
-      "name": "test_ci_builds_strix_broker_profile",
+      "name": "test_scanner_worker_cannot_reach_egress_network_directly",
       "kind": "function",
       "file": "backend/tests/test_strix_broker_runtime.py",
-      "line": 41
+      "line": 58
+    },
+    {
+      "name": "test_network_zones_keep_scanner_to_egress_separated",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_runtime.py",
+      "line": 68
+    },
+    {
+      "name": "test_ci_builds_strix_broker_and_egress_profile",
+      "kind": "function",
+      "file": "backend/tests/test_strix_broker_runtime.py",
+      "line": 84
     },
     {
       "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 15
+      "file": "backend/tests/test_strix_egress.py",
+      "line": 19
     },
     {
-      "name": "test_contract_is_deterministic_and_binds_policy_and_job",
+      "name": "_request",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 31
+      "file": "backend/tests/test_strix_egress.py",
+      "line": 34
     },
     {
-      "name": "test_contract_summary_is_redacted",
+      "name": "test_egress_service_is_disabled_by_default",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 53
+      "file": "backend/tests/test_strix_egress.py",
+      "line": 44
     },
     {
-      "name": "test_unsigned_contract_can_be_previewed_but_not_used_by_runtime",
+      "name": "test_egress_service_requires_verification_key",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 67
+      "file": "backend/tests/test_strix_egress.py",
+      "line": 61
     },
     {
-      "name": "test_signed_contract_authorizes_only_in_scope_rate_bounded_requests",
+      "name": "test_egress_fetch_calls_transport_only_when_enabled",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 84
+      "file": "backend/tests/test_strix_egress.py",
+      "line": 71
     },
     {
-      "name": "test_runtime_can_verify_with_explicit_broker_secret",
+      "name": "fake_perform",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 123
+      "file": "backend/tests/test_strix_egress.py",
+      "line": 77
     },
     {
-      "name": "test_contract_tampering_fails_before_request_authorization",
+      "name": "test_egress_fetch_maps_failures_without_internal_details",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 146
+      "file": "backend/tests/test_strix_egress.py",
+      "line": 111
     },
     {
-      "name": "test_policy_change_invalidates_existing_contract",
+      "name": "test_egress_fetch_returns_retry_after_for_rate_limit",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 159
+      "file": "backend/tests/test_strix_egress.py",
+      "line": 133
     },
     {
-      "name": "test_job_change_invalidates_existing_contract",
-      "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 170
+      "name": "_Response",
+      "kind": "class",
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "line": 20
     },
     {
-      "name": "test_unsafe_campaign_flags_block_contract_issuance",
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 188
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "line": 21
     },
     {
-      "name": "test_automated_scanning_must_remain_enabled",
+      "name": "read",
       "kind": "function",
-      "file": "backend/tests/test_strix_execution_contract.py",
-      "line": 198
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "line": 35
+    },
+    {
+      "name": "getheaders",
+      "kind": "function",
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "line": 39
+    },
+    {
+      "name": "_Connection",
+      "kind": "class",
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "line": 43
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "line": 47
     }
   ],
   "selected_tests": [
     "backend/tests/test_nuclei_preflight.py",
     "backend/tests/test_runtime_capabilities.py",
     "backend/tests/test_strix_broker.py",
+    "backend/tests/test_strix_broker_client.py",
     "backend/tests/test_strix_broker_runtime.py",
-    "backend/tests/test_strix_execution_contract.py"
+    "backend/tests/test_strix_egress.py",
+    "backend/tests/test_strix_egress_transport.py"
   ]
 }

@@ -186,7 +186,11 @@ app/
   storage_backend.py
   storage_core.py
   storage.py
+  strix_broker_client.py
+  strix_broker_models.py
   strix_broker.py
+  strix_egress_transport.py
+  strix_egress.py
   strix_execution_contract.py
   strix_parser.py
   strix_run_status.py
@@ -412,8 +416,11 @@ tests/
   test_simple_selection_cached.py
   test_storage_backend.py
   test_storage.py
+  test_strix_broker_client.py
   test_strix_broker_runtime.py
   test_strix_broker.py
+  test_strix_egress_transport.py
+  test_strix_egress.py
   test_strix_execution_contract.py
   test_strix_run_status.py
   test_submission_api.py
@@ -10769,10 +10776,53 @@ flow_id = _bounded_identifier(flow_id, "flow_id")
 row = db.execute(
 ```
 
-## File: app/strix_broker.py
+## File: app/strix_broker_client.py
 ```python
-app = FastAPI(
+class StrixBrokerClientError(RuntimeError)
 ⋮----
+def __init__(self, message: str, *, status_code: int = 502)
+⋮----
+class _NoRedirect(urllib.request.HTTPRedirectHandler)
+⋮----
+def redirect_request(self, req, fp, code, msg, headers, newurl)
+⋮----
+@dataclass(frozen=True)
+class EgressEndpoint
+⋮----
+url: str
+host: str
+port: int
+⋮----
+def _egress_endpoint() -> EgressEndpoint
+⋮----
+raw = os.getenv(
+parsed = urlsplit(raw)
+⋮----
+port = parsed.port
+⋮----
+def _timeout_seconds() -> float
+⋮----
+raw = os.getenv("XBOW_STRIX_BROKER_EGRESS_TIMEOUT_SECONDS", "15")
+⋮----
+value = float(raw)
+⋮----
+def _opener()
+⋮----
+endpoint = _egress_endpoint()
+payload = json.dumps(
+outbound = urllib.request.Request(
+⋮----
+raw = response.read(2 * 1024 * 1024 + 1)
+⋮----
+status = int(response.status)
+⋮----
+status = int(exc.code)
+⋮----
+decoded = json.loads(raw.decode("utf-8"))
+```
+
+## File: app/strix_broker_models.py
+```python
 class BrokerContractDocument(BaseModel)
 ⋮----
 model_config = ConfigDict(extra="forbid")
@@ -10815,12 +10865,52 @@ mode: Literal["admission_only"] = "admission_only"
 egress_enabled: Literal[False] = False
 network_io_performed: Literal[False] = False
 ⋮----
+class BrokerHttpRequest(BaseModel)
+⋮----
+method: Literal["GET", "HEAD"] = "GET"
+headers: dict[str, str] = Field(default_factory=dict, max_length=32)
+⋮----
+class BrokerHeader(BaseModel)
+⋮----
+name: str = Field(min_length=1, max_length=128)
+value: str = Field(max_length=4096)
+⋮----
+class BrokerHttpResponse(BaseModel)
+⋮----
+status_code: int = Field(ge=100, le=599)
+reason: str = Field(max_length=256)
+headers: list[BrokerHeader] = Field(default_factory=list, max_length=64)
+body_base64: str
+body_bytes: int = Field(ge=0)
+truncated: bool
+⋮----
+method: Literal["GET", "HEAD"]
+mode: Literal["read_only_http"] = "read_only_http"
+egress_enforced: Literal[True] = True
+network_io_performed: Literal[True] = True
+redirect_followed: Literal[False] = False
+```
+
+## File: app/strix_broker.py
+```python
+app = FastAPI(
+⋮----
 def _broker_verification_secret() -> str
 ⋮----
 secret = os.getenv("XBOW_STRIX_BROKER_HMAC_KEY", "")
 ⋮----
+def _read_only_egress_enabled() -> bool
+⋮----
+raw = os.getenv(
+⋮----
+secret = _broker_verification_secret()
+⋮----
 @app.get("/healthz")
 def healthz() -> dict
+⋮----
+egress_enabled = _read_only_egress_enabled()
+⋮----
+egress_enabled = False
 ⋮----
 @app.get("/readyz")
 def readyz() -> dict
@@ -10828,9 +10918,163 @@ def readyz() -> dict
 @app.post("/v1/admit", response_model=BrokerAdmissionResponse)
 def admit(request: BrokerAdmissionRequest) -> BrokerAdmissionResponse
 ⋮----
-secret = _broker_verification_secret()
+authorized = _authorize(request)
+⋮----
+@app.post("/v1/request", response_model=BrokerHttpResponse)
+def request_http(request: BrokerHttpRequest) -> BrokerHttpResponse
+⋮----
+__all__ = [
+```
+
+## File: app/strix_egress_transport.py
+```python
+class StrixEgressError(RuntimeError)
+⋮----
+class StrixEgressPolicyError(StrixEgressError)
+⋮----
+class StrixEgressNetworkError(StrixEgressError)
+⋮----
+class StrixEgressRateLimitError(StrixEgressPolicyError)
+⋮----
+def __init__(self, retry_after_seconds: float)
+⋮----
+_HEADER_NAME = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]+$")
+_FORBIDDEN_REQUEST_HEADERS = {
+_FORBIDDEN_RESPONSE_HEADERS = {
+_MAX_RATE_KEYS = 4096
+_RATE_LOCK = threading.Lock()
+_LAST_REQUEST_AT: OrderedDict[str, float] = OrderedDict()
+⋮----
+@dataclass(frozen=True)
+class ResolvedEndpoint
+⋮----
+family: int
+sockaddr: tuple
+address: str
+address_type: str
+⋮----
+def _timeout_seconds() -> float
+⋮----
+raw = os.getenv("XBOW_STRIX_EGRESS_TIMEOUT_SECONDS", "10")
+⋮----
+value = float(raw)
+⋮----
+def _max_response_bytes() -> int
+⋮----
+raw = os.getenv("XBOW_STRIX_EGRESS_MAX_RESPONSE_BYTES", "262144")
+⋮----
+value = int(raw)
+⋮----
+def _normalize_headers(headers: dict[str, str]) -> dict[str, str]
+⋮----
+normalized: dict[str, str] = {}
+⋮----
+name = str(raw_name).strip()
+value = str(raw_value)
+⋮----
+def _public_ip(value: str) -> ipaddress.IPv4Address | ipaddress.IPv6Address
+⋮----
+address = ipaddress.ip_address(value)
+⋮----
+def resolve_public_endpoint(host: str, port: int) -> ResolvedEndpoint
+⋮----
+literal = ipaddress.ip_address(host)
+⋮----
+literal = None
+⋮----
+address = _public_ip(str(literal))
+family = socket.AF_INET6 if address.version == 6 else socket.AF_INET
+sockaddr = (
+⋮----
+records = socket.getaddrinfo(
+⋮----
+candidates: list[ResolvedEndpoint] = []
+seen: set[tuple[int, str]] = set()
+⋮----
+address_text = str(sockaddr[0])
+address = _public_ip(address_text)
+key = (family, str(address))
+⋮----
+actual_timeout = timeout
+⋮----
+actual_timeout = float(timeout_override)
+sock = socket.socket(endpoint.family, socket.SOCK_STREAM)
+⋮----
+def _enforce_rate(contract_hash: str, rps: float) -> None
+⋮----
+interval = 1.0 / rps
+now = time.monotonic()
+⋮----
+previous = _LAST_REQUEST_AT.get(contract_hash)
+⋮----
+remaining = interval - (now - previous)
+⋮----
+def reset_rate_limits_for_tests() -> None
+⋮----
+def _response_headers(response: http.client.HTTPResponse) -> list[BrokerHeader]
+⋮----
+sanitized: list[BrokerHeader] = []
+⋮----
+clean_name = str(name).strip()
+clean_value = str(value).strip()
+⋮----
+clean_value = clean_value.encode("utf-8")[:4096].decode(
 ⋮----
 authorized = authorize_strix_contract_request(
+⋮----
+parsed = urlsplit(authorized.target)
+host = authorized.host
+⋮----
+port = parsed.port or (443 if parsed.scheme == "https" else 80)
+⋮----
+headers = _normalize_headers(request.headers)
+endpoint = resolve_public_endpoint(host, port)
+⋮----
+timeout = _timeout_seconds()
+target_path = parsed.path or "/"
+⋮----
+connection_class = (
+kwargs = {"timeout": timeout}
+⋮----
+connection = connection_class(host, port=port, **kwargs)
+⋮----
+max_bytes = _max_response_bytes()
+⋮----
+response = connection.getresponse()
+body = b""
+truncated = False
+⋮----
+payload = response.read(max_bytes + 1)
+truncated = len(payload) > max_bytes
+body = payload[:max_bytes]
+```
+
+## File: app/strix_egress.py
+```python
+app = FastAPI(
+⋮----
+def _verification_secret() -> str
+⋮----
+secret = os.getenv("XBOW_STRIX_EGRESS_HMAC_KEY", "")
+⋮----
+def _enabled() -> bool
+⋮----
+raw = os.getenv("XBOW_STRIX_EGRESS_ENABLED", "false").strip().lower()
+⋮----
+@app.get("/healthz")
+def healthz() -> dict
+⋮----
+enabled = _enabled()
+⋮----
+enabled = False
+⋮----
+@app.get("/readyz")
+def readyz() -> dict
+⋮----
+@app.post("/v1/fetch", response_model=BrokerHttpResponse)
+def fetch(request: BrokerHttpRequest) -> BrokerHttpResponse
+⋮----
+secret = _verification_secret()
 ```
 
 ## File: app/strix_execution_contract.py
@@ -20179,24 +20423,82 @@ record = store.get_hackerone_batch_record("batch-1")
 stale = dict(document)
 ```
 
+## File: tests/test_strix_broker_client.py
+```python
+class _Response
+⋮----
+def __init__(self, payload: bytes, *, status=200)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, *_args)
+⋮----
+def read(self, amount)
+⋮----
+chunk = self.payload[self.offset:self.offset + amount]
+⋮----
+class _Opener
+⋮----
+def __init__(self, response)
+⋮----
+def open(self, request, timeout)
+⋮----
+def _request(monkeypatch)
+⋮----
+campaign = Campaign(
+contract = build_strix_execution_contract(campaign, job_id="job-1")
+⋮----
+def test_client_posts_only_to_fixed_internal_egress_endpoint(monkeypatch)
+⋮----
+request = _request(monkeypatch)
+payload = {
+opener = _Opener(_Response(json.dumps(payload).encode()))
+⋮----
+result = forward_read_only_request(request)
+⋮----
+sent = json.loads(opener.request.data.decode())
+⋮----
+def test_client_rejects_non_internal_endpoint_configuration(monkeypatch, url)
+⋮----
+def test_client_rejects_oversized_egress_service_response(monkeypatch)
+⋮----
+opener = _Opener(_Response(b"x" * (2 * 1024 * 1024 + 1)))
+⋮----
+def test_client_rejects_invalid_response_shape(monkeypatch)
+⋮----
+opener = _Opener(_Response(b'{"status_code":200}'))
+```
+
 ## File: tests/test_strix_broker_runtime.py
 ```python
 ROOT = Path(__file__).resolve().parents[2]
 ⋮----
-def _broker_compose_block() -> str
+def _compose() -> str
 ⋮----
-compose = (ROOT / "docker-compose.yml").read_text()
+def _service_block(name: str, next_name: str) -> str
+⋮----
+compose = _compose()
+marker = f"\n  {name}:\n"
+next_marker = f"\n  {next_name}:\n"
 ⋮----
 def test_strix_broker_is_internal_and_unpublished()
 ⋮----
-broker = _broker_compose_block()
+broker = _service_block("strix-broker", "strix-egress")
 networks = compose.split("\nnetworks:", 1)[1]
 ⋮----
-def test_scanner_worker_can_reach_only_broker_internal_boundary_additionally()
+def test_strix_egress_is_only_dual_homed_external_boundary()
 ⋮----
-scanner = compose.split("  scanner-worker:", 1)[1].split(
+egress = _service_block("strix-egress", "pentagi-worker")
 ⋮----
-def test_ci_builds_strix_broker_profile()
+def test_scanner_worker_cannot_reach_egress_network_directly()
+⋮----
+scanner = _service_block("scanner-worker", "strix-broker")
+⋮----
+def test_network_zones_keep_scanner_to_egress_separated()
+⋮----
+networks = _compose().split("\nnetworks:", 1)[1]
+⋮----
+def test_ci_builds_strix_broker_and_egress_profile()
 ⋮----
 workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 ```
@@ -20230,6 +20532,134 @@ def test_broker_rejects_rate_above_signed_contract(monkeypatch)
 def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch)
 ⋮----
 payload = contract.model_dump()
+⋮----
+def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch)
+⋮----
+def test_broker_request_path_is_disabled_by_default(monkeypatch)
+⋮----
+def test_broker_revalidates_contract_before_forwarding(monkeypatch)
+⋮----
+def test_broker_forwards_only_after_local_admission(monkeypatch)
+⋮----
+captured = {}
+⋮----
+def fake_forward(request)
+⋮----
+request = BrokerHttpRequest(
+⋮----
+result = request_http(request)
+```
+
+## File: tests/test_strix_egress_transport.py
+```python
+class _Response
+⋮----
+def read(self, amount)
+⋮----
+def getheaders(self)
+⋮----
+class _Connection
+⋮----
+instances = []
+response = _Response()
+⋮----
+def __init__(self, host, port=None, **kwargs)
+⋮----
+def request(self, method, path, headers=None)
+⋮----
+def getresponse(self)
+⋮----
+def close(self)
+⋮----
+class _Socket
+⋮----
+def __init__(self)
+⋮----
+def settimeout(self, value)
+⋮----
+def bind(self, source)
+⋮----
+def connect(self, target)
+⋮----
+def _campaign()
+⋮----
+def _request(monkeypatch, **overrides)
+⋮----
+contract = build_strix_execution_contract(_campaign(), job_id="job-1")
+payload = {
+⋮----
+@pytest.fixture(autouse=True)
+def _reset_rate_state()
+⋮----
+def test_resolver_rejects_private_ip_literal()
+⋮----
+def test_resolver_rejects_mixed_public_private_dns(monkeypatch)
+⋮----
+def test_pinned_connection_uses_validated_sockaddr(monkeypatch)
+⋮----
+sock = _Socket()
+⋮----
+endpoint = ResolvedEndpoint(
+⋮----
+create = _pinned_create_connection(endpoint, 5.0)
+result = create(("api.example.test", 443))
+⋮----
+def test_transport_returns_redirect_without_following_it(monkeypatch)
+⋮----
+request = _request(monkeypatch)
+⋮----
+result = perform_bounded_http_request(
+⋮----
+rendered_headers = [(item.name, item.value) for item in result.headers]
+⋮----
+connection = _Connection.instances[-1]
+⋮----
+def test_transport_rejects_unsafe_header_before_dns(monkeypatch)
+⋮----
+request = _request(
+called = {"dns": 0}
+⋮----
+def fail_if_called(*_args, **_kwargs)
+⋮----
+def test_transport_bounds_response_body(monkeypatch)
+⋮----
+def test_head_does_not_read_response_body(monkeypatch)
+⋮----
+request = _request(monkeypatch, method="HEAD")
+response = _Response(b"should-not-be-read")
+⋮----
+def test_rate_limit_is_enforced_per_contract(monkeypatch)
+⋮----
+request = _request(monkeypatch, requested_rps=1.0)
+⋮----
+times = iter([100.0, 100.1])
+```
+
+## File: tests/test_strix_egress.py
+```python
+def _campaign()
+⋮----
+def _request(monkeypatch)
+⋮----
+contract = build_strix_execution_contract(_campaign(), job_id="job-1")
+⋮----
+def test_egress_service_is_disabled_by_default(monkeypatch)
+⋮----
+result = healthz()
+⋮----
+def test_egress_service_requires_verification_key(monkeypatch)
+⋮----
+def test_egress_fetch_calls_transport_only_when_enabled(monkeypatch)
+⋮----
+request = _request(monkeypatch)
+⋮----
+captured = {}
+⋮----
+def fake_perform(value, *, verification_secret)
+⋮----
+result = fetch(request)
+⋮----
+def test_egress_fetch_returns_retry_after_for_rate_limit(monkeypatch)
 ```
 
 ## File: tests/test_strix_execution_contract.py
