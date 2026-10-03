@@ -89,6 +89,42 @@ def _opener():
     )
 
 
+def check_egress_ready() -> None:
+    endpoint = _egress_endpoint()
+    ready_url = (
+        f"http://{endpoint.host}:{endpoint.port}/readyz"
+    )
+    request = urllib.request.Request(
+        ready_url,
+        method="GET",
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "xbow-strix-broker/1.0",
+        },
+    )
+    try:
+        with _opener().open(
+            request,
+            timeout=min(_timeout_seconds(), 5.0),
+        ) as response:
+            payload = response.read(4097)
+            if int(response.status) != 200 or len(payload) > 4096:
+                raise StrixBrokerClientError(
+                    "Strix egress service is not ready",
+                    status_code=503,
+                )
+    except urllib.error.HTTPError as exc:
+        raise StrixBrokerClientError(
+            "Strix egress service is not ready",
+            status_code=503,
+        ) from exc
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise StrixBrokerClientError(
+            "Strix egress service is unavailable",
+            status_code=503,
+        ) from exc
+
+
 def forward_read_only_request(
     request: BrokerHttpRequest,
 ) -> BrokerHttpResponse:
