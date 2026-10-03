@@ -201,6 +201,18 @@ class JobQueue:
             ).fetchone()
         return self._decode(row) if row else None
 
+    def recovery_snapshot(self, limit: int = 5000) -> list[dict[str, Any]]:
+        """Return bounded lease/retry state without reading job payloads."""
+        if not 1 <= limit <= 5000:
+            raise ValueError("recovery snapshot limit must be between 1 and 5000")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT id,status,attempts,max_attempts,claimed_by,claimed_at
+                   FROM jobs ORDER BY created_at,id LIMIT ?""",
+                (limit,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     def stats(self) -> dict[str, Any]:
         """Return bounded operational queue telemetry without exposing payloads."""
         with self.connect() as db:

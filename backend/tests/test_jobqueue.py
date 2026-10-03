@@ -508,3 +508,24 @@ def test_claim_allowed_rejects_empty_and_unknown_kind_sets(tmp_path):
         q.claim_allowed("worker-a", ())
     with pytest.raises(ValueError, match="unsupported job kind"):
         q.claim_allowed("worker-a", ("shell",))
+
+
+
+def test_recovery_snapshot_is_bounded_and_never_reads_payloads(tmp_path):
+    q = JobQueue(str(tmp_path / "recovery.sqlite3"))
+    q.enqueue(
+        "campaign-1",
+        "report",
+        {"secret": "must-not-leak"},
+    )
+    q.enqueue(
+        "campaign-2",
+        "report",
+        {"campaign_id": "campaign-2"},
+    )
+
+    snapshot = q.recovery_snapshot(limit=1)
+
+    assert len(snapshot) == 1
+    assert "payload" not in snapshot[0]
+    assert "secret" not in str(snapshot)

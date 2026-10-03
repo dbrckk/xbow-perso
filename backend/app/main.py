@@ -1910,6 +1910,7 @@ from .htb_lab import router as htb_lab_router  # noqa: E402
 from .finding_readiness import router as finding_readiness_router  # noqa: E402
 from .metrics import router as metrics_router  # noqa: E402
 from .operational_alerts import router as alerts_router  # noqa: E402
+from .queue_recovery import router as queue_recovery_router  # noqa: E402
 from .report_approval_api import router as report_approval_router  # noqa: E402
 
 app.include_router(browser_router)
@@ -1926,4 +1927,5 @@ app.include_router(htb_lab_router)
 app.include_router(finding_readiness_router)
 app.include_router(metrics_router)
 app.include_router(alerts_router)
+app.include_router(queue_recovery_router)
 app.include_router(report_approval_router)
