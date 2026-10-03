@@ -127,6 +127,7 @@ class JobQueue:
         max_attempts: int = 2,
         *,
         dedupe_key: str | None = None,
+        job_id: str | None = None,
     ) -> dict[str, Any]:
         campaign_id = _bounded_identifier(campaign_id, "campaign_id")
         if kind not in {"strix_scan", "nuclei_scan", "independent_validation", "browser_flow", "recon_task", "report", "pentagi_flow", "pentagi_status"}:
@@ -135,6 +136,10 @@ class JobQueue:
             raise ValueError("max_attempts must be 1..5")
         if dedupe_key is not None:
             dedupe_key = _bounded_identifier(dedupe_key, "dedupe_key")
+        if job_id is not None:
+            if dedupe_key is None:
+                raise ValueError("prepared job_id requires dedupe_key")
+            job_id = _bounded_identifier(job_id, "job_id", max_length=128)
 
         encoded_payload = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
         if len(encoded_payload.encode("utf-8")) > _max_job_payload_bytes():
@@ -151,7 +156,7 @@ class JobQueue:
                     raise ValueError("dedupe_key reused with different job payload")
                 return decoded
 
-        job_id, now = str(uuid4()), utcnow()
+        job_id, now = job_id or str(uuid4()), utcnow()
         try:
             with self.connect() as db:
                 db.execute(
