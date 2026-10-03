@@ -1,5 +1,8 @@
 import base64
 import json
+from datetime import UTC, datetime, timedelta
+
+import pytest
 
 from app.dr_manifest import build_backup_manifest, write_backup_manifest
 from app.dr_restore_preflight import assess_restore_preflight
@@ -173,3 +176,83 @@ def test_restore_preflight_does_not_expose_secret_names_or_backup_contents(tmp_p
     assert result["contains_backup_contents"] is False
     assert result["contains_secrets"] is False
     assert result["contains_secret_names"] is False
+
+
+def test_signed_recent_backup_has_trusted_freshness(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "freshness-key")
+    manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)
+    saved = json.loads(manifest.read_text(encoding="utf-8"))
+    created = datetime.fromisoformat(saved["created_at"])
+
+    result = assess_restore_preflight(
+        str(manifest),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+        max_age_hours=24,
+        now=created + timedelta(hours=2),
+    )
+
+    assert result["restore_preflight_ready"] is True
+    assert result["backup_freshness"]["trusted"] is True
+    assert result["backup_freshness"]["status"] == "fresh"
+    assert result["backup_freshness"]["age_hours"] == 2.0
+
+
+def test_signed_stale_backup_blocks_restore_preflight(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "freshness-key")
+    manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)
+    saved = json.loads(manifest.read_text(encoding="utf-8"))
+    created = datetime.fromisoformat(saved["created_at"])
+
+    result = assess_restore_preflight(
+        str(manifest),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+        max_age_hours=24,
+        now=created + timedelta(hours=25),
+    )
+
+    assert result["restore_preflight_ready"] is False
+    assert result["backup_freshness"]["status"] == "stale"
+    assert result["backup_freshness"]["trusted"] is True
+    assert "backup_set_stale" in result["blockers"]
+
+
+def test_unsigned_legacy_backup_never_claims_trusted_freshness(tmp_path, monkeypatch):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+    manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)
+
+    result = assess_restore_preflight(
+        str(manifest),
+        postgres_dump=str(postgres),
+        redis_snapshot=str(redis),
+        vault_copy=str(vault),
+    )
+
+    assert result["restore_preflight_ready"] is True
+    assert result["backup_freshness"]["status"] == "unknown"
+    assert result["backup_freshness"]["trusted"] is False
+    assert "backup_freshness_untrusted" in result["warnings"]
+
+
+@pytest.mark.parametrize("value", [0, -1, float("inf"), float("nan"), True])
+def test_restore_preflight_rejects_invalid_freshness_threshold(
+    tmp_path, monkeypatch, value
+):
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+    manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)
+
+    with pytest.raises(Exception, match="max_age_hours must be a positive finite number"):
+        assess_restore_preflight(
+            str(manifest),
+            postgres_dump=str(postgres),
+            redis_snapshot=str(redis),
+            vault_copy=str(vault),
+            max_age_hours=value,
+        )
