@@ -135,6 +135,8 @@ PYTHONPATH=backend python -m app.dr_cli preflight \
   --vault-copy /path/to/secrets.vault.json
 ```
 
-The preflight checks manifest/hash integrity, a recognized PostgreSQL dump format, the Redis RDB header/version, and the encrypted vault-v1 record structure. It never restores PostgreSQL, loads Redis, decrypts secrets, or modifies backup files. A successful result therefore means **the backup set passed structural preflight**, not that a real restore has been proven.
+The preflight checks manifest/hash integrity, a recognized PostgreSQL dump format, the Redis RDB header/version, and the encrypted vault-v1 record structure. New manifests also carry a creation timestamp inside the signed manifest payload. For authenticated manifests, preflight requires the backup to be no older than 24 hours by default; override the operational threshold with `--max-age-hours N`. A signed timestamp that is missing, malformed, or more than five minutes in the future blocks readiness. Legacy unsigned manifests remain readable, but their freshness is reported as untrusted rather than guessed from filesystem timestamps.
+
+The preflight never restores PostgreSQL, loads Redis, decrypts secrets, or modifies backup files. A successful result therefore means **the backup set passed structural and freshness preflight**, not that a real restore has been proven.
 
 A production DR procedure should still periodically restore into an isolated disposable environment and validate application-level readiness before considering the recovery path fully tested.
