@@ -161,7 +161,7 @@ def test_hackerone_start_queues_verified_bounded_recon_before_scanning(tmp_path,
         )
 
 
-def test_non_hackerone_start_keeps_strix_routing(tmp_path, monkeypatch):
+def test_non_hackerone_start_is_recon_first(tmp_path, monkeypatch):
     db = str(tmp_path / "campaigns.sqlite3")
     artifacts = str(tmp_path / "artifacts")
     queue_db = str(tmp_path / "jobs.sqlite3")
@@ -186,12 +186,16 @@ def test_non_hackerone_start_keeps_strix_routing(tmp_path, monkeypatch):
 
     start_result = main.start_campaign(campaign.id)
 
-    assert start_result["job"]["kind"] == "strix_scan"
+    assert start_result["job"]["kind"] == "recon_task"
+    assert start_result["orchestrated_start"] is True
+    assert start_result["jobs"]
+    assert all(job["kind"] == "recon_task" for job in start_result["jobs"])
+    assert not any(job["kind"] in {"strix_scan", "nuclei_scan"} for job in start_result["jobs"])
     provenance = start_result["job"]["payload"]["_provenance"]
-    assert provenance["job_kind"] == "strix_scan"
+    assert provenance["job_kind"] == "recon_task"
     assert "external_policy_provider" not in provenance
     assert "external_policy_fingerprint" not in provenance
-    assert jobs.stats()["total"] == 1
+    assert jobs.stats()["total"] == len(start_result["jobs"])
 
 
 def test_hackerone_binding_accepts_valid_scope_metadata(tmp_path, monkeypatch):
