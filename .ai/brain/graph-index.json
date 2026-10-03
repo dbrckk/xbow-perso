@@ -896,6 +896,7 @@
         "backend/tests/test_hackerone_prelaunch.py"
       ],
       "dependents": [
+        "backend/app/metrics.py",
         "backend/app/orchestrator.py",
         "backend/app/planner_budget.py",
         "backend/app/queue_backend.py",
@@ -937,7 +938,7 @@
         "backend/tests/test_worker_concurrency.py",
         "backend/tests/test_worker_job_provenance.py"
       ],
-      "in_degree": 40,
+      "in_degree": 41,
       "out_degree": 2,
       "path": "backend/app/jobqueue.py"
     },
@@ -1514,6 +1515,28 @@
     },
     {
       "dependencies": [
+        "backend/app/api_outbox.py",
+        "backend/app/campaign_audit.py",
+        "backend/app/jobqueue.py",
+        "backend/app/main.py",
+        "backend/app/queue_recovery.py",
+        "backend/app/worker_watchdog.py",
+        "backend/tests/test_hackerone_prelaunch.py"
+      ],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/app/operational_alerts.py",
+        "backend/app/readiness.py",
+        "backend/tests/test_metrics.py",
+        "backend/tests/test_queue_age_metrics.py",
+        "backend/tests/test_watchdog_observability.py"
+      ],
+      "in_degree": 6,
+      "out_degree": 7,
+      "path": "backend/app/metrics.py"
+    },
+    {
+      "dependencies": [
         "backend/app/domain_incident_lifecycle.py",
         "backend/app/error_budget.py",
         "backend/app/incident_domains.py",
@@ -1801,26 +1824,6 @@
       "in_degree": 7,
       "out_degree": 4,
       "path": "backend/app/hypothesis_engine.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/api_outbox.py",
-        "backend/app/campaign_audit.py",
-        "backend/app/main.py",
-        "backend/app/worker_watchdog.py",
-        "backend/tests/test_hackerone_prelaunch.py"
-      ],
-      "dependents": [
-        "backend/app/main.py",
-        "backend/app/operational_alerts.py",
-        "backend/app/readiness.py",
-        "backend/tests/test_metrics.py",
-        "backend/tests/test_queue_age_metrics.py",
-        "backend/tests/test_watchdog_observability.py"
-      ],
-      "in_degree": 6,
-      "out_degree": 5,
-      "path": "backend/app/metrics.py"
     },
     {
       "dependencies": [
@@ -2216,7 +2219,7 @@
       "path": "backend/app/report_approval.py"
     }
   ],
-  "edge_count": 1878,
+  "edge_count": 1880,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 389,
   "schema_version": 1

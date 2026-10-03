@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T16:40:08Z
+Generated: 2026-10-03T16:49:59Z
 
 ### Git
 - Branch: `main`
-- Head: `23fd9319931f`
-- Commit date: 2026-10-03T18:39:48+02:00
-- Commit: feat(recovery): add read-only queue consistency assessment (#469)
+- Head: `1c766dfaa083`
+- Commit date: 2026-10-03T18:49:48+02:00
+- Commit: feat(observability): surface queue consistency health (#470)
 - Tracked files: 588
 
 ### Recently changed files
+- `backend/app/metrics.py`
+- `backend/app/operational_alerts.py`
+- `backend/tests/test_metrics.py`
+- `backend/tests/test_operational_alerts.py`
 - `backend/app/jobqueue.py`
 - `backend/app/main.py`
 - `backend/app/queue_backend.py`
@@ -48,10 +52,6 @@ Generated: 2026-10-03T16:40:08Z
 - `backend/app/orchestrator.py`
 - `backend/app/recon_worker.py`
 - `backend/app/scanner_sandbox.py`
-- `backend/app/worker_service.py`
-- `backend/tests/test_nuclei_worker_plan.py`
-- `backend/tests/test_recon_worker.py`
-- `backend/tests/test_scanner_sandbox.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -2,26 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "hardening: reject unsafe local address classes in HTB mode (#395)",
-      "terms": [
-        "395",
-        "address",
-        "classes",
-        "hardening",
-        "htb",
-        "local",
-        "mode",
-        "reject",
-        "unsafe"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/app/htb_lab.py",
-        "backend/tests/test_htb_lab.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "feat: build a durable HackerOne feasibility index (#396)",
       "terms": [
         "396",
@@ -1236,6 +1216,26 @@
         "backend/tests/test_queue_recovery.py",
         "backend/tests/test_redis_jobqueue.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "feat(observability): surface queue consistency health (#470)",
+      "terms": [
+        "470",
+        "consistency",
+        "feat",
+        "health",
+        "observability",
+        "queue",
+        "surface"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/metrics.py",
+        "backend/app/operational_alerts.py",
+        "backend/tests/test_metrics.py",
+        "backend/tests/test_operational_alerts.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -2114,6 +2114,12 @@
       "backend/tests/test_queue_recovery.py": 4,
       "backend/tests/test_redis_jobqueue.py": 4
     },
+    "470": {
+      "backend/app/metrics.py": 4,
+      "backend/app/operational_alerts.py": 4,
+      "backend/tests/test_metrics.py": 4,
+      "backend/tests/test_operational_alerts.py": 4
+    },
     "accelerate": {
       "backend/app/hackerone_feasibility.py": 4,
       "backend/tests/test_hackerone_feasibility.py": 4
@@ -2932,10 +2938,14 @@
     "consistency": {
       "backend/app/jobqueue.py": 4,
       "backend/app/main.py": 4,
+      "backend/app/metrics.py": 4,
+      "backend/app/operational_alerts.py": 4,
       "backend/app/queue_backend.py": 4,
       "backend/app/queue_recovery.py": 4,
       "backend/app/redis_jobqueue.py": 4,
       "backend/tests/test_jobqueue.py": 4,
+      "backend/tests/test_metrics.py": 4,
+      "backend/tests/test_operational_alerts.py": 4,
       "backend/tests/test_queue_recovery.py": 4,
       "backend/tests/test_redis_jobqueue.py": 4
     },
@@ -3526,11 +3536,11 @@
       "backend/app/jobqueue.py": 4,
       "backend/app/local_outcome_intelligence.py": 4,
       "backend/app/main.py": 40,
-      "backend/app/metrics.py": 4,
+      "backend/app/metrics.py": 8,
       "backend/app/observation_writer.py": 4,
       "backend/app/offensive_expansion.py": 4,
       "backend/app/openapi_testgen.py": 40,
-      "backend/app/operational_alerts.py": 4,
+      "backend/app/operational_alerts.py": 8,
       "backend/app/opportunity_ranking.py": 4,
       "backend/app/orchestrator.py": 40,
       "backend/app/passive_api_intelligence.py": 4,
@@ -3852,7 +3862,11 @@
       "frontend/simple.js": 4
     },
     "health": {
-      "backend/tests/test_mobile_production_update_script.py": 12
+      "backend/app/metrics.py": 4,
+      "backend/app/operational_alerts.py": 4,
+      "backend/tests/test_metrics.py": 4,
+      "backend/tests/test_mobile_production_update_script.py": 12,
+      "backend/tests/test_operational_alerts.py": 4
     },
     "heartbeat": {
       "backend/app/hackerone_live_readiness.py": 4,
@@ -4442,8 +4456,12 @@
       "frontend/sw.js": 4
     },
     "observability": {
+      "backend/app/metrics.py": 4,
+      "backend/app/operational_alerts.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 4,
       "backend/tests/test_frontend_policy_launcher.py": 4,
+      "backend/tests/test_metrics.py": 4,
+      "backend/tests/test_operational_alerts.py": 4,
       "frontend/simple.js": 4,
       "frontend/sw.js": 4
     },
@@ -4967,6 +4985,8 @@
       "backend/app/jobqueue.py": 4,
       "backend/app/local_outcome_intelligence.py": 4,
       "backend/app/main.py": 8,
+      "backend/app/metrics.py": 4,
+      "backend/app/operational_alerts.py": 4,
       "backend/app/postgres_storage.py": 4,
       "backend/app/queue_backend.py": 4,
       "backend/app/queue_recovery.py": 4,
@@ -4978,6 +4998,8 @@
       "backend/tests/test_hackerone_batch_api.py": 4,
       "backend/tests/test_jobqueue.py": 4,
       "backend/tests/test_local_outcome_intelligence.py": 4,
+      "backend/tests/test_metrics.py": 4,
+      "backend/tests/test_operational_alerts.py": 4,
       "backend/tests/test_queue_recovery.py": 4,
       "backend/tests/test_redis_jobqueue.py": 4,
       "backend/tests/test_storage.py": 4,
@@ -5879,6 +5901,8 @@
     "surface": {
       "backend/app/htb_lab.py": 4,
       "backend/app/main.py": 24,
+      "backend/app/metrics.py": 4,
+      "backend/app/operational_alerts.py": 4,
       "backend/app/orchestrator.py": 12,
       "backend/app/recon_priority.py": 12,
       "backend/app/recon_swarm.py": 12,
@@ -5888,7 +5912,9 @@
       "backend/tests/test_frontend_auth_proxy.py": 36,
       "backend/tests/test_frontend_policy_launcher.py": 36,
       "backend/tests/test_htb_lab.py": 4,
+      "backend/tests/test_metrics.py": 4,
       "backend/tests/test_mobile_production_update_script.py": 8,
+      "backend/tests/test_operational_alerts.py": 4,
       "backend/tests/test_recon_priority.py": 12,
       "backend/tests/test_simple_selection_cache_only.py": 4,
       "backend/tests/test_surface_confidence.py": 4,

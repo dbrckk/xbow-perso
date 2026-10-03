@@ -1,17 +1,13 @@
 # Change impact
 
-Base: 55934376f4314bc2c293a3d1c7041f21a6daf448
-Head: 23fd9319931f63937b4a1949127c654f64fcd0b3
+Base: a6740b47c8928101ba16f56c1588dcf31a6b3560
+Head: 1c766dfaa0835fdbfa2db70abb4326b099f0f20c
 
 ## Changed files
-- M backend/app/jobqueue.py
-- M backend/app/main.py
-- M backend/app/queue_backend.py
-- A backend/app/queue_recovery.py
-- M backend/app/redis_jobqueue.py
-- M backend/tests/test_jobqueue.py
-- A backend/tests/test_queue_recovery.py
-- M backend/tests/test_redis_jobqueue.py
+- M backend/app/metrics.py
+- M backend/app/operational_alerts.py
+- M backend/tests/test_metrics.py
+- M backend/tests/test_operational_alerts.py
 
 ## Affected areas
 - backend

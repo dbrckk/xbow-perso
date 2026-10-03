@@ -6905,6 +6905,24 @@ age = _age_seconds(snapshot.get("oldest_pending_at"))
 ⋮----
 oldest_outbox_age_seconds = (
 ⋮----
+queue_recovery_available = False
+queue_recovery_safe_to_resume = None
+queue_recovery_issues_total = 0
+queue_recovery_critical_issues = 0
+queue_recovery_warning_issues = 0
+queue_recovery_assessment_truncated = False
+recovery_snapshot = getattr(queue_backend, "recovery_snapshot", None)
+⋮----
+recovery = analyze_queue_recovery(
+⋮----
+queue_recovery_available = True
+queue_recovery_safe_to_resume = bool(recovery.get("safe_to_resume"))
+queue_recovery_issues_total = int(recovery.get("issues_total") or 0)
+severities = recovery.get("issues_by_severity") or {}
+queue_recovery_critical_issues = int(severities.get("critical") or 0)
+queue_recovery_warning_issues = int(severities.get("warning") or 0)
+queue_recovery_assessment_truncated = bool(
+⋮----
 metrics = {
 ⋮----
 watchdog = build_worker_watchdog(metrics)
@@ -7555,6 +7573,9 @@ running_lease_age = metrics.get("oldest_running_lease_age_seconds")
 pending_outbox = int(metrics.get("pending_outbox_total") or 0)
 outbox_age = metrics.get("oldest_outbox_pending_age_seconds")
 invalid_audit_chains = int(metrics.get("invalid_campaign_audit_chains") or 0)
+queue_recovery_available = metrics.get("queue_recovery_available")
+queue_recovery_critical = int(
+queue_recovery_warning = int(
 ⋮----
 alerts: list[dict[str, Any]] = []
 ⋮----
@@ -16917,6 +16938,20 @@ legacy = [{"type": "legacy_event", "at": "old"}]
 def test_metrics_distinguish_invalid_and_legacy_audit_chains(monkeypatch)
 ⋮----
 result = build_operational_metrics(Queue(), AuditStorage())
+⋮----
+class RecoveryQueue
+⋮----
+def __init__(self, jobs)
+⋮----
+def recovery_snapshot(self, limit=5000)
+⋮----
+def test_metrics_include_read_only_queue_consistency_summary(monkeypatch)
+⋮----
+queue = RecoveryQueue(
+⋮----
+result = build_operational_metrics(queue, Storage())
+⋮----
+def test_metrics_surface_critical_queue_inconsistency_without_identity_leak(monkeypatch)
 ````
 
 ## File: backend/tests/test_mobile_production_update_script.py
@@ -17422,6 +17457,12 @@ def test_alerts_route_is_exposed_under_authenticated_api()
 def test_operational_alerts_flag_invalid_campaign_audit_chain(monkeypatch)
 ⋮----
 audit_alerts = [
+⋮----
+def test_operational_alerts_flag_critical_queue_consistency(monkeypatch)
+⋮----
+def test_operational_alerts_flag_queue_recovery_review(monkeypatch)
+⋮----
+def test_operational_alerts_flag_unavailable_queue_recovery(monkeypatch)
 ````
 
 ## File: backend/tests/test_operational_slo.py
