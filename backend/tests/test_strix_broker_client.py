@@ -6,6 +6,7 @@ import pytest
 from app.main import Campaign, ProgramRules, TargetInput
 from app.strix_broker_client import (
     StrixBrokerClientError,
+    check_egress_ready,
     forward_read_only_request,
 )
 from app.strix_broker_models import BrokerContractDocument, BrokerHttpRequest
@@ -133,3 +134,25 @@ def test_client_rejects_invalid_response_shape(monkeypatch):
 
     with pytest.raises(StrixBrokerClientError, match="invalid response"):
         forward_read_only_request(request)
+
+
+
+def test_client_checks_fixed_internal_readiness_endpoint(monkeypatch):
+    opener = _Opener(_Response(b'{"status":"ready"}'))
+    monkeypatch.setattr("app.strix_broker_client._opener", lambda: opener)
+
+    check_egress_ready()
+
+    assert opener.request.full_url == "http://strix-egress:8091/readyz"
+    assert opener.request.get_method() == "GET"
+    assert opener.timeout == 5.0
+
+
+def test_client_readiness_rejects_oversized_response(monkeypatch):
+    opener = _Opener(_Response(b"x" * 4097))
+    monkeypatch.setattr("app.strix_broker_client._opener", lambda: opener)
+
+    with pytest.raises(StrixBrokerClientError) as exc_info:
+        check_egress_ready()
+
+    assert exc_info.value.status_code == 503
