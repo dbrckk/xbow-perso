@@ -23,6 +23,7 @@ class ScannerSandboxAdmission:
     runtime_read_only_rootfs: bool
     runtime_no_new_privileges: bool
     runtime_cap_drop_all: bool
+    runtime_seccomp_filter: bool
     runtime_attested: bool
     block_reasons: tuple[str, ...]
 
@@ -59,6 +60,7 @@ def _runtime_hardening_attestation() -> dict[str, bool]:
         no_new_privileges = status_fields.get("NoNewPrivs") == "1"
         cap_eff_raw = status_fields.get("CapEff")
         cap_drop_all = bool(cap_eff_raw) and int(cap_eff_raw, 16) == 0
+        seccomp_filter = status_fields.get("Seccomp") == "2"
 
         mountinfo = Path("/proc/self/mountinfo").read_text(encoding="utf-8")
         rootfs_read_only = False
@@ -76,12 +78,14 @@ def _runtime_hardening_attestation() -> dict[str, bool]:
             "read_only_rootfs": rootfs_read_only,
             "no_new_privileges": no_new_privileges,
             "cap_drop_all": cap_drop_all,
+            "seccomp_filter": seccomp_filter,
         }
     except (OSError, ValueError):
         return {
             "read_only_rootfs": False,
             "no_new_privileges": False,
             "cap_drop_all": False,
+            "seccomp_filter": False,
         }
 
 
@@ -110,10 +114,12 @@ def scanner_sandbox_admission(engine: str | None = None) -> ScannerSandboxAdmiss
     runtime_read_only_rootfs = bool(runtime.get("read_only_rootfs"))
     runtime_no_new_privileges = bool(runtime.get("no_new_privileges"))
     runtime_cap_drop_all = bool(runtime.get("cap_drop_all"))
+    runtime_seccomp_filter = bool(runtime.get("seccomp_filter"))
     runtime_attested = (
         runtime_read_only_rootfs
         and runtime_no_new_privileges
         and runtime_cap_drop_all
+        and runtime_seccomp_filter
     )
 
     reasons: list[str] = []
@@ -135,6 +141,8 @@ def scanner_sandbox_admission(engine: str | None = None) -> ScannerSandboxAdmiss
         reasons.append("runtime_no_new_privileges_missing")
     if cap_drop_all and not runtime_cap_drop_all:
         reasons.append("runtime_capabilities_present")
+    if profile == "restricted-v1" and not runtime_seccomp_filter:
+        reasons.append("runtime_seccomp_filter_missing")
     if engine is not None and engine.lower() not in allowed_engines:
         reasons.append("engine_not_allowlisted")
 
@@ -150,6 +158,7 @@ def scanner_sandbox_admission(engine: str | None = None) -> ScannerSandboxAdmiss
         runtime_read_only_rootfs=runtime_read_only_rootfs,
         runtime_no_new_privileges=runtime_no_new_privileges,
         runtime_cap_drop_all=runtime_cap_drop_all,
+        runtime_seccomp_filter=runtime_seccomp_filter,
         runtime_attested=runtime_attested,
         block_reasons=tuple(reasons),
     )
@@ -171,6 +180,7 @@ def safe_scanner_sandbox_admission(engine: str | None = None) -> dict[str, Any]:
             "runtime_read_only_rootfs": False,
             "runtime_no_new_privileges": False,
             "runtime_cap_drop_all": False,
+            "runtime_seccomp_filter": False,
             "runtime_attested": False,
             "block_reasons": ["invalid_sandbox_configuration"],
             "configuration_error": True,
