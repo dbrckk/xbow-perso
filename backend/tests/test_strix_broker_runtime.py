@@ -21,7 +21,11 @@ def test_strix_broker_is_internal_and_unpublished():
     networks = compose.split("\nnetworks:", 1)[1]
 
     assert 'profiles: ["strix-broker"]' in broker
-    assert "networks: [strix-broker, strix-egress-control]" in broker
+    assert (
+        "networks: [strix-broker, strix-egress-control, "
+        "strix-runner-control]"
+        in broker
+    )
     assert "strix-external" not in broker
     assert "\n    ports:" not in broker
     assert "\n    volumes:" not in broker
@@ -33,11 +37,11 @@ def test_strix_broker_is_internal_and_unpublished():
     assert "XBOW_STRIX_EGRESS_URL: http://strix-egress:8091/v1/fetch" in broker
     assert "strix-broker:" in networks
     assert "strix-egress-control:" in networks
-    assert networks.count("internal: true") >= 2
+    assert networks.count("internal: true") >= 3
 
 
 def test_strix_egress_is_only_dual_homed_external_boundary():
-    egress = _service_block("strix-egress", "pentagi-worker")
+    egress = _service_block("strix-egress", "strix-runner")
 
     assert 'profiles: ["strix-broker"]' in egress
     assert "networks: [strix-egress-control, strix-external]" in egress
