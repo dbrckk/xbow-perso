@@ -51,7 +51,6 @@ def test_scanner_worker_dry_run_stays_ready_and_records_event(tmp_path, monkeypa
     assert observations[0]["source"] == "strix-dry-run"
 
 
-
 def test_scanner_worker_binds_status_findings_and_evidence_to_same_strix_run(
     tmp_path,
     monkeypatch,
