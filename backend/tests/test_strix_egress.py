@@ -149,7 +149,6 @@ def test_egress_fetch_returns_retry_after_for_rate_limit(monkeypatch):
     assert exc_info.value.headers == {"Retry-After": "0.750"}
 
 
-
 def test_egress_fetch_returns_retry_after_for_concurrency_limit(monkeypatch):
     request = _request(monkeypatch)
     monkeypatch.setenv("XBOW_STRIX_EGRESS_ENABLED", "true")
