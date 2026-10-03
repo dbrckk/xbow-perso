@@ -10,6 +10,7 @@ from .jobqueue import _job_lease_seconds
 router = APIRouter()
 
 MAX_RECOVERY_JOBS = 5000
+MAX_ISSUE_DETAILS = 200
 _KNOWN_STATUSES = {"queued", "running", "completed", "failed", "cancelled"}
 
 
@@ -186,13 +187,15 @@ def analyze_queue_recovery(
         "critical": sum(item["severity"] == "critical" for item in issues),
         "warning": sum(item["severity"] == "warning" for item in issues),
     }
+    issue_details_truncated = len(issues) > MAX_ISSUE_DETAILS
     return {
         "jobs_total": total,
         "jobs_assessed": len(jobs),
         "jobs_by_status": status_counts,
         "issues_total": len(issues),
         "issues_by_severity": severity_counts,
-        "issues": issues,
+        "issues": issues[:MAX_ISSUE_DETAILS],
+        "issue_details_truncated": issue_details_truncated,
         "safe_to_resume": not issues,
         "assessment_truncated": truncated,
         "read_only": True,
