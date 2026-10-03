@@ -1,10 +1,10 @@
 import base64
 import json
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
-from app.dr_manifest import build_backup_manifest, write_backup_manifest
+from app.dr_manifest import DisasterRecoveryError, build_backup_manifest, write_backup_manifest
 from app.dr_restore_preflight import assess_restore_preflight
 
 
@@ -248,7 +248,7 @@ def test_restore_preflight_rejects_invalid_freshness_threshold(
     monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
     manifest, postgres, redis, vault = _write_valid_backup_set(tmp_path)
 
-    with pytest.raises(Exception, match="max_age_hours must be a positive finite number"):
+    with pytest.raises(DisasterRecoveryError, match="max_age_hours must be a positive finite number"):
         assess_restore_preflight(
             str(manifest),
             postgres_dump=str(postgres),
