@@ -9,13 +9,14 @@ Status: active
 - Nuclei remains the reviewed active scanner path in the dedicated restricted scanner worker.
 - Strix jobs now produce a deterministic execution contract bound to job id, policy fingerprint, scope and request-rate ceiling; broker authorization requires an authenticated contract.
 - The Strix boundary now has a broker plus a separate dual-homed read-only egress service; GET/HEAD requests are contract-verified twice, DNS-pinned, public-network-only, non-redirecting, bounded and rate-limited.
+- A dedicated attestation-only Strix runner image pins v1.6.2, verifies release SHA-256 for amd64/arm64 at build and runtime, and is attached only to an internal runner-to-broker network.
 
 ## Broken / blockers
-- Active Strix execution does not yet have an enforceable isolated runtime contract for downstream scope, request-rate, and sandbox guarantees.
+- Active Strix execution does not yet have an enforceable isolated runtime contract for the full downstream tool/method surface; the new runner is attestation-only and deliberately exposes no scan endpoint.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed while building a separately pinned/attested Strix runner whose only target-network path is the broker boundary.
+- Keep Strix active dispatch fail-closed while replacing the upstream Docker-dependent execution backend and routing every supported target-network action through the broker boundary.
 
 ## Validation
 - PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
@@ -24,6 +25,7 @@ Status: active
 - Broker isolation is asserted by tests and CI builds the dedicated `strix-broker` Compose profile.
 - The read-only egress transport rejects non-public IPs, pins validated DNS results to the socket connection, preserves TLS hostname verification, follows no redirects, bounds responses/timeouts, enforces contract RPS, and allows only one in-flight request per contract.
 - Broker readiness now fails closed on the egress service whenever read-only proxying is enabled.
+- The attestation-only runner has dedicated tests for release/version/hash provenance, secret-free Compose isolation, CI build coverage, and supply-chain SBOM/provenance generation.
 
 ## Last verified
 - 2026-10-03
