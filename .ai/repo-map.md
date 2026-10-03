@@ -74,6 +74,7 @@ backend/
     chain_detector.py
     chain_intelligence.py
     circuit_breaker.py
+    control_plane_health.py
     coverage.py
     decision_audit.py
     decision_consensus.py
@@ -242,6 +243,7 @@ backend/
     test_campaign_runtime.py
     test_chain_detector.py
     test_chain_intelligence.py
+    test_control_plane_health.py
     test_control_views.py
     test_coverage.py
     test_decision_audit.py
@@ -2125,6 +2127,96 @@ current = circuit_breaker_state(graph)
 observation = Observation(
 ⋮----
 def record_circuit_reset(store: Any, campaign_id: str, *, at: str) -> dict[str, Any]
+````
+
+## File: backend/app/control_plane_health.py
+````python
+router = APIRouter()
+⋮----
+_WEIGHTS = {
+⋮----
+def _domain(score: int, reasons: list[str]) -> dict[str, Any]
+⋮----
+bounded = max(0, min(100, int(score)))
+⋮----
+"""Build an aggregate, advisory health model from existing read-only signals."""
+hard_blockers: list[str] = []
+⋮----
+governance_score = 100
+governance_reasons: list[str] = []
+invalid_audit = int(metrics.get("invalid_campaign_audit_chains") or 0)
+legacy_audit = int(metrics.get("campaigns_with_legacy_audit_events") or 0)
+⋮----
+governance_score = 0
+⋮----
+governance_score = 80
+⋮----
+queue_score = 100
+queue_reasons: list[str] = []
+queue_available = metrics.get("queue_recovery_available")
+queue_critical = int(metrics.get("queue_recovery_critical_issues") or 0)
+queue_warning = int(metrics.get("queue_recovery_warning_issues") or 0)
+queue_truncated = bool(metrics.get("queue_recovery_assessment_truncated"))
+⋮----
+queue_score = 0
+⋮----
+queue_score = 50
+⋮----
+queue_score = 70
+⋮----
+watchdog = metrics.get("worker_watchdog") or {}
+watchdog_status = str(watchdog.get("status") or "unknown").lower()
+worker_reasons = [
+⋮----
+worker_score = 100
+⋮----
+worker_score = 65
+⋮----
+worker_score = 25
+⋮----
+worker_score = 50
+⋮----
+alert_items = [
+alert_codes = {
+⋮----
+queue_flow_reasons: list[str] = []
+⋮----
+queue_flow_score = 20
+⋮----
+queue_flow_score = 60
+⋮----
+queue_flow_score = 100
+⋮----
+delivery_reasons: list[str] = []
+⋮----
+delivery_score = 20
+⋮----
+delivery_score = 60
+⋮----
+delivery_score = 100
+⋮----
+domains = {
+weighted_score = round(
+blockers = sorted(set(hard_blockers))
+⋮----
+weighted_score = min(weighted_score, 39.0)
+status = "BLOCKED"
+⋮----
+status = "HEALTHY"
+⋮----
+status = "DEGRADED"
+⋮----
+critical_alerts = sum(
+warning_alerts = sum(
+⋮----
+@router.get("/api/operations/health")
+def control_plane_health()
+⋮----
+metrics = build_operational_metrics(queue(), storage())
+⋮----
+alerts = build_operational_alerts(metrics)
+⋮----
+alerts = {
 ````
 
 ## File: backend/app/coverage.py
@@ -6849,6 +6941,7 @@ def download_artifact(campaign_id: str, artifact_id: str)
 ⋮----
 from .browser import router as browser_router  # noqa: E402
 from .campaign_control import router as campaign_control_router  # noqa: E402
+from .control_plane_health import router as control_plane_health_router  # noqa: E402
 from .coverage import router as coverage_router  # noqa: E402
 from .decision_timeline import router as decision_timeline_router  # noqa: E402
 from .evidence_quality import router as evidence_quality_router  # noqa: E402
@@ -13371,6 +13464,37 @@ candidate = next(item for item in result["candidates"] if item["chain_id"] == "a
 def test_single_family_does_not_invent_chain()
 ⋮----
 result = build_chain_intelligence([_category("business_logic", 50, 10)])
+````
+
+## File: backend/tests/test_control_plane_health.py
+````python
+def _healthy_metrics()
+⋮----
+def test_control_plane_health_is_healthy_when_all_domains_are_clean()
+⋮----
+result = build_control_plane_health(
+⋮----
+def test_control_plane_health_degrades_without_hard_blocker()
+⋮----
+metrics = _healthy_metrics()
+⋮----
+alerts = {
+⋮----
+result = build_control_plane_health(metrics, alerts)
+⋮----
+def test_control_plane_health_blocks_on_invalid_campaign_audit()
+⋮----
+result = build_control_plane_health(metrics, {"status": "ok", "alerts": []})
+⋮----
+def test_control_plane_health_blocks_on_critical_queue_inconsistency()
+⋮----
+def test_control_plane_health_blocks_when_alert_configuration_is_invalid()
+⋮----
+def test_control_plane_health_does_not_echo_sensitive_input_fields()
+⋮----
+rendered = str(result)
+⋮----
+def test_control_plane_health_route_is_registered()
 ````
 
 ## File: backend/tests/test_control_views.py

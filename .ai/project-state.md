@@ -22,23 +22,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T17:04:47Z
+Generated: 2026-10-03T17:11:19Z
 
 ### Git
 - Branch: `main`
-- Head: `cc0953d4ee03`
-- Commit date: 2026-10-03T19:04:36+02:00
-- Commit: chore(deps-dev): bump pip-audit to 2.10.1 (#472)
-- Tracked files: 588
+- Head: `f10996ec6f66`
+- Commit date: 2026-10-03T19:11:08+02:00
+- Commit: feat(ops): add aggregate control-plane health model (#473)
+- Tracked files: 590
 
 ### Recently changed files
+- `backend/app/control_plane_health.py`
+- `backend/app/main.py`
+- `backend/tests/test_control_plane_health.py`
 - `backend/requirements-dev.txt`
 - `backend/app/metrics.py`
 - `backend/app/operational_alerts.py`
 - `backend/tests/test_metrics.py`
 - `backend/tests/test_operational_alerts.py`
 - `backend/app/jobqueue.py`
-- `backend/app/main.py`
 - `backend/app/queue_backend.py`
 - `backend/app/queue_recovery.py`
 - `backend/app/redis_jobqueue.py`
@@ -50,8 +52,6 @@ Generated: 2026-10-03T17:04:47Z
 - `backend/tests/test_htb_lab.py`
 - `backend/tests/test_job_provenance_api_integration.py`
 - `backend/tests/test_outbox_chaos.py`
-- `backend/app/orchestrator.py`
-- `backend/app/recon_worker.py`
 
 ### Project signals
 - `pyproject.toml`

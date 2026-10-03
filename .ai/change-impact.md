@@ -1,10 +1,12 @@
 # Change impact
 
-Base: 0e6bba285060b2be79c4cf5225bc4d34872a0bdb
-Head: cc0953d4ee03b052b4e7b97a3b03321ced74e25f
+Base: 57fb69b6daa8365c863085e3d37be1e04af57162
+Head: f10996ec6f6641d2f88a6ebebfccca1d2b476d64
 
 ## Changed files
-- M backend/requirements-dev.txt
+- A backend/app/control_plane_health.py
+- M backend/app/main.py
+- A backend/tests/test_control_plane_health.py
 
 ## Affected areas
 - backend
