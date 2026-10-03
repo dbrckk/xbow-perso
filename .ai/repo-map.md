@@ -84,6 +84,7 @@ backend/
     domain_incident_lifecycle.py
     dr_cli.py
     dr_manifest.py
+    dr_restore_preflight.py
     error_budget.py
     evidence_chain.py
     evidence_quality.py
@@ -258,6 +259,7 @@ backend/
     test_domain_lifecycle_integration.py
     test_dr_cli.py
     test_dr_manifest.py
+    test_dr_restore_preflight.py
     test_error_budget.py
     test_evidence_backed_planner.py
     test_evidence_chain.py
@@ -2638,6 +2640,8 @@ create = sub.add_parser("manifest")
 ⋮----
 verify = sub.add_parser("verify")
 ⋮----
+preflight = sub.add_parser("preflight")
+⋮----
 def main() -> int
 ⋮----
 args = _parser().parse_args()
@@ -2651,6 +2655,9 @@ result = {
 ⋮----
 verification = verify_backup_manifest(
 result = {"ok": verification["valid"], **verification}
+⋮----
+preflight = assess_restore_preflight(
+result = {"ok": preflight["restore_preflight_ready"], **preflight}
 ````
 
 ## File: backend/app/dr_manifest.py
@@ -2739,6 +2746,72 @@ size_value = left.get("size_bytes")
 match = bool(
 ⋮----
 valid = valid and match
+````
+
+## File: backend/app/dr_restore_preflight.py
+````python
+_SECRET_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]{1,128}$")
+_MAX_VAULT_BYTES = 1024 * 1024
+⋮----
+def _safe_file(path_value: str, label: str) -> Path
+⋮----
+path = Path(path_value)
+⋮----
+stat = path.stat()
+⋮----
+def _inspect_postgres_dump(path_value: str) -> dict[str, Any]
+⋮----
+path = _safe_file(path_value, "postgres")
+⋮----
+prefix = handle.read(8192)
+⋮----
+dump_format = "custom"
+⋮----
+dump_format = "tar"
+⋮----
+dump_format = "plain_sql"
+⋮----
+dump_format = "unrecognized"
+⋮----
+def _inspect_redis_snapshot(path_value: str) -> dict[str, Any]
+⋮----
+path = _safe_file(path_value, "redis")
+⋮----
+header = handle.read(9)
+⋮----
+valid = (
+⋮----
+def _decode_vault_field(value: Any) -> bytes | None
+⋮----
+def _inspect_vault_copy(path_value: str) -> dict[str, Any]
+⋮----
+path = _safe_file(path_value, "vault")
+⋮----
+payload = json.loads(path.read_text(encoding="utf-8"))
+⋮----
+secrets = payload["secrets"]
+valid = True
+⋮----
+valid = False
+⋮----
+nonce = _decode_vault_field(record.get("nonce"))
+ciphertext = _decode_vault_field(record.get("ciphertext"))
+⋮----
+"""Perform a non-destructive structural preflight for a DR backup set.
+
+    This verifies integrity and recognizable backup structure only. It never
+    restores PostgreSQL, loads Redis, decrypts vault secrets, or modifies data.
+    """
+verification = verify_backup_manifest(
+⋮----
+postgres = _inspect_postgres_dump(postgres_dump)
+redis = _inspect_redis_snapshot(redis_snapshot)
+vault = _inspect_vault_copy(vault_copy)
+⋮----
+blockers: list[str] = []
+warnings: list[str] = []
+⋮----
+signature_state = verification.get("manifest_signature_valid")
 ````
 
 ## File: backend/app/error_budget.py
@@ -14030,6 +14103,30 @@ def test_legacy_signed_v1_manifest_remains_backward_compatible(tmp_path, monkeyp
 def test_legacy_v1_rejects_partial_signature_stripping(tmp_path, monkeypatch)
 ⋮----
 def test_signed_manifest_fails_closed_when_key_becomes_unavailable(tmp_path, monkeypatch)
+````
+
+## File: backend/tests/test_dr_restore_preflight.py
+````python
+def _write_valid_backup_set(tmp_path)
+⋮----
+postgres = tmp_path / "postgres.dump"
+redis = tmp_path / "dump.rdb"
+vault = tmp_path / "secrets.vault.json"
+manifest = tmp_path / "manifest.json"
+⋮----
+def test_restore_preflight_accepts_recognized_integrity_valid_backup_set(tmp_path, monkeypatch)
+⋮----
+result = assess_restore_preflight(
+⋮----
+def test_restore_preflight_rejects_checksum_valid_but_unrecognized_redis_snapshot(tmp_path, monkeypatch)
+⋮----
+def test_restore_preflight_rejects_unrecognized_postgres_dump(tmp_path, monkeypatch)
+⋮----
+def test_restore_preflight_rejects_invalid_vault_structure(tmp_path, monkeypatch)
+⋮----
+def test_restore_preflight_does_not_expose_secret_names_or_backup_contents(tmp_path, monkeypatch)
+⋮----
+rendered = json.dumps(result, sort_keys=True)
 ````
 
 ## File: backend/tests/test_error_budget.py

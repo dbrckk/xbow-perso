@@ -456,11 +456,12 @@
     "backend/app/dr_cli.py": {
       "dependencies": [
         "backend/app/dr_manifest.py",
+        "backend/app/dr_restore_preflight.py",
         "backend/tests/test_hackerone_prelaunch.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "backend/app/dr_manifest.py": {
       "dependencies": [
@@ -468,7 +469,20 @@
       ],
       "dependents": [
         "backend/app/dr_cli.py",
-        "backend/tests/test_dr_manifest.py"
+        "backend/app/dr_restore_preflight.py",
+        "backend/tests/test_dr_manifest.py",
+        "backend/tests/test_dr_restore_preflight.py"
+      ],
+      "in_degree": 4,
+      "out_degree": 1
+    },
+    "backend/app/dr_restore_preflight.py": {
+      "dependencies": [
+        "backend/app/dr_manifest.py"
+      ],
+      "dependents": [
+        "backend/app/dr_cli.py",
+        "backend/tests/test_dr_restore_preflight.py"
       ],
       "in_degree": 2,
       "out_degree": 1
@@ -3550,6 +3564,16 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "backend/tests/test_dr_restore_preflight.py": {
+      "dependencies": [
+        "backend/app/dr_manifest.py",
+        "backend/app/dr_restore_preflight.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "backend/tests/test_error_budget.py": {
       "dependencies": [
         "backend/app/error_budget.py",
@@ -5640,6 +5664,7 @@
         "backend/tests/test_domain_lifecycle_integration.py",
         "backend/tests/test_dr_cli.py",
         "backend/tests/test_dr_manifest.py",
+        "backend/tests/test_dr_restore_preflight.py",
         "backend/tests/test_error_budget.py",
         "backend/tests/test_evidence_backed_planner.py",
         "backend/tests/test_evidence_chain.py",
@@ -5823,7 +5848,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 218,
+      "in_degree": 219,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

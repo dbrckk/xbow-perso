@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T17:11:19Z
+Generated: 2026-10-03T17:23:17Z
 
 ### Git
 - Branch: `main`
-- Head: `f10996ec6f66`
-- Commit date: 2026-10-03T19:11:08+02:00
-- Commit: feat(ops): add aggregate control-plane health model (#473)
-- Tracked files: 590
+- Head: `edd4f78737ca`
+- Commit date: 2026-10-03T19:23:03+02:00
+- Commit: feat(dr): add non-destructive restore preflight (#474)
+- Tracked files: 592
 
 ### Recently changed files
+- `PRODUCTION_MIGRATION.md`
+- `backend/app/dr_cli.py`
+- `backend/app/dr_restore_preflight.py`
+- `backend/tests/test_dr_restore_preflight.py`
 - `backend/app/control_plane_health.py`
 - `backend/app/main.py`
 - `backend/tests/test_control_plane_health.py`
@@ -47,11 +51,6 @@ Generated: 2026-10-03T17:11:19Z
 - `backend/tests/test_jobqueue.py`
 - `backend/tests/test_queue_recovery.py`
 - `backend/tests/test_redis_jobqueue.py`
-- `backend/tests/test_api_idempotency.py`
-- `backend/tests/test_hackerone_binding.py`
-- `backend/tests/test_htb_lab.py`
-- `backend/tests/test_job_provenance_api_integration.py`
-- `backend/tests/test_outbox_chaos.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -1,14 +1,16 @@
 # Change impact
 
-Base: 57fb69b6daa8365c863085e3d37be1e04af57162
-Head: f10996ec6f6641d2f88a6ebebfccca1d2b476d64
+Base: 86b81a36bde4d7f217ce39c6188bd373b525821b
+Head: edd4f78737cafca5a34680433fe5bc8267f55cf3
 
 ## Changed files
-- A backend/app/control_plane_health.py
-- M backend/app/main.py
-- A backend/tests/test_control_plane_health.py
+- M PRODUCTION_MIGRATION.md
+- M backend/app/dr_cli.py
+- A backend/app/dr_restore_preflight.py
+- A backend/tests/test_dr_restore_preflight.py
 
 ## Affected areas
+- (root)
 - backend
 
 ## Related test candidates
