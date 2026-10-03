@@ -418,3 +418,66 @@ def test_request_slot_is_released_after_network_failure(monkeypatch):
         verification_secret="egress-secret",
     )
     assert result.status_code == 200
+
+
+
+def test_concurrency_rejection_happens_before_dns(monkeypatch):
+    request = _request(monkeypatch, requested_rps=2.0)
+    called = {"dns": 0}
+
+    def dns(*_args, **_kwargs):
+        called["dns"] += 1
+        raise AssertionError("DNS must not run for saturated contract")
+
+    monkeypatch.setattr(
+        "app.strix_egress_transport.resolve_public_endpoint",
+        dns,
+    )
+    monkeypatch.setattr(
+        "app.strix_egress_transport.time.monotonic",
+        lambda: 100.0,
+    )
+
+    contract_hash = request.contract.contract_hash
+    _acquire_request_slot(contract_hash, 2.0)
+    try:
+        with pytest.raises(StrixEgressConcurrencyError, match="in flight"):
+            perform_bounded_http_request(
+                request,
+                verification_secret="egress-secret",
+            )
+    finally:
+        _release_request_slot(contract_hash)
+
+    assert called["dns"] == 0
+
+
+def test_rate_rejection_happens_before_dns(monkeypatch):
+    request = _request(monkeypatch, requested_rps=1.0)
+    called = {"dns": 0}
+
+    def dns(*_args, **_kwargs):
+        called["dns"] += 1
+        raise AssertionError("DNS must not run for rate-limited contract")
+
+    monkeypatch.setattr(
+        "app.strix_egress_transport.resolve_public_endpoint",
+        dns,
+    )
+    times = iter([100.0, 100.1])
+    monkeypatch.setattr(
+        "app.strix_egress_transport.time.monotonic",
+        lambda: next(times),
+    )
+
+    contract_hash = request.contract.contract_hash
+    _acquire_request_slot(contract_hash, 1.0)
+    _release_request_slot(contract_hash)
+
+    with pytest.raises(StrixEgressRateLimitError):
+        perform_bounded_http_request(
+            request,
+            verification_secret="egress-secret",
+        )
+
+    assert called["dns"] == 0
