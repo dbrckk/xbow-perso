@@ -14102,7 +14102,7 @@ block = script.split("async function loadOpenapiFile()", 1)[1].split("async func
 ⋮----
 def test_openapi_file_ux_validates_and_resets_locally()
 ⋮----
-def test_pwa_precache_matches_v102_assets()
+def test_pwa_precache_matches_v103_assets()
 ⋮----
 def test_dashboard_surfaces_passive_openapi_auth_inventory()
 ⋮----
@@ -14121,6 +14121,12 @@ def test_openapi_dashboard_surfaces_bounded_parameter_metadata()
 def test_openapi_dashboard_surfaces_operation_summary_and_deprecation()
 ⋮----
 def test_mobile_journal_explains_bounded_autonomy_block_reasons()
+⋮----
+def test_mobile_dashboard_surfaces_aggregate_control_plane_health_read_only()
+⋮----
+def test_control_plane_health_is_informative_not_a_launch_gate()
+⋮----
+gate = script.split("function updateStartAvailability()", 1)[1].split("function requireToken()", 1)[0]
 ```
 
 ## File: tests/test_frontend_policy_launcher.py

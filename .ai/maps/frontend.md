@@ -389,6 +389,10 @@ function retryableReviewError(error)
 ⋮----
 async function refreshRuntimeReadiness(
 ⋮----
+function controlPlaneDomainLabel(name)
+⋮----
+async function refreshControlPlaneHealth(
+⋮----
 function browserBlockReasonLabel(reason)
 ⋮----
 async function refreshBrowserReadiness(

@@ -1,19 +1,18 @@
 # Change impact
 
-Base: fb41fc13472c71909d6084d210d28ac8fd274831
-Head: 2e21cee0caab1fd64b1589b46d38e7a77cbac554
+Base: f33723b6cb0522708682541d6e30f34651bf1e5f
+Head: 37b0a7ec93bbdb26d5a0cb6605f4894c9a98d871
 
 ## Changed files
-- M PRODUCTION_MIGRATION.md
-- M backend/app/dr_cli.py
-- M backend/app/dr_manifest.py
-- M backend/app/dr_restore_preflight.py
-- M backend/tests/test_dr_manifest.py
-- M backend/tests/test_dr_restore_preflight.py
+- M backend/tests/test_frontend_auth_proxy.py
+- M backend/tests/test_frontend_policy_launcher.py
+- M frontend/index.html
+- M frontend/simple.js
+- M frontend/sw.js
 
 ## Affected areas
-- (root)
 - backend
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

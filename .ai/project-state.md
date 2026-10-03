@@ -22,16 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T17:44:30Z
+Generated: 2026-10-03T17:50:21Z
 
 ### Git
 - Branch: `main`
-- Head: `2e21cee0caab`
-- Commit date: 2026-10-03T19:44:18+02:00
-- Commit: feat(dr): attest signed backup freshness (#476)
+- Head: `37b0a7ec93bb`
+- Commit date: 2026-10-03T19:50:11+02:00
+- Commit: feat(frontend): surface aggregate control-plane health (#475)
 - Tracked files: 592
 
 ### Recently changed files
+- `backend/tests/test_frontend_auth_proxy.py`
+- `backend/tests/test_frontend_policy_launcher.py`
+- `frontend/index.html`
+- `frontend/simple.js`
+- `frontend/sw.js`
 - `PRODUCTION_MIGRATION.md`
 - `backend/app/dr_cli.py`
 - `backend/app/dr_manifest.py`
@@ -42,10 +47,6 @@ Generated: 2026-10-03T17:44:30Z
 - `backend/app/main.py`
 - `backend/tests/test_control_plane_health.py`
 - `backend/requirements-dev.txt`
-- `backend/app/metrics.py`
-- `backend/app/operational_alerts.py`
-- `backend/tests/test_metrics.py`
-- `backend/tests/test_operational_alerts.py`
 
 ### Project signals
 - `pyproject.toml`
