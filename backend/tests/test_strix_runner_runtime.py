@@ -110,3 +110,14 @@ def test_ci_smoke_tests_runner_attestation_without_scan_execution():
     assert ".State.Health.Status" in workflow
     assert '"healthy"' in workflow
     assert "strix scan" not in workflow
+
+
+
+def test_supply_chain_cancels_superseded_branch_runs():
+    workflow = (
+        ROOT / ".github" / "workflows" / "supply-chain.yml"
+    ).read_text()
+
+    assert "concurrency:" in workflow
+    assert "supply-chain-${{ github.workflow }}-${{ github.ref }}" in workflow
+    assert "cancel-in-progress: true" in workflow
