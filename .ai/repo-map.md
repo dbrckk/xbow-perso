@@ -202,6 +202,7 @@ backend/
     storage_backend.py
     storage_core.py
     storage.py
+    strix_broker.py
     strix_execution_contract.py
     strix_parser.py
     strix_run_status.py
@@ -427,6 +428,8 @@ backend/
     test_simple_selection_cached.py
     test_storage_backend.py
     test_storage.py
+    test_strix_broker_runtime.py
+    test_strix_broker.py
     test_strix_execution_contract.py
     test_strix_run_status.py
     test_submission_api.py
@@ -11374,6 +11377,70 @@ flow_id = _bounded_identifier(flow_id, "flow_id")
 row = db.execute(
 ````
 
+## File: backend/app/strix_broker.py
+````python
+app = FastAPI(
+⋮----
+class BrokerContractDocument(BaseModel)
+⋮----
+model_config = ConfigDict(extra="forbid")
+⋮----
+schema: Literal["strix-execution-contract-v1"]
+engine: Literal["strix"]
+campaign_id: str = Field(min_length=1, max_length=128)
+job_id: str = Field(min_length=1, max_length=128)
+primary_target: str = Field(min_length=1, max_length=2048)
+policy_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+allowed_targets: list[str] = Field(min_length=1, max_length=256)
+denied_targets: list[str] = Field(default_factory=list, max_length=256)
+max_requests_per_second: float = Field(gt=0, le=20)
+direct_egress_allowed: Literal[False]
+host_container_socket_allowed: Literal[False]
+independent_validation_required: Literal[True]
+contract_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+signature_alg: Literal["hmac-sha256"]
+signature: str = Field(pattern=r"^[0-9a-f]{64}$")
+⋮----
+@model_validator(mode="after")
+    def normalize_scope(self)
+⋮----
+def to_contract(self) -> StrixExecutionContract
+⋮----
+class BrokerAdmissionRequest(BaseModel)
+⋮----
+contract: BrokerContractDocument
+target: str = Field(min_length=1, max_length=2048)
+requested_rps: float = Field(gt=0, le=20)
+⋮----
+class BrokerAdmissionResponse(BaseModel)
+⋮----
+allowed: Literal[True]
+contract_hash: str
+host: str
+target: str
+max_requests_per_second: float
+mode: Literal["admission_only"] = "admission_only"
+egress_enabled: Literal[False] = False
+network_io_performed: Literal[False] = False
+⋮----
+def _broker_verification_secret() -> str
+⋮----
+secret = os.getenv("XBOW_STRIX_BROKER_HMAC_KEY", "")
+⋮----
+@app.get("/healthz")
+def healthz() -> dict
+⋮----
+@app.get("/readyz")
+def readyz() -> dict
+⋮----
+@app.post("/v1/admit", response_model=BrokerAdmissionResponse)
+def admit(request: BrokerAdmissionRequest) -> BrokerAdmissionResponse
+⋮----
+secret = _broker_verification_secret()
+⋮----
+authorized = authorize_strix_contract_request(
+````
+
 ## File: backend/app/strix_execution_contract.py
 ````python
 STRIX_EXECUTION_CONTRACT_SCHEMA = "strix-execution-contract-v1"
@@ -11443,6 +11510,8 @@ signature = (
 ⋮----
 canonical = _canonical_payload(contract)
 expected_hash = hashlib.sha256(canonical).hexdigest()
+⋮----
+secret = (
 ⋮----
 expected_signature = hmac.new(
 ⋮----
@@ -20718,6 +20787,59 @@ record = store.get_hackerone_batch_record("batch-1")
 stale = dict(document)
 ````
 
+## File: backend/tests/test_strix_broker_runtime.py
+````python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def _broker_compose_block() -> str
+⋮----
+compose = (ROOT / "docker-compose.yml").read_text()
+⋮----
+def test_strix_broker_is_internal_and_unpublished()
+⋮----
+broker = _broker_compose_block()
+networks = compose.split("\nnetworks:", 1)[1]
+⋮----
+def test_scanner_worker_can_reach_only_broker_internal_boundary_additionally()
+⋮----
+scanner = compose.split("  scanner-worker:", 1)[1].split(
+⋮----
+def test_ci_builds_strix_broker_profile()
+⋮----
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+````
+
+## File: backend/tests/test_strix_broker.py
+````python
+def _campaign()
+⋮----
+def _signed_contract(monkeypatch)
+⋮----
+contract = build_strix_execution_contract(_campaign(), job_id="job-1")
+⋮----
+def test_broker_health_is_explicitly_admission_only(monkeypatch)
+⋮----
+result = healthz()
+⋮----
+def test_broker_readiness_requires_verification_key(monkeypatch)
+⋮----
+def test_broker_admits_signed_in_scope_request_without_egress(monkeypatch)
+⋮----
+contract = _signed_contract(monkeypatch)
+⋮----
+result = admit(
+⋮----
+def test_broker_rejects_wrong_verification_key(monkeypatch)
+⋮----
+def test_broker_rejects_out_of_scope_and_denied_hosts(monkeypatch)
+⋮----
+def test_broker_rejects_rate_above_signed_contract(monkeypatch)
+⋮----
+def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch)
+⋮----
+payload = contract.model_dump()
+````
+
 ## File: backend/tests/test_strix_execution_contract.py
 ````python
 def _campaign(*, rps=1.5, denied=None)
@@ -20740,6 +20862,8 @@ def test_unsigned_contract_can_be_previewed_but_not_used_by_runtime(monkeypatch)
 def test_signed_contract_authorizes_only_in_scope_rate_bounded_requests(monkeypatch)
 ⋮----
 authorized = authorize_strix_contract_request(
+⋮----
+def test_runtime_can_verify_with_explicit_broker_secret(monkeypatch)
 ⋮----
 def test_contract_tampering_fails_before_request_authorization(monkeypatch)
 ⋮----
@@ -24415,8 +24539,52 @@ services:
       nofile:
         soft: 1024
         hard: 2048
-    networks: [control]
+    networks: [control, strix-broker]
 
+
+  strix-broker:
+    profiles: ["strix-broker"]
+    build: ./backend
+    command:
+      [
+        "uvicorn",
+        "app.strix_broker:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8090",
+        "--no-access-log",
+      ]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    environment:
+      XBOW_STRIX_BROKER_HMAC_KEY: ${XBOW_STRIX_BROKER_HMAC_KEY:-}
+    expose:
+      - "8090"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 0.25
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/readyz', timeout=2).read()",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks: [strix-broker]
 
 
   pentagi-worker:
@@ -24566,6 +24734,9 @@ volumes:
 networks:
   control:
     driver: bridge
+  strix-broker:
+    driver: bridge
+    internal: true
 ````
 
 ## File: pyproject.toml
@@ -25012,7 +25183,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- isolated Strix egress/runtime enforcement consuming the signed execution contract
+- controlled Strix HTTP(S) egress enforcement behind the isolated admission broker
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -25061,5 +25232,15 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 
 The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, and each Strix job now gets a deterministic `strix-execution-contract-v1` bound to the job id, campaign policy fingerprint, normalized allow/deny scope and exact request-rate ceiling. The contract forbids direct egress and host-container-socket access, requires independent validation, and is HMAC-authenticated when the audit signing key is configured. Future broker requests must present an authenticated contract and are rejected when the target is out of scope or the requested RPS exceeds the contract cap.
 
-**Active Strix dispatch remains fail-closed** until an isolated runtime/egress broker can enforce that contract for every downstream request. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable` while also advertising the required contract schema. Dry-run planning remains available.
+A dedicated `strix-broker` Compose profile now provides the first isolated runtime boundary. It runs on an `internal: true` Docker network, publishes no host port, mounts no data volume or Docker socket, drops all Linux capabilities, and operates in `admission_only` mode. Its `/v1/admit` endpoint verifies the signed contract with `XBOW_STRIX_BROKER_HMAC_KEY`, then applies the scope and RPS checks without performing network I/O.
+
+Start the admission-only broker only after provisioning its verification secret:
+
+```bash
+docker compose --profile strix-broker up -d --build strix-broker
+```
+
+For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` must match the HMAC secret used to sign the contract. This shared-key arrangement is an intermediate boundary; it does not make active Strix execution production-ready.
+
+**Active Strix dispatch remains fail-closed** until controlled HTTP(S) egress is mediated behind this broker for every downstream request and the Strix runtime itself is pinned/attested. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable`, `strix_broker_mode=admission_only`, and `strix_broker_egress_enforced=false`. Dry-run planning remains available.
 ````

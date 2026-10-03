@@ -96,7 +96,7 @@
       "source": {
         "file": "backend/app/runtime_capabilities.py",
         "start": 106,
-        "end": 184
+        "end": 187
       },
       "symbol_dependencies": [
         {
@@ -129,8 +129,8 @@
     "safe_scanner_runtime_capability": {
       "source": {
         "file": "backend/app/runtime_capabilities.py",
-        "start": 187,
-        "end": 214
+        "start": 190,
+        "end": 220
       },
       "symbol_dependencies": [
         {
@@ -175,8 +175,8 @@
     "browser_runtime_capability": {
       "source": {
         "file": "backend/app/runtime_capabilities.py",
-        "start": 218,
-        "end": 239
+        "start": 224,
+        "end": 245
       },
       "symbol_dependencies": [
         {
@@ -197,8 +197,8 @@
     "safe_browser_runtime_capability": {
       "source": {
         "file": "backend/app/runtime_capabilities.py",
-        "start": 242,
-        "end": 254
+        "start": 248,
+        "end": 260
       },
       "symbol_dependencies": [
         {
@@ -218,7 +218,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 218,
+              "line": 224,
               "kind": "function",
               "language": "python"
             }
@@ -231,8 +231,8 @@
     "recon_runtime_capability": {
       "source": {
         "file": "backend/app/runtime_capabilities.py",
-        "start": 257,
-        "end": 292
+        "start": 263,
+        "end": 298
       },
       "symbol_dependencies": [
         {
@@ -253,8 +253,8 @@
     "safe_recon_runtime_capability": {
       "source": {
         "file": "backend/app/runtime_capabilities.py",
-        "start": 295,
-        "end": 314
+        "start": 301,
+        "end": 320
       },
       "symbol_dependencies": [
         {
@@ -274,7 +274,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 257,
+              "line": 263,
               "kind": "function",
               "language": "python"
             }
@@ -284,19 +284,74 @@
       ],
       "dependency_count": 2
     },
-    "ScannerJobResult": {
+    "BrokerContractDocument": {
       "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 19,
-        "end": 23
+        "file": "backend/app/strix_broker.py",
+        "start": 26,
+        "end": 68
       },
       "symbol_dependencies": [
         {
-          "symbol": "ScannerIngestionResult",
+          "symbol": "StrixExecutionContract",
           "definitions": [
             {
-              "file": "backend/app/scanner_ingestion.py",
-              "line": 15,
+              "file": "backend/app/strix_execution_contract.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "normalize_scope",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_contract",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "normalize_scope": {
+      "source": {
+        "file": "backend/app/strix_broker.py",
+        "start": 46,
+        "end": 49
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "to_contract": {
+      "source": {
+        "file": "backend/app/strix_broker.py",
+        "start": 51,
+        "end": 68
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixExecutionContract",
+          "definitions": [
+            {
+              "file": "backend/app/strix_execution_contract.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
@@ -306,327 +361,138 @@
       ],
       "dependency_count": 1
     },
-    "_record_scan_observation": {
+    "BrokerAdmissionRequest": {
       "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 26,
-        "end": 51
+        "file": "backend/app/strix_broker.py",
+        "start": 71,
+        "end": 76
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "BrokerContractDocument",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_state_after_scan": {
-      "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 54,
-        "end": 59
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "run_strix_job": {
-      "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 62,
-        "end": 154
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ScannerJobResult",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixRunStatusError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_run_status.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_record_scan_observation",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
+              "file": "backend/app/strix_broker.py",
               "line": 26,
-              "kind": "function",
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
+        }
+      ],
+      "dependency_count": 1
+    },
+    "BrokerAdmissionResponse": {
+      "source": {
+        "file": "backend/app/strix_broker.py",
+        "start": 79,
+        "end": 87
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_broker_verification_secret": {
+      "source": {
+        "file": "backend/app/strix_broker.py",
+        "start": 90,
+        "end": 102
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "healthz": {
+      "source": {
+        "file": "backend/app/strix_broker.py",
+        "start": 106,
+        "end": 114
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "readyz": {
+      "source": {
+        "file": "backend/app/strix_broker.py",
+        "start": 118,
+        "end": 125
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "_state_after_scan",
+          "symbol": "_broker_verification_secret",
           "definitions": [
             {
-              "file": "backend/app/scanner_worker.py",
-              "line": 54,
+              "file": "backend/app/strix_broker.py",
+              "line": 90,
               "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "admit": {
+      "source": {
+        "file": "backend/app/strix_broker.py",
+        "start": 129,
+        "end": 153
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "BrokerAdmissionRequest",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 71,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "build_strix_execution_contract",
+          "symbol": "BrokerAdmissionResponse",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 79,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StrixExecutionContractError",
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 135,
-              "kind": "function",
+              "line": 18,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "build_strix_plan",
+          "symbol": "_broker_verification_secret",
           "definitions": [
             {
-              "file": "backend/app/worker.py",
-              "line": 166,
+              "file": "backend/app/strix_broker.py",
+              "line": 90,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 244,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 182,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ingest_scanner_run",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_ingestion.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_strix_run_status",
-          "definitions": [
-            {
-              "file": "backend/app/strix_run_status.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_execution_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 388,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_asset",
-          "definitions": [
-            {
-              "file": "backend/app/observation_writer.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "redacted_summary",
+          "symbol": "authorize_strix_contract_request",
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 46,
+              "line": 284,
               "kind": "function",
               "language": "python"
             }
@@ -634,245 +500,19 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "utcnow",
+          "symbol": "to_contract",
           "definitions": [
             {
-              "file": "backend/app/jobqueue.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
+              "file": "backend/app/strix_broker.py",
+              "line": 51,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 21
-    },
-    "run_nuclei_job": {
-      "source": {
-        "file": "backend/app/scanner_worker.py",
-        "start": 157,
-        "end": 233
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "CampaignState",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 73,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ScannerJobResult",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_record_scan_observation",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_state_after_scan",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 54,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_nuclei_plan",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 91,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 244,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 182,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ingest_scanner_run",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_ingestion.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "persist_execution_artifacts",
-          "definitions": [
-            {
-              "file": "backend/app/worker.py",
-              "line": 388,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "record_asset",
-          "definitions": [
-            {
-              "file": "backend/app/observation_writer.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "utcnow",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/main.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 17
+      "dependency_count": 6
     },
     "StrixExecutionContractError": {
       "source": {
@@ -1359,7 +999,7 @@
       "source": {
         "file": "backend/app/strix_execution_contract.py",
         "start": 196,
-        "end": 232
+        "end": 237
       },
       "symbol_dependencies": [
         {
@@ -1416,8 +1056,8 @@
     "verify_strix_execution_contract": {
       "source": {
         "file": "backend/app/strix_execution_contract.py",
-        "start": 235,
-        "end": 276
+        "start": 240,
+        "end": 281
       },
       "symbol_dependencies": [
         {
@@ -1522,8 +1162,8 @@
     "authorize_strix_contract_request": {
       "source": {
         "file": "backend/app/strix_execution_contract.py",
-        "start": 279,
-        "end": 329
+        "start": 284,
+        "end": 347
       },
       "symbol_dependencies": [
         {
@@ -1864,7 +1504,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 257,
+              "line": 263,
               "kind": "function",
               "language": "python"
             }
@@ -1886,7 +1526,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 257,
+              "line": 263,
               "kind": "function",
               "language": "python"
             }
@@ -1908,7 +1548,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 257,
+              "line": 263,
               "kind": "function",
               "language": "python"
             }
@@ -1930,7 +1570,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 295,
+              "line": 301,
               "kind": "function",
               "language": "python"
             }
@@ -1975,7 +1615,7 @@
       "source": {
         "file": "backend/tests/test_runtime_capabilities.py",
         "start": 287,
-        "end": 306
+        "end": 309
       },
       "symbol_dependencies": [
         {
@@ -1996,8 +1636,8 @@
     "test_browser_runtime_capability_fails_closed_without_runtime_marker": {
       "source": {
         "file": "backend/tests/test_runtime_capabilities.py",
-        "start": 309,
-        "end": 319
+        "start": 312,
+        "end": 322
       },
       "symbol_dependencies": [
         {
@@ -2005,7 +1645,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 218,
+              "line": 224,
               "kind": "function",
               "language": "python"
             }
@@ -2018,8 +1658,8 @@
     "test_browser_runtime_capability_ready_with_runtime_marker": {
       "source": {
         "file": "backend/tests/test_runtime_capabilities.py",
-        "start": 322,
-        "end": 332
+        "start": 325,
+        "end": 335
       },
       "symbol_dependencies": [
         {
@@ -2027,7 +1667,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 218,
+              "line": 224,
               "kind": "function",
               "language": "python"
             }
@@ -2040,8 +1680,8 @@
     "test_browser_runtime_capability_disabled_even_when_runtime_exists": {
       "source": {
         "file": "backend/tests/test_runtime_capabilities.py",
-        "start": 335,
-        "end": 345
+        "start": 338,
+        "end": 348
       },
       "symbol_dependencies": [
         {
@@ -2049,7 +1689,7 @@
           "definitions": [
             {
               "file": "backend/app/runtime_capabilities.py",
-              "line": 218,
+              "line": 224,
               "kind": "function",
               "language": "python"
             }
@@ -2062,17 +1702,17 @@
     "test_capabilities_api_exposes_browser_runtime_detail": {
       "source": {
         "file": "backend/tests/test_runtime_capabilities.py",
-        "start": 348,
-        "end": 361
+        "start": 351,
+        "end": 364
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
     "_campaign": {
       "source": {
-        "file": "backend/tests/test_scanner_worker.py",
-        "start": 12,
-        "end": 132
+        "file": "backend/tests/test_strix_broker.py",
+        "start": 16,
+        "end": 29
       },
       "symbol_dependencies": [
         {
@@ -2081,18 +1721,6 @@
             {
               "file": "backend/app/main.py",
               "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "JobQueue",
-          "definitions": [
-            {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
               "kind": "class",
               "language": "python"
             }
@@ -2112,18 +1740,6 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
           "symbol": "TargetInput",
           "definitions": [
             {
@@ -2134,25 +1750,57 @@
             }
           ],
           "relation": "imported_module"
-        },
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_signed_contract": {
+      "source": {
+        "file": "backend/tests/test_strix_broker.py",
+        "start": 32,
+        "end": 35
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "fake_execute",
+          "symbol": "BrokerContractDocument",
           "definitions": [
             {
-              "file": "backend/tests/test_scanner_worker.py",
-              "line": 98,
+              "file": "backend/app/strix_broker.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_strix_execution_contract",
+          "definitions": [
+            {
+              "file": "backend/app/strix_execution_contract.py",
+              "line": 135,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_broker_health_is_explicitly_admission_only": {
+      "source": {
+        "file": "backend/tests/test_strix_broker.py",
+        "start": 38,
+        "end": 48
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "queue",
+          "symbol": "healthz",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 56,
+              "file": "backend/app/strix_broker.py",
+              "line": 106,
               "kind": "function",
               "language": "python"
             }
@@ -2170,131 +1818,23 @@
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "run_strix_job",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 206,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_scanner_worker_binds_status_findings_and_evidence_to_same_strix_run",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_worker.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_scanner_worker_dry_run_stays_ready_and_records_event",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_worker.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
-      "dependency_count": 12
+      "dependency_count": 2
     },
-    "test_scanner_worker_dry_run_stays_ready_and_records_event": {
+    "test_broker_readiness_requires_verification_key": {
       "source": {
-        "file": "backend/tests/test_scanner_worker.py",
-        "start": 26,
+        "file": "backend/tests/test_strix_broker.py",
+        "start": 51,
         "end": 57
       },
       "symbol_dependencies": [
         {
-          "symbol": "JobQueue",
+          "symbol": "readyz",
           "definitions": [
             {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_strix_job",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 206,
+              "file": "backend/app/strix_broker.py",
+              "line": 118,
               "kind": "function",
               "language": "python"
             }
@@ -2302,21 +1842,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 1
     },
-    "test_scanner_worker_binds_status_findings_and_evidence_to_same_strix_run": {
+    "test_broker_admits_signed_in_scope_request_without_egress": {
       "source": {
-        "file": "backend/tests/test_scanner_worker.py",
+        "file": "backend/tests/test_strix_broker.py",
         "start": 60,
-        "end": 164
+        "end": 77
       },
       "symbol_dependencies": [
         {
-          "symbol": "JobQueue",
+          "symbol": "BrokerAdmissionRequest",
           "definitions": [
             {
-              "file": "backend/app/jobqueue.py",
-              "line": 61,
+              "file": "backend/app/strix_broker.py",
+              "line": 71,
               "kind": "class",
               "language": "python"
             }
@@ -2324,23 +1864,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "Storage",
+          "symbol": "_signed_contract",
           "definitions": [
             {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fake_execute",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_worker.py",
-              "line": 98,
+              "file": "backend/tests/test_strix_broker.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -2348,11 +1876,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "list_artifacts",
+          "symbol": "admit",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 1874,
+              "file": "backend/app/strix_broker.py",
+              "line": 129,
               "kind": "function",
               "language": "python"
             }
@@ -2360,81 +1888,57 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "queue",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 56,
+              "file": "frontend/app.js",
+              "line": 60,
               "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_strix_job",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_worker.py",
-              "line": 62,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "save_campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 206,
-              "kind": "function",
-              "language": "python"
+              "language": "javascript"
             }
           ],
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 4
     },
-    "fake_execute": {
+    "test_broker_rejects_wrong_verification_key": {
       "source": {
-        "file": "backend/tests/test_scanner_worker.py",
-        "start": 98,
-        "end": 218
+        "file": "backend/tests/test_strix_broker.py",
+        "start": 80,
+        "end": 94
       },
       "symbol_dependencies": [
         {
-          "symbol": "list_artifacts",
+          "symbol": "BrokerAdmissionRequest",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 1874,
-              "kind": "function",
+              "file": "backend/app/strix_broker.py",
+              "line": 71,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "queue",
+          "symbol": "_signed_contract",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 56,
+              "file": "backend/tests/test_strix_broker.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "run_strix_job",
+          "symbol": "admit",
           "definitions": [
             {
-              "file": "backend/app/scanner_worker.py",
-              "line": 62,
+              "file": "backend/app/strix_broker.py",
+              "line": 129,
               "kind": "function",
               "language": "python"
             }
@@ -2443,6 +1947,181 @@
         }
       ],
       "dependency_count": 3
+    },
+    "test_broker_rejects_out_of_scope_and_denied_hosts": {
+      "source": {
+        "file": "backend/tests/test_strix_broker.py",
+        "start": 97,
+        "end": 113
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "BrokerAdmissionRequest",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 71,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_signed_contract",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_broker.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "admit",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_broker_rejects_rate_above_signed_contract": {
+      "source": {
+        "file": "backend/tests/test_strix_broker.py",
+        "start": 116,
+        "end": 130
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "BrokerAdmissionRequest",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 71,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_signed_contract",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_broker.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "admit",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 129,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_broker_contract_model_forbids_unsafe_runtime_invariants": {
+      "source": {
+        "file": "backend/tests/test_strix_broker.py",
+        "start": 133,
+        "end": 139
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "BrokerContractDocument",
+          "definitions": [
+            {
+              "file": "backend/app/strix_broker.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_signed_contract",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_broker.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_broker_compose_block": {
+      "source": {
+        "file": "backend/tests/test_strix_broker_runtime.py",
+        "start": 7,
+        "end": 9
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_strix_broker_is_internal_and_unpublished": {
+      "source": {
+        "file": "backend/tests/test_strix_broker_runtime.py",
+        "start": 12,
+        "end": 26
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_broker_compose_block",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_broker_runtime.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_scanner_worker_can_reach_only_broker_internal_boundary_additionally": {
+      "source": {
+        "file": "backend/tests/test_strix_broker_runtime.py",
+        "start": 29,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_ci_builds_strix_broker_profile": {
+      "source": {
+        "file": "backend/tests/test_strix_broker_runtime.py",
+        "start": 41,
+        "end": 47
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
     "test_contract_is_deterministic_and_binds_policy_and_job": {
       "source": {
@@ -2480,7 +2159,7 @@
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 235,
+              "line": 240,
               "kind": "function",
               "language": "python"
             }
@@ -2548,7 +2227,7 @@
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 279,
+              "line": 284,
               "kind": "function",
               "language": "python"
             }
@@ -2584,7 +2263,7 @@
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 235,
+              "line": 240,
               "kind": "function",
               "language": "python"
             }
@@ -2630,7 +2309,7 @@
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 279,
+              "line": 284,
               "kind": "function",
               "language": "python"
             }
@@ -2652,11 +2331,11 @@
       ],
       "dependency_count": 4
     },
-    "test_contract_tampering_fails_before_request_authorization": {
+    "test_runtime_can_verify_with_explicit_broker_secret": {
       "source": {
         "file": "backend/tests/test_strix_execution_contract.py",
-        "start": 120,
-        "end": 130
+        "start": 123,
+        "end": 143
       },
       "symbol_dependencies": [
         {
@@ -2676,7 +2355,53 @@
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 279,
+              "line": 284,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_strix_execution_contract",
+          "definitions": [
+            {
+              "file": "backend/app/strix_execution_contract.py",
+              "line": 135,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_contract_tampering_fails_before_request_authorization": {
+      "source": {
+        "file": "backend/tests/test_strix_execution_contract.py",
+        "start": 146,
+        "end": 156
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixExecutionContractError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_execution_contract.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "authorize_strix_contract_request",
+          "definitions": [
+            {
+              "file": "backend/app/strix_execution_contract.py",
+              "line": 284,
               "kind": "function",
               "language": "python"
             }
@@ -2701,8 +2426,8 @@
     "test_policy_change_invalidates_existing_contract": {
       "source": {
         "file": "backend/tests/test_strix_execution_contract.py",
-        "start": 133,
-        "end": 141
+        "start": 159,
+        "end": 167
       },
       "symbol_dependencies": [
         {
@@ -2734,7 +2459,7 @@
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 235,
+              "line": 240,
               "kind": "function",
               "language": "python"
             }
@@ -2747,8 +2472,8 @@
     "test_job_change_invalidates_existing_contract": {
       "source": {
         "file": "backend/tests/test_strix_execution_contract.py",
-        "start": 144,
-        "end": 150
+        "start": 170,
+        "end": 176
       },
       "symbol_dependencies": [
         {
@@ -2780,7 +2505,7 @@
           "definitions": [
             {
               "file": "backend/app/strix_execution_contract.py",
-              "line": 235,
+              "line": 240,
               "kind": "function",
               "language": "python"
             }
@@ -2793,8 +2518,8 @@
     "test_unsafe_campaign_flags_block_contract_issuance": {
       "source": {
         "file": "backend/tests/test_strix_execution_contract.py",
-        "start": 162,
-        "end": 169
+        "start": 188,
+        "end": 195
       },
       "symbol_dependencies": [
         {
@@ -2827,8 +2552,8 @@
     "test_automated_scanning_must_remain_enabled": {
       "source": {
         "file": "backend/tests/test_strix_execution_contract.py",
-        "start": 172,
-        "end": 182
+        "start": 198,
+        "end": 208
       },
       "symbol_dependencies": [
         {

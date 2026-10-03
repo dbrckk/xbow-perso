@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 1,
     "tier": "bounded",
     "top_score": 27
   },
   "cache": {
-    "fingerprint": "8c7550857cfb3c419a574d624710fcab4424bee3e06628d9f88458b72561e0fd",
+    "fingerprint": "78c7a211d8e60abb089c4d79be079c5c012c518ca8fbf5fbf2fec3ac9063dd5c",
     "hit": false
   },
-  "candidate_count": 41,
+  "candidate_count": 47,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -51,28 +51,7 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 27,
-      "symbols": [
-        "_campaign",
-        "fake_execute",
-        "test_nuclei_worker_dry_run_preserves_safe_default",
-        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
-        "test_scan_engines_default_preserves_strix",
-        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
-        "test_sqlite_queue_accepts_nuclei_scan"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_worker.py",
+      "path": "backend/app/strix_broker.py",
       "reasons": [
         "impact",
         "recently-changed",
@@ -80,11 +59,15 @@
       ],
       "score": 26,
       "symbols": [
-        "ScannerJobResult",
-        "_record_scan_observation",
-        "_state_after_scan",
-        "run_nuclei_job",
-        "run_strix_job"
+        "BrokerAdmissionRequest",
+        "BrokerAdmissionResponse",
+        "BrokerContractDocument",
+        "_broker_verification_secret",
+        "admit",
+        "healthz",
+        "normalize_scope",
+        "readyz",
+        "to_contract"
       ]
     },
     {
@@ -119,24 +102,6 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_scanner_worker.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "fake_execute",
-        "test_scanner_worker_binds_status_findings_and_evidence_to_same_strix_run",
-        "test_scanner_worker_dry_run_stays_ready_and_records_event"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
       "path": "backend/tests/test_strix_execution_contract.py",
       "reasons": [
         "impact",
@@ -151,9 +116,46 @@
         "test_contract_tampering_fails_before_request_authorization",
         "test_job_change_invalidates_existing_contract",
         "test_policy_change_invalidates_existing_contract",
+        "test_runtime_can_verify_with_explicit_broker_secret",
         "test_signed_contract_authorizes_only_in_scope_rate_bounded_requests",
         "test_unsafe_campaign_flags_block_contract_issuance",
         "test_unsigned_contract_can_be_previewed_but_not_used_by_runtime"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_worker.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "ScannerJobResult",
+        "_record_scan_observation",
+        "_state_after_scan",
+        "run_nuclei_job",
+        "run_strix_job"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_adaptation.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "ScannerAdaptation",
+        "_engine_memory",
+        "adapt_scanner_engines",
+        "rank_key"
       ]
     }
   ],

@@ -29,28 +29,33 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T19:10:50Z
+Generated: 2026-10-03T19:20:07Z
 
 ### Git
 - Branch: `main`
-- Head: `723a0ee4d80e`
-- Commit date: 2026-10-03T21:10:39+02:00
-- Commit: feat(strix): add signed execution contract v1
-- Tracked files: 595
+- Head: `8132dc67a68b`
+- Commit date: 2026-10-03T21:19:57+02:00
+- Commit: feat(strix): add isolated admission-only broker
+- Tracked files: 598
 
 ### Recently changed files
+- `.env.example`
+- `.github/workflows/ci.yml`
 - `README.md`
 - `backend/app/runtime_capabilities.py`
-- `backend/app/scanner_worker.py`
+- `backend/app/strix_broker.py`
 - `backend/app/strix_execution_contract.py`
 - `backend/tests/test_runtime_capabilities.py`
-- `backend/tests/test_scanner_worker.py`
+- `backend/tests/test_strix_broker.py`
+- `backend/tests/test_strix_broker_runtime.py`
 - `backend/tests/test_strix_execution_contract.py`
+- `docker-compose.yml`
+- `backend/app/scanner_worker.py`
+- `backend/tests/test_scanner_worker.py`
 - `backend/app/scanner_sandbox.py`
 - `backend/tests/test_scanner_sandbox.py`
 - `backend/app/worker.py`
 - `backend/requirements.txt`
-- `backend/requirements-dev.txt`
 
 ### Project signals
 - `pyproject.toml`

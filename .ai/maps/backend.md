@@ -186,6 +186,7 @@ app/
   storage_backend.py
   storage_core.py
   storage.py
+  strix_broker.py
   strix_execution_contract.py
   strix_parser.py
   strix_run_status.py
@@ -411,6 +412,8 @@ tests/
   test_simple_selection_cached.py
   test_storage_backend.py
   test_storage.py
+  test_strix_broker_runtime.py
+  test_strix_broker.py
   test_strix_execution_contract.py
   test_strix_run_status.py
   test_submission_api.py
@@ -10766,6 +10769,70 @@ flow_id = _bounded_identifier(flow_id, "flow_id")
 row = db.execute(
 ```
 
+## File: app/strix_broker.py
+```python
+app = FastAPI(
+⋮----
+class BrokerContractDocument(BaseModel)
+⋮----
+model_config = ConfigDict(extra="forbid")
+⋮----
+schema: Literal["strix-execution-contract-v1"]
+engine: Literal["strix"]
+campaign_id: str = Field(min_length=1, max_length=128)
+job_id: str = Field(min_length=1, max_length=128)
+primary_target: str = Field(min_length=1, max_length=2048)
+policy_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+allowed_targets: list[str] = Field(min_length=1, max_length=256)
+denied_targets: list[str] = Field(default_factory=list, max_length=256)
+max_requests_per_second: float = Field(gt=0, le=20)
+direct_egress_allowed: Literal[False]
+host_container_socket_allowed: Literal[False]
+independent_validation_required: Literal[True]
+contract_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+signature_alg: Literal["hmac-sha256"]
+signature: str = Field(pattern=r"^[0-9a-f]{64}$")
+⋮----
+@model_validator(mode="after")
+    def normalize_scope(self)
+⋮----
+def to_contract(self) -> StrixExecutionContract
+⋮----
+class BrokerAdmissionRequest(BaseModel)
+⋮----
+contract: BrokerContractDocument
+target: str = Field(min_length=1, max_length=2048)
+requested_rps: float = Field(gt=0, le=20)
+⋮----
+class BrokerAdmissionResponse(BaseModel)
+⋮----
+allowed: Literal[True]
+contract_hash: str
+host: str
+target: str
+max_requests_per_second: float
+mode: Literal["admission_only"] = "admission_only"
+egress_enabled: Literal[False] = False
+network_io_performed: Literal[False] = False
+⋮----
+def _broker_verification_secret() -> str
+⋮----
+secret = os.getenv("XBOW_STRIX_BROKER_HMAC_KEY", "")
+⋮----
+@app.get("/healthz")
+def healthz() -> dict
+⋮----
+@app.get("/readyz")
+def readyz() -> dict
+⋮----
+@app.post("/v1/admit", response_model=BrokerAdmissionResponse)
+def admit(request: BrokerAdmissionRequest) -> BrokerAdmissionResponse
+⋮----
+secret = _broker_verification_secret()
+⋮----
+authorized = authorize_strix_contract_request(
+```
+
 ## File: app/strix_execution_contract.py
 ```python
 STRIX_EXECUTION_CONTRACT_SCHEMA = "strix-execution-contract-v1"
@@ -10835,6 +10902,8 @@ signature = (
 ⋮----
 canonical = _canonical_payload(contract)
 expected_hash = hashlib.sha256(canonical).hexdigest()
+⋮----
+secret = (
 ⋮----
 expected_signature = hmac.new(
 ⋮----
@@ -20110,6 +20179,59 @@ record = store.get_hackerone_batch_record("batch-1")
 stale = dict(document)
 ```
 
+## File: tests/test_strix_broker_runtime.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def _broker_compose_block() -> str
+⋮----
+compose = (ROOT / "docker-compose.yml").read_text()
+⋮----
+def test_strix_broker_is_internal_and_unpublished()
+⋮----
+broker = _broker_compose_block()
+networks = compose.split("\nnetworks:", 1)[1]
+⋮----
+def test_scanner_worker_can_reach_only_broker_internal_boundary_additionally()
+⋮----
+scanner = compose.split("  scanner-worker:", 1)[1].split(
+⋮----
+def test_ci_builds_strix_broker_profile()
+⋮----
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+```
+
+## File: tests/test_strix_broker.py
+```python
+def _campaign()
+⋮----
+def _signed_contract(monkeypatch)
+⋮----
+contract = build_strix_execution_contract(_campaign(), job_id="job-1")
+⋮----
+def test_broker_health_is_explicitly_admission_only(monkeypatch)
+⋮----
+result = healthz()
+⋮----
+def test_broker_readiness_requires_verification_key(monkeypatch)
+⋮----
+def test_broker_admits_signed_in_scope_request_without_egress(monkeypatch)
+⋮----
+contract = _signed_contract(monkeypatch)
+⋮----
+result = admit(
+⋮----
+def test_broker_rejects_wrong_verification_key(monkeypatch)
+⋮----
+def test_broker_rejects_out_of_scope_and_denied_hosts(monkeypatch)
+⋮----
+def test_broker_rejects_rate_above_signed_contract(monkeypatch)
+⋮----
+def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch)
+⋮----
+payload = contract.model_dump()
+```
+
 ## File: tests/test_strix_execution_contract.py
 ```python
 def _campaign(*, rps=1.5, denied=None)
@@ -20132,6 +20254,8 @@ def test_unsigned_contract_can_be_previewed_but_not_used_by_runtime(monkeypatch)
 def test_signed_contract_authorizes_only_in_scope_rate_bounded_requests(monkeypatch)
 ⋮----
 authorized = authorize_strix_contract_request(
+⋮----
+def test_runtime_can_verify_with_explicit_broker_secret(monkeypatch)
 ⋮----
 def test_contract_tampering_fails_before_request_authorization(monkeypatch)
 ⋮----
