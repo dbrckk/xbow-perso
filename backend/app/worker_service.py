@@ -342,6 +342,16 @@ def process_recon_task(job: dict, store: Storage) -> None:
             parent_id=asset_id,
         )
 
+    provenance = {
+        str(item.get("endpoint")): [
+            str(value)
+            for value in list(item.get("sources") or [])
+            if str(value).strip()
+        ]
+        for item in result.endpoint_provenance
+        if isinstance(item, dict) and item.get("endpoint")
+    }
+
     for endpoint in result.endpoints:
         record_endpoint(
             store,
@@ -349,6 +359,7 @@ def process_recon_task(job: dict, store: Storage) -> None:
             endpoint,
             source=source,
             parent_id=asset_id,
+            metadata={"discovery_sources": provenance.get(endpoint, [])},
         )
 
     for form in result.forms:
@@ -396,6 +407,11 @@ def process_recon_task(job: dict, store: Storage) -> None:
             "http_status": result.http_status,
             "assets": len(result.assets),
             "endpoints": len(result.endpoints),
+            "sitemap_endpoints": sum(
+                "sitemap" in item.get("sources", [])
+                for item in result.endpoint_provenance
+                if isinstance(item, dict)
+            ),
             "forms": len(result.forms),
             "technologies": len(result.technologies),
             "waf": len(result.waf),
