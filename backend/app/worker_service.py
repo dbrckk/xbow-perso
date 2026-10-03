@@ -353,13 +353,18 @@ def process_recon_task(job: dict, store: Storage) -> None:
     }
 
     for endpoint in result.endpoints:
+        discovery_sources = provenance.get(endpoint, [])
         record_endpoint(
             store,
             campaign,
             endpoint,
             source=source,
             parent_id=asset_id,
-            metadata={"discovery_sources": provenance.get(endpoint, [])},
+            metadata=(
+                {"discovery_sources": discovery_sources}
+                if discovery_sources
+                else None
+            ),
         )
 
     for form in result.forms:
