@@ -207,23 +207,31 @@ def analyze_queue_recovery(
     }
 
 
+def build_queue_recovery_assessment(backend) -> dict[str, Any]:
+    lease_seconds = _job_lease_seconds()
+    stats = backend.stats()
+    jobs = backend.recovery_snapshot(limit=MAX_RECOVERY_JOBS)
+    result = analyze_queue_recovery(
+        jobs,
+        lease_seconds=lease_seconds,
+        total_jobs=int(stats.get("total") or 0),
+    )
+    health = backend.health()
+    result["storage"] = str(health.get("storage") or "unknown")
+    result["storage_healthy"] = health.get("ok") is True
+    if result["storage_healthy"] is not True:
+        result["safe_to_resume"] = False
+    return result
+
+
 @router.get("/api/recovery/queue")
 def queue_recovery_assessment():
     from .main import queue
 
-    backend = queue()
     try:
-        lease_seconds = _job_lease_seconds()
-        stats = backend.stats()
-        jobs = backend.recovery_snapshot(limit=MAX_RECOVERY_JOBS)
+        return build_queue_recovery_assessment(queue())
     except (ValueError, RuntimeError) as exc:
         raise HTTPException(
             status_code=503,
             detail="Queue recovery assessment unavailable",
         ) from exc
-
-    return analyze_queue_recovery(
-        jobs,
-        lease_seconds=lease_seconds,
-        total_jobs=int(stats.get("total") or 0),
-    )
