@@ -46,6 +46,9 @@ def test_operational_metrics_are_aggregate_only():
     assert result["invalid_campaign_audit_chains"] == 0
     assert result["campaigns_with_legacy_audit_events"] == 0
     assert result["legacy_audit_events_total"] == 0
+    assert result["queue_recovery_available"] is False
+    assert result["queue_recovery_safe_to_resume"] is None
+    assert result["queue_recovery_issues_total"] == 0
     rendered = str(result)
     assert "secret.example" not in rendered
     assert "other.example" not in rendered
@@ -87,3 +90,70 @@ def test_metrics_distinguish_invalid_and_legacy_audit_chains(monkeypatch):
     assert result["legacy_audit_events_total"] == 1
     assert "tampered" not in str(result)
     assert "legacy_event" not in str(result)
+
+
+class RecoveryQueue:
+    def __init__(self, jobs):
+        self.jobs = jobs
+
+    def stats(self):
+        return {
+            "total": len(self.jobs),
+            "storage": "sqlite",
+            "by_status": {"queued": len(self.jobs)},
+        }
+
+    def recovery_snapshot(self, limit=5000):
+        return self.jobs[:limit]
+
+
+def test_metrics_include_read_only_queue_consistency_summary(monkeypatch):
+    monkeypatch.setenv("XBOW_JOB_LEASE_SECONDS", "3600")
+    queue = RecoveryQueue(
+        [
+            {
+                "id": "job-1",
+                "status": "queued",
+                "attempts": 0,
+                "max_attempts": 2,
+                "payload": {"target": "https://secret.example"},
+            }
+        ]
+    )
+
+    result = build_operational_metrics(queue, Storage())
+
+    assert result["queue_recovery_available"] is True
+    assert result["queue_recovery_safe_to_resume"] is True
+    assert result["queue_recovery_issues_total"] == 0
+    assert result["queue_recovery_critical_issues"] == 0
+    assert result["queue_recovery_warning_issues"] == 0
+    assert result["queue_recovery_assessment_truncated"] is False
+    assert "job-1" not in str(result)
+    assert "secret.example" not in str(result)
+
+
+def test_metrics_surface_critical_queue_inconsistency_without_identity_leak(monkeypatch):
+    monkeypatch.setenv("XBOW_JOB_LEASE_SECONDS", "3600")
+    queue = RecoveryQueue(
+        [
+            {
+                "id": "private-job-id",
+                "status": "queued",
+                "attempts": 2,
+                "max_attempts": 2,
+                "payload": {"authorization": "secret-value"},
+            }
+        ]
+    )
+
+    result = build_operational_metrics(queue, Storage())
+
+    assert result["queue_recovery_available"] is True
+    assert result["queue_recovery_safe_to_resume"] is False
+    assert result["queue_recovery_issues_total"] == 1
+    assert result["queue_recovery_critical_issues"] == 1
+    assert result["queue_recovery_warning_issues"] == 0
+    rendered = str(result)
+    assert "private-job-id" not in rendered
+    assert "secret-value" not in rendered

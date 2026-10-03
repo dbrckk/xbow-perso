@@ -88,3 +88,67 @@ def test_operational_alerts_flag_invalid_campaign_audit_chain(monkeypatch):
         }
     ]
     assert result["status"] == "alert"
+
+
+def test_operational_alerts_flag_critical_queue_consistency(monkeypatch):
+    monkeypatch.setenv("XBOW_ALERT_FAILED_JOBS", "2")
+    monkeypatch.setenv("XBOW_ALERT_QUEUED_JOBS", "20")
+    monkeypatch.setenv("XBOW_ALERT_RUNNING_JOBS", "20")
+
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {"failed": 0, "queued": 0, "running": 0},
+            "queue_recovery_available": True,
+            "queue_recovery_critical_issues": 2,
+            "queue_recovery_warning_issues": 0,
+        }
+    )
+
+    assert {
+        "code": "queue_consistency_invalid",
+        "severity": "critical",
+        "value": 2,
+        "threshold": 1,
+    } in result["alerts"]
+
+
+def test_operational_alerts_flag_queue_recovery_review(monkeypatch):
+    monkeypatch.setenv("XBOW_ALERT_FAILED_JOBS", "2")
+    monkeypatch.setenv("XBOW_ALERT_QUEUED_JOBS", "20")
+    monkeypatch.setenv("XBOW_ALERT_RUNNING_JOBS", "20")
+
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {"failed": 0, "queued": 0, "running": 0},
+            "queue_recovery_available": True,
+            "queue_recovery_critical_issues": 0,
+            "queue_recovery_warning_issues": 1,
+        }
+    )
+
+    assert {
+        "code": "queue_recovery_review",
+        "severity": "warning",
+        "value": 1,
+        "threshold": 1,
+    } in result["alerts"]
+
+
+def test_operational_alerts_flag_unavailable_queue_recovery(monkeypatch):
+    monkeypatch.setenv("XBOW_ALERT_FAILED_JOBS", "2")
+    monkeypatch.setenv("XBOW_ALERT_QUEUED_JOBS", "20")
+    monkeypatch.setenv("XBOW_ALERT_RUNNING_JOBS", "20")
+
+    result = build_operational_alerts(
+        {
+            "jobs_by_status": {"failed": 0, "queued": 0, "running": 0},
+            "queue_recovery_available": False,
+        }
+    )
+
+    assert {
+        "code": "queue_recovery_unavailable",
+        "severity": "warning",
+        "value": 1,
+        "threshold": 1,
+    } in result["alerts"]
