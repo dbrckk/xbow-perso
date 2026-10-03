@@ -221,6 +221,18 @@ def build_queue_recovery_assessment(backend) -> dict[str, Any]:
     result["storage_healthy"] = health.get("ok") is True
     if result["storage_healthy"] is not True:
         result["safe_to_resume"] = False
+        result["issues_total"] += 1
+        result["issues_by_severity"]["critical"] += 1
+        storage_issue = {
+            "job_id": None,
+            "code": "queue_storage_unhealthy",
+            "severity": "critical",
+            "recommended_action": "repair_queue_storage_before_resume",
+        }
+        if len(result["issues"]) < MAX_ISSUE_DETAILS:
+            result["issues"].append(storage_issue)
+        else:
+            result["issue_details_truncated"] = True
     return result
 
 
