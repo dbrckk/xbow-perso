@@ -6,9 +6,12 @@ from app.main import Campaign, ProgramRules, TargetInput
 from app.strix_broker import (
     BrokerAdmissionRequest,
     BrokerContractDocument,
+    BrokerHttpRequest,
+    BrokerHttpResponse,
     admit,
     healthz,
     readyz,
+    request_http,
 )
 from app.strix_execution_contract import build_strix_execution_contract
 
@@ -137,3 +140,114 @@ def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch):
 
     with pytest.raises(ValidationError):
         BrokerContractDocument.model_validate(payload)
+
+
+
+def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch):
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    monkeypatch.setenv(
+        "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
+        "true",
+    )
+
+    result = healthz()
+
+    assert result["ready"] is True
+    assert result["mode"] == "read_only_http_proxy"
+    assert result["egress_enabled"] is True
+    assert result["allowed_http_methods"] == ["GET", "HEAD"]
+
+
+def test_broker_request_path_is_disabled_by_default(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    monkeypatch.delenv(
+        "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
+        raising=False,
+    )
+    monkeypatch.setattr(
+        "app.strix_broker.forward_read_only_request",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("egress client must not run")
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        request_http(
+            BrokerHttpRequest(
+                contract=contract,
+                target="https://app.example.test/",
+                requested_rps=1.0,
+            )
+        )
+
+    assert exc_info.value.status_code == 503
+
+
+def test_broker_revalidates_contract_before_forwarding(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "wrong-secret")
+    monkeypatch.setenv(
+        "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
+        "true",
+    )
+    monkeypatch.setattr(
+        "app.strix_broker.forward_read_only_request",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("egress client must not run")
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        request_http(
+            BrokerHttpRequest(
+                contract=contract,
+                target="https://app.example.test/",
+                requested_rps=1.0,
+            )
+        )
+
+    assert exc_info.value.status_code == 403
+
+
+def test_broker_forwards_only_after_local_admission(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    monkeypatch.setenv(
+        "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
+        "true",
+    )
+    captured = {}
+
+    def fake_forward(request):
+        captured["request"] = request
+        return BrokerHttpResponse(
+            status_code=200,
+            reason="OK",
+            headers=[],
+            body_base64="b2s=",
+            body_bytes=2,
+            truncated=False,
+            contract_hash=request.contract.contract_hash,
+            host="app.example.test",
+            method=request.method,
+        )
+
+    monkeypatch.setattr(
+        "app.strix_broker.forward_read_only_request",
+        fake_forward,
+    )
+    request = BrokerHttpRequest(
+        contract=contract,
+        target="https://app.example.test/profile",
+        requested_rps=1.0,
+        method="HEAD",
+    )
+
+    result = request_http(request)
+
+    assert captured["request"] is request
+    assert result.status_code == 200
+    assert result.host == "app.example.test"
+    assert result.mode == "read_only_http"
+    assert result.egress_enforced is True

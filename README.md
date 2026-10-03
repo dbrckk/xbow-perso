@@ -426,7 +426,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- controlled Strix HTTP(S) egress enforcement behind the isolated admission broker
+- isolated Strix runner forced through the broker, plus pinned/attested Strix runtime
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -475,14 +475,16 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 
 The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, and each Strix job now gets a deterministic `strix-execution-contract-v1` bound to the job id, campaign policy fingerprint, normalized allow/deny scope and exact request-rate ceiling. The contract forbids direct egress and host-container-socket access, requires independent validation, and is HMAC-authenticated when the audit signing key is configured. Future broker requests must present an authenticated contract and are rejected when the target is out of scope or the requested RPS exceeds the contract cap.
 
-A dedicated `strix-broker` Compose profile now provides the first isolated runtime boundary. It runs on an `internal: true` Docker network, publishes no host port, mounts no data volume or Docker socket, drops all Linux capabilities, and operates in `admission_only` mode. Its `/v1/admit` endpoint verifies the signed contract with `XBOW_STRIX_BROKER_HMAC_KEY`, then applies the scope and RPS checks without performing network I/O.
+The `strix-broker` profile now uses three network zones. The scanner can reach only the broker network; the broker can reach a second internal broker-to-egress network; only the separate `strix-egress` service is attached to an external bridge. Neither service publishes a host port or mounts data volumes or a Docker socket, and both run read-only with no-new-privileges and all Linux capabilities dropped.
 
-Start the admission-only broker only after provisioning its verification secret:
+The broker keeps `/v1/admit` for policy-only checks and adds an optional `/v1/request` path for read-only HTTP. Every request is verified once by the broker and again by `strix-egress`. The egress service permits only GET/HEAD, rejects private/reserved/link-local destinations, resolves DNS before connecting and pins the validated IP to prevent rebinding, preserves the original hostname for TLS verification, follows no redirects, bounds timeout/response size, filters unsafe hop-by-hop headers, and enforces the signed per-contract RPS ceiling before opening the connection.
+
+The read-only path is disabled by default. To test the boundary, provision the broker and egress verification keys, enable both read-only gates, then start the profile:
 
 ```bash
-docker compose --profile strix-broker up -d --build strix-broker
+docker compose --profile strix-broker up -d --build
 ```
 
-For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` must match the HMAC secret used to sign the contract. This shared-key arrangement is an intermediate boundary; it does not make active Strix execution production-ready.
+For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` must match the HMAC secret used to sign the contract. The symmetric-key arrangement is still intermediate and should eventually be replaced by asymmetric verification.
 
-**Active Strix dispatch remains fail-closed** until controlled HTTP(S) egress is mediated behind this broker for every downstream request and the Strix runtime itself is pinned/attested. Adding `strix` to `XBOW_SCANNER_ALLOWED_ENGINES`, installing the CLI, or exposing a Docker CLI is intentionally insufficient; `GET /api/capabilities` reports `strix_runtime_contract_not_enforceable`, `strix_broker_mode=admission_only`, and `strix_broker_egress_enforced=false`. Dry-run planning remains available.
+**Active Strix dispatch remains fail-closed.** The controlled GET/HEAD egress path exists, but the current Strix execution runtime is not yet a separately pinned/attested runner whose only network path is the broker, and full Strix behavior cannot be represented by this read-only subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.

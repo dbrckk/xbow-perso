@@ -303,9 +303,15 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_runtime_contract_enforceable"] is False
     assert result["strix_execution_contract_schema"] == "strix-execution-contract-v1"
     assert result["strix_execution_contract_required"] is True
-    assert result["strix_broker_mode"] == "admission_only"
+    assert result["strix_broker_mode"] == "read_only_http_boundary"
+    assert result["strix_broker_read_only_egress_available"] is True
     assert result["strix_broker_egress_enforced"] is False
     assert result["strix_broker_internal_network_required"] is True
+    assert result["strix_broker_allowed_methods"] == ["GET", "HEAD"]
+    assert result["strix_broker_public_network_only"] is True
+    assert result["strix_broker_dns_pinning"] is True
+    assert result["strix_broker_redirects_followed"] is False
+    assert result["strix_runner_network_isolated"] is False
     assert "strix_runtime_contract_not_enforceable" in result["dispatch_block_reasons"]
 
 
