@@ -81,10 +81,17 @@ class BrokerHttpRequest(BaseModel):
     headers: dict[str, str] = Field(default_factory=dict, max_length=32)
 
 
+class BrokerHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=128)
+    value: str = Field(max_length=4096)
+
+
 class BrokerHttpResponse(BaseModel):
     status_code: int = Field(ge=100, le=599)
     reason: str = Field(max_length=256)
-    headers: dict[str, str]
+    headers: list[BrokerHeader] = Field(default_factory=list, max_length=64)
     body_base64: str
     body_bytes: int = Field(ge=0)
     truncated: bool
