@@ -64,6 +64,119 @@ class StrixAuthorizedRequest:
     max_requests_per_second: float
 
 
+_CONTRACT_FIELDS = frozenset(
+    {
+        "schema",
+        "engine",
+        "campaign_id",
+        "job_id",
+        "primary_target",
+        "policy_fingerprint",
+        "allowed_targets",
+        "denied_targets",
+        "max_requests_per_second",
+        "direct_egress_allowed",
+        "host_container_socket_allowed",
+        "independent_validation_required",
+        "contract_hash",
+        "signature_alg",
+        "signature",
+    }
+)
+
+
+def strix_execution_contract_from_dict(value: object) -> StrixExecutionContract:
+    if not isinstance(value, dict) or set(value) != _CONTRACT_FIELDS:
+        raise StrixExecutionContractError(
+            "Strix execution contract document is invalid"
+        )
+
+    allowed = value.get("allowed_targets")
+    denied = value.get("denied_targets")
+    if (
+        not isinstance(allowed, list)
+        or not 1 <= len(allowed) <= 256
+        or not all(isinstance(item, str) and item for item in allowed)
+        or not isinstance(denied, list)
+        or len(denied) > 256
+        or not all(isinstance(item, str) and item for item in denied)
+    ):
+        raise StrixExecutionContractError(
+            "Strix execution contract scope document is invalid"
+        )
+
+    for name, expected in (
+        ("direct_egress_allowed", False),
+        ("host_container_socket_allowed", False),
+        ("independent_validation_required", True),
+    ):
+        if value.get(name) is not expected:
+            raise StrixExecutionContractError(
+                "Strix execution contract safety invariants changed"
+            )
+
+    try:
+        rate = float(value.get("max_requests_per_second"))
+    except (TypeError, ValueError) as exc:
+        raise StrixExecutionContractError(
+            "Strix execution contract rate is invalid"
+        ) from exc
+    if not 0 < rate <= 20:
+        raise StrixExecutionContractError(
+            "Strix execution contract rate is invalid"
+        )
+
+    text_fields = (
+        "schema",
+        "engine",
+        "campaign_id",
+        "job_id",
+        "primary_target",
+        "policy_fingerprint",
+        "contract_hash",
+    )
+    if any(
+        not isinstance(value.get(name), str) or not value.get(name)
+        for name in text_fields
+    ):
+        raise StrixExecutionContractError(
+            "Strix execution contract document is invalid"
+        )
+
+    signature = value.get("signature")
+    signature_alg = value.get("signature_alg")
+    if signature is None:
+        if signature_alg is not None:
+            raise StrixExecutionContractError(
+                "Strix execution contract signature metadata is invalid"
+            )
+    elif (
+        not isinstance(signature, str)
+        or signature_alg != "hmac-sha256"
+    ):
+        raise StrixExecutionContractError(
+            "Strix execution contract signature metadata is invalid"
+        )
+
+    return StrixExecutionContract(
+        schema=str(value["schema"]),
+        engine=str(value["engine"]),
+        campaign_id=str(value["campaign_id"]),
+        job_id=str(value["job_id"]),
+        primary_target=str(value["primary_target"]),
+        policy_fingerprint=str(value["policy_fingerprint"]),
+        allowed_targets=tuple(allowed),
+        denied_targets=tuple(denied),
+        max_requests_per_second=rate,
+        direct_egress_allowed=False,
+        host_container_socket_allowed=False,
+        independent_validation_required=True,
+        contract_hash=str(value["contract_hash"]),
+        signature_alg=signature_alg,
+        signature=signature,
+    )
+
+
 def _validate_job_id(job_id: str) -> str:
     value = str(job_id).strip()
     if (
