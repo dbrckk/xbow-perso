@@ -42,8 +42,8 @@ def test_strix_egress_is_only_dual_homed_external_boundary():
 
     assert 'profiles: ["strix-broker"]' in egress
     assert "networks: [strix-egress-control, strix-external]" in egress
-    assert "strix-broker" not in egress
-    assert "control]" not in egress
+    assert "networks: [strix-broker" not in egress
+    assert "networks: [control" not in egress
     assert "\n    ports:" not in egress
     assert "\n    volumes:" not in egress
     assert "read_only: true" in egress
