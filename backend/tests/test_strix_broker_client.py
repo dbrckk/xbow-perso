@@ -70,7 +70,7 @@ def test_client_posts_only_to_fixed_internal_egress_endpoint(monkeypatch):
     payload = {
         "status_code": 200,
         "reason": "OK",
-        "headers": {},
+        "headers": [],
         "body_base64": "",
         "body_bytes": 0,
         "truncated": False,
