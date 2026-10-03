@@ -138,37 +138,26 @@ Only after this review may the live gates be changed.
 
 ## 7. Enable the scanner only for an authorized program
 
-On the server:
-
-```env
-XBOW_ENABLE_ACTIVE_SCANS=true
-DRY_RUN=false
-XBOW_ENABLE_NUCLEI=true
-XBOW_NUCLEI_ALLOWED_VERSION=3.11.1
-XBOW_SCANNER_ALLOWED_ENGINES=nuclei
-XBOW_SCANNER_SANDBOX_PROFILE=restricted-v1
-```
-
-Then:
+Do not edit the live gates directly in `.env`. After reviewing the exact program and confirming that its current policy permits automation, use the maintained activation path:
 
 ```bash
-cd /opt/xbow-perso
-sudo docker compose --profile scanner up -d --build
+sudo bash /opt/xbow-perso/scripts/mobile-enable-hackerone-nuclei.sh
 ```
+
+The activation script first refreshes the safe production baseline, requires an idle queue/batch state, creates the root-only live scanner profile, keeps HackerOne submission disabled, and validates backend/scanner/HackerOne readiness before reporting success.
 
 The PWA must show **PRÊT SCAN RÉEL** before execution.
 
 ## 8. Emergency stop from Android
 
+Use the maintained disarm path:
+
 ```bash
-cd /opt/xbow-perso
-sudo sed -i 's/^XBOW_ENABLE_ACTIVE_SCANS=.*/XBOW_ENABLE_ACTIVE_SCANS=false/' .env
-sudo sed -i 's/^DRY_RUN=.*/DRY_RUN=true/' .env
-sudo docker compose stop scanner-worker || true
-sudo docker compose up -d
+sudo bash /opt/xbow-perso/scripts/mobile-disable-hackerone-nuclei.sh
+sudo bash /opt/xbow-perso/scripts/mobile-production-status.sh
 ```
 
-Re-open the PWA and verify that live readiness is blocked again.
+The live profile is removed and the fail-safe production baseline is redeployed. Re-open the PWA and verify that live readiness is blocked again.
 
 
 ## Production migration preflight from a phone
