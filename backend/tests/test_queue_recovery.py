@@ -114,6 +114,9 @@ def test_queue_recovery_route_is_exposed():
 
 def test_queue_recovery_route_never_returns_payloads_or_worker_identity(monkeypatch):
     class Backend:
+        def health(self):
+            return {"ok": True, "storage": "fixture"}
+
         def stats(self):
             return {"total": 1}
 
@@ -162,3 +165,25 @@ def test_queue_recovery_bounds_issue_details_but_keeps_exact_counts():
     assert len(result["issues"]) == 200
     assert result["issue_details_truncated"] is True
     assert result["safe_to_resume"] is False
+
+
+
+def test_queue_recovery_marks_unhealthy_storage_critical(monkeypatch):
+    from app.queue_recovery import build_queue_recovery_assessment
+
+    class Backend:
+        def health(self):
+            return {"ok": False, "storage": "fixture"}
+
+        def stats(self):
+            return {"total": 0}
+
+        def recovery_snapshot(self, limit=5000):
+            return []
+
+    result = build_queue_recovery_assessment(Backend())
+
+    assert result["storage_healthy"] is False
+    assert result["safe_to_resume"] is False
+    assert result["issues_by_severity"]["critical"] == 1
+    assert any(item["code"] == "queue_storage_unhealthy" for item in result["issues"])
