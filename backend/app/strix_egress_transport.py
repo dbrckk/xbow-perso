@@ -256,16 +256,26 @@ def _acquire_request_slot(contract_hash: str, rps: float) -> None:
             remaining = interval - (now - previous)
             if remaining > 0:
                 raise StrixEgressRateLimitError(remaining)
+
+        if (
+            contract_hash not in _LAST_REQUEST_AT
+            and len(_LAST_REQUEST_AT) >= _MAX_RATE_KEYS
+        ):
+            evicted = False
+            for stale_hash in tuple(_LAST_REQUEST_AT):
+                if stale_hash in _INFLIGHT_CONTRACTS:
+                    continue
+                del _LAST_REQUEST_AT[stale_hash]
+                evicted = True
+                break
+            if not evicted:
+                raise StrixEgressConcurrencyError(
+                    "Strix egress rate state is saturated"
+                )
+
         _LAST_REQUEST_AT[contract_hash] = now
         _LAST_REQUEST_AT.move_to_end(contract_hash)
         _INFLIGHT_CONTRACTS.add(contract_hash)
-        while len(_LAST_REQUEST_AT) > _MAX_RATE_KEYS:
-            stale_hash, _ = _LAST_REQUEST_AT.popitem(last=False)
-            if stale_hash not in _INFLIGHT_CONTRACTS:
-                continue
-            _LAST_REQUEST_AT[stale_hash] = now
-            _LAST_REQUEST_AT.move_to_end(stale_hash)
-            break
 
 
 def _release_request_slot(contract_hash: str) -> None:
@@ -342,21 +352,11 @@ def perform_bounded_http_request(
         raise StrixEgressPolicyError("Strix egress target port is invalid") from exc
 
     headers = _normalize_headers(request.headers)
-    endpoint = resolve_public_endpoint(host, port)
     timeout = _timeout_seconds()
     max_bytes = _max_response_bytes()
     target_path = parsed.path or "/"
     if parsed.query:
         target_path += f"?{parsed.query}"
-
-    connection_class = (
-        http.client.HTTPSConnection
-        if parsed.scheme == "https"
-        else http.client.HTTPConnection
-    )
-    kwargs = {"timeout": timeout}
-    if parsed.scheme == "https":
-        kwargs["context"] = ssl.create_default_context()
 
     _acquire_request_slot(
         authorized.contract_hash,
@@ -364,6 +364,15 @@ def perform_bounded_http_request(
     )
     connection = None
     try:
+        endpoint = resolve_public_endpoint(host, port)
+        connection_class = (
+            http.client.HTTPSConnection
+            if parsed.scheme == "https"
+            else http.client.HTTPConnection
+        )
+        kwargs = {"timeout": timeout}
+        if parsed.scheme == "https":
+            kwargs["context"] = ssl.create_default_context()
         connection = connection_class(host, port=port, **kwargs)
         connection._create_connection = _pinned_create_connection(
             endpoint,
