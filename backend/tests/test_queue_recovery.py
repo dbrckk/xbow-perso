@@ -138,3 +138,27 @@ def test_queue_recovery_route_never_returns_payloads_or_worker_identity(monkeypa
     assert result["worker_identities_exposed"] is False
     assert "private-worker" not in str(result)
     assert "must-not-leak" not in str(result)
+
+
+
+def test_queue_recovery_bounds_issue_details_but_keeps_exact_counts():
+    jobs = [
+        _job(
+            id=f"job-{index}",
+            status="queued",
+            attempts=2,
+            max_attempts=2,
+        )
+        for index in range(250)
+    ]
+
+    result = analyze_queue_recovery(
+        jobs,
+        lease_seconds=60,
+        total_jobs=250,
+    )
+
+    assert result["issues_total"] == 250
+    assert len(result["issues"]) == 200
+    assert result["issue_details_truncated"] is True
+    assert result["safe_to_resume"] is False
