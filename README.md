@@ -415,6 +415,32 @@ PYTHONPATH=backend python -m app.dr_cli verify \
 
 The manifest stores only filenames, sizes, and SHA-256 hashes; it never embeds backup contents or decrypted secrets. When `XBOW_AUDIT_HMAC_KEY` (or the `audit_hmac_key` vault entry) is available, the manifest is also authenticated with HMAC-SHA256 so manifest rewriting is detectable.
 
+Before resuming workers after a restore, inspect queue consistency without mutating jobs:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli queue-check
+```
+
+To produce a signed aggregate recovery attestation, keep the audit HMAC key available and run:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli attest \
+  --manifest /backups/xbow-manifest.json \
+  --postgres-dump /backups/postgres.dump \
+  --redis-snapshot /backups/dump.rdb \
+  --vault-copy /backups/secrets.vault.json \
+  --output /backups/recovery-attestation.json
+```
+
+The attestation signs only aggregate integrity state. It contains no targets, job payloads, worker identities, secrets, or backup contents. Its decision is `READY`, `REVIEW`, or `BLOCK`; only `READY` sets `ready_to_restore=true`. Unsigned legacy manifests or legacy unsealed audit events produce `REVIEW`; invalid backup, queue, campaign-audit, or worker-audit state produces `BLOCK`.
+
+Verify an attestation independently before relying on it:
+
+```bash
+PYTHONPATH=backend python -m app.dr_cli verify-attestation \
+  --attestation /backups/recovery-attestation.json
+```
+
 ## Safety model
 
 A campaign must include written authorization metadata, allowed targets and prohibited actions. Requests outside the declared scope are rejected by the API before reaching a worker. This is an engineering control, not a substitute for the rules of the bug bounty program.
