@@ -11,6 +11,7 @@ from app.strix_runner import (
     PINNED_STRIX_VERSION,
     StrixRunnerAttestationError,
     attest_strix_runtime,
+    StrixRunnerHandler,
     health_document,
 )
 
@@ -200,3 +201,35 @@ def test_pinned_release_assets_have_exact_sha256(architecture):
     assert item["asset"].startswith("strix-1.6.2-linux-")
     assert len(item["sha256"]) == 64
     int(item["sha256"], 16)
+
+
+
+def test_head_readyz_fails_closed_when_runtime_attestation_fails(monkeypatch):
+    handler = StrixRunnerHandler.__new__(StrixRunnerHandler)
+    handler.path = "/readyz"
+    statuses = []
+    headers = []
+
+    monkeypatch.setattr(
+        "app.strix_runner.attest_strix_runtime",
+        lambda: (_ for _ in ()).throw(
+            StrixRunnerAttestationError("fixture failure")
+        ),
+    )
+    handler.send_response = statuses.append
+    handler.send_header = lambda name, value: headers.append((name, value))
+    handler.end_headers = lambda: None
+
+    handler.do_HEAD()
+
+    assert statuses == [503]
+    assert ("Cache-Control", "no-store") in headers
+
+
+def test_pinned_release_assets_match_github_release_digests():
+    assert PINNED_STRIX_ASSETS["amd64"]["sha256"] == (
+        "f3f29fa64bee420bf64f8911fb9f38e20270d406f6df44cc2436252c2af0bc81"
+    )
+    assert PINNED_STRIX_ASSETS["arm64"]["sha256"] == (
+        "4a4cba115bda8b89d7bbfabe960246a480ff43563144959b2e33477955aa6df2"
+    )
