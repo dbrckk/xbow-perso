@@ -206,8 +206,9 @@ def test_transport_returns_redirect_without_following_it(monkeypatch):
 
     assert result.status_code == 302
     assert result.redirect_followed is False
-    assert result.headers["Location"] == "https://outside.invalid/"
-    assert "Connection" not in result.headers
+    rendered_headers = [(item.name, item.value) for item in result.headers]
+    assert ("Location", "https://outside.invalid/") in rendered_headers
+    assert all(name != "Connection" for name, _value in rendered_headers)
     assert base64.b64decode(result.body_base64) == b"redirect"
     connection = _Connection.instances[-1]
     assert connection.host == "api.example.test"
