@@ -22,7 +22,13 @@ def _domain(score: int, reasons: list[str]) -> dict[str, Any]:
     bounded = max(0, min(100, int(score)))
     return {
         "score": bounded,
-        "status": "HEALTHY" if bounded >= 85 else "DEGRADED",
+        "status": (
+            "HEALTHY"
+            if bounded >= 85
+            else "DEGRADED"
+            if bounded >= 40
+            else "BLOCKED"
+        ),
         "reasons": reasons,
     }
 
