@@ -143,7 +143,6 @@ def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch):
         BrokerContractDocument.model_validate(payload)
 
 
-
 def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch):
     monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
     monkeypatch.setenv(
@@ -252,7 +251,6 @@ def test_broker_forwards_only_after_local_admission(monkeypatch):
     assert result.host == "app.example.test"
     assert result.mode == "read_only_http"
     assert result.egress_enforced is True
-
 
 
 def test_broker_readiness_requires_egress_when_proxy_enabled(monkeypatch):
