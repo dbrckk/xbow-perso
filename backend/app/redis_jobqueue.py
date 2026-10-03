@@ -197,6 +197,39 @@ class RedisJobQueue:
             raise RuntimeError("Redis queue dedupe index is inconsistent")
         return job
 
+    def recovery_snapshot(self, limit: int = 5000) -> list[dict[str, Any]]:
+        """Return bounded lease/retry state without reading job payloads."""
+        if not 1 <= limit <= 5000:
+            raise ValueError("recovery snapshot limit must be between 1 and 5000")
+        job_ids = sorted(str(value) for value in self.redis.smembers(self._all))[:limit]
+        if not job_ids:
+            return []
+        with self.redis.pipeline(transaction=False) as pipe:
+            for job_id in job_ids:
+                pipe.hmget(
+                    self._job_key(job_id),
+                    "status",
+                    "attempts",
+                    "max_attempts",
+                    "claimed_by",
+                    "claimed_at",
+                )
+            rows = pipe.execute()
+        snapshots: list[dict[str, Any]] = []
+        for job_id, values in zip(job_ids, rows, strict=True):
+            status, attempts, max_attempts, claimed_by, claimed_at = values
+            snapshots.append(
+                {
+                    "id": job_id,
+                    "status": status,
+                    "attempts": attempts,
+                    "max_attempts": max_attempts,
+                    "claimed_by": claimed_by or None,
+                    "claimed_at": claimed_at or None,
+                }
+            )
+        return snapshots
+
     def stats(self) -> dict[str, Any]:
         ids = list(self.redis.smembers(self._all))
         counts = {status: 0 for status in _STATUSES}
