@@ -8,20 +8,21 @@ Status: active
 - Strix lifecycle status, result ingestion, and persisted vulnerability evidence are bound to the same completed run directory.
 - Nuclei remains the reviewed active scanner path in the dedicated restricted scanner worker.
 - Strix jobs now produce a deterministic execution contract bound to job id, policy fingerprint, scope and request-rate ceiling; broker authorization requires an authenticated contract.
-- An admission-only Strix broker runs without host ports, data volumes, Docker socket access or external egress on an internal Docker network.
+- The Strix boundary now has a broker plus a separate dual-homed read-only egress service; GET/HEAD requests are contract-verified twice, DNS-pinned, public-network-only, non-redirecting, bounded and rate-limited.
 
 ## Broken / blockers
 - Active Strix execution does not yet have an enforceable isolated runtime contract for downstream scope, request-rate, and sandbox guarantees.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed while adding a controlled HTTP(S) egress path behind the internal broker and enforcing the signed scope/RPS contract on every request.
+- Keep Strix active dispatch fail-closed while building a separately pinned/attested Strix runner whose only target-network path is the broker boundary.
 
 ## Validation
 - PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
 - Runtime-contract changes require the same full CI/security/supply-chain gates before merge.
 - Execution-contract v1 adds deterministic hashing, optional HMAC authentication, policy/job binding, scope checks, rate-cap checks and redacted scan-event tracing.
 - Broker isolation is asserted by tests and CI builds the dedicated `strix-broker` Compose profile.
+- The read-only egress transport rejects non-public IPs, pins validated DNS results to the socket connection, preserves TLS hostname verification, follows no redirects, bounds responses/timeouts and enforces contract RPS.
 
 ## Last verified
 - 2026-10-03
