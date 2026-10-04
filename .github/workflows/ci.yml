@@ -170,6 +170,21 @@ jobs:
       - run: docker compose --profile scanner build --pull scanner-worker
       - run: docker compose --profile strix-broker build --pull strix-broker strix-egress
       - run: docker compose --profile strix-runner build --pull strix-runner
+      - name: Build inert Strix Python runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --pull \
+            --file backend/Dockerfile.strix-python-runtime \
+            --tag xbow-strix-python-runtime:ci \
+            backend
+          docker run --rm \
+            --network none \
+            --read-only \
+            --tmpfs /tmp:size=16m,noexec,nosuid,nodev \
+            --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            xbow-strix-python-runtime:ci
       - name: strix-runner-network-proof
         shell: bash
         run: |
