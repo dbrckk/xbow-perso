@@ -377,3 +377,50 @@ def test_runner_rpc_socket_timeout_is_bounded():
 
     assert RUNNER_RPC_SOCKET_TIMEOUT_SECONDS == 5.0
     assert fake.timeout == 5.0
+
+
+
+def test_runner_rpc_server_rejects_connections_above_cap():
+    import threading
+
+    from app.strix_runner_rpc import (
+        RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS,
+        BoundedThreadingHTTPServer,
+    )
+
+    server = object.__new__(BoundedThreadingHTTPServer)
+    server._request_slots = threading.BoundedSemaphore(1)
+    rejected = []
+    server.shutdown_request = rejected.append
+
+    assert RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS == 16
+    assert server._request_slots.acquire(blocking=False) is True
+
+    server.process_request("second-request", ("127.0.0.1", 12345))
+
+    assert rejected == ["second-request"]
+    server._request_slots.release()
+
+
+def test_runner_rpc_server_releases_slot_after_request_thread(monkeypatch):
+    import threading
+
+    from app.strix_runner_rpc import BoundedThreadingHTTPServer
+
+    server = object.__new__(BoundedThreadingHTTPServer)
+    server._request_slots = threading.BoundedSemaphore(1)
+    assert server._request_slots.acquire(blocking=False) is True
+
+    def fail_request_thread(_self, _request, _client_address):
+        raise RuntimeError("fixture failure")
+
+    monkeypatch.setattr(
+        "app.strix_runner_rpc.ThreadingHTTPServer.process_request_thread",
+        fail_request_thread,
+    )
+
+    with pytest.raises(RuntimeError, match="fixture failure"):
+        server.process_request_thread("request", ("127.0.0.1", 12345))
+
+    assert server._request_slots.acquire(blocking=False) is True
+    server._request_slots.release()
