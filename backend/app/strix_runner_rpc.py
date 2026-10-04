@@ -24,6 +24,8 @@ RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
 RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
+RUNNER_RPC_MIN_SECRET_BYTES = 32
+RUNNER_RPC_MAX_SECRET_BYTES = 4096
 
 _MUTATION_PATHS = {
     "/v1/session/create",
@@ -52,6 +54,8 @@ class RunnerRpcService:
         active_execution: bool,
         now: Callable[[], float] = time.time,
     ) -> None:
+        if secret and not _valid_runner_rpc_secret(secret):
+            raise ValueError("runner RPC secret is invalid")
         self._secret = secret if secret else None
         self._active_execution = bool(active_execution)
         self._now = now
@@ -191,6 +195,11 @@ class RunnerRpcService:
             self._nonces.popitem(last=False)
 
 
+def _valid_runner_rpc_secret(secret: str) -> bool:
+    size = len(secret.encode("utf-8"))
+    return RUNNER_RPC_MIN_SECRET_BYTES <= size <= RUNNER_RPC_MAX_SECRET_BYTES
+
+
 def sign_runner_rpc_request(
     *,
     method: str,
@@ -200,7 +209,7 @@ def sign_runner_rpc_request(
     timestamp: int,
     nonce: str,
 ) -> str:
-    if not secret or len(secret.encode("utf-8")) > 4096:
+    if not _valid_runner_rpc_secret(secret):
         raise ValueError("runner RPC secret is invalid")
     body_digest = hashlib.sha256(body).hexdigest()
     canonical = "\n".join(
@@ -434,7 +443,7 @@ def _rpc_secret_from_env() -> str | None:
     secret = os.getenv("XBOW_STRIX_RUNNER_RPC_HMAC_KEY", "")
     if not secret:
         return None
-    if len(secret.encode("utf-8")) > 4096:
+    if not _valid_runner_rpc_secret(secret):
         raise RuntimeError("Strix runner RPC key is invalid")
     return secret
 
