@@ -39,9 +39,10 @@
     "Kept the runner tmpfs noexec after CI exposed PyInstaller runtime extraction failure; moved exact CLI version verification to image build time and runtime re-attestation to the immutable manifest plus binary SHA-256.",
     "Added a strict 5-second socket timeout and a 16-connection concurrency cap to the internal Strix runner RPC.",
     "Exposed distinct Python-bootstrap and upstream Docker-preflight blockers in scanner capability diagnostics without blocking the Nuclei path.",
-    "Added a minimum 32-byte HMAC secret requirement for the internal Strix runner RPC, including signer, service, environment, CI fixture and documentation coverage."
+    "Added a minimum 32-byte HMAC secret requirement for the internal Strix runner RPC, including signer, service, environment, CI fixture and documentation coverage.",
+    "Added a 10-second absolute runner RPC header/body read deadline and reject truncated request bodies before authentication or operation handling."
   ],
-  "current_branch": "codex/strix-runner-rpc-secret-strength-v2",
+  "current_branch": "codex/strix-runner-rpc-read-deadline-clean",
   "current_priority": "Provide a pinned Python Strix bootstrap path that can load xbow-remote-v1 before implementing any remote session execution.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
@@ -59,7 +60,7 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the runner RPC HMAC secret-strength hardening.",
+    "Validate and merge the runner RPC absolute read-deadline hardening.",
     "Build a reproducible pinned Python Strix v1.6.2 bootstrap that imports app.strix_backend_hook before the Strix entrypoint.",
     "Provide a reviewed compatibility layer for the upstream Docker preflight without mounting or exposing a host Docker socket.",
     "Verify the Python bootstrap against the exact upstream dependency lock and package digests.",
