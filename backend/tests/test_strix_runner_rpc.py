@@ -427,7 +427,6 @@ def test_runner_rpc_server_releases_slot_after_request_thread(monkeypatch):
     server._request_slots.release()
 
 
-
 def test_runner_rpc_signer_rejects_short_secret():
     with pytest.raises(ValueError, match="at least 32 bytes"):
         sign_runner_rpc_request(
