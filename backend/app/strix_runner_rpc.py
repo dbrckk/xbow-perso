@@ -15,7 +15,12 @@ from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
-from .strix_runner_attestation import attest_strix_runner
+from .strix_runner_attestation import (
+    STRIX_ATTESTATION_SCHEMA,
+    STRIX_RELEASE_COMMIT,
+    STRIX_RELEASE_VERSION,
+    attest_strix_runner,
+)
 
 
 RUNNER_RPC_PROTOCOL = "strix-runner-rpc-v1"
@@ -52,12 +57,14 @@ class RunnerRpcService:
         *,
         secret: str | None,
         active_execution: bool,
+        attestation: Mapping[str, Any] | None = None,
         now: Callable[[], float] = time.time,
     ) -> None:
         if secret and not _valid_runner_rpc_secret(secret):
             raise ValueError("runner RPC secret is invalid")
         self._secret = secret if secret else None
         self._active_execution = bool(active_execution)
+        self._attestation = _validate_runner_attestation(attestation)
         self._now = now
         self._nonces: OrderedDict[str, float] = OrderedDict()
         self._nonce_lock = threading.Lock()
@@ -90,6 +97,8 @@ class RunnerRpcService:
         if normalized_method == "GET" and path == "/readyz":
             if not self._secret:
                 return _error(503, "rpc_key_unavailable")
+            if self._attestation is None:
+                return _error(503, "runner_attestation_unavailable")
             return RunnerRpcResponse(
                 status=200,
                 json_body={
@@ -97,6 +106,10 @@ class RunnerRpcService:
                     "protocol": RUNNER_RPC_PROTOCOL,
                     "active_execution_enabled": self._active_execution,
                     "implemented_operations": [],
+                    "runner_attested": True,
+                    "runner_version": self._attestation["version"],
+                    "source_commit": self._attestation["source_commit"],
+                    "binary_sha256": self._attestation["binary_sha256"],
                 },
             )
 
@@ -193,6 +206,32 @@ class RunnerRpcService:
             if seen_at >= cutoff:
                 break
             self._nonces.popitem(last=False)
+
+
+def _validate_runner_attestation(
+    attestation: Mapping[str, Any] | None,
+) -> dict[str, str] | None:
+    if attestation is None:
+        return None
+    if (
+        attestation.get("schema") != STRIX_ATTESTATION_SCHEMA
+        or attestation.get("ready") is not True
+        or attestation.get("version") != STRIX_RELEASE_VERSION
+        or attestation.get("source_commit") != STRIX_RELEASE_COMMIT
+        or attestation.get("archive_verified") is not True
+        or attestation.get("binary_verified") is not True
+        or attestation.get("docker_socket_present") is not False
+        or attestation.get("docker_host_configured") is not False
+        or attestation.get("active_execution_enabled") is not False
+        or attestation.get("network_mode") != "internal_only"
+        or not _valid_digest(attestation.get("binary_sha256"))
+    ):
+        raise ValueError("runner RPC attestation is invalid")
+    return {
+        "version": str(attestation["version"]),
+        "source_commit": str(attestation["source_commit"]),
+        "binary_sha256": str(attestation["binary_sha256"]),
+    }
 
 
 def _valid_runner_rpc_secret(secret: str) -> bool:
@@ -456,6 +495,7 @@ def serve() -> None:
     service = RunnerRpcService(
         secret=_rpc_secret_from_env(),
         active_execution=False,
+        attestation=attestation,
     )
     server = ThreadingHTTPServer(
         ("0.0.0.0", RUNNER_RPC_PORT),
