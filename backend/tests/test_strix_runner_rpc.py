@@ -475,7 +475,6 @@ def test_create_requires_immutable_sha256_image_reference(image):
     assert result.json_body["error"] == "invalid_request"
 
 
-
 @pytest.mark.parametrize(
     "path",
     (
