@@ -1,24 +1,13 @@
 # Change impact
 
-Base: 81b1730f9baba0ea229c4527c6252f6b8a1b6cd7
-Head: 0120d731db2a27ed822b3aedaeb89ef8ffbbf8fc
+Base: cec128c25d45389eb23e74c660330d2b280b9e1b
+Head: a8f40bbd8ea03414440328bccc345521180cfb26
 
 ## Changed files
-- M .env.example
-- M .github/workflows/ci.yml
-- M README.md
-- M backend/Dockerfile.strix-runner
-- M backend/app/runtime_capabilities.py
-- M backend/app/strix_runner_attestation.py
-- A backend/app/strix_runner_rpc.py
-- M backend/tests/test_runtime_capabilities.py
-- M backend/tests/test_strix_runner_attestation.py
-- A backend/tests/test_strix_runner_rpc.py
-- M docker-compose.yml
+- M backend/app/strix_runner_rpc.py
+- M backend/tests/test_strix_runner_rpc.py
 
 ## Affected areas
-- (root)
-- .github
 - backend
 
 ## Related test candidates

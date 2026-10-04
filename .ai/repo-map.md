@@ -11962,6 +11962,7 @@ RUNNER_RPC_PORT = 8092
 RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
 RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
+RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
 ⋮----
 _MUTATION_PATHS = {
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
@@ -12004,6 +12005,8 @@ cutoff = now - RUNNER_RPC_AUTH_WINDOW_SECONDS
 body_digest = hashlib.sha256(body).hexdigest()
 canonical = "\n".join(
 ⋮----
+def configure_runner_rpc_socket(connection: Any) -> None
+⋮----
 def _error(status: int, code: str) -> RunnerRpcResponse
 ⋮----
 def _valid_id(value: object) -> bool
@@ -12027,6 +12030,8 @@ timeout = payload.get("timeout_seconds")
 class _RunnerRpcHttpHandler(BaseHTTPRequestHandler)
 ⋮----
 server_version = "xbow-strix-runner-rpc/1"
+⋮----
+def setup(self) -> None
 ⋮----
 def do_GET(self) -> None:  # noqa: N802
 ⋮----
@@ -21788,6 +21793,16 @@ workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 def test_runner_image_contains_only_rpc_and_attestation_modules()
 ⋮----
 dockerfile = (ROOT / "backend" / "Dockerfile.strix-runner").read_text()
+⋮----
+def test_runner_rpc_socket_timeout_is_bounded()
+⋮----
+class FakeSocket
+⋮----
+def __init__(self)
+⋮----
+def settimeout(self, value)
+⋮----
+fake = FakeSocket()
 ````
 
 ## File: backend/tests/test_submission_api.py
