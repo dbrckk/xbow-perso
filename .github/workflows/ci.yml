@@ -67,6 +67,8 @@ jobs:
           python -m pip install --no-deps --target "$tmp/site" "$wheel"
           PYTHONPATH="$PWD/backend:$tmp/site" \
             python -m app.strix_backend_hook --self-test
+          PYTHONPATH="$PWD/backend:$tmp/site" \
+            python -m app.strix_python_compat_probe --self-test
       - run: |
           PYTHONPATH=backend \
           XBOW_REDIS_URL=redis://localhost:6379/15 \
