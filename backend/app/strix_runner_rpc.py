@@ -24,6 +24,7 @@ RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
 RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
+RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
 
 _MUTATION_PATHS = {
     "/v1/session/create",
@@ -365,6 +366,45 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
     return False
 
 
+class BoundedThreadingHTTPServer(ThreadingHTTPServer):
+    def __init__(
+        self,
+        *args: Any,
+        max_concurrent_connections: int = RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS,
+        **kwargs: Any,
+    ) -> None:
+        if max_concurrent_connections < 1:
+            raise ValueError("max_concurrent_connections must be positive")
+        super().__init__(*args, **kwargs)
+        self._request_slots = threading.BoundedSemaphore(
+            max_concurrent_connections
+        )
+
+    def process_request(
+        self,
+        request: Any,
+        client_address: Any,
+    ) -> None:
+        if not self._request_slots.acquire(blocking=False):
+            self.shutdown_request(request)
+            return
+        try:
+            super().process_request(request, client_address)
+        except BaseException:
+            self._request_slots.release()
+            raise
+
+    def process_request_thread(
+        self,
+        request: Any,
+        client_address: Any,
+    ) -> None:
+        try:
+            super().process_request_thread(request, client_address)
+        finally:
+            self._request_slots.release()
+
+
 class _RunnerRpcHttpHandler(BaseHTTPRequestHandler):
     server_version = "xbow-strix-runner-rpc/1"
 
@@ -448,7 +488,7 @@ def serve() -> None:
         secret=_rpc_secret_from_env(),
         active_execution=False,
     )
-    server = ThreadingHTTPServer(
+    server = BoundedThreadingHTTPServer(
         ("0.0.0.0", RUNNER_RPC_PORT),
         _RunnerRpcHttpHandler,
     )
