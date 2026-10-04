@@ -136,7 +136,6 @@ def test_ready_requires_rpc_secret():
     assert result.json_body["error"] == "rpc_key_unavailable"
 
 
-
 def test_ready_requires_runtime_attestation():
     result = _service(attestation=None).handle(
         method="GET",
