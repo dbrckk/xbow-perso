@@ -485,6 +485,7 @@
         "backend/tests/test_strix_execution_contract.py",
         "backend/tests/test_strix_python_compat_probe.py",
         "backend/tests/test_strix_python_lock_probe.py",
+        "backend/tests/test_strix_python_toolchain_probe.py",
         "backend/tests/test_strix_run_status.py",
         "backend/tests/test_strix_runner_attestation.py",
         "backend/tests/test_strix_runner_rpc.py",
@@ -511,7 +512,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 229,
+      "in_degree": 230,
       "out_degree": 4,
       "path": "frontend/app.js"
     },
@@ -1102,6 +1103,41 @@
     {
       "dependencies": [
         "backend/app/main.py",
+        "backend/app/queue_recovery.py",
+        "frontend/app.js"
+      ],
+      "dependents": [
+        "backend/app/api_rate_limit.py",
+        "backend/app/browser.py",
+        "backend/app/production_migration.py",
+        "backend/app/queue_backend.py",
+        "backend/app/queue_recovery.py",
+        "backend/app/storage_backend.py",
+        "backend/app/strix_backend_hook.py",
+        "backend/app/strix_python_compat_probe.py",
+        "backend/tests/test_api_rate_limit.py",
+        "backend/tests/test_deployment_config.py",
+        "backend/tests/test_deployment_preflight.py",
+        "backend/tests/test_frontend_auth_proxy.py",
+        "backend/tests/test_mobile_production_update_script.py",
+        "backend/tests/test_queue_backend.py",
+        "backend/tests/test_scanner_runtime_contract.py",
+        "backend/tests/test_simple_selection_cache_only.py",
+        "backend/tests/test_storage_backend.py",
+        "backend/tests/test_strix_backend_hook.py",
+        "backend/tests/test_strix_broker_runtime.py",
+        "backend/tests/test_strix_python_compat_probe.py",
+        "backend/tests/test_strix_python_toolchain_probe.py",
+        "backend/tests/test_strix_runner_attestation.py",
+        "backend/tests/test_strix_runner_rpc.py"
+      ],
+      "in_degree": 23,
+      "out_degree": 3,
+      "path": "backend/tests/test_queue_recovery.py"
+    },
+    {
+      "dependencies": [
+        "backend/app/main.py",
         "backend/app/secret_vault.py"
       ],
       "dependents": [
@@ -1132,40 +1168,6 @@
       "in_degree": 23,
       "out_degree": 2,
       "path": "backend/app/campaign_audit.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/main.py",
-        "backend/app/queue_recovery.py",
-        "frontend/app.js"
-      ],
-      "dependents": [
-        "backend/app/api_rate_limit.py",
-        "backend/app/browser.py",
-        "backend/app/production_migration.py",
-        "backend/app/queue_backend.py",
-        "backend/app/queue_recovery.py",
-        "backend/app/storage_backend.py",
-        "backend/app/strix_backend_hook.py",
-        "backend/app/strix_python_compat_probe.py",
-        "backend/tests/test_api_rate_limit.py",
-        "backend/tests/test_deployment_config.py",
-        "backend/tests/test_deployment_preflight.py",
-        "backend/tests/test_frontend_auth_proxy.py",
-        "backend/tests/test_mobile_production_update_script.py",
-        "backend/tests/test_queue_backend.py",
-        "backend/tests/test_scanner_runtime_contract.py",
-        "backend/tests/test_simple_selection_cache_only.py",
-        "backend/tests/test_storage_backend.py",
-        "backend/tests/test_strix_backend_hook.py",
-        "backend/tests/test_strix_broker_runtime.py",
-        "backend/tests/test_strix_python_compat_probe.py",
-        "backend/tests/test_strix_runner_attestation.py",
-        "backend/tests/test_strix_runner_rpc.py"
-      ],
-      "in_degree": 22,
-      "out_degree": 3,
-      "path": "backend/tests/test_queue_recovery.py"
     },
     {
       "dependencies": [
@@ -2266,8 +2268,8 @@
       "path": "backend/app/review_queue.py"
     }
   ],
-  "edge_count": 1983,
+  "edge_count": 1987,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 416,
+  "node_count": 418,
   "schema_version": 1
 }

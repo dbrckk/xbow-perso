@@ -213,6 +213,7 @@ backend/
     strix_parser.py
     strix_python_compat_probe.py
     strix_python_lock_probe.py
+    strix_python_toolchain_probe.py
     strix_run_status.py
     strix_runner_attestation.py
     strix_runner_rpc.py
@@ -447,6 +448,7 @@ backend/
     test_strix_execution_contract.py
     test_strix_python_compat_probe.py
     test_strix_python_lock_probe.py
+    test_strix_python_toolchain_probe.py
     test_strix_run_status.py
     test_strix_runner_attestation.py
     test_strix_runner_rpc.py
@@ -472,6 +474,7 @@ backend/
     test_worker_secrets.py
     test_worker_state.py
     test_worker_watchdog.py
+  strix-python-runtime.lock.json
 frontend/
   app.js
   hackerone.js
@@ -12001,6 +12004,50 @@ parser = argparse.ArgumentParser()
 args = parser.parse_args()
 ````
 
+## File: backend/app/strix_python_toolchain_probe.py
+````python
+STRIX_PYTHON_TOOLCHAIN_SCHEMA = "strix-python-runtime-lock-v1"
+STRIX_SOURCE_COMMIT = "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+STRIX_VERSION = "1.6.2"
+STRIX_RELEASE_PYTHON_VERSION = "3.12.14"
+STRIX_RELEASE_UV_VERSION = "0.12.10"
+_MAX_MANIFEST_BYTES = 64 * 1024
+_MAX_UV_ARCHIVE_BYTES = 64 * 1024 * 1024
+⋮----
+class StrixPythonToolchainError(RuntimeError)
+⋮----
+def _read_bounded(path: Path, limit: int) -> bytes
+⋮----
+payload = path.read_bytes()
+⋮----
+def _sha256_file(path: Path) -> str
+⋮----
+def _load_manifest(path: Path) -> dict[str, Any]
+⋮----
+payload = _read_bounded(path, _MAX_MANIFEST_BYTES)
+⋮----
+decoded = json.loads(payload.decode("utf-8"))
+⋮----
+manifest = _load_manifest(manifest_path)
+⋮----
+release_build = manifest.get("release_build")
+⋮----
+assets = manifest.get("uv_assets")
+⋮----
+asset = assets.get(architecture)
+⋮----
+asset_name = asset.get("asset")
+expected_sha256 = asset.get("sha256")
+⋮----
+observed_sha256 = _sha256_file(uv_archive_path)
+⋮----
+def _main() -> int
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args()
+````
+
 ## File: backend/app/strix_run_status.py
 ````python
 class StrixRunStatusError(RuntimeError)
@@ -21854,6 +21901,31 @@ def test_ci_attests_pinned_strix_dependency_lock()
 workflow = Path(".github/workflows/ci.yml").read_text()
 ````
 
+## File: backend/tests/test_strix_python_toolchain_probe.py
+````python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def test_runtime_toolchain_manifest_is_inert_and_pinned()
+⋮----
+manifest = json.loads(
+⋮----
+def test_toolchain_probe_accepts_exact_uv_archive(tmp_path, monkeypatch)
+⋮----
+archive = tmp_path / "uv.tar.gz"
+⋮----
+manifest = ROOT / "backend" / "strix-python-runtime.lock.json"
+⋮----
+result = probe_toolchain(
+⋮----
+def test_toolchain_probe_rejects_digest_mismatch(tmp_path, monkeypatch)
+⋮----
+def test_toolchain_probe_rejects_unknown_architecture(tmp_path)
+⋮----
+def test_ci_verifies_official_uv_release_asset()
+⋮----
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+````
+
 ## File: backend/tests/test_strix_run_status.py
 ````python
 def test_strix_run_status_requires_completed_status(tmp_path)
@@ -22822,6 +22894,46 @@ def test_watchdog_detects_stale_running_lease(monkeypatch)
 def test_watchdog_enforces_failed_job_budget(monkeypatch)
 ⋮----
 def test_watchdog_invalid_threshold_fails_closed(monkeypatch)
+````
+
+## File: backend/strix-python-runtime.lock.json
+````json
+{
+  "schema": "strix-python-runtime-lock-v1",
+  "source_commit": "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2",
+  "strix_version": "1.6.2",
+  "release_build": {
+    "python_version": "3.12.14",
+    "uv_version": "0.12.10",
+    "setup_uv_action_commit": "d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86"
+  },
+  "upstream_sources": {
+    "pyproject_git_blob_sha1": "b78fb3aa90936edaedc86cf634d34de89bcb9f5b",
+    "uv_lock_git_blob_sha1": "2cb4cb5f0c4732dce1dc3cca21406ae63f66b148"
+  },
+  "uv_assets": {
+    "amd64": {
+      "asset": "uv-x86_64-unknown-linux-gnu.tar.gz",
+      "sha256": "173d95a0c32d18c896c46ba6fafbf3cf9c14ab74b033f81b76c883ef492a976b"
+    },
+    "arm64": {
+      "asset": "uv-aarch64-unknown-linux-gnu.tar.gz",
+      "sha256": "9ff6b9d4665edcdd3a88dcc73cd1eb641754deb927f14e8c62ebfde6bf4f5f5e"
+    }
+  },
+  "strix_wheels": {
+    "amd64": {
+      "asset": "strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl",
+      "sha256": "1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b"
+    },
+    "arm64": {
+      "asset": "strix_agent-1.6.2-py3-none-manylinux_2_17_aarch64.whl",
+      "sha256": "b2939f8c6339817a2abeff2ba266838af3d45e4e05593fe89db11464c8e7a0d4"
+    }
+  },
+  "runtime_install_enabled": false,
+  "active_execution_enabled": false
+}
 ````
 
 ## File: frontend/app.js

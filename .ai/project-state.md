@@ -39,17 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T23:43:09Z
+Generated: 2026-10-04T23:49:26Z
 
 ### Git
 - Branch: `main`
-- Head: `c0916bf814ac`
-- Commit date: 2026-10-05T01:42:58+02:00
-- Commit: security(strix): attest pinned Python dependency lock
-- Tracked files: 617
+- Head: `b2f488308817`
+- Commit date: 2026-10-05T01:49:15+02:00
+- Commit: security(strix): pin Python release toolchain
+- Tracked files: 620
 
 ### Recently changed files
 - `.github/workflows/ci.yml`
+- `backend/app/strix_python_toolchain_probe.py`
+- `backend/strix-python-runtime.lock.json`
+- `backend/tests/test_strix_python_toolchain_probe.py`
 - `backend/app/strix_python_lock_probe.py`
 - `backend/tests/test_strix_python_lock_probe.py`
 - `backend/app/strix_python_compat_probe.py`
@@ -57,7 +60,6 @@ Generated: 2026-10-04T23:43:09Z
 - `README.md`
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_strix_runner_rpc.py`
-- `.env.example`
 
 ### Project signals
 - `pyproject.toml`

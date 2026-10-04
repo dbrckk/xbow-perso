@@ -5,229 +5,195 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "StrixPythonLockError": {
+    "StrixPythonToolchainError": {
       "source": {
-        "file": "backend/app/strix_python_lock_probe.py",
-        "start": 40,
-        "end": 41
+        "file": "backend/app/strix_python_toolchain_probe.py",
+        "start": 20,
+        "end": 21
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_read_bounded_bytes": {
+    "_read_bounded": {
       "source": {
-        "file": "backend/app/strix_python_lock_probe.py",
+        "file": "backend/app/strix_python_toolchain_probe.py",
+        "start": 24,
+        "end": 35
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixPythonToolchainError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_sha256_file": {
+      "source": {
+        "file": "backend/app/strix_python_toolchain_probe.py",
+        "start": 38,
+        "end": 41
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_read_bounded",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_load_manifest": {
+      "source": {
+        "file": "backend/app/strix_python_toolchain_probe.py",
         "start": 44,
+        "end": 56
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixPythonToolchainError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_read_bounded",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "probe_toolchain": {
+      "source": {
+        "file": "backend/app/strix_python_toolchain_probe.py",
+        "start": 59,
+        "end": 131
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixPythonToolchainError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_load_manifest",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_sha256_file",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_main": {
+      "source": {
+        "file": "backend/app/strix_python_toolchain_probe.py",
+        "start": 134,
+        "end": 163
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixPythonToolchainError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "probe_toolchain",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_runtime_toolchain_manifest_is_inert_and_pinned": {
+      "source": {
+        "file": "backend/tests/test_strix_python_toolchain_probe.py",
+        "start": 15,
+        "end": 30
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_toolchain_probe_accepts_exact_uv_archive": {
+      "source": {
+        "file": "backend/tests/test_strix_python_toolchain_probe.py",
+        "start": 33,
         "end": 55
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixPythonLockError",
+          "symbol": "_sha256_file",
           "definitions": [
             {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_git_blob_sha1": {
-      "source": {
-        "file": "backend/app/strix_python_lock_probe.py",
-        "start": 58,
-        "end": 64
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_read_bounded_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 44,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_read_toml": {
-      "source": {
-        "file": "backend/app/strix_python_lock_probe.py",
-        "start": 67,
-        "end": 79
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixPythonLockError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_read_bounded_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 44,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_find_strix_package": {
-      "source": {
-        "file": "backend/app/strix_python_lock_probe.py",
-        "start": 82,
-        "end": 98
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixPythonLockError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "probe_dependency_lock": {
-      "source": {
-        "file": "backend/app/strix_python_lock_probe.py",
-        "start": 101,
-        "end": 178
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixPythonLockError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_find_strix_package",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_git_blob_sha1",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 58,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_read_toml",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "_main": {
-      "source": {
-        "file": "backend/app/strix_python_lock_probe.py",
-        "start": 181,
-        "end": 202
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixPythonLockError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "probe_dependency_lock",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 101,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_write_fixture": {
-      "source": {
-        "file": "backend/tests/test_strix_python_lock_probe.py",
-        "start": 30,
-        "end": 57
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_dependency_lock_probe_accepts_exact_pinned_contract": {
-      "source": {
-        "file": "backend/tests/test_strix_python_lock_probe.py",
-        "start": 60,
-        "end": 91
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_git_blob_sha1",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 58,
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
@@ -235,23 +201,57 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_write_fixture",
+          "symbol": "probe_toolchain",
           "definitions": [
             {
-              "file": "backend/tests/test_strix_python_lock_probe.py",
-              "line": 30,
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 59,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_toolchain_probe_rejects_digest_mismatch": {
+      "source": {
+        "file": "backend/tests/test_strix_python_toolchain_probe.py",
+        "start": 58,
+        "end": 72
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "probe_dependency_lock",
+          "symbol": "StrixPythonToolchainError",
           "definitions": [
             {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 101,
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_sha256_file",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "probe_toolchain",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 59,
               "kind": "function",
               "language": "python"
             }
@@ -261,19 +261,19 @@
       ],
       "dependency_count": 3
     },
-    "test_dependency_lock_probe_rejects_blob_mismatch": {
+    "test_toolchain_probe_rejects_unknown_architecture": {
       "source": {
-        "file": "backend/tests/test_strix_python_lock_probe.py",
-        "start": 94,
-        "end": 105
+        "file": "backend/tests/test_strix_python_toolchain_probe.py",
+        "start": 75,
+        "end": 85
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixPythonLockError",
+          "symbol": "StrixPythonToolchainError",
           "definitions": [
             {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 40,
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 20,
               "kind": "class",
               "language": "python"
             }
@@ -281,35 +281,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_git_blob_sha1",
+          "symbol": "probe_toolchain",
           "definitions": [
             {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 58,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_write_fixture",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_python_lock_probe.py",
-              "line": 30,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "probe_dependency_lock",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 101,
+              "file": "backend/app/strix_python_toolchain_probe.py",
+              "line": 59,
               "kind": "function",
               "language": "python"
             }
@@ -317,71 +293,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_dependency_lock_probe_rejects_changed_direct_dependencies": {
+    "test_ci_verifies_official_uv_release_asset": {
       "source": {
-        "file": "backend/tests/test_strix_python_lock_probe.py",
-        "start": 108,
-        "end": 133
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixPythonLockError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_git_blob_sha1",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 58,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_write_fixture",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_python_lock_probe.py",
-              "line": 30,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "probe_dependency_lock",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_lock_probe.py",
-              "line": 101,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_ci_attests_pinned_strix_dependency_lock": {
-      "source": {
-        "file": "backend/tests/test_strix_python_lock_probe.py",
-        "start": 136,
-        "end": 143
+        "file": "backend/tests/test_strix_python_toolchain_probe.py",
+        "start": 88,
+        "end": 100
       },
       "symbol_dependencies": [],
       "dependency_count": 0
