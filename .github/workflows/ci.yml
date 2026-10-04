@@ -51,6 +51,22 @@ jobs:
       - run: python -m pip check
       - run: python -m compileall -q backend/app backend/tests
       - run: ruff check backend/app backend/tests
+      - name: Verify pinned Strix backend hook
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          wheel="$tmp/strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            "https://github.com/usestrix/strix/releases/download/v1.6.2/strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl" \
+            -o "$wheel"
+          printf '%s  %s\n' \
+            "1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b" \
+            "$wheel" | sha256sum -c -
+          python -m pip install --no-deps --target "$tmp/site" "$wheel"
+          PYTHONPATH="$PWD/backend:$tmp/site" \
+            python -m app.strix_backend_hook --self-test
       - run: |
           PYTHONPATH=backend \
           XBOW_REDIS_URL=redis://localhost:6379/15 \
