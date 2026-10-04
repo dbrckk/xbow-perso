@@ -157,6 +157,11 @@ def test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile(mo
     assert result["dispatch_ready"] is True
     assert result["sandbox_profile"] == "restricted-v1"
     assert result["allowed_engines"] == ["nuclei"]
+    assert "strix_python_bootstrap_not_ready" not in result["dispatch_block_reasons"]
+    assert (
+        "strix_upstream_docker_preflight_required"
+        not in result["dispatch_block_reasons"]
+    )
 
 
 def test_capabilities_api_exposes_scanner_worker_admission(monkeypatch):
