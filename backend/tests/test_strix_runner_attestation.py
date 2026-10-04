@@ -1,5 +1,6 @@
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -192,3 +193,31 @@ def test_runner_uses_dedicated_pyinstaller_exec_tmpfs():
         in block
     )
     assert "TMPDIR=/run/strix-tmp" in dockerfile
+
+
+
+def test_cli_version_check_preserves_dedicated_tmpdir(tmp_path, monkeypatch):
+    binary = tmp_path / "strix"
+    binary.write_bytes(b"fixture")
+    binary.chmod(0o755)
+    seen = {}
+
+    def fake_run(*args, **kwargs):
+        seen.update(kwargs["env"])
+        return subprocess.CompletedProcess(
+            args=args[0],
+            returncode=0,
+            stdout="strix 1.6.2\n",
+            stderr="",
+        )
+
+    monkeypatch.setenv("TMPDIR", "/run/strix-tmp")
+    monkeypatch.setattr(
+        "app.strix_runner_attestation.subprocess.run",
+        fake_run,
+    )
+
+    from app.strix_runner_attestation import _read_cli_version
+
+    assert _read_cli_version(binary) == "strix 1.6.2"
+    assert seen["TMPDIR"] == "/run/strix-tmp"
