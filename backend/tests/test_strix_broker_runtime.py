@@ -1,3 +1,6 @@
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -89,3 +92,31 @@ def test_ci_builds_strix_broker_and_egress_profile():
         "strix-broker strix-egress"
         in workflow
     )
+
+
+
+def test_strix_broker_imports_in_fresh_interpreter():
+    backend = ROOT / "backend"
+    env = {
+        **os.environ,
+        "PYTHONPATH": str(backend),
+    }
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import app.strix_broker; "
+                "print(app.strix_broker.app.title)"
+            ),
+        ],
+        cwd=backend,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=15,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "xbow Strix admission broker" in result.stdout
