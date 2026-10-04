@@ -172,3 +172,23 @@ def test_ci_executes_runner_runtime_smoke():
     assert "socket.create_connection" in script
     assert '("1.1.1.1", 443)' in script
     assert "direct public TCP egress unexpectedly available" in script
+
+
+
+def test_runner_uses_dedicated_pyinstaller_exec_tmpfs():
+    compose = (ROOT / "docker-compose.yml").read_text()
+    dockerfile = (
+        ROOT / "backend" / "Dockerfile.strix-runner"
+    ).read_text()
+    block = compose.split("  strix-runner:", 1)[1].split(
+        "\n  scanner-worker:",
+        1,
+    )[0]
+
+    assert "/tmp:size=64m,noexec,nosuid,nodev" in block
+    assert (
+        "/run/strix-tmp:size=256m,nosuid,nodev,mode=0700,"
+        "uid=65532,gid=65532"
+        in block
+    )
+    assert "TMPDIR=/run/strix-tmp" in dockerfile
