@@ -131,7 +131,7 @@ def test_runner_dockerfile_pins_official_release_assets():
 def test_runner_compose_service_is_internal_and_inert():
     compose = (ROOT / "docker-compose.yml").read_text()
     block = compose.split("  strix-runner:", 1)[1].split(
-        "\n  pentagi-worker:",
+        "\n  scanner-worker:",
         1,
     )[0]
 
