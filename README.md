@@ -489,14 +489,20 @@ For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` m
 
 A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux release. The image verifies the official release-asset SHA-256 before extraction (amd64 and arm64 have separate pinned digests), verifies the CLI reports exactly `strix 1.6.2`, records the pinned source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and re-attests the extracted binary SHA-256 at runtime. The container has no published ports, volumes, Docker socket or external network and runs as a non-root user with a read-only root filesystem and all Linux capabilities dropped.
 
-The runner is intentionally inert: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory and the process only performs attestation before idling. Build or start it independently:
+The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it now serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes, but **all session operations are still unimplemented**. A valid request therefore fails closed instead of executing a command.
+
+Provision a separate internal RPC key before starting the runner:
 
 ```bash
-docker compose --profile strix-runner build --pull strix-runner
-docker compose --profile strix-runner up -d strix-runner
+XBOW_STRIX_RUNNER_RPC_HMAC_KEY='<server-side secret>' \
+  docker compose --profile strix-runner up -d --build strix-runner
 ```
 
-The next extension point is now verified without enabling execution. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
+The service publishes no host port; port 8092 is exposed only to the internal `strix-broker` network. CI verifies that the broker can reach the runner readiness endpoint while the runner cannot open a direct public-network connection.
+
+The next extension point is verified without enabling execution. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
+
+One integration blocker is explicit: the pinned runner still launches the official standalone PyInstaller binary, while the custom backend registration currently exists only in a Python process using the wheel API. The standalone binary does not automatically import `app.strix_backend_hook`. A pinned Python bootstrap path (or another upstream-supported loading mechanism) is therefore required before `xbow-remote-v1` can participate in a real Strix run.
 
 
-**Active Strix dispatch remains fail-closed.** A separately pinned/attested inert runner now exists and its only configured network is the internal broker network, but no Strix execution backend is wired to it yet and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
+**Active Strix dispatch remains fail-closed.** A separately pinned/attested runner and authenticated internal RPC now exist, but session operations are unimplemented, the standalone Strix binary does not yet load the xbow backend hook, and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.

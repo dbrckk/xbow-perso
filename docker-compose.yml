@@ -161,8 +161,18 @@ services:
     restart: unless-stopped
     init: true
     stop_grace_period: 15s
+    command:
+      [
+        "python",
+        "-m",
+        "app.strix_runner_rpc",
+        "--serve",
+      ]
     environment:
       XBOW_STRIX_ACTIVE_EXECUTION: "false"
+      XBOW_STRIX_RUNNER_RPC_HMAC_KEY: ${XBOW_STRIX_RUNNER_RPC_HMAC_KEY:-}
+    expose:
+      - "8092"
     read_only: true
     tmpfs:
       - /tmp:size=64m,noexec,nosuid,nodev
@@ -178,12 +188,11 @@ services:
         [
           "CMD",
           "python",
-          "-m",
-          "app.strix_runner_attestation",
-          "--check",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8092/readyz', timeout=2).read()",
         ]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
       start_period: 10s
     networks: [strix-broker]

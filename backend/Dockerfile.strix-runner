@@ -25,14 +25,16 @@ RUN apt-get update \
     && tar -C /opt/strix -xzf "/tmp/${ASSET}" \
     && mv "/opt/strix/strix-${STRIX_VERSION}-linux-${RELEASE_ARCH}" /opt/strix/strix \
     && chmod 0755 /opt/strix/strix \
-    && /opt/strix/strix --version | grep -Fx "strix ${STRIX_VERSION}" \
+    && CLI_VERSION="$(/opt/strix/strix --version)" \
+    && printf '%s\n' "$CLI_VERSION" | grep -Fx "strix ${STRIX_VERSION}" \
     && BINARY_SHA256="$(sha256sum /opt/strix/strix | awk '{print $1}')" \
-    && printf '{"schema":"strix-runner-attestation-v1","version":"%s","source_commit":"%s","asset_name":"%s","archive_sha256":"%s","binary_sha256":"%s","platform":"linux","architecture":"%s"}\n' \
+    && printf '{"schema":"strix-runner-attestation-v1","version":"%s","source_commit":"%s","asset_name":"%s","archive_sha256":"%s","binary_sha256":"%s","cli_version":"%s","platform":"linux","architecture":"%s"}\n' \
          "$STRIX_VERSION" \
          "$STRIX_SOURCE_COMMIT" \
          "$ASSET" \
          "$ARCHIVE_SHA256" \
          "$BINARY_SHA256" \
+         "$CLI_VERSION" \
          "$TARGETARCH" \
          > /opt/strix/manifest.json \
     && chmod 0444 /opt/strix/manifest.json \
@@ -49,10 +51,12 @@ RUN groupadd --system --gid 65532 strix-runner \
 
 COPY --from=fetch /opt/strix /opt/strix
 COPY app/strix_runner_attestation.py /app/app/strix_runner_attestation.py
+COPY app/strix_runner_rpc.py /app/app/strix_runner_rpc.py
 
 RUN chmod 0555 /opt/strix/strix \
     && chmod 0444 /opt/strix/manifest.json \
-    && chmod 0444 /app/app/strix_runner_attestation.py
+    && chmod 0444 /app/app/strix_runner_attestation.py \
+    && chmod 0444 /app/app/strix_runner_rpc.py
 
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
@@ -62,4 +66,4 @@ ENV PYTHONUNBUFFERED=1 \
 
 USER 65532:65532
 
-CMD ["python", "-m", "app.strix_runner_attestation", "--idle"]
+CMD ["python", "-m", "app.strix_runner_rpc", "--serve"]

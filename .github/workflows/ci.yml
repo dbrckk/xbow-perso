@@ -152,6 +152,7 @@ jobs:
           }
           trap cleanup EXIT
           export XBOW_STRIX_BROKER_HMAC_KEY="ci-broker-proof-key"
+          export XBOW_STRIX_RUNNER_RPC_HMAC_KEY="ci-runner-proof-key"
           docker compose --profile strix-broker --profile strix-runner up -d \
             --no-deps strix-broker strix-runner
           broker_ready=0
@@ -164,6 +165,20 @@ jobs:
             sleep 1
           done
           if [ "$broker_ready" -ne 1 ]; then
+            docker compose --profile strix-broker --profile strix-runner ps
+            docker compose --profile strix-broker --profile strix-runner logs --no-color
+            exit 1
+          fi
+          runner_ready=0
+          for _ in $(seq 1 30); do
+            if docker compose exec -T strix-broker python -c \
+              "import urllib.request; urllib.request.urlopen('http://strix-runner:8092/readyz', timeout=2).read()"; then
+              runner_ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$runner_ready" -ne 1 ]; then
             docker compose --profile strix-broker --profile strix-runner ps
             docker compose --profile strix-broker --profile strix-runner logs --no-color
             exit 1

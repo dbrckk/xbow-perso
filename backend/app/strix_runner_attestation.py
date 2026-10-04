@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 import os
-import subprocess
 import time
 from pathlib import Path
 
@@ -67,28 +66,6 @@ def _read_manifest(path: Path) -> dict:
     return data
 
 
-def _read_cli_version(binary_path: Path) -> str:
-    try:
-        result = subprocess.run(
-            [str(binary_path), "--version"],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=10,
-            env={
-                "PATH": os.environ.get("PATH", ""),
-                "HOME": "/tmp",
-                "LANG": "C.UTF-8",
-                "LC_ALL": "C.UTF-8",
-            },
-        )
-    except (OSError, subprocess.SubprocessError) as exc:
-        raise StrixRunnerAttestationError(
-            "Strix runner CLI version check failed"
-        ) from exc
-    return result.stdout.strip()
-
-
 def _docker_socket_present() -> bool:
     return Path("/var/run/docker.sock").exists()
 
@@ -105,6 +82,10 @@ def _validate_manifest(data: dict) -> dict:
     if data.get("source_commit") != STRIX_RELEASE_COMMIT:
         raise StrixRunnerAttestationError(
             "Strix runner source commit mismatch"
+        )
+    if data.get("cli_version") != f"strix {STRIX_RELEASE_VERSION}":
+        raise StrixRunnerAttestationError(
+            "Strix runner CLI version mismatch"
         )
     if data.get("platform") != "linux":
         raise StrixRunnerAttestationError(
@@ -157,11 +138,7 @@ def attest_strix_runner(
             "Strix runner binary digest mismatch"
         )
 
-    cli_version = _read_cli_version(binary)
-    if cli_version != f"strix {STRIX_RELEASE_VERSION}":
-        raise StrixRunnerAttestationError(
-            "Strix runner CLI version mismatch"
-        )
+    cli_version = str(data["cli_version"])
 
     docker_socket_present = _docker_socket_present()
     if docker_socket_present:

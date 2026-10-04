@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-04",
-  "task": "Verify a fail-closed custom Strix backend extension point",
+  "task": "Define and expose an authenticated fail-closed Strix runner RPC",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -30,13 +30,20 @@
     "Merged the live runner network proof and circular-import fix after CI, security and supply-chain passed.",
     "Added xbow-remote-v1 registration through the Strix v1.6.2 runtime backend registry with bind mounts explicitly unsupported.",
     "Kept the custom backend fail-closed: every backend invocation raises before any session or network operation.",
-    "Added CI verification against the official Strix v1.6.2 x86_64 Python wheel with its pinned SHA-256 and no dependency installation."
+    "Added CI verification against the official Strix v1.6.2 x86_64 Python wheel with its pinned SHA-256 and no dependency installation.",
+    "Added strix-runner-rpc-v1 with strict create/exec/resolve-port/delete request schemas.",
+    "Added HMAC-SHA256 request authentication with timestamp bounds, nonce replay protection, body limits and concurrent replay serialization.",
+    "Changed the isolated runner from an idle loop to an internal-only RPC service on port 8092 while keeping active execution impossible.",
+    "Added broker-to-runner readiness verification in CI without exposing a host port.",
+    "Surfaced RPC and standalone-backend-loading blockers through runtime capability diagnostics.",
+    "Kept the runner tmpfs noexec after CI exposed PyInstaller runtime extraction failure; moved exact CLI version verification to image build time and runtime re-attestation to the immutable manifest plus binary SHA-256."
   ],
-  "current_branch": "codex/strix-custom-backend-hook",
-  "current_priority": "Define the minimal remote-session RPC contract required by Strix v1.6.2 and implement it against the isolated runner without direct target-network access.",
+  "current_branch": "codex/strix-runner-rpc-contract",
+  "current_priority": "Provide a pinned Python Strix bootstrap path that can load xbow-remote-v1 before implementing any remote session execution.",
   "blockers": [
-    "The custom Strix backend is registered and compatibility-tested but intentionally rejects all execution.",
-    "A remote session implementation still needs exec, exposed-port resolution and cleanup semantics compatible with Strix v1.6.2.",
+    "Runner RPC session operations are deliberately unimplemented and always fail closed.",
+    "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
+    "A pinned Python runtime/bootstrap using the verified Strix v1.6.2 package is required before the custom backend can be selected by a real run.",
     "The bounded broker path supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
     "The upstream v1.6.2 Git tag object is unsigned; trust is anchored to the pinned source commit and official release-asset digests.",
     "Contract v1 still uses symmetric HMAC verification rather than asymmetric verification."
@@ -48,11 +55,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the fail-closed custom backend hook.",
-    "Specify a narrow authenticated remote-session RPC for exec, exposed-port resolution and cleanup.",
-    "Implement the RPC server inside the isolated runner with strict command/session admission and no direct public target route.",
-    "Implement an xbow backend client that satisfies the Strix v1.6.2 session interface through that RPC.",
-    "Expand broker methods only for concrete required Strix workflows with method-specific controls.",
-    "Keep strix_runtime_contract_enforceable false until end-to-end execution and network bypass tests pass."
+    "Validate and merge the authenticated fail-closed runner RPC.",
+    "Build a reproducible pinned Python Strix v1.6.2 bootstrap that imports app.strix_backend_hook before calling strix.interface.main.",
+    "Verify the Python bootstrap against the exact upstream dependency lock and package digests.",
+    "Implement the xbow remote session client only after the hook is genuinely loaded in the runtime process.",
+    "Keep all runner session RPC operations unimplemented until end-to-end network and command admission controls are defined.",
+    "Keep strix_runtime_contract_enforceable false until execution and bypass tests pass."
   ]
 }

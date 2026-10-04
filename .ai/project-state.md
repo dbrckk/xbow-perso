@@ -9,15 +9,17 @@ Status: active
 - Nuclei remains the reviewed active scanner path in the dedicated restricted scanner worker.
 - Strix jobs now produce a deterministic execution contract bound to job id, policy fingerprint, scope and request-rate ceiling; broker authorization requires an authenticated contract.
 - The Strix boundary now has a broker plus a separate dual-homed read-only egress service; GET/HEAD requests are contract-verified twice, DNS-pinned, public-network-only, non-redirecting, bounded and rate-limited.
-- A dedicated inert Strix runner pins v1.6.2, verifies official amd64/arm64 release digests at build time, attests the extracted binary/version at runtime, and is attached only to the internal broker network.
+- A dedicated inert Strix runner pins v1.6.2, verifies official amd64/arm64 release digests and the exact CLI version at build time, then re-attests the build manifest and extracted binary SHA-256 at runtime without executing the PyInstaller binary; it is attached only to the internal broker network.
 - The xbow `xbow-remote-v1` backend hook is verified against the official Strix v1.6.2 Python wheel and registry API; it declares no bind-mount support and intentionally rejects every execution request.
+- The isolated runner now exposes authenticated `strix-runner-rpc-v1` on internal port 8092 with strict schemas, HMAC authentication, timestamp/nonce replay defenses and no implemented session operations.
 
 ## Broken / blockers
-- Active Strix execution is still not wired through the isolated runner/broker path; the runner and custom backend hook remain fail-closed.
+- Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
+- The pinned standalone Strix binary does not automatically load the Python `xbow-remote-v1` registration; a pinned Python bootstrap path is still required.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed while defining the minimum remote-session RPC surface required by Strix v1.6.2 (exec, exposed-port resolution, cleanup) and implementing it against the isolated runner.
+- Keep Strix active dispatch fail-closed while building a reproducible Python Strix v1.6.2 bootstrap that loads `xbow-remote-v1` in the actual runtime process.
 
 ## Validation
 - PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
@@ -26,8 +28,9 @@ Status: active
 - Broker isolation is asserted by tests and CI builds the dedicated `strix-broker` Compose profile.
 - The read-only egress transport rejects non-public IPs, pins validated DNS results to the socket connection, preserves TLS hostname verification, follows no redirects, bounds responses/timeouts, enforces contract RPS, and allows only one in-flight request per contract.
 - Broker readiness now fails closed on the egress service whenever read-only proxying is enabled.
-- The Strix runner image pins v1.6.2 release assets/digests and source commit, verifies the archive before extraction, verifies the exact CLI version, and re-attests the binary SHA-256 at runtime.
+- The Strix runner image pins v1.6.2 release assets/digests and source commit, verifies the archive and exact CLI version during image construction, records that version in the immutable manifest, and re-attests the manifest plus binary SHA-256 at runtime.
 - CI verifies the custom backend hook against the official v1.6.2 manylinux x86_64 wheel after checking its pinned SHA-256; the hook self-test proves registration succeeds while backend execution remains blocked.
+- The runner RPC contract is independently testable and remains non-executing even if a service instance is constructed with an active flag; the real runner startup attestation still forbids active execution.
 
 ## Last verified
 - 2026-10-03

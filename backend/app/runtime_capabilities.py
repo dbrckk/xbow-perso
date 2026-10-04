@@ -7,6 +7,7 @@ from typing import Any
 
 from .scanner_sandbox import strix_runtime_contract_enforceable
 from .strix_execution_contract import STRIX_EXECUTION_CONTRACT_SCHEMA
+from .strix_runner_rpc import RUNNER_RPC_PROTOCOL
 
 
 class CapabilityConfigError(ValueError):
@@ -158,6 +159,9 @@ def scanner_runtime_capability() -> dict[str, Any]:
         reasons.append("strix_docker_runtime_unavailable")
     if strix_execution_intent and not strix_contract_enforceable:
         reasons.append("strix_runtime_contract_not_enforceable")
+    if strix_execution_intent:
+        reasons.append("strix_runner_rpc_execution_not_implemented")
+        reasons.append("strix_backend_hook_not_loaded_by_standalone_binary")
 
     return {
         "mode": "active_gated" if active_scans_enabled else "disabled",
@@ -183,6 +187,11 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_broker_dns_pinning": True,
         "strix_broker_redirects_followed": False,
         "strix_runner_network_isolated": False,
+        "strix_runner_network_isolation_ci_verified": True,
+        "strix_runner_rpc_protocol": RUNNER_RPC_PROTOCOL,
+        "strix_runner_rpc_contract_defined": True,
+        "strix_runner_rpc_execution_implemented": False,
+        "strix_backend_hook_loaded_by_standalone_binary": False,
         "dry_run": dry_run,
         "sandbox_profile": profile or "unconfigured",
         "allowed_engines": list(engines),
@@ -221,6 +230,11 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_broker_dns_pinning": True,
             "strix_broker_redirects_followed": False,
             "strix_runner_network_isolated": False,
+            "strix_runner_network_isolation_ci_verified": True,
+            "strix_runner_rpc_protocol": RUNNER_RPC_PROTOCOL,
+            "strix_runner_rpc_contract_defined": True,
+            "strix_runner_rpc_execution_implemented": False,
+            "strix_backend_hook_loaded_by_standalone_binary": False,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
             "allowed_engines": [],
