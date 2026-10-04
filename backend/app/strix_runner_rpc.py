@@ -321,6 +321,7 @@ def _valid_common(payload: dict[str, Any]) -> bool:
     return (
         payload.get("schema") == RUNNER_RPC_PROTOCOL
         and _valid_id(payload.get("request_id"))
+        and _valid_digest(payload.get("contract_hash"))
     )
 
 
@@ -334,6 +335,7 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             {
                 "schema",
                 "request_id",
+                "contract_hash",
                 "image",
                 "exposed_ports",
                 "manifest_digest",
@@ -359,6 +361,7 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             {
                 "schema",
                 "request_id",
+                "contract_hash",
                 "session_id",
                 "argv",
                 "timeout_seconds",
