@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import hmac
 import json
 import math
 import os
 import re
+import socket
 import threading
 import time
 from collections import OrderedDict
@@ -24,6 +26,7 @@ RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
 RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
+RUNNER_RPC_READ_DEADLINE_SECONDS = 10.0
 RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
 RUNNER_RPC_MIN_SECRET_BYTES = 32
 RUNNER_RPC_MAX_SECRET_BYTES = 4096
@@ -424,7 +427,37 @@ class _RunnerRpcHttpHandler(BaseHTTPRequestHandler):
 
     def setup(self) -> None:
         configure_runner_rpc_socket(self.request)
-        super().setup()
+        self._read_deadline_timer: threading.Timer | None = None
+        self._start_read_deadline()
+        try:
+            super().setup()
+        except BaseException:
+            self._cancel_read_deadline()
+            raise
+
+    def finish(self) -> None:
+        self._cancel_read_deadline()
+        super().finish()
+
+    def _start_read_deadline(self) -> None:
+        timer = threading.Timer(
+            RUNNER_RPC_READ_DEADLINE_SECONDS,
+            self._expire_read_deadline,
+        )
+        timer.daemon = True
+        self._read_deadline_timer = timer
+        timer.start()
+
+    def _cancel_read_deadline(self) -> None:
+        timer = getattr(self, "_read_deadline_timer", None)
+        if timer is None:
+            return
+        timer.cancel()
+        self._read_deadline_timer = None
+
+    def _expire_read_deadline(self) -> None:
+        with contextlib.suppress(OSError):
+            self.request.shutdown(socket.SHUT_RDWR)
 
     def do_GET(self) -> None:  # noqa: N802
         self._dispatch()
@@ -441,22 +474,31 @@ class _RunnerRpcHttpHandler(BaseHTTPRequestHandler):
         body = b""
         if self.command == "POST":
             if self.headers.get("Transfer-Encoding"):
+                self._cancel_read_deadline()
                 self._write(_error(400, "invalid_request"))
                 return
             length_raw = self.headers.get("Content-Length")
             try:
                 length = int(length_raw or "0")
             except ValueError:
+                self._cancel_read_deadline()
                 self._write(_error(400, "invalid_request"))
                 return
             if length < 0:
+                self._cancel_read_deadline()
                 self._write(_error(400, "invalid_request"))
                 return
             if length > RUNNER_RPC_MAX_BODY_BYTES:
+                self._cancel_read_deadline()
                 self._write(_error(413, "request_too_large"))
                 return
             body = self.rfile.read(length)
+            if len(body) != length:
+                self._cancel_read_deadline()
+                self._write(_error(400, "invalid_request"))
+                return
 
+        self._cancel_read_deadline()
         result = service.handle(
             method=self.command,
             path=self.path,
