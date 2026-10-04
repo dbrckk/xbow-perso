@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-04",
-  "task": "Build a pinned, attested and network-isolated Strix runner",
+  "task": "Verify a fail-closed custom Strix backend extension point",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -26,14 +26,19 @@
     "Added a dedicated Strix runner image pinned to official v1.6.2 Linux release assets with separate amd64/arm64 SHA-256 digests.",
     "Pinned the v1.6.2 source commit ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2 and require the CLI to report exactly strix 1.6.2.",
     "Added runtime re-attestation of the extracted Strix binary digest and fail-closed checks for Docker socket/DOCKER_HOST presence.",
-    "Added an inert non-root runner service with no ports, volumes or external network and active execution forced off."
+    "Added an inert non-root runner service with no ports, volumes or external network and active execution forced off.",
+    "Merged the live runner network proof and circular-import fix after CI, security and supply-chain passed.",
+    "Added xbow-remote-v1 registration through the Strix v1.6.2 runtime backend registry with bind mounts explicitly unsupported.",
+    "Kept the custom backend fail-closed: every backend invocation raises before any session or network operation.",
+    "Added CI verification against the official Strix v1.6.2 x86_64 Python wheel with its pinned SHA-256 and no dependency installation."
   ],
-  "current_branch": "codex/strix-runner-attestation",
-  "current_priority": "Wire a supported Strix execution backend to the pinned runner while forcing all target HTTP traffic through the signed broker boundary.",
+  "current_branch": "codex/strix-custom-backend-hook",
+  "current_priority": "Define the minimal remote-session RPC contract required by Strix v1.6.2 and implement it against the isolated runner without direct target-network access.",
   "blockers": [
-    "The pinned runner is intentionally inert and no active Strix execution backend is wired to it.",
+    "The custom Strix backend is registered and compatibility-tested but intentionally rejects all execution.",
+    "A remote session implementation still needs exec, exposed-port resolution and cleanup semantics compatible with Strix v1.6.2.",
     "The bounded broker path supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
-    "The upstream v1.6.2 Git tag object is unsigned; trust is therefore anchored to the pinned source commit plus GitHub release asset digests rather than a cryptographically signed tag.",
+    "The upstream v1.6.2 Git tag object is unsigned; trust is anchored to the pinned source commit and official release-asset digests.",
     "Contract v1 still uses symmetric HMAC verification rather than asymmetric verification."
   ],
   "safety_invariants": [
@@ -43,11 +48,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the pinned runner image/service.",
-    "Map the minimum Strix runtime/backend calls needed for broker-only HTTP operation.",
-    "Implement a custom backend or wrapper that cannot open direct target-network connections.",
-    "Add integration tests proving the runner cannot resolve/connect to public targets directly while it can reach the internal broker.",
-    "Expand broker methods only when a concrete Strix workflow requires them and method-specific safety controls exist.",
-    "Evaluate asymmetric contract signatures so verification services do not possess the signing secret."
+    "Validate and merge the fail-closed custom backend hook.",
+    "Specify a narrow authenticated remote-session RPC for exec, exposed-port resolution and cleanup.",
+    "Implement the RPC server inside the isolated runner with strict command/session admission and no direct public target route.",
+    "Implement an xbow backend client that satisfies the Strix v1.6.2 session interface through that RPC.",
+    "Expand broker methods only for concrete required Strix workflows with method-specific controls.",
+    "Keep strix_runtime_contract_enforceable false until end-to-end execution and network bypass tests pass."
   ]
 }

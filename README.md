@@ -496,5 +496,7 @@ docker compose --profile strix-runner build --pull strix-runner
 docker compose --profile strix-runner up -d strix-runner
 ```
 
+The next extension point is now verified without enabling execution. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
+
 
 **Active Strix dispatch remains fail-closed.** A separately pinned/attested inert runner now exists and its only configured network is the internal broker network, but no Strix execution backend is wired to it yet and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
