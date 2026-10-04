@@ -312,7 +312,17 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_broker_dns_pinning"] is True
     assert result["strix_broker_redirects_followed"] is False
     assert result["strix_runner_network_isolated"] is False
+    assert result["strix_runner_network_isolation_ci_verified"] is True
+    assert result["strix_runner_rpc_protocol"] == "strix-runner-rpc-v1"
+    assert result["strix_runner_rpc_contract_defined"] is True
+    assert result["strix_runner_rpc_execution_implemented"] is False
+    assert result["strix_backend_hook_loaded_by_standalone_binary"] is False
     assert "strix_runtime_contract_not_enforceable" in result["dispatch_block_reasons"]
+    assert "strix_runner_rpc_execution_not_implemented" in result["dispatch_block_reasons"]
+    assert (
+        "strix_backend_hook_not_loaded_by_standalone_binary"
+        in result["dispatch_block_reasons"]
+    )
 
 
 def test_browser_runtime_capability_fails_closed_without_runtime_marker(monkeypatch, tmp_path):
