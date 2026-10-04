@@ -11357,6 +11357,7 @@ RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
 RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
+RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
 ⋮----
 _MUTATION_PATHS = {
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
@@ -11421,6 +11422,8 @@ ports = payload.get("exposed_ports")
 argv = payload.get("argv")
 timeout = payload.get("timeout_seconds")
 ⋮----
+class BoundedThreadingHTTPServer(ThreadingHTTPServer)
+⋮----
 class _RunnerRpcHttpHandler(BaseHTTPRequestHandler)
 ⋮----
 server_version = "xbow-strix-runner-rpc/1"
@@ -11460,7 +11463,7 @@ def serve() -> None
 attestation = attest_strix_runner()
 ⋮----
 service = RunnerRpcService(
-server = ThreadingHTTPServer(
+server = BoundedThreadingHTTPServer(
 ⋮----
 def _main() -> int
 ⋮----
@@ -21197,6 +21200,16 @@ def __init__(self)
 def settimeout(self, value)
 ⋮----
 fake = FakeSocket()
+⋮----
+def test_runner_rpc_server_rejects_connections_above_cap()
+⋮----
+server = object.__new__(BoundedThreadingHTTPServer)
+⋮----
+rejected = []
+⋮----
+def test_runner_rpc_server_releases_slot_after_request_thread(monkeypatch)
+⋮----
+def fail_request_thread(_self, _request, _client_address)
 ```
 
 ## File: tests/test_submission_api.py

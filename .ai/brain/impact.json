@@ -1,156 +1,415 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "1cf8291de2af9c225dd3b3108176a65c6c766687",
-  "head": "96f7d9921ea62de73cb0d0cccb9374b5856a7533",
+  "base": "96f7d9921ea62de73cb0d0cccb9374b5856a7533",
+  "head": "aefcf4f0de4b1a9b60f76d574557e47b70108e50",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/tests/test_runtime_capabilities.py",
+      "path": "backend/app/strix_runner_rpc.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_strix_runner_rpc.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/tests/test_runtime_capabilities.py"
+    "backend/app/strix_runner_rpc.py",
+    "backend/tests/test_strix_runner_rpc.py"
   ],
   "impacted_files": [
-    "backend/tests/test_runtime_capabilities.py"
+    "backend/app/runtime_capabilities.py",
+    "backend/app/strix_runner_rpc.py",
+    "backend/tests/test_strix_runner_rpc.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_clear",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 25
+      "name": "CapabilityConfigError",
+      "kind": "class",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 13
     },
     {
-      "name": "test_pentagi_capability_defaults_fail_closed",
+      "name": "_strict_bool",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 30
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 17
     },
     {
-      "name": "test_all_operator_gates_still_do_not_claim_pentagi_execution",
+      "name": "pentagi_runtime_capability",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 46
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 29
     },
     {
-      "name": "test_status_tracking_requires_integration_and_status_worker",
+      "name": "safe_pentagi_runtime_capability",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 68
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 82
     },
     {
-      "name": "test_invalid_boolean_configuration_fails_closed",
+      "name": "scanner_runtime_capability",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 81
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 107
     },
     {
-      "name": "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets",
+      "name": "safe_scanner_runtime_capability",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 96
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 215
     },
     {
-      "name": "test_capabilities_api_reports_configuration_error_without_raising",
+      "name": "browser_runtime_capability",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 116
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 262
     },
     {
-      "name": "test_scanner_runtime_capability_defaults_fail_closed",
+      "name": "safe_browser_runtime_capability",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 129
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 286
     },
     {
-      "name": "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile",
+      "name": "recon_runtime_capability",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 148
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 301
     },
     {
-      "name": "test_capabilities_api_exposes_scanner_worker_admission",
+      "name": "safe_recon_runtime_capability",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 167
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 339
     },
     {
-      "name": "test_scanner_runtime_capability_rejects_unsupported_engine",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 183
+      "name": "RunnerRpcResponse",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 42
     },
     {
-      "name": "test_recon_runtime_capability_defaults_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 197
+      "name": "RunnerRpcService",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 48
     },
     {
-      "name": "test_external_recon_preflight_reports_missing_tools",
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 210
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 49
     },
     {
-      "name": "test_external_recon_preflight_ready_when_every_tool_exists",
+      "name": "handle",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 231
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 62
     },
     {
-      "name": "test_recon_capability_invalid_configuration_fails_closed",
+      "name": "_authenticate",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 245
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 133
     },
     {
-      "name": "test_capabilities_api_exposes_recon_preflight",
+      "name": "_prune_nonces",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 186
+    },
+    {
+      "name": "sign_runner_rpc_request",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 195
+    },
+    {
+      "name": "configure_runner_rpc_socket",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 224
+    },
+    {
+      "name": "_error",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 228
+    },
+    {
+      "name": "_valid_id",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 239
+    },
+    {
+      "name": "_valid_digest",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 243
+    },
+    {
+      "name": "_valid_port",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 247
+    },
+    {
+      "name": "_exact_keys",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
       "line": 255
     },
     {
-      "name": "test_strix_runtime_capability_fails_closed_without_binary_or_docker",
+      "name": "_valid_common",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 275
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 259
     },
     {
-      "name": "test_strix_runtime_capability_stays_blocked_when_cli_exists",
+      "name": "_validate_operation_payload",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 292
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 266
     },
     {
-      "name": "test_browser_runtime_capability_fails_closed_without_runtime_marker",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 343
-    },
-    {
-      "name": "test_browser_runtime_capability_ready_with_runtime_marker",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 356
-    },
-    {
-      "name": "test_browser_runtime_capability_disabled_even_when_runtime_exists",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
+      "name": "BoundedThreadingHTTPServer",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
       "line": 369
     },
     {
-      "name": "test_capabilities_api_exposes_browser_runtime_detail",
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 370
+    },
+    {
+      "name": "process_request",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 383
+    },
+    {
+      "name": "process_request_thread",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 397
+    },
+    {
+      "name": "_RunnerRpcHttpHandler",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 408
+    },
+    {
+      "name": "setup",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 411
+    },
+    {
+      "name": "do_GET",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 415
+    },
+    {
+      "name": "do_POST",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 418
+    },
+    {
+      "name": "_dispatch",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 421
+    },
+    {
+      "name": "_write",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 454
+    },
+    {
+      "name": "log_message",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 469
+    },
+    {
+      "name": "_rpc_secret_from_env",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 473
+    },
+    {
+      "name": "serve",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 482
+    },
+    {
+      "name": "_main",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 500
+    },
+    {
+      "name": "_headers",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 19
+    },
+    {
+      "name": "_service",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 36
+    },
+    {
+      "name": "_payload",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 44
+    },
+    {
+      "name": "_request",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 77
+    },
+    {
+      "name": "test_health_is_non_secret_and_execution_stays_disabled",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 91
+    },
+    {
+      "name": "test_ready_requires_rpc_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 108
+    },
+    {
+      "name": "test_authenticated_session_operations_still_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 129
+    },
+    {
+      "name": "test_even_active_flag_cannot_enable_unimplemented_rpc",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 136
+    },
+    {
+      "name": "test_missing_auth_is_rejected_before_payload_processing",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 148
+    },
+    {
+      "name": "test_signature_covers_body",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 161
+    },
+    {
+      "name": "test_nonce_replay_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 180
+    },
+    {
+      "name": "test_replay_cache_saturation_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 209
+    },
+    {
+      "name": "test_stale_timestamp_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 260
+    },
+    {
+      "name": "test_unknown_payload_field_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 292
+    },
+    {
+      "name": "test_operation_schema_bounds_are_enforced",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 319
+    },
+    {
+      "name": "test_runner_compose_exposes_rpc_only_internally",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 329
+    },
+    {
+      "name": "test_ci_waits_for_runner_rpc_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 345
+    },
+    {
+      "name": "test_runner_image_contains_only_rpc_and_attestation_modules",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 353
+    },
+    {
+      "name": "test_runner_rpc_socket_timeout_is_bounded",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 361
+    },
+    {
+      "name": "FakeSocket",
+      "kind": "class",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 367
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 368
+    },
+    {
+      "name": "settimeout",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 371
+    },
+    {
+      "name": "test_runner_rpc_server_rejects_connections_above_cap",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
       "line": 382
+    },
+    {
+      "name": "test_runner_rpc_server_releases_slot_after_request_thread",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 404
+    },
+    {
+      "name": "fail_request_thread",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 413
     }
   ],
   "selected_tests": [
-    "backend/tests/test_runtime_capabilities.py"
+    "backend/tests/test_strix_runner_rpc.py"
   ]
 }

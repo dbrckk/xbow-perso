@@ -1,10 +1,11 @@
 # Change impact
 
-Base: 12db634756aff9a978070ab220d2692d103a3db9
-Head: 96f7d9921ea62de73cb0d0cccb9374b5856a7533
+Base: 24e9c65eb4eabe9e65b2ca0b1948d757cb6ae684
+Head: aefcf4f0de4b1a9b60f76d574557e47b70108e50
 
 ## Changed files
-- M backend/tests/test_runtime_capabilities.py
+- M backend/app/strix_runner_rpc.py
+- M backend/tests/test_strix_runner_rpc.py
 
 ## Affected areas
 - backend
