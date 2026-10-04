@@ -69,6 +69,18 @@ jobs:
             python -m app.strix_backend_hook --self-test
           PYTHONPATH="$PWD/backend:$tmp/site" \
             python -m app.strix_python_compat_probe --self-test
+          source_base="https://raw.githubusercontent.com/usestrix/strix/ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+          pyproject="$tmp/pyproject.toml"
+          lockfile="$tmp/uv.lock"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            "$source_base/pyproject.toml" -o "$pyproject"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            "$source_base/uv.lock" -o "$lockfile"
+          PYTHONPATH="$PWD/backend" \
+            python -m app.strix_python_lock_probe \
+              --self-test \
+              --pyproject "$pyproject" \
+              --lock "$lockfile"
       - run: |
           PYTHONPATH=backend \
           XBOW_REDIS_URL=redis://localhost:6379/15 \
