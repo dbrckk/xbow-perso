@@ -1,20 +1,18 @@
 # Change impact
 
-Base: 667cd7d753d67ca95980520f5b84c85fa66014be
-Head: 3fdbb71dac2608df93f4847365350a369f8ad0d3
+Base: 599a4b791e942baa78fd9154edc48e668b58828f
+Head: 14613bcce0e61e61455be301201276c61ff5e306
 
 ## Changed files
+- M .github/workflows/ci.yml
 - M README.md
-- M backend/app/strix_broker.py
-- M backend/app/strix_broker_client.py
-- M backend/app/strix_egress.py
-- M backend/app/strix_egress_transport.py
-- M backend/tests/test_strix_broker.py
-- M backend/tests/test_strix_broker_client.py
-- M backend/tests/test_strix_egress.py
-- M backend/tests/test_strix_egress_transport.py
+- A backend/Dockerfile.strix-runner
+- A backend/app/strix_runner_attestation.py
+- A backend/tests/test_strix_runner_attestation.py
+- M docker-compose.yml
 
 ## Affected areas
+- .github
 - (root)
 - backend
 

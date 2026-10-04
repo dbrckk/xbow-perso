@@ -210,6 +210,7 @@ backend/
     strix_execution_contract.py
     strix_parser.py
     strix_run_status.py
+    strix_runner_attestation.py
     submission_api.py
     submission_state.py
     surface_confidence.py
@@ -439,6 +440,7 @@ backend/
     test_strix_egress.py
     test_strix_execution_contract.py
     test_strix_run_status.py
+    test_strix_runner_attestation.py
     test_submission_api.py
     test_submission_state.py
     test_surface_confidence.py
@@ -11856,6 +11858,61 @@ payload = json.loads(run_json.read_text(encoding="utf-8"))
 status = str(payload.get("status") or "").strip().lower()
 ````
 
+## File: backend/app/strix_runner_attestation.py
+````python
+STRIX_RELEASE_VERSION = "1.6.2"
+STRIX_RELEASE_COMMIT = "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+STRIX_ATTESTATION_SCHEMA = "strix-runner-attestation-v1"
+⋮----
+_RELEASES = {
+⋮----
+class StrixRunnerAttestationError(RuntimeError)
+⋮----
+def _sha256_file(path: Path) -> str
+⋮----
+digest = hashlib.sha256()
+⋮----
+def _read_manifest(path: Path) -> dict
+⋮----
+payload = path.read_bytes()
+⋮----
+data = json.loads(payload.decode("utf-8"))
+⋮----
+def _read_cli_version(binary_path: Path) -> str
+⋮----
+result = subprocess.run(
+⋮----
+def _docker_socket_present() -> bool
+⋮----
+def _validate_manifest(data: dict) -> dict
+⋮----
+architecture = str(data.get("architecture") or "")
+release = _RELEASES.get(architecture)
+⋮----
+binary_sha256 = str(data.get("binary_sha256") or "")
+⋮----
+binary = Path(binary_path)
+manifest = Path(manifest_path)
+data = _read_manifest(manifest)
+⋮----
+actual_binary_sha256 = _sha256_file(binary)
+⋮----
+cli_version = _read_cli_version(binary)
+⋮----
+docker_socket_present = _docker_socket_present()
+⋮----
+active_raw = os.getenv(
+⋮----
+def _main() -> int
+⋮----
+parser = argparse.ArgumentParser()
+mode = parser.add_mutually_exclusive_group(required=True)
+⋮----
+args = parser.parse_args()
+⋮----
+attestation = attest_strix_runner()
+````
+
 ## File: backend/app/submission_api.py
 ````python
 router = APIRouter()
@@ -21387,6 +21444,41 @@ def test_strix_run_status_fails_closed_without_run_json(tmp_path)
 def test_strix_run_status_rejects_oversized_status_file(tmp_path, monkeypatch)
 ````
 
+## File: backend/tests/test_strix_runner_attestation.py
+````python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def _write_fixture(tmp_path, *, version="strix 1.6.2")
+⋮----
+binary = tmp_path / "strix"
+⋮----
+digest = hashlib.sha256(binary.read_bytes()).hexdigest()
+manifest = tmp_path / "manifest.json"
+⋮----
+def test_runner_attestation_accepts_exact_pinned_release(tmp_path, monkeypatch)
+⋮----
+result = attest_strix_runner(binary_path=binary, manifest_path=manifest)
+⋮----
+def test_runner_attestation_rejects_binary_tampering(tmp_path, monkeypatch)
+⋮----
+def test_runner_attestation_rejects_wrong_cli_version(tmp_path, monkeypatch)
+⋮----
+def test_runner_attestation_rejects_docker_socket(tmp_path, monkeypatch)
+⋮----
+def test_runner_dockerfile_pins_official_release_assets()
+⋮----
+dockerfile = (ROOT / "backend" / "Dockerfile.strix-runner").read_text()
+⋮----
+def test_runner_compose_service_is_internal_and_inert()
+⋮----
+compose = (ROOT / "docker-compose.yml").read_text()
+block = compose.split("  strix-runner:", 1)[1].split(
+⋮----
+def test_ci_builds_strix_runner_profile()
+⋮----
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+````
+
 ## File: backend/tests/test_submission_api.py
 ````python
 def _setup(tmp_path, monkeypatch, *, report_ready=True)
@@ -24971,6 +25063,42 @@ services:
     networks: [control]
 
 
+  strix-runner:
+    profiles: ["strix-runner"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.strix-runner
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    environment:
+      XBOW_STRIX_ACTIVE_EXECUTION: "false"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 0.50
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-m",
+          "app.strix_runner_attestation",
+          "--check",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks: [strix-broker]
+
+
   scanner-worker:
     profiles: ["scanner"]
     build:
@@ -25126,6 +25254,7 @@ services:
       retries: 3
       start_period: 5s
     networks: [strix-egress-control, strix-external]
+
 
 
   pentagi-worker:
@@ -25729,7 +25858,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- isolated Strix runner forced through the broker, plus pinned/attested Strix runtime
+- broker-only Strix execution backend using the pinned/attested runner
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -25790,5 +25919,15 @@ docker compose --profile strix-broker up -d --build
 
 For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` must match the HMAC secret used to sign the contract. The symmetric-key arrangement is still intermediate and should eventually be replaced by asymmetric verification.
 
-**Active Strix dispatch remains fail-closed.** The controlled GET/HEAD egress path exists, but the current Strix execution runtime is not yet a separately pinned/attested runner whose only network path is the broker, and full Strix behavior cannot be represented by this read-only subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
+A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux release. The image verifies the official release-asset SHA-256 before extraction (amd64 and arm64 have separate pinned digests), verifies the CLI reports exactly `strix 1.6.2`, records the pinned source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and re-attests the extracted binary SHA-256 at runtime. The container has no published ports, volumes, Docker socket or external network and runs as a non-root user with a read-only root filesystem and all Linux capabilities dropped.
+
+The runner is intentionally inert: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory and the process only performs attestation before idling. Build or start it independently:
+
+```bash
+docker compose --profile strix-runner build --pull strix-runner
+docker compose --profile strix-runner up -d strix-runner
+```
+
+
+**Active Strix dispatch remains fail-closed.** A separately pinned/attested inert runner now exists and its only configured network is the internal broker network, but no Strix execution backend is wired to it yet and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
 ````

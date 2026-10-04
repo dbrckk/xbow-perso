@@ -5,529 +5,37 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_broker_verification_secret": {
+    "StrixRunnerAttestationError": {
       "source": {
-        "file": "backend/app/strix_broker.py",
-        "start": 35,
-        "end": 47
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_read_only_egress_enabled": {
-      "source": {
-        "file": "backend/app/strix_broker.py",
-        "start": 50,
-        "end": 62
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_authorize": {
-      "source": {
-        "file": "backend/app/strix_broker.py",
-        "start": 65,
-        "end": 83
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerAdmissionRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 55,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixExecutionContractError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_broker_verification_secret",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "authorize_strix_contract_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 284,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "to_contract",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "healthz": {
-      "source": {
-        "file": "backend/app/strix_broker.py",
-        "start": 87,
-        "end": 104
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_read_only_egress_enabled",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "readyz": {
-      "source": {
-        "file": "backend/app/strix_broker.py",
-        "start": 108,
-        "end": 129
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_broker_verification_secret",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_read_only_egress_enabled",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "admit": {
-      "source": {
-        "file": "backend/app/strix_broker.py",
-        "start": 133,
-        "end": 141
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerAdmissionRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 55,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerAdmissionResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 63,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_authorize",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "request_http": {
-      "source": {
-        "file": "backend/app/strix_broker.py",
-        "start": 145,
-        "end": 159
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_authorize",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_read_only_egress_enabled",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "forward_read_only_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "StrixBrokerClientError": {
-      "source": {
-        "file": "backend/app/strix_broker_client.py",
-        "start": 16,
-        "end": 19
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 17,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "__init__": {
-      "source": {
-        "file": "backend/app/strix_broker_client.py",
-        "start": 17,
-        "end": 137
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "EgressEndpoint",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 28,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_NoRedirect",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 22,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_egress_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_timeout_seconds",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "redirect_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "_NoRedirect": {
-      "source": {
-        "file": "backend/app/strix_broker_client.py",
-        "start": 22,
-        "end": 24
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "redirect_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "redirect_request": {
-      "source": {
-        "file": "backend/app/strix_broker_client.py",
-        "start": 23,
-        "end": 24
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "EgressEndpoint": {
-      "source": {
-        "file": "backend/app/strix_broker_client.py",
-        "start": 28,
-        "end": 31
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_egress_endpoint": {
-      "source": {
-        "file": "backend/app/strix_broker_client.py",
+        "file": "backend/app/strix_runner_attestation.py",
         "start": 34,
-        "end": 65
+        "end": 35
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "EgressEndpoint",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 28,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "_timeout_seconds": {
+    "_sha256_file": {
       "source": {
-        "file": "backend/app/strix_broker_client.py",
-        "start": 68,
-        "end": 82
+        "file": "backend/app/strix_runner_attestation.py",
+        "start": 38,
+        "end": 43
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_read_manifest": {
+      "source": {
+        "file": "backend/app/strix_runner_attestation.py",
+        "start": 46,
+        "end": 67
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixBrokerClientError",
+          "symbol": "StrixRunnerAttestationError",
           "definitions": [
             {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 34,
               "kind": "class",
               "language": "python"
             }
@@ -537,19 +45,19 @@
       ],
       "dependency_count": 1
     },
-    "_opener": {
+    "_read_cli_version": {
       "source": {
-        "file": "backend/app/strix_broker_client.py",
-        "start": 85,
+        "file": "backend/app/strix_runner_attestation.py",
+        "start": 70,
         "end": 89
       },
       "symbol_dependencies": [
         {
-          "symbol": "_NoRedirect",
+          "symbol": "StrixRunnerAttestationError",
           "definitions": [
             {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 22,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 34,
               "kind": "class",
               "language": "python"
             }
@@ -559,2479 +67,50 @@
       ],
       "dependency_count": 1
     },
-    "check_egress_ready": {
+    "_docker_socket_present": {
       "source": {
-        "file": "backend/app/strix_broker_client.py",
+        "file": "backend/app/strix_runner_attestation.py",
         "start": 92,
-        "end": 147
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_egress_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_timeout_seconds",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "forward_read_only_request": {
-      "source": {
-        "file": "backend/app/strix_broker_client.py",
-        "start": 150,
-        "end": 209
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_egress_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_timeout_seconds",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "_verification_secret": {
-      "source": {
-        "file": "backend/app/strix_egress.py",
-        "start": 26,
-        "end": 38
+        "end": 93
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_enabled": {
+    "_validate_manifest": {
       "source": {
-        "file": "backend/app/strix_egress.py",
-        "start": 41,
-        "end": 50
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "fetch": {
-      "source": {
-        "file": "backend/app/strix_egress.py",
-        "start": 89,
-        "end": 127
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressConcurrencyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 46,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressNetworkError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 36,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressRateLimitError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_enabled",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_verification_secret",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "perform_bounded_http_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 325,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 9
-    },
-    "StrixEgressError": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 28,
-        "end": 29
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "StrixEgressPolicyError": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 32,
-        "end": 33
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 28,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "StrixEgressNetworkError": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 36,
-        "end": 37
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 28,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "StrixEgressRateLimitError": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 40,
-        "end": 43
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "StrixEgressConcurrencyError": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 46,
-        "end": 47
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "ResolvedEndpoint": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 82,
-        "end": 86
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_max_response_bytes": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 104,
-        "end": 116
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 28,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_normalize_headers": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 119,
-        "end": 143
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_public_ip": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 146,
-        "end": 155
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "resolve_public_endpoint": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 158,
-        "end": 217
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ResolvedEndpoint",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 82,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixEgressNetworkError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 36,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_public_ip",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 146,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_pinned_create_connection": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 220,
-        "end": 243
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ResolvedEndpoint",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 82,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "create_connection",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 224,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "create_connection": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 224,
-        "end": 344
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHeader",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 84,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressConcurrencyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 46,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixEgressPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixEgressRateLimitError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixExecutionContractError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_acquire_request_slot",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 246,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_release_request_slot",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 281,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_response_headers",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 292,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "authorize_strix_contract_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 284,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "perform_bounded_http_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 325,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reset_rate_limits_for_tests",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 286,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "to_contract",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 14
-    },
-    "_acquire_request_slot": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 246,
-        "end": 278
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressConcurrencyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 46,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixEgressRateLimitError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_release_request_slot": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 281,
-        "end": 283
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "reset_rate_limits_for_tests": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 286,
-        "end": 289
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_response_headers": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 292,
-        "end": 322
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHeader",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 84,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "perform_bounded_http_request": {
-      "source": {
-        "file": "backend/app/strix_egress_transport.py",
-        "start": 325,
-        "end": 414
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressNetworkError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 36,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixEgressPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixExecutionContractError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_acquire_request_slot",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 246,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_max_response_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 104,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_normalize_headers",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 119,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_pinned_create_connection",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 220,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_release_request_slot",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 281,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_response_headers",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 292,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_timeout_seconds",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 89,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "authorize_strix_contract_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 284,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "resolve_public_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 158,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "to_contract",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 15
-    },
-    "_campaign": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 20,
-        "end": 140
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerAdmissionRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 55,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "BrokerContractDocument",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "admit",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 133,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_strix_execution_contract",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 135,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "healthz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 87,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "readyz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 108,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_broker_admits_signed_in_scope_request_without_egress",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 64,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_broker_contract_model_forbids_unsafe_runtime_invariants",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 137,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_broker_health_is_explicitly_admission_only",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_broker_readiness_requires_verification_key",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_broker_rejects_out_of_scope_and_denied_hosts",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 101,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_broker_rejects_rate_above_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 120,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_broker_rejects_wrong_verification_key",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 19
-    },
-    "_signed_contract": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 36,
-        "end": 39
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerContractDocument",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "build_strix_execution_contract",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 135,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_broker_health_is_explicitly_admission_only": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 42,
-        "end": 52
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "healthz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 87,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_broker_readiness_requires_verification_key": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 55,
-        "end": 61
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "readyz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 108,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_broker_admits_signed_in_scope_request_without_egress": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 64,
-        "end": 81
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerAdmissionRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 55,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "admit",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 133,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_broker_rejects_wrong_verification_key": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 84,
-        "end": 98
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerAdmissionRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 55,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "admit",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 133,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_broker_rejects_out_of_scope_and_denied_hosts": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 101,
-        "end": 117
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerAdmissionRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 55,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "admit",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 133,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_broker_rejects_rate_above_signed_contract": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 120,
-        "end": 134
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerAdmissionRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 55,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "admit",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 133,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_broker_contract_model_forbids_unsafe_runtime_invariants": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 137,
-        "end": 143
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerContractDocument",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_broker_health_reports_read_only_proxy_when_enabled": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 146,
-        "end": 158
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "healthz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 87,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_broker_request_path_is_disabled_by_default": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 161,
-        "end": 184
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "forward_read_only_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request_http",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 145,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_broker_revalidates_contract_before_forwarding": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 187,
-        "end": 210
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "forward_read_only_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request_http",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 145,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_broker_forwards_only_after_local_admission": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 213,
-        "end": 253
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_signed_contract",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "fake_forward",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 222,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "forward_read_only_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request_http",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 145,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "fake_forward": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 222,
-        "end": 342
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "forward_read_only_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "readyz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 108,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request_http",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 145,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_broker_readiness_checks_egress_when_proxy_enabled",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 279,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_broker_readiness_requires_egress_when_proxy_enabled",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 256,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 10
-    },
-    "test_broker_readiness_requires_egress_when_proxy_enabled": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 256,
-        "end": 276
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "readyz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 108,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_broker_readiness_checks_egress_when_proxy_enabled": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 279,
-        "end": 296
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "readyz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 108,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "ready": {
-      "source": {
-        "file": "backend/tests/test_strix_broker.py",
-        "start": 287,
-        "end": 407
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "readyz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker.py",
-              "line": 108,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_Response": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 16,
-        "end": 32
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "__enter__",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "__exit__",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 17,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "read",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "__enter__": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 23,
-        "end": 24
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "__exit__": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 26,
-        "end": 27
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "read": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 29,
-        "end": 32
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_Opener": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 35,
-        "end": 44
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 17,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "open",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "open": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 41,
-        "end": 44
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_request": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 47,
-        "end": 66
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerContractDocument",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "BrokerHttpRequest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 74,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Campaign",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 160,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_strix_execution_contract",
-          "definitions": [
-            {
-              "file": "backend/app/strix_execution_contract.py",
-              "line": 135,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_client_posts_only_to_fixed_internal_egress_endpoint": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 69,
-        "end": 97
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_Opener",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_Response",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "forward_read_only_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_client_rejects_non_internal_endpoint_configuration": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 112,
-        "end": 119
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "forward_read_only_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_client_rejects_oversized_egress_service_response": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 122,
-        "end": 128
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_Opener",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_Response",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "forward_read_only_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_client_rejects_invalid_response_shape": {
-      "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 131,
+        "file": "backend/app/strix_runner_attestation.py",
+        "start": 96,
         "end": 137
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixBrokerClientError",
+          "symbol": "StrixRunnerAttestationError",
           "definitions": [
             {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 34,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "attest_strix_runner": {
+      "source": {
+        "file": "backend/app/strix_runner_attestation.py",
+        "start": 140,
+        "end": 200
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "_Opener",
+          "symbol": "StrixRunnerAttestationError",
           "definitions": [
             {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 35,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 34,
               "kind": "class",
               "language": "python"
             }
@@ -3039,35 +118,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_Response",
+          "symbol": "_docker_socket_present",
           "definitions": [
             {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 47,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 92,
               "kind": "function",
               "language": "python"
             }
@@ -3075,243 +130,100 @@
           "relation": "same_file"
         },
         {
-          "symbol": "forward_read_only_request",
+          "symbol": "_read_cli_version",
           "definitions": [
             {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 150,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 70,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_read_manifest",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_sha256_file",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_validate_manifest",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 6
     },
-    "test_client_checks_fixed_internal_readiness_endpoint": {
+    "_main": {
       "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 140,
-        "end": 160
+        "file": "backend/app/strix_runner_attestation.py",
+        "start": 203,
+        "end": 223
       },
       "symbol_dependencies": [
         {
-          "symbol": "_Opener",
+          "symbol": "attest_strix_runner",
           "definitions": [
             {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 35,
-              "kind": "class",
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 140,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "_Response",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ready",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 318,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 1
     },
-    "test_client_readiness_rejects_oversized_response": {
+    "_write_fixture": {
       "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 163,
-        "end": 170
+        "file": "backend/tests/test_strix_runner_attestation.py",
+        "start": 18,
+        "end": 42
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_Opener",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_Response",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "test_client_readiness_rejects_unexpected_egress_posture": {
+    "test_runner_attestation_accepts_exact_pinned_release": {
       "source": {
-        "file": "backend/tests/test_strix_broker_client.py",
-        "start": 201,
-        "end": 211
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixBrokerClientError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_Opener",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_Response",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_broker_client.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_opener",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "check_egress_ready",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_client.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_egress_service_is_disabled_by_default": {
-      "source": {
-        "file": "backend/tests/test_strix_egress.py",
+        "file": "backend/tests/test_strix_runner_attestation.py",
         "start": 45,
-        "end": 59
+        "end": 65
       },
       "symbol_dependencies": [
         {
-          "symbol": "healthz",
+          "symbol": "_docker_socket_present",
           "definitions": [
             {
-              "file": "backend/app/strix_egress.py",
-              "line": 54,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 92,
               "kind": "function",
               "language": "python"
             }
@@ -3319,11 +231,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ready",
+          "symbol": "_read_cli_version",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 318,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 70,
               "kind": "function",
               "language": "python"
             }
@@ -3331,67 +243,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "readyz",
+          "symbol": "_write_fixture",
           "definitions": [
             {
-              "file": "backend/app/strix_egress.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_egress_service_requires_verification_key": {
-      "source": {
-        "file": "backend/tests/test_strix_egress.py",
-        "start": 62,
-        "end": 69
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "readyz",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_egress_fetch_calls_transport_only_when_enabled": {
-      "source": {
-        "file": "backend/tests/test_strix_egress.py",
-        "start": 72,
-        "end": 102
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 35,
+              "file": "backend/tests/test_strix_runner_attestation.py",
+              "line": 18,
               "kind": "function",
               "language": "python"
             }
@@ -3399,281 +255,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "fake_perform",
+          "symbol": "attest_strix_runner",
           "definitions": [
             {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 78,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "fetch",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress.py",
-              "line": 89,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "perform_bounded_http_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 325,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "fake_perform": {
-      "source": {
-        "file": "backend/tests/test_strix_egress.py",
-        "start": 78,
-        "end": 198
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "BrokerHttpResponse",
-          "definitions": [
-            {
-              "file": "backend/app/strix_broker_models.py",
-              "line": 91,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressConcurrencyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 46,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressNetworkError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 36,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StrixEgressRateLimitError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "fetch",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress.py",
-              "line": 89,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "perform_bounded_http_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 325,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_egress_fetch_maps_failures_without_internal_details",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 112,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_egress_fetch_returns_retry_after_for_concurrency_limit",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 152,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_egress_fetch_returns_retry_after_for_rate_limit",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 134,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 11
-    },
-    "test_egress_fetch_maps_failures_without_internal_details": {
-      "source": {
-        "file": "backend/tests/test_strix_egress.py",
-        "start": 112,
-        "end": 131
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "fetch",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress.py",
-              "line": 89,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "perform_bounded_http_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 325,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_egress_fetch_returns_retry_after_for_rate_limit": {
-      "source": {
-        "file": "backend/tests/test_strix_egress.py",
-        "start": 134,
-        "end": 149
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixEgressRateLimitError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 40,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "fetch",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress.py",
-              "line": 89,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "perform_bounded_http_request",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 325,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 140,
               "kind": "function",
               "language": "python"
             }
@@ -3683,19 +269,19 @@
       ],
       "dependency_count": 4
     },
-    "test_egress_fetch_returns_retry_after_for_concurrency_limit": {
+    "test_runner_attestation_rejects_binary_tampering": {
       "source": {
-        "file": "backend/tests/test_strix_egress.py",
-        "start": 152,
-        "end": 168
+        "file": "backend/tests/test_strix_runner_attestation.py",
+        "start": 68,
+        "end": 81
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixEgressConcurrencyError",
+          "symbol": "StrixRunnerAttestationError",
           "definitions": [
             {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 46,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 34,
               "kind": "class",
               "language": "python"
             }
@@ -3703,23 +289,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_request",
+          "symbol": "_docker_socket_present",
           "definitions": [
             {
-              "file": "backend/tests/test_strix_egress.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "fetch",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress.py",
-              "line": 89,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 92,
               "kind": "function",
               "language": "python"
             }
@@ -3727,54 +301,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "perform_bounded_http_request",
+          "symbol": "_read_cli_version",
           "definitions": [
             {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 325,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "getheaders": {
-      "source": {
-        "file": "backend/tests/test_strix_egress_transport.py",
-        "start": 43,
-        "end": 44
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_Connection": {
-      "source": {
-        "file": "backend/tests/test_strix_egress_transport.py",
-        "start": 47,
-        "end": 67
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_Response",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress_transport.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "backend/app/strix_egress_transport.py",
-              "line": 41,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 70,
               "kind": "function",
               "language": "python"
             }
@@ -3782,17 +313,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "close",
+          "symbol": "_write_fixture",
           "definitions": [
             {
-              "file": "backend/tests/test_strix_egress_transport.py",
-              "line": 66,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_strix_egress_transport.py",
-              "line": 86,
+              "file": "backend/tests/test_strix_runner_attestation.py",
+              "line": 18,
               "kind": "function",
               "language": "python"
             }
@@ -3800,61 +325,183 @@
           "relation": "same_file"
         },
         {
-          "symbol": "getresponse",
+          "symbol": "attest_strix_runner",
           "definitions": [
             {
-              "file": "backend/tests/test_strix_egress_transport.py",
-              "line": 63,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 140,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "backend/tests/test_strix_egress_transport.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/tests/test_strix_egress_transport.py",
-              "line": 392,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         }
       ],
       "dependency_count": 5
     },
-    "request": {
+    "test_runner_attestation_rejects_wrong_cli_version": {
       "source": {
-        "file": "backend/tests/test_strix_egress_transport.py",
-        "start": 60,
-        "end": 61
+        "file": "backend/tests/test_strix_runner_attestation.py",
+        "start": 84,
+        "end": 96
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixRunnerAttestationError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 34,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_docker_socket_present",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_read_cli_version",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_write_fixture",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_runner_attestation.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attest_strix_runner",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_runner_attestation_rejects_docker_socket": {
+      "source": {
+        "file": "backend/tests/test_strix_runner_attestation.py",
+        "start": 99,
+        "end": 111
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixRunnerAttestationError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 34,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_docker_socket_present",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_read_cli_version",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_write_fixture",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_runner_attestation.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attest_strix_runner",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_runner_dockerfile_pins_official_release_assets": {
+      "source": {
+        "file": "backend/tests/test_strix_runner_attestation.py",
+        "start": 114,
+        "end": 130
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "getresponse": {
+    "test_runner_compose_service_is_internal_and_inert": {
       "source": {
-        "file": "backend/tests/test_strix_egress_transport.py",
-        "start": 63,
-        "end": 64
+        "file": "backend/tests/test_strix_runner_attestation.py",
+        "start": 133,
+        "end": 150
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "close": {
+    "test_ci_builds_strix_runner_profile": {
       "source": {
-        "file": "backend/tests/test_strix_egress_transport.py",
-        "start": 66,
-        "end": 67
+        "file": "backend/tests/test_strix_runner_attestation.py",
+        "start": 153,
+        "end": 159
       },
       "symbol_dependencies": [],
       "dependency_count": 0

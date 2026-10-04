@@ -194,6 +194,7 @@ app/
   strix_execution_contract.py
   strix_parser.py
   strix_run_status.py
+  strix_runner_attestation.py
   submission_api.py
   submission_state.py
   surface_confidence.py
@@ -423,6 +424,7 @@ tests/
   test_strix_egress.py
   test_strix_execution_contract.py
   test_strix_run_status.py
+  test_strix_runner_attestation.py
   test_submission_api.py
   test_submission_state.py
   test_surface_confidence.py
@@ -11248,6 +11250,61 @@ payload = json.loads(run_json.read_text(encoding="utf-8"))
 status = str(payload.get("status") or "").strip().lower()
 ```
 
+## File: app/strix_runner_attestation.py
+```python
+STRIX_RELEASE_VERSION = "1.6.2"
+STRIX_RELEASE_COMMIT = "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+STRIX_ATTESTATION_SCHEMA = "strix-runner-attestation-v1"
+⋮----
+_RELEASES = {
+⋮----
+class StrixRunnerAttestationError(RuntimeError)
+⋮----
+def _sha256_file(path: Path) -> str
+⋮----
+digest = hashlib.sha256()
+⋮----
+def _read_manifest(path: Path) -> dict
+⋮----
+payload = path.read_bytes()
+⋮----
+data = json.loads(payload.decode("utf-8"))
+⋮----
+def _read_cli_version(binary_path: Path) -> str
+⋮----
+result = subprocess.run(
+⋮----
+def _docker_socket_present() -> bool
+⋮----
+def _validate_manifest(data: dict) -> dict
+⋮----
+architecture = str(data.get("architecture") or "")
+release = _RELEASES.get(architecture)
+⋮----
+binary_sha256 = str(data.get("binary_sha256") or "")
+⋮----
+binary = Path(binary_path)
+manifest = Path(manifest_path)
+data = _read_manifest(manifest)
+⋮----
+actual_binary_sha256 = _sha256_file(binary)
+⋮----
+cli_version = _read_cli_version(binary)
+⋮----
+docker_socket_present = _docker_socket_present()
+⋮----
+active_raw = os.getenv(
+⋮----
+def _main() -> int
+⋮----
+parser = argparse.ArgumentParser()
+mode = parser.add_mutually_exclusive_group(required=True)
+⋮----
+args = parser.parse_args()
+⋮----
+attestation = attest_strix_runner()
+```
+
 ## File: app/submission_api.py
 ```python
 router = APIRouter()
@@ -20777,6 +20834,41 @@ result = load_strix_run_status(tmp_path)
 def test_strix_run_status_fails_closed_without_run_json(tmp_path)
 ⋮----
 def test_strix_run_status_rejects_oversized_status_file(tmp_path, monkeypatch)
+```
+
+## File: tests/test_strix_runner_attestation.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+def _write_fixture(tmp_path, *, version="strix 1.6.2")
+⋮----
+binary = tmp_path / "strix"
+⋮----
+digest = hashlib.sha256(binary.read_bytes()).hexdigest()
+manifest = tmp_path / "manifest.json"
+⋮----
+def test_runner_attestation_accepts_exact_pinned_release(tmp_path, monkeypatch)
+⋮----
+result = attest_strix_runner(binary_path=binary, manifest_path=manifest)
+⋮----
+def test_runner_attestation_rejects_binary_tampering(tmp_path, monkeypatch)
+⋮----
+def test_runner_attestation_rejects_wrong_cli_version(tmp_path, monkeypatch)
+⋮----
+def test_runner_attestation_rejects_docker_socket(tmp_path, monkeypatch)
+⋮----
+def test_runner_dockerfile_pins_official_release_assets()
+⋮----
+dockerfile = (ROOT / "backend" / "Dockerfile.strix-runner").read_text()
+⋮----
+def test_runner_compose_service_is_internal_and_inert()
+⋮----
+compose = (ROOT / "docker-compose.yml").read_text()
+block = compose.split("  strix-runner:", 1)[1].split(
+⋮----
+def test_ci_builds_strix_runner_profile()
+⋮----
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 ```
 
 ## File: tests/test_submission_api.py
