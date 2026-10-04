@@ -62,8 +62,10 @@ class RunnerRpcService:
     ) -> None:
         if secret and not _valid_runner_rpc_secret(secret):
             raise ValueError("runner RPC secret is invalid")
+        if active_execution:
+            raise ValueError("runner RPC active execution must remain disabled")
         self._secret = secret if secret else None
-        self._active_execution = bool(active_execution)
+        self._active_execution = False
         self._attestation = _validate_runner_attestation(attestation)
         self._now = now
         self._nonces: OrderedDict[str, float] = OrderedDict()
