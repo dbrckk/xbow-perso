@@ -206,6 +206,57 @@ def test_nonce_replay_is_rejected():
     assert second.json_body["error"] == "replay_detected"
 
 
+def test_replay_cache_saturation_fails_closed(monkeypatch):
+    monkeypatch.setattr(
+        "app.strix_runner_rpc.RUNNER_RPC_MAX_NONCES",
+        1,
+    )
+    path = "/v1/session/delete"
+    payload = _payload(path)
+    body = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    service = _service()
+
+    first_headers = _headers(
+        path,
+        body,
+        nonce="00000000000000000000000000000001",
+    )
+    second_headers = _headers(
+        path,
+        body,
+        nonce="00000000000000000000000000000002",
+    )
+
+    first = service.handle(
+        method="POST",
+        path=path,
+        headers=first_headers,
+        body=body,
+    )
+    saturated = service.handle(
+        method="POST",
+        path=path,
+        headers=second_headers,
+        body=body,
+    )
+    replay = service.handle(
+        method="POST",
+        path=path,
+        headers=first_headers,
+        body=body,
+    )
+
+    assert first.status == 503
+    assert saturated.status == 503
+    assert saturated.json_body["error"] == "replay_cache_saturated"
+    assert replay.status == 409
+    assert replay.json_body["error"] == "replay_detected"
+
+
 def test_stale_timestamp_is_rejected():
     path = "/v1/session/delete"
     body = json.dumps(
