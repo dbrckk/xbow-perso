@@ -3,9 +3,9 @@
 - Index mode: incremental
 - Files indexed: 418
 - Files reparsed this run: 2
-- Symbols: 4086
+- Symbols: 4091
 - Internal import edges: 1350
-- Impacted files: 2
+- Impacted files: 3
 - Selected tests: 1
 
 ## Languages
@@ -29,10 +29,10 @@
 - backend/app/storage_backend.py: 32 symbols
 - backend/tests/test_auth.py: 32 symbols
 - backend/tests/test_browser.py: 32 symbols
-- backend/app/strix_runner_rpc.py: 29 symbols
+- backend/app/strix_runner_rpc.py: 30 symbols
+- backend/tests/test_strix_runner_rpc.py: 29 symbols
 - backend/app/redis_jobqueue.py: 28 symbols
 - backend/tests/test_redis_jobqueue.py: 28 symbols
-- backend/app/jobqueue.py: 27 symbols
 
 ## Agent routing
 - Read impact.json first after project/change context.
@@ -45,7 +45,7 @@
 - AST index mode: incremental
 - AST files reparsed this run: 2
 - outline files retained: 416
-- top-level items retained: 5554
+- top-level items retained: 5561
 - direct members retained: 1250
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard

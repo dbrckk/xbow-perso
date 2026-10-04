@@ -12006,6 +12006,8 @@ RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
 RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
+RUNNER_RPC_MIN_SECRET_BYTES = 32
+RUNNER_RPC_MAX_SECRET_BYTES = 4096
 ⋮----
 _MUTATION_PATHS = {
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
@@ -12045,6 +12047,11 @@ def _prune_nonces(self, now: float) -> None
 ⋮----
 cutoff = now - RUNNER_RPC_AUTH_WINDOW_SECONDS
 ⋮----
+def _runner_rpc_secret_bytes(secret: str) -> bytes
+⋮----
+encoded = secret.encode("utf-8")
+⋮----
+secret_bytes = _runner_rpc_secret_bytes(secret)
 body_digest = hashlib.sha256(body).hexdigest()
 canonical = "\n".join(
 ⋮----
@@ -21772,7 +21779,7 @@ def test_runner_has_no_direct_public_network_probe()
 ## File: backend/tests/test_strix_runner_rpc.py
 ````python
 ROOT = Path(__file__).resolve().parents[2]
-SECRET = "fixture-runner-rpc-secret"
+SECRET = "fixture-runner-rpc-secret-at-least-32-bytes"
 NOW = 1_800_000_000
 NONCE = "0123456789abcdef0123456789abcdef"
 ⋮----
@@ -21875,6 +21882,18 @@ rejected = []
 def test_runner_rpc_server_releases_slot_after_request_thread(monkeypatch)
 ⋮----
 def fail_request_thread(_self, _request, _client_address)
+⋮----
+def test_runner_rpc_signer_rejects_short_secret()
+⋮----
+def test_runner_rpc_service_rejects_short_secret()
+⋮----
+def test_runner_rpc_env_rejects_short_secret(monkeypatch)
+⋮----
+def test_runner_rpc_accepts_exact_minimum_secret_length()
+⋮----
+secret = "x" * RUNNER_RPC_MIN_SECRET_BYTES
+⋮----
+service = RunnerRpcService(
 ````
 
 ## File: backend/tests/test_submission_api.py
@@ -26330,11 +26349,11 @@ A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux r
 
 The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it now serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes, but **all session operations are still unimplemented**. A valid request therefore fails closed instead of executing a command.
 
-Provision a separate internal RPC key before starting the runner:
+Provision a separate internal RPC key of at least 32 bytes before starting the runner. A 32-byte random value encoded as hex is sufficient:
 
 ```bash
-XBOW_STRIX_RUNNER_RPC_HMAC_KEY='<server-side secret>' \
-  docker compose --profile strix-runner up -d --build strix-runner
+export XBOW_STRIX_RUNNER_RPC_HMAC_KEY="$(openssl rand -hex 32)"
+docker compose --profile strix-runner up -d --build strix-runner
 ```
 
 The service publishes no host port; port 8092 is exposed only to the internal `strix-broker` network. CI verifies that the broker can reach the runner readiness endpoint while the runner cannot open a direct public-network connection.

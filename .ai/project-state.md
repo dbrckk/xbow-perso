@@ -39,21 +39,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T22:47:19Z
+Generated: 2026-10-04T22:50:27Z
 
 ### Git
 - Branch: `main`
-- Head: `7808d390e45d`
-- Commit date: 2026-10-05T00:47:07+02:00
-- Commit: test(strix): verify Python runtime compatibility
+- Head: `7be923d9068a`
+- Commit date: 2026-10-05T00:50:17+02:00
+- Commit: security(strix): require strong runner RPC HMAC secret
 - Tracked files: 615
 
 ### Recently changed files
+- `.env.example`
 - `.github/workflows/ci.yml`
-- `backend/app/strix_python_compat_probe.py`
-- `backend/tests/test_strix_python_compat_probe.py`
+- `README.md`
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_strix_runner_rpc.py`
+- `backend/app/strix_python_compat_probe.py`
+- `backend/tests/test_strix_python_compat_probe.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/app/runtime_capabilities.py`
 

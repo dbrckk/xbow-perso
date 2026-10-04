@@ -1,14 +1,17 @@
 # Change impact
 
-Base: 0593aef39dacfa2e430fc7883606ee9a921f95a8
-Head: 7808d390e45d582fa2e79680a8fce5ab9f761efa
+Base: ff07325f031aab6917d7eba68eadaa653ec33f12
+Head: 7be923d9068ad3d5cf85264de1affa832a13c20d
 
 ## Changed files
+- M .env.example
 - M .github/workflows/ci.yml
-- A backend/app/strix_python_compat_probe.py
-- A backend/tests/test_strix_python_compat_probe.py
+- M README.md
+- M backend/app/strix_runner_rpc.py
+- M backend/tests/test_strix_runner_rpc.py
 
 ## Affected areas
+- (root)
 - .github
 - backend
 

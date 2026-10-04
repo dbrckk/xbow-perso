@@ -11398,6 +11398,8 @@ RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
 RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
+RUNNER_RPC_MIN_SECRET_BYTES = 32
+RUNNER_RPC_MAX_SECRET_BYTES = 4096
 ⋮----
 _MUTATION_PATHS = {
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
@@ -11437,6 +11439,11 @@ def _prune_nonces(self, now: float) -> None
 ⋮----
 cutoff = now - RUNNER_RPC_AUTH_WINDOW_SECONDS
 ⋮----
+def _runner_rpc_secret_bytes(secret: str) -> bytes
+⋮----
+encoded = secret.encode("utf-8")
+⋮----
+secret_bytes = _runner_rpc_secret_bytes(secret)
 body_digest = hashlib.sha256(body).hexdigest()
 canonical = "\n".join(
 ⋮----
@@ -21164,7 +21171,7 @@ def test_runner_has_no_direct_public_network_probe()
 ## File: tests/test_strix_runner_rpc.py
 ```python
 ROOT = Path(__file__).resolve().parents[2]
-SECRET = "fixture-runner-rpc-secret"
+SECRET = "fixture-runner-rpc-secret-at-least-32-bytes"
 NOW = 1_800_000_000
 NONCE = "0123456789abcdef0123456789abcdef"
 ⋮----
@@ -21267,6 +21274,18 @@ rejected = []
 def test_runner_rpc_server_releases_slot_after_request_thread(monkeypatch)
 ⋮----
 def fail_request_thread(_self, _request, _client_address)
+⋮----
+def test_runner_rpc_signer_rejects_short_secret()
+⋮----
+def test_runner_rpc_service_rejects_short_secret()
+⋮----
+def test_runner_rpc_env_rejects_short_secret(monkeypatch)
+⋮----
+def test_runner_rpc_accepts_exact_minimum_secret_length()
+⋮----
+secret = "x" * RUNNER_RPC_MIN_SECRET_BYTES
+⋮----
+service = RunnerRpcService(
 ```
 
 ## File: tests/test_submission_api.py
