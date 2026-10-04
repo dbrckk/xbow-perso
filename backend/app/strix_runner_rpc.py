@@ -7,6 +7,7 @@ import json
 import math
 import os
 import re
+import threading
 import time
 from collections import OrderedDict
 from collections.abc import Callable, Mapping
@@ -54,6 +55,7 @@ class RunnerRpcService:
         self._active_execution = bool(active_execution)
         self._now = now
         self._nonces: OrderedDict[str, float] = OrderedDict()
+        self._nonce_lock = threading.Lock()
 
     def handle(
         self,
@@ -169,13 +171,14 @@ class RunnerRpcService:
         if not hmac.compare_digest(signature, expected):
             return _error(401, "signature_mismatch")
 
-        self._prune_nonces(now)
-        if nonce in self._nonces:
-            return _error(409, "replay_detected")
-        self._nonces[nonce] = now
-        self._nonces.move_to_end(nonce)
-        while len(self._nonces) > RUNNER_RPC_MAX_NONCES:
-            self._nonces.popitem(last=False)
+        with self._nonce_lock:
+            self._prune_nonces(now)
+            if nonce in self._nonces:
+                return _error(409, "replay_detected")
+            self._nonces[nonce] = now
+            self._nonces.move_to_end(nonce)
+            while len(self._nonces) > RUNNER_RPC_MAX_NONCES:
+                self._nonces.popitem(last=False)
         return None
 
     def _prune_nonces(self, now: float) -> None:
