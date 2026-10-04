@@ -468,6 +468,7 @@ class _RunnerRpcHttpHandler(BaseHTTPRequestHandler):
     def _dispatch(self) -> None:
         service = getattr(self.server, "rpc_service", None)
         if not isinstance(service, RunnerRpcService):
+            self._cancel_read_deadline()
             self._write(_error(503, "rpc_service_unavailable"))
             return
 
