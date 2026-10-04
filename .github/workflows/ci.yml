@@ -81,6 +81,19 @@ jobs:
               --self-test \
               --pyproject "$pyproject" \
               --lock "$lockfile"
+          uv_archive="$tmp/uv-x86_64-unknown-linux-gnu.tar.gz"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            "https://github.com/astral-sh/uv/releases/download/0.12.10/uv-x86_64-unknown-linux-gnu.tar.gz" \
+            -o "$uv_archive"
+          printf '%s  %s\n' \
+            "173d95a0c32d18c896c46ba6fafbf3cf9c14ab74b033f81b76c883ef492a976b" \
+            "$uv_archive" | sha256sum -c -
+          PYTHONPATH="$PWD/backend" \
+            python -m app.strix_python_toolchain_probe \
+              --self-test \
+              --manifest "$PWD/backend/strix-python-runtime.lock.json" \
+              --uv-archive "$uv_archive" \
+              --architecture amd64
       - run: |
           PYTHONPATH=backend \
           XBOW_REDIS_URL=redis://localhost:6379/15 \
