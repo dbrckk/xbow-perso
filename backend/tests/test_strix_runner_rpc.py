@@ -475,7 +475,6 @@ def test_runner_rpc_accepts_exact_minimum_secret_length():
     ).status == 200
 
 
-
 def test_runner_rpc_read_deadline_is_absolute(monkeypatch):
     import socket
 
