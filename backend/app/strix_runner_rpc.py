@@ -404,6 +404,7 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
                 {
                     "schema",
                     "request_id",
+                    "contract_hash",
                     "session_id",
                     "port",
                 },
@@ -419,6 +420,7 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
                 {
                     "schema",
                     "request_id",
+                    "contract_hash",
                     "session_id",
                 },
             )
