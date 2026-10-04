@@ -85,7 +85,7 @@ def test_ed25519_contract_signing_rejects_noncanonical_private_key(key):
         "not-base64url",
         base64.urlsafe_b64encode(b"short").decode().rstrip("="),
         base64.urlsafe_b64encode(b"x" * 33).decode().rstrip("="),
-        "A" * 43,
+        "*" * 43,
     ),
 )
 def test_ed25519_contract_verification_rejects_invalid_public_key(key):
