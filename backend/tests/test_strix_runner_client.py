@@ -1,7 +1,11 @@
 import json
 import urllib.error
+from pathlib import Path
 
 import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+
 
 from app.strix_runner_client import (
     StrixRunnerClientError,
@@ -121,3 +125,10 @@ def test_runner_readiness_client_maps_network_failure(monkeypatch):
 
     with pytest.raises(StrixRunnerClientError, match="unavailable"):
         check_runner_readiness()
+
+
+
+def test_ci_uses_posture_validating_runner_readiness_client():
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+
+    assert "python -m app.strix_runner_client --check-readiness" in workflow
