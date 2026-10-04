@@ -25,6 +25,8 @@ RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
 RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
+RUNNER_RPC_MIN_SECRET_BYTES = 32
+RUNNER_RPC_MAX_SECRET_BYTES = 4096
 
 _MUTATION_PATHS = {
     "/v1/session/create",
@@ -53,6 +55,8 @@ class RunnerRpcService:
         active_execution: bool,
         now: Callable[[], float] = time.time,
     ) -> None:
+        if secret:
+            _runner_rpc_secret_bytes(secret)
         self._secret = secret if secret else None
         self._active_execution = bool(active_execution)
         self._now = now
@@ -192,6 +196,17 @@ class RunnerRpcService:
             self._nonces.popitem(last=False)
 
 
+def _runner_rpc_secret_bytes(secret: str) -> bytes:
+    if not isinstance(secret, str):
+        raise ValueError("runner RPC secret must be text")
+    encoded = secret.encode("utf-8")
+    if len(encoded) < RUNNER_RPC_MIN_SECRET_BYTES:
+        raise ValueError("runner RPC secret must be at least 32 bytes")
+    if len(encoded) > RUNNER_RPC_MAX_SECRET_BYTES:
+        raise ValueError("runner RPC secret exceeds maximum size")
+    return encoded
+
+
 def sign_runner_rpc_request(
     *,
     method: str,
@@ -201,8 +216,7 @@ def sign_runner_rpc_request(
     timestamp: int,
     nonce: str,
 ) -> str:
-    if not secret or len(secret.encode("utf-8")) > 4096:
-        raise ValueError("runner RPC secret is invalid")
+    secret_bytes = _runner_rpc_secret_bytes(secret)
     body_digest = hashlib.sha256(body).hexdigest()
     canonical = "\n".join(
         (
@@ -215,7 +229,7 @@ def sign_runner_rpc_request(
         )
     ).encode("utf-8")
     return hmac.new(
-        secret.encode("utf-8"),
+        secret_bytes,
         canonical,
         hashlib.sha256,
     ).hexdigest()
@@ -474,8 +488,10 @@ def _rpc_secret_from_env() -> str | None:
     secret = os.getenv("XBOW_STRIX_RUNNER_RPC_HMAC_KEY", "")
     if not secret:
         return None
-    if len(secret.encode("utf-8")) > 4096:
-        raise RuntimeError("Strix runner RPC key is invalid")
+    try:
+        _runner_rpc_secret_bytes(secret)
+    except ValueError as exc:
+        raise RuntimeError(str(exc)) from exc
     return secret
 
 
