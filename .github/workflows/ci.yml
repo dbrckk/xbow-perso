@@ -127,3 +127,29 @@ jobs:
       - run: docker compose --profile scanner build --pull scanner-worker
       - run: docker compose --profile strix-broker build --pull strix-broker strix-egress
       - run: docker compose --profile strix-runner build --pull strix-runner
+      - name: strix-runner-network-proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          cleanup() {
+            docker compose --profile strix-broker --profile strix-runner down -v
+          }
+          trap cleanup EXIT
+          export XBOW_STRIX_BROKER_HMAC_KEY="ci-broker-proof-key"
+          export XBOW_STRIX_EGRESS_HMAC_KEY="ci-egress-proof-key"
+          docker compose --profile strix-broker --profile strix-runner up -d \
+            strix-egress strix-broker strix-runner
+          for _ in $(seq 1 30); do
+            if docker compose exec -T strix-runner python -c \
+              "import urllib.request; urllib.request.urlopen('http://strix-broker:8090/healthz', timeout=2).read()"; then
+              break
+            fi
+            sleep 1
+          done
+          docker compose exec -T strix-runner python -c \
+            "import urllib.request; urllib.request.urlopen('http://strix-broker:8090/healthz', timeout=2).read()"
+          if docker compose exec -T strix-runner python -c \
+            "import socket; socket.create_connection(('192.0.2.1', 80), timeout=1).close()"; then
+            echo "direct public egress unexpectedly succeeded" >&2
+            exit 1
+          fi
