@@ -356,3 +356,25 @@ def test_runner_image_contains_only_rpc_and_attestation_modules():
     assert "COPY app/strix_runner_attestation.py" in dockerfile
     assert "COPY app/strix_runner_rpc.py" in dockerfile
     assert "COPY app/strix_backend_hook.py" not in dockerfile
+
+
+
+def test_runner_rpc_socket_timeout_is_bounded():
+    from app.strix_runner_rpc import (
+        RUNNER_RPC_SOCKET_TIMEOUT_SECONDS,
+        configure_runner_rpc_socket,
+    )
+
+    class FakeSocket:
+        def __init__(self):
+            self.timeout = None
+
+        def settimeout(self, value):
+            self.timeout = value
+
+    fake = FakeSocket()
+
+    configure_runner_rpc_socket(fake)
+
+    assert RUNNER_RPC_SOCKET_TIMEOUT_SECONDS == 5.0
+    assert fake.timeout == 5.0
