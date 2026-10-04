@@ -9,13 +9,14 @@ Status: active
 - Nuclei remains the reviewed active scanner path in the dedicated restricted scanner worker.
 - Strix jobs now produce a deterministic execution contract bound to job id, policy fingerprint, scope and request-rate ceiling; broker authorization requires an authenticated contract.
 - The Strix boundary now has a broker plus a separate dual-homed read-only egress service; GET/HEAD requests are contract-verified twice, DNS-pinned, public-network-only, non-redirecting, bounded and rate-limited.
+- A dedicated inert Strix runner pins v1.6.2, verifies official amd64/arm64 release digests at build time, attests the extracted binary/version at runtime, and is attached only to the internal broker network.
 
 ## Broken / blockers
-- Active Strix execution does not yet have an enforceable isolated runtime contract for downstream scope, request-rate, and sandbox guarantees.
+- Active Strix execution is still not wired through the isolated runner/broker path; the runner remains attestation-only and fail-closed.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed while building a separately pinned/attested Strix runner whose only target-network path is the broker boundary.
+- Keep Strix active dispatch fail-closed while implementing a broker-only execution backend for the pinned runner and proving that supported Strix traffic cannot bypass the broker.
 
 ## Validation
 - PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
@@ -24,6 +25,7 @@ Status: active
 - Broker isolation is asserted by tests and CI builds the dedicated `strix-broker` Compose profile.
 - The read-only egress transport rejects non-public IPs, pins validated DNS results to the socket connection, preserves TLS hostname verification, follows no redirects, bounds responses/timeouts, enforces contract RPS, and allows only one in-flight request per contract.
 - Broker readiness now fails closed on the egress service whenever read-only proxying is enabled.
+- The Strix runner image pins v1.6.2 release assets/digests and source commit, verifies the archive before extraction, verifies the exact CLI version, and re-attests the binary SHA-256 at runtime.
 
 ## Last verified
 - 2026-10-03

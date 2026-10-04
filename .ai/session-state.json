@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-03",
-  "task": "Build a controlled Strix egress boundary and isolate the future runner",
+  "updated_at": "2026-10-04",
+  "task": "Build a pinned, attested and network-isolated Strix runner",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -21,14 +21,19 @@
     "Added double contract verification at broker and egress boundaries and preserved repeated response headers such as Set-Cookie.",
     "Added three-zone Compose isolation tests and CI build coverage for both broker and egress services.",
     "Added one-in-flight-request-per-contract enforcement on top of the signed RPS ceiling to bound slow-target concurrency.",
-    "Made broker readiness fail closed on the isolated egress service when the read-only proxy is enabled."
+    "Made broker readiness fail closed on the isolated egress service when the read-only proxy is enabled.",
+    "Merged PR #489 after CI, security and supply-chain all passed.",
+    "Added a dedicated Strix runner image pinned to official v1.6.2 Linux release assets with separate amd64/arm64 SHA-256 digests.",
+    "Pinned the v1.6.2 source commit ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2 and require the CLI to report exactly strix 1.6.2.",
+    "Added runtime re-attestation of the extracted Strix binary digest and fail-closed checks for Docker socket/DOCKER_HOST presence.",
+    "Added an inert non-root runner service with no ports, volumes or external network and active execution forced off."
   ],
-  "current_branch": "codex/strix-egress-concurrency-readiness",
-  "current_priority": "Build a separately pinned/attested Strix runner with no direct target-network egress and force all supported target HTTP traffic through the broker.",
+  "current_branch": "codex/strix-runner-attestation",
+  "current_priority": "Wire a supported Strix execution backend to the pinned runner while forcing all target HTTP traffic through the signed broker boundary.",
   "blockers": [
-    "The current scanner-worker is not the final isolated Strix runner and still participates in the general control network.",
-    "The bounded broker path currently supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
-    "The exact Strix runtime version/image is not yet pinned and attested.",
+    "The pinned runner is intentionally inert and no active Strix execution backend is wired to it.",
+    "The bounded broker path supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
+    "The upstream v1.6.2 Git tag object is unsigned; trust is therefore anchored to the pinned source commit plus GitHub release asset digests rather than a cryptographically signed tag.",
     "Contract v1 still uses symmetric HMAC verification rather than asymmetric verification."
   ],
   "safety_invariants": [
@@ -38,11 +43,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the egress concurrency/readiness hardening.",
-    "Create a dedicated Strix runner image/service attached only to internal runtime networks.",
-    "Pin the exact Strix source/version and attest it at runtime.",
-    "Route supported Strix HTTP traffic through the broker and prove direct target-network access is unavailable.",
-    "Expand the contract deliberately for any additional HTTP methods only after method-specific safety controls are defined.",
+    "Validate and merge the pinned runner image/service.",
+    "Map the minimum Strix runtime/backend calls needed for broker-only HTTP operation.",
+    "Implement a custom backend or wrapper that cannot open direct target-network connections.",
+    "Add integration tests proving the runner cannot resolve/connect to public targets directly while it can reach the internal broker.",
+    "Expand broker methods only when a concrete Strix workflow requires them and method-specific safety controls exist.",
     "Evaluate asymmetric contract signatures so verification services do not possess the signing secret."
   ]
 }

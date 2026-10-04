@@ -153,6 +153,42 @@ services:
     networks: [control]
 
 
+  strix-runner:
+    profiles: ["strix-runner"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.strix-runner
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    environment:
+      XBOW_STRIX_ACTIVE_EXECUTION: "false"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 0.50
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-m",
+          "app.strix_runner_attestation",
+          "--check",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks: [strix-broker]
+
+
   scanner-worker:
     profiles: ["scanner"]
     build:
@@ -308,6 +344,7 @@ services:
       retries: 3
       start_period: 5s
     networks: [strix-egress-control, strix-external]
+
 
 
   pentagi-worker:

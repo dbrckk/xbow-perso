@@ -426,7 +426,7 @@ Implemented foundations include PostgreSQL storage, Redis-backed queues, encrypt
 Remaining major work:
 
 - production migration/runbook automation and tested restore drills
-- isolated Strix runner forced through the broker, plus pinned/attested Strix runtime
+- broker-only Strix execution backend using the pinned/attested runner
 - enforceable PentAGI remote execution contract
 - Playwright browser worker hardening and authenticated-flow UX
 - stronger CVSS/CWE normalization and report metadata assistance
@@ -487,4 +487,14 @@ docker compose --profile strix-broker up -d --build
 
 For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` must match the HMAC secret used to sign the contract. The symmetric-key arrangement is still intermediate and should eventually be replaced by asymmetric verification.
 
-**Active Strix dispatch remains fail-closed.** The controlled GET/HEAD egress path exists, but the current Strix execution runtime is not yet a separately pinned/attested runner whose only network path is the broker, and full Strix behavior cannot be represented by this read-only subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
+A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux release. The image verifies the official release-asset SHA-256 before extraction (amd64 and arm64 have separate pinned digests), verifies the CLI reports exactly `strix 1.6.2`, records the pinned source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and re-attests the extracted binary SHA-256 at runtime. The container has no published ports, volumes, Docker socket or external network and runs as a non-root user with a read-only root filesystem and all Linux capabilities dropped.
+
+The runner is intentionally inert: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory and the process only performs attestation before idling. Build or start it independently:
+
+```bash
+docker compose --profile strix-runner build --pull strix-runner
+docker compose --profile strix-runner up -d strix-runner
+```
+
+
+**Active Strix dispatch remains fail-closed.** A separately pinned/attested inert runner now exists and its only configured network is the internal broker network, but no Strix execution backend is wired to it yet and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
