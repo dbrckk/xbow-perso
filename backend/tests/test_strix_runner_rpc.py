@@ -342,6 +342,14 @@ def test_runner_compose_exposes_rpc_only_internally():
     assert "/readyz" in block
 
 
+def test_ci_waits_for_runner_rpc_readiness():
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+
+    assert "runner_ready=0" in workflow
+    assert "http://strix-runner:8092/readyz" in workflow
+    assert 'if [ "$runner_ready" -ne 1 ]; then' in workflow
+
+
 def test_runner_image_contains_only_rpc_and_attestation_modules():
     dockerfile = (ROOT / "backend" / "Dockerfile.strix-runner").read_text()
 
