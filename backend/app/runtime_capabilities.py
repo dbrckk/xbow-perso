@@ -135,6 +135,8 @@ def scanner_runtime_capability() -> dict[str, Any]:
     strix_binary_available = bool(shutil.which("strix"))
     docker_cli_available = bool(shutil.which("docker"))
     strix_contract_enforceable = strix_runtime_contract_enforceable()
+    strix_python_bootstrap_ready = False
+    strix_upstream_docker_preflight_required = True
 
     reasons: list[str] = []
     if not active_scans_enabled:
@@ -162,6 +164,10 @@ def scanner_runtime_capability() -> dict[str, Any]:
     if strix_execution_intent:
         reasons.append("strix_runner_rpc_execution_not_implemented")
         reasons.append("strix_backend_hook_not_loaded_by_standalone_binary")
+        if not strix_python_bootstrap_ready:
+            reasons.append("strix_python_bootstrap_not_ready")
+        if strix_upstream_docker_preflight_required:
+            reasons.append("strix_upstream_docker_preflight_required")
 
     return {
         "mode": "active_gated" if active_scans_enabled else "disabled",
@@ -192,6 +198,10 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_runner_rpc_contract_defined": True,
         "strix_runner_rpc_execution_implemented": False,
         "strix_backend_hook_loaded_by_standalone_binary": False,
+        "strix_python_bootstrap_ready": strix_python_bootstrap_ready,
+        "strix_upstream_docker_preflight_required": (
+            strix_upstream_docker_preflight_required
+        ),
         "dry_run": dry_run,
         "sandbox_profile": profile or "unconfigured",
         "allowed_engines": list(engines),
@@ -235,6 +245,8 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_runner_rpc_contract_defined": True,
             "strix_runner_rpc_execution_implemented": False,
             "strix_backend_hook_loaded_by_standalone_binary": False,
+            "strix_python_bootstrap_ready": False,
+            "strix_upstream_docker_preflight_required": True,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
             "allowed_engines": [],
