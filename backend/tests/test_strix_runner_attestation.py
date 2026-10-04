@@ -165,5 +165,5 @@ def test_runner_has_no_direct_public_network_probe():
 
     assert "strix-runner-network-proof" in workflow
     assert "http://strix-broker:8090/healthz" in workflow
-    assert "93.184.216.34" in workflow
+    assert "192.0.2.1" in workflow
     assert "direct public egress unexpectedly succeeded" in workflow
