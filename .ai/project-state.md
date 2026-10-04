@@ -31,31 +31,31 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T19:45:11Z
+Generated: 2026-10-04T05:51:21Z
 
 ### Git
 - Branch: `main`
-- Head: `52917ab83a52`
-- Commit date: 2026-10-03T21:44:54+02:00
-- Commit: feat(strix): add bounded read-only egress boundary
+- Head: `3fdbb71dac26`
+- Commit date: 2026-10-04T07:50:57+02:00
+- Commit: security(strix): bound egress concurrency and readiness
 - Tracked files: 605
 
 ### Recently changed files
-- `.env.example`
-- `.github/workflows/ci.yml`
 - `README.md`
-- `backend/app/runtime_capabilities.py`
 - `backend/app/strix_broker.py`
 - `backend/app/strix_broker_client.py`
-- `backend/app/strix_broker_models.py`
 - `backend/app/strix_egress.py`
 - `backend/app/strix_egress_transport.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_broker.py`
 - `backend/tests/test_strix_broker_client.py`
-- `backend/tests/test_strix_broker_runtime.py`
 - `backend/tests/test_strix_egress.py`
 - `backend/tests/test_strix_egress_transport.py`
+- `.env.example`
+- `.github/workflows/ci.yml`
+- `backend/app/runtime_capabilities.py`
+- `backend/app/strix_broker_models.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_broker_runtime.py`
 - `docker-compose.yml`
 - `backend/app/strix_execution_contract.py`
 - `backend/tests/test_strix_execution_contract.py`

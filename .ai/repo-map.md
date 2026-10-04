@@ -11416,7 +11416,18 @@ value = float(raw)
 ⋮----
 def _opener()
 ⋮----
+def check_egress_ready() -> None
+⋮----
 endpoint = _egress_endpoint()
+ready_url = (
+request = urllib.request.Request(
+⋮----
+payload = response.read(4097)
+⋮----
+readiness = json.loads(payload.decode("utf-8"))
+⋮----
+expected = {
+⋮----
 payload = json.dumps(
 outbound = urllib.request.Request(
 ⋮----
@@ -11546,12 +11557,15 @@ class StrixEgressRateLimitError(StrixEgressPolicyError)
 ⋮----
 def __init__(self, retry_after_seconds: float)
 ⋮----
+class StrixEgressConcurrencyError(StrixEgressPolicyError)
+⋮----
 _HEADER_NAME = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]+$")
 _FORBIDDEN_REQUEST_HEADERS = {
 _FORBIDDEN_RESPONSE_HEADERS = {
 _MAX_RATE_KEYS = 4096
 _RATE_LOCK = threading.Lock()
 _LAST_REQUEST_AT: OrderedDict[str, float] = OrderedDict()
+_INFLIGHT_CONTRACTS: set[str] = set()
 ⋮----
 @dataclass(frozen=True)
 class ResolvedEndpoint
@@ -11608,7 +11622,7 @@ actual_timeout = timeout
 actual_timeout = float(timeout_override)
 sock = socket.socket(endpoint.family, socket.SOCK_STREAM)
 ⋮----
-def _enforce_rate(contract_hash: str, rps: float) -> None
+def _acquire_request_slot(contract_hash: str, rps: float) -> None
 ⋮----
 interval = 1.0 / rps
 now = time.monotonic()
@@ -11616,6 +11630,12 @@ now = time.monotonic()
 previous = _LAST_REQUEST_AT.get(contract_hash)
 ⋮----
 remaining = interval - (now - previous)
+⋮----
+evicted = False
+⋮----
+evicted = True
+⋮----
+def _release_request_slot(contract_hash: str) -> None
 ⋮----
 def reset_rate_limits_for_tests() -> None
 ⋮----
@@ -11636,17 +11656,17 @@ host = authorized.host
 port = parsed.port or (443 if parsed.scheme == "https" else 80)
 ⋮----
 headers = _normalize_headers(request.headers)
-endpoint = resolve_public_endpoint(host, port)
-⋮----
 timeout = _timeout_seconds()
+max_bytes = _max_response_bytes()
 target_path = parsed.path or "/"
 ⋮----
+connection = None
+⋮----
+endpoint = resolve_public_endpoint(host, port)
 connection_class = (
 kwargs = {"timeout": timeout}
 ⋮----
 connection = connection_class(host, port=port, **kwargs)
-⋮----
-max_bytes = _max_response_bytes()
 ⋮----
 response = connection.getresponse()
 body = b""
@@ -21075,6 +21095,14 @@ opener = _Opener(_Response(b"x" * (2 * 1024 * 1024 + 1)))
 def test_client_rejects_invalid_response_shape(monkeypatch)
 ⋮----
 opener = _Opener(_Response(b'{"status_code":200}'))
+⋮----
+def test_client_checks_fixed_internal_readiness_endpoint(monkeypatch)
+⋮----
+opener = _Opener(
+⋮----
+def test_client_readiness_rejects_oversized_response(monkeypatch)
+⋮----
+opener = _Opener(_Response(b"x" * 4097))
 ````
 
 ## File: backend/tests/test_strix_broker_runtime.py
@@ -21156,6 +21184,16 @@ def fake_forward(request)
 request = BrokerHttpRequest(
 ⋮----
 result = request_http(request)
+⋮----
+def test_broker_readiness_requires_egress_when_proxy_enabled(monkeypatch)
+⋮----
+def test_broker_readiness_checks_egress_when_proxy_enabled(monkeypatch)
+⋮----
+called = {"count": 0}
+⋮----
+def ready()
+⋮----
+result = readyz()
 ````
 
 ## File: backend/tests/test_strix_egress_transport.py
@@ -21241,6 +21279,24 @@ def test_rate_limit_is_enforced_per_contract(monkeypatch)
 request = _request(monkeypatch, requested_rps=1.0)
 ⋮----
 times = iter([100.0, 100.1])
+⋮----
+def test_concurrency_limit_is_enforced_per_contract(monkeypatch)
+⋮----
+request = _request(monkeypatch, requested_rps=2.0)
+⋮----
+contract_hash = request.contract.contract_hash
+⋮----
+def test_request_slot_is_released_after_network_failure(monkeypatch)
+⋮----
+class _FailingConnection(_Connection)
+⋮----
+times = iter([100.0, 102.0])
+⋮----
+def test_concurrency_rejection_happens_before_dns(monkeypatch)
+⋮----
+def dns(*_args, **_kwargs)
+⋮----
+def test_rate_rejection_happens_before_dns(monkeypatch)
 ````
 
 ## File: backend/tests/test_strix_egress.py
@@ -21268,6 +21324,8 @@ def fake_perform(value, *, verification_secret)
 result = fetch(request)
 ⋮----
 def test_egress_fetch_returns_retry_after_for_rate_limit(monkeypatch)
+⋮----
+def test_egress_fetch_returns_retry_after_for_concurrency_limit(monkeypatch)
 ````
 
 ## File: backend/tests/test_strix_execution_contract.py
@@ -25720,11 +25778,11 @@ Active execution remains fail-closed unless all scanner admission gates are sati
 
 The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence ingestion are implemented, and each Strix job now gets a deterministic `strix-execution-contract-v1` bound to the job id, campaign policy fingerprint, normalized allow/deny scope and exact request-rate ceiling. The contract forbids direct egress and host-container-socket access, requires independent validation, and is HMAC-authenticated when the audit signing key is configured. Future broker requests must present an authenticated contract and are rejected when the target is out of scope or the requested RPS exceeds the contract cap.
 
-The `strix-broker` profile now uses three network zones. The scanner can reach only the broker network; the broker can reach a second internal broker-to-egress network; only the separate `strix-egress` service is attached to an external bridge. Neither service publishes a host port or mounts data volumes or a Docker socket, and both run read-only with no-new-privileges and all Linux capabilities dropped.
+The `strix-broker` profile now uses three Strix-specific network zones. Within those zones, `scanner-worker` can reach only the broker network; the broker can reach a second internal broker-to-egress network; only the separate `strix-egress` service is attached to an external bridge. The current `scanner-worker` still also uses the general `control` network for the reviewed Nuclei path, so it is **not** yet the final network-isolated Strix runner. Neither service publishes a host port or mounts data volumes or a Docker socket, and both run read-only with no-new-privileges and all Linux capabilities dropped.
 
-The broker keeps `/v1/admit` for policy-only checks and adds an optional `/v1/request` path for read-only HTTP. Every request is verified once by the broker and again by `strix-egress`. The egress service permits only GET/HEAD, rejects private/reserved/link-local destinations, resolves DNS before connecting and pins the validated IP to prevent rebinding, preserves the original hostname for TLS verification, follows no redirects, bounds timeout/response size, filters unsafe hop-by-hop headers, and enforces the signed per-contract RPS ceiling before opening the connection.
+The broker keeps `/v1/admit` for policy-only checks and adds an optional `/v1/request` path for read-only HTTP. Every request is verified once by the broker and again by `strix-egress`. The egress service permits only GET/HEAD, rejects private/reserved/link-local destinations, resolves DNS before connecting and pins the validated IP to prevent rebinding, preserves the original hostname for TLS verification, follows no redirects, bounds timeout/response size, filters unsafe hop-by-hop headers, enforces the signed per-contract RPS ceiling before opening the connection, and permits at most one in-flight target request per contract.
 
-The read-only path is disabled by default. To test the boundary, provision the broker and egress verification keys, enable both read-only gates, then start the profile:
+When the read-only proxy is enabled, broker readiness also depends on the isolated egress service being ready. The read-only path is disabled by default. To test the boundary, provision the broker and egress verification keys, enable both read-only gates, then start the profile:
 
 ```bash
 docker compose --profile strix-broker up -d --build

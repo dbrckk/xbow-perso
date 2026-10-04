@@ -8776,49 +8776,49 @@
       "language": "python",
       "kind": "function",
       "name": "_broker_verification_secret",
-      "line": 34
+      "line": 35
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "_read_only_egress_enabled",
-      "line": 49
+      "line": 50
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "_authorize",
-      "line": 64
+      "line": 65
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "healthz",
-      "line": 86
+      "line": 87
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "readyz",
-      "line": 107
+      "line": 108
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "admit",
-      "line": 124
+      "line": 133
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "request_http",
-      "line": 136
+      "line": 145
     },
     {
       "file": "backend/app/strix_broker_client.py",
@@ -8880,8 +8880,15 @@
       "file": "backend/app/strix_broker_client.py",
       "language": "python",
       "kind": "function",
-      "name": "forward_read_only_request",
+      "name": "check_egress_ready",
       "line": 92
+    },
+    {
+      "file": "backend/app/strix_broker_client.py",
+      "language": "python",
+      "kind": "function",
+      "name": "forward_read_only_request",
+      "line": 150
     },
     {
       "file": "backend/app/strix_broker_models.py",
@@ -8944,35 +8951,35 @@
       "language": "python",
       "kind": "function",
       "name": "_verification_secret",
-      "line": 25
+      "line": 26
     },
     {
       "file": "backend/app/strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "_enabled",
-      "line": 40
+      "line": 41
     },
     {
       "file": "backend/app/strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "healthz",
-      "line": 53
+      "line": 54
     },
     {
       "file": "backend/app/strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "readyz",
-      "line": 71
+      "line": 72
     },
     {
       "file": "backend/app/strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "fetch",
-      "line": 88
+      "line": 89
     },
     {
       "file": "backend/app/strix_egress_transport.py",
@@ -9013,85 +9020,99 @@
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "class",
+      "name": "StrixEgressConcurrencyError",
+      "line": 46
+    },
+    {
+      "file": "backend/app/strix_egress_transport.py",
+      "language": "python",
+      "kind": "class",
       "name": "ResolvedEndpoint",
-      "line": 77
+      "line": 82
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "_timeout_seconds",
-      "line": 84
+      "line": 89
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "_max_response_bytes",
-      "line": 99
+      "line": 104
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "_normalize_headers",
-      "line": 114
+      "line": 119
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "_public_ip",
-      "line": 141
+      "line": 146
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "resolve_public_endpoint",
-      "line": 153
+      "line": 158
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "_pinned_create_connection",
-      "line": 215
+      "line": 220
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "create_connection",
-      "line": 219
+      "line": 224
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
-      "name": "_enforce_rate",
-      "line": 241
+      "name": "_acquire_request_slot",
+      "line": 246
+    },
+    {
+      "file": "backend/app/strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_release_request_slot",
+      "line": 281
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "reset_rate_limits_for_tests",
-      "line": 256
+      "line": 286
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "_response_headers",
-      "line": 261
+      "line": 292
     },
     {
       "file": "backend/app/strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "perform_bounded_http_request",
-      "line": 294
+      "line": 325
     },
     {
       "file": "backend/app/strix_execution_contract.py",
@@ -24428,63 +24449,63 @@
       "language": "python",
       "kind": "function",
       "name": "_campaign",
-      "line": 19
+      "line": 20
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "_signed_contract",
-      "line": 35
+      "line": 36
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_health_is_explicitly_admission_only",
-      "line": 41
+      "line": 42
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_readiness_requires_verification_key",
-      "line": 54
+      "line": 55
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_admits_signed_in_scope_request_without_egress",
-      "line": 63
+      "line": 64
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_rejects_wrong_verification_key",
-      "line": 83
+      "line": 84
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_rejects_out_of_scope_and_denied_hosts",
-      "line": 100
+      "line": 101
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_rejects_rate_above_signed_contract",
-      "line": 119
+      "line": 120
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_contract_model_forbids_unsafe_runtime_invariants",
-      "line": 136
+      "line": 137
     },
     {
       "file": "backend/tests/test_strix_broker.py",
@@ -24522,95 +24543,137 @@
       "line": 222
     },
     {
-      "file": "backend/tests/test_strix_broker_client.py",
+      "file": "backend/tests/test_strix_broker.py",
       "language": "python",
-      "kind": "class",
-      "name": "_Response",
-      "line": 15
+      "kind": "function",
+      "name": "test_broker_readiness_requires_egress_when_proxy_enabled",
+      "line": 256
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_broker_readiness_checks_egress_when_proxy_enabled",
+      "line": 279
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "ready",
+      "line": 287
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
-      "kind": "function",
-      "name": "__init__",
+      "kind": "class",
+      "name": "_Response",
       "line": 16
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
+      "name": "__init__",
+      "line": 17
+    },
+    {
+      "file": "backend/tests/test_strix_broker_client.py",
+      "language": "python",
+      "kind": "function",
       "name": "__enter__",
-      "line": 22
+      "line": 23
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
       "name": "__exit__",
-      "line": 25
+      "line": 26
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
       "name": "read",
-      "line": 28
+      "line": 29
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "class",
       "name": "_Opener",
-      "line": 34
-    },
-    {
-      "file": "backend/tests/test_strix_broker_client.py",
-      "language": "python",
-      "kind": "function",
-      "name": "__init__",
       "line": 35
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
+      "name": "__init__",
+      "line": 36
+    },
+    {
+      "file": "backend/tests/test_strix_broker_client.py",
+      "language": "python",
+      "kind": "function",
       "name": "open",
-      "line": 40
+      "line": 41
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
       "name": "_request",
-      "line": 46
+      "line": 47
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
       "name": "test_client_posts_only_to_fixed_internal_egress_endpoint",
-      "line": 68
+      "line": 69
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
       "name": "test_client_rejects_non_internal_endpoint_configuration",
-      "line": 110
+      "line": 112
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
       "name": "test_client_rejects_oversized_egress_service_response",
-      "line": 120
+      "line": 122
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
       "language": "python",
       "kind": "function",
       "name": "test_client_rejects_invalid_response_shape",
-      "line": 129
+      "line": 131
+    },
+    {
+      "file": "backend/tests/test_strix_broker_client.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_client_checks_fixed_internal_readiness_endpoint",
+      "line": 140
+    },
+    {
+      "file": "backend/tests/test_strix_broker_client.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_client_readiness_rejects_oversized_response",
+      "line": 163
+    },
+    {
+      "file": "backend/tests/test_strix_broker_client.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_client_readiness_rejects_unexpected_egress_posture",
+      "line": 201
     },
     {
       "file": "backend/tests/test_strix_broker_runtime.py",
@@ -24666,245 +24729,308 @@
       "language": "python",
       "kind": "function",
       "name": "_campaign",
-      "line": 19
+      "line": 20
     },
     {
       "file": "backend/tests/test_strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "_request",
-      "line": 34
+      "line": 35
     },
     {
       "file": "backend/tests/test_strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "test_egress_service_is_disabled_by_default",
-      "line": 44
+      "line": 45
     },
     {
       "file": "backend/tests/test_strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "test_egress_service_requires_verification_key",
-      "line": 61
+      "line": 62
     },
     {
       "file": "backend/tests/test_strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "test_egress_fetch_calls_transport_only_when_enabled",
-      "line": 71
+      "line": 72
     },
     {
       "file": "backend/tests/test_strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "fake_perform",
-      "line": 77
+      "line": 78
     },
     {
       "file": "backend/tests/test_strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "test_egress_fetch_maps_failures_without_internal_details",
-      "line": 111
+      "line": 112
     },
     {
       "file": "backend/tests/test_strix_egress.py",
       "language": "python",
       "kind": "function",
       "name": "test_egress_fetch_returns_retry_after_for_rate_limit",
-      "line": 133
+      "line": 134
+    },
+    {
+      "file": "backend/tests/test_strix_egress.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_egress_fetch_returns_retry_after_for_concurrency_limit",
+      "line": 152
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "class",
       "name": "_Response",
-      "line": 20
+      "line": 24
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "__init__",
-      "line": 21
+      "line": 25
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "read",
-      "line": 35
+      "line": 39
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "getheaders",
-      "line": 39
+      "line": 43
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "class",
       "name": "_Connection",
-      "line": 43
-    },
-    {
-      "file": "backend/tests/test_strix_egress_transport.py",
-      "language": "python",
-      "kind": "function",
-      "name": "__init__",
       "line": 47
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
+      "name": "__init__",
+      "line": 51
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
       "name": "request",
-      "line": 56
+      "line": 60
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "getresponse",
-      "line": 59
+      "line": 63
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "close",
-      "line": 62
+      "line": 66
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "class",
       "name": "_Socket",
-      "line": 66
+      "line": 70
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "__init__",
-      "line": 67
+      "line": 71
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "settimeout",
-      "line": 73
+      "line": 77
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "bind",
-      "line": 76
+      "line": 80
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "connect",
-      "line": 79
+      "line": 83
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "close",
-      "line": 82
-    },
-    {
-      "file": "backend/tests/test_strix_egress_transport.py",
-      "language": "python",
-      "kind": "function",
-      "name": "_campaign",
       "line": 86
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
+      "name": "_campaign",
+      "line": 90
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
       "name": "_request",
-      "line": 102
+      "line": 106
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "_reset_rate_state",
-      "line": 117
+      "line": 121
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "test_resolver_rejects_private_ip_literal",
-      "line": 125
+      "line": 129
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "test_resolver_rejects_mixed_public_private_dns",
-      "line": 130
+      "line": 134
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "test_pinned_connection_uses_validated_sockaddr",
-      "line": 155
+      "line": 159
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "test_transport_returns_redirect_without_following_it",
-      "line": 176
+      "line": 180
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "test_transport_rejects_unsafe_header_before_dns",
-      "line": 228
+      "line": 232
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "fail_if_called",
-      "line": 235
+      "line": 239
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "test_transport_bounds_response_body",
-      "line": 253
+      "line": 257
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "test_head_does_not_read_response_body",
-      "line": 281
+      "line": 285
     },
     {
       "file": "backend/tests/test_strix_egress_transport.py",
       "language": "python",
       "kind": "function",
       "name": "test_rate_limit_is_enforced_per_contract",
-      "line": 309
+      "line": 313
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_concurrency_limit_is_enforced_per_contract",
+      "line": 347
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_request_slot_is_released_after_network_failure",
+      "line": 379
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "class",
+      "name": "_FailingConnection",
+      "line": 391
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
+      "name": "request",
+      "line": 392
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_concurrency_rejection_happens_before_dns",
+      "line": 422
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
+      "name": "dns",
+      "line": 426
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_rate_rejection_happens_before_dns",
+      "line": 453
+    },
+    {
+      "file": "backend/tests/test_strix_egress_transport.py",
+      "language": "python",
+      "kind": "function",
+      "name": "dns",
+      "line": 457
     },
     {
       "file": "backend/tests/test_strix_execution_contract.py",

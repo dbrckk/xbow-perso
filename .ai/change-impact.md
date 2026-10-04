@@ -1,29 +1,21 @@
 # Change impact
 
-Base: 7f0a2ead28daba495c2239b8ad796bf34e965d22
-Head: 52917ab83a52c6a6ad95b5746705e0d03cebeffd
+Base: 667cd7d753d67ca95980520f5b84c85fa66014be
+Head: 3fdbb71dac2608df93f4847365350a369f8ad0d3
 
 ## Changed files
-- M .env.example
-- M .github/workflows/ci.yml
 - M README.md
-- M backend/app/runtime_capabilities.py
 - M backend/app/strix_broker.py
-- A backend/app/strix_broker_client.py
-- A backend/app/strix_broker_models.py
-- A backend/app/strix_egress.py
-- A backend/app/strix_egress_transport.py
-- M backend/tests/test_runtime_capabilities.py
+- M backend/app/strix_broker_client.py
+- M backend/app/strix_egress.py
+- M backend/app/strix_egress_transport.py
 - M backend/tests/test_strix_broker.py
-- A backend/tests/test_strix_broker_client.py
-- M backend/tests/test_strix_broker_runtime.py
-- A backend/tests/test_strix_egress.py
-- A backend/tests/test_strix_egress_transport.py
-- M docker-compose.yml
+- M backend/tests/test_strix_broker_client.py
+- M backend/tests/test_strix_egress.py
+- M backend/tests/test_strix_egress_transport.py
 
 ## Affected areas
 - (root)
-- .github
 - backend
 
 ## Related test candidates
