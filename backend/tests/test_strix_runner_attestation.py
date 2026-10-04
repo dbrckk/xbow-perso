@@ -126,6 +126,8 @@ def test_runner_dockerfile_pins_official_release_assets():
     assert "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2" in dockerfile
     assert "sha256sum -c -" in dockerfile
     assert 'grep -Fx "strix ${STRIX_VERSION}"' in dockerfile
+    assert "COPY app/strix_runner_attestation.py" in dockerfile
+    assert "COPY app/__init__.py" not in dockerfile
 
 
 def test_runner_compose_service_is_internal_and_inert():
