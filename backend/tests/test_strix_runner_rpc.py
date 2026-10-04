@@ -381,7 +381,6 @@ def test_runner_rpc_socket_timeout_is_bounded():
     assert fake.timeout == 5.0
 
 
-
 def test_runner_rpc_signer_rejects_short_secret():
     with pytest.raises(ValueError, match="at least 32 bytes"):
         sign_runner_rpc_request(
