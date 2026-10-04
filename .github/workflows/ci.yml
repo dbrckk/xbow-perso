@@ -152,7 +152,7 @@ jobs:
           }
           trap cleanup EXIT
           export XBOW_STRIX_BROKER_HMAC_KEY="ci-broker-proof-key"
-          export XBOW_STRIX_RUNNER_RPC_HMAC_KEY="ci-runner-proof-key"
+          export XBOW_STRIX_RUNNER_RPC_HMAC_KEY="ci-runner-proof-key-at-least-32-bytes"
           docker compose --profile strix-broker --profile strix-runner up -d \
             --no-deps strix-broker strix-runner
           broker_ready=0
