@@ -94,4 +94,4 @@ def test_ci_verifies_official_uv_release_binary():
         in workflow
     )
     assert "python -m app.strix_python_toolchain_probe" in workflow
-    assert 'grep -Fx "uv 0.12.10"' in workflow
+    assert "uv 0.12.10" not in workflow
