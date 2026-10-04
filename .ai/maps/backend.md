@@ -9950,6 +9950,8 @@ strix_execution_intent = bool(
 strix_binary_available = bool(shutil.which("strix"))
 docker_cli_available = bool(shutil.which("docker"))
 strix_contract_enforceable = strix_runtime_contract_enforceable()
+strix_python_bootstrap_ready = False
+strix_upstream_docker_preflight_required = True
 ⋮----
 reasons: list[str] = []
 ⋮----

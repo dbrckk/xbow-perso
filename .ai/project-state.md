@@ -38,25 +38,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T22:29:53Z
+Generated: 2026-10-04T22:33:15Z
 
 ### Git
 - Branch: `main`
-- Head: `a8f40bbd8ea0`
-- Commit date: 2026-10-05T00:29:42+02:00
-- Commit: security(strix): bound runner RPC socket lifetime
+- Head: `1cf8291de2af`
+- Commit date: 2026-10-05T00:33:04+02:00
+- Commit: feat(strix): expose Python bootstrap blockers
 - Tracked files: 613
 
 ### Recently changed files
+- `backend/app/runtime_capabilities.py`
+- `backend/tests/test_runtime_capabilities.py`
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_strix_runner_rpc.py`
 - `.env.example`
 - `.github/workflows/ci.yml`
 - `README.md`
 - `backend/Dockerfile.strix-runner`
-- `backend/app/runtime_capabilities.py`
 - `backend/app/strix_runner_attestation.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_runner_attestation.py`
 - `docker-compose.yml`
 - `backend/app/strix_backend_hook.py`
