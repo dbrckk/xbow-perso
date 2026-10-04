@@ -43,6 +43,10 @@ class StrixEgressRateLimitError(StrixEgressPolicyError):
         super().__init__("Strix egress request rate exceeded")
 
 
+class StrixEgressConcurrencyError(StrixEgressPolicyError):
+    pass
+
+
 _HEADER_NAME = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]+$")
 _FORBIDDEN_REQUEST_HEADERS = {
     "connection",
@@ -71,6 +75,7 @@ _FORBIDDEN_RESPONSE_HEADERS = {
 _MAX_RATE_KEYS = 4096
 _RATE_LOCK = threading.Lock()
 _LAST_REQUEST_AT: OrderedDict[str, float] = OrderedDict()
+_INFLIGHT_CONTRACTS: set[str] = set()
 
 
 @dataclass(frozen=True)
@@ -238,24 +243,50 @@ def _pinned_create_connection(
     return create_connection
 
 
-def _enforce_rate(contract_hash: str, rps: float) -> None:
+def _acquire_request_slot(contract_hash: str, rps: float) -> None:
     interval = 1.0 / rps
     now = time.monotonic()
     with _RATE_LOCK:
+        if contract_hash in _INFLIGHT_CONTRACTS:
+            raise StrixEgressConcurrencyError(
+                "Strix egress contract already has a request in flight"
+            )
         previous = _LAST_REQUEST_AT.get(contract_hash)
         if previous is not None:
             remaining = interval - (now - previous)
             if remaining > 0:
                 raise StrixEgressRateLimitError(remaining)
+
+        if (
+            contract_hash not in _LAST_REQUEST_AT
+            and len(_LAST_REQUEST_AT) >= _MAX_RATE_KEYS
+        ):
+            evicted = False
+            for stale_hash in tuple(_LAST_REQUEST_AT):
+                if stale_hash in _INFLIGHT_CONTRACTS:
+                    continue
+                del _LAST_REQUEST_AT[stale_hash]
+                evicted = True
+                break
+            if not evicted:
+                raise StrixEgressConcurrencyError(
+                    "Strix egress rate state is saturated"
+                )
+
         _LAST_REQUEST_AT[contract_hash] = now
         _LAST_REQUEST_AT.move_to_end(contract_hash)
-        while len(_LAST_REQUEST_AT) > _MAX_RATE_KEYS:
-            _LAST_REQUEST_AT.popitem(last=False)
+        _INFLIGHT_CONTRACTS.add(contract_hash)
+
+
+def _release_request_slot(contract_hash: str) -> None:
+    with _RATE_LOCK:
+        _INFLIGHT_CONTRACTS.discard(contract_hash)
 
 
 def reset_rate_limits_for_tests() -> None:
     with _RATE_LOCK:
         _LAST_REQUEST_AT.clear()
+        _INFLIGHT_CONTRACTS.clear()
 
 
 def _response_headers(response: http.client.HTTPResponse) -> list[BrokerHeader]:
@@ -321,32 +352,32 @@ def perform_bounded_http_request(
         raise StrixEgressPolicyError("Strix egress target port is invalid") from exc
 
     headers = _normalize_headers(request.headers)
-    endpoint = resolve_public_endpoint(host, port)
-    _enforce_rate(
-        authorized.contract_hash,
-        authorized.max_requests_per_second,
-    )
     timeout = _timeout_seconds()
+    max_bytes = _max_response_bytes()
     target_path = parsed.path or "/"
     if parsed.query:
         target_path += f"?{parsed.query}"
 
-    connection_class = (
-        http.client.HTTPSConnection
-        if parsed.scheme == "https"
-        else http.client.HTTPConnection
+    _acquire_request_slot(
+        authorized.contract_hash,
+        authorized.max_requests_per_second,
     )
-    kwargs = {"timeout": timeout}
-    if parsed.scheme == "https":
-        kwargs["context"] = ssl.create_default_context()
-    connection = connection_class(host, port=port, **kwargs)
-    connection._create_connection = _pinned_create_connection(
-        endpoint,
-        timeout,
-    )
-
-    max_bytes = _max_response_bytes()
+    connection = None
     try:
+        endpoint = resolve_public_endpoint(host, port)
+        connection_class = (
+            http.client.HTTPSConnection
+            if parsed.scheme == "https"
+            else http.client.HTTPConnection
+        )
+        kwargs = {"timeout": timeout}
+        if parsed.scheme == "https":
+            kwargs["context"] = ssl.create_default_context()
+        connection = connection_class(host, port=port, **kwargs)
+        connection._create_connection = _pinned_create_connection(
+            endpoint,
+            timeout,
+        )
         connection.request(
             request.method,
             target_path,
@@ -378,4 +409,6 @@ def perform_bounded_http_request(
     ) as exc:
         raise StrixEgressNetworkError("Strix egress request failed") from exc
     finally:
-        connection.close()
+        if connection is not None:
+            connection.close()
+        _release_request_slot(authorized.contract_hash)

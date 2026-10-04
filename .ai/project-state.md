@@ -22,7 +22,8 @@ Status: active
 - Runtime-contract changes require the same full CI/security/supply-chain gates before merge.
 - Execution-contract v1 adds deterministic hashing, optional HMAC authentication, policy/job binding, scope checks, rate-cap checks and redacted scan-event tracing.
 - Broker isolation is asserted by tests and CI builds the dedicated `strix-broker` Compose profile.
-- The read-only egress transport rejects non-public IPs, pins validated DNS results to the socket connection, preserves TLS hostname verification, follows no redirects, bounds responses/timeouts and enforces contract RPS.
+- The read-only egress transport rejects non-public IPs, pins validated DNS results to the socket connection, preserves TLS hostname verification, follows no redirects, bounds responses/timeouts, enforces contract RPS, and allows only one in-flight request per contract.
+- Broker readiness now fails closed on the egress service whenever read-only proxying is enabled.
 
 ## Last verified
 - 2026-10-03

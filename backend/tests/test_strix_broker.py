@@ -13,6 +13,7 @@ from app.strix_broker import (
     readyz,
     request_http,
 )
+from app.strix_broker_client import StrixBrokerClientError
 from app.strix_execution_contract import build_strix_execution_contract
 
 
@@ -142,7 +143,6 @@ def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch):
         BrokerContractDocument.model_validate(payload)
 
 
-
 def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch):
     monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
     monkeypatch.setenv(
@@ -251,3 +251,46 @@ def test_broker_forwards_only_after_local_admission(monkeypatch):
     assert result.host == "app.example.test"
     assert result.mode == "read_only_http"
     assert result.egress_enforced is True
+
+
+def test_broker_readiness_requires_egress_when_proxy_enabled(monkeypatch):
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    monkeypatch.setenv(
+        "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
+        "true",
+    )
+    monkeypatch.setattr(
+        "app.strix_broker.check_egress_ready",
+        lambda: (_ for _ in ()).throw(
+            StrixBrokerClientError(
+                "fixture unavailable",
+                status_code=503,
+            )
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        readyz()
+
+    assert exc_info.value.status_code == 503
+    assert exc_info.value.detail == "Strix read-only egress is not ready"
+
+
+def test_broker_readiness_checks_egress_when_proxy_enabled(monkeypatch):
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    monkeypatch.setenv(
+        "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
+        "true",
+    )
+    called = {"count": 0}
+
+    def ready():
+        called["count"] += 1
+
+    monkeypatch.setattr("app.strix_broker.check_egress_ready", ready)
+
+    result = readyz()
+
+    assert called["count"] == 1
+    assert result["status"] == "ready"
+    assert result["egress_enabled"] is True

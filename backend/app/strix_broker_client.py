@@ -47,7 +47,7 @@ def _egress_endpoint() -> EgressEndpoint:
     if (
         parsed.scheme != "http"
         or parsed.hostname != "strix-egress"
-        or port not in {None, 8091}
+        or port != 8091
         or parsed.path != "/v1/fetch"
         or parsed.query
         or parsed.fragment
@@ -87,6 +87,64 @@ def _opener():
         urllib.request.ProxyHandler({}),
         _NoRedirect(),
     )
+
+
+def check_egress_ready() -> None:
+    endpoint = _egress_endpoint()
+    ready_url = (
+        f"http://{endpoint.host}:{endpoint.port}/readyz"
+    )
+    request = urllib.request.Request(
+        ready_url,
+        method="GET",
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "xbow-strix-broker/1.0",
+        },
+    )
+    try:
+        with _opener().open(
+            request,
+            timeout=min(_timeout_seconds(), 5.0),
+        ) as response:
+            payload = response.read(4097)
+            if int(response.status) != 200 or len(payload) > 4096:
+                raise StrixBrokerClientError(
+                    "Strix egress service is not ready",
+                    status_code=503,
+                )
+            try:
+                readiness = json.loads(payload.decode("utf-8"))
+            except (UnicodeError, json.JSONDecodeError) as exc:
+                raise StrixBrokerClientError(
+                    "Strix egress readiness payload is invalid",
+                    status_code=503,
+                ) from exc
+            expected = {
+                "status": "ready",
+                "mode": "read_only_http",
+                "methods": ["GET", "HEAD"],
+                "public_network_only": True,
+                "redirects_followed": False,
+            }
+            if not isinstance(readiness, dict) or any(
+                readiness.get(key) != value
+                for key, value in expected.items()
+            ):
+                raise StrixBrokerClientError(
+                    "Strix egress readiness posture is unexpected",
+                    status_code=503,
+                )
+    except urllib.error.HTTPError as exc:
+        raise StrixBrokerClientError(
+            "Strix egress service is not ready",
+            status_code=503,
+        ) from exc
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise StrixBrokerClientError(
+            "Strix egress service is unavailable",
+            status_code=503,
+        ) from exc
 
 
 def forward_read_only_request(

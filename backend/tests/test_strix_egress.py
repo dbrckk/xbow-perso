@@ -9,6 +9,7 @@ from app.strix_broker_models import (
 )
 from app.strix_egress import fetch, healthz, readyz
 from app.strix_egress_transport import (
+    StrixEgressConcurrencyError,
     StrixEgressNetworkError,
     StrixEgressPolicyError,
     StrixEgressRateLimitError,
@@ -146,3 +147,22 @@ def test_egress_fetch_returns_retry_after_for_rate_limit(monkeypatch):
 
     assert exc_info.value.status_code == 429
     assert exc_info.value.headers == {"Retry-After": "0.750"}
+
+
+def test_egress_fetch_returns_retry_after_for_concurrency_limit(monkeypatch):
+    request = _request(monkeypatch)
+    monkeypatch.setenv("XBOW_STRIX_EGRESS_ENABLED", "true")
+    monkeypatch.setenv("XBOW_STRIX_EGRESS_HMAC_KEY", "egress-service-secret")
+    monkeypatch.setattr(
+        "app.strix_egress.perform_bounded_http_request",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            StrixEgressConcurrencyError("already in flight")
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        fetch(request)
+
+    assert exc_info.value.status_code == 429
+    assert exc_info.value.headers == {"Retry-After": "0.100"}
+    assert exc_info.value.detail == "Strix egress request already in flight"

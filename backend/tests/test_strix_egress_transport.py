@@ -7,9 +7,13 @@ from app.main import Campaign, ProgramRules, TargetInput
 from app.strix_broker_models import BrokerContractDocument, BrokerHttpRequest
 from app.strix_egress_transport import (
     ResolvedEndpoint,
+    StrixEgressConcurrencyError,
+    StrixEgressNetworkError,
     StrixEgressPolicyError,
     StrixEgressRateLimitError,
+    _acquire_request_slot,
     _pinned_create_connection,
+    _release_request_slot,
     perform_bounded_http_request,
     reset_rate_limits_for_tests,
     resolve_public_endpoint,
@@ -338,3 +342,140 @@ def test_rate_limit_is_enforced_per_contract(monkeypatch):
         )
 
     assert exc_info.value.retry_after_seconds > 0.8
+
+
+def test_concurrency_limit_is_enforced_per_contract(monkeypatch):
+    request = _request(monkeypatch, requested_rps=2.0)
+    monkeypatch.setattr(
+        "app.strix_egress_transport.resolve_public_endpoint",
+        lambda *_args, **_kwargs: ResolvedEndpoint(
+            family=socket.AF_INET,
+            sockaddr=("93.184.216.34", 443),
+            address="93.184.216.34",
+            address_type="ipv4",
+        ),
+    )
+    monkeypatch.setattr(
+        "app.strix_egress_transport.http.client.HTTPSConnection",
+        _Connection,
+    )
+    monkeypatch.setattr(
+        "app.strix_egress_transport.time.monotonic",
+        lambda: 100.0,
+    )
+
+    contract_hash = request.contract.contract_hash
+    _acquire_request_slot(contract_hash, 2.0)
+    try:
+        with pytest.raises(StrixEgressConcurrencyError, match="in flight"):
+            perform_bounded_http_request(
+                request,
+                verification_secret="egress-secret",
+            )
+    finally:
+        _release_request_slot(contract_hash)
+
+
+def test_request_slot_is_released_after_network_failure(monkeypatch):
+    request = _request(monkeypatch, requested_rps=1.0)
+    monkeypatch.setattr(
+        "app.strix_egress_transport.resolve_public_endpoint",
+        lambda *_args, **_kwargs: ResolvedEndpoint(
+            family=socket.AF_INET,
+            sockaddr=("93.184.216.34", 443),
+            address="93.184.216.34",
+            address_type="ipv4",
+        ),
+    )
+
+    class _FailingConnection(_Connection):
+        def request(self, method, path, headers=None):
+            raise OSError("fixture network failure")
+
+    monkeypatch.setattr(
+        "app.strix_egress_transport.http.client.HTTPSConnection",
+        _FailingConnection,
+    )
+    times = iter([100.0, 102.0])
+    monkeypatch.setattr(
+        "app.strix_egress_transport.time.monotonic",
+        lambda: next(times),
+    )
+
+    with pytest.raises(StrixEgressNetworkError, match="Strix egress request failed"):
+        perform_bounded_http_request(
+            request,
+            verification_secret="egress-secret",
+        )
+
+    monkeypatch.setattr(
+        "app.strix_egress_transport.http.client.HTTPSConnection",
+        _Connection,
+    )
+    result = perform_bounded_http_request(
+        request,
+        verification_secret="egress-secret",
+    )
+    assert result.status_code == 200
+
+
+def test_concurrency_rejection_happens_before_dns(monkeypatch):
+    request = _request(monkeypatch, requested_rps=2.0)
+    called = {"dns": 0}
+
+    def dns(*_args, **_kwargs):
+        called["dns"] += 1
+        raise AssertionError("DNS must not run for saturated contract")
+
+    monkeypatch.setattr(
+        "app.strix_egress_transport.resolve_public_endpoint",
+        dns,
+    )
+    monkeypatch.setattr(
+        "app.strix_egress_transport.time.monotonic",
+        lambda: 100.0,
+    )
+
+    contract_hash = request.contract.contract_hash
+    _acquire_request_slot(contract_hash, 2.0)
+    try:
+        with pytest.raises(StrixEgressConcurrencyError, match="in flight"):
+            perform_bounded_http_request(
+                request,
+                verification_secret="egress-secret",
+            )
+    finally:
+        _release_request_slot(contract_hash)
+
+    assert called["dns"] == 0
+
+
+def test_rate_rejection_happens_before_dns(monkeypatch):
+    request = _request(monkeypatch, requested_rps=1.0)
+    called = {"dns": 0}
+
+    def dns(*_args, **_kwargs):
+        called["dns"] += 1
+        raise AssertionError("DNS must not run for rate-limited contract")
+
+    monkeypatch.setattr(
+        "app.strix_egress_transport.resolve_public_endpoint",
+        dns,
+    )
+    times = iter([100.0, 100.1])
+    monkeypatch.setattr(
+        "app.strix_egress_transport.time.monotonic",
+        lambda: next(times),
+    )
+
+    contract_hash = request.contract.contract_hash
+    _acquire_request_slot(contract_hash, 1.0)
+    _release_request_slot(contract_hash)
+
+    with pytest.raises(StrixEgressRateLimitError):
+        perform_bounded_http_request(
+            request,
+            verification_secret="egress-secret",
+        )
+
+    assert called["dns"] == 0
