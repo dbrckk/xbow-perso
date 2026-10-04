@@ -11397,6 +11397,7 @@ RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
 RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
+RUNNER_RPC_READ_DEADLINE_SECONDS = 10.0
 RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
 RUNNER_RPC_MIN_SECRET_BYTES = 32
 RUNNER_RPC_MAX_SECRET_BYTES = 4096
@@ -11476,6 +11477,18 @@ class _RunnerRpcHttpHandler(BaseHTTPRequestHandler)
 server_version = "xbow-strix-runner-rpc/1"
 ⋮----
 def setup(self) -> None
+⋮----
+def finish(self) -> None
+⋮----
+def _start_read_deadline(self) -> None
+⋮----
+timer = threading.Timer(
+⋮----
+def _cancel_read_deadline(self) -> None
+⋮----
+timer = getattr(self, "_read_deadline_timer", None)
+⋮----
+def _expire_read_deadline(self) -> None
 ⋮----
 def do_GET(self) -> None:  # noqa: N802
 ⋮----
@@ -21286,6 +21299,26 @@ def test_runner_rpc_accepts_exact_minimum_secret_length()
 secret = "x" * RUNNER_RPC_MIN_SECRET_BYTES
 ⋮----
 service = RunnerRpcService(
+⋮----
+def test_runner_rpc_read_deadline_is_absolute(monkeypatch)
+⋮----
+timers = []
+⋮----
+class FakeTimer
+⋮----
+def __init__(self, interval, callback)
+⋮----
+def start(self)
+⋮----
+def cancel(self)
+⋮----
+def shutdown(self, mode)
+⋮----
+handler = object.__new__(_RunnerRpcHttpHandler)
+⋮----
+def test_runner_rpc_rejects_truncated_body_before_service()
+⋮----
+written = []
 ```
 
 ## File: tests/test_submission_api.py

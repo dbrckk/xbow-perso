@@ -12005,6 +12005,7 @@ RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
 RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
 RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
+RUNNER_RPC_READ_DEADLINE_SECONDS = 10.0
 RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
 RUNNER_RPC_MIN_SECRET_BYTES = 32
 RUNNER_RPC_MAX_SECRET_BYTES = 4096
@@ -12084,6 +12085,18 @@ class _RunnerRpcHttpHandler(BaseHTTPRequestHandler)
 server_version = "xbow-strix-runner-rpc/1"
 ⋮----
 def setup(self) -> None
+⋮----
+def finish(self) -> None
+⋮----
+def _start_read_deadline(self) -> None
+⋮----
+timer = threading.Timer(
+⋮----
+def _cancel_read_deadline(self) -> None
+⋮----
+timer = getattr(self, "_read_deadline_timer", None)
+⋮----
+def _expire_read_deadline(self) -> None
 ⋮----
 def do_GET(self) -> None:  # noqa: N802
 ⋮----
@@ -21894,6 +21907,26 @@ def test_runner_rpc_accepts_exact_minimum_secret_length()
 secret = "x" * RUNNER_RPC_MIN_SECRET_BYTES
 ⋮----
 service = RunnerRpcService(
+⋮----
+def test_runner_rpc_read_deadline_is_absolute(monkeypatch)
+⋮----
+timers = []
+⋮----
+class FakeTimer
+⋮----
+def __init__(self, interval, callback)
+⋮----
+def start(self)
+⋮----
+def cancel(self)
+⋮----
+def shutdown(self, mode)
+⋮----
+handler = object.__new__(_RunnerRpcHttpHandler)
+⋮----
+def test_runner_rpc_rejects_truncated_body_before_service()
+⋮----
+written = []
 ````
 
 ## File: backend/tests/test_submission_api.py
@@ -26347,7 +26380,7 @@ For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` m
 
 A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux release. The image verifies the official release-asset SHA-256 before extraction (amd64 and arm64 have separate pinned digests), verifies the CLI reports exactly `strix 1.6.2`, records the pinned source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and re-attests the extracted binary SHA-256 at runtime. The container has no published ports, volumes, Docker socket or external network and runs as a non-root user with a read-only root filesystem and all Linux capabilities dropped.
 
-The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it now serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes, but **all session operations are still unimplemented**. A valid request therefore fails closed instead of executing a command.
+The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it now serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes. Its HTTP boundary also uses a 5-second idle socket timeout, a 10-second absolute header/body read deadline and a 16-connection concurrency cap. **All session operations are still unimplemented**; a valid request therefore fails closed instead of executing a command.
 
 Provision a separate internal RPC key of at least 32 bytes before starting the runner. A 32-byte random value encoded as hex is sufficient:
 
