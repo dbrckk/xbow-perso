@@ -303,7 +303,7 @@ class _RunnerRpcHandler(BaseHTTPRequestHandler):
             payload = self._decode_json(body)
             response = self._dispatch_post(payload)
             self._send_json(200, response)
-        except RpcAuthError as exc:
+        except RpcAuthError:
             self._send_json(
                 401,
                 {"detail": "RPC authentication failed"},
