@@ -65,6 +65,7 @@ def _payload(path: str) -> dict:
         return {
             "schema": RUNNER_RPC_PROTOCOL,
             "request_id": "req-create-1",
+            "contract_hash": "c" * 64,
             "image": "ghcr.io/example/sandbox@sha256:" + "a" * 64,
             "exposed_ports": [48080],
             "manifest_digest": "b" * 64,
@@ -73,6 +74,7 @@ def _payload(path: str) -> dict:
         return {
             "schema": RUNNER_RPC_PROTOCOL,
             "request_id": "req-exec-1",
+            "contract_hash": "c" * 64,
             "session_id": "sess-1",
             "argv": ["sh", "-lc", "printf ok"],
             "timeout_seconds": 10.0,
@@ -81,6 +83,7 @@ def _payload(path: str) -> dict:
         return {
             "schema": RUNNER_RPC_PROTOCOL,
             "request_id": "req-port-1",
+            "contract_hash": "c" * 64,
             "session_id": "sess-1",
             "port": 48080,
         }
@@ -88,6 +91,7 @@ def _payload(path: str) -> dict:
         return {
             "schema": RUNNER_RPC_PROTOCOL,
             "request_id": "req-delete-1",
+            "contract_hash": "c" * 64,
             "session_id": "sess-1",
         }
     raise AssertionError(path)
@@ -464,6 +468,40 @@ def test_create_requires_immutable_sha256_image_reference(image):
     path = "/v1/session/create"
     payload = _payload(path)
     payload["image"] = image
+
+    result = _request(_service(), path, payload)
+
+    assert result.status == 400
+    assert result.json_body["error"] == "invalid_request"
+
+
+
+@pytest.mark.parametrize(
+    "path",
+    (
+        "/v1/session/create",
+        "/v1/session/exec",
+        "/v1/session/resolve-port",
+        "/v1/session/delete",
+    ),
+)
+@pytest.mark.parametrize(
+    "contract_hash",
+    (
+        None,
+        "not-a-digest",
+        "A" * 64,
+    ),
+)
+def test_session_operations_require_canonical_contract_hash(
+    path,
+    contract_hash,
+):
+    payload = _payload(path)
+    if contract_hash is None:
+        payload.pop("contract_hash")
+    else:
+        payload["contract_hash"] = contract_hash
 
     result = _request(_service(), path, payload)
 
