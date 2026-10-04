@@ -11,13 +11,14 @@ Status: active
 - The Strix boundary now has a broker plus a separate dual-homed read-only egress service; GET/HEAD requests are contract-verified twice, DNS-pinned, public-network-only, non-redirecting, bounded and rate-limited.
 - A dedicated inert Strix runner pins v1.6.2, verifies official amd64/arm64 release digests at build time, attests the extracted binary/version at runtime, and is attached only to the internal broker network.
 - The xbow `xbow-remote-v1` backend hook is verified against the official Strix v1.6.2 Python wheel and registry API; it declares no bind-mount support and intentionally rejects every execution request.
+- The isolated runner now has an HMAC-authenticated, nonce/replay-protected internal RPC for idempotent session create/delete; exec, write and exposed-port resolution remain explicitly disabled.
 
 ## Broken / blockers
-- Active Strix execution is still not wired through the isolated runner/broker path; the runner and custom backend hook remain fail-closed.
+- Active Strix execution is still not wired through the isolated runner/broker path; the RPC exists, but all Strix execution primitives remain disabled.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed while defining the minimum remote-session RPC surface required by Strix v1.6.2 (exec, exposed-port resolution, cleanup) and implementing it against the isolated runner.
+- Keep Strix active dispatch fail-closed while implementing a client-side Strix session adapter against the authenticated runner RPC, with execution/write/port operations still denied until method-specific controls exist.
 
 ## Validation
 - PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
@@ -28,6 +29,7 @@ Status: active
 - Broker readiness now fails closed on the egress service whenever read-only proxying is enabled.
 - The Strix runner image pins v1.6.2 release assets/digests and source commit, verifies the archive before extraction, verifies the exact CLI version, and re-attests the binary SHA-256 at runtime.
 - CI verifies the custom backend hook against the official v1.6.2 manylinux x86_64 wheel after checking its pinned SHA-256; the hook self-test proves registration succeeds while backend execution remains blocked.
+- Runner RPC authentication binds method/path/body to timestamped nonces, rejects replay, and CI probes authenticated create -> blocked exec -> delete while the live network proof still demonstrates no direct public route.
 
 ## Last verified
 - 2026-10-03
