@@ -282,7 +282,6 @@ def test_python_runtime_probe_rejects_upstream_blob_mismatch(
         probe_python_runtime()
 
 
-
 def test_preflight_structure_identifies_only_docker_checks_to_patch():
     from app.strix_python_compat_probe import _verify_preflight_structure
 
