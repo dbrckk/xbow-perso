@@ -191,16 +191,9 @@ def test_authenticated_session_operations_still_fail_closed(path):
     assert result.json_body["error"] == "active_execution_disabled"
 
 
-def test_even_active_flag_cannot_enable_unimplemented_rpc():
-    path = "/v1/session/create"
-    result = _request(
-        _service(active_execution=True),
-        path,
-        _payload(path),
-    )
-
-    assert result.status == 501
-    assert result.json_body["error"] == "rpc_operation_not_implemented"
+def test_runner_rpc_rejects_active_execution_mode():
+    with pytest.raises(ValueError, match="active execution must remain disabled"):
+        _service(active_execution=True)
 
 
 def test_missing_auth_is_rejected_before_payload_processing():
