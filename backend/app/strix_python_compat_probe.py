@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import sys
@@ -19,6 +20,11 @@ STRIX_PYTHON_COMPAT_SCHEMA = "strix-python-compat-probe-v1"
 STRIX_MAIN_PY_GIT_BLOB_SHA1 = "c9bd559614a4b6a952229500721216be6df50c62"
 STRIX_ENVIRONMENT_PY_GIT_BLOB_SHA1 = "522067df84a046379341f0e243dea57c9205b6b1"
 _MAX_UPSTREAM_SOURCE_BYTES = 512 * 1024
+_DOCKER_PREFLIGHT_SYMBOLS = (
+    "check_docker_installed",
+    "pull_docker_image",
+)
+_PRESERVED_VALIDATION_SYMBOL = "validate_environment"
 _REQUIRED_DOCKER_PREFLIGHT_MARKERS = (
     "check_docker_installed()",
     "pull_docker_image()",
@@ -104,6 +110,75 @@ def _verify_docker_preflight(source: str) -> None:
         )
 
 
+def _verify_preflight_structure(source: str) -> dict[str, Any]:
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as exc:
+        raise StrixPythonCompatError(
+            "Strix upstream preflight structure is invalid"
+        ) from exc
+
+    required_symbols = (
+        *_DOCKER_PREFLIGHT_SYMBOLS,
+        _PRESERVED_VALIDATION_SYMBOL,
+    )
+    environment_imports = [
+        node
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "strix.interface.environment"
+    ]
+    if len(environment_imports) != 1:
+        raise StrixPythonCompatError(
+            "Strix upstream preflight structure changed"
+        )
+    imported = {
+        alias.name: alias.asname
+        for alias in environment_imports[0].names
+        if alias.name in required_symbols
+    }
+    if set(imported) != set(required_symbols) or any(
+        alias is not None for alias in imported.values()
+    ):
+        raise StrixPythonCompatError(
+            "Strix upstream preflight structure changed"
+        )
+
+    main_functions = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == "main"
+    ]
+    if len(main_functions) != 1:
+        raise StrixPythonCompatError(
+            "Strix upstream preflight structure changed"
+        )
+
+    calls = sorted(
+        (
+            node.lineno,
+            node.col_offset,
+            node.func.id,
+        )
+        for node in ast.walk(main_functions[0])
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id in required_symbols
+    )
+    call_names = [item[2] for item in calls]
+    if call_names != list(required_symbols):
+        raise StrixPythonCompatError(
+            "Strix upstream preflight structure changed"
+        )
+
+    return {
+        "docker_preflight_symbols": list(_DOCKER_PREFLIGHT_SYMBOLS),
+        "preserved_validation_symbol": _PRESERVED_VALIDATION_SYMBOL,
+        "preflight_call_order_verified": True,
+    }
+
+
 def probe_python_runtime() -> dict[str, Any]:
     version = _installed_strix_version()
     if version != STRIX_EXPECTED_VERSION:
@@ -139,6 +214,7 @@ def probe_python_runtime() -> dict[str, Any]:
 
     source = _read_upstream_main_source(main_path)
     _verify_docker_preflight(source)
+    preflight_structure = _verify_preflight_structure(source)
 
     return {
         "schema": STRIX_PYTHON_COMPAT_SCHEMA,
@@ -151,6 +227,7 @@ def probe_python_runtime() -> dict[str, Any]:
         "entrypoint_enabled": False,
         "upstream_main_blob_sha1": main_blob_sha1,
         "upstream_environment_blob_sha1": environment_blob_sha1,
+        **preflight_structure,
     }
 
 
