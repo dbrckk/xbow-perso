@@ -35,7 +35,8 @@
     "Added HMAC-SHA256 request authentication with timestamp bounds, nonce replay protection, body limits and concurrent replay serialization.",
     "Changed the isolated runner from an idle loop to an internal-only RPC service on port 8092 while keeping active execution impossible.",
     "Added broker-to-runner readiness verification in CI without exposing a host port.",
-    "Surfaced RPC and standalone-backend-loading blockers through runtime capability diagnostics."
+    "Surfaced RPC and standalone-backend-loading blockers through runtime capability diagnostics.",
+    "Kept the runner tmpfs noexec after CI exposed PyInstaller runtime extraction failure; moved exact CLI version verification to image build time and runtime re-attestation to the immutable manifest plus binary SHA-256."
   ],
   "current_branch": "codex/strix-runner-rpc-contract",
   "current_priority": "Provide a pinned Python Strix bootstrap path that can load xbow-remote-v1 before implementing any remote session execution.",
