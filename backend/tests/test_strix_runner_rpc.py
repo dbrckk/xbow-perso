@@ -448,3 +448,25 @@ def test_runner_rpc_signing_rejects_weak_shared_secret():
             timestamp=NOW,
             nonce=NONCE,
         )
+
+
+
+@pytest.mark.parametrize(
+    "image",
+    (
+        "ghcr.io/example/sandbox:latest",
+        "ghcr.io/example/sandbox:1.0.0",
+        "ghcr.io/example/sandbox",
+        "ghcr.io/example/sandbox@sha256:" + "A" * 64,
+        "ghcr.io/example/sandbox@sha512:" + "a" * 128,
+    ),
+)
+def test_create_requires_immutable_sha256_image_reference(image):
+    path = "/v1/session/create"
+    payload = _payload(path)
+    payload["image"] = image
+
+    result = _request(_service(), path, payload)
+
+    assert result.status == 400
+    assert result.json_body["error"] == "invalid_request"
