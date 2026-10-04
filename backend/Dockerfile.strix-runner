@@ -48,12 +48,11 @@ RUN groupadd --system --gid 65532 strix-runner \
     && chown -R root:root /app
 
 COPY --from=fetch /opt/strix /opt/strix
-COPY app/__init__.py /app/app/__init__.py
 COPY app/strix_runner_attestation.py /app/app/strix_runner_attestation.py
 
 RUN chmod 0555 /opt/strix/strix \
     && chmod 0444 /opt/strix/manifest.json \
-    && chmod 0444 /app/app/__init__.py /app/app/strix_runner_attestation.py
+    && chmod 0444 /app/app/strix_runner_attestation.py
 
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
