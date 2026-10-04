@@ -45,6 +45,16 @@ def test_python_runtime_probe_reports_hook_and_docker_preflight(monkeypatch, tmp
         "supports_bind_mounts": False,
         "active_execution_enabled": False,
         "upstream_docker_preflight_required": True,
+        "source_commit": "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2",
+        "upstream_pyproject_sha256": (
+            "78e22229485fcd69cf07670812826170"
+            "a6538c157e61ccf12aa38661fc066c6c"
+        ),
+        "upstream_uv_lock_sha256": (
+            "b4adb335fdfa72b64173e120eea57d08"
+            "b0a993979eb4b01157b2f1488f81c6ea"
+        ),
+        "dependency_lock_installation_enabled": False,
         "entrypoint_enabled": False,
     }
 
@@ -116,3 +126,30 @@ def test_ci_runs_python_compat_probe_against_pinned_wheel():
     workflow = Path(".github/workflows/ci.yml").read_text()
 
     assert "app.strix_python_compat_probe --self-test" in workflow
+
+
+
+def test_ci_verifies_pinned_upstream_python_dependency_files():
+    workflow = Path(".github/workflows/ci.yml").read_text()
+    source_commit = "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+
+    assert (
+        f"raw.githubusercontent.com/usestrix/strix/{source_commit}/pyproject.toml"
+        in workflow
+    )
+    assert (
+        f"raw.githubusercontent.com/usestrix/strix/{source_commit}/uv.lock"
+        in workflow
+    )
+    assert (
+        "78e22229485fcd69cf07670812826170"
+        "a6538c157e61ccf12aa38661fc066c6c"
+        in workflow
+    )
+    assert (
+        "b4adb335fdfa72b64173e120eea57d08"
+        "b0a993979eb4b01157b2f1488f81c6ea"
+        in workflow
+    )
+    assert "upstream-pyproject.toml" in workflow
+    assert "upstream-uv.lock" in workflow
