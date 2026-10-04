@@ -136,7 +136,8 @@ def test_dependency_lock_probe_rejects_changed_direct_dependencies(
 def test_ci_attests_pinned_strix_dependency_lock():
     workflow = Path(".github/workflows/ci.yml").read_text()
 
-    assert "app.strix_python_lock_probe --self-test" in workflow
+    assert "python -m app.strix_python_lock_probe" in workflow
+    assert "--self-test" in workflow
     assert "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2" in workflow
     assert "pyproject.toml" in workflow
     assert "uv.lock" in workflow
