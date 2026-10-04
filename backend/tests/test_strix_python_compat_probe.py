@@ -116,3 +116,112 @@ def test_ci_runs_python_compat_probe_against_pinned_wheel():
     workflow = Path(".github/workflows/ci.yml").read_text()
 
     assert "app.strix_python_compat_probe --self-test" in workflow
+
+
+
+def test_git_blob_sha1_matches_git_object_identity(tmp_path):
+    from app.strix_python_compat_probe import _git_blob_sha1
+
+    source = tmp_path / "fixture.txt"
+    source.write_bytes(b"hello\n")
+
+    assert _git_blob_sha1(source) == "ce013625030ba8dba906f756967f9e9ca394464a"
+
+
+def test_python_runtime_probe_requires_exact_upstream_blob_ids(
+    monkeypatch,
+    tmp_path,
+):
+    main_source = tmp_path / "main.py"
+    main_source.write_text(
+        "def main():\n"
+        "    check_docker_installed()\n"
+        "    pull_docker_image()\n"
+        "    validate_environment()\n",
+        encoding="utf-8",
+    )
+    environment_source = tmp_path / "environment.py"
+    environment_source.write_text("fixture\n", encoding="utf-8")
+
+    monkeypatch.setattr(
+        "app.strix_python_compat_probe._installed_strix_version",
+        lambda: "1.6.2",
+    )
+    monkeypatch.setattr(
+        "app.strix_python_compat_probe._upstream_source_path",
+        lambda relative: (
+            main_source
+            if relative == "strix/interface/main.py"
+            else environment_source
+        ),
+    )
+    monkeypatch.setattr(
+        "app.strix_python_compat_probe._git_blob_sha1",
+        lambda path: (
+            "c9bd559614a4b6a952229500721216be6df50c62"
+            if path == main_source
+            else "522067df84a046379341f0e243dea57c9205b6b1"
+        ),
+    )
+    monkeypatch.setattr(
+        "app.strix_python_compat_probe.register_xbow_backend",
+        lambda: {
+            "backend": "xbow-remote-v1",
+            "registered": True,
+            "supports_bind_mounts": False,
+            "active_execution_enabled": False,
+        },
+    )
+
+    result = probe_python_runtime()
+
+    assert result["upstream_main_blob_sha1"] == (
+        "c9bd559614a4b6a952229500721216be6df50c62"
+    )
+    assert result["upstream_environment_blob_sha1"] == (
+        "522067df84a046379341f0e243dea57c9205b6b1"
+    )
+
+
+def test_python_runtime_probe_rejects_upstream_blob_mismatch(
+    monkeypatch,
+    tmp_path,
+):
+    main_source = tmp_path / "main.py"
+    main_source.write_text(
+        "check_docker_installed()\n"
+        "pull_docker_image()\n"
+        "validate_environment()\n",
+        encoding="utf-8",
+    )
+    environment_source = tmp_path / "environment.py"
+    environment_source.write_text("fixture\n", encoding="utf-8")
+
+    monkeypatch.setattr(
+        "app.strix_python_compat_probe._installed_strix_version",
+        lambda: "1.6.2",
+    )
+    monkeypatch.setattr(
+        "app.strix_python_compat_probe._upstream_source_path",
+        lambda relative: (
+            main_source
+            if relative == "strix/interface/main.py"
+            else environment_source
+        ),
+    )
+    monkeypatch.setattr(
+        "app.strix_python_compat_probe._git_blob_sha1",
+        lambda _path: "0" * 40,
+    )
+    monkeypatch.setattr(
+        "app.strix_python_compat_probe.register_xbow_backend",
+        lambda: {
+            "backend": "xbow-remote-v1",
+            "registered": True,
+            "supports_bind_mounts": False,
+            "active_execution_enabled": False,
+        },
+    )
+
+    with pytest.raises(StrixPythonCompatError, match="source identity"):
+        probe_python_runtime()
