@@ -1,6 +1,8 @@
 from dataclasses import replace
 
 import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from app.main import Campaign, ProgramRules, TargetInput
 from app.strix_execution_contract import (
@@ -10,6 +12,31 @@ from app.strix_execution_contract import (
     build_strix_execution_contract,
     verify_strix_execution_contract,
 )
+
+
+
+
+
+@pytest.fixture(autouse=True)
+def _clear_ed25519_contract_keys(monkeypatch):
+    monkeypatch.delenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
+        raising=False,
+    )
+    monkeypatch.delenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PUBLIC_KEY",
+        raising=False,
+    )
+
+
+def _ed25519_keypair(seed: int = 0) -> tuple[str, str]:
+    private_bytes = bytes((seed + index) % 256 for index in range(32))
+    private_key = Ed25519PrivateKey.from_private_bytes(private_bytes)
+    public_bytes = private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+    return private_bytes.hex(), public_bytes.hex()
 
 
 def _campaign(*, rps=1.5, denied=None):
@@ -206,3 +233,80 @@ def test_automated_scanning_must_remain_enabled(monkeypatch):
         match="automated_scanning_disabled",
     ):
         build_strix_execution_contract(campaign, job_id="job-1")
+
+
+
+def test_ed25519_contract_verifies_with_public_key_only(monkeypatch):
+    private_key, public_key = _ed25519_keypair()
+    monkeypatch.setenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
+        private_key,
+    )
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "fallback-hmac-key")
+
+    contract = build_strix_execution_contract(_campaign(), job_id="job-ed")
+
+    assert contract.signature_alg == "ed25519"
+    assert contract.signature is not None
+    assert len(contract.signature) == 128
+
+    monkeypatch.delenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
+        raising=False,
+    )
+    monkeypatch.delenv("XBOW_AUDIT_HMAC_KEY", raising=False)
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+
+    authorized = authorize_strix_contract_request(
+        contract,
+        target="https://api.example.test/profile",
+        requested_rps=1.0,
+        verification_public_key=public_key,
+    )
+
+    assert authorized.contract_hash == contract.contract_hash
+    assert authorized.host == "api.example.test"
+
+
+def test_ed25519_contract_rejects_wrong_public_key(monkeypatch):
+    private_key, _public_key = _ed25519_keypair()
+    _wrong_private, wrong_public = _ed25519_keypair(seed=64)
+    monkeypatch.setenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
+        private_key,
+    )
+    contract = build_strix_execution_contract(_campaign(), job_id="job-ed")
+
+    monkeypatch.delenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
+        raising=False,
+    )
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+
+    with pytest.raises(StrixExecutionContractError, match="signature mismatch"):
+        authorize_strix_contract_request(
+            contract,
+            target="https://app.example.test/",
+            requested_rps=1.0,
+            verification_public_key=wrong_public,
+        )
+
+
+def test_ed25519_contract_rejects_malformed_private_key(monkeypatch):
+    monkeypatch.setenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
+        "not-a-valid-key",
+    )
+
+    with pytest.raises(StrixExecutionContractError, match="private key"):
+        build_strix_execution_contract(_campaign(), job_id="job-ed")
+
+
+def test_hmac_contract_remains_supported_without_ed25519_key(monkeypatch):
+    monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "fixture-contract-key")
+
+    contract = build_strix_execution_contract(_campaign(), job_id="job-hmac")
+
+    assert contract.signature_alg == "hmac-sha256"
+    assert contract.signature is not None
+    assert len(contract.signature) == 64
