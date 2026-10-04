@@ -38,18 +38,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T22:33:15Z
+Generated: 2026-10-04T22:37:54Z
 
 ### Git
 - Branch: `main`
-- Head: `1cf8291de2af`
-- Commit date: 2026-10-05T00:33:04+02:00
-- Commit: feat(strix): expose Python bootstrap blockers
+- Head: `96f7d9921ea6`
+- Commit date: 2026-10-05T00:37:43+02:00
+- Commit: test(strix): keep bootstrap blockers scoped to Strix intent
 - Tracked files: 613
 
 ### Recently changed files
-- `backend/app/runtime_capabilities.py`
 - `backend/tests/test_runtime_capabilities.py`
+- `backend/app/runtime_capabilities.py`
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_strix_runner_rpc.py`
 - `.env.example`
@@ -61,10 +61,6 @@ Generated: 2026-10-04T22:33:15Z
 - `docker-compose.yml`
 - `backend/app/strix_backend_hook.py`
 - `backend/tests/test_strix_backend_hook.py`
-- `backend/app/main.py`
-- `backend/app/scope_policy.py`
-- `backend/app/strix_execution_contract.py`
-- `backend/tests/test_strix_broker_runtime.py`
 
 ### Project signals
 - `pyproject.toml`

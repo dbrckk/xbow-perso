@@ -1,10 +1,9 @@
 # Change impact
 
-Base: 9b88da0ceba5f0a4a4268c20e11b116391ceed54
-Head: 1cf8291de2af9c225dd3b3108176a65c6c766687
+Base: 12db634756aff9a978070ab220d2692d103a3db9
+Head: 96f7d9921ea62de73cb0d0cccb9374b5856a7533
 
 ## Changed files
-- M backend/app/runtime_capabilities.py
 - M backend/tests/test_runtime_capabilities.py
 
 ## Affected areas
