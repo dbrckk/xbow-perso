@@ -26,6 +26,7 @@ Status: active
 - The read-only egress transport rejects non-public IPs, pins validated DNS results to the socket connection, preserves TLS hostname verification, follows no redirects, bounds responses/timeouts, enforces contract RPS, and allows only one in-flight request per contract.
 - Broker readiness now fails closed on the egress service whenever read-only proxying is enabled.
 - The Strix runner image pins v1.6.2 release assets/digests and source commit, verifies the archive before extraction, verifies the exact CLI version, and re-attests the binary SHA-256 at runtime.
+- CI runtime smoke executes attestation in the final Compose container and fails if that runner can establish direct public TCP egress.
 
 ## Last verified
 - 2026-10-03
