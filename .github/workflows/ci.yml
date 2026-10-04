@@ -58,6 +58,20 @@ jobs:
           tmp="$(mktemp -d)"
           trap 'rm -rf "$tmp"' EXIT
           wheel="$tmp/strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl"
+          upstream_pyproject="$tmp/upstream-pyproject.toml"
+          upstream_lock="$tmp/upstream-uv.lock"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            "https://raw.githubusercontent.com/usestrix/strix/ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2/pyproject.toml" \
+            -o "$upstream_pyproject"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            "https://raw.githubusercontent.com/usestrix/strix/ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2/uv.lock" \
+            -o "$upstream_lock"
+          printf '%s  %s\n' \
+            "78e22229485fcd69cf07670812826170a6538c157e61ccf12aa38661fc066c6c" \
+            "$upstream_pyproject" | sha256sum -c -
+          printf '%s  %s\n' \
+            "b4adb335fdfa72b64173e120eea57d08b0a993979eb4b01157b2f1488f81c6ea" \
+            "$upstream_lock" | sha256sum -c -
           curl --fail --location --proto '=https' --tlsv1.2 \
             "https://github.com/usestrix/strix/releases/download/v1.6.2/strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl" \
             -o "$wheel"
