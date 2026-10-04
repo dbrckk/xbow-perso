@@ -450,7 +450,6 @@ def test_runner_rpc_signing_rejects_weak_shared_secret():
         )
 
 
-
 @pytest.mark.parametrize(
     "image",
     (
