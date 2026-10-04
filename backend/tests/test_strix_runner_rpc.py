@@ -4,14 +4,16 @@ from pathlib import Path
 import pytest
 
 from app.strix_runner_rpc import (
+    RUNNER_RPC_MIN_SECRET_BYTES,
     RUNNER_RPC_PROTOCOL,
     RunnerRpcService,
+    _rpc_secret_from_env,
     sign_runner_rpc_request,
 )
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SECRET = "fixture-runner-rpc-secret"
+SECRET = "fixture-runner-rpc-secret-at-least-32-bytes"
 NOW = 1_800_000_000
 NONCE = "0123456789abcdef0123456789abcdef"
 
@@ -377,3 +379,52 @@ def test_runner_rpc_socket_timeout_is_bounded():
 
     assert RUNNER_RPC_SOCKET_TIMEOUT_SECONDS == 5.0
     assert fake.timeout == 5.0
+
+
+
+def test_runner_rpc_signer_rejects_short_secret():
+    with pytest.raises(ValueError, match="at least 32 bytes"):
+        sign_runner_rpc_request(
+            method="POST",
+            path="/v1/session/delete",
+            body=b"{}",
+            secret="too-short",
+            timestamp=NOW,
+            nonce=NONCE,
+        )
+
+
+def test_runner_rpc_service_rejects_short_secret():
+    with pytest.raises(ValueError, match="at least 32 bytes"):
+        RunnerRpcService(
+            secret="too-short",
+            active_execution=False,
+            now=lambda: NOW,
+        )
+
+
+def test_runner_rpc_env_rejects_short_secret(monkeypatch):
+    monkeypatch.setenv(
+        "XBOW_STRIX_RUNNER_RPC_HMAC_KEY",
+        "too-short",
+    )
+
+    with pytest.raises(RuntimeError, match="at least 32 bytes"):
+        _rpc_secret_from_env()
+
+
+def test_runner_rpc_accepts_exact_minimum_secret_length():
+    secret = "x" * RUNNER_RPC_MIN_SECRET_BYTES
+
+    service = RunnerRpcService(
+        secret=secret,
+        active_execution=False,
+        now=lambda: NOW,
+    )
+
+    assert service.handle(
+        method="GET",
+        path="/readyz",
+        headers={},
+        body=b"",
+    ).status == 200
