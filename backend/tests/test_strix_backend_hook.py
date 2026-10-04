@@ -19,6 +19,11 @@ from app.strix_backend_hook import (
 ROOT = Path(__file__).resolve().parents[2]
 
 
+@pytest.fixture(autouse=True)
+def _restore_runtime_backend_env(monkeypatch):
+    monkeypatch.delenv("STRIX_RUNTIME_BACKEND", raising=False)
+
+
 def _install_fake_strix_backend_api(monkeypatch, *, existing=None):
     registry = {"docker": object()}
     bind_mount_backends = {"docker"}
