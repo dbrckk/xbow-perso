@@ -85,13 +85,16 @@ def test_toolchain_probe_rejects_unknown_architecture(tmp_path):
         )
 
 
-def test_ci_verifies_official_uv_release_binary():
+def test_ci_verifies_official_uv_release_asset():
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 
-    assert "uv-x86_64-unknown-linux-gnu.tar.gz" in workflow
+    assert (
+        "https://github.com/astral-sh/uv/releases/download/"
+        "0.12.10/uv-x86_64-unknown-linux-gnu.tar.gz"
+        in workflow
+    )
     assert (
         "173d95a0c32d18c896c46ba6fafbf3cf9c14ab74b033f81b76c883ef492a976b"
         in workflow
     )
     assert "python -m app.strix_python_toolchain_probe" in workflow
-    assert "uv 0.12.10" not in workflow
