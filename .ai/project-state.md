@@ -35,23 +35,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T09:37:05Z
+Generated: 2026-10-04T09:49:40Z
 
 ### Git
 - Branch: `main`
-- Head: `a662b153ba02`
-- Commit date: 2026-10-04T11:36:53+02:00
-- Commit: ci(strix): prove runner broker-only network isolation
-- Tracked files: 609
+- Head: `68841f350e31`
+- Commit date: 2026-10-04T11:49:28+02:00
+- Commit: feat(strix): verify fail-closed custom backend hook
+- Tracked files: 611
 
 ### Recently changed files
 - `.github/workflows/ci.yml`
+- `README.md`
+- `backend/app/strix_backend_hook.py`
+- `backend/tests/test_strix_backend_hook.py`
 - `backend/app/main.py`
 - `backend/app/scope_policy.py`
 - `backend/app/strix_execution_contract.py`
 - `backend/tests/test_strix_broker_runtime.py`
 - `backend/tests/test_strix_runner_attestation.py`
-- `README.md`
 - `backend/Dockerfile.strix-runner`
 - `backend/app/strix_runner_attestation.py`
 - `docker-compose.yml`
@@ -63,8 +65,6 @@ Generated: 2026-10-04T09:37:05Z
 - `backend/tests/test_strix_broker_client.py`
 - `backend/tests/test_strix_egress.py`
 - `backend/tests/test_strix_egress_transport.py`
-- `.env.example`
-- `backend/app/runtime_capabilities.py`
 
 ### Project signals
 - `pyproject.toml`

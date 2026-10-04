@@ -187,6 +187,7 @@ app/
   storage_backend.py
   storage_core.py
   storage.py
+  strix_backend_hook.py
   strix_broker_client.py
   strix_broker_models.py
   strix_broker.py
@@ -418,6 +419,7 @@ tests/
   test_simple_selection_cached.py
   test_storage_backend.py
   test_storage.py
+  test_strix_backend_hook.py
   test_strix_broker_client.py
   test_strix_broker_runtime.py
   test_strix_broker.py
@@ -10780,6 +10782,46 @@ flow_id = _bounded_identifier(flow_id, "flow_id")
 row = db.execute(
 ```
 
+## File: app/strix_backend_hook.py
+```python
+STRIX_BACKEND_NAME = "xbow-remote-v1"
+STRIX_EXPECTED_VERSION = "1.6.2"
+STRIX_SOURCE_COMMIT = "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+STRIX_X86_64_WHEEL_SHA256 = (
+⋮----
+class StrixBackendHookError(RuntimeError)
+⋮----
+class StrixBackendBlocked(StrixBackendHookError)
+⋮----
+def _installed_strix_version() -> str
+⋮----
+def _backend_api()
+⋮----
+def register_xbow_backend() -> dict[str, Any]
+⋮----
+supported = set(supported_backends())
+⋮----
+existing = get_backend(STRIX_BACKEND_NAME)
+⋮----
+selected = get_backend(STRIX_BACKEND_NAME)
+⋮----
+async def _assert_backend_fails_closed() -> None
+⋮----
+backend = get_backend(STRIX_BACKEND_NAME)
+⋮----
+def self_test() -> dict[str, Any]
+⋮----
+version = _installed_strix_version()
+⋮----
+descriptor = register_xbow_backend()
+⋮----
+def _main() -> int
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args()
+```
+
 ## File: app/strix_broker_client.py
 ```python
 class StrixBrokerClientError(RuntimeError)
@@ -20500,6 +20542,60 @@ batch = {
 record = store.get_hackerone_batch_record("batch-1")
 ⋮----
 stale = dict(document)
+```
+
+## File: tests/test_strix_backend_hook.py
+```python
+ROOT = Path(__file__).resolve().parents[2]
+⋮----
+@pytest.fixture(autouse=True)
+def _restore_runtime_backend_env(monkeypatch)
+⋮----
+def _install_fake_strix_backend_api(monkeypatch, *, existing=None)
+⋮----
+registry = {"docker": object()}
+bind_mount_backends = {"docker"}
+⋮----
+backend_module = types.ModuleType("strix.runtime.backends")
+⋮----
+def register_backend(name, backend, *, supports_bind_mounts=False)
+⋮----
+def get_backend(name)
+⋮----
+def supported_backends()
+⋮----
+def backend_supports_bind_mounts(name)
+⋮----
+strix_module = types.ModuleType("strix")
+⋮----
+runtime_module = types.ModuleType("strix.runtime")
+⋮----
+def test_registers_fail_closed_backend_without_bind_mounts(monkeypatch)
+⋮----
+registry = _install_fake_strix_backend_api(monkeypatch)
+⋮----
+result = register_xbow_backend()
+⋮----
+def test_registration_is_idempotent_for_same_backend(monkeypatch)
+⋮----
+first = register_xbow_backend()
+second = register_xbow_backend()
+⋮----
+def test_backend_name_collision_fails_closed(monkeypatch)
+⋮----
+def test_registered_backend_always_blocks_execution(monkeypatch)
+⋮----
+backend = registry[STRIX_BACKEND_NAME]
+⋮----
+def test_self_test_requires_exact_strix_version(monkeypatch)
+⋮----
+def test_self_test_proves_fail_closed_backend(monkeypatch)
+⋮----
+result = self_test()
+⋮----
+def test_ci_checks_real_pinned_strix_backend_api()
+⋮----
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 ```
 
 ## File: tests/test_strix_broker_client.py

@@ -1,18 +1,17 @@
 # Change impact
 
-Base: b709276b924d89f0d003f834bc46236e99b2825a
-Head: a662b153ba023880fc3128c21d1081f179d4483c
+Base: 89c7b2d6d25eb8e1891bb3a95093da10f33e9ec1
+Head: 68841f350e319c938e52c5264d53ba7ce68e47cc
 
 ## Changed files
 - M .github/workflows/ci.yml
-- M backend/app/main.py
-- A backend/app/scope_policy.py
-- M backend/app/strix_execution_contract.py
-- M backend/tests/test_strix_broker_runtime.py
-- M backend/tests/test_strix_runner_attestation.py
+- M README.md
+- A backend/app/strix_backend_hook.py
+- A backend/tests/test_strix_backend_hook.py
 
 ## Affected areas
 - .github
+- (root)
 - backend
 
 ## Related test candidates
