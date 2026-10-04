@@ -33,21 +33,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T06:05:52Z
+Generated: 2026-10-04T09:37:05Z
 
 ### Git
 - Branch: `main`
-- Head: `14613bcce0e6`
-- Commit date: 2026-10-04T08:05:16+02:00
-- Commit: feat(strix): add pinned inert runner attestation
-- Tracked files: 608
+- Head: `a662b153ba02`
+- Commit date: 2026-10-04T11:36:53+02:00
+- Commit: ci(strix): prove runner broker-only network isolation
+- Tracked files: 609
 
 ### Recently changed files
 - `.github/workflows/ci.yml`
+- `backend/app/main.py`
+- `backend/app/scope_policy.py`
+- `backend/app/strix_execution_contract.py`
+- `backend/tests/test_strix_broker_runtime.py`
+- `backend/tests/test_strix_runner_attestation.py`
 - `README.md`
 - `backend/Dockerfile.strix-runner`
 - `backend/app/strix_runner_attestation.py`
-- `backend/tests/test_strix_runner_attestation.py`
 - `docker-compose.yml`
 - `backend/app/strix_broker.py`
 - `backend/app/strix_broker_client.py`
@@ -59,10 +63,6 @@ Generated: 2026-10-04T06:05:52Z
 - `backend/tests/test_strix_egress_transport.py`
 - `.env.example`
 - `backend/app/runtime_capabilities.py`
-- `backend/app/strix_broker_models.py`
-- `backend/tests/test_runtime_capabilities.py`
-- `backend/tests/test_strix_broker_runtime.py`
-- `backend/app/strix_execution_contract.py`
 
 ### Project signals
 - `pyproject.toml`

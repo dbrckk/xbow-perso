@@ -1,19 +1,18 @@
 # Change impact
 
-Base: 599a4b791e942baa78fd9154edc48e668b58828f
-Head: 14613bcce0e61e61455be301201276c61ff5e306
+Base: b709276b924d89f0d003f834bc46236e99b2825a
+Head: a662b153ba023880fc3128c21d1081f179d4483c
 
 ## Changed files
 - M .github/workflows/ci.yml
-- M README.md
-- A backend/Dockerfile.strix-runner
-- A backend/app/strix_runner_attestation.py
-- A backend/tests/test_strix_runner_attestation.py
-- M docker-compose.yml
+- M backend/app/main.py
+- A backend/app/scope_policy.py
+- M backend/app/strix_execution_contract.py
+- M backend/tests/test_strix_broker_runtime.py
+- M backend/tests/test_strix_runner_attestation.py
 
 ## Affected areas
 - .github
-- (root)
 - backend
 
 ## Related test candidates

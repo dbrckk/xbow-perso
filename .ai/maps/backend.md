@@ -181,6 +181,7 @@ app/
   scanner_registry.py
   scanner_sandbox.py
   scanner_worker.py
+  scope_policy.py
   secret_vault.py
   simple_portfolio.py
   storage_backend.py
@@ -6052,19 +6053,6 @@ class IncidentAcknowledgeInput(BaseModel)
 fingerprint: str = Field(min_length=1, max_length=64, pattern=r"^[0-9a-f]+$")
 expected_version: int = Field(ge=1)
 ⋮----
-def normalize_pattern(pattern: str) -> str
-⋮----
-value = pattern.strip().lower()
-⋮----
-value = (urlparse(value).hostname or value).lower()
-⋮----
-def is_host_allowed(host: str, allowed: list[str], denied: list[str]) -> bool
-⋮----
-host = host.lower().rstrip(".")
-denied_patterns = [normalize_pattern(x) for x in denied]
-⋮----
-allowed_patterns = [normalize_pattern(x) for x in allowed]
-⋮----
 def save_campaign(campaign: Campaign, *, expected_version: int | None = None) -> int
 ⋮----
 def assert_campaign_record(campaign_id: str) -> tuple[Campaign, int]
@@ -10330,6 +10318,20 @@ ingestion = ingest_scanner_run(
 plan = build_nuclei_plan(campaign, run_dir)
 ⋮----
 nuclei_output = Path(run_dir) / "nuclei.jsonl"
+```
+
+## File: app/scope_policy.py
+```python
+def normalize_pattern(pattern: str) -> str
+⋮----
+value = str(pattern).strip().lower()
+⋮----
+value = (urlparse(value).hostname or value).lower()
+⋮----
+normalized_host = str(host).lower().rstrip(".")
+denied_patterns = [normalize_pattern(item) for item in denied]
+⋮----
+allowed_patterns = [normalize_pattern(item) for item in allowed]
 ```
 
 ## File: app/secret_vault.py
@@ -20586,6 +20588,12 @@ networks = _compose().split("\nnetworks:", 1)[1]
 def test_ci_builds_strix_broker_and_egress_profile()
 ⋮----
 workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+⋮----
+def test_strix_broker_imports_in_fresh_interpreter()
+⋮----
+backend = ROOT / "backend"
+env = {
+result = subprocess.run(
 ```
 
 ## File: tests/test_strix_broker.py
@@ -20869,6 +20877,8 @@ block = compose.split("  strix-runner:", 1)[1].split(
 def test_ci_builds_strix_runner_profile()
 ⋮----
 workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+⋮----
+def test_runner_has_no_direct_public_network_probe()
 ```
 
 ## File: tests/test_submission_api.py
