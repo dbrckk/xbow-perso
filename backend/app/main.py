@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 from datetime import datetime, timezone
 from enum import Enum
-from fnmatch import fnmatch
 from typing import Any, Literal
 from urllib.parse import urlparse
 from uuid import uuid4
@@ -24,6 +23,7 @@ from .campaign_audit import append_campaign_event, verify_campaign_event_chain
 from .policy_integrity import seal_policy_receipt, verify_policy_receipt
 from .queue_backend import QueueBackend, create_queue
 from .readiness import readiness as dependency_readiness
+from .scope_policy import is_host_allowed, normalize_pattern
 from .storage import ArtifactIntegrityError, CampaignConflictError
 from .storage_backend import StorageBackend, create_storage
 from .validation_state import has_evidence_backed_independent_validation
@@ -185,22 +185,6 @@ class OpenApiPreviewInput(BaseModel):
 class IncidentAcknowledgeInput(BaseModel):
     fingerprint: str = Field(min_length=1, max_length=64, pattern=r"^[0-9a-f]+$")
     expected_version: int = Field(ge=1)
-
-
-def normalize_pattern(pattern: str) -> str:
-    value = pattern.strip().lower()
-    if "://" in value:
-        value = (urlparse(value).hostname or value).lower()
-    return value.rstrip(".")
-
-
-def is_host_allowed(host: str, allowed: list[str], denied: list[str]) -> bool:
-    host = host.lower().rstrip(".")
-    denied_patterns = [normalize_pattern(x) for x in denied]
-    if any(fnmatch(host, p) for p in denied_patterns):
-        return False
-    allowed_patterns = [normalize_pattern(x) for x in allowed]
-    return any(fnmatch(host, p) for p in allowed_patterns)
 
 
 def save_campaign(campaign: Campaign, *, expected_version: int | None = None) -> int:
