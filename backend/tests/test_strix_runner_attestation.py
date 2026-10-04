@@ -157,3 +157,18 @@ def test_ci_builds_strix_runner_profile():
         "docker compose --profile strix-runner build --pull strix-runner"
         in workflow
     )
+
+
+
+def test_ci_executes_runner_runtime_smoke():
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+    script = (
+        ROOT / "scripts" / "verify-strix-runner-runtime.sh"
+    ).read_text()
+
+    assert "bash -n scripts/verify-strix-runner-runtime.sh" in workflow
+    assert "bash scripts/verify-strix-runner-runtime.sh" in workflow
+    assert "app.strix_runner_attestation --check" in script
+    assert "socket.create_connection" in script
+    assert '("1.1.1.1", 443)' in script
+    assert "direct public TCP egress unexpectedly available" in script
