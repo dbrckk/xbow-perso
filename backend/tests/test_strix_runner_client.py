@@ -127,7 +127,6 @@ def test_runner_readiness_client_maps_network_failure(monkeypatch):
         check_runner_readiness()
 
 
-
 def test_ci_uses_posture_validating_runner_readiness_client():
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 
