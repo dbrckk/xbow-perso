@@ -502,6 +502,8 @@ The service publishes no host port; port 8092 is exposed only to the internal `s
 
 The next extension point is verified without enabling execution. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
 
+The same CI probe now also downloads `pyproject.toml` and `uv.lock` from source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2` and verifies SHA-256 `78e22229485fcd69cf07670812826170a6538c157e61ccf12aa38661fc066c6c` and `b4adb335fdfa72b64173e120eea57d08b0a993979eb4b01157b2f1488f81c6ea` respectively. These files are provenance inputs only: the dependency lock is **not installed or activated yet**, and the Python compatibility probe reports `dependency_lock_installation_enabled=false`.
+
 One integration blocker is explicit: the pinned runner still launches the official standalone PyInstaller binary, while the custom backend registration currently exists only in a Python process using the wheel API. The standalone binary does not automatically import `app.strix_backend_hook`. A pinned Python bootstrap path (or another upstream-supported loading mechanism) is therefore required before `xbow-remote-v1` can participate in a real Strix run.
 
 
