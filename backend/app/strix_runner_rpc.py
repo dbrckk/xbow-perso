@@ -42,6 +42,7 @@ _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
 _SIGNATURE_RE = re.compile(r"^[0-9a-f]{64}$")
 _ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_IMAGE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,430}$")
 
 
 @dataclass(frozen=True)
@@ -293,6 +294,17 @@ def _valid_digest(value: object) -> bool:
     return isinstance(value, str) and bool(_SHA256_RE.fullmatch(value))
 
 
+def _valid_image_reference(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    reference, separator, digest = value.rpartition("@sha256:")
+    return bool(
+        separator
+        and _IMAGE_REF_RE.fullmatch(reference)
+        and _SHA256_RE.fullmatch(digest)
+    )
+
+
 def _valid_port(value: object) -> bool:
     return (
         isinstance(value, int)
@@ -331,9 +343,7 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
         image = payload.get("image")
         ports = payload.get("exposed_ports")
         if (
-            not isinstance(image, str)
-            or not 1 <= len(image) <= 512
-            or any(ord(char) < 0x20 or ord(char) == 0x7F for char in image)
+            not _valid_image_reference(image)
             or not isinstance(ports, list)
             or not 0 <= len(ports) <= 16
             or any(not _valid_port(port) for port in ports)
