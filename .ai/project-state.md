@@ -11,13 +11,15 @@ Status: active
 - The Strix boundary now has a broker plus a separate dual-homed read-only egress service; GET/HEAD requests are contract-verified twice, DNS-pinned, public-network-only, non-redirecting, bounded and rate-limited.
 - A dedicated inert Strix runner pins v1.6.2, verifies official amd64/arm64 release digests at build time, attests the extracted binary/version at runtime, and is attached only to the internal broker network.
 - The xbow `xbow-remote-v1` backend hook is verified against the official Strix v1.6.2 Python wheel and registry API; it declares no bind-mount support and intentionally rejects every execution request.
+- The isolated runner now exposes authenticated `strix-runner-rpc-v1` on internal port 8092 with strict schemas, HMAC authentication, timestamp/nonce replay defenses and no implemented session operations.
 
 ## Broken / blockers
-- Active Strix execution is still not wired through the isolated runner/broker path; the runner and custom backend hook remain fail-closed.
+- Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
+- The pinned standalone Strix binary does not automatically load the Python `xbow-remote-v1` registration; a pinned Python bootstrap path is still required.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed while defining the minimum remote-session RPC surface required by Strix v1.6.2 (exec, exposed-port resolution, cleanup) and implementing it against the isolated runner.
+- Keep Strix active dispatch fail-closed while building a reproducible Python Strix v1.6.2 bootstrap that loads `xbow-remote-v1` in the actual runtime process.
 
 ## Validation
 - PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
@@ -28,6 +30,7 @@ Status: active
 - Broker readiness now fails closed on the egress service whenever read-only proxying is enabled.
 - The Strix runner image pins v1.6.2 release assets/digests and source commit, verifies the archive before extraction, verifies the exact CLI version, and re-attests the binary SHA-256 at runtime.
 - CI verifies the custom backend hook against the official v1.6.2 manylinux x86_64 wheel after checking its pinned SHA-256; the hook self-test proves registration succeeds while backend execution remains blocked.
+- The runner RPC contract is independently testable and remains non-executing even if a service instance is constructed with an active flag; the real runner startup attestation still forbids active execution.
 
 ## Last verified
 - 2026-10-03
