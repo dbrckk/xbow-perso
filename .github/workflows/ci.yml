@@ -152,6 +152,7 @@ jobs:
           }
           trap cleanup EXIT
           export XBOW_STRIX_BROKER_HMAC_KEY="ci-broker-proof-key"
+          export XBOW_STRIX_RUNNER_RPC_HMAC_KEY="ci-runner-proof-key"
           docker compose --profile strix-broker --profile strix-runner up -d \
             --no-deps strix-broker strix-runner
           broker_ready=0
@@ -168,6 +169,8 @@ jobs:
             docker compose --profile strix-broker --profile strix-runner logs --no-color
             exit 1
           fi
+          docker compose exec -T strix-broker python -c \
+            "import urllib.request; urllib.request.urlopen('http://strix-runner:8092/readyz', timeout=2).read()"
           if docker compose exec -T strix-runner python -c \
             "import socket; socket.create_connection(('192.0.2.1', 80), timeout=1).close()"; then
             echo "direct public egress unexpectedly succeeded" >&2
