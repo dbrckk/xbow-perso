@@ -212,6 +212,7 @@ backend/
     strix_execution_contract.py
     strix_parser.py
     strix_python_compat_probe.py
+    strix_python_lock_probe.py
     strix_run_status.py
     strix_runner_attestation.py
     strix_runner_rpc.py
@@ -445,6 +446,7 @@ backend/
     test_strix_egress.py
     test_strix_execution_contract.py
     test_strix_python_compat_probe.py
+    test_strix_python_lock_probe.py
     test_strix_run_status.py
     test_strix_runner_attestation.py
     test_strix_runner_rpc.py
@@ -11944,6 +11946,61 @@ parser = argparse.ArgumentParser()
 args = parser.parse_args()
 ````
 
+## File: backend/app/strix_python_lock_probe.py
+````python
+STRIX_PYTHON_LOCK_SCHEMA = "strix-python-lock-probe-v1"
+STRIX_SOURCE_COMMIT = "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+STRIX_VERSION = "1.6.2"
+STRIX_PYPROJECT_GIT_BLOB_SHA1 = "b78fb3aa90936edaedc86cf634d34de89bcb9f5b"
+STRIX_UV_LOCK_GIT_BLOB_SHA1 = "2cb4cb5f0c4732dce1dc3cca21406ae63f66b148"
+STRIX_PYTHON_REQUIREMENT = ">=3.12"
+STRIX_UV_LOCK_VERSION = 1
+STRIX_UV_LOCK_REVISION = 3
+_MAX_LOCK_SOURCE_BYTES = 1024 * 1024
+_EXPECTED_DIRECT_DEPENDENCIES = (
+⋮----
+class StrixPythonLockError(RuntimeError)
+⋮----
+def _read_bounded_bytes(path: Path) -> bytes
+⋮----
+payload = path.read_bytes()
+⋮----
+def _git_blob_sha1(path: Path) -> str
+⋮----
+payload = _read_bounded_bytes(path)
+header = f"blob {len(payload)}\0".encode("ascii")
+⋮----
+def _read_toml(path: Path) -> dict[str, Any]
+⋮----
+parsed = tomllib.loads(payload.decode("utf-8"))
+⋮----
+def _find_strix_package(lock: dict[str, Any]) -> dict[str, Any]
+⋮----
+packages = lock.get("package")
+⋮----
+matches = [
+⋮----
+pyproject_blob = _git_blob_sha1(pyproject_path)
+lock_blob = _git_blob_sha1(lock_path)
+⋮----
+pyproject = _read_toml(pyproject_path)
+project = pyproject.get("project")
+⋮----
+lock = _read_toml(lock_path)
+⋮----
+package = _find_strix_package(lock)
+⋮----
+dependencies = package.get("dependencies")
+⋮----
+names = sorted(
+⋮----
+def _main() -> int
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args()
+````
+
 ## File: backend/app/strix_run_status.py
 ````python
 class StrixRunStatusError(RuntimeError)
@@ -21775,6 +21832,26 @@ def test_preflight_structure_identifies_only_docker_checks_to_patch()
 descriptor = _verify_preflight_structure(
 ⋮----
 def test_preflight_structure_rejects_changed_scope_or_order(source)
+````
+
+## File: backend/tests/test_strix_python_lock_probe.py
+````python
+EXPECTED_DEPENDENCIES = [
+⋮----
+def _write_fixture(tmp_path)
+⋮----
+pyproject = tmp_path / "pyproject.toml"
+⋮----
+lock = tmp_path / "uv.lock"
+dependency_rows = "\n".join(
+⋮----
+result = probe_dependency_lock(
+⋮----
+def test_dependency_lock_probe_rejects_blob_mismatch(monkeypatch, tmp_path)
+⋮----
+def test_ci_attests_pinned_strix_dependency_lock()
+⋮----
+workflow = Path(".github/workflows/ci.yml").read_text()
 ````
 
 ## File: backend/tests/test_strix_run_status.py

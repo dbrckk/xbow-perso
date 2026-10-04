@@ -1,13 +1,15 @@
 # Change impact
 
-Base: 7738f2e9cdc2637efed394708749f07919e32eb0
-Head: 0e87a1834e3c64210839736b924a9f67fff15932
+Base: 80c6ba97a8fb780cdaf2457f79275f971f4dc600
+Head: c0916bf814ac2235736b103796505b46004ec943
 
 ## Changed files
-- M backend/app/strix_python_compat_probe.py
-- M backend/tests/test_strix_python_compat_probe.py
+- M .github/workflows/ci.yml
+- A backend/app/strix_python_lock_probe.py
+- A backend/tests/test_strix_python_lock_probe.py
 
 ## Affected areas
+- .github
 - backend
 
 ## Related test candidates

@@ -39,23 +39,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T23:37:15Z
+Generated: 2026-10-04T23:43:09Z
 
 ### Git
 - Branch: `main`
-- Head: `0e87a1834e3c`
-- Commit date: 2026-10-05T01:37:04+02:00
-- Commit: security(strix): attest Docker preflight patch scope
-- Tracked files: 615
+- Head: `c0916bf814ac`
+- Commit date: 2026-10-05T01:42:58+02:00
+- Commit: security(strix): attest pinned Python dependency lock
+- Tracked files: 617
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `backend/app/strix_python_lock_probe.py`
+- `backend/tests/test_strix_python_lock_probe.py`
 - `backend/app/strix_python_compat_probe.py`
 - `backend/tests/test_strix_python_compat_probe.py`
 - `README.md`
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_strix_runner_rpc.py`
 - `.env.example`
-- `.github/workflows/ci.yml`
 
 ### Project signals
 - `pyproject.toml`
