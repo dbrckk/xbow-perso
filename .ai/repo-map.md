@@ -213,6 +213,7 @@ backend/
     strix_parser.py
     strix_run_status.py
     strix_runner_attestation.py
+    strix_runner_rpc.py
     submission_api.py
     submission_state.py
     surface_confidence.py
@@ -444,6 +445,7 @@ backend/
     test_strix_execution_contract.py
     test_strix_run_status.py
     test_strix_runner_attestation.py
+    test_strix_runner_rpc.py
     test_submission_api.py
     test_submission_state.py
     test_surface_confidence.py
@@ -11922,10 +11924,6 @@ payload = path.read_bytes()
 ⋮----
 data = json.loads(payload.decode("utf-8"))
 ⋮----
-def _read_cli_version(binary_path: Path) -> str
-⋮----
-result = subprocess.run(
-⋮----
 def _docker_socket_present() -> bool
 ⋮----
 def _validate_manifest(data: dict) -> dict
@@ -11941,7 +11939,7 @@ data = _read_manifest(manifest)
 ⋮----
 actual_binary_sha256 = _sha256_file(binary)
 ⋮----
-cli_version = _read_cli_version(binary)
+cli_version = str(data["cli_version"])
 ⋮----
 docker_socket_present = _docker_socket_present()
 ⋮----
@@ -11955,6 +11953,121 @@ mode = parser.add_mutually_exclusive_group(required=True)
 args = parser.parse_args()
 ⋮----
 attestation = attest_strix_runner()
+````
+
+## File: backend/app/strix_runner_rpc.py
+````python
+RUNNER_RPC_PROTOCOL = "strix-runner-rpc-v1"
+RUNNER_RPC_PORT = 8092
+RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
+RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
+RUNNER_RPC_MAX_NONCES = 4096
+⋮----
+_MUTATION_PATHS = {
+_NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
+_SIGNATURE_RE = re.compile(r"^[0-9a-f]{64}$")
+_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+⋮----
+@dataclass(frozen=True)
+class RunnerRpcResponse
+⋮----
+status: int
+json_body: dict[str, Any]
+headers: dict[str, str] = field(default_factory=dict)
+⋮----
+class RunnerRpcService
+⋮----
+normalized_method = str(method).upper()
+normalized_headers = {
+⋮----
+auth_error = self._authenticate(
+⋮----
+content_type = normalized_headers.get("content-type", "")
+⋮----
+payload = json.loads(body.decode("utf-8"))
+⋮----
+timestamp_raw = headers.get("x-xbow-runner-timestamp")
+nonce = headers.get("x-xbow-runner-nonce")
+signature = headers.get("x-xbow-runner-signature")
+⋮----
+timestamp = int(timestamp_raw)
+⋮----
+now = float(self._now())
+⋮----
+expected = sign_runner_rpc_request(
+⋮----
+def _prune_nonces(self, now: float) -> None
+⋮----
+cutoff = now - RUNNER_RPC_AUTH_WINDOW_SECONDS
+⋮----
+body_digest = hashlib.sha256(body).hexdigest()
+canonical = "\n".join(
+⋮----
+def _error(status: int, code: str) -> RunnerRpcResponse
+⋮----
+def _valid_id(value: object) -> bool
+⋮----
+def _valid_digest(value: object) -> bool
+⋮----
+def _valid_port(value: object) -> bool
+⋮----
+def _exact_keys(payload: dict[str, Any], expected: set[str]) -> bool
+⋮----
+def _valid_common(payload: dict[str, Any]) -> bool
+⋮----
+def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool
+⋮----
+image = payload.get("image")
+ports = payload.get("exposed_ports")
+⋮----
+argv = payload.get("argv")
+timeout = payload.get("timeout_seconds")
+⋮----
+class _RunnerRpcHttpHandler(BaseHTTPRequestHandler)
+⋮----
+server_version = "xbow-strix-runner-rpc/1"
+⋮----
+def do_GET(self) -> None:  # noqa: N802
+⋮----
+def do_POST(self) -> None:  # noqa: N802
+⋮----
+def _dispatch(self) -> None
+⋮----
+service = getattr(self.server, "rpc_service", None)
+⋮----
+body = b""
+⋮----
+length_raw = self.headers.get("Content-Length")
+⋮----
+length = int(length_raw or "0")
+⋮----
+body = self.rfile.read(length)
+⋮----
+result = service.handle(
+⋮----
+def _write(self, result: RunnerRpcResponse) -> None
+⋮----
+payload = json.dumps(
+⋮----
+def log_message(self, _format: str, *_args: object) -> None
+⋮----
+def _rpc_secret_from_env() -> str | None
+⋮----
+secret = os.getenv("XBOW_STRIX_RUNNER_RPC_HMAC_KEY", "")
+⋮----
+def serve() -> None
+⋮----
+attestation = attest_strix_runner()
+⋮----
+service = RunnerRpcService(
+server = ThreadingHTTPServer(
+⋮----
+def _main() -> int
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args()
 ````
 
 ## File: backend/app/submission_api.py
@@ -21563,9 +21676,13 @@ def test_runner_attestation_accepts_exact_pinned_release(tmp_path, monkeypatch)
 ⋮----
 result = attest_strix_runner(binary_path=binary, manifest_path=manifest)
 ⋮----
+result = attest_strix_runner(
+⋮----
 def test_runner_attestation_rejects_binary_tampering(tmp_path, monkeypatch)
 ⋮----
 def test_runner_attestation_rejects_wrong_cli_version(tmp_path, monkeypatch)
+⋮----
+data = json.loads(manifest.read_text(encoding="utf-8"))
 ⋮----
 def test_runner_attestation_rejects_docker_socket(tmp_path, monkeypatch)
 ⋮----
@@ -21583,6 +21700,94 @@ def test_ci_builds_strix_runner_profile()
 workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 ⋮----
 def test_runner_has_no_direct_public_network_probe()
+````
+
+## File: backend/tests/test_strix_runner_rpc.py
+````python
+ROOT = Path(__file__).resolve().parents[2]
+SECRET = "fixture-runner-rpc-secret"
+NOW = 1_800_000_000
+NONCE = "0123456789abcdef0123456789abcdef"
+⋮----
+def _headers(path: str, body: bytes, *, nonce: str = NONCE)
+⋮----
+signature = sign_runner_rpc_request(
+⋮----
+def _service(*, secret=SECRET, active_execution=False)
+⋮----
+def _payload(path: str) -> dict
+⋮----
+def _request(service: RunnerRpcService, path: str, payload: dict)
+⋮----
+body = json.dumps(
+⋮----
+def test_health_is_non_secret_and_execution_stays_disabled()
+⋮----
+result = _service().handle(
+⋮----
+def test_ready_requires_rpc_secret()
+⋮----
+result = _service(secret=None).handle(
+⋮----
+def test_authenticated_session_operations_still_fail_closed(path)
+⋮----
+result = _request(_service(), path, _payload(path))
+⋮----
+def test_even_active_flag_cannot_enable_unimplemented_rpc()
+⋮----
+path = "/v1/session/create"
+result = _request(
+⋮----
+def test_missing_auth_is_rejected_before_payload_processing()
+⋮----
+service = _service()
+result = service.handle(
+⋮----
+def test_signature_covers_body()
+⋮----
+path = "/v1/session/delete"
+original = json.dumps(
+tampered = original.replace(b"sess-1", b"sess-2")
+⋮----
+def test_nonce_replay_is_rejected()
+⋮----
+payload = _payload(path)
+⋮----
+headers = _headers(path, body)
+⋮----
+first = service.handle(
+second = service.handle(
+⋮----
+def test_replay_cache_saturation_fails_closed(monkeypatch)
+⋮----
+first_headers = _headers(
+second_headers = _headers(
+⋮----
+saturated = service.handle(
+replay = service.handle(
+⋮----
+def test_stale_timestamp_is_rejected()
+⋮----
+stale = NOW - 31
+⋮----
+def test_unknown_payload_field_fails_closed()
+⋮----
+result = _request(_service(), path, payload)
+⋮----
+def test_operation_schema_bounds_are_enforced(path, mutate)
+⋮----
+def test_runner_compose_exposes_rpc_only_internally()
+⋮----
+compose = (ROOT / "docker-compose.yml").read_text()
+block = compose.split("  strix-runner:", 1)[1].split(
+⋮----
+def test_ci_waits_for_runner_rpc_readiness()
+⋮----
+workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+⋮----
+def test_runner_image_contains_only_rpc_and_attestation_modules()
+⋮----
+dockerfile = (ROOT / "backend" / "Dockerfile.strix-runner").read_text()
 ````
 
 ## File: backend/tests/test_submission_api.py
@@ -25177,8 +25382,18 @@ services:
     restart: unless-stopped
     init: true
     stop_grace_period: 15s
+    command:
+      [
+        "python",
+        "-m",
+        "app.strix_runner_rpc",
+        "--serve",
+      ]
     environment:
       XBOW_STRIX_ACTIVE_EXECUTION: "false"
+      XBOW_STRIX_RUNNER_RPC_HMAC_KEY: ${XBOW_STRIX_RUNNER_RPC_HMAC_KEY:-}
+    expose:
+      - "8092"
     read_only: true
     tmpfs:
       - /tmp:size=64m,noexec,nosuid,nodev
@@ -25194,12 +25409,11 @@ services:
         [
           "CMD",
           "python",
-          "-m",
-          "app.strix_runner_attestation",
-          "--check",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8092/readyz', timeout=2).read()",
         ]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
       start_period: 10s
     networks: [strix-broker]
@@ -26027,15 +26241,21 @@ For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` m
 
 A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux release. The image verifies the official release-asset SHA-256 before extraction (amd64 and arm64 have separate pinned digests), verifies the CLI reports exactly `strix 1.6.2`, records the pinned source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and re-attests the extracted binary SHA-256 at runtime. The container has no published ports, volumes, Docker socket or external network and runs as a non-root user with a read-only root filesystem and all Linux capabilities dropped.
 
-The runner is intentionally inert: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory and the process only performs attestation before idling. Build or start it independently:
+The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it now serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes, but **all session operations are still unimplemented**. A valid request therefore fails closed instead of executing a command.
+
+Provision a separate internal RPC key before starting the runner:
 
 ```bash
-docker compose --profile strix-runner build --pull strix-runner
-docker compose --profile strix-runner up -d strix-runner
+XBOW_STRIX_RUNNER_RPC_HMAC_KEY='<server-side secret>' \
+  docker compose --profile strix-runner up -d --build strix-runner
 ```
 
-The next extension point is now verified without enabling execution. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
+The service publishes no host port; port 8092 is exposed only to the internal `strix-broker` network. CI verifies that the broker can reach the runner readiness endpoint while the runner cannot open a direct public-network connection.
+
+The next extension point is verified without enabling execution. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
+
+One integration blocker is explicit: the pinned runner still launches the official standalone PyInstaller binary, while the custom backend registration currently exists only in a Python process using the wheel API. The standalone binary does not automatically import `app.strix_backend_hook`. A pinned Python bootstrap path (or another upstream-supported loading mechanism) is therefore required before `xbow-remote-v1` can participate in a real Strix run.
 
 
-**Active Strix dispatch remains fail-closed.** A separately pinned/attested inert runner now exists and its only configured network is the internal broker network, but no Strix execution backend is wired to it yet and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
+**Active Strix dispatch remains fail-closed.** A separately pinned/attested runner and authenticated internal RPC now exist, but session operations are unimplemented, the standalone Strix binary does not yet load the xbow backend hook, and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
 ````

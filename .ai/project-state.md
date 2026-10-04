@@ -38,36 +38,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T09:49:40Z
+Generated: 2026-10-04T10:55:11Z
 
 ### Git
 - Branch: `main`
-- Head: `68841f350e31`
-- Commit date: 2026-10-04T11:49:28+02:00
-- Commit: feat(strix): verify fail-closed custom backend hook
-- Tracked files: 611
+- Head: `0120d731db2a`
+- Commit date: 2026-10-04T12:54:59+02:00
+- Commit: feat(strix): add authenticated fail-closed runner RPC
+- Tracked files: 613
 
 ### Recently changed files
+- `.env.example`
 - `.github/workflows/ci.yml`
 - `README.md`
+- `backend/Dockerfile.strix-runner`
+- `backend/app/runtime_capabilities.py`
+- `backend/app/strix_runner_attestation.py`
+- `backend/app/strix_runner_rpc.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_runner_attestation.py`
+- `backend/tests/test_strix_runner_rpc.py`
+- `docker-compose.yml`
 - `backend/app/strix_backend_hook.py`
 - `backend/tests/test_strix_backend_hook.py`
 - `backend/app/main.py`
 - `backend/app/scope_policy.py`
 - `backend/app/strix_execution_contract.py`
 - `backend/tests/test_strix_broker_runtime.py`
-- `backend/tests/test_strix_runner_attestation.py`
-- `backend/Dockerfile.strix-runner`
-- `backend/app/strix_runner_attestation.py`
-- `docker-compose.yml`
 - `backend/app/strix_broker.py`
 - `backend/app/strix_broker_client.py`
 - `backend/app/strix_egress.py`
-- `backend/app/strix_egress_transport.py`
-- `backend/tests/test_strix_broker.py`
-- `backend/tests/test_strix_broker_client.py`
-- `backend/tests/test_strix_egress.py`
-- `backend/tests/test_strix_egress_transport.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -2550,7 +2550,8 @@
       "dependencies": [
         "backend/app/observation_graph.py",
         "backend/app/scanner_sandbox.py",
-        "backend/app/strix_execution_contract.py"
+        "backend/app/strix_execution_contract.py",
+        "backend/app/strix_runner_rpc.py"
       ],
       "dependents": [
         "backend/app/campaign_control.py",
@@ -2564,7 +2565,7 @@
         "backend/tests/test_runtime_capabilities.py"
       ],
       "in_degree": 9,
-      "out_degree": 3
+      "out_degree": 4
     },
     "backend/app/runtime_gap_analysis.py": {
       "dependencies": [],
@@ -2973,10 +2974,22 @@
     "backend/app/strix_runner_attestation.py": {
       "dependencies": [],
       "dependents": [
+        "backend/app/strix_runner_rpc.py",
         "backend/tests/test_strix_runner_attestation.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
+    },
+    "backend/app/strix_runner_rpc.py": {
+      "dependencies": [
+        "backend/app/strix_runner_attestation.py"
+      ],
+      "dependents": [
+        "backend/app/runtime_capabilities.py",
+        "backend/tests/test_strix_runner_rpc.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
     },
     "backend/app/submission_api.py": {
       "dependencies": [
@@ -5142,9 +5155,10 @@
         "backend/tests/test_storage_backend.py",
         "backend/tests/test_strix_backend_hook.py",
         "backend/tests/test_strix_broker_runtime.py",
-        "backend/tests/test_strix_runner_attestation.py"
+        "backend/tests/test_strix_runner_attestation.py",
+        "backend/tests/test_strix_runner_rpc.py"
       ],
-      "in_degree": 19,
+      "in_degree": 20,
       "out_degree": 3
     },
     "backend/tests/test_readiness.py": {
@@ -5617,6 +5631,16 @@
       "in_degree": 0,
       "out_degree": 3
     },
+    "backend/tests/test_strix_runner_rpc.py": {
+      "dependencies": [
+        "backend/app/strix_runner_rpc.py",
+        "backend/tests/test_queue_recovery.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "backend/tests/test_submission_api.py": {
       "dependencies": [
         "backend/app/campaign_audit.py",
@@ -6059,6 +6083,7 @@
         "backend/tests/test_strix_execution_contract.py",
         "backend/tests/test_strix_run_status.py",
         "backend/tests/test_strix_runner_attestation.py",
+        "backend/tests/test_strix_runner_rpc.py",
         "backend/tests/test_submission_api.py",
         "backend/tests/test_submission_state.py",
         "backend/tests/test_surface_confidence.py",
@@ -6082,7 +6107,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 226,
+      "in_degree": 227,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

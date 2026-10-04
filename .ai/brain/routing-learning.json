@@ -2,28 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "feat: strengthen CWE and CVSS report metadata (#411)",
-      "terms": [
-        "411",
-        "cvss",
-        "cwe",
-        "feat",
-        "metadata",
-        "report",
-        "strengthen"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/app/finding_metadata.py",
-        "backend/app/report.py",
-        "backend/app/report_readiness.py",
-        "backend/tests/test_finding_metadata.py",
-        "backend/tests/test_report.py",
-        "backend/tests/test_report_metadata_normalization.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "feat: harden Strix runtime lifecycle contract (#412)",
       "terms": [
         "412",
@@ -1242,6 +1220,28 @@
       "useful": [
         "backend/app/strix_backend_hook.py",
         "backend/tests/test_strix_backend_hook.py"
+      ]
+    },
+    {
+      "rejected": [],
+      "task": "Define and expose an authenticated fail-closed Strix runner RPC",
+      "terms": [
+        "authenticated",
+        "define",
+        "expose",
+        "fail-closed",
+        "rpc",
+        "runner",
+        "strix"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/runtime_capabilities.py",
+        "backend/app/strix_runner_attestation.py",
+        "backend/app/strix_runner_rpc.py",
+        "backend/tests/test_runtime_capabilities.py",
+        "backend/tests/test_strix_runner_attestation.py",
+        "backend/tests/test_strix_runner_rpc.py"
       ]
     }
   ],
@@ -2486,6 +2486,14 @@
       "frontend/simple.js": 4,
       "frontend/sw.js": 12
     },
+    "authenticated": {
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/strix_runner_attestation.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_runner_attestation.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4
+    },
     "authentication": {
       "backend/app/openapi_testgen.py": 4,
       "backend/tests/test_openapi_testgen.py": 4
@@ -3330,6 +3338,14 @@
       "backend/tests/test_live_activation_profile.py": 4,
       "frontend/sw.js": 4
     },
+    "define": {
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/strix_runner_attestation.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_runner_attestation.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4
+    },
     "deployed": {
       "backend/tests/test_mobile_production_update_script.py": 8
     },
@@ -3628,12 +3644,17 @@
       "backend/app/main.py": 4,
       "backend/app/orchestrator.py": 4,
       "backend/app/passive_response_context.py": 4,
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/strix_runner_attestation.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 4,
       "backend/tests/test_frontend_policy_launcher.py": 4,
       "backend/tests/test_htb_lab.py": 4,
       "backend/tests/test_mobile_production_update_script.py": 4,
       "backend/tests/test_passive_response_context.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 8,
+      "backend/tests/test_strix_runner_attestation.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4,
       "frontend/simple.js": 4,
       "frontend/sw.js": 4
     },
@@ -3663,12 +3684,18 @@
     "fail-closed": {
       "backend/app/htb_lab.py": 4,
       "backend/app/main.py": 4,
+      "backend/app/runtime_capabilities.py": 4,
       "backend/app/strix_backend_hook.py": 4,
+      "backend/app/strix_runner_attestation.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 4,
       "backend/tests/test_frontend_policy_launcher.py": 4,
       "backend/tests/test_htb_lab.py": 4,
       "backend/tests/test_mobile_production_update_script.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
       "backend/tests/test_strix_backend_hook.py": 4,
+      "backend/tests/test_strix_runner_attestation.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4,
       "frontend/simple.js": 4,
       "frontend/sw.js": 4
     },
@@ -5743,6 +5770,14 @@
     "routes": {
       "backend/tests/test_mobile_production_update_script.py": 4
     },
+    "rpc": {
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/strix_runner_attestation.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_runner_attestation.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4
+    },
     "run": {
       "backend/app/hackerone_api.py": 4,
       "backend/app/main.py": 4,
@@ -5757,7 +5792,7 @@
     },
     "runner": {
       "backend/app/main.py": 4,
-      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/runtime_capabilities.py": 8,
       "backend/app/scope_policy.py": 4,
       "backend/app/strix_broker.py": 8,
       "backend/app/strix_broker_client.py": 8,
@@ -5765,14 +5800,16 @@
       "backend/app/strix_egress.py": 8,
       "backend/app/strix_egress_transport.py": 8,
       "backend/app/strix_execution_contract.py": 4,
-      "backend/app/strix_runner_attestation.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/app/strix_runner_attestation.py": 8,
+      "backend/app/strix_runner_rpc.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 8,
       "backend/tests/test_strix_broker.py": 8,
       "backend/tests/test_strix_broker_client.py": 8,
       "backend/tests/test_strix_broker_runtime.py": 8,
       "backend/tests/test_strix_egress.py": 8,
       "backend/tests/test_strix_egress_transport.py": 8,
-      "backend/tests/test_strix_runner_attestation.py": 8
+      "backend/tests/test_strix_runner_attestation.py": 12,
+      "backend/tests/test_strix_runner_rpc.py": 4
     },
     "runtime": {
       "backend/app/github_learning_sync.py": 4,
@@ -6198,7 +6235,7 @@
     },
     "strix": {
       "backend/app/main.py": 4,
-      "backend/app/runtime_capabilities.py": 20,
+      "backend/app/runtime_capabilities.py": 24,
       "backend/app/scanner_sandbox.py": 4,
       "backend/app/scanner_worker.py": 12,
       "backend/app/scope_policy.py": 4,
@@ -6210,9 +6247,10 @@
       "backend/app/strix_egress_transport.py": 8,
       "backend/app/strix_execution_contract.py": 12,
       "backend/app/strix_run_status.py": 4,
-      "backend/app/strix_runner_attestation.py": 4,
+      "backend/app/strix_runner_attestation.py": 8,
+      "backend/app/strix_runner_rpc.py": 4,
       "backend/app/worker.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 20,
+      "backend/tests/test_runtime_capabilities.py": 24,
       "backend/tests/test_scanner_sandbox.py": 4,
       "backend/tests/test_scanner_worker.py": 8,
       "backend/tests/test_strix_backend_hook.py": 4,
@@ -6223,7 +6261,8 @@
       "backend/tests/test_strix_egress_transport.py": 8,
       "backend/tests/test_strix_execution_contract.py": 8,
       "backend/tests/test_strix_run_status.py": 4,
-      "backend/tests/test_strix_runner_attestation.py": 8
+      "backend/tests/test_strix_runner_attestation.py": 12,
+      "backend/tests/test_strix_runner_rpc.py": 4
     },
     "structural": {
       "backend/app/browser.py": 4,
