@@ -473,3 +473,88 @@ def test_runner_rpc_accepts_exact_minimum_secret_length():
         headers={},
         body=b"",
     ).status == 200
+
+
+
+def test_runner_rpc_read_deadline_is_absolute(monkeypatch):
+    import socket
+
+    from app.strix_runner_rpc import (
+        RUNNER_RPC_READ_DEADLINE_SECONDS,
+        _RunnerRpcHttpHandler,
+    )
+
+    timers = []
+
+    class FakeTimer:
+        def __init__(self, interval, callback):
+            self.interval = interval
+            self.callback = callback
+            self.daemon = False
+            self.started = False
+            self.cancelled = False
+            timers.append(self)
+
+        def start(self):
+            self.started = True
+
+        def cancel(self):
+            self.cancelled = True
+
+    class FakeSocket:
+        def __init__(self):
+            self.shutdown_mode = None
+
+        def shutdown(self, mode):
+            self.shutdown_mode = mode
+
+    monkeypatch.setattr(
+        "app.strix_runner_rpc.threading.Timer",
+        FakeTimer,
+    )
+    handler = object.__new__(_RunnerRpcHttpHandler)
+    handler.request = FakeSocket()
+    handler._read_deadline_timer = None
+
+    handler._start_read_deadline()
+
+    assert RUNNER_RPC_READ_DEADLINE_SECONDS == 10.0
+    assert len(timers) == 1
+    assert timers[0].interval == 10.0
+    assert timers[0].daemon is True
+    assert timers[0].started is True
+
+    timers[0].callback()
+
+    assert handler.request.shutdown_mode == socket.SHUT_RDWR
+
+    handler._cancel_read_deadline()
+
+    assert timers[0].cancelled is True
+    assert handler._read_deadline_timer is None
+
+
+def test_runner_rpc_rejects_truncated_body_before_service():
+    import io
+    from types import SimpleNamespace
+
+    from app.strix_runner_rpc import _RunnerRpcHttpHandler
+
+    handler = object.__new__(_RunnerRpcHttpHandler)
+    handler.command = "POST"
+    handler.path = "/v1/session/delete"
+    handler.headers = {
+        "Content-Length": "10",
+        "Content-Type": "application/json",
+    }
+    handler.rfile = io.BytesIO(b"{}")
+    handler.server = SimpleNamespace(rpc_service=_service())
+    handler._read_deadline_timer = None
+    written = []
+    handler._write = written.append
+
+    handler._dispatch()
+
+    assert len(written) == 1
+    assert written[0].status == 400
+    assert written[0].json_body["error"] == "invalid_request"
