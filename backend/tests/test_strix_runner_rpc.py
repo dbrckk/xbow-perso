@@ -400,7 +400,7 @@ def test_ci_waits_for_runner_rpc_readiness():
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 
     assert "runner_ready=0" in workflow
-    assert "http://strix-runner:8092/readyz" in workflow
+    assert "python -m app.strix_runner_client --check-readiness" in workflow
     assert 'if [ "$runner_ready" -ne 1 ]; then' in workflow
 
 

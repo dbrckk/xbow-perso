@@ -171,8 +171,8 @@ jobs:
           fi
           runner_ready=0
           for _ in $(seq 1 30); do
-            if docker compose exec -T strix-broker python -c \
-              "import urllib.request; urllib.request.urlopen('http://strix-runner:8092/readyz', timeout=2).read()"; then
+            if docker compose exec -T strix-broker \
+              python -m app.strix_runner_client --check-readiness; then
               runner_ready=1
               break
             fi
