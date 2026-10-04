@@ -23,6 +23,7 @@ RUNNER_RPC_PORT = 8092
 RUNNER_RPC_MAX_BODY_BYTES = 1024 * 1024
 RUNNER_RPC_AUTH_WINDOW_SECONDS = 30
 RUNNER_RPC_MAX_NONCES = 4096
+RUNNER_RPC_SOCKET_TIMEOUT_SECONDS = 5.0
 
 _MUTATION_PATHS = {
     "/v1/session/create",
@@ -219,6 +220,10 @@ def sign_runner_rpc_request(
     ).hexdigest()
 
 
+def configure_runner_rpc_socket(connection: Any) -> None:
+    connection.settimeout(RUNNER_RPC_SOCKET_TIMEOUT_SECONDS)
+
+
 def _error(status: int, code: str) -> RunnerRpcResponse:
     return RunnerRpcResponse(
         status=status,
@@ -362,6 +367,10 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
 
 class _RunnerRpcHttpHandler(BaseHTTPRequestHandler):
     server_version = "xbow-strix-runner-rpc/1"
+
+    def setup(self) -> None:
+        configure_runner_rpc_socket(self.request)
+        super().setup()
 
     def do_GET(self) -> None:  # noqa: N802
         self._dispatch()
