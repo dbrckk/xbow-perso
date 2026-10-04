@@ -358,7 +358,6 @@ def test_runner_image_contains_only_rpc_and_attestation_modules():
     assert "COPY app/strix_backend_hook.py" not in dockerfile
 
 
-
 def test_runner_rpc_socket_timeout_is_bounded():
     from app.strix_runner_rpc import (
         RUNNER_RPC_SOCKET_TIMEOUT_SECONDS,
