@@ -26,10 +26,12 @@
     "Added a dedicated Strix runner image pinned to official v1.6.2 Linux release assets with separate amd64/arm64 SHA-256 digests.",
     "Pinned the v1.6.2 source commit ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2 and require the CLI to report exactly strix 1.6.2.",
     "Added runtime re-attestation of the extracted Strix binary digest and fail-closed checks for Docker socket/DOCKER_HOST presence.",
-    "Added an inert non-root runner service with no ports, volumes or external network and active execution forced off."
+    "Added an inert non-root runner service with no ports, volumes or external network and active execution forced off.",
+    "Merged PR #491 after the final runner image build, pytest, Ruff, security and supply-chain checks passed.",
+    "Added a CI runtime smoke that executes the final runner attestation inside Compose and fails if the runner can establish a direct public TCP connection."
   ],
-  "current_branch": "codex/strix-runner-attestation",
-  "current_priority": "Wire a supported Strix execution backend to the pinned runner while forcing all target HTTP traffic through the signed broker boundary.",
+  "current_branch": "codex/strix-runner-runtime-smoke",
+  "current_priority": "Prove the pinned runner runtime isolation in CI, then implement a broker-only Strix backend without direct target egress.",
   "blockers": [
     "The pinned runner is intentionally inert and no active Strix execution backend is wired to it.",
     "The bounded broker path supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
@@ -43,11 +45,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the pinned runner image/service.",
-    "Map the minimum Strix runtime/backend calls needed for broker-only HTTP operation.",
-    "Implement a custom backend or wrapper that cannot open direct target-network connections.",
-    "Add integration tests proving the runner cannot resolve/connect to public targets directly while it can reach the internal broker.",
-    "Expand broker methods only when a concrete Strix workflow requires them and method-specific safety controls exist.",
+    "Validate and merge the runner runtime smoke.",
+    "Map the minimum Strix session/backend operations required by v1.6.2.",
+    "Implement a broker-only backend or wrapper with no Docker daemon dependency.",
+    "Prove supported Strix target traffic is mediated by the signed broker and cannot bypass it.",
+    "Expand broker methods only for concrete required workflows with method-specific controls.",
     "Evaluate asymmetric contract signatures so verification services do not possess the signing secret."
   ]
 }

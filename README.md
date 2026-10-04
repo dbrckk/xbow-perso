@@ -489,7 +489,7 @@ For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` m
 
 A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux release. The image verifies the official release-asset SHA-256 before extraction (amd64 and arm64 have separate pinned digests), verifies the CLI reports exactly `strix 1.6.2`, records the pinned source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and re-attests the extracted binary SHA-256 at runtime. The container has no published ports, volumes, Docker socket or external network and runs as a non-root user with a read-only root filesystem and all Linux capabilities dropped.
 
-The runner is intentionally inert: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory and the process only performs attestation before idling. Build or start it independently:
+The runner is intentionally inert: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory and the process only performs attestation before idling. CI also starts the final Compose service, executes the runtime attestation inside that container, and fails if the runner can open a direct TCP connection to a public Internet address. Build or start it independently:
 
 ```bash
 docker compose --profile strix-runner build --pull strix-runner

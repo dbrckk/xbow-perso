@@ -82,6 +82,7 @@ jobs:
       - run: bash -n scripts/mobile-disable-hackerone-nuclei.sh
       - run: bash -n scripts/mobile-vault-cutover.sh
       - run: bash -n scripts/mobile-vault-rollback.sh
+      - run: bash -n scripts/verify-strix-runner-runtime.sh
       - run: docker compose config --quiet
       - run: |
           XBOW_POSTGRES_PASSWORD=ci-postgres \
@@ -127,3 +128,4 @@ jobs:
       - run: docker compose --profile scanner build --pull scanner-worker
       - run: docker compose --profile strix-broker build --pull strix-broker strix-egress
       - run: docker compose --profile strix-runner build --pull strix-runner
+      - run: bash scripts/verify-strix-runner-runtime.sh

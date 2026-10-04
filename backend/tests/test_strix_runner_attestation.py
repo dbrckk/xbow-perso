@@ -1,5 +1,6 @@
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -157,3 +158,66 @@ def test_ci_builds_strix_runner_profile():
         "docker compose --profile strix-runner build --pull strix-runner"
         in workflow
     )
+
+
+
+def test_ci_executes_runner_runtime_smoke():
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+    script = (
+        ROOT / "scripts" / "verify-strix-runner-runtime.sh"
+    ).read_text()
+
+    assert "bash -n scripts/verify-strix-runner-runtime.sh" in workflow
+    assert "bash scripts/verify-strix-runner-runtime.sh" in workflow
+    assert "app.strix_runner_attestation --check" in script
+    assert "socket.create_connection" in script
+    assert '("1.1.1.1", 443)' in script
+    assert "direct public TCP egress unexpectedly available" in script
+
+
+
+def test_runner_uses_dedicated_pyinstaller_exec_tmpfs():
+    compose = (ROOT / "docker-compose.yml").read_text()
+    dockerfile = (
+        ROOT / "backend" / "Dockerfile.strix-runner"
+    ).read_text()
+    block = compose.split("  strix-runner:", 1)[1].split(
+        "\n  scanner-worker:",
+        1,
+    )[0]
+
+    assert "/tmp:size=64m,noexec,nosuid,nodev" in block
+    assert (
+        "/run/strix-tmp:size=256m,nosuid,nodev,mode=0700,"
+        "uid=65532,gid=65532"
+        in block
+    )
+    assert "TMPDIR=/run/strix-tmp" in dockerfile
+
+
+
+def test_cli_version_check_preserves_dedicated_tmpdir(tmp_path, monkeypatch):
+    binary = tmp_path / "strix"
+    binary.write_bytes(b"fixture")
+    binary.chmod(0o755)
+    seen = {}
+
+    def fake_run(*args, **kwargs):
+        seen.update(kwargs["env"])
+        return subprocess.CompletedProcess(
+            args=args[0],
+            returncode=0,
+            stdout="strix 1.6.2\n",
+            stderr="",
+        )
+
+    monkeypatch.setenv("TMPDIR", "/run/strix-tmp")
+    monkeypatch.setattr(
+        "app.strix_runner_attestation.subprocess.run",
+        fake_run,
+    )
+
+    from app.strix_runner_attestation import _read_cli_version
+
+    assert _read_cli_version(binary) == "strix 1.6.2"
+    assert seen["TMPDIR"] == "/run/strix-tmp"

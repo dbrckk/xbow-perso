@@ -166,6 +166,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp:size=64m,noexec,nosuid,nodev
+      - /run/strix-tmp:size=256m,nosuid,nodev,mode=0700,uid=65532,gid=65532
     security_opt:
       - no-new-privileges:true
     cap_drop:
