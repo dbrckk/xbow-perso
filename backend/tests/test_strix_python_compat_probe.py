@@ -264,3 +264,59 @@ def test_python_runtime_probe_rejects_upstream_blob_mismatch(
 
     with pytest.raises(StrixPythonCompatError, match="source identity"):
         probe_python_runtime()
+
+
+
+def test_preflight_structure_identifies_only_docker_checks_to_patch():
+    from app.strix_python_compat_probe import _verify_preflight_structure
+
+    descriptor = _verify_preflight_structure(
+        "from strix.interface.environment import (\n"
+        "    check_docker_installed,\n"
+        "    pull_docker_image,\n"
+        "    validate_environment,\n"
+        ")\n"
+        "def main():\n"
+        "    check_docker_installed()\n"
+        "    pull_docker_image()\n"
+        "    validate_environment()\n"
+    )
+
+    assert descriptor == {
+        "docker_preflight_symbols": [
+            "check_docker_installed",
+            "pull_docker_image",
+        ],
+        "preserved_validation_symbol": "validate_environment",
+        "preflight_call_order_verified": True,
+    }
+
+
+@pytest.mark.parametrize(
+    "source",
+    (
+        (
+            "from strix.interface.environment import "
+            "check_docker_installed, pull_docker_image\n"
+            "def main():\n"
+            "    check_docker_installed()\n"
+            "    pull_docker_image()\n"
+        ),
+        (
+            "from strix.interface.environment import (\n"
+            "    check_docker_installed,\n"
+            "    pull_docker_image,\n"
+            "    validate_environment,\n"
+            ")\n"
+            "def main():\n"
+            "    pull_docker_image()\n"
+            "    check_docker_installed()\n"
+            "    validate_environment()\n"
+        ),
+    ),
+)
+def test_preflight_structure_rejects_changed_scope_or_order(source):
+    from app.strix_python_compat_probe import _verify_preflight_structure
+
+    with pytest.raises(StrixPythonCompatError, match="preflight structure"):
+        _verify_preflight_structure(source)
