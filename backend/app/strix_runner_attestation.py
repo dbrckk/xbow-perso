@@ -78,6 +78,7 @@ def _read_cli_version(binary_path: Path) -> str:
             env={
                 "PATH": os.environ.get("PATH", ""),
                 "HOME": "/tmp",
+                "TMPDIR": os.environ.get("TMPDIR", "/tmp"),
                 "LANG": "C.UTF-8",
                 "LC_ALL": "C.UTF-8",
             },
