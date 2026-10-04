@@ -11,7 +11,7 @@ Status: active
 - The Strix boundary now has a broker plus a separate dual-homed read-only egress service; GET/HEAD requests are contract-verified twice, DNS-pinned, public-network-only, non-redirecting, bounded and rate-limited.
 - A dedicated inert Strix runner pins v1.6.2, verifies official amd64/arm64 release digests and the exact CLI version at build time, then re-attests the build manifest and extracted binary SHA-256 at runtime without executing the PyInstaller binary; it is attached only to the internal broker network.
 - The xbow `xbow-remote-v1` backend hook is verified against the official Strix v1.6.2 Python wheel and registry API; it declares no bind-mount support and intentionally rejects every execution request.
-- The isolated runner now exposes authenticated `strix-runner-rpc-v1` on internal port 8092 with strict schemas, HMAC authentication, a 5-second socket timeout, a 16-connection concurrency cap, timestamp/nonce replay defenses and no implemented session operations; runner RPC keys must be at least 32 bytes.
+- The isolated runner now exposes authenticated `strix-runner-rpc-v1` on internal port 8092 with strict schemas, HMAC authentication, a 5-second idle socket timeout, a 10-second absolute request-read deadline, a 16-connection concurrency cap, timestamp/nonce replay defenses and no implemented session operations; runner RPC keys must be at least 32 bytes.
 
 ## Broken / blockers
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
@@ -31,7 +31,7 @@ Status: active
 - Broker readiness now fails closed on the egress service whenever read-only proxying is enabled.
 - The Strix runner image pins v1.6.2 release assets/digests and source commit, verifies the archive and exact CLI version during image construction, records that version in the immutable manifest, and re-attests the manifest plus binary SHA-256 at runtime.
 - CI verifies the custom backend hook against the official v1.6.2 manylinux x86_64 wheel after checking its pinned SHA-256; the hook self-test proves registration succeeds while backend execution remains blocked.
-- The runner RPC contract is independently testable and remains non-executing even if a service instance is constructed with an active flag; the real runner startup attestation still forbids active execution. RPC sockets use a 5-second timeout, concurrent connections are capped at 16, and HMAC secrets shorter than 32 bytes are rejected.
+- The runner RPC contract is independently testable and remains non-executing even if a service instance is constructed with an active flag; the real runner startup attestation still forbids active execution. RPC sockets use a 5-second idle timeout, request headers/body have a 10-second absolute read deadline, truncated bodies are rejected, concurrent connections are capped at 16, and HMAC secrets shorter than 32 bytes are rejected.
 
 ## Last verified
 - 2026-10-03
