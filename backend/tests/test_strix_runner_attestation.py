@@ -157,3 +157,13 @@ def test_ci_builds_strix_runner_profile():
         "docker compose --profile strix-runner build --pull strix-runner"
         in workflow
     )
+
+
+
+def test_runner_has_no_direct_public_network_probe():
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+
+    assert "strix-runner-network-proof" in workflow
+    assert "http://strix-broker:8090/healthz" in workflow
+    assert "192.0.2.1" in workflow
+    assert "direct public egress unexpectedly succeeded" in workflow
