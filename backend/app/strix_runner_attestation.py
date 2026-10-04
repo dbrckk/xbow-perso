@@ -106,6 +106,10 @@ def _validate_manifest(data: dict) -> dict:
         raise StrixRunnerAttestationError(
             "Strix runner source commit mismatch"
         )
+    if data.get("cli_version") != f"strix {STRIX_RELEASE_VERSION}":
+        raise StrixRunnerAttestationError(
+            "Strix runner CLI version mismatch"
+        )
     if data.get("platform") != "linux":
         raise StrixRunnerAttestationError(
             "Strix runner platform mismatch"
@@ -157,11 +161,7 @@ def attest_strix_runner(
             "Strix runner binary digest mismatch"
         )
 
-    cli_version = _read_cli_version(binary)
-    if cli_version != f"strix {STRIX_RELEASE_VERSION}":
-        raise StrixRunnerAttestationError(
-            "Strix runner CLI version mismatch"
-        )
+    cli_version = str(data["cli_version"])
 
     docker_socket_present = _docker_socket_present()
     if docker_socket_present:
