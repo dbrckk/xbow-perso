@@ -11,6 +11,11 @@ from app.strix_python_compat_probe import (
 def test_python_runtime_probe_reports_hook_and_docker_preflight(monkeypatch, tmp_path):
     source = tmp_path / "main.py"
     source.write_text(
+        "from strix.interface.environment import (\n"
+        "    check_docker_installed,\n"
+        "    pull_docker_image,\n"
+        "    validate_environment,\n"
+        ")\n"
         "def main():\n"
         "    check_docker_installed()\n"
         "    pull_docker_image()\n"
@@ -66,6 +71,12 @@ def test_python_runtime_probe_reports_hook_and_docker_preflight(monkeypatch, tmp
         "upstream_environment_blob_sha1": (
             "522067df84a046379341f0e243dea57c9205b6b1"
         ),
+        "docker_preflight_symbols": [
+            "check_docker_installed",
+            "pull_docker_image",
+        ],
+        "preserved_validation_symbol": "validate_environment",
+        "preflight_call_order_verified": True,
     }
 
 
@@ -173,6 +184,11 @@ def test_python_runtime_probe_requires_exact_upstream_blob_ids(
 ):
     main_source = tmp_path / "main.py"
     main_source.write_text(
+        "from strix.interface.environment import (\n"
+        "    check_docker_installed,\n"
+        "    pull_docker_image,\n"
+        "    validate_environment,\n"
+        ")\n"
         "def main():\n"
         "    check_docker_installed()\n"
         "    pull_docker_image()\n"
