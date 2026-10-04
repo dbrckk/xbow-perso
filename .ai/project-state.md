@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T23:31:47Z
+Generated: 2026-10-04T23:37:15Z
 
 ### Git
 - Branch: `main`
-- Head: `50251bb28e98`
-- Commit date: 2026-10-05T01:31:34+02:00
-- Commit: security(strix): attest exact upstream Python sources
+- Head: `0e87a1834e3c`
+- Commit date: 2026-10-05T01:37:04+02:00
+- Commit: security(strix): attest Docker preflight patch scope
 - Tracked files: 615
 
 ### Recently changed files

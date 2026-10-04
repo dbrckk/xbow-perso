@@ -11878,6 +11878,8 @@ STRIX_PYTHON_COMPAT_SCHEMA = "strix-python-compat-probe-v1"
 STRIX_MAIN_PY_GIT_BLOB_SHA1 = "c9bd559614a4b6a952229500721216be6df50c62"
 STRIX_ENVIRONMENT_PY_GIT_BLOB_SHA1 = "522067df84a046379341f0e243dea57c9205b6b1"
 _MAX_UPSTREAM_SOURCE_BYTES = 512 * 1024
+_DOCKER_PREFLIGHT_SYMBOLS = (
+_PRESERVED_VALIDATION_SYMBOL = "validate_environment"
 _REQUIRED_DOCKER_PREFLIGHT_MARKERS = (
 ⋮----
 class StrixPythonCompatError(RuntimeError)
@@ -11905,6 +11907,20 @@ def _verify_docker_preflight(source: str) -> None
 ⋮----
 missing = [
 ⋮----
+def _verify_preflight_structure(source: str) -> dict[str, Any]
+⋮----
+tree = ast.parse(source)
+⋮----
+required_symbols = (
+environment_imports = [
+⋮----
+imported = {
+⋮----
+main_functions = [
+⋮----
+calls = sorted(
+call_names = [item[2] for item in calls]
+⋮----
 def probe_python_runtime() -> dict[str, Any]
 ⋮----
 version = _installed_strix_version()
@@ -11918,6 +11934,8 @@ main_blob_sha1 = _git_blob_sha1(main_path)
 environment_blob_sha1 = _git_blob_sha1(environment_path)
 ⋮----
 source = _read_upstream_main_source(main_path)
+⋮----
+preflight_structure = _verify_preflight_structure(source)
 ⋮----
 def _main() -> int
 ⋮----
@@ -21751,6 +21769,12 @@ def test_git_blob_sha1_matches_git_object_identity(tmp_path)
 source = tmp_path / "fixture.txt"
 ⋮----
 main_source = tmp_path / "main.py"
+⋮----
+def test_preflight_structure_identifies_only_docker_checks_to_patch()
+⋮----
+descriptor = _verify_preflight_structure(
+⋮----
+def test_preflight_structure_rejects_changed_scope_or_order(source)
 ````
 
 ## File: backend/tests/test_strix_run_status.py
