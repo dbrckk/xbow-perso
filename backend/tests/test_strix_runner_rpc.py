@@ -379,7 +379,6 @@ def test_runner_rpc_socket_timeout_is_bounded():
     assert fake.timeout == 5.0
 
 
-
 def test_runner_rpc_server_rejects_connections_above_cap():
     import threading
 
