@@ -20,6 +20,10 @@ from app.strix_execution_contract import (
 @pytest.fixture(autouse=True)
 def _clear_ed25519_contract_keys(monkeypatch):
     monkeypatch.delenv(
+        "XBOW_STRIX_CONTRACT_SIGNATURE_ALG",
+        raising=False,
+    )
+    monkeypatch.delenv(
         "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
         raising=False,
     )
@@ -238,6 +242,7 @@ def test_automated_scanning_must_remain_enabled(monkeypatch):
 
 def test_ed25519_contract_verifies_with_public_key_only(monkeypatch):
     private_key, public_key = _ed25519_keypair()
+    monkeypatch.setenv("XBOW_STRIX_CONTRACT_SIGNATURE_ALG", "ed25519")
     monkeypatch.setenv(
         "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
         private_key,
@@ -270,7 +275,8 @@ def test_ed25519_contract_verifies_with_public_key_only(monkeypatch):
 
 def test_ed25519_contract_rejects_wrong_public_key(monkeypatch):
     private_key, _public_key = _ed25519_keypair()
-    _wrong_private, wrong_public = _ed25519_keypair(seed=64)
+    _, wrong_public = _ed25519_keypair(seed=64)
+    monkeypatch.setenv("XBOW_STRIX_CONTRACT_SIGNATURE_ALG", "ed25519")
     monkeypatch.setenv(
         "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
         private_key,
@@ -293,6 +299,7 @@ def test_ed25519_contract_rejects_wrong_public_key(monkeypatch):
 
 
 def test_ed25519_contract_rejects_malformed_private_key(monkeypatch):
+    monkeypatch.setenv("XBOW_STRIX_CONTRACT_SIGNATURE_ALG", "ed25519")
     monkeypatch.setenv(
         "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
         "not-a-valid-key",
