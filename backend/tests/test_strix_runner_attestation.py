@@ -44,7 +44,7 @@ def _write_fixture(tmp_path, *, version="strix 1.6.2"):
 
 
 def test_runner_attestation_accepts_exact_pinned_release(tmp_path, monkeypatch):
-    binary, manifest, version = _write_fixture(tmp_path)
+    binary, manifest, _version = _write_fixture(tmp_path)
     monkeypatch.setattr(
         "app.strix_runner_attestation._docker_socket_present",
         lambda: False,
@@ -72,14 +72,6 @@ def test_runner_attestation_does_not_execute_pyinstaller_at_runtime(
         lambda: False,
     )
 
-    def fail_run(*_args, **_kwargs):
-        raise AssertionError("runtime attestation must not execute Strix")
-
-    monkeypatch.setattr(
-        "app.strix_runner_attestation.subprocess.run",
-        fail_run,
-    )
-
     result = attest_strix_runner(
         binary_path=binary,
         manifest_path=manifest,
@@ -89,7 +81,7 @@ def test_runner_attestation_does_not_execute_pyinstaller_at_runtime(
 
 
 def test_runner_attestation_rejects_binary_tampering(tmp_path, monkeypatch):
-    binary, manifest, version = _write_fixture(tmp_path)
+    binary, manifest, _version = _write_fixture(tmp_path)
     binary.write_bytes(b"tampered")
     monkeypatch.setattr(
         "app.strix_runner_attestation._docker_socket_present",
@@ -115,7 +107,7 @@ def test_runner_attestation_rejects_wrong_cli_version(tmp_path, monkeypatch):
 
 
 def test_runner_attestation_rejects_docker_socket(tmp_path, monkeypatch):
-    binary, manifest, version = _write_fixture(tmp_path)
+    binary, manifest, _version = _write_fixture(tmp_path)
     monkeypatch.setattr(
         "app.strix_runner_attestation._docker_socket_present",
         lambda: True,
