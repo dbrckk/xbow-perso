@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 import os
-import subprocess
 import time
 from pathlib import Path
 
@@ -65,28 +64,6 @@ def _read_manifest(path: Path) -> dict:
             "Strix runner manifest is invalid"
         )
     return data
-
-
-def _read_cli_version(binary_path: Path) -> str:
-    try:
-        result = subprocess.run(
-            [str(binary_path), "--version"],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=10,
-            env={
-                "PATH": os.environ.get("PATH", ""),
-                "HOME": "/tmp",
-                "LANG": "C.UTF-8",
-                "LC_ALL": "C.UTF-8",
-            },
-        )
-    except (OSError, subprocess.SubprocessError) as exc:
-        raise StrixRunnerAttestationError(
-            "Strix runner CLI version check failed"
-        ) from exc
-    return result.stdout.strip()
 
 
 def _docker_socket_present() -> bool:
