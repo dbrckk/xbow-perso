@@ -3,9 +3,17 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
+
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+    Ed25519PrivateKey,
+    Ed25519PublicKey,
+)
 
 from .job_provenance import policy_snapshot_fingerprint
 from .scope_policy import is_host_allowed, normalize_pattern
@@ -18,6 +26,9 @@ if TYPE_CHECKING:
 
 STRIX_EXECUTION_CONTRACT_SCHEMA = "strix-execution-contract-v1"
 _SIGNATURE_DOMAIN = b"xbow:strix-execution-contract:v1\x00"
+_SIGNATURE_ALG_ENV = "XBOW_STRIX_CONTRACT_SIGNATURE_ALG"
+_ED25519_PRIVATE_KEY_ENV = "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY"
+_ED25519_VAULT_NAME = "strix_contract_ed25519_private_key"
 
 
 class StrixExecutionContractError(RuntimeError):
@@ -112,6 +123,59 @@ def _contract_secret() -> str | None:
         ) from exc
 
 
+def _signature_algorithm() -> str:
+    value = os.getenv(_SIGNATURE_ALG_ENV, "hmac-sha256").strip().lower()
+    if value not in {"hmac-sha256", "ed25519"}:
+        raise StrixExecutionContractError(
+            "Strix execution contract signature algorithm is invalid"
+        )
+    return value
+
+
+def _decode_ed25519_key(value: str, *, label: str) -> bytes:
+    if (
+        len(value) != 64
+        or any(ch not in "0123456789abcdef" for ch in value)
+    ):
+        raise StrixExecutionContractError(
+            f"Strix execution contract Ed25519 {label} is invalid"
+        )
+    try:
+        return bytes.fromhex(value)
+    except ValueError as exc:
+        raise StrixExecutionContractError(
+            f"Strix execution contract Ed25519 {label} is invalid"
+        ) from exc
+
+
+def _contract_ed25519_private_key() -> str:
+    try:
+        value = resolve_secret(
+            _ED25519_VAULT_NAME,
+            _ED25519_PRIVATE_KEY_ENV,
+        )
+    except SecretVaultError as exc:
+        raise StrixExecutionContractError(
+            "Strix execution contract Ed25519 private key is unavailable"
+        ) from exc
+    if not value:
+        raise StrixExecutionContractError(
+            "Strix execution contract Ed25519 private key is unavailable"
+        )
+    _decode_ed25519_key(value, label="private key")
+    return value
+
+
+def _public_key_from_private_hex(private_hex: str) -> str:
+    private_key = Ed25519PrivateKey.from_private_bytes(
+        _decode_ed25519_key(private_hex, label="private key")
+    )
+    return private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ).hex()
+
+
 def _unsafe_campaign_reasons(campaign: Campaign) -> list[str]:
     rules = campaign.target.rules
     reasons: list[str] = []
@@ -176,23 +240,37 @@ def build_strix_execution_contract(
     )
     canonical = _canonical_payload(unsigned)
     digest = hashlib.sha256(canonical).hexdigest()
-    secret = _contract_secret()
-    signature = (
-        hmac.new(
-            secret.encode("utf-8"),
-            _SIGNATURE_DOMAIN + canonical,
-            hashlib.sha256,
-        ).hexdigest()
-        if secret
-        else None
-    )
+    signature_alg = _signature_algorithm()
+    signature: str | None
+    if signature_alg == "ed25519":
+        private_hex = _contract_ed25519_private_key()
+        private_key = Ed25519PrivateKey.from_private_bytes(
+            _decode_ed25519_key(private_hex, label="private key")
+        )
+        signature = private_key.sign(
+            _SIGNATURE_DOMAIN + canonical
+        ).hex()
+    else:
+        secret = _contract_secret()
+        signature = (
+            hmac.new(
+                secret.encode("utf-8"),
+                _SIGNATURE_DOMAIN + canonical,
+                hashlib.sha256,
+            ).hexdigest()
+            if secret
+            else None
+        )
+        if signature is None:
+            signature_alg = None
+
     return StrixExecutionContract(
         **{
             **unsigned.to_dict(),
             "allowed_targets": unsigned.allowed_targets,
             "denied_targets": unsigned.denied_targets,
             "contract_hash": digest,
-            "signature_alg": "hmac-sha256" if signature else None,
+            "signature_alg": signature_alg,
             "signature": signature,
         }
     )
@@ -203,6 +281,7 @@ def verify_strix_contract_integrity(
     *,
     require_signature: bool,
     verification_secret: str | None = None,
+    verification_public_key: str | None = None,
 ) -> None:
     canonical = _canonical_payload(contract)
     expected_hash = hashlib.sha256(canonical).hexdigest()
@@ -220,26 +299,60 @@ def verify_strix_contract_integrity(
             )
         return
 
-    if contract.signature_alg != "hmac-sha256":
-        raise StrixExecutionContractError(
-            "Strix execution contract signature algorithm is unsupported"
+    if contract.signature_alg == "hmac-sha256":
+        secret = (
+            verification_secret
+            if verification_secret is not None
+            else _contract_secret()
         )
-    secret = (
-        verification_secret
-        if verification_secret is not None
-        else _contract_secret()
+        if not secret:
+            raise StrixExecutionContractError(
+                "Strix execution contract verification key is unavailable"
+            )
+        expected_signature = hmac.new(
+            secret.encode("utf-8"),
+            _SIGNATURE_DOMAIN + canonical,
+            hashlib.sha256,
+        ).hexdigest()
+        if not hmac.compare_digest(contract.signature, expected_signature):
+            raise StrixExecutionContractError(
+                "Strix execution contract signature mismatch"
+            )
+        return
+
+    if contract.signature_alg == "ed25519":
+        if (
+            len(contract.signature) != 128
+            or any(
+                ch not in "0123456789abcdef"
+                for ch in contract.signature
+            )
+        ):
+            raise StrixExecutionContractError(
+                "Strix execution contract signature is invalid"
+            )
+        public_hex = verification_public_key
+        if public_hex is None:
+            public_hex = _public_key_from_private_hex(
+                _contract_ed25519_private_key()
+            )
+        public_key = Ed25519PublicKey.from_public_bytes(
+            _decode_ed25519_key(public_hex, label="public key")
+        )
+        try:
+            public_key.verify(
+                bytes.fromhex(contract.signature),
+                _SIGNATURE_DOMAIN + canonical,
+            )
+        except (InvalidSignature, ValueError) as exc:
+            raise StrixExecutionContractError(
+                "Strix execution contract signature mismatch"
+            ) from exc
+        return
+
+    raise StrixExecutionContractError(
+        "Strix execution contract signature algorithm is unsupported"
     )
-    if not secret:
-        raise StrixExecutionContractError(
-            "Strix execution contract verification key is unavailable"
-        )
-    expected_signature = hmac.new(
-        secret.encode("utf-8"),
-        _SIGNATURE_DOMAIN + canonical,
-        hashlib.sha256,
-    ).hexdigest()
-    if not hmac.compare_digest(contract.signature, expected_signature):
-        raise StrixExecutionContractError("Strix execution contract signature mismatch")
 
 
 def verify_strix_execution_contract(
@@ -292,6 +405,7 @@ def authorize_strix_contract_request(
     target: str,
     requested_rps: float,
     verification_secret: str | None = None,
+    verification_public_key: str | None = None,
 ) -> StrixAuthorizedRequest:
     """Authorize one future broker request against a signed immutable contract.
 
@@ -303,6 +417,7 @@ def authorize_strix_contract_request(
         contract,
         require_signature=True,
         verification_secret=verification_secret,
+        verification_public_key=verification_public_key,
     )
     if contract.schema != STRIX_EXECUTION_CONTRACT_SCHEMA or contract.engine != "strix":
         raise StrixExecutionContractError("Strix execution contract schema is unsupported")
