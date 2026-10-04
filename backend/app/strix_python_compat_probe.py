@@ -10,11 +10,20 @@ from typing import Any
 from .strix_backend_hook import (
     STRIX_BACKEND_NAME,
     STRIX_EXPECTED_VERSION,
+    STRIX_SOURCE_COMMIT,
     register_xbow_backend,
 )
 
 
 STRIX_PYTHON_COMPAT_SCHEMA = "strix-python-compat-probe-v1"
+STRIX_UPSTREAM_PYPROJECT_SHA256 = (
+    "78e22229485fcd69cf07670812826170"
+    "a6538c157e61ccf12aa38661fc066c6c"
+)
+STRIX_UPSTREAM_UV_LOCK_SHA256 = (
+    "b4adb335fdfa72b64173e120eea57d08"
+    "b0a993979eb4b01157b2f1488f81c6ea"
+)
 _MAX_UPSTREAM_SOURCE_BYTES = 512 * 1024
 _REQUIRED_DOCKER_PREFLIGHT_MARKERS = (
     "check_docker_installed()",
@@ -113,6 +122,10 @@ def probe_python_runtime() -> dict[str, Any]:
         "supports_bind_mounts": False,
         "active_execution_enabled": False,
         "upstream_docker_preflight_required": True,
+        "source_commit": STRIX_SOURCE_COMMIT,
+        "upstream_pyproject_sha256": STRIX_UPSTREAM_PYPROJECT_SHA256,
+        "upstream_uv_lock_sha256": STRIX_UPSTREAM_UV_LOCK_SHA256,
+        "dependency_lock_installation_enabled": False,
         "entrypoint_enabled": False,
     }
 
