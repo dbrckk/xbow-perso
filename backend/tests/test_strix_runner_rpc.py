@@ -14,6 +14,19 @@ ROOT = Path(__file__).resolve().parents[2]
 SECRET = "fixture-runner-rpc-secret-32-bytes-minimum"
 NOW = 1_800_000_000
 NONCE = "0123456789abcdef0123456789abcdef"
+ATTESTATION = {
+    "schema": "strix-runner-attestation-v1",
+    "ready": True,
+    "version": "1.6.2",
+    "source_commit": "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2",
+    "binary_sha256": "a" * 64,
+    "archive_verified": True,
+    "binary_verified": True,
+    "docker_socket_present": False,
+    "docker_host_configured": False,
+    "active_execution_enabled": False,
+    "network_mode": "internal_only",
+}
 
 
 def _headers(path: str, body: bytes, *, nonce: str = NONCE):
@@ -33,10 +46,16 @@ def _headers(path: str, body: bytes, *, nonce: str = NONCE):
     }
 
 
-def _service(*, secret=SECRET, active_execution=False):
+def _service(
+    *,
+    secret=SECRET,
+    active_execution=False,
+    attestation=ATTESTATION,
+):
     return RunnerRpcService(
         secret=secret,
         active_execution=active_execution,
+        attestation=attestation,
         now=lambda: NOW,
     )
 
@@ -117,6 +136,44 @@ def test_ready_requires_rpc_secret():
     assert result.json_body["error"] == "rpc_key_unavailable"
 
 
+def test_ready_requires_runtime_attestation():
+    result = _service(attestation=None).handle(
+        method="GET",
+        path="/readyz",
+        headers={},
+        body=b"",
+    )
+
+    assert result.status == 503
+    assert result.json_body["error"] == "runner_attestation_unavailable"
+
+
+def test_ready_exposes_exact_runtime_attestation():
+    result = _service().handle(
+        method="GET",
+        path="/readyz",
+        headers={},
+        body=b"",
+    )
+
+    assert result.status == 200
+    assert result.json_body["runner_attested"] is True
+    assert result.json_body["runner_version"] == "1.6.2"
+    assert (
+        result.json_body["source_commit"]
+        == "ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
+    )
+    assert result.json_body["binary_sha256"] == "a" * 64
+
+
+def test_runner_rpc_rejects_mismatched_runtime_attestation():
+    attestation = dict(ATTESTATION)
+    attestation["source_commit"] = "0" * 40
+
+    with pytest.raises(ValueError, match="attestation is invalid"):
+        _service(attestation=attestation)
+
+
 @pytest.mark.parametrize(
     "path",
     (
@@ -133,16 +190,9 @@ def test_authenticated_session_operations_still_fail_closed(path):
     assert result.json_body["error"] == "active_execution_disabled"
 
 
-def test_even_active_flag_cannot_enable_unimplemented_rpc():
-    path = "/v1/session/create"
-    result = _request(
-        _service(active_execution=True),
-        path,
-        _payload(path),
-    )
-
-    assert result.status == 501
-    assert result.json_body["error"] == "rpc_operation_not_implemented"
+def test_runner_rpc_rejects_active_execution_mode():
+    with pytest.raises(ValueError, match="active execution must remain disabled"):
+        _service(active_execution=True)
 
 
 def test_missing_auth_is_rejected_before_payload_processing():
