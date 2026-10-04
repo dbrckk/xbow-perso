@@ -25,14 +25,16 @@ RUN apt-get update \
     && tar -C /opt/strix -xzf "/tmp/${ASSET}" \
     && mv "/opt/strix/strix-${STRIX_VERSION}-linux-${RELEASE_ARCH}" /opt/strix/strix \
     && chmod 0755 /opt/strix/strix \
-    && /opt/strix/strix --version | grep -Fx "strix ${STRIX_VERSION}" \
+    && CLI_VERSION="$(/opt/strix/strix --version)" \
+    && printf '%s\n' "$CLI_VERSION" | grep -Fx "strix ${STRIX_VERSION}" \
     && BINARY_SHA256="$(sha256sum /opt/strix/strix | awk '{print $1}')" \
-    && printf '{"schema":"strix-runner-attestation-v1","version":"%s","source_commit":"%s","asset_name":"%s","archive_sha256":"%s","binary_sha256":"%s","platform":"linux","architecture":"%s"}\n' \
+    && printf '{"schema":"strix-runner-attestation-v1","version":"%s","source_commit":"%s","asset_name":"%s","archive_sha256":"%s","binary_sha256":"%s","cli_version":"%s","platform":"linux","architecture":"%s"}\n' \
          "$STRIX_VERSION" \
          "$STRIX_SOURCE_COMMIT" \
          "$ASSET" \
          "$ARCHIVE_SHA256" \
          "$BINARY_SHA256" \
+         "$CLI_VERSION" \
          "$TARGETARCH" \
          > /opt/strix/manifest.json \
     && chmod 0444 /opt/strix/manifest.json \
