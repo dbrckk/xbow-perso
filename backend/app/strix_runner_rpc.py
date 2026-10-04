@@ -175,10 +175,10 @@ class RunnerRpcService:
             self._prune_nonces(now)
             if nonce in self._nonces:
                 return _error(409, "replay_detected")
+            if len(self._nonces) >= RUNNER_RPC_MAX_NONCES:
+                return _error(503, "replay_cache_saturated")
             self._nonces[nonce] = now
             self._nonces.move_to_end(nonce)
-            while len(self._nonces) > RUNNER_RPC_MAX_NONCES:
-                self._nonces.popitem(last=False)
         return None
 
     def _prune_nonces(self, now: float) -> None:
