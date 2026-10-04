@@ -39,24 +39,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T22:55:35Z
+Generated: 2026-10-04T23:31:47Z
 
 ### Git
 - Branch: `main`
-- Head: `e1bd65eb4fa8`
-- Commit date: 2026-10-05T00:55:24+02:00
-- Commit: security(strix): enforce absolute runner RPC read deadline
+- Head: `50251bb28e98`
+- Commit date: 2026-10-05T01:31:34+02:00
+- Commit: security(strix): attest exact upstream Python sources
 - Tracked files: 615
 
 ### Recently changed files
+- `backend/app/strix_python_compat_probe.py`
+- `backend/tests/test_strix_python_compat_probe.py`
 - `README.md`
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_strix_runner_rpc.py`
 - `.env.example`
 - `.github/workflows/ci.yml`
-- `backend/app/strix_python_compat_probe.py`
-- `backend/tests/test_strix_python_compat_probe.py`
-- `backend/tests/test_runtime_capabilities.py`
 
 ### Project signals
 - `pyproject.toml`

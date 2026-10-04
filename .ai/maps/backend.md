@@ -11267,6 +11267,8 @@ finding = normalize_strix_item(item, campaign)
 ## File: app/strix_python_compat_probe.py
 ```python
 STRIX_PYTHON_COMPAT_SCHEMA = "strix-python-compat-probe-v1"
+STRIX_MAIN_PY_GIT_BLOB_SHA1 = "c9bd559614a4b6a952229500721216be6df50c62"
+STRIX_ENVIRONMENT_PY_GIT_BLOB_SHA1 = "522067df84a046379341f0e243dea57c9205b6b1"
 _MAX_UPSTREAM_SOURCE_BYTES = 512 * 1024
 _REQUIRED_DOCKER_PREFLIGHT_MARKERS = (
 ⋮----
@@ -11274,13 +11276,22 @@ class StrixPythonCompatError(RuntimeError)
 ⋮----
 def _installed_strix_version() -> str
 ⋮----
-def _upstream_main_path() -> Path
+def _upstream_source_path(relative_path: str) -> Path
 ⋮----
 distribution = metadata.distribution("strix-agent")
 ⋮----
-def _read_upstream_main_source(path: Path) -> str
+def _upstream_main_path() -> Path
+⋮----
+def _read_bounded_bytes(path: Path) -> bytes
 ⋮----
 payload = path.read_bytes()
+⋮----
+def _git_blob_sha1(path: Path) -> str
+⋮----
+payload = _read_bounded_bytes(path)
+header = f"blob {len(payload)}\0".encode("ascii")
+⋮----
+def _read_upstream_main_source(path: Path) -> str
 ⋮----
 def _verify_docker_preflight(source: str) -> None
 ⋮----
@@ -11293,7 +11304,12 @@ version = _installed_strix_version()
 descriptor = register_xbow_backend()
 expected_descriptor = {
 ⋮----
-source = _read_upstream_main_source(_upstream_main_path())
+main_path = _upstream_source_path("strix/interface/main.py")
+environment_path = _upstream_source_path(
+main_blob_sha1 = _git_blob_sha1(main_path)
+environment_blob_sha1 = _git_blob_sha1(environment_path)
+⋮----
+source = _read_upstream_main_source(main_path)
 ⋮----
 def _main() -> int
 ⋮----
@@ -21110,6 +21126,8 @@ def test_python_runtime_probe_reports_hook_and_docker_preflight(monkeypatch, tmp
 ⋮----
 source = tmp_path / "main.py"
 ⋮----
+environment_source = tmp_path / "environment.py"
+⋮----
 result = probe_python_runtime()
 ⋮----
 def test_python_runtime_probe_rejects_wrong_version(monkeypatch)
@@ -21119,6 +21137,12 @@ def test_probe_source_read_is_bounded(monkeypatch, tmp_path)
 def test_ci_runs_python_compat_probe_against_pinned_wheel()
 ⋮----
 workflow = Path(".github/workflows/ci.yml").read_text()
+⋮----
+def test_git_blob_sha1_matches_git_object_identity(tmp_path)
+⋮----
+source = tmp_path / "fixture.txt"
+⋮----
+main_source = tmp_path / "main.py"
 ```
 
 ## File: tests/test_strix_run_status.py

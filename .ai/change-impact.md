@@ -1,15 +1,13 @@
 # Change impact
 
-Base: eb0349e59e00615df65d338e27dbeeeb96c9a877
-Head: e1bd65eb4fa8f69ab65485d1189fc37c3ac6b30b
+Base: 3273c6fb877abc5f7108d86eb8f045b292c74ed1
+Head: 50251bb28e9803aafa59616dd5454bc875f5212d
 
 ## Changed files
-- M README.md
-- M backend/app/strix_runner_rpc.py
-- M backend/tests/test_strix_runner_rpc.py
+- M backend/app/strix_python_compat_probe.py
+- M backend/tests/test_strix_python_compat_probe.py
 
 ## Affected areas
-- (root)
 - backend
 
 ## Related test candidates
