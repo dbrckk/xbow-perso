@@ -317,3 +317,41 @@ def test_hmac_contract_remains_supported_without_ed25519_key(monkeypatch):
     assert contract.signature_alg == "hmac-sha256"
     assert contract.signature is not None
     assert len(contract.signature) == 64
+
+
+
+def test_contract_rejects_unknown_signature_algorithm(monkeypatch):
+    monkeypatch.setenv(
+        "XBOW_STRIX_CONTRACT_SIGNATURE_ALG",
+        "unsupported",
+    )
+
+    with pytest.raises(
+        StrixExecutionContractError,
+        match="signature algorithm is invalid",
+    ):
+        build_strix_execution_contract(_campaign(), job_id="job-alg")
+
+
+def test_ed25519_contract_rejects_malformed_public_key(monkeypatch):
+    private_key, _public_key = _ed25519_keypair()
+    monkeypatch.setenv("XBOW_STRIX_CONTRACT_SIGNATURE_ALG", "ed25519")
+    monkeypatch.setenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
+        private_key,
+    )
+    contract = build_strix_execution_contract(_campaign(), job_id="job-ed")
+
+    monkeypatch.delenv(
+        "XBOW_STRIX_CONTRACT_ED25519_PRIVATE_KEY",
+        raising=False,
+    )
+    monkeypatch.setenv("XBOW_VAULT_ENABLED", "false")
+
+    with pytest.raises(StrixExecutionContractError, match="public key"):
+        authorize_strix_contract_request(
+            contract,
+            target="https://app.example.test/",
+            requested_rps=1.0,
+            verification_public_key="bad-key",
+        )
