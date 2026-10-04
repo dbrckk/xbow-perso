@@ -4,11 +4,16 @@ import hashlib
 import hmac
 import json
 from dataclasses import asdict, dataclass
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from .job_provenance import policy_snapshot_fingerprint
-from .main import Campaign, is_host_allowed, normalize_pattern
+from .scope_policy import is_host_allowed, normalize_pattern
 from .secret_vault import SecretVaultError, resolve_secret
+
+
+if TYPE_CHECKING:
+    from .main import Campaign
 
 
 STRIX_EXECUTION_CONTRACT_SCHEMA = "strix-execution-contract-v1"
