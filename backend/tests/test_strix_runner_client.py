@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[2]
-
-
 from app.strix_runner_client import (
     StrixRunnerClientError,
     check_runner_readiness,
 )
+
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class _Response:
