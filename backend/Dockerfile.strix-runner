@@ -49,10 +49,12 @@ RUN groupadd --system --gid 65532 strix-runner \
 
 COPY --from=fetch /opt/strix /opt/strix
 COPY app/strix_runner_attestation.py /app/app/strix_runner_attestation.py
+COPY app/strix_runner_rpc.py /app/app/strix_runner_rpc.py
 
 RUN chmod 0555 /opt/strix/strix \
     && chmod 0444 /opt/strix/manifest.json \
-    && chmod 0444 /app/app/strix_runner_attestation.py
+    && chmod 0444 /app/app/strix_runner_attestation.py \
+    && chmod 0444 /app/app/strix_runner_rpc.py
 
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
@@ -62,4 +64,4 @@ ENV PYTHONUNBUFFERED=1 \
 
 USER 65532:65532
 
-CMD ["python", "-m", "app.strix_runner_attestation", "--idle"]
+CMD ["python", "-m", "app.strix_runner_rpc", "--serve"]
