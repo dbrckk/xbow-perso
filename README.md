@@ -491,7 +491,7 @@ A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux r
 
 The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it now serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes, but **all session operations are still unimplemented**. A valid request therefore fails closed instead of executing a command.
 
-Provision a separate internal RPC key before starting the runner:
+Provision a separate internal RPC key of at least 32 bytes before starting the runner:
 
 ```bash
 XBOW_STRIX_RUNNER_RPC_HMAC_KEY='<server-side secret>' \

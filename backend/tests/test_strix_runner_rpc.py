@@ -11,7 +11,7 @@ from app.strix_runner_rpc import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SECRET = "fixture-runner-rpc-secret"
+SECRET = "fixture-runner-rpc-secret-32-bytes-minimum"
 NOW = 1_800_000_000
 NONCE = "0123456789abcdef0123456789abcdef"
 
@@ -377,3 +377,24 @@ def test_runner_rpc_socket_timeout_is_bounded():
 
     assert RUNNER_RPC_SOCKET_TIMEOUT_SECONDS == 5.0
     assert fake.timeout == 5.0
+
+
+def test_runner_rpc_rejects_weak_shared_secret():
+    with pytest.raises(ValueError, match="secret is invalid"):
+        RunnerRpcService(
+            secret="too-short",
+            active_execution=False,
+            now=lambda: NOW,
+        )
+
+
+def test_runner_rpc_signing_rejects_weak_shared_secret():
+    with pytest.raises(ValueError, match="secret is invalid"):
+        sign_runner_rpc_request(
+            method="POST",
+            path="/v1/session/delete",
+            body=b"{}",
+            secret="too-short",
+            timestamp=NOW,
+            nonce=NONCE,
+        )
