@@ -38,27 +38,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T22:42:11Z
+Generated: 2026-10-04T22:47:19Z
 
 ### Git
 - Branch: `main`
-- Head: `aefcf4f0de4b`
-- Commit date: 2026-10-05T00:42:00+02:00
-- Commit: security(strix): cap runner RPC connection concurrency
-- Tracked files: 613
+- Head: `7808d390e45d`
+- Commit date: 2026-10-05T00:47:07+02:00
+- Commit: test(strix): verify Python runtime compatibility
+- Tracked files: 615
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `backend/app/strix_python_compat_probe.py`
+- `backend/tests/test_strix_python_compat_probe.py`
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_strix_runner_rpc.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/app/runtime_capabilities.py`
-- `.env.example`
-- `.github/workflows/ci.yml`
-- `README.md`
-- `backend/Dockerfile.strix-runner`
-- `backend/app/strix_runner_attestation.py`
-- `backend/tests/test_strix_runner_attestation.py`
-- `docker-compose.yml`
 
 ### Project signals
 - `pyproject.toml`
