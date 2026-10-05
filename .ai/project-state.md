@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T07:18:53Z
+Generated: 2026-10-05T07:35:52Z
 
 ### Git
 - Branch: `main`
-- Head: `57b8183d9530`
-- Commit date: 2026-10-05T09:18:41+02:00
-- Commit: feat(strix): inspect Python preflight patch surface
-- Tracked files: 624
+- Head: `01b2b1cb110a`
+- Commit date: 2026-10-05T09:35:40+02:00
+- Commit: fix(ci): avoid frontend smoke broken pipe under pipefail
+- Tracked files: 625
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `backend/tests/test_ci_workflow.py`
 - `backend/app/strix_python_preflight_surface.py`
 - `backend/tests/test_strix_python_preflight_surface.py`
 - `README.md`
@@ -56,14 +58,11 @@ Generated: 2026-10-05T07:18:53Z
 - `backend/app/strix_python_bootstrap_plan.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_python_bootstrap_plan.py`
-- `.github/workflows/ci.yml`
 - `backend/app/strix_python_toolchain_probe.py`
 - `backend/strix-python-runtime.lock.json`
 - `backend/tests/test_strix_python_toolchain_probe.py`
 - `backend/app/strix_python_lock_probe.py`
 - `backend/tests/test_strix_python_lock_probe.py`
-- `backend/app/strix_python_compat_probe.py`
-- `backend/tests/test_strix_python_compat_probe.py`
 
 ### Project signals
 - `pyproject.toml`

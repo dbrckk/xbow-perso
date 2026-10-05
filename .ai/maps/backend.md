@@ -243,6 +243,7 @@ tests/
   test_campaign_runtime.py
   test_chain_detector.py
   test_chain_intelligence.py
+  test_ci_workflow.py
   test_control_plane_health.py
   test_control_views.py
   test_coverage.py
@@ -13841,6 +13842,13 @@ candidate = next(item for item in result["candidates"] if item["chain_id"] == "a
 def test_single_family_does_not_invent_chain()
 ⋮----
 result = build_chain_intelligence([_category("business_logic", 50, 10)])
+```
+
+## File: tests/test_ci_workflow.py
+```python
+def test_frontend_smoke_test_avoids_pipefail_broken_pipe()
+⋮----
+workflow = Path(".github/workflows/ci.yml").read_text()
 ```
 
 ## File: tests/test_control_plane_health.py

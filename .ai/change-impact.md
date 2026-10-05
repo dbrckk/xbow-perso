@@ -1,13 +1,14 @@
 # Change impact
 
-Base: aa88000b9484f6560ee68a8566e4d53e6296401a
-Head: 57b8183d953035305c67b10be886cc8454898e16
+Base: 79351ecb17b826213b814c88205cde5d9f249e04
+Head: 01b2b1cb110af272fbad033fccac18f9588b3d25
 
 ## Changed files
-- A backend/app/strix_python_preflight_surface.py
-- A backend/tests/test_strix_python_preflight_surface.py
+- M .github/workflows/ci.yml
+- A backend/tests/test_ci_workflow.py
 
 ## Affected areas
+- .github
 - backend
 
 ## Related test candidates
