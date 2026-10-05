@@ -98,6 +98,11 @@ The dedicated scanner worker must also be running:
 docker compose --profile scanner up -d --build
 ```
 
+The pinned Nuclei discovery profile now includes `cve` and `vuln` templates in addition to technology, misconfiguration and exposure detection, while still excluding `dos`, `fuzz`, `intrusive`, `default-login` and `bruteforce` tags. Nuclei CVE output is normalized with CVE IDs, CPE, CVSS vector/score, EPSS score/percentile, references, verified-template metadata, request count and vendor/product data. Known CVEs can become eligible for a bounded exact-template recheck only when the template is verified and declares at most five requests; normal scope, scanner sandbox, rate-limit and dry-run gates still apply.
+
+The finding-intelligence layer also distinguishes known CVEs from unknown vulnerability signals. A finding without a CVE is never labelled a zero-day merely because no identifier exists: `potential_zero_day_candidate` requires high/critical severity, strong differential behavior, sufficient evidence quality/readiness and no normalized CVE ID. Such candidates are routed to an isolated-lab reproducer review path; automatic zero-day exploitation remains disabled.
+
+
 Do **not** enable those switches merely because the platform is technically ready. In the HackerOne launcher, first load the exact program, review its current scope/policy, explicitly confirm Safe Harbor/authorization, confirm that automated scanning is permitted, enter the exact request-rate ceiling, review account constraints/exclusions, preview the executable rules, and only then launch.
 
 Direct HackerOne submission remains independently gated by `XBOW_ENABLE_HACKERONE_SUBMISSION=true` and is **not required** for a first real scan. The historical report-sync worker is also optional and can be enabled later.
