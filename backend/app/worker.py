@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import os
+import re
 import shlex
 import subprocess
 from dataclasses import dataclass
@@ -122,7 +123,7 @@ def build_nuclei_plan(campaign: Campaign, output_dir: str = "/data/nuclei_runs")
         "-templates",
         "/opt/nuclei-templates",
         "-tags",
-        "tech,misconfig,exposure",
+        "tech,misconfig,exposure,cve,vuln",
         "-exclude-tags",
         "dos,fuzz,intrusive,default-login,bruteforce",
         "-disable-unsigned-templates",
@@ -160,6 +161,80 @@ def build_nuclei_plan(campaign: Campaign, output_dir: str = "/data/nuclei_runs")
         output_dir=output_dir,
         campaign_rps=float(rules.max_requests_per_second),
         admission_cap_rps=autonomous_cap,
+    )
+
+
+_NUCLEI_TEMPLATE_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,200}$")
+_MAX_EXACT_CVE_VALIDATION_REQUESTS = 5
+
+
+def build_nuclei_cve_validation_plan(
+    campaign: Campaign,
+    finding: Finding,
+    output_dir: str = "/data/nuclei_runs",
+) -> WorkerPlan:
+    """Build a bounded exact-template CVE recheck plan.
+
+    This reuses the hardened Nuclei runtime and only admits scanner findings
+    backed by a verified template with a small declared request count. It does
+    not enable destructive, fuzz, brute-force, default-login or interactsh
+    templates, and normal worker dry-run/runtime gates remain in force.
+    """
+
+    if not finding.cve_ids:
+        raise WorkerPolicyError("CVE validation requires a normalized CVE id")
+    template_id = str(finding.template_id or "").strip()
+    if not _NUCLEI_TEMPLATE_ID_RE.fullmatch(template_id):
+        raise WorkerPolicyError("CVE validation requires a safe template id")
+    if finding.template_verified is not True:
+        raise WorkerPolicyError("CVE validation requires a verified Nuclei template")
+    max_requests = finding.template_max_requests
+    if (
+        not isinstance(max_requests, int)
+        or isinstance(max_requests, bool)
+        or not 1 <= max_requests <= _MAX_EXACT_CVE_VALIDATION_REQUESTS
+    ):
+        raise WorkerPolicyError(
+            "CVE validation template request count exceeds bounded policy"
+        )
+    if finding.status != "validation_required":
+        raise WorkerPolicyError(
+            "CVE validation requires a validation_required finding"
+        )
+
+    target = str(finding.endpoint or finding.asset or "").strip()
+    parsed = urlparse(target)
+    host = (parsed.hostname or "").lower()
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not host
+        or parsed.username
+        or parsed.password
+        or not is_host_allowed(
+            host,
+            campaign.target.rules.allowed_targets,
+            campaign.target.rules.denied_targets,
+        )
+    ):
+        raise WorkerPolicyError("CVE validation target is outside declared scope")
+
+    base = build_nuclei_plan(campaign, output_dir)
+    command = list(base.command)
+    target_index = command.index("-target") + 1
+    command[target_index] = target
+
+    tags_index = command.index("-tags")
+    del command[tags_index : tags_index + 2]
+    command.extend(["-id", template_id])
+
+    return WorkerPlan(
+        engine=base.engine,
+        command=command,
+        target=target,
+        dry_run=base.dry_run,
+        output_dir=base.output_dir,
+        campaign_rps=base.campaign_rps,
+        admission_cap_rps=base.admission_cap_rps,
     )
 
 
