@@ -1,3 +1,4 @@
+import hashlib
 import json
 from pathlib import Path
 
@@ -7,13 +8,16 @@ from app.strix_runner_rpc import (
     RUNNER_RPC_MIN_SECRET_BYTES,
     RUNNER_RPC_PROTOCOL,
     RunnerRpcService,
+    _admission_secret_from_env,
     _rpc_secret_from_env,
     sign_runner_rpc_request,
 )
+from app.strix_runner_exec_ticket import build_strix_runner_exec_ticket
 
 
 ROOT = Path(__file__).resolve().parents[2]
 SECRET = "fixture-runner-rpc-secret-at-least-32-bytes"
+ADMISSION_SECRET = "fixture-runner-admission-secret-at-least-32-bytes"
 NOW = 1_800_000_000
 NONCE = "0123456789abcdef0123456789abcdef"
 
@@ -35,9 +39,15 @@ def _headers(path: str, body: bytes, *, nonce: str = NONCE):
     }
 
 
-def _service(*, secret=SECRET, active_execution=False):
+def _service(
+    *,
+    secret=SECRET,
+    admission_secret=ADMISSION_SECRET,
+    active_execution=False,
+):
     return RunnerRpcService(
         secret=secret,
+        admission_secret=admission_secret,
         active_execution=active_execution,
         now=lambda: NOW,
     )
@@ -53,12 +63,41 @@ def _payload(path: str) -> dict:
             "manifest_digest": "b" * 64,
         }
     if path == "/v1/session/exec":
+        argv = [
+            "curl",
+            "-fsS",
+            "http://127.0.0.1:48080/graphql",
+        ]
+        timeout_seconds = 10.0
+        request_id = "req-exec-1"
+        session_id = "sess-1"
+        canonical = "\\x00".join(argv).encode("utf-8")
+        descriptor = {
+            "schema": "strix-command-admission-v1",
+            "contract_hash": "c" * 64,
+            "session_id": session_id,
+            "request_id": request_id,
+            "profile": "bootstrap-v1",
+            "executable": "curl",
+            "argv_sha256": hashlib.sha256(canonical).hexdigest(),
+            "argc": len(argv),
+            "argv_bytes": sum(len(arg.encode("utf-8")) for arg in argv),
+            "timeout_seconds": timeout_seconds,
+            "shell_interpreter_allowed": False,
+            "direct_egress_allowed": False,
+            "network_scope_enforcement": "broker_required",
+            "active_execution_enabled": False,
+        }
         return {
             "schema": RUNNER_RPC_PROTOCOL,
-            "request_id": "req-exec-1",
-            "session_id": "sess-1",
-            "argv": ["sh", "-lc", "printf ok"],
-            "timeout_seconds": 10.0,
+            "request_id": request_id,
+            "session_id": session_id,
+            "argv": argv,
+            "timeout_seconds": timeout_seconds,
+            "admission": build_strix_runner_exec_ticket(
+                descriptor,
+                signing_secret=ADMISSION_SECRET,
+            ).to_dict(),
         }
     if path == "/v1/session/resolve-port":
         return {
@@ -103,6 +142,7 @@ def test_health_is_non_secret_and_execution_stays_disabled():
         "status": "ok",
         "protocol": RUNNER_RPC_PROTOCOL,
         "active_execution_enabled": False,
+        "exec_admission_required": True,
         "implemented_operations": [],
     }
 
@@ -117,6 +157,18 @@ def test_ready_requires_rpc_secret():
 
     assert result.status == 503
     assert result.json_body["error"] == "rpc_key_unavailable"
+
+
+def test_ready_requires_exec_admission_secret():
+    result = _service(admission_secret=None).handle(
+        method="GET",
+        path="/readyz",
+        headers={},
+        body=b"",
+    )
+
+    assert result.status == 503
+    assert result.json_body["error"] == "exec_admission_key_unavailable"
 
 
 @pytest.mark.parametrize(
@@ -145,6 +197,40 @@ def test_even_active_flag_cannot_enable_unimplemented_rpc():
 
     assert result.status == 501
     assert result.json_body["error"] == "rpc_operation_not_implemented"
+
+
+def test_valid_exec_ticket_still_cannot_enable_execution():
+    path = "/v1/session/exec"
+    result = _request(
+        _service(active_execution=True),
+        path,
+        _payload(path),
+    )
+
+    assert result.status == 501
+    assert result.json_body["error"] == "rpc_operation_not_implemented"
+
+
+def test_exec_rejects_tampered_admission_ticket_before_execution_gate():
+    path = "/v1/session/exec"
+    payload = _payload(path)
+    payload["admission"]["signature"] = "0" * 64
+
+    result = _request(_service(), path, payload)
+
+    assert result.status == 403
+    assert result.json_body["error"] == "exec_admission_rejected"
+
+
+def test_exec_rejects_ticket_bound_to_different_argv():
+    path = "/v1/session/exec"
+    payload = _payload(path)
+    payload["argv"] = ["curl", "-I", "http://127.0.0.1:48080/"]
+
+    result = _request(_service(), path, payload)
+
+    assert result.status == 403
+    assert result.json_body["error"] == "exec_admission_rejected"
 
 
 def test_missing_auth_is_rejected_before_payload_processing():
@@ -352,11 +438,12 @@ def test_ci_waits_for_runner_rpc_readiness():
     assert 'if [ "$runner_ready" -ne 1 ]; then' in workflow
 
 
-def test_runner_image_contains_only_rpc_and_attestation_modules():
+def test_runner_image_contains_only_required_runner_modules():
     dockerfile = (ROOT / "backend" / "Dockerfile.strix-runner").read_text()
 
     assert "COPY app/strix_runner_attestation.py" in dockerfile
     assert "COPY app/strix_runner_rpc.py" in dockerfile
+    assert "COPY app/strix_runner_exec_ticket.py" in dockerfile
     assert "COPY app/strix_backend_hook.py" not in dockerfile
 
 
@@ -443,6 +530,7 @@ def test_runner_rpc_service_rejects_short_secret():
     with pytest.raises(ValueError, match="at least 32 bytes"):
         RunnerRpcService(
             secret="too-short",
+            admission_secret=ADMISSION_SECRET,
             active_execution=False,
             now=lambda: NOW,
         )
@@ -458,11 +546,22 @@ def test_runner_rpc_env_rejects_short_secret(monkeypatch):
         _rpc_secret_from_env()
 
 
+def test_runner_admission_env_rejects_short_secret(monkeypatch):
+    monkeypatch.setenv(
+        "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY",
+        "too-short",
+    )
+
+    with pytest.raises(RuntimeError, match="at least 32 bytes"):
+        _admission_secret_from_env()
+
+
 def test_runner_rpc_accepts_exact_minimum_secret_length():
     secret = "x" * RUNNER_RPC_MIN_SECRET_BYTES
 
     service = RunnerRpcService(
         secret=secret,
+        admission_secret=ADMISSION_SECRET,
         active_execution=False,
         now=lambda: NOW,
     )
