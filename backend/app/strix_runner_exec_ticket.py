@@ -39,6 +39,28 @@ _SHELL_INTERPRETERS = frozenset(
     }
 )
 
+_PROFILE_EXECUTABLES = {
+    "bootstrap-v1": frozenset({"curl"}),
+    "web-active-v1": frozenset(
+        {
+            "curl",
+            "dalfox",
+            "feroxbuster",
+            "ffuf",
+            "gobuster",
+            "httpx",
+            "katana",
+            "nikto",
+            "nuclei",
+            "sqlmap",
+        }
+    ),
+}
+_PROFILE_MAX_TIMEOUT_SECONDS = {
+    "bootstrap-v1": 30.0,
+    "web-active-v1": 300.0,
+}
+
 
 class StrixRunnerExecTicketError(RuntimeError):
     pass
@@ -178,7 +200,11 @@ def _validate_descriptor(values: Mapping[str, Any]) -> None:
             )
     profile = values.get("profile")
     executable = values.get("executable")
-    if not isinstance(profile, str) or not _PROFILE_RE.fullmatch(profile):
+    if (
+        not isinstance(profile, str)
+        or not _PROFILE_RE.fullmatch(profile)
+        or profile not in _PROFILE_EXECUTABLES
+    ):
         raise StrixRunnerExecTicketError("runner exec profile is invalid")
     if (
         not isinstance(executable, str)
@@ -186,6 +212,7 @@ def _validate_descriptor(values: Mapping[str, Any]) -> None:
         or "/" in executable
         or "\\" in executable
         or executable in _SHELL_INTERPRETERS
+        or executable not in _PROFILE_EXECUTABLES[profile]
     ):
         raise StrixRunnerExecTicketError(
             "runner exec executable is not admitted"
@@ -208,7 +235,11 @@ def _validate_descriptor(values: Mapping[str, Any]) -> None:
         timeout = float(values.get("timeout_seconds"))
     except (TypeError, ValueError) as exc:
         raise StrixRunnerExecTicketError("runner exec timeout is invalid") from exc
-    if not math.isfinite(timeout) or not 0.1 <= timeout <= 600.0:
+    if (
+        not math.isfinite(timeout)
+        or timeout < 0.1
+        or timeout > _PROFILE_MAX_TIMEOUT_SECONDS[profile]
+    ):
         raise StrixRunnerExecTicketError("runner exec timeout is invalid")
     if (
         values.get("shell_interpreter_allowed") is not False
@@ -219,6 +250,19 @@ def _validate_descriptor(values: Mapping[str, Any]) -> None:
         raise StrixRunnerExecTicketError(
             "runner exec safety invariants changed"
         )
+
+
+def reviewed_runner_exec_ticket_profiles() -> dict[str, dict[str, Any]]:
+    return {
+        profile: {
+            "executables": sorted(executables),
+            "max_timeout_seconds": _PROFILE_MAX_TIMEOUT_SECONDS[profile],
+            "shell_interpreters_allowed": False,
+            "direct_egress_allowed": False,
+            "network_scope_enforcement": "broker_required",
+        }
+        for profile, executables in _PROFILE_EXECUTABLES.items()
+    }
 
 
 def build_strix_runner_exec_ticket(
