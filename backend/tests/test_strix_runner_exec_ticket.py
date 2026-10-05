@@ -2,9 +2,11 @@ import hashlib
 
 import pytest
 
+from app.strix_command_admission import reviewed_command_profiles
 from app.strix_runner_exec_ticket import (
     StrixRunnerExecTicketError,
     build_strix_runner_exec_ticket,
+    reviewed_runner_exec_ticket_profiles,
     validate_strix_runner_exec_ticket_secret,
     verify_strix_runner_exec_ticket,
 )
@@ -160,3 +162,28 @@ def test_exec_ticket_rejects_request_binding_mismatch(
 def test_exec_ticket_secret_requires_minimum_entropy_length():
     with pytest.raises(StrixRunnerExecTicketError, match="at least 32 bytes"):
         validate_strix_runner_exec_ticket_secret("too-short")
+
+
+def test_runner_ticket_profiles_match_command_admission_profiles():
+    assert reviewed_runner_exec_ticket_profiles() == reviewed_command_profiles()
+
+
+def test_runner_ticket_enforces_profile_specific_timeout():
+    descriptor = _descriptor(timeout_seconds=31.0)
+
+    with pytest.raises(StrixRunnerExecTicketError, match="timeout"):
+        build_strix_runner_exec_ticket(
+            descriptor,
+            signing_secret=SECRET,
+        )
+
+
+def test_runner_ticket_rejects_executable_outside_selected_profile():
+    descriptor = _descriptor(argv=["nuclei", "-version"])
+    descriptor["profile"] = "bootstrap-v1"
+
+    with pytest.raises(StrixRunnerExecTicketError, match="executable"):
+        build_strix_runner_exec_ticket(
+            descriptor,
+            signing_secret=SECRET,
+        )
