@@ -7,6 +7,13 @@ import os
 from importlib import metadata
 from typing import Any
 
+from .strix_remote_session import (
+    STRIX_REMOTE_SESSION_SCHEMA,
+    StrixRemoteSessionBlocked,
+    prepare_strix_remote_session,
+    prepared_remote_session_self_test,
+)
+
 
 STRIX_BACKEND_NAME = "xbow-remote-v1"
 STRIX_EXPECTED_VERSION = "1.6.2"
@@ -20,20 +27,18 @@ class StrixBackendHookError(RuntimeError):
     pass
 
 
-class StrixBackendBlocked(StrixBackendHookError):
-    pass
-
-
-async def _blocked_backend(
+async def _prepared_backend(
     *,
     image: str,
     manifest: Any,
     exposed_ports: tuple[int, ...],
     bind_mounts: list[dict[str, Any]] | None = None,
 ) -> tuple[Any, Any]:
-    del image, manifest, exposed_ports, bind_mounts
-    raise StrixBackendBlocked(
-        "xbow Strix backend is registered but remote execution is not wired"
+    return await prepare_strix_remote_session(
+        image=image,
+        manifest=manifest,
+        exposed_ports=exposed_ports,
+        bind_mounts=bind_mounts,
     )
 
 
@@ -77,19 +82,19 @@ def register_xbow_backend() -> dict[str, Any]:
     supported = set(supported_backends())
     if STRIX_BACKEND_NAME in supported:
         existing = get_backend(STRIX_BACKEND_NAME)
-        if existing is not _blocked_backend:
+        if existing is not _prepared_backend:
             raise StrixBackendHookError(
                 "Strix backend name collision for xbow-remote-v1"
             )
     else:
         register_backend(
             STRIX_BACKEND_NAME,
-            _blocked_backend,
+            _prepared_backend,
             supports_bind_mounts=False,
         )
 
     selected = get_backend(STRIX_BACKEND_NAME)
-    if selected is not _blocked_backend:
+    if selected is not _prepared_backend:
         raise StrixBackendHookError(
             "Strix backend registry returned an unexpected backend"
         )
@@ -107,21 +112,59 @@ def register_xbow_backend() -> dict[str, Any]:
     }
 
 
-async def _assert_backend_fails_closed() -> None:
+async def _assert_backend_fails_closed() -> dict[str, Any]:
     _, get_backend, _, _ = _backend_api()
     backend = get_backend(STRIX_BACKEND_NAME)
-    try:
-        await backend(
-            image="unused",
-            manifest=object(),
-            exposed_ports=(),
-            bind_mounts=[],
-        )
-    except StrixBackendBlocked:
-        return
-    raise StrixBackendHookError(
-        "xbow Strix backend did not fail closed"
+    client, session = await backend(
+        image="fixture",
+        manifest=object(),
+        exposed_ports=(48080,),
+        bind_mounts=[],
     )
+
+    if (
+        session.descriptor.schema != STRIX_REMOTE_SESSION_SCHEMA
+        or session.descriptor.manifest_materialized
+        or session.descriptor.network_io_performed
+        or session.descriptor.process_execution_performed
+        or session.descriptor.active_execution_enabled
+    ):
+        raise StrixBackendHookError(
+            "xbow Strix prepared session safety posture is unexpected"
+        )
+
+    blocked = []
+    for name, operation in (
+        ("resolve-port", session.resolve_exposed_port(48080)),
+        (
+            "exec",
+            session.exec(
+                "curl",
+                "-fsS",
+                "http://127.0.0.1:48080/graphql",
+                timeout=15,
+            ),
+        ),
+        ("delete", client.delete(session)),
+    ):
+        try:
+            await operation
+        except StrixRemoteSessionBlocked:
+            blocked.append(name)
+        else:
+            raise StrixBackendHookError(
+                f"xbow Strix prepared operation did not fail closed: {name}"
+            )
+
+    return {
+        "prepared_session_schema": STRIX_REMOTE_SESSION_SCHEMA,
+        "prepared_backend_returns_client_session": True,
+        "blocked_operations": blocked,
+        "manifest_materialized": False,
+        "network_io_performed": False,
+        "process_execution_performed": False,
+        "active_execution_enabled": False,
+    }
 
 
 def self_test() -> dict[str, Any]:
@@ -132,13 +175,16 @@ def self_test() -> dict[str, Any]:
             f"{version!r} != {STRIX_EXPECTED_VERSION!r}"
         )
     descriptor = register_xbow_backend()
-    asyncio.run(_assert_backend_fails_closed())
+    prepared = asyncio.run(_assert_backend_fails_closed())
+    interface = prepared_remote_session_self_test()
     return {
         "schema": "strix-backend-hook-v1",
         "strix_version": version,
         "source_commit": STRIX_SOURCE_COMMIT,
         "wheel_sha256": STRIX_X86_64_WHEEL_SHA256,
         **descriptor,
+        **prepared,
+        "remote_session_interface_sha256": interface["self_test_sha256"],
         "fail_closed_verified": True,
     }
 

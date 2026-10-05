@@ -9,7 +9,6 @@ import pytest
 from app import strix_backend_hook
 from app.strix_backend_hook import (
     STRIX_BACKEND_NAME,
-    StrixBackendBlocked,
     StrixBackendHookError,
     register_xbow_backend,
     self_test,
@@ -83,7 +82,7 @@ def test_registers_fail_closed_backend_without_bind_mounts(monkeypatch):
         "active_execution_enabled": False,
     }
     assert os.environ["STRIX_RUNTIME_BACKEND"] == STRIX_BACKEND_NAME
-    assert registry[STRIX_BACKEND_NAME] is strix_backend_hook._blocked_backend
+    assert registry[STRIX_BACKEND_NAME] is strix_backend_hook._prepared_backend
 
 
 def test_registration_is_idempotent_for_same_backend(monkeypatch):
@@ -105,20 +104,27 @@ def test_backend_name_collision_fails_closed(monkeypatch):
         register_xbow_backend()
 
 
-def test_registered_backend_always_blocks_execution(monkeypatch):
+def test_registered_backend_returns_prepared_non_executing_client_session(monkeypatch):
     registry = _install_fake_strix_backend_api(monkeypatch)
     register_xbow_backend()
     backend = registry[STRIX_BACKEND_NAME]
 
-    with pytest.raises(StrixBackendBlocked, match="not wired"):
-        asyncio.run(
-            backend(
-                image="unused",
-                manifest=object(),
-                exposed_ports=(),
-                bind_mounts=[],
-            )
+    client, session = asyncio.run(
+        backend(
+            image="fixture",
+            manifest=object(),
+            exposed_ports=(48080,),
+            bind_mounts=[],
         )
+    )
+
+    assert client is not None
+    assert session is not None
+    assert session.descriptor.schema == "strix-remote-session-interface-v1"
+    assert session.descriptor.manifest_materialized is False
+    assert session.descriptor.network_io_performed is False
+    assert session.descriptor.process_execution_performed is False
+    assert session.descriptor.active_execution_enabled is False
 
 
 def test_self_test_requires_exact_strix_version(monkeypatch):
@@ -146,6 +152,12 @@ def test_self_test_proves_fail_closed_backend(monkeypatch):
     assert result["schema"] == "strix-backend-hook-v1"
     assert result["strix_version"] == "1.6.2"
     assert result["backend"] == STRIX_BACKEND_NAME
+    assert result["prepared_session_schema"] == "strix-remote-session-interface-v1"
+    assert result["prepared_backend_returns_client_session"] is True
+    assert result["blocked_operations"] == ["resolve-port", "exec", "delete"]
+    assert result["manifest_materialized"] is False
+    assert result["network_io_performed"] is False
+    assert result["process_execution_performed"] is False
     assert result["fail_closed_verified"] is True
     assert result["active_execution_enabled"] is False
 

@@ -8,6 +8,7 @@ from typing import Any
 from .scanner_sandbox import strix_runtime_contract_enforceable
 from .strix_execution_contract import STRIX_EXECUTION_CONTRACT_SCHEMA
 from .strix_runner_rpc import RUNNER_RPC_PROTOCOL
+from .strix_remote_session import STRIX_REMOTE_SESSION_SCHEMA
 from .strix_runner_exec_ticket import STRIX_RUNNER_EXEC_TICKET_SCHEMA
 
 
@@ -212,6 +213,13 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_command_direct_egress_allowed": False,
         "strix_command_network_scope_enforcement": "broker_required",
         "strix_command_admission_enforced": False,
+        "strix_remote_session_schema": STRIX_REMOTE_SESSION_SCHEMA,
+        "strix_remote_backend_returns_client_session": True,
+        "strix_remote_manifest_materialized": False,
+        "strix_remote_resolve_port_enabled": False,
+        "strix_remote_exec_enabled": False,
+        "strix_remote_delete_enabled": False,
+        "strix_remote_network_io_enabled": False,
         "strix_backend_hook_loaded_by_standalone_binary": False,
         "strix_python_bootstrap_ready": strix_python_bootstrap_ready,
         "strix_python_bootstrap_plan_contract_defined": True,
@@ -283,6 +291,13 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_command_direct_egress_allowed": False,
             "strix_command_network_scope_enforcement": "broker_required",
             "strix_command_admission_enforced": False,
+            "strix_remote_session_schema": STRIX_REMOTE_SESSION_SCHEMA,
+            "strix_remote_backend_returns_client_session": True,
+            "strix_remote_manifest_materialized": False,
+            "strix_remote_resolve_port_enabled": False,
+            "strix_remote_exec_enabled": False,
+            "strix_remote_delete_enabled": False,
+            "strix_remote_network_io_enabled": False,
             "strix_backend_hook_loaded_by_standalone_binary": False,
             "strix_python_bootstrap_ready": False,
             "strix_python_bootstrap_plan_contract_defined": True,

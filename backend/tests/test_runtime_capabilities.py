@@ -437,6 +437,13 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
     assert result["strix_runner_exec_ticket_producer_wired_to_session"] is False
     assert result["strix_command_admission_contract_defined"] is True
     assert result["strix_command_admission_enforced"] is False
+    assert result["strix_remote_session_schema"] == "strix-remote-session-interface-v1"
+    assert result["strix_remote_backend_returns_client_session"] is True
+    assert result["strix_remote_manifest_materialized"] is False
+    assert result["strix_remote_resolve_port_enabled"] is False
+    assert result["strix_remote_exec_enabled"] is False
+    assert result["strix_remote_delete_enabled"] is False
+    assert result["strix_remote_network_io_enabled"] is False
     assert result["strix_command_direct_egress_allowed"] is False
     assert result["strix_python_bootstrap_runtime_contract_defined"] is True
     assert result["strix_python_bootstrap_backend_first_import_enforced"] is True
