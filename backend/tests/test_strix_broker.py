@@ -60,6 +60,8 @@ def test_broker_health_is_explicitly_admission_only(monkeypatch):
 
     assert result["status"] == "ok"
     assert result["ready"] is False
+    assert result["contract_verifier_ready"] is False
+    assert result["ticket_issuer_ready"] is False
     assert result["mode"] == "admission_only"
     assert result["egress_enabled"] is False
     assert result["network_io_performed"] is False
@@ -172,7 +174,7 @@ def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch):
 
 
 def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch):
-    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    _configure_broker_keys(monkeypatch)
     monkeypatch.setenv(
         "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
         "true",
@@ -181,6 +183,8 @@ def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch):
     result = healthz()
 
     assert result["ready"] is True
+    assert result["contract_verifier_ready"] is True
+    assert result["ticket_issuer_ready"] is True
     assert result["mode"] == "read_only_http_proxy"
     assert result["egress_enabled"] is True
     assert result["allowed_http_methods"] == ["GET", "HEAD"]
