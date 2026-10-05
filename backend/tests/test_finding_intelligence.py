@@ -151,3 +151,35 @@ def test_finding_intelligence_surfaces_public_duplicate_similarity_without_block
     assert duplicate["automatic_report_block"] is False
     assert result["findings"][0]["status"] == "validation_required"
     assert result["summary"]["high_public_similarity_findings"] == 1
+
+
+def test_finding_intelligence_surfaces_cve_exploitability_metadata():
+    finding = _finding(
+        "f1",
+        "https://example.test/graphql",
+        severity="critical",
+    )
+    finding.cve_ids = ["CVE-2026-1207"]
+    finding.cpe = ["cpe:2.3:a:vendor:product:*:*:*:*:*:*:*:*"]
+    finding.cvss = 9.1
+    finding.cvss_vector = "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+    finding.epss_score = 0.75
+    finding.epss_percentile = 0.99
+    finding.tags = ["cve", "kev"]
+    finding.template_id = "CVE-2026-1207"
+    finding.template_verified = True
+    finding.template_max_requests = 1
+    finding.vendor = "vendor"
+    finding.product = "product"
+
+    result = build_finding_intelligence([finding], _graph())
+
+    intelligence = result["findings"][0]["vulnerability_intelligence"]
+    assert intelligence["classification"] == "known_cve"
+    assert intelligence["cve_ids"] == ["CVE-2026-1207"]
+    assert intelligence["known_exploited_signal"] is True
+    assert intelligence["validation_mode"] == "exact_nuclei_template_recheck"
+    assert intelligence["authorized_target_recheck_eligible"] is True
+    assert intelligence["automatic_exploitation_allowed"] is False
+    assert result["summary"]["known_cve_findings"] == 1
+    assert result["summary"]["exact_cve_recheck_eligible"] == 1
