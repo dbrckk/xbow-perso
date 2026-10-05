@@ -309,6 +309,10 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_execution_contract_schema"] == "strix-execution-contract-v1"
     assert result["strix_execution_contract_required"] is True
     assert result["strix_broker_mode"] == "read_only_http_boundary"
+    assert result["strix_broker_command_ticket_endpoint_defined"] is True
+    assert result["strix_broker_command_ticket_requires_verified_contract"] is True
+    assert result["strix_broker_command_admission_enforced"] is True
+    assert result["strix_runner_exec_ticket_producer_wired_to_session"] is False
     assert result["strix_broker_read_only_egress_available"] is True
     assert result["strix_broker_egress_enforced"] is False
     assert result["strix_broker_internal_network_required"] is True
@@ -428,6 +432,9 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
     assert result["strix_runner_exec_ticket_required"] is True
     assert result["strix_runner_exec_ticket_enforced"] is True
     assert result["strix_runner_exec_process_launch_enabled"] is False
+    assert result["strix_broker_command_ticket_endpoint_defined"] is True
+    assert result["strix_broker_command_admission_enforced"] is True
+    assert result["strix_runner_exec_ticket_producer_wired_to_session"] is False
     assert result["strix_command_admission_contract_defined"] is True
     assert result["strix_command_admission_enforced"] is False
     assert result["strix_command_direct_egress_allowed"] is False
