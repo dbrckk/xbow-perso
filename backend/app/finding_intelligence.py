@@ -78,10 +78,6 @@ def build_finding_intelligence(
             list(public_reports or []),
             program_handle=program_handle,
         )
-        novelty = assess_vulnerability_novelty(
-            finding,
-            differential_item,
-        )
         fingerprint = fingerprint_by_finding.get(
             finding_id,
             {
@@ -90,6 +86,16 @@ def build_finding_intelligence(
                 "versioned_match_count": 0,
                 "high_confidence_match_count": 0,
             },
+        )
+        novelty = assess_vulnerability_novelty(
+            finding,
+            differential_item,
+            versioned_fingerprint_match_count=int(
+                fingerprint["versioned_match_count"]
+            ),
+            high_confidence_fingerprint_match_count=int(
+                fingerprint["high_confidence_match_count"]
+            ),
         )
         finding_rows.append(
             {
