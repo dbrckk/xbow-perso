@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import asdict, dataclass
 from typing import Any, Iterable
 from urllib.parse import urlparse
@@ -10,6 +11,7 @@ from .main import Campaign, Finding, is_host_allowed
 
 
 _ALLOWED_SEVERITIES = {"info", "low", "medium", "high", "critical"}
+_CVE_RE = re.compile(r"\bCVE-(\d{4})-(\d{4,10})\b", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -26,6 +28,7 @@ class NormalizedScannerFinding:
     remediation: str = ""
     cwe: str | None = None
     cvss: float | None = None
+    cve_ids: tuple[str, ...] = ()
     template_id: str | None = None
     matcher_name: str | None = None
 
@@ -33,6 +36,7 @@ class NormalizedScannerFinding:
         payload = asdict(self)
         payload["evidence"] = list(self.evidence)
         payload["reproduction_steps"] = list(self.reproduction_steps)
+        payload["cve_ids"] = list(self.cve_ids)
         return payload
 
 
@@ -65,6 +69,30 @@ def _string_list(value: Any, *, limit: int = 50) -> tuple[str, ...]:
     return tuple(str(item) for item in items[:limit])
 
 
+def _cve_ids(value: Any, *, limit: int = 32) -> tuple[str, ...]:
+    if value is None or value == "":
+        return ()
+    values = list(value) if isinstance(value, (list, tuple, set)) else [value]
+    found: set[str] = set()
+    for item in values:
+        for match in _CVE_RE.finditer(str(item)):
+            found.add(f"CVE-{match.group(1)}-{match.group(2)}".upper())
+            if len(found) >= limit:
+                break
+        if len(found) >= limit:
+            break
+    return tuple(sorted(found))
+
+
+def _with_cve_evidence(
+    evidence: tuple[str, ...],
+    cve_ids: tuple[str, ...],
+) -> tuple[str, ...]:
+    tagged = tuple(f"cve-id:{cve_id}" for cve_id in cve_ids)
+    combined = tagged + evidence
+    return combined[:50]
+
+
 def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> NormalizedScannerFinding | None:
     asset = str(item.get("asset") or item.get("target") or campaign.target.primary_url)
     host = (urlparse(asset).hostname or asset.split(":")[0]).lower()
@@ -74,6 +102,15 @@ def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> Normalized
     cwe = item.get("cwe")
     if isinstance(cwe, list):
         cwe = ", ".join(str(x) for x in cwe)
+    cve_ids = _cve_ids(
+        item.get("cve_ids")
+        or item.get("cves")
+        or item.get("cve")
+    )
+    evidence = _with_cve_evidence(
+        _string_list(item.get("evidence")),
+        cve_ids,
+    )
 
     return NormalizedScannerFinding(
         engine="strix",
@@ -82,7 +119,7 @@ def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> Normalized
         asset=asset,
         endpoint=_optional_str(item.get("endpoint")),
         summary=str(item.get("summary") or item.get("description") or item.get("technical_analysis") or ""),
-        evidence=_string_list(item.get("evidence")),
+        evidence=evidence,
         reproduction_steps=_string_list(
             item.get("reproduction_steps")
             or item.get("poc_steps")
@@ -92,6 +129,7 @@ def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> Normalized
         remediation=str(item.get("remediation") or item.get("recommendation") or ""),
         cwe=_optional_str(cwe),
         cvss=_optional_cvss(item.get("cvss")),
+        cve_ids=cve_ids,
     )
 
 
@@ -109,7 +147,16 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
     if isinstance(cwe, list):
         cwe = ", ".join(str(x) for x in cwe)
 
+    cve_ids = _cve_ids(
+        classification.get("cve-id")
+        or classification.get("cve_id")
+        or info.get("cve")
+    )
     extracted = item.get("extracted-results") or item.get("extracted_results") or []
+    evidence = _with_cve_evidence(
+        _string_list(extracted),
+        cve_ids,
+    )
     matcher = item.get("matcher-name") or item.get("matcher_name")
     template_id = item.get("template-id") or item.get("template_id")
 
@@ -120,7 +167,7 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
         asset=f"{urlparse(matched_at).scheme}://{host}",
         endpoint=matched_at,
         summary=str(info.get("description") or ""),
-        evidence=_string_list(extracted),
+        evidence=evidence,
         reproduction_steps=(),
         impact="",
         remediation=str(info.get("remediation") or info.get("reference") or ""),
@@ -129,6 +176,7 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
             classification.get("cvss-score")
             or classification.get("cvss_score")
         ),
+        cve_ids=cve_ids,
         template_id=_optional_str(template_id),
         matcher_name=_optional_str(matcher),
     )
@@ -142,6 +190,7 @@ def normalized_finding_id(item: NormalizedScannerFinding) -> str:
             item.asset.strip(),
             item.endpoint or "",
             item.cwe or "",
+            list(item.cve_ids),
             item.summary.strip(),
             item.template_id or "",
             item.matcher_name or "",
