@@ -56,10 +56,11 @@
     "Added bootstrap-v1 with curl-only admission for Caido bootstrap and web-active-v1 with reviewed offensive web tools including nuclei, sqlmap, ffuf, katana, dalfox, feroxbuster, gobuster, httpx and nikto.",
     "Command admission rejects shell interpreters, executable paths, control characters, malformed ids, oversized argv and per-profile timeout overruns.",
     "Command admission requires direct_egress_allowed=false, host_container_socket_allowed=false and independent_validation_required=true; network scope remains broker-enforced.",
-    "Runtime capability exposes the reviewed command profiles while keeping strix_command_admission_enforced=false until RPC integration is implemented."
+    "Runtime capability exposes the reviewed command profiles while keeping strix_command_admission_enforced=false until RPC integration is implemented.",
+    "Supply-chain validation for PR #527 passed; CI test and security jobs were cancelled before acquiring a runner, while the CI build job itself passed."
   ],
   "current_branch": "codex/strix-command-admission-v1",
-  "current_priority": "Validate and merge strix-command-admission-v1, then bind the /v1/session/exec RPC operation to an authenticated command admission descriptor without enabling direct runner egress.",
+  "current_priority": "Re-trigger cancelled CI/security jobs for PR #527, merge once all checks are green, then bind /v1/session/exec to authenticated admission without enabling direct runner egress.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
@@ -76,7 +77,7 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the reviewed Strix command-admission contract through CI, security and supply-chain.",
+    "Re-trigger the cancelled CI/security jobs and merge PR #527 only after CI, security and supply-chain are all green.",
     "Extend runner RPC exec payloads with the execution-contract identity and command-admission descriptor, rejecting mismatches before any process creation.",
     "Implement a session lifecycle abstraction compatible with the pinned Strix BaseSandboxSession interface.",
     "Keep target traffic broker-routed and fail closed on any direct runner egress attempt.",
