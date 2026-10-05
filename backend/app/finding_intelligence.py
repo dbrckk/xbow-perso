@@ -12,6 +12,7 @@ from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .observation_graph import load_observation_graph
 from .public_duplicate_intelligence import rank_public_duplicate_risk
+from .vulnerability_intelligence import build_vulnerability_signal
 
 router = APIRouter()
 
@@ -54,6 +55,7 @@ def build_finding_intelligence(
     }
     consensus_by_cluster = {item.cluster_id: item for item in cluster_consensus}
     saturation_by_cluster = {item.cluster_id: item for item in saturation}
+    finding_by_id = {str(item.id): item for item in findings}
 
     finding_rows = []
     for finding in sorted(findings, key=lambda item: str(item.id)):
@@ -71,6 +73,19 @@ def build_finding_intelligence(
             list(public_reports or []),
             program_handle=program_handle,
         )
+
+        member_ids = cluster.finding_ids if cluster else (finding_id,)
+        corroborating_sources = {
+            str(getattr(finding_by_id.get(member_id), "discovered_by", "") or "").strip()
+            for member_id in member_ids
+            if member_id in finding_by_id
+        }
+        vulnerability = build_vulnerability_signal(
+            finding,
+            differential_signal=differential_item.signal,
+            corroborating_sources=corroborating_sources,
+        )
+
         finding_rows.append(
             {
                 "finding_id": finding_id,
@@ -79,6 +94,7 @@ def build_finding_intelligence(
                 "readiness": readiness_item.to_dict() if readiness_item else None,
                 "triage": triage_item.to_dict() if triage_item else None,
                 "differential": differential_item.to_dict(),
+                "vulnerability": vulnerability.to_dict(),
                 "public_duplicate_similarity": duplicate_similarity,
                 "cluster_id": cluster_id,
                 "cluster_status": (
@@ -140,6 +156,24 @@ def build_finding_intelligence(
                 row["differential"]["signal"] == "weak"
                 for row in finding_rows
             ),
+            "known_cve_candidates": sum(
+                row["vulnerability"]["known_cve_candidate"]
+                for row in finding_rows
+            ),
+            "multi_scanner_cve_candidates": sum(
+                row["vulnerability"]["cve_signal"]
+                == "multi_scanner_cve_candidate"
+                for row in finding_rows
+            ),
+            "novel_candidates": sum(
+                row["vulnerability"]["novel_candidate"]
+                for row in finding_rows
+            ),
+            "novel_candidates_needing_corroboration": sum(
+                row["vulnerability"]["novelty_signal"]
+                == "behavioral_candidate_needs_corroboration"
+                for row in finding_rows
+            ),
             "high_public_similarity_findings": sum(
                 row["public_duplicate_similarity"]["similarity_band"]
                 == "high_public_similarity"
@@ -199,4 +233,5 @@ def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):
         "advisory_only": True,
         "auto_merge": False,
         "does_not_confirm_findings": True,
+        "does_not_claim_zero_day": True,
     }
