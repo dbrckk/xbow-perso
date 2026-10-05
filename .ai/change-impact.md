@@ -1,17 +1,16 @@
 # Change impact
 
-Base: 0cff8f41fb2c8762105f9ae4714c4fde9324756d
-Head: f1c08e417bdee1a2d73efc9390081cd994dadc9d
+Base: 9902a1d0a79abac56df22a29d641c69921ad82c2
+Head: 121fc4cd8ad2f19c750c3c73ecb8dae602b41592
 
 ## Changed files
 - M README.md
 - M backend/app/runtime_capabilities.py
-- M backend/app/strix_broker.py
-- M backend/app/strix_broker_models.py
+- M backend/app/strix_backend_hook.py
+- A backend/app/strix_remote_session.py
 - M backend/tests/test_runtime_capabilities.py
-- M backend/tests/test_strix_broker.py
-- M backend/tests/test_strix_broker_runtime.py
-- M docker-compose.yml
+- M backend/tests/test_strix_backend_hook.py
+- A backend/tests/test_strix_remote_session.py
 
 ## Affected areas
 - (root)

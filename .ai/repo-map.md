@@ -220,6 +220,7 @@ backend/
     strix_python_preflight_patch_plan.py
     strix_python_preflight_surface.py
     strix_python_toolchain_probe.py
+    strix_remote_session.py
     strix_run_status.py
     strix_runner_attestation.py
     strix_runner_exec_ticket.py
@@ -464,6 +465,7 @@ backend/
     test_strix_python_preflight_patch_plan.py
     test_strix_python_preflight_surface.py
     test_strix_python_toolchain_probe.py
+    test_strix_remote_session.py
     test_strix_run_status.py
     test_strix_runner_attestation.py
     test_strix_runner_exec_ticket.py
@@ -11445,8 +11447,6 @@ STRIX_X86_64_WHEEL_SHA256 = (
 ⋮----
 class StrixBackendHookError(RuntimeError)
 ⋮----
-class StrixBackendBlocked(StrixBackendHookError)
-⋮----
 def _installed_strix_version() -> str
 ⋮----
 def _backend_api()
@@ -11459,15 +11459,19 @@ existing = get_backend(STRIX_BACKEND_NAME)
 ⋮----
 selected = get_backend(STRIX_BACKEND_NAME)
 ⋮----
-async def _assert_backend_fails_closed() -> None
+async def _assert_backend_fails_closed() -> dict[str, Any]
 ⋮----
 backend = get_backend(STRIX_BACKEND_NAME)
+⋮----
+blocked = []
 ⋮----
 def self_test() -> dict[str, Any]
 ⋮----
 version = _installed_strix_version()
 ⋮----
 descriptor = register_xbow_backend()
+prepared = asyncio.run(_assert_backend_fails_closed())
+interface = prepared_remote_session_self_test()
 ⋮----
 def _main() -> int
 ⋮----
@@ -12337,6 +12341,97 @@ def _main() -> int
 parser = argparse.ArgumentParser()
 ⋮----
 args = parser.parse_args()
+````
+
+## File: backend/app/strix_remote_session.py
+````python
+STRIX_REMOTE_SESSION_SCHEMA = "strix-remote-session-interface-v1"
+_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_EXECUTABLE_RE = re.compile(r"^[A-Za-z0-9._+-]{1,64}$")
+_SHELL_INTERPRETERS = frozenset(
+⋮----
+class StrixRemoteSessionError(RuntimeError)
+⋮----
+class StrixRemoteSessionBlocked(StrixRemoteSessionError)
+⋮----
+@dataclass(frozen=True)
+class PreparedRemoteSessionDescriptor
+⋮----
+schema: str
+session_id: str
+image: str
+exposed_ports: tuple[int, ...]
+manifest_present: bool
+manifest_materialized: bool
+bind_mounts_supported: bool
+active_execution_enabled: bool
+network_io_performed: bool
+process_execution_performed: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+@dataclass(frozen=True)
+class PreparedRemoteOperation
+⋮----
+operation: str
+⋮----
+request_id: str
+executable: str | None
+argv_sha256: str | None
+argc: int
+timeout_seconds: float | None
+port: int | None
+⋮----
+def _valid_session_id(value: str) -> str
+⋮----
+def _validate_image(image: str) -> str
+⋮----
+def _validate_ports(exposed_ports: Sequence[int]) -> tuple[int, ...]
+⋮----
+ports: list[int] = []
+⋮----
+def _new_session_id() -> str
+⋮----
+def _new_request_id(operation: str) -> str
+⋮----
+normalized: list[str] = []
+total_bytes = 0
+⋮----
+executable = normalized[0]
+⋮----
+timeout = 30.0 if timeout_seconds is None else float(timeout_seconds)
+⋮----
+canonical = "\x00".join(normalized).encode("utf-8")
+⋮----
+class PreparedStrixRemoteSession
+⋮----
+def __init__(self, descriptor: PreparedRemoteSessionDescriptor) -> None
+⋮----
+@property
+    def session_id(self) -> str
+⋮----
+def plan_resolve_exposed_port(self, port: int) -> PreparedRemoteOperation
+⋮----
+async def resolve_exposed_port(self, port: int) -> Any
+⋮----
+class PreparedStrixRemoteClient
+⋮----
+def __init__(self, session: PreparedStrixRemoteSession) -> None
+⋮----
+def plan_delete(self, session: PreparedStrixRemoteSession) -> PreparedRemoteOperation
+⋮----
+async def delete(self, session: PreparedStrixRemoteSession) -> Any
+⋮----
+descriptor = PreparedRemoteSessionDescriptor(
+session = PreparedStrixRemoteSession(descriptor)
+⋮----
+def prepared_remote_session_self_test() -> dict[str, Any]
+⋮----
+exec_plan = session.plan_exec(
+port_plan = session.plan_resolve_exposed_port(48080)
+canonical = json.dumps(
 ````
 
 ## File: backend/app/strix_run_status.py
@@ -21969,7 +22064,7 @@ second = register_xbow_backend()
 ⋮----
 def test_backend_name_collision_fails_closed(monkeypatch)
 ⋮----
-def test_registered_backend_always_blocks_execution(monkeypatch)
+def test_registered_backend_returns_prepared_non_executing_client_session(monkeypatch)
 ⋮----
 backend = registry[STRIX_BACKEND_NAME]
 ⋮----
@@ -22589,6 +22684,40 @@ def test_toolchain_probe_rejects_unknown_architecture(tmp_path)
 def test_ci_verifies_official_uv_release_asset()
 ⋮----
 workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+````
+
+## File: backend/tests/test_strix_remote_session.py
+````python
+def _prepared(*, ports=(48080,))
+⋮----
+def test_prepared_backend_returns_client_and_session_without_side_effects()
+⋮----
+def test_exec_plan_matches_pinned_caido_bootstrap_call_shape()
+⋮----
+plan = session.plan_exec(
+⋮----
+def test_exec_is_async_and_always_fails_closed()
+⋮----
+def test_resolve_exposed_port_is_async_and_fails_closed()
+⋮----
+def test_resolve_exposed_port_rejects_undeclared_port_before_blocker()
+⋮----
+def test_client_delete_is_async_and_fails_closed()
+⋮----
+def test_client_delete_rejects_session_mismatch()
+⋮----
+def test_prepared_exec_plan_rejects_shells_and_executable_paths(argv)
+⋮----
+@pytest.mark.parametrize("timeout", (0, -1, 601, float("inf"), float("nan")))
+def test_prepared_exec_plan_rejects_invalid_timeout(timeout)
+⋮----
+def test_prepared_backend_rejects_bind_mounts()
+⋮----
+def test_prepared_backend_rejects_duplicate_or_invalid_ports()
+⋮----
+def test_self_test_reports_non_executing_interface()
+⋮----
+result = prepared_remote_session_self_test()
 ````
 
 ## File: backend/tests/test_strix_run_status.py
@@ -27389,10 +27518,10 @@ docker compose --profile strix-runner up -d --build strix-runner
 
 The service publishes no host port; port 8092 is exposed only to the internal `strix-broker` network. CI verifies that the broker can reach the runner readiness endpoint while the runner cannot open a direct public-network connection.
 
-The next extension point is verified without enabling execution. The runner RPC enforces the signed exec-ticket boundary before its execution gate, and the trusted broker now turns only a verified `strix-command-admission-v1` descriptor into that ticket. This producer path is still not wired into a live Strix session, so no process execution is enabled yet. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
+The next extension point is verified without enabling execution. The runner RPC enforces the signed exec-ticket boundary before its execution gate, and the trusted broker turns only a verified `strix-command-admission-v1` descriptor into that ticket. `app.strix_backend_hook` now registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry and returns a prepared `(client, session)` pair with the async methods that pinned Strix actually calls: `session.resolve_exposed_port(port)`, `session.exec(*args, timeout=...)`, and `client.delete(session)`. The prepared interface records only bounded non-secret operation metadata; it does not materialize the manifest, perform network I/O, resolve a port, delete a runtime, or execute a process. Each live operation still fails closed. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
 
 One integration blocker is explicit: the pinned runner still launches the official standalone PyInstaller binary, while the custom backend registration currently exists only in a Python process using the wheel API. The standalone binary does not automatically import `app.strix_backend_hook`. The repository now defines an inert `strix-python-bootstrap-plan-v1` that composes the attested v1.6.2 source, dependency lock and Python/uv toolchain, identifies only `check_docker_installed` and `pull_docker_image` as Docker-preflight patch candidates, and explicitly preserves `validate_environment`. The plan remains non-applying and non-executing: `patch_application_enabled=false`, `entrypoint_enabled=false`, and `active_execution_enabled=false`. The repository also defines `strix-python-preflight-compatibility-v1`, a context-managed shim that can temporarily replace only those two direct aliases in `strix.interface.main` after exact plan and import-identity checks. It leaves the upstream environment module untouched during normal operation, preserves `validate_environment`, restores guarded symbols on every exit path, and is not wired into the runner yet. `strix-python-bootstrap-runtime-v1` now composes those pieces into a prepared runtime context: it registers `xbow-remote-v1` before importing `strix.interface.main`, rechecks the registry after import, re-attests the preflight surface, applies the bounded compatibility shim for the lifetime of the context, and still never calls the Strix entrypoint itself. The next boundary is now explicit too: `strix-command-admission-v1` authenticates the signed execution contract and admits bounded argv only through reviewed profiles. `bootstrap-v1` currently permits only `curl`; `web-active-v1` includes reviewed web-assessment tools such as `nuclei`, `sqlmap`, `ffuf`, `katana`, `dalfox`, `feroxbuster`, `gobuster`, `httpx`, and `nikto`. Shell interpreters and executable paths are rejected, direct runner egress remains forbidden, and network scope must still be enforced by the broker.
 
 
-**Active Strix dispatch remains fail-closed.** A separately pinned/attested runner and authenticated internal RPC now exist, but session operations are unimplemented, the standalone Strix binary does not yet load the xbow backend hook, and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.
+**Active Strix dispatch remains fail-closed.** The Python backend can now return the expected client/session shape, but manifest upload/materialization and all remote session operations remain disabled. The standalone Strix binary still does not load the xbow backend hook, and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while exposing the prepared remote-session blockers. Dry-run planning remains available.
 ````

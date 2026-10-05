@@ -39,21 +39,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T22:16:44Z
+Generated: 2026-10-05T22:25:36Z
 
 ### Git
 - Branch: `main`
-- Head: `f1c08e417bde`
-- Commit date: 2026-10-06T00:16:33+02:00
-- Commit: feat(strix): issue runner exec tickets from trusted broker
-- Tracked files: 637
+- Head: `121fc4cd8ad2`
+- Commit date: 2026-10-06T00:25:24+02:00
+- Commit: feat(strix): add prepared remote client session interface
+- Tracked files: 639
 
 ### Recently changed files
 - `README.md`
 - `backend/app/runtime_capabilities.py`
+- `backend/app/strix_backend_hook.py`
+- `backend/app/strix_remote_session.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_backend_hook.py`
+- `backend/tests/test_strix_remote_session.py`
 - `backend/app/strix_broker.py`
 - `backend/app/strix_broker_models.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_broker.py`
 - `backend/tests/test_strix_broker_runtime.py`
 - `docker-compose.yml`
@@ -65,10 +69,6 @@ Generated: 2026-10-05T22:16:44Z
 - `backend/tests/test_strix_runner_rpc.py`
 - `backend/app/finding_intelligence.py`
 - `backend/app/scanner_normalization.py`
-- `backend/app/vulnerability_intelligence.py`
-- `backend/tests/test_vulnerability_intelligence.py`
-- `backend/app/strix_command_admission.py`
-- `backend/tests/test_strix_command_admission.py`
 
 ### Project signals
 - `pyproject.toml`
