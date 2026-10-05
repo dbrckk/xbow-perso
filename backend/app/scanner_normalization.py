@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import asdict, dataclass
 from typing import Any, Iterable
 from urllib.parse import urlparse
@@ -10,6 +11,7 @@ from .main import Campaign, Finding, is_host_allowed
 
 
 _ALLOWED_SEVERITIES = {"info", "low", "medium", "high", "critical"}
+_CVE_ID_RE = re.compile(r"^CVE-[0-9]{4}-[0-9]{4,}$")
 
 
 @dataclass(frozen=True)
@@ -56,6 +58,8 @@ def _optional_str(value: Any) -> str | None:
 
 
 def _optional_cvss(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
     try:
         score = float(value)
     except (TypeError, ValueError):
@@ -69,6 +73,8 @@ def _severity(value: Any) -> str:
 
 
 def _optional_unit_interval(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
     try:
         score = float(value)
     except (TypeError, ValueError):
@@ -77,6 +83,8 @@ def _optional_unit_interval(value: Any) -> float | None:
 
 
 def _optional_nonnegative_int(value: Any) -> int | None:
+    if isinstance(value, bool):
+        return None
     try:
         result = int(value)
     except (TypeError, ValueError):
@@ -98,6 +106,8 @@ def _identifier_list(
         if prefix is not None:
             normalized = normalized.upper()
             if not normalized.startswith(prefix):
+                continue
+            if prefix == "CVE-" and not _CVE_ID_RE.fullmatch(normalized):
                 continue
         if not normalized or normalized in seen:
             continue
