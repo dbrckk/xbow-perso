@@ -5,7 +5,7 @@ import json
 import re
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 
@@ -95,8 +95,16 @@ def _safe_text(value: object, *, name: str, max_bytes: int) -> str:
 
 
 def _normalize_entry_path(value: object) -> str:
+    if isinstance(value, Path):
+        raw_value = value.as_posix()
+    elif isinstance(value, str):
+        raw_value = value
+    else:
+        raise StrixManifestAdmissionError(
+            "manifest entry path must be text or Path"
+        )
     raw = _safe_text(
-        str(value),
+        raw_value,
         name="manifest entry path",
         max_bytes=_MAX_ENTRY_PATH_BYTES,
     )
