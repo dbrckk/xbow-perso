@@ -8,6 +8,7 @@ from typing import Any
 from .scanner_sandbox import strix_runtime_contract_enforceable
 from .strix_execution_contract import STRIX_EXECUTION_CONTRACT_SCHEMA
 from .strix_runner_rpc import RUNNER_RPC_PROTOCOL
+from .strix_runner_exec_ticket import STRIX_RUNNER_EXEC_TICKET_SCHEMA
 
 
 class CapabilityConfigError(ValueError):
@@ -197,6 +198,10 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_runner_rpc_protocol": RUNNER_RPC_PROTOCOL,
         "strix_runner_rpc_contract_defined": True,
         "strix_runner_rpc_execution_implemented": False,
+        "strix_runner_exec_ticket_schema": STRIX_RUNNER_EXEC_TICKET_SCHEMA,
+        "strix_runner_exec_ticket_required": True,
+        "strix_runner_exec_ticket_enforced": True,
+        "strix_runner_exec_process_launch_enabled": False,
         "strix_command_admission_contract_defined": True,
         "strix_command_profiles": ["bootstrap-v1", "web-active-v1"],
         "strix_command_shell_interpreters_allowed": False,
@@ -260,6 +265,10 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_runner_rpc_protocol": RUNNER_RPC_PROTOCOL,
             "strix_runner_rpc_contract_defined": True,
             "strix_runner_rpc_execution_implemented": False,
+            "strix_runner_exec_ticket_schema": STRIX_RUNNER_EXEC_TICKET_SCHEMA,
+            "strix_runner_exec_ticket_required": True,
+            "strix_runner_exec_ticket_enforced": True,
+            "strix_runner_exec_process_launch_enabled": False,
             "strix_command_admission_contract_defined": True,
             "strix_command_profiles": ["bootstrap-v1", "web-active-v1"],
             "strix_command_shell_interpreters_allowed": False,
