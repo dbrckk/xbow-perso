@@ -104,6 +104,37 @@ def safe_pentagi_runtime_capability() -> dict[str, Any]:
         }
 
 
+def _strix_capability_state_consistent(capability: dict[str, Any]) -> bool:
+    patch_enabled = capability.get(
+        "strix_python_preflight_patch_application_enabled"
+    )
+    compatibility_applied = capability.get(
+        "strix_python_preflight_compatibility_applied"
+    )
+    bootstrap_ready = capability.get("strix_python_bootstrap_ready")
+    runtime_enforceable = capability.get(
+        "strix_runtime_contract_enforceable"
+    )
+    rpc_execution = capability.get(
+        "strix_runner_rpc_execution_implemented"
+    )
+    preserved_validation = capability.get(
+        "strix_python_preflight_preserves_environment_validation"
+    )
+
+    if preserved_validation is not True:
+        return False
+    if compatibility_applied is True and patch_enabled is not True:
+        return False
+    if bootstrap_ready is True and compatibility_applied is not True:
+        return False
+    if runtime_enforceable is True and (
+        bootstrap_ready is not True or rpc_execution is not True
+    ):
+        return False
+    return True
+
+
 def scanner_runtime_capability() -> dict[str, Any]:
     active_scans_enabled = _strict_bool("XBOW_ENABLE_ACTIVE_SCANS", False)
     scanner_worker_enabled = _strict_bool("XBOW_ENABLE_SCANNER_WORKER", False)
@@ -169,7 +200,7 @@ def scanner_runtime_capability() -> dict[str, Any]:
         if strix_upstream_docker_preflight_required:
             reasons.append("strix_upstream_docker_preflight_required")
 
-    return {
+    capability = {
         "mode": "active_gated" if active_scans_enabled else "disabled",
         "active_scans_enabled": active_scans_enabled,
         "scanner_worker_enabled": scanner_worker_enabled,
@@ -215,6 +246,18 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "worker_admission_enforced": True,
         "contains_secrets": False,
     }
+    capability["strix_capability_state_consistent"] = (
+        _strix_capability_state_consistent(capability)
+    )
+    if not capability["strix_capability_state_consistent"]:
+        capability["dispatch_ready"] = False
+        if "strix_capability_state_inconsistent" not in capability[
+            "dispatch_block_reasons"
+        ]:
+            capability["dispatch_block_reasons"].append(
+                "strix_capability_state_inconsistent"
+            )
+    return capability
 
 
 def safe_scanner_runtime_capability() -> dict[str, Any]:
@@ -256,6 +299,7 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_python_preflight_patch_application_enabled": False,
             "strix_python_preflight_compatibility_applied": False,
             "strix_python_preflight_preserves_environment_validation": True,
+            "strix_capability_state_consistent": True,
             "strix_upstream_docker_preflight_required": True,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
