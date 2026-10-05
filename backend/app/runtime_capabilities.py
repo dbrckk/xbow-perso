@@ -202,6 +202,8 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_python_bootstrap_plan_contract_defined": True,
         "strix_python_preflight_patch_plan_contract_defined": True,
         "strix_python_preflight_patch_application_enabled": False,
+        "strix_python_preflight_compatibility_applied": False,
+        "strix_python_preflight_preserves_environment_validation": True,
         "strix_upstream_docker_preflight_required": (
             strix_upstream_docker_preflight_required
         ),
@@ -252,6 +254,8 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_python_bootstrap_plan_contract_defined": True,
             "strix_python_preflight_patch_plan_contract_defined": True,
             "strix_python_preflight_patch_application_enabled": False,
+            "strix_python_preflight_compatibility_applied": False,
+            "strix_python_preflight_preserves_environment_validation": True,
             "strix_upstream_docker_preflight_required": True,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
