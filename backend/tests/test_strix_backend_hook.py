@@ -164,6 +164,9 @@ def test_self_test_proves_fail_closed_backend(monkeypatch):
     assert result["backend"] == STRIX_BACKEND_NAME
     assert result["prepared_session_schema"] == "strix-remote-session-interface-v1"
     assert result["prepared_backend_returns_client_session"] is True
+    assert result["manifest_admission_schema"] == "strix-manifest-admission-v1"
+    assert result["manifest_admission_enforced"] is True
+    assert result["manifest_digest_bound_to_session"] is True
     assert result["blocked_operations"] == ["resolve-port", "exec", "delete"]
     assert result["manifest_materialized"] is False
     assert result["network_io_performed"] is False
