@@ -3,6 +3,7 @@ from __future__ import annotations
 from app.main import Campaign, ProgramRules, TargetInput
 from app.scanner_normalization import (
     normalize_nuclei_item,
+    normalized_finding_id,
     to_campaign_finding,
 )
 
@@ -109,3 +110,38 @@ def test_cve_metadata_defaults_keep_old_findings_compatible():
     assert finding.tags == []
     assert finding.template_verified is None
     assert finding.epss_score is None
+
+
+def test_cve_enrichment_does_not_change_historical_normalized_id():
+    base = {
+        "template-id": "CVE-2026-1207",
+        "matcher-name": "postgres-error",
+        "matched-at": "https://app.example.test/api?raster=1",
+        "info": {
+            "name": "Django RasterField - SQL Injection",
+            "severity": "high",
+            "description": "fixture",
+        },
+    }
+    enriched = {
+        **base,
+        "info": {
+            **base["info"],
+            "classification": {
+                "cve-id": "CVE-2026-1207",
+                "cpe": "cpe:2.3:a:djangoproject:django:*:*:*:*:*:*:*:*",
+                "epss-score": 0.5,
+            },
+            "metadata": {
+                "verified": True,
+                "max-request": 1,
+            },
+        },
+    }
+
+    old_shape = normalize_nuclei_item(base, _campaign())
+    new_shape = normalize_nuclei_item(enriched, _campaign())
+
+    assert old_shape is not None
+    assert new_shape is not None
+    assert normalized_finding_id(old_shape) == normalized_finding_id(new_shape)
