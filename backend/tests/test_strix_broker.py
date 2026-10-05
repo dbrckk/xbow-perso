@@ -55,6 +55,10 @@ def _configure_broker_keys(monkeypatch):
 
 def test_broker_health_is_explicitly_admission_only(monkeypatch):
     monkeypatch.delenv("XBOW_STRIX_BROKER_HMAC_KEY", raising=False)
+    monkeypatch.delenv(
+        "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY",
+        raising=False,
+    )
 
     result = healthz()
 
