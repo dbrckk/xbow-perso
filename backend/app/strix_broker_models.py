@@ -71,6 +71,55 @@ class BrokerAdmissionResponse(BaseModel):
     network_io_performed: Literal[False] = False
 
 
+class BrokerCommandTicketRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    contract: BrokerContractDocument
+    session_id: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9._:-]+$",
+    )
+    request_id: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9._:-]+$",
+    )
+    profile: Literal["bootstrap-v1", "web-active-v1"]
+    argv: list[str] = Field(min_length=1, max_length=64)
+    timeout_seconds: float = Field(ge=0.1, le=300)
+
+
+class BrokerRunnerExecTicketDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema: Literal["strix-runner-exec-ticket-v1"]
+    command_schema: Literal["strix-command-admission-v1"]
+    contract_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    session_id: str = Field(min_length=1, max_length=128)
+    request_id: str = Field(min_length=1, max_length=128)
+    profile: Literal["bootstrap-v1", "web-active-v1"]
+    executable: str = Field(min_length=1, max_length=64)
+    argv_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    argc: int = Field(ge=1, le=64)
+    argv_bytes: int = Field(ge=1, le=16 * 1024)
+    timeout_seconds: float = Field(ge=0.1, le=300)
+    shell_interpreter_allowed: Literal[False]
+    direct_egress_allowed: Literal[False]
+    network_scope_enforcement: Literal["broker_required"]
+    active_execution_enabled: Literal[False]
+    signature_alg: Literal["hmac-sha256"]
+    signature: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class BrokerCommandTicketResponse(BaseModel):
+    allowed: Literal[True]
+    ticket: BrokerRunnerExecTicketDocument
+    mode: Literal["ticket_issuer_only"] = "ticket_issuer_only"
+    network_io_performed: Literal[False] = False
+    process_execution_performed: Literal[False] = False
+
+
 class BrokerHttpRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

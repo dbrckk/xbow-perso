@@ -33,6 +33,7 @@ def test_strix_broker_is_internal_and_unpublished():
     assert "cap_drop:" in broker
     assert "- ALL" in broker
     assert "XBOW_STRIX_BROKER_HMAC_KEY:" in broker
+    assert "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY:" in broker
     assert "XBOW_STRIX_EGRESS_URL: http://strix-egress:8091/v1/fetch" in broker
     assert "strix-broker:" in networks
     assert "strix-egress-control:" in networks

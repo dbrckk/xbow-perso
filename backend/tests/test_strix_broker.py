@@ -5,16 +5,19 @@ from pydantic import ValidationError
 from app.main import Campaign, ProgramRules, TargetInput
 from app.strix_broker import (
     BrokerAdmissionRequest,
+    BrokerCommandTicketRequest,
     BrokerContractDocument,
     BrokerHttpRequest,
     BrokerHttpResponse,
     admit,
     healthz,
+    issue_command_ticket,
     readyz,
     request_http,
 )
 from app.strix_broker_client import StrixBrokerClientError
 from app.strix_execution_contract import build_strix_execution_contract
+from app.strix_runner_exec_ticket import verify_strix_runner_exec_ticket
 
 
 def _campaign():
@@ -33,19 +36,36 @@ def _campaign():
     )
 
 
+ADMISSION_SECRET = "broker-runner-admission-secret-at-least-32-bytes"
+
+
 def _signed_contract(monkeypatch):
     monkeypatch.setenv("XBOW_AUDIT_HMAC_KEY", "broker-fixture-secret")
     contract = build_strix_execution_contract(_campaign(), job_id="job-1")
     return BrokerContractDocument.model_validate(contract.to_dict())
 
 
+def _configure_broker_keys(monkeypatch):
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    monkeypatch.setenv(
+        "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY",
+        ADMISSION_SECRET,
+    )
+
+
 def test_broker_health_is_explicitly_admission_only(monkeypatch):
     monkeypatch.delenv("XBOW_STRIX_BROKER_HMAC_KEY", raising=False)
+    monkeypatch.delenv(
+        "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY",
+        raising=False,
+    )
 
     result = healthz()
 
     assert result["status"] == "ok"
     assert result["ready"] is False
+    assert result["contract_verifier_ready"] is False
+    assert result["ticket_issuer_ready"] is False
     assert result["mode"] == "admission_only"
     assert result["egress_enabled"] is False
     assert result["network_io_performed"] is False
@@ -59,6 +79,20 @@ def test_broker_readiness_requires_verification_key(monkeypatch):
         readyz()
 
     assert exc_info.value.status_code == 503
+
+
+def test_broker_readiness_requires_runner_admission_key(monkeypatch):
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    monkeypatch.delenv(
+        "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY",
+        raising=False,
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        readyz()
+
+    assert exc_info.value.status_code == 503
+    assert "admission signing key" in str(exc_info.value.detail)
 
 
 def test_broker_admits_signed_in_scope_request_without_egress(monkeypatch):
@@ -144,7 +178,7 @@ def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch):
 
 
 def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch):
-    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    _configure_broker_keys(monkeypatch)
     monkeypatch.setenv(
         "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
         "true",
@@ -153,9 +187,121 @@ def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch):
     result = healthz()
 
     assert result["ready"] is True
+    assert result["contract_verifier_ready"] is True
+    assert result["ticket_issuer_ready"] is True
     assert result["mode"] == "read_only_http_proxy"
     assert result["egress_enabled"] is True
     assert result["allowed_http_methods"] == ["GET", "HEAD"]
+
+
+def test_broker_issues_runner_ticket_only_after_command_admission(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+    _configure_broker_keys(monkeypatch)
+    argv = [
+        "curl",
+        "-fsS",
+        "http://127.0.0.1:48080/graphql",
+    ]
+
+    result = issue_command_ticket(
+        BrokerCommandTicketRequest(
+            contract=contract,
+            session_id="sess-1",
+            request_id="req-1",
+            profile="bootstrap-v1",
+            argv=argv,
+            timeout_seconds=10.0,
+        )
+    )
+
+    assert result.allowed is True
+    assert result.mode == "ticket_issuer_only"
+    assert result.network_io_performed is False
+    assert result.process_execution_performed is False
+    verified = verify_strix_runner_exec_ticket(
+        result.ticket.model_dump(mode="json"),
+        session_id="sess-1",
+        request_id="req-1",
+        argv=argv,
+        timeout_seconds=10.0,
+        verification_secret=ADMISSION_SECRET,
+    )
+    assert verified.contract_hash == contract.contract_hash
+    assert verified.profile == "bootstrap-v1"
+    assert verified.active_execution_enabled is False
+
+
+def test_broker_command_ticket_rejects_wrong_contract_key(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "different-secret")
+    monkeypatch.setenv(
+        "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY",
+        ADMISSION_SECRET,
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        issue_command_ticket(
+            BrokerCommandTicketRequest(
+                contract=contract,
+                session_id="sess-1",
+                request_id="req-1",
+                profile="bootstrap-v1",
+                argv=["curl", "-I", "http://127.0.0.1:48080/"],
+                timeout_seconds=10.0,
+            )
+        )
+
+    assert exc_info.value.status_code == 403
+
+
+@pytest.mark.parametrize(
+    ("profile", "argv"),
+    (
+        ("bootstrap-v1", ["sh", "-lc", "printf ok"]),
+        ("bootstrap-v1", ["nuclei", "-version"]),
+    ),
+)
+def test_broker_command_ticket_rejects_unreviewed_command(monkeypatch, profile, argv):
+    contract = _signed_contract(monkeypatch)
+    _configure_broker_keys(monkeypatch)
+
+    with pytest.raises(HTTPException) as exc_info:
+        issue_command_ticket(
+            BrokerCommandTicketRequest(
+                contract=contract,
+                session_id="sess-1",
+                request_id="req-1",
+                profile=profile,
+                argv=argv,
+                timeout_seconds=10.0,
+            )
+        )
+
+    assert exc_info.value.status_code == 403
+    assert "command admission rejected" in str(exc_info.value.detail).lower()
+
+
+def test_broker_command_ticket_requires_signing_key(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    monkeypatch.delenv(
+        "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY",
+        raising=False,
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        issue_command_ticket(
+            BrokerCommandTicketRequest(
+                contract=contract,
+                session_id="sess-1",
+                request_id="req-1",
+                profile="bootstrap-v1",
+                argv=["curl", "-I", "http://127.0.0.1:48080/"],
+                timeout_seconds=10.0,
+            )
+        )
+
+    assert exc_info.value.status_code == 503
 
 
 def test_broker_request_path_is_disabled_by_default(monkeypatch):
@@ -254,7 +400,7 @@ def test_broker_forwards_only_after_local_admission(monkeypatch):
 
 
 def test_broker_readiness_requires_egress_when_proxy_enabled(monkeypatch):
-    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    _configure_broker_keys(monkeypatch)
     monkeypatch.setenv(
         "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
         "true",
@@ -277,7 +423,7 @@ def test_broker_readiness_requires_egress_when_proxy_enabled(monkeypatch):
 
 
 def test_broker_readiness_checks_egress_when_proxy_enabled(monkeypatch):
-    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "broker-fixture-secret")
+    _configure_broker_keys(monkeypatch)
     monkeypatch.setenv(
         "XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS",
         "true",
