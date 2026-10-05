@@ -373,7 +373,8 @@
       "main",
       "observation_graph",
       "public_duplicate_intelligence",
-      "typing"
+      "typing",
+      "vulnerability_intelligence"
     ],
     "backend/app/finding_lifecycle.py": [
       "__future__",
@@ -1388,6 +1389,7 @@
       "hashlib",
       "json",
       "main",
+      "re",
       "typing",
       "urllib.parse"
     ],
@@ -1499,6 +1501,14 @@
       "strix_execution_contract",
       "typing"
     ],
+    "backend/app/strix_command_admission.py": [
+      "__future__",
+      "dataclasses",
+      "hashlib",
+      "re",
+      "strix_execution_contract",
+      "typing"
+    ],
     "backend/app/strix_egress.py": [
       "__future__",
       "fastapi",
@@ -1554,6 +1564,22 @@
       "strix_python_toolchain_probe",
       "typing"
     ],
+    "backend/app/strix_python_bootstrap_runtime.py": [
+      "__future__",
+      "argparse",
+      "collections.abc",
+      "contextlib",
+      "importlib",
+      "json",
+      "os",
+      "strix_backend_hook",
+      "strix_python_preflight_compatibility",
+      "strix_python_preflight_patch_plan",
+      "strix_python_preflight_surface",
+      "sys",
+      "types",
+      "typing"
+    ],
     "backend/app/strix_python_compat_probe.py": [
       "__future__",
       "argparse",
@@ -1574,6 +1600,13 @@
       "pathlib",
       "sys",
       "tomllib",
+      "typing"
+    ],
+    "backend/app/strix_python_preflight_compatibility.py": [
+      "__future__",
+      "collections.abc",
+      "contextlib",
+      "strix_python_preflight_patch_plan",
       "typing"
     ],
     "backend/app/strix_python_preflight_patch_plan.py": [
@@ -1725,6 +1758,12 @@
       "pathlib",
       "secret_vault",
       "secrets",
+      "typing"
+    ],
+    "backend/app/vulnerability_intelligence.py": [
+      "__future__",
+      "dataclasses",
+      "re",
       "typing"
     ],
     "backend/app/worker.py": [
@@ -3006,6 +3045,12 @@
       "subprocess",
       "sys"
     ],
+    "backend/tests/test_strix_command_admission.py": [
+      "__future__",
+      "app.strix_command_admission",
+      "app.strix_execution_contract",
+      "pytest"
+    ],
     "backend/tests/test_strix_egress.py": [
       "app.main",
       "app.strix_broker_models",
@@ -3035,6 +3080,13 @@
       "app.strix_python_bootstrap_plan",
       "pytest"
     ],
+    "backend/tests/test_strix_python_bootstrap_runtime.py": [
+      "__future__",
+      "app.strix_python_bootstrap_runtime",
+      "os",
+      "pytest",
+      "types"
+    ],
     "backend/tests/test_strix_python_compat_probe.py": [
       "app.strix_python_compat_probe",
       "pathlib",
@@ -3043,6 +3095,11 @@
     "backend/tests/test_strix_python_lock_probe.py": [
       "app.strix_python_lock_probe",
       "pathlib",
+      "pytest"
+    ],
+    "backend/tests/test_strix_python_preflight_compatibility.py": [
+      "__future__",
+      "app.strix_python_preflight_compatibility",
       "pytest"
     ],
     "backend/tests/test_strix_python_preflight_patch_plan.py": [
@@ -3144,6 +3201,14 @@
       "base64",
       "os",
       "pytest"
+    ],
+    "backend/tests/test_vulnerability_intelligence.py": [
+      "app.finding_intelligence",
+      "app.main",
+      "app.observation_graph",
+      "app.scanner_normalization",
+      "app.vulnerability_intelligence",
+      "types"
     ],
     "backend/tests/test_watchdog_observability.py": [
       "app",

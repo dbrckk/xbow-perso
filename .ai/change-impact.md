@@ -1,11 +1,13 @@
 # Change impact
 
-Base: a77d0bfff2461314f9c519e32a425d4d34e65f06
-Head: ea40e27ff26a2aa930dfe6d773818f2c0e4d95cc
+Base: 074db0fb98a9322164d67aafad3ebe174e9b9248
+Head: 56067593f9fdc6571a958a48584a68b7b8776437
 
 ## Changed files
-- M backend/app/runtime_capabilities.py
-- M backend/tests/test_runtime_capabilities.py
+- M backend/app/finding_intelligence.py
+- M backend/app/scanner_normalization.py
+- A backend/app/vulnerability_intelligence.py
+- A backend/tests/test_vulnerability_intelligence.py
 
 ## Affected areas
 - backend

@@ -191,13 +191,16 @@ app/
   strix_broker_client.py
   strix_broker_models.py
   strix_broker.py
+  strix_command_admission.py
   strix_egress_transport.py
   strix_egress.py
   strix_execution_contract.py
   strix_parser.py
   strix_python_bootstrap_plan.py
+  strix_python_bootstrap_runtime.py
   strix_python_compat_probe.py
   strix_python_lock_probe.py
+  strix_python_preflight_compatibility.py
   strix_python_preflight_patch_plan.py
   strix_python_preflight_surface.py
   strix_python_toolchain_probe.py
@@ -216,6 +219,7 @@ app/
   value_efficiency.py
   vault_cli.py
   vault_migration.py
+  vulnerability_intelligence.py
   worker_audit.py
   worker_liveness.py
   worker_service.py
@@ -431,12 +435,15 @@ tests/
   test_strix_broker_client.py
   test_strix_broker_runtime.py
   test_strix_broker.py
+  test_strix_command_admission.py
   test_strix_egress_transport.py
   test_strix_egress.py
   test_strix_execution_contract.py
   test_strix_python_bootstrap_plan.py
+  test_strix_python_bootstrap_runtime.py
   test_strix_python_compat_probe.py
   test_strix_python_lock_probe.py
+  test_strix_python_preflight_compatibility.py
   test_strix_python_preflight_patch_plan.py
   test_strix_python_preflight_surface.py
   test_strix_python_toolchain_probe.py
@@ -454,6 +461,7 @@ tests/
   test_validator.py
   test_value_efficiency.py
   test_vault_migration.py
+  test_vulnerability_intelligence.py
   test_watchdog_observability.py
   test_worker_concurrency.py
   test_worker_job_provenance.py
@@ -2724,6 +2732,7 @@ triage_by_id = {item.finding_id: item for item in triage}
 cluster_by_member = {
 consensus_by_cluster = {item.cluster_id: item for item in cluster_consensus}
 saturation_by_cluster = {item.cluster_id: item for item in saturation}
+finding_by_id = {str(item.id): item for item in findings}
 ⋮----
 finding_rows = []
 ⋮----
@@ -2734,6 +2743,10 @@ cluster = cluster_by_member.get(finding_id)
 cluster_id = cluster.cluster_id if cluster else None
 differential_item = differential_signals.get(
 duplicate_similarity = rank_public_duplicate_risk(
+⋮----
+member_ids = cluster.finding_ids if cluster else (finding_id,)
+corroborating_sources = {
+vulnerability = build_vulnerability_signal(
 ⋮----
 cluster_rows = []
 ⋮----
@@ -10104,6 +10117,7 @@ queued = 0
 ## File: app/scanner_normalization.py
 ```python
 _ALLOWED_SEVERITIES = {"info", "low", "medium", "high", "critical"}
+_CVE_RE = re.compile(r"\bCVE-(\d{4})-(\d{4,10})\b", re.IGNORECASE)
 ⋮----
 @dataclass(frozen=True)
 class NormalizedScannerFinding
@@ -10120,6 +10134,7 @@ impact: str = ""
 remediation: str = ""
 cwe: str | None = None
 cvss: float | None = None
+cve_ids: tuple[str, ...] = ()
 template_id: str | None = None
 matcher_name: str | None = None
 ⋮----
@@ -10143,6 +10158,14 @@ items = [value]
 ⋮----
 items = list(value)
 ⋮----
+def _cve_ids(value: Any, *, limit: int = 32) -> tuple[str, ...]
+⋮----
+values = list(value) if isinstance(value, (list, tuple, set)) else [value]
+found: set[str] = set()
+⋮----
+tagged = tuple(f"cve-id:{cve_id}" for cve_id in cve_ids)
+combined = tagged + evidence
+⋮----
 def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> NormalizedScannerFinding | None
 ⋮----
 asset = str(item.get("asset") or item.get("target") or campaign.target.primary_url)
@@ -10151,6 +10174,8 @@ host = (urlparse(asset).hostname or asset.split(":")[0]).lower()
 cwe = item.get("cwe")
 ⋮----
 cwe = ", ".join(str(x) for x in cwe)
+cve_ids = _cve_ids(
+evidence = _with_cve_evidence(
 ⋮----
 def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> NormalizedScannerFinding | None
 ⋮----
@@ -10162,6 +10187,7 @@ classification = info.get("classification") if isinstance(info.get("classificati
 cwe = classification.get("cwe-id") or classification.get("cwe_id")
 ⋮----
 extracted = item.get("extracted-results") or item.get("extracted_results") or []
+⋮----
 matcher = item.get("matcher-name") or item.get("matcher_name")
 template_id = item.get("template-id") or item.get("template_id")
 ⋮----
@@ -11001,6 +11027,73 @@ def request_http(request: BrokerHttpRequest) -> BrokerHttpResponse
 __all__ = [
 ```
 
+## File: app/strix_command_admission.py
+```python
+STRIX_COMMAND_ADMISSION_SCHEMA = "strix-command-admission-v1"
+STRIX_BOOTSTRAP_PROFILE = "bootstrap-v1"
+STRIX_WEB_ACTIVE_PROFILE = "web-active-v1"
+⋮----
+STRIX_BOOTSTRAP_EXECUTABLES = frozenset({"curl"})
+STRIX_WEB_ACTIVE_EXECUTABLES = frozenset(
+⋮----
+_PROFILE_EXECUTABLES = {
+_PROFILE_MAX_TIMEOUT_SECONDS = {
+⋮----
+_MAX_ARGC = 64
+_MAX_ARG_BYTES = 4096
+_MAX_TOTAL_ARG_BYTES = 16 * 1024
+_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_EXECUTABLE_RE = re.compile(r"^[A-Za-z0-9._+-]{1,64}$")
+_SHELL_INTERPRETERS = frozenset(
+⋮----
+class StrixCommandAdmissionError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class StrixAuthorizedCommand
+⋮----
+schema: str
+contract_hash: str
+session_id: str
+request_id: str
+profile: str
+executable: str
+argv_sha256: str
+argc: int
+argv_bytes: int
+timeout_seconds: float
+shell_interpreter_allowed: bool
+direct_egress_allowed: bool
+network_scope_enforcement: str
+active_execution_enabled: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def reviewed_command_profiles() -> dict[str, dict[str, Any]]
+⋮----
+def _valid_id(value: object, name: str) -> str
+⋮----
+encoded_total = 0
+normalized: list[str] = []
+⋮----
+executable = normalized[0]
+⋮----
+"""Authorize one future sandbox command without executing it.
+
+    Network scope is deliberately *not* inferred from argv. The execution
+    contract requires direct egress to remain disabled, so target traffic must
+    still cross the separately scoped broker boundary.
+    """
+⋮----
+session_id = _valid_id(session_id, "session id")
+request_id = _valid_id(request_id, "request id")
+⋮----
+timeout = float(timeout_seconds)
+⋮----
+max_timeout = _PROFILE_MAX_TIMEOUT_SECONDS.get(profile)
+⋮----
+canonical_argv = "\x00".join(argv).encode("utf-8")
+```
+
 ## File: app/strix_egress_transport.py
 ```python
 class StrixEgressError(RuntimeError)
@@ -11298,6 +11391,68 @@ def _verify_toolchain(descriptor: dict[str, Any]) -> None
 uv_sha256 = descriptor.get("uv_sha256")
 ```
 
+## File: app/strix_python_bootstrap_runtime.py
+```python
+STRIX_PYTHON_BOOTSTRAP_RUNTIME_SCHEMA = "strix-python-bootstrap-runtime-v1"
+_ENVIRONMENT_MODULE = "strix.interface.environment"
+_MAIN_MODULE = "strix.interface.main"
+_EXPECTED_BACKEND_DESCRIPTOR = {
+⋮----
+class StrixPythonBootstrapRuntimeError(RuntimeError)
+⋮----
+def _module_namespace(module: Any, name: str) -> MutableMapping[str, Any]
+⋮----
+namespace = vars(module)
+⋮----
+def _verify_backend_descriptor(descriptor: Mapping[str, Any]) -> None
+⋮----
+"""Prepare the pinned Strix Python runtime without invoking its entrypoint.
+
+    The custom backend is registered before strix.interface.main is imported.
+    Only the two attested Docker-preflight aliases are then patched, and the
+    upstream environment validation callable remains untouched.
+    """
+⋮----
+cache = sys.modules if module_cache is None else module_cache
+⋮----
+before_import = register_xbow_backend()
+⋮----
+environment_module = import_module(_ENVIRONMENT_MODULE)
+main_module = import_module(_MAIN_MODULE)
+⋮----
+after_import = register_xbow_backend()
+⋮----
+environment_namespace = _module_namespace(
+main_namespace = _module_namespace(main_module, _MAIN_MODULE)
+⋮----
+surface = inspect_preflight_surface(
+patch_plan = build_preflight_patch_plan(surface)
+⋮----
+def _self_test_plan() -> dict[str, Any]
+⋮----
+def self_test() -> dict[str, Any]
+⋮----
+def check_docker_installed() -> None
+⋮----
+def pull_docker_image() -> None
+⋮----
+def validate_environment() -> str
+⋮----
+environment = SimpleNamespace(
+main = SimpleNamespace(
+imports: list[str] = []
+⋮----
+def synthetic_import(name: str) -> Any
+⋮----
+result = {
+⋮----
+def _main() -> int
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args()
+```
+
 ## File: app/strix_python_compat_probe.py
 ```python
 STRIX_PYTHON_COMPAT_SCHEMA = "strix-python-compat-probe-v1"
@@ -11423,6 +11578,40 @@ def _main() -> int
 parser = argparse.ArgumentParser()
 ⋮----
 args = parser.parse_args()
+```
+
+## File: app/strix_python_preflight_compatibility.py
+```python
+STRIX_PYTHON_PREFLIGHT_COMPATIBILITY_SCHEMA = (
+_PATCH_SYMBOLS = (
+_PRESERVED_SYMBOL = "validate_environment"
+_PLAN_KEYS = {
+⋮----
+class StrixPythonPreflightCompatibilityError(RuntimeError)
+⋮----
+def _verified_noop_preflight(*_args: Any, **_kwargs: Any) -> None
+⋮----
+def _verify_patch_plan(plan: Mapping[str, Any]) -> None
+⋮----
+originals: dict[str, Any] = {}
+⋮----
+main_value = main_namespace.get(symbol)
+environment_value = environment_namespace.get(symbol)
+⋮----
+"""Temporarily bypass only the attested Docker preflight aliases in main.
+
+    The upstream environment module and validate_environment are not changed by
+    the compatibility layer. No Strix entrypoint is called here.
+    """
+⋮----
+originals = _verify_pre_patch_namespaces(
+body_error: BaseException | None = None
+patched_symbols: list[str] = []
+⋮----
+body_error = exc
+⋮----
+validation_changed = (
+environment_changed = any(
 ```
 
 ## File: app/strix_python_preflight_patch_plan.py
@@ -12550,6 +12739,67 @@ result = plan_vault_migration(args.source_env_file)
 result = apply_vault_migration(args.source_env_file)
 ⋮----
 result = rewrite_env_file(
+```
+
+## File: app/vulnerability_intelligence.py
+```python
+_CVE_RE = re.compile(r"\bCVE-(\d{4})-(\d{4,10})\b", re.IGNORECASE)
+_SEVERITY_WEIGHT = {
+⋮----
+@dataclass(frozen=True)
+class VulnerabilitySignal
+⋮----
+finding_id: str
+cve_ids: tuple[str, ...]
+known_cve_candidate: bool
+cve_signal: str
+novel_candidate: bool
+novelty_signal: str
+corroborating_sources: tuple[str, ...]
+corroborating_source_count: int
+independent_validation_required: bool
+exploitability_confirmed: bool
+zero_day_claim: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _extract_cve_ids(values: Iterable[object]) -> tuple[str, ...]
+⋮----
+found: set[str] = set()
+⋮----
+def finding_cve_ids(finding: Any) -> tuple[str, ...]
+⋮----
+structured = getattr(finding, "cve_ids", None)
+values: list[object] = []
+⋮----
+evidence = getattr(finding, "evidence", None)
+⋮----
+finding_id = str(getattr(finding, "id", ""))
+cve_ids = finding_cve_ids(finding)
+sources = tuple(
+source_count = len(sources)
+⋮----
+cve_signal = "multi_scanner_cve_candidate"
+⋮----
+cve_signal = "scanner_reported_cve_candidate"
+⋮----
+cve_signal = "none"
+⋮----
+severity = str(getattr(finding, "severity", "")).lower()
+high_impact = _SEVERITY_WEIGHT.get(severity, -1) >= _SEVERITY_WEIGHT["high"]
+differential = str(differential_signal).lower()
+⋮----
+novel_candidate = (
+⋮----
+novelty_signal = "strong_behavioral_candidate"
+⋮----
+novelty_signal = "behavioral_candidate_needs_corroboration"
+⋮----
+novelty_signal = "corroborated_unknown_candidate"
+⋮----
+novelty_signal = "none"
 ```
 
 ## File: app/worker_audit.py
@@ -21135,6 +21385,43 @@ def ready()
 result = readyz()
 ```
 
+## File: tests/test_strix_command_admission.py
+```python
+def _contract(**overrides) -> StrixExecutionContract
+⋮----
+values = {
+⋮----
+def _trust_contract(monkeypatch)
+⋮----
+calls = []
+⋮----
+def verify(contract, *, require_signature, verification_secret=None)
+⋮----
+def test_reviewed_profiles_keep_shell_and_direct_egress_disabled()
+⋮----
+profiles = reviewed_command_profiles()
+⋮----
+def test_bootstrap_curl_is_admitted_without_enabling_execution(monkeypatch)
+⋮----
+calls = _trust_contract(monkeypatch)
+⋮----
+result = authorize_strix_command(
+⋮----
+def test_reviewed_web_active_tools_are_admissible(monkeypatch, executable)
+⋮----
+def test_shells_paths_and_control_characters_fail_closed(monkeypatch, argv)
+⋮----
+def test_tool_outside_profile_is_rejected(monkeypatch)
+⋮----
+def test_profile_timeout_caps_are_enforced(monkeypatch)
+⋮----
+def test_contract_safety_drift_is_rejected(monkeypatch, overrides)
+⋮----
+def test_signature_verification_failure_is_wrapped(monkeypatch)
+⋮----
+def fail(*_args, **_kwargs)
+```
+
 ## File: tests/test_strix_egress_transport.py
 ```python
 class _Response
@@ -21326,6 +21613,49 @@ def test_bootstrap_plan_rejects_unknown_fields()
 compatibility = _compat()
 ```
 
+## File: tests/test_strix_python_bootstrap_runtime.py
+```python
+def _plan() -> dict
+⋮----
+def _modules()
+⋮----
+def check_docker_installed()
+⋮----
+def pull_docker_image()
+⋮----
+def validate_environment()
+⋮----
+environment = SimpleNamespace(
+main = SimpleNamespace(
+⋮----
+def _backend_descriptor() -> dict
+⋮----
+def test_bootstrap_registers_backend_before_main_import_and_restores(monkeypatch)
+⋮----
+originals = dict(vars(main))
+events = []
+⋮----
+def register()
+⋮----
+def importer(name)
+⋮----
+def test_bootstrap_rejects_preimported_main(monkeypatch)
+⋮----
+def test_bootstrap_rejects_main_loaded_during_backend_registration(monkeypatch)
+⋮----
+cache = {}
+⋮----
+def test_bootstrap_rejects_unexpected_backend_descriptor(monkeypatch)
+⋮----
+def test_bootstrap_rejects_backend_selection_drift(monkeypatch)
+⋮----
+calls = 0
+⋮----
+def test_bootstrap_fails_closed_on_tampered_plan(monkeypatch)
+⋮----
+plan = _plan()
+```
+
 ## File: tests/test_strix_python_compat_probe.py
 ```python
 def test_python_runtime_probe_reports_hook_and_docker_preflight(monkeypatch, tmp_path)
@@ -21375,6 +21705,46 @@ def test_dependency_lock_probe_rejects_blob_mismatch(monkeypatch, tmp_path)
 def test_ci_attests_pinned_strix_dependency_lock()
 ⋮----
 workflow = Path(".github/workflows/ci.yml").read_text()
+```
+
+## File: tests/test_strix_python_preflight_compatibility.py
+```python
+def _plan() -> dict
+⋮----
+def _namespaces() -> tuple[dict, dict]
+⋮----
+def check_docker_installed()
+⋮----
+def pull_docker_image()
+⋮----
+def validate_environment()
+⋮----
+environment = {
+⋮----
+def test_compatibility_patches_only_attested_main_aliases_and_restores()
+⋮----
+original_main = dict(main)
+original_environment = dict(environment)
+⋮----
+def test_compatibility_rejects_tampered_patch_plan(mutate)
+⋮----
+plan = _plan()
+⋮----
+def test_compatibility_rejects_unknown_plan_fields()
+⋮----
+def test_compatibility_rejects_direct_import_identity_mismatch()
+⋮----
+def alternate_check()
+⋮----
+def test_compatibility_restores_patch_symbols_after_body_error()
+⋮----
+def test_compatibility_fails_if_validation_is_rebound_during_context()
+⋮----
+def alternate_validation()
+⋮----
+def test_compatibility_fails_if_environment_module_changes_during_context()
+⋮----
+def alternate_pull()
 ```
 
 ## File: tests/test_strix_python_preflight_patch_plan.py
@@ -22105,6 +22475,41 @@ def test_source_env_file_requires_private_permissions(monkeypatch, tmp_path)
 def test_vault_migration_cli_plan_returns_nonzero_when_blocked(monkeypatch, capsys)
 ⋮----
 def test_vault_migration_cli_plan_returns_zero_when_ready(monkeypatch, capsys)
+```
+
+## File: tests/test_vulnerability_intelligence.py
+```python
+def _campaign() -> Campaign
+⋮----
+def test_nuclei_classification_preserves_cve_as_stable_evidence()
+⋮----
+normalized = normalize_nuclei_item(
+⋮----
+finding = to_campaign_finding(normalized)
+⋮----
+def test_known_cve_candidate_never_confirms_exploitability()
+⋮----
+signal = build_vulnerability_signal(
+⋮----
+def test_strong_unknown_requires_independent_corroboration_for_novel_candidate()
+⋮----
+finding = _finding(severity="critical")
+⋮----
+single_source = build_vulnerability_signal(
+corroborated = build_vulnerability_signal(
+⋮----
+def test_low_severity_unknown_is_not_promoted_to_novel_candidate()
+⋮----
+def test_textual_cve_extraction_is_case_insensitive_and_deduplicated()
+⋮----
+finding = _finding(
+⋮----
+def test_finding_intelligence_surfaces_cve_signal_without_auto_confirmation()
+⋮----
+finding = SimpleNamespace(
+⋮----
+result = build_finding_intelligence([finding], ObservationGraph())
+row = result["findings"][0]["vulnerability"]
 ```
 
 ## File: tests/test_watchdog_observability.py

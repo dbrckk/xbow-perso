@@ -39,27 +39,30 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T18:37:01Z
+Generated: 2026-10-05T21:56:52Z
 
 ### Git
 - Branch: `main`
-- Head: `ea40e27ff26a`
-- Commit date: 2026-10-05T20:36:46+02:00
-- Commit: security(strix): lock fail-closed preflight capability state
-- Tracked files: 627
+- Head: `56067593f9fd`
+- Commit date: 2026-10-05T23:56:40+02:00
+- Commit: feat(intelligence): add CVE and novel vulnerability signals
+- Tracked files: 635
 
 ### Recently changed files
-- `backend/app/runtime_capabilities.py`
-- `backend/tests/test_runtime_capabilities.py`
-- `backend/app/strix_python_preflight_patch_plan.py`
-- `backend/tests/test_strix_python_preflight_patch_plan.py`
-- `.github/workflows/ci.yml`
-- `backend/tests/test_ci_workflow.py`
-- `backend/app/strix_python_preflight_surface.py`
-- `backend/tests/test_strix_python_preflight_surface.py`
+- `backend/app/finding_intelligence.py`
+- `backend/app/scanner_normalization.py`
+- `backend/app/vulnerability_intelligence.py`
+- `backend/tests/test_vulnerability_intelligence.py`
 - `README.md`
-- `backend/app/strix_python_bootstrap_plan.py`
-- `backend/tests/test_strix_python_bootstrap_plan.py`
+- `backend/app/runtime_capabilities.py`
+- `backend/app/strix_command_admission.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_command_admission.py`
+- `.github/workflows/ci.yml`
+- `backend/app/strix_python_bootstrap_runtime.py`
+- `backend/tests/test_strix_python_bootstrap_runtime.py`
+- `backend/app/strix_python_preflight_compatibility.py`
+- `backend/tests/test_strix_python_preflight_compatibility.py`
 
 ### Project signals
 - `pyproject.toml`
