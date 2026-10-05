@@ -80,6 +80,18 @@ def _safe_nuclei_output_dir(output_dir: str) -> str:
     return str(resolved)
 
 
+def _nuclei_cve_discovery_mode() -> str:
+    mode = os.getenv(
+        "XBOW_NUCLEI_CVE_DISCOVERY_MODE",
+        "adaptive",
+    ).strip().lower()
+    if mode not in {"off", "adaptive", "broad"}:
+        raise WorkerPolicyError(
+            "XBOW_NUCLEI_CVE_DISCOVERY_MODE must be off, adaptive or broad"
+        )
+    return mode
+
+
 def _nuclei_rate_limit(rps: float) -> tuple[int, str]:
     if rps <= 0:
         raise WorkerPolicyError("Nuclei rate limit must be positive")
@@ -114,6 +126,10 @@ def build_nuclei_plan(campaign: Campaign, output_dir: str = "/data/nuclei_runs")
     dry_run = dry_run_requested or not active_enabled or not nuclei_enabled
     rate, duration = _nuclei_rate_limit(float(rules.max_requests_per_second))
     output_file = str(Path(output_dir) / "nuclei.jsonl")
+    cve_mode = _nuclei_cve_discovery_mode()
+    discovery_tags = "tech,misconfig,exposure"
+    if cve_mode == "broad":
+        discovery_tags += ",cve,vuln"
     cmd = [
         "nuclei",
         "-target",
@@ -123,7 +139,7 @@ def build_nuclei_plan(campaign: Campaign, output_dir: str = "/data/nuclei_runs")
         "-templates",
         "/opt/nuclei-templates",
         "-tags",
-        "tech,misconfig,exposure,cve,vuln",
+        discovery_tags,
         "-exclude-tags",
         "dos,fuzz,intrusive,default-login,bruteforce",
         "-disable-unsigned-templates",
@@ -153,6 +169,8 @@ def build_nuclei_plan(campaign: Campaign, output_dir: str = "/data/nuclei_runs")
         "-jsonl-export",
         output_file,
     ]
+    if cve_mode == "adaptive":
+        cmd.append("-automatic-scan")
     return WorkerPlan(
         engine="nuclei",
         command=cmd,
@@ -225,6 +243,8 @@ def build_nuclei_cve_validation_plan(
 
     tags_index = command.index("-tags")
     del command[tags_index : tags_index + 2]
+    if "-automatic-scan" in command:
+        command.remove("-automatic-scan")
     command.extend(["-id", template_id])
 
     return WorkerPlan(
