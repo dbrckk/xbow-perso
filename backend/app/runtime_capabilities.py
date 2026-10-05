@@ -199,6 +199,8 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_runner_rpc_execution_implemented": False,
         "strix_backend_hook_loaded_by_standalone_binary": False,
         "strix_python_bootstrap_ready": strix_python_bootstrap_ready,
+        "strix_python_bootstrap_plan_contract_defined": True,
+        "strix_python_preflight_patch_application_enabled": False,
         "strix_upstream_docker_preflight_required": (
             strix_upstream_docker_preflight_required
         ),
@@ -246,6 +248,8 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_runner_rpc_execution_implemented": False,
             "strix_backend_hook_loaded_by_standalone_binary": False,
             "strix_python_bootstrap_ready": False,
+            "strix_python_bootstrap_plan_contract_defined": True,
+            "strix_python_preflight_patch_application_enabled": False,
             "strix_upstream_docker_preflight_required": True,
             "dry_run": True,
             "sandbox_profile": "configuration_error",
