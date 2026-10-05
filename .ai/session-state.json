@@ -58,10 +58,13 @@
     "Added vulnerability intelligence that ranks known-CVE exploitability using severity, CVSS, EPSS, CPE, verified templates, KEV-like tags and evidence quality.",
     "Added potential zero-day candidate scoring that requires no CVE plus high/critical severity, strong differential behavior and sufficient evidence/readiness; absence of a CVE alone never qualifies.",
     "Unknown high-confidence candidates are routed to isolated-lab reproducer review and automatic zero-day exploitation remains disabled.",
-    "Finding intelligence now exposes known CVE counts, potential zero-day candidates, high exploitability findings and exact CVE recheck eligibility."
+    "Finding intelligence now exposes known CVE counts, potential zero-day candidates, high exploitability findings and exact CVE recheck eligibility.",
+    "Changed CVE discovery to adaptive-by-default using Nuclei automatic technology-to-template mapping; broad mode explicitly adds cve,vuln tags and off mode retains only base discovery.",
+    "Added product/technology fingerprint correlation for known-CVE prioritization and temporal endpoint novelty as an additional unknown-vulnerability signal.",
+    "Propagated bounded CVE/CPE/EPSS/template metadata into the observation graph while preserving historical normalized finding IDs."
   ],
   "current_branch": "codex/cve-unknown-vuln-intelligence-v1",
-  "current_priority": "Validate CVE/unknown-vulnerability intelligence and exact-template recheck planning through CI, then wire eligible CVE rechecks into independent validation with explicit policy provenance.",
+  "current_priority": "Validate adaptive/broad CVE discovery, rich CVE evidence propagation, exploitability scoring and bounded exact-template rechecks through CI before merge.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
