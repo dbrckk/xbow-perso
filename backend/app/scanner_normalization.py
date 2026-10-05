@@ -261,8 +261,6 @@ def normalized_finding_id(item: NormalizedScannerFinding) -> str:
             item.summary.strip(),
             item.template_id or "",
             item.matcher_name or "",
-            ",".join(item.cve_ids),
-            ",".join(item.cpe),
         ],
         ensure_ascii=False,
         separators=(",", ":"),
