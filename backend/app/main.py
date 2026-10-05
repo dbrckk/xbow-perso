@@ -127,6 +127,17 @@ class Finding(BaseModel):
     remediation: str = ""
     cwe: str | None = None
     cvss: float | None = Field(default=None, ge=0, le=10)
+    cve_ids: list[str] = Field(default_factory=list)
+    cpe: list[str] = Field(default_factory=list)
+    cvss_vector: str | None = None
+    epss_score: float | None = Field(default=None, ge=0, le=1)
+    epss_percentile: float | None = Field(default=None, ge=0, le=1)
+    references: list[str] = Field(default_factory=list)
+    template_id: str | None = None
+    template_verified: bool | None = None
+    template_max_requests: int | None = Field(default=None, ge=0, le=10000)
+    vendor: str | None = None
+    product: str | None = None
     status: Literal["candidate", "validation_required", "confirmed", "rejected"] = "candidate"
     discovered_by: str = "unknown"
     validated_by: str | None = None
