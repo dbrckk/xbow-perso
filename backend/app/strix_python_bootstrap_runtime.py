@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import os
 import sys
@@ -60,7 +61,7 @@ def _verify_backend_descriptor(descriptor: Mapping[str, Any]) -> None:
 def prepared_strix_python_runtime(
     *,
     bootstrap_plan: dict[str, Any],
-    import_module: Callable[[str], Any],
+    import_module: Callable[[str], Any] = importlib.import_module,
     module_cache: Mapping[str, Any] | None = None,
 ) -> Iterator[tuple[dict[str, Any], Any]]:
     """Prepare the pinned Strix Python runtime without invoking its entrypoint.
@@ -78,6 +79,10 @@ def prepared_strix_python_runtime(
 
     before_import = register_xbow_backend()
     _verify_backend_descriptor(before_import)
+    if _MAIN_MODULE in cache:
+        raise StrixPythonBootstrapRuntimeError(
+            "Strix main module loaded during backend registration"
+        )
     if os.environ.get("STRIX_RUNTIME_BACKEND") != STRIX_BACKEND_NAME:
         raise StrixPythonBootstrapRuntimeError(
             "Strix runtime backend selection was not pinned"
@@ -91,6 +96,10 @@ def prepared_strix_python_runtime(
     if after_import != before_import:
         raise StrixPythonBootstrapRuntimeError(
             "Strix backend registry changed during interface import"
+        )
+    if os.environ.get("STRIX_RUNTIME_BACKEND") != STRIX_BACKEND_NAME:
+        raise StrixPythonBootstrapRuntimeError(
+            "Strix runtime backend selection changed during interface import"
         )
 
     environment_namespace = _module_namespace(
