@@ -13,6 +13,6 @@ def test_frontend_smoke_test_avoids_pipefail_broken_pipe():
         in workflow
     )
     assert (
-        "grep -q 'class="app-shell simple-shell"' <<< "$html""
+        'grep -q \'class="app-shell simple-shell"\' <<< "$html"'
         in workflow
     )
