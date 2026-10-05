@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-05",
-  "task": "Bind Strix runner exec RPC to authenticated admission tickets without enabling process execution",
+  "task": "Issue Strix runner exec tickets only from the trusted broker",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -64,13 +64,18 @@
     "Runner exec tickets bind execution-contract hash, session/request ids, reviewed profile, executable, argv SHA-256/count/bytes and timeout.",
     "The runner independently enforces the reviewed bootstrap-v1/web-active-v1 tool and timeout policy, rejects shells/executable paths and requires broker-only network enforcement.",
     "The /v1/session/exec RPC verifies the admission ticket before the active-execution gate; valid tickets still cannot launch a process because active execution remains disabled and all session operations remain unimplemented.",
-    "Runner readiness now requires both the RPC transport key and the separate exec-admission key; CI network proof configures both."
+    "Runner readiness now requires both the RPC transport key and the separate exec-admission key; CI network proof configures both.",
+    "Merged PR #531 after CI, security and supply-chain passed; the runner now verifies authenticated exec tickets before the disabled execution gate.",
+    "Added a broker-only /v1/command-ticket endpoint that verifies the signed execution contract and applies strix-command-admission-v1 before signing a runner exec ticket.",
+    "The broker ticket endpoint performs no target-network I/O and no process execution.",
+    "Runner admission signing material is injected only into the trusted broker and isolated runner; scanner callers receive signed tickets without the key.",
+    "Broker readiness now requires both the execution-contract verification key and runner ticket signing key, while read-only egress remains separately gated."
   ],
-  "current_branch": "codex/strix-runner-exec-admission-v1",
-  "current_priority": "Validate and merge the runner exec-ticket boundary, then implement a non-executing remote client/session lifecycle compatible with pinned Strix v1.6.2.",
+  "current_branch": "codex/strix-broker-ticket-issuer-v1",
+  "current_priority": "Validate and merge the trusted broker ticket issuer, then implement a non-executing remote client/session lifecycle compatible with pinned Strix v1.6.2.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
-    "The trusted producer path that converts a verified strix-command-admission-v1 descriptor into a runner exec ticket is not wired into a live session yet.",
+    "The trusted broker can issue runner exec tickets, but no live Strix session/client consumes them yet.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
     "A pinned Python runtime/bootstrap using the verified Strix v1.6.2 package is required before the custom backend can be selected by a real run.",
     "Strix v1.6.2's Python entrypoint still performs Docker CLI/image preflight before scan execution even when a custom runtime backend is selected.",
@@ -85,9 +90,9 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge strix-runner-exec-admission-v1 through CI, security and supply-chain.",
-    "Add a trusted producer adapter that turns only a verified StrixAuthorizedCommand into a runner exec ticket without exposing the signing key to the runner caller.",
+    "Validate and merge strix-broker-ticket-issuer-v1 through CI, security and supply-chain.",
     "Implement a non-executing remote client/session lifecycle compatible with the pinned Strix BaseSandboxSession interface.",
+    "Bind the future session exec method to broker-issued tickets and runner transport authentication without enabling subprocess execution.",
     "Keep target traffic broker-routed and fail closed on any direct runner egress attempt.",
     "Add manifest-entry upload and cleanup semantics before enabling session creation.",
     "Enable active Strix entrypoint execution only after session create/exec/resolve/delete and broker scope enforcement pass end-to-end tests."
