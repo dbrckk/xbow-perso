@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-05",
-  "task": "Prepare the pinned Strix Python runtime for controlled offensive execution",
+  "task": "Define signed Strix command admission for controlled offensive sessions",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -50,10 +50,11 @@
     "Added strix-python-bootstrap-runtime-v1, which registers xbow-remote-v1 before importing strix.interface.main and rejects a pre-imported main module.",
     "The prepared bootstrap revalidates backend registry stability, attests the exact preflight surface, builds the bounded patch plan and applies the compatibility shim only for the context lifetime.",
     "The bootstrap keeps validate_environment intact and never invokes the Strix entrypoint; active execution remains disabled.",
-    "CI now exercises the bootstrap contract against the real pinned Strix v1.6.2 backend registry API while using synthetic interface modules so no scan is launched."
+    "CI now exercises the bootstrap contract against the real pinned Strix v1.6.2 backend registry API while using synthetic interface modules so no scan is launched.",
+    "Merged PR #526 after CI, security and supply-chain passed; strix-python-bootstrap-runtime-v1 is now on main."
   ],
-  "current_branch": "codex/strix-python-bootstrap-runtime",
-  "current_priority": "Validate and merge the prepared Python bootstrap runtime, then design the command-admission boundary needed before allowing any Strix entrypoint execution.",
+  "current_branch": "main",
+  "current_priority": "Bind every future Strix session command to the signed execution contract, session identity, bounded argv and timeout before implementing runner execution.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
@@ -70,11 +71,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge strix-python-bootstrap-runtime-v1 through CI, security and supply-chain.",
-    "Define a strict command-admission contract for Strix runtime sessions bound to the signed execution contract, allowed target scope and operation budget.",
-    "Implement only the minimum runner RPC session primitives required by xbow-remote-v1 after command admission is enforceable.",
-    "Route all target network access through the brokered egress boundary rather than direct runner egress.",
-    "Enable the Strix entrypoint only after bootstrap, command admission, network admission and cleanup invariants pass end-to-end tests.",
-    "Keep independent validation required before confirmed findings."
+    "Define a signed-contract-bound command admission descriptor for Strix session exec requests.",
+    "Reject untrusted executable paths, malformed argv, excessive timeouts and contract safety-invariant drift before RPC dispatch.",
+    "Define a minimal bootstrap executable profile and a separately reviewable offensive web-tool profile.",
+    "Wire command admission into runner RPC only after the contract is validated independently.",
+    "Keep direct runner egress blocked and route target network activity through the scoped broker boundary.",
+    "Implement session create/exec/delete only after manifest and lifecycle semantics match the pinned Strix backend API."
   ]
 }
