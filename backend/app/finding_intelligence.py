@@ -12,6 +12,7 @@ from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .observation_graph import load_observation_graph
 from .public_duplicate_intelligence import rank_public_duplicate_risk
+from .vulnerability_novelty import assess_vulnerability_novelty
 
 router = APIRouter()
 
@@ -71,6 +72,10 @@ def build_finding_intelligence(
             list(public_reports or []),
             program_handle=program_handle,
         )
+        novelty = assess_vulnerability_novelty(
+            finding,
+            differential_item,
+        )
         finding_rows.append(
             {
                 "finding_id": finding_id,
@@ -80,6 +85,7 @@ def build_finding_intelligence(
                 "triage": triage_item.to_dict() if triage_item else None,
                 "differential": differential_item.to_dict(),
                 "public_duplicate_similarity": duplicate_similarity,
+                "vulnerability_novelty": novelty.to_dict(),
                 "cluster_id": cluster_id,
                 "cluster_status": (
                     consensus_by_cluster[cluster_id].status
@@ -143,6 +149,20 @@ def build_finding_intelligence(
             "high_public_similarity_findings": sum(
                 row["public_duplicate_similarity"]["similarity_band"]
                 == "high_public_similarity"
+                for row in finding_rows
+            ),
+            "known_cve_findings": sum(
+                row["vulnerability_novelty"]["novelty_band"] == "known_cve"
+                for row in finding_rows
+            ),
+            "candidate_novel_findings": sum(
+                row["vulnerability_novelty"]["novelty_band"]
+                == "candidate_novel"
+                for row in finding_rows
+            ),
+            "unexplained_behavior_findings": sum(
+                row["vulnerability_novelty"]["novelty_band"]
+                == "unexplained_behavior"
                 for row in finding_rows
             ),
             "saturated_clusters": sum(
