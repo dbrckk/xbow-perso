@@ -32,6 +32,15 @@ def test_scanner_finding_persists_canonical_asset_endpoint_finding_evidence_chai
         evidence=["header mismatch", "response marker"],
         cwe="CWE-284",
         cvss=7.5,
+        cve_ids=["CVE-2026-1207"],
+        cpe=["cpe:2.3:a:vendor:product:*:*:*:*:*:*:*:*"],
+        epss_score=0.42,
+        tags=["cve", "kev"],
+        template_id="CVE-2026-1207",
+        template_verified=True,
+        template_max_requests=1,
+        vendor="vendor",
+        product="product",
         discovered_by="strix",
         status="validation_required",
     )
@@ -52,6 +61,11 @@ def test_scanner_finding_persists_canonical_asset_endpoint_finding_evidence_chai
     assert finding_record["kind"] == "finding"
     assert finding_record["metadata"]["cwe"] == "CWE-284"
     assert finding_record["metadata"]["cvss"] == 7.5
+    assert finding_record["metadata"]["cve_ids"] == ["CVE-2026-1207"]
+    assert finding_record["metadata"]["epss_score"] == 0.42
+    assert finding_record["metadata"]["template_verified"] is True
+    assert finding_record["metadata"]["template_max_requests"] == 1
+    assert finding_record["metadata"]["tags"] == ["cve", "kev"]
 
     evidence = [
         item for item in records
