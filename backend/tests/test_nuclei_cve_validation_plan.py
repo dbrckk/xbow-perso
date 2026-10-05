@@ -54,7 +54,10 @@ def _configure(monkeypatch, tmp_path):
     return root
 
 
-def test_discovery_plan_includes_cve_and_vuln_tags(monkeypatch, tmp_path):
+def test_discovery_plan_uses_adaptive_cve_selection_by_default(
+    monkeypatch,
+    tmp_path,
+):
     root = _configure(monkeypatch, tmp_path)
 
     plan = build_nuclei_plan(
@@ -63,12 +66,41 @@ def test_discovery_plan_includes_cve_and_vuln_tags(monkeypatch, tmp_path):
     )
 
     tags_index = plan.command.index("-tags")
-    assert plan.command[tags_index + 1] == (
-        "tech,misconfig,exposure,cve,vuln"
-    )
+    assert plan.command[tags_index + 1] == "tech,misconfig,exposure"
+    assert "-automatic-scan" in plan.command
     exclude_index = plan.command.index("-exclude-tags")
     excluded = set(plan.command[exclude_index + 1].split(","))
     assert {"dos", "fuzz", "intrusive", "default-login", "bruteforce"} <= excluded
+
+
+def test_broad_cve_mode_explicitly_adds_cve_and_vuln_tags(
+    monkeypatch,
+    tmp_path,
+):
+    root = _configure(monkeypatch, tmp_path)
+    monkeypatch.setenv("XBOW_NUCLEI_CVE_DISCOVERY_MODE", "broad")
+
+    plan = build_nuclei_plan(
+        _campaign(),
+        str(root / "broad"),
+    )
+
+    tags_index = plan.command.index("-tags")
+    assert plan.command[tags_index + 1] == (
+        "tech,misconfig,exposure,cve,vuln"
+    )
+    assert "-automatic-scan" not in plan.command
+
+
+def test_invalid_cve_discovery_mode_fails_closed(monkeypatch, tmp_path):
+    root = _configure(monkeypatch, tmp_path)
+    monkeypatch.setenv("XBOW_NUCLEI_CVE_DISCOVERY_MODE", "anything")
+
+    with pytest.raises(WorkerPolicyError, match="must be off, adaptive or broad"):
+        build_nuclei_plan(
+            _campaign(),
+            str(root / "invalid"),
+        )
 
 
 def test_exact_cve_recheck_uses_verified_template_id(monkeypatch, tmp_path):
@@ -83,6 +115,7 @@ def test_exact_cve_recheck_uses_verified_template_id(monkeypatch, tmp_path):
     assert plan.target == "https://app.example.test/api"
     assert "-tags" not in plan.command
     assert "-id" in plan.command
+    assert "-automatic-scan" not in plan.command
     id_index = plan.command.index("-id")
     assert plan.command[id_index + 1] == "CVE-2026-1207"
     target_index = plan.command.index("-target")
