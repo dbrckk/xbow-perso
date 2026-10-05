@@ -415,3 +415,45 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
     assert result["strix_python_bootstrap_ready"] is False
     assert result["strix_runtime_contract_enforceable"] is False
     assert result["strix_upstream_docker_preflight_required"] is True
+
+
+
+def test_strix_capability_state_consistency_is_reported():
+    result = scanner_runtime_capability()
+
+    assert result["strix_capability_state_consistent"] is True
+    assert "strix_capability_state_inconsistent" not in (
+        result["dispatch_block_reasons"]
+    )
+
+
+def test_strix_capability_consistency_rejects_impossible_states():
+    from app.runtime_capabilities import _strix_capability_state_consistent
+
+    baseline = {
+        "strix_python_preflight_patch_application_enabled": False,
+        "strix_python_preflight_compatibility_applied": False,
+        "strix_python_bootstrap_ready": False,
+        "strix_runtime_contract_enforceable": False,
+        "strix_runner_rpc_execution_implemented": False,
+        "strix_python_preflight_preserves_environment_validation": True,
+    }
+    assert _strix_capability_state_consistent(baseline) is True
+
+    impossible = dict(baseline)
+    impossible["strix_python_preflight_compatibility_applied"] = True
+    assert _strix_capability_state_consistent(impossible) is False
+
+    impossible = dict(baseline)
+    impossible["strix_python_bootstrap_ready"] = True
+    assert _strix_capability_state_consistent(impossible) is False
+
+    impossible = dict(baseline)
+    impossible["strix_runtime_contract_enforceable"] = True
+    assert _strix_capability_state_consistent(impossible) is False
+
+    impossible = dict(baseline)
+    impossible[
+        "strix_python_preflight_preserves_environment_validation"
+    ] = False
+    assert _strix_capability_state_consistent(impossible) is False
