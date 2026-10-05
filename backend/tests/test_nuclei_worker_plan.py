@@ -83,7 +83,7 @@ def test_nuclei_plan_is_http_only_bounded_and_non_destructive(monkeypatch, tmp_p
 
     assert command[command.index("-type") + 1] == "http"
     assert command[command.index("-templates") + 1] == "/opt/nuclei-templates"
-    assert command[command.index("-tags") + 1] == "tech,misconfig,exposure"
+    assert command[command.index("-tags") + 1] == "tech,misconfig,exposure,cve,vuln"
     assert command[command.index("-exclude-tags") + 1] == "dos,fuzz,intrusive,default-login,bruteforce"
     assert command[command.index("-rate-limit") + 1] == "2"
     assert command[command.index("-concurrency") + 1] == "1"
