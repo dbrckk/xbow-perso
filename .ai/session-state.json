@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-05",
-  "task": "Define a pinned Strix-compatible remote client/session interface without enabling remote operations",
+  "task": "Pre-admit and digest pinned Strix manifests without uploading or materializing them",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -75,13 +75,20 @@
     "The prepared session defines async exec(*args, timeout=...), resolve_exposed_port(port), and client.delete(session) while all three live operations fail closed.",
     "The prepared backend validates images, exposed ports, argv bounds, timeout bounds, shell/path rejection and records only hashed argv metadata.",
     "The xbow-remote-v1 backend now returns the prepared client/session pair but performs no manifest materialization, network I/O or process execution.",
-    "Backend self-test now proves the prepared pair is returned and resolve-port, exec and delete all remain blocked."
+    "Backend self-test now proves the prepared pair is returned and resolve-port, exec and delete all remain blocked.",
+    "Merged PR #533 after CI, security and supply-chain passed; xbow-remote-v1 now returns a prepared Strix-compatible client/session pair while resolve-port, exec and delete remain blocked.",
+    "Added strix-manifest-admission-v1 for the pinned Strix v1 workspace manifest shape.",
+    "Manifest admission validates relative POSIX paths, reviewed file/local-dir entry types, inline file limits, literal environment limits and unsupported user/group/path-grant surfaces.",
+    "Manifest plans expose only content/value digests and byte counts; raw inline content, environment values and local host paths are not included.",
+    "LocalDir admission performs no filesystem traversal, resolution, existence checks or reads.",
+    "Prepared remote sessions are now bound to the admitted manifest digest before the client/session pair is returned; upload and materialization remain disabled."
   ],
-  "current_branch": "codex/strix-remote-session-interface-v1",
-  "current_priority": "Validate and merge the prepared remote client/session interface, then define bounded manifest serialization/upload without enabling session creation.",
+  "current_branch": "codex/strix-manifest-admission-v1",
+  "current_priority": "Validate and merge bounded manifest admission, then define a content-addressed upload envelope without enabling runner materialization or session creation.",
   "blockers": [
-    "Prepared remote client/session methods are structurally compatible with pinned Strix but resolve-port, exec and delete deliberately fail closed.",
-    "Manifest entries are not serialized, uploaded or materialized by the remote backend.",
+    "Manifest admission computes metadata and digests only; no manifest content is uploaded or materialized.",
+    "LocalDir contents are deliberately not enumerated or copied yet.",
+    "Prepared remote client/session resolve-port, exec and delete operations deliberately fail closed.",
     "Runner RPC create/exec/resolve/delete operations remain deliberately unimplemented.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
     "A pinned Python runtime/bootstrap using the verified Strix v1.6.2 package is required before the custom backend can be selected by a real run.",
@@ -97,11 +104,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge strix-remote-session-interface-v1 through CI, security and supply-chain.",
-    "Define bounded manifest serialization and content digests for remote upload without exposing host paths or enabling session creation.",
-    "Add a broker/runner manifest admission envelope with strict byte/file/path limits and no executable materialization.",
+    "Validate and merge strix-manifest-admission-v1 through CI, security and supply-chain.",
+    "Define a content-addressed manifest upload envelope with strict aggregate/file/path limits and explicit content digests, still without runner materialization.",
+    "Add manifest upload admission at the broker/runner boundary without enabling session creation.",
+    "Bind future session creation to the admitted manifest digest and signed execution contract.",
     "Bind the future session exec method to broker-issued tickets and runner transport authentication without enabling subprocess execution.",
-    "Keep target traffic broker-routed and fail closed on any direct runner egress attempt.",
-    "Enable active Strix entrypoint execution only after manifest upload plus session create/exec/resolve/delete and broker scope enforcement pass end-to-end tests."
+    "Keep target traffic broker-routed and fail closed on any direct runner egress attempt."
   ]
 }
