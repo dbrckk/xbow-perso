@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-05",
-  "task": "Implement a bounded attested Strix Python preflight compatibility shim",
+  "task": "Build the pinned Strix Python bootstrap around the bounded preflight compatibility shim",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -45,10 +45,11 @@
     "The bootstrap plan identifies only check_docker_installed and pull_docker_image as patch candidates while preserving validate_environment.",
     "Added strix-python-preflight-compatibility-v1 as a temporary context-managed patch that only replaces the two attested Docker preflight aliases in strix.interface.main.",
     "The compatibility shim verifies exact patch-plan fields and direct import identity, preserves validate_environment, guards the upstream environment namespace, and restores all guarded symbols on every exit path.",
-    "Added regression tests for exact patching, tampered plans, import-identity mismatch, exception restoration, validation rebinding and upstream environment mutation."
+    "Added regression tests for exact patching, tampered plans, import-identity mismatch, exception restoration, validation rebinding and upstream environment mutation.",
+    "Merged PR #525 after CI, security and supply-chain passed; the bounded Strix Python preflight compatibility shim is now on main."
   ],
-  "current_branch": "codex/strix-preflight-compatibility-shim",
-  "current_priority": "Validate the bounded compatibility shim in CI, then wire it into a pinned Python bootstrap without enabling the Strix entrypoint or runner RPC session execution.",
+  "current_branch": "main",
+  "current_priority": "Build a reproducible pinned Python bootstrap that imports app.strix_backend_hook, applies the attested preflight compatibility shim, and still stops before the Strix entrypoint or runner RPC session execution.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
@@ -65,9 +66,10 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the bounded preflight compatibility shim through CI, security and supply-chain.",
-    "Build the pinned Python bootstrap process that imports app.strix_backend_hook and applies the compatibility shim to the attested Strix v1.6.2 main module.",
-    "Keep the Strix entrypoint disabled until the bootstrap runtime, command admission and brokered network path are enforced end to end.",
+    "Define the pinned Python bootstrap contract around the verified Strix v1.6.2 wheel, source commit, dependency lock and Python/uv toolchain.",
+    "Load app.strix_backend_hook before importing the Strix entrypoint module and verify xbow-remote-v1 registration in the same runtime process.",
+    "Apply strix-python-preflight-compatibility-v1 only after the exact upstream import identities are re-attested.",
+    "Keep the Strix entrypoint disabled until command admission and the brokered network path are enforced end to end.",
     "Keep runner RPC session operations unimplemented until end-to-end command and network admission controls are defined.",
     "Keep strix_runtime_contract_enforceable false until execution and bypass tests pass."
   ]
