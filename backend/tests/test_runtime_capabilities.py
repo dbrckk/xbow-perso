@@ -439,6 +439,13 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
     assert result["strix_command_admission_enforced"] is False
     assert result["strix_remote_session_schema"] == "strix-remote-session-interface-v1"
     assert result["strix_remote_backend_returns_client_session"] is True
+    assert result["strix_manifest_admission_schema"] == "strix-manifest-admission-v1"
+    assert result["strix_manifest_admission_enforced"] is True
+    assert result["strix_manifest_digest_bound_to_session"] is True
+    assert result["strix_manifest_host_paths_included"] is False
+    assert result["strix_manifest_raw_content_included"] is False
+    assert result["strix_manifest_filesystem_io_performed"] is False
+    assert result["strix_manifest_upload_enabled"] is False
     assert result["strix_remote_manifest_materialized"] is False
     assert result["strix_remote_resolve_port_enabled"] is False
     assert result["strix_remote_exec_enabled"] is False
