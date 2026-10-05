@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-05",
-  "task": "Issue Strix runner exec tickets only from the trusted broker",
+  "task": "Define a pinned Strix-compatible remote client/session interface without enabling remote operations",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -69,13 +69,20 @@
     "Added a broker-only /v1/command-ticket endpoint that verifies the signed execution contract and applies strix-command-admission-v1 before signing a runner exec ticket.",
     "The broker ticket endpoint performs no target-network I/O and no process execution.",
     "Runner admission signing material is injected only into the trusted broker and isolated runner; scanner callers receive signed tickets without the key.",
-    "Broker readiness now requires both the execution-contract verification key and runner ticket signing key, while read-only egress remains separately gated."
+    "Broker readiness now requires both the execution-contract verification key and runner ticket signing key, while read-only egress remains separately gated.",
+    "Merged PR #532 after CI, security and supply-chain passed; the trusted broker is now the only runner exec-ticket issuer.",
+    "Added strix-remote-session-interface-v1 with a prepared non-executing client/session pair matching pinned Strix v1.6.2 lifecycle calls.",
+    "The prepared session defines async exec(*args, timeout=...), resolve_exposed_port(port), and client.delete(session) while all three live operations fail closed.",
+    "The prepared backend validates images, exposed ports, argv bounds, timeout bounds, shell/path rejection and records only hashed argv metadata.",
+    "The xbow-remote-v1 backend now returns the prepared client/session pair but performs no manifest materialization, network I/O or process execution.",
+    "Backend self-test now proves the prepared pair is returned and resolve-port, exec and delete all remain blocked."
   ],
-  "current_branch": "codex/strix-broker-ticket-issuer-v1",
-  "current_priority": "Validate and merge the trusted broker ticket issuer, then implement a non-executing remote client/session lifecycle compatible with pinned Strix v1.6.2.",
+  "current_branch": "codex/strix-remote-session-interface-v1",
+  "current_priority": "Validate and merge the prepared remote client/session interface, then define bounded manifest serialization/upload without enabling session creation.",
   "blockers": [
-    "Runner RPC session operations are deliberately unimplemented and always fail closed.",
-    "The trusted broker can issue runner exec tickets, but no live Strix session/client consumes them yet.",
+    "Prepared remote client/session methods are structurally compatible with pinned Strix but resolve-port, exec and delete deliberately fail closed.",
+    "Manifest entries are not serialized, uploaded or materialized by the remote backend.",
+    "Runner RPC create/exec/resolve/delete operations remain deliberately unimplemented.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
     "A pinned Python runtime/bootstrap using the verified Strix v1.6.2 package is required before the custom backend can be selected by a real run.",
     "Strix v1.6.2's Python entrypoint still performs Docker CLI/image preflight before scan execution even when a custom runtime backend is selected.",
@@ -90,11 +97,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge strix-broker-ticket-issuer-v1 through CI, security and supply-chain.",
-    "Implement a non-executing remote client/session lifecycle compatible with the pinned Strix BaseSandboxSession interface.",
+    "Validate and merge strix-remote-session-interface-v1 through CI, security and supply-chain.",
+    "Define bounded manifest serialization and content digests for remote upload without exposing host paths or enabling session creation.",
+    "Add a broker/runner manifest admission envelope with strict byte/file/path limits and no executable materialization.",
     "Bind the future session exec method to broker-issued tickets and runner transport authentication without enabling subprocess execution.",
     "Keep target traffic broker-routed and fail closed on any direct runner egress attempt.",
-    "Add manifest-entry upload and cleanup semantics before enabling session creation.",
-    "Enable active Strix entrypoint execution only after session create/exec/resolve/delete and broker scope enforcement pass end-to-end tests."
+    "Enable active Strix entrypoint execution only after manifest upload plus session create/exec/resolve/delete and broker scope enforcement pass end-to-end tests."
   ]
 }
