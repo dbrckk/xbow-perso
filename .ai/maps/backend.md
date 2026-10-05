@@ -198,6 +198,7 @@ app/
   strix_python_bootstrap_plan.py
   strix_python_compat_probe.py
   strix_python_lock_probe.py
+  strix_python_preflight_surface.py
   strix_python_toolchain_probe.py
   strix_run_status.py
   strix_runner_attestation.py
@@ -434,6 +435,7 @@ tests/
   test_strix_python_bootstrap_plan.py
   test_strix_python_compat_probe.py
   test_strix_python_lock_probe.py
+  test_strix_python_preflight_surface.py
   test_strix_python_toolchain_probe.py
   test_strix_run_status.py
   test_strix_runner_attestation.py
@@ -11420,6 +11422,21 @@ parser = argparse.ArgumentParser()
 args = parser.parse_args()
 ```
 
+## File: app/strix_python_preflight_surface.py
+```python
+STRIX_PYTHON_PREFLIGHT_SURFACE_SCHEMA = (
+_PATCH_SYMBOLS = [
+_PRESERVED_SYMBOL = "validate_environment"
+_PLAN_KEYS = {
+⋮----
+class StrixPythonPreflightSurfaceError(RuntimeError)
+⋮----
+def _verify_plan(plan: dict[str, Any]) -> None
+⋮----
+main_value = main_namespace.get(symbol)
+environment_value = environment_namespace.get(symbol)
+```
+
 ## File: app/strix_python_toolchain_probe.py
 ```python
 STRIX_PYTHON_TOOLCHAIN_SCHEMA = "strix-python-runtime-lock-v1"
@@ -21334,6 +21351,40 @@ def test_dependency_lock_probe_rejects_blob_mismatch(monkeypatch, tmp_path)
 def test_ci_attests_pinned_strix_dependency_lock()
 ⋮----
 workflow = Path(".github/workflows/ci.yml").read_text()
+```
+
+## File: tests/test_strix_python_preflight_surface.py
+```python
+def _plan() -> dict
+⋮----
+def test_preflight_surface_verifies_direct_import_identity()
+⋮----
+def check_docker_installed()
+⋮----
+def pull_docker_image()
+⋮----
+def validate_environment()
+⋮----
+environment = {
+main = dict(environment)
+⋮----
+result = inspect_preflight_surface(
+⋮----
+def test_preflight_surface_rejects_validation_rebinding()
+⋮----
+def rebound_validation()
+⋮----
+main = {
+⋮----
+def test_preflight_surface_rejects_patch_symbol_rebinding()
+⋮----
+def alternate_check()
+⋮----
+def test_preflight_surface_rejects_unsafe_plan(mutate)
+⋮----
+plan = _plan()
+⋮----
+def test_preflight_surface_rejects_unknown_plan_fields()
 ```
 
 ## File: tests/test_strix_python_toolchain_probe.py

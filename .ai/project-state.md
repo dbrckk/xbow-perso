@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T07:05:00Z
+Generated: 2026-10-05T07:18:53Z
 
 ### Git
 - Branch: `main`
-- Head: `9defa92bfa04`
-- Commit date: 2026-10-05T09:04:49+02:00
-- Commit: feat(strix): compose inert Python bootstrap plan
-- Tracked files: 622
+- Head: `57b8183d9530`
+- Commit date: 2026-10-05T09:18:41+02:00
+- Commit: feat(strix): inspect Python preflight patch surface
+- Tracked files: 624
 
 ### Recently changed files
+- `backend/app/strix_python_preflight_surface.py`
+- `backend/tests/test_strix_python_preflight_surface.py`
 - `README.md`
 - `backend/app/runtime_capabilities.py`
 - `backend/app/strix_python_bootstrap_plan.py`

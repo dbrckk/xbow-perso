@@ -2858,9 +2858,10 @@
       "dependents": [
         "backend/app/strix_python_bootstrap_plan.py",
         "backend/app/strix_python_compat_probe.py",
+        "backend/app/strix_python_preflight_surface.py",
         "backend/tests/test_strix_backend_hook.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 1
     },
     "backend/app/strix_broker.py": {
@@ -2973,9 +2974,10 @@
         "backend/tests/test_queue_recovery.py"
       ],
       "dependents": [
+        "backend/app/strix_python_preflight_surface.py",
         "backend/tests/test_strix_python_bootstrap_plan.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 5
     },
     "backend/app/strix_python_compat_probe.py": {
@@ -2994,18 +2996,34 @@
       "dependencies": [],
       "dependents": [
         "backend/app/strix_python_bootstrap_plan.py",
+        "backend/app/strix_python_preflight_surface.py",
         "backend/tests/test_strix_python_lock_probe.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 0
+    },
+    "backend/app/strix_python_preflight_surface.py": {
+      "dependencies": [
+        "backend/app/strix_backend_hook.py",
+        "backend/app/strix_python_bootstrap_plan.py",
+        "backend/app/strix_python_lock_probe.py",
+        "backend/app/strix_python_toolchain_probe.py",
+        "backend/tests/test_queue_recovery.py"
+      ],
+      "dependents": [
+        "backend/tests/test_strix_python_preflight_surface.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 5
     },
     "backend/app/strix_python_toolchain_probe.py": {
       "dependencies": [],
       "dependents": [
         "backend/app/strix_python_bootstrap_plan.py",
+        "backend/app/strix_python_preflight_surface.py",
         "backend/tests/test_strix_python_toolchain_probe.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 0
     },
     "backend/app/strix_run_status.py": {
@@ -5192,6 +5210,7 @@
         "backend/app/strix_backend_hook.py",
         "backend/app/strix_python_bootstrap_plan.py",
         "backend/app/strix_python_compat_probe.py",
+        "backend/app/strix_python_preflight_surface.py",
         "backend/tests/test_api_rate_limit.py",
         "backend/tests/test_deployment_config.py",
         "backend/tests/test_deployment_preflight.py",
@@ -5205,11 +5224,12 @@
         "backend/tests/test_strix_broker_runtime.py",
         "backend/tests/test_strix_python_bootstrap_plan.py",
         "backend/tests/test_strix_python_compat_probe.py",
+        "backend/tests/test_strix_python_preflight_surface.py",
         "backend/tests/test_strix_python_toolchain_probe.py",
         "backend/tests/test_strix_runner_attestation.py",
         "backend/tests/test_strix_runner_rpc.py"
       ],
-      "in_degree": 25,
+      "in_degree": 27,
       "out_degree": 3
     },
     "backend/tests/test_readiness.py": {
@@ -5691,6 +5711,16 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 2
+    },
+    "backend/tests/test_strix_python_preflight_surface.py": {
+      "dependencies": [
+        "backend/app/strix_python_preflight_surface.py",
+        "backend/tests/test_queue_recovery.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
     },
     "backend/tests/test_strix_python_toolchain_probe.py": {
       "dependencies": [
@@ -6174,6 +6204,7 @@
         "backend/tests/test_strix_python_bootstrap_plan.py",
         "backend/tests/test_strix_python_compat_probe.py",
         "backend/tests/test_strix_python_lock_probe.py",
+        "backend/tests/test_strix_python_preflight_surface.py",
         "backend/tests/test_strix_python_toolchain_probe.py",
         "backend/tests/test_strix_run_status.py",
         "backend/tests/test_strix_runner_attestation.py",
@@ -6201,7 +6232,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 231,
+      "in_degree": 232,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

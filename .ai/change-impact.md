@@ -1,17 +1,13 @@
 # Change impact
 
-Base: a926d9a24b61875b19ccb243694bb7cd1c704cb5
-Head: 9defa92bfa04e1f70f2f24eac65458a78ea39cf1
+Base: aa88000b9484f6560ee68a8566e4d53e6296401a
+Head: 57b8183d953035305c67b10be886cc8454898e16
 
 ## Changed files
-- M README.md
-- M backend/app/runtime_capabilities.py
-- A backend/app/strix_python_bootstrap_plan.py
-- M backend/tests/test_runtime_capabilities.py
-- A backend/tests/test_strix_python_bootstrap_plan.py
+- A backend/app/strix_python_preflight_surface.py
+- A backend/tests/test_strix_python_preflight_surface.py
 
 ## Affected areas
-- (root)
 - backend
 
 ## Related test candidates
