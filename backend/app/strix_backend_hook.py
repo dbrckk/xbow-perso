@@ -8,6 +8,7 @@ from importlib import metadata
 from types import SimpleNamespace
 from typing import Any
 
+from .strix_manifest_admission import STRIX_MANIFEST_ADMISSION_SCHEMA
 from .strix_remote_session import (
     STRIX_REMOTE_SESSION_SCHEMA,
     StrixRemoteSessionBlocked,
@@ -134,6 +135,10 @@ async def _assert_backend_fails_closed() -> dict[str, Any]:
 
     if (
         session.descriptor.schema != STRIX_REMOTE_SESSION_SCHEMA
+        or session.descriptor.manifest_admission_schema
+        != STRIX_MANIFEST_ADMISSION_SCHEMA
+        or not session.descriptor.manifest_admitted
+        or len(session.descriptor.manifest_digest) != 64
         or session.descriptor.manifest_materialized
         or session.descriptor.network_io_performed
         or session.descriptor.process_execution_performed
@@ -169,6 +174,9 @@ async def _assert_backend_fails_closed() -> dict[str, Any]:
     return {
         "prepared_session_schema": STRIX_REMOTE_SESSION_SCHEMA,
         "prepared_backend_returns_client_session": True,
+        "manifest_admission_schema": STRIX_MANIFEST_ADMISSION_SCHEMA,
+        "manifest_admission_enforced": True,
+        "manifest_digest_bound_to_session": True,
         "blocked_operations": blocked,
         "manifest_materialized": False,
         "network_io_performed": False,
