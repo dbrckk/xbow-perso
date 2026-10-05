@@ -10968,6 +10968,39 @@ mode: Literal["admission_only"] = "admission_only"
 egress_enabled: Literal[False] = False
 network_io_performed: Literal[False] = False
 ⋮----
+class BrokerCommandTicketRequest(BaseModel)
+⋮----
+session_id: str = Field(
+request_id: str = Field(
+profile: Literal["bootstrap-v1", "web-active-v1"]
+argv: list[str] = Field(min_length=1, max_length=64)
+timeout_seconds: float = Field(ge=0.1, le=300)
+⋮----
+class BrokerRunnerExecTicketDocument(BaseModel)
+⋮----
+schema: Literal["strix-runner-exec-ticket-v1"]
+command_schema: Literal["strix-command-admission-v1"]
+⋮----
+session_id: str = Field(min_length=1, max_length=128)
+request_id: str = Field(min_length=1, max_length=128)
+⋮----
+executable: str = Field(min_length=1, max_length=64)
+argv_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+argc: int = Field(ge=1, le=64)
+argv_bytes: int = Field(ge=1, le=16 * 1024)
+⋮----
+shell_interpreter_allowed: Literal[False]
+⋮----
+network_scope_enforcement: Literal["broker_required"]
+active_execution_enabled: Literal[False]
+⋮----
+class BrokerCommandTicketResponse(BaseModel)
+⋮----
+ticket: BrokerRunnerExecTicketDocument
+mode: Literal["ticket_issuer_only"] = "ticket_issuer_only"
+⋮----
+process_execution_performed: Literal[False] = False
+⋮----
 class BrokerHttpRequest(BaseModel)
 ⋮----
 method: Literal["GET", "HEAD"] = "GET"
@@ -11002,6 +11035,10 @@ def _broker_verification_secret() -> str
 ⋮----
 secret = os.getenv("XBOW_STRIX_BROKER_HMAC_KEY", "")
 ⋮----
+def _runner_admission_signing_secret() -> str
+⋮----
+secret = os.getenv("XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY", "")
+⋮----
 def _read_only_egress_enabled() -> bool
 ⋮----
 raw = os.getenv(
@@ -11022,6 +11059,13 @@ def readyz() -> dict
 def admit(request: BrokerAdmissionRequest) -> BrokerAdmissionResponse
 ⋮----
 authorized = _authorize(request)
+⋮----
+verification_secret = _broker_verification_secret()
+⋮----
+authorized = authorize_strix_command(
+⋮----
+signing_secret = _runner_admission_signing_secret()
+ticket = build_strix_runner_exec_ticket(
 ⋮----
 @app.post("/v1/request", response_model=BrokerHttpResponse)
 def request_http(request: BrokerHttpRequest) -> BrokerHttpResponse
@@ -21430,15 +21474,21 @@ result = subprocess.run(
 ```python
 def _campaign()
 ⋮----
+ADMISSION_SECRET = "broker-runner-admission-secret-at-least-32-bytes"
+⋮----
 def _signed_contract(monkeypatch)
 ⋮----
 contract = build_strix_execution_contract(_campaign(), job_id="job-1")
+⋮----
+def _configure_broker_keys(monkeypatch)
 ⋮----
 def test_broker_health_is_explicitly_admission_only(monkeypatch)
 ⋮----
 result = healthz()
 ⋮----
 def test_broker_readiness_requires_verification_key(monkeypatch)
+⋮----
+def test_broker_readiness_requires_runner_admission_key(monkeypatch)
 ⋮----
 def test_broker_admits_signed_in_scope_request_without_egress(monkeypatch)
 ⋮----
@@ -21457,6 +21507,20 @@ def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch)
 payload = contract.model_dump()
 ⋮----
 def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch)
+⋮----
+def test_broker_issues_runner_ticket_only_after_command_admission(monkeypatch)
+⋮----
+argv = [
+⋮----
+result = issue_command_ticket(
+⋮----
+verified = verify_strix_runner_exec_ticket(
+⋮----
+def test_broker_command_ticket_rejects_wrong_contract_key(monkeypatch)
+⋮----
+def test_broker_command_ticket_rejects_unreviewed_command(monkeypatch, profile, argv)
+⋮----
+def test_broker_command_ticket_requires_signing_key(monkeypatch)
 ⋮----
 def test_broker_request_path_is_disabled_by_default(monkeypatch)
 ⋮----

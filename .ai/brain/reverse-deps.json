@@ -2876,13 +2876,15 @@
       "dependencies": [
         "backend/app/strix_broker_client.py",
         "backend/app/strix_broker_models.py",
-        "backend/app/strix_execution_contract.py"
+        "backend/app/strix_command_admission.py",
+        "backend/app/strix_execution_contract.py",
+        "backend/app/strix_runner_exec_ticket.py"
       ],
       "dependents": [
         "backend/tests/test_strix_broker.py"
       ],
       "in_degree": 1,
-      "out_degree": 3
+      "out_degree": 5
     },
     "backend/app/strix_broker_client.py": {
       "dependencies": [
@@ -2919,10 +2921,11 @@
         "backend/app/strix_execution_contract.py"
       ],
       "dependents": [
+        "backend/app/strix_broker.py",
         "backend/tests/test_strix_command_admission.py",
         "backend/tests/test_strix_runner_exec_ticket.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 1
     },
     "backend/app/strix_egress.py": {
@@ -3108,11 +3111,13 @@
       "dependencies": [],
       "dependents": [
         "backend/app/runtime_capabilities.py",
+        "backend/app/strix_broker.py",
         "backend/app/strix_runner_rpc.py",
+        "backend/tests/test_strix_broker.py",
         "backend/tests/test_strix_runner_exec_ticket.py",
         "backend/tests/test_strix_runner_rpc.py"
       ],
-      "in_degree": 4,
+      "in_degree": 6,
       "out_degree": 0
     },
     "backend/app/strix_runner_rpc.py": {
@@ -5705,11 +5710,12 @@
         "backend/app/strix_broker_client.py",
         "backend/app/strix_broker_models.py",
         "backend/app/strix_execution_contract.py",
+        "backend/app/strix_runner_exec_ticket.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 6
+      "out_degree": 7
     },
     "backend/tests/test_strix_broker_client.py": {
       "dependencies": [

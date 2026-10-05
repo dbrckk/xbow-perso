@@ -2,22 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "fix: bound OpenAPI operation identifiers (#430)",
-      "terms": [
-        "430",
-        "bound",
-        "identifiers",
-        "openapi",
-        "operation"
-      ],
-      "tests": [],
-      "useful": [
-        "backend/app/openapi_testgen.py",
-        "backend/tests/test_openapi_testgen.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "fix: bound OpenAPI parameter names (#431)",
       "terms": [
         "431",
@@ -1263,6 +1247,30 @@
         "backend/tests/test_runtime_capabilities.py",
         "backend/tests/test_strix_runner_exec_ticket.py",
         "backend/tests/test_strix_runner_rpc.py"
+      ]
+    },
+    {
+      "rejected": [],
+      "task": "Issue Strix runner exec tickets only from the trusted broker",
+      "terms": [
+        "broker",
+        "exec",
+        "from",
+        "issue",
+        "only",
+        "runner",
+        "strix",
+        "tickets",
+        "trusted"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/runtime_capabilities.py",
+        "backend/app/strix_broker.py",
+        "backend/app/strix_broker_models.py",
+        "backend/tests/test_runtime_capabilities.py",
+        "backend/tests/test_strix_broker.py",
+        "backend/tests/test_strix_broker_runtime.py"
       ]
     }
   ],
@@ -2918,6 +2926,14 @@
       "backend/app/campaign_control.py": 4,
       "backend/tests/test_campaign_circuit_breaker.py": 4
     },
+    "broker": {
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/strix_broker.py": 4,
+      "backend/app/strix_broker_models.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_broker.py": 4,
+      "backend/tests/test_strix_broker_runtime.py": 4
+    },
     "browser": {
       "backend/app/browser.py": 4,
       "backend/app/hackerone_intelligence.py": 4,
@@ -3749,10 +3765,14 @@
       "frontend/simple.js": 4
     },
     "exec": {
-      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/runtime_capabilities.py": 8,
+      "backend/app/strix_broker.py": 4,
+      "backend/app/strix_broker_models.py": 4,
       "backend/app/strix_runner_exec_ticket.py": 4,
       "backend/app/strix_runner_rpc.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 8,
+      "backend/tests/test_strix_broker.py": 4,
+      "backend/tests/test_strix_broker_runtime.py": 4,
       "backend/tests/test_strix_runner_exec_ticket.py": 4,
       "backend/tests/test_strix_runner_rpc.py": 4
     },
@@ -4088,8 +4108,11 @@
       "backend/app/production_migration.py": 4,
       "backend/app/recon_priority.py": 4,
       "backend/app/recon_swarm.py": 4,
+      "backend/app/runtime_capabilities.py": 4,
       "backend/app/storage_backend.py": 4,
       "backend/app/storage_core.py": 4,
+      "backend/app/strix_broker.py": 4,
+      "backend/app/strix_broker_models.py": 4,
       "backend/app/vault_migration.py": 4,
       "backend/app/worker_service.py": 4,
       "backend/tests/test_auth.py": 4,
@@ -4110,7 +4133,10 @@
       "backend/tests/test_mobile_production_update_script.py": 8,
       "backend/tests/test_planner_intelligence.py": 4,
       "backend/tests/test_recon_priority.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
       "backend/tests/test_simple_selection_cache_only.py": 4,
+      "backend/tests/test_strix_broker.py": 4,
+      "backend/tests/test_strix_broker_runtime.py": 4,
       "frontend/app.js": 8,
       "frontend/hackerone.js": 32,
       "frontend/simple.js": 8,
@@ -4532,6 +4558,14 @@
       "backend/tests/test_strix_broker.py": 4,
       "backend/tests/test_strix_broker_runtime.py": 4,
       "backend/tests/test_strix_execution_contract.py": 8
+    },
+    "issue": {
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/strix_broker.py": 4,
+      "backend/app/strix_broker_models.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_broker.py": 4,
+      "backend/tests/test_strix_broker_runtime.py": 4
     },
     "journal": {
       "backend/app/github_learning_sync.py": 4,
@@ -5023,8 +5057,14 @@
       "frontend/sw.js": 4
     },
     "only": {
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/strix_broker.py": 4,
+      "backend/app/strix_broker_models.py": 4,
       "backend/tests/test_frontend_auth_proxy.py": 4,
       "backend/tests/test_frontend_policy_launcher.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_broker.py": 4,
+      "backend/tests/test_strix_broker_runtime.py": 4,
       "frontend/simple.js": 4,
       "frontend/sw.js": 4
     },
@@ -6033,11 +6073,11 @@
     },
     "runner": {
       "backend/app/main.py": 4,
-      "backend/app/runtime_capabilities.py": 16,
+      "backend/app/runtime_capabilities.py": 20,
       "backend/app/scope_policy.py": 4,
-      "backend/app/strix_broker.py": 8,
+      "backend/app/strix_broker.py": 12,
       "backend/app/strix_broker_client.py": 8,
-      "backend/app/strix_broker_models.py": 4,
+      "backend/app/strix_broker_models.py": 8,
       "backend/app/strix_egress.py": 8,
       "backend/app/strix_egress_transport.py": 8,
       "backend/app/strix_execution_contract.py": 4,
@@ -6047,10 +6087,10 @@
       "backend/app/strix_runner_attestation.py": 8,
       "backend/app/strix_runner_exec_ticket.py": 4,
       "backend/app/strix_runner_rpc.py": 24,
-      "backend/tests/test_runtime_capabilities.py": 20,
-      "backend/tests/test_strix_broker.py": 8,
+      "backend/tests/test_runtime_capabilities.py": 24,
+      "backend/tests/test_strix_broker.py": 12,
       "backend/tests/test_strix_broker_client.py": 8,
-      "backend/tests/test_strix_broker_runtime.py": 8,
+      "backend/tests/test_strix_broker_runtime.py": 12,
       "backend/tests/test_strix_egress.py": 8,
       "backend/tests/test_strix_egress_transport.py": 8,
       "backend/tests/test_strix_python_compat_probe.py": 12,
@@ -6515,9 +6555,9 @@
       "backend/app/scanner_worker.py": 12,
       "backend/app/scope_policy.py": 4,
       "backend/app/strix_backend_hook.py": 4,
-      "backend/app/strix_broker.py": 12,
+      "backend/app/strix_broker.py": 16,
       "backend/app/strix_broker_client.py": 8,
-      "backend/app/strix_broker_models.py": 4,
+      "backend/app/strix_broker_models.py": 8,
       "backend/app/strix_command_admission.py": 4,
       "backend/app/strix_egress.py": 8,
       "backend/app/strix_egress_transport.py": 8,
@@ -6541,9 +6581,9 @@
       "backend/tests/test_scanner_sandbox.py": 4,
       "backend/tests/test_scanner_worker.py": 8,
       "backend/tests/test_strix_backend_hook.py": 4,
-      "backend/tests/test_strix_broker.py": 12,
+      "backend/tests/test_strix_broker.py": 16,
       "backend/tests/test_strix_broker_client.py": 8,
-      "backend/tests/test_strix_broker_runtime.py": 12,
+      "backend/tests/test_strix_broker_runtime.py": 16,
       "backend/tests/test_strix_command_admission.py": 4,
       "backend/tests/test_strix_egress.py": 8,
       "backend/tests/test_strix_egress_transport.py": 8,
@@ -6694,10 +6734,14 @@
       "backend/tests/test_mobile_production_update_script.py": 4
     },
     "tickets": {
-      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/runtime_capabilities.py": 8,
+      "backend/app/strix_broker.py": 4,
+      "backend/app/strix_broker_models.py": 4,
       "backend/app/strix_runner_exec_ticket.py": 4,
       "backend/app/strix_runner_rpc.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 8,
+      "backend/tests/test_strix_broker.py": 4,
+      "backend/tests/test_strix_broker_runtime.py": 4,
       "backend/tests/test_strix_runner_exec_ticket.py": 4,
       "backend/tests/test_strix_runner_rpc.py": 4
     },
@@ -6738,6 +6782,14 @@
     "treat": {
       "backend/app/worker_service.py": 4,
       "backend/tests/test_worker_observations.py": 4
+    },
+    "trusted": {
+      "backend/app/runtime_capabilities.py": 4,
+      "backend/app/strix_broker.py": 4,
+      "backend/app/strix_broker_models.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_broker.py": 4,
+      "backend/tests/test_strix_broker_runtime.py": 4
     },
     "turn": {
       "backend/app/github_learning_sync.py": 4,

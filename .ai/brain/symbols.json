@@ -7747,35 +7747,35 @@
       "language": "python",
       "kind": "function",
       "name": "safe_scanner_runtime_capability",
-      "line": 236
+      "line": 240
     },
     {
       "file": "backend/app/runtime_capabilities.py",
       "language": "python",
       "kind": "function",
       "name": "browser_runtime_capability",
-      "line": 303
+      "line": 311
     },
     {
       "file": "backend/app/runtime_capabilities.py",
       "language": "python",
       "kind": "function",
       "name": "safe_browser_runtime_capability",
-      "line": 327
+      "line": 335
     },
     {
       "file": "backend/app/runtime_capabilities.py",
       "language": "python",
       "kind": "function",
       "name": "recon_runtime_capability",
-      "line": 342
+      "line": 350
     },
     {
       "file": "backend/app/runtime_capabilities.py",
       "language": "python",
       "kind": "function",
       "name": "safe_recon_runtime_capability",
-      "line": 380
+      "line": 388
     },
     {
       "file": "backend/app/runtime_gap_analysis.py",
@@ -8853,49 +8853,63 @@
       "language": "python",
       "kind": "function",
       "name": "_broker_verification_secret",
-      "line": 35
+      "line": 48
+    },
+    {
+      "file": "backend/app/strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_runner_admission_signing_secret",
+      "line": 63
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "_read_only_egress_enabled",
-      "line": 50
+      "line": 80
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "_authorize",
-      "line": 65
+      "line": 95
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "healthz",
-      "line": 87
+      "line": 117
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "readyz",
-      "line": 108
+      "line": 146
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "admit",
-      "line": 133
+      "line": 174
+    },
+    {
+      "file": "backend/app/strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "issue_command_ticket",
+      "line": 189
     },
     {
       "file": "backend/app/strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "request_http",
-      "line": 145
+      "line": 226
     },
     {
       "file": "backend/app/strix_broker_client.py",
@@ -9006,22 +9020,43 @@
       "file": "backend/app/strix_broker_models.py",
       "language": "python",
       "kind": "class",
-      "name": "BrokerHttpRequest",
+      "name": "BrokerCommandTicketRequest",
       "line": 74
     },
     {
       "file": "backend/app/strix_broker_models.py",
       "language": "python",
       "kind": "class",
+      "name": "BrokerRunnerExecTicketDocument",
+      "line": 93
+    },
+    {
+      "file": "backend/app/strix_broker_models.py",
+      "language": "python",
+      "kind": "class",
+      "name": "BrokerCommandTicketResponse",
+      "line": 115
+    },
+    {
+      "file": "backend/app/strix_broker_models.py",
+      "language": "python",
+      "kind": "class",
+      "name": "BrokerHttpRequest",
+      "line": 123
+    },
+    {
+      "file": "backend/app/strix_broker_models.py",
+      "language": "python",
+      "kind": "class",
       "name": "BrokerHeader",
-      "line": 84
+      "line": 133
     },
     {
       "file": "backend/app/strix_broker_models.py",
       "language": "python",
       "kind": "class",
       "name": "BrokerHttpResponse",
-      "line": 91
+      "line": 140
     },
     {
       "file": "backend/app/strix_command_admission.py",
@@ -24358,35 +24393,35 @@
       "language": "python",
       "kind": "function",
       "name": "test_browser_runtime_capability_fails_closed_without_runtime_marker",
-      "line": 366
+      "line": 370
     },
     {
       "file": "backend/tests/test_runtime_capabilities.py",
       "language": "python",
       "kind": "function",
       "name": "test_browser_runtime_capability_ready_with_runtime_marker",
-      "line": 379
+      "line": 383
     },
     {
       "file": "backend/tests/test_runtime_capabilities.py",
       "language": "python",
       "kind": "function",
       "name": "test_browser_runtime_capability_disabled_even_when_runtime_exists",
-      "line": 392
+      "line": 396
     },
     {
       "file": "backend/tests/test_runtime_capabilities.py",
       "language": "python",
       "kind": "function",
       "name": "test_capabilities_api_exposes_browser_runtime_detail",
-      "line": 405
+      "line": 409
     },
     {
       "file": "backend/tests/test_runtime_capabilities.py",
       "language": "python",
       "kind": "function",
       "name": "test_strix_capability_preflight_state_stays_fail_closed",
-      "line": 422
+      "line": 426
     },
     {
       "file": "backend/tests/test_runtime_gap_analysis.py",
@@ -25471,119 +25506,161 @@
       "language": "python",
       "kind": "function",
       "name": "_campaign",
-      "line": 20
+      "line": 23
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "_signed_contract",
-      "line": 36
-    },
-    {
-      "file": "backend/tests/test_strix_broker.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_broker_health_is_explicitly_admission_only",
       "line": 42
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
+      "name": "_configure_broker_keys",
+      "line": 48
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_broker_health_is_explicitly_admission_only",
+      "line": 56
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
       "name": "test_broker_readiness_requires_verification_key",
-      "line": 55
+      "line": 75
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
-      "name": "test_broker_admits_signed_in_scope_request_without_egress",
-      "line": 64
-    },
-    {
-      "file": "backend/tests/test_strix_broker.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_broker_rejects_wrong_verification_key",
+      "name": "test_broker_readiness_requires_runner_admission_key",
       "line": 84
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
+      "name": "test_broker_admits_signed_in_scope_request_without_egress",
+      "line": 98
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_broker_rejects_wrong_verification_key",
+      "line": 118
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
       "name": "test_broker_rejects_out_of_scope_and_denied_hosts",
-      "line": 101
+      "line": 135
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_rejects_rate_above_signed_contract",
-      "line": 120
+      "line": 154
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_contract_model_forbids_unsafe_runtime_invariants",
-      "line": 137
+      "line": 171
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_health_reports_read_only_proxy_when_enabled",
-      "line": 146
+      "line": 180
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_broker_issues_runner_ticket_only_after_command_admission",
+      "line": 197
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_broker_command_ticket_rejects_wrong_contract_key",
+      "line": 234
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_broker_command_ticket_rejects_unreviewed_command",
+      "line": 264
+    },
+    {
+      "file": "backend/tests/test_strix_broker.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_broker_command_ticket_requires_signing_key",
+      "line": 284
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_request_path_is_disabled_by_default",
-      "line": 161
+      "line": 307
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_revalidates_contract_before_forwarding",
-      "line": 187
+      "line": 333
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_forwards_only_after_local_admission",
-      "line": 213
+      "line": 359
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "fake_forward",
-      "line": 222
+      "line": 368
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_readiness_requires_egress_when_proxy_enabled",
-      "line": 256
+      "line": 402
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "test_broker_readiness_checks_egress_when_proxy_enabled",
-      "line": 279
+      "line": 425
     },
     {
       "file": "backend/tests/test_strix_broker.py",
       "language": "python",
       "kind": "function",
       "name": "ready",
-      "line": 287
+      "line": 433
     },
     {
       "file": "backend/tests/test_strix_broker_client.py",
@@ -25723,35 +25800,35 @@
       "language": "python",
       "kind": "function",
       "name": "test_strix_egress_is_only_dual_homed_external_boundary",
-      "line": 42
+      "line": 43
     },
     {
       "file": "backend/tests/test_strix_broker_runtime.py",
       "language": "python",
       "kind": "function",
       "name": "test_scanner_worker_cannot_reach_egress_network_directly",
-      "line": 61
+      "line": 62
     },
     {
       "file": "backend/tests/test_strix_broker_runtime.py",
       "language": "python",
       "kind": "function",
       "name": "test_network_zones_keep_scanner_to_egress_separated",
-      "line": 71
+      "line": 72
     },
     {
       "file": "backend/tests/test_strix_broker_runtime.py",
       "language": "python",
       "kind": "function",
       "name": "test_ci_builds_strix_broker_and_egress_profile",
-      "line": 87
+      "line": 88
     },
     {
       "file": "backend/tests/test_strix_broker_runtime.py",
       "language": "python",
       "kind": "function",
       "name": "test_strix_broker_imports_in_fresh_interpreter",
-      "line": 98
+      "line": 99
     },
     {
       "file": "backend/tests/test_strix_command_admission.py",

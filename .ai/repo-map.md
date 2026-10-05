@@ -11576,6 +11576,39 @@ mode: Literal["admission_only"] = "admission_only"
 egress_enabled: Literal[False] = False
 network_io_performed: Literal[False] = False
 ⋮----
+class BrokerCommandTicketRequest(BaseModel)
+⋮----
+session_id: str = Field(
+request_id: str = Field(
+profile: Literal["bootstrap-v1", "web-active-v1"]
+argv: list[str] = Field(min_length=1, max_length=64)
+timeout_seconds: float = Field(ge=0.1, le=300)
+⋮----
+class BrokerRunnerExecTicketDocument(BaseModel)
+⋮----
+schema: Literal["strix-runner-exec-ticket-v1"]
+command_schema: Literal["strix-command-admission-v1"]
+⋮----
+session_id: str = Field(min_length=1, max_length=128)
+request_id: str = Field(min_length=1, max_length=128)
+⋮----
+executable: str = Field(min_length=1, max_length=64)
+argv_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+argc: int = Field(ge=1, le=64)
+argv_bytes: int = Field(ge=1, le=16 * 1024)
+⋮----
+shell_interpreter_allowed: Literal[False]
+⋮----
+network_scope_enforcement: Literal["broker_required"]
+active_execution_enabled: Literal[False]
+⋮----
+class BrokerCommandTicketResponse(BaseModel)
+⋮----
+ticket: BrokerRunnerExecTicketDocument
+mode: Literal["ticket_issuer_only"] = "ticket_issuer_only"
+⋮----
+process_execution_performed: Literal[False] = False
+⋮----
 class BrokerHttpRequest(BaseModel)
 ⋮----
 method: Literal["GET", "HEAD"] = "GET"
@@ -11610,6 +11643,10 @@ def _broker_verification_secret() -> str
 ⋮----
 secret = os.getenv("XBOW_STRIX_BROKER_HMAC_KEY", "")
 ⋮----
+def _runner_admission_signing_secret() -> str
+⋮----
+secret = os.getenv("XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY", "")
+⋮----
 def _read_only_egress_enabled() -> bool
 ⋮----
 raw = os.getenv(
@@ -11630,6 +11667,13 @@ def readyz() -> dict
 def admit(request: BrokerAdmissionRequest) -> BrokerAdmissionResponse
 ⋮----
 authorized = _authorize(request)
+⋮----
+verification_secret = _broker_verification_secret()
+⋮----
+authorized = authorize_strix_command(
+⋮----
+signing_secret = _runner_admission_signing_secret()
+ticket = build_strix_runner_exec_ticket(
 ⋮----
 @app.post("/v1/request", response_model=BrokerHttpResponse)
 def request_http(request: BrokerHttpRequest) -> BrokerHttpResponse
@@ -22038,15 +22082,21 @@ result = subprocess.run(
 ````python
 def _campaign()
 ⋮----
+ADMISSION_SECRET = "broker-runner-admission-secret-at-least-32-bytes"
+⋮----
 def _signed_contract(monkeypatch)
 ⋮----
 contract = build_strix_execution_contract(_campaign(), job_id="job-1")
+⋮----
+def _configure_broker_keys(monkeypatch)
 ⋮----
 def test_broker_health_is_explicitly_admission_only(monkeypatch)
 ⋮----
 result = healthz()
 ⋮----
 def test_broker_readiness_requires_verification_key(monkeypatch)
+⋮----
+def test_broker_readiness_requires_runner_admission_key(monkeypatch)
 ⋮----
 def test_broker_admits_signed_in_scope_request_without_egress(monkeypatch)
 ⋮----
@@ -22065,6 +22115,20 @@ def test_broker_contract_model_forbids_unsafe_runtime_invariants(monkeypatch)
 payload = contract.model_dump()
 ⋮----
 def test_broker_health_reports_read_only_proxy_when_enabled(monkeypatch)
+⋮----
+def test_broker_issues_runner_ticket_only_after_command_admission(monkeypatch)
+⋮----
+argv = [
+⋮----
+result = issue_command_ticket(
+⋮----
+verified = verify_strix_runner_exec_ticket(
+⋮----
+def test_broker_command_ticket_rejects_wrong_contract_key(monkeypatch)
+⋮----
+def test_broker_command_ticket_rejects_unreviewed_command(monkeypatch, profile, argv)
+⋮----
+def test_broker_command_ticket_requires_signing_key(monkeypatch)
 ⋮----
 def test_broker_request_path_is_disabled_by_default(monkeypatch)
 ⋮----
@@ -26570,6 +26634,7 @@ services:
         condition: service_healthy
     environment:
       XBOW_STRIX_BROKER_HMAC_KEY: ${XBOW_STRIX_BROKER_HMAC_KEY:-}
+      XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY: ${XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY:-}
       XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS: ${XBOW_STRIX_BROKER_ENABLE_READONLY_EGRESS:-false}
       XBOW_STRIX_EGRESS_URL: http://strix-egress:8091/v1/fetch
       XBOW_STRIX_BROKER_EGRESS_TIMEOUT_SECONDS: ${XBOW_STRIX_BROKER_EGRESS_TIMEOUT_SECONDS:-15}
@@ -27300,21 +27365,21 @@ The default allowlist contains only Nuclei. Strix lifecycle parsing and evidence
 
 The `strix-broker` profile now uses three Strix-specific network zones. Within those zones, `scanner-worker` can reach only the broker network; the broker can reach a second internal broker-to-egress network; only the separate `strix-egress` service is attached to an external bridge. The current `scanner-worker` still also uses the general `control` network for the reviewed Nuclei path, so it is **not** yet the final network-isolated Strix runner. Neither service publishes a host port or mounts data volumes or a Docker socket, and both run read-only with no-new-privileges and all Linux capabilities dropped.
 
-The broker keeps `/v1/admit` for policy-only checks and adds an optional `/v1/request` path for read-only HTTP. Every request is verified once by the broker and again by `strix-egress`. The egress service permits only GET/HEAD, rejects private/reserved/link-local destinations, resolves DNS before connecting and pins the validated IP to prevent rebinding, preserves the original hostname for TLS verification, follows no redirects, bounds timeout/response size, filters unsafe hop-by-hop headers, enforces the signed per-contract RPS ceiling before opening the connection, and permits at most one in-flight target request per contract.
+The broker keeps `/v1/admit` for policy-only checks, adds `/v1/command-ticket` as the only trusted producer of runner exec tickets, and retains an optional `/v1/request` path for read-only HTTP. Ticket issuance first verifies the signed execution contract, then applies `strix-command-admission-v1`; only after both checks pass does the broker sign a `strix-runner-exec-ticket-v1`. The endpoint performs no target-network I/O and no process execution. For read-only HTTP, every request is verified once by the broker and again by `strix-egress`. The egress service permits only GET/HEAD, rejects private/reserved/link-local destinations, resolves DNS before connecting and pins the validated IP to prevent rebinding, preserves the original hostname for TLS verification, follows no redirects, bounds timeout/response size, filters unsafe hop-by-hop headers, enforces the signed per-contract RPS ceiling before opening the connection, and permits at most one in-flight target request per contract.
 
-When the read-only proxy is enabled, broker readiness also depends on the isolated egress service being ready. The read-only path is disabled by default. To test the boundary, provision the broker and egress verification keys, enable both read-only gates, then start the profile:
+Broker readiness now requires both the execution-contract verification key and the runner exec-ticket signing key. When the read-only proxy is enabled, readiness additionally depends on the isolated egress service being ready. The read-only path is disabled by default. To test the boundary, provision the broker, runner-admission and egress keys, enable both read-only gates, then start the profile:
 
 ```bash
 docker compose --profile strix-broker up -d --build
 ```
 
-For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` must match the HMAC secret used to sign the contract. The symmetric-key arrangement is still intermediate and should eventually be replaced by asymmetric verification.
+For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` must match the HMAC secret used to sign the execution contract. `XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY` is a separate HMAC secret shared only by the trusted broker (signing) and isolated runner (verification); scanner callers receive tickets but never the key. The symmetric-key arrangement is still intermediate and should eventually be replaced by asymmetric verification.
 
 A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux release. The image verifies the official release-asset SHA-256 before extraction (amd64 and arm64 have separate pinned digests), verifies the CLI reports exactly `strix 1.6.2`, records the pinned source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and re-attests the extracted binary SHA-256 at runtime. The container has no published ports, volumes, Docker socket or external network and runs as a non-root user with a read-only root filesystem and all Linux capabilities dropped.
 
 The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC transport authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes. Its HTTP boundary also uses a 5-second idle socket timeout, a 10-second absolute header/body read deadline and a 16-connection concurrency cap. `/v1/session/exec` now additionally requires a `strix-runner-exec-ticket-v1` signed with a separate admission key. The ticket binds the command-admission schema, execution-contract hash, session/request ids, argv SHA-256, argc/byte count, profile, executable and timeout. The runner independently rechecks the reviewed profile/tool allowlist, rejects shell interpreters and executable paths, and requires direct egress to remain disabled with broker-only network enforcement. **All session operations are still unimplemented**; even a valid ticket reaches only the disabled-execution gate and cannot launch a process.
 
-Provision separate internal RPC and exec-admission keys of at least 32 bytes before starting the runner. A 32-byte random value encoded as hex is sufficient for each:
+Provision separate internal RPC and exec-admission keys of at least 32 bytes before starting the runner. The exec-admission key must also be supplied to the trusted broker, but not to the scanner caller. A 32-byte random value encoded as hex is sufficient for each:
 
 ```bash
 export XBOW_STRIX_RUNNER_RPC_HMAC_KEY="$(openssl rand -hex 32)"
@@ -27324,7 +27389,7 @@ docker compose --profile strix-runner up -d --build strix-runner
 
 The service publishes no host port; port 8092 is exposed only to the internal `strix-broker` network. CI verifies that the broker can reach the runner readiness endpoint while the runner cannot open a direct public-network connection.
 
-The next extension point is verified without enabling execution. The runner RPC now enforces the signed exec-ticket boundary before its execution gate, but the trusted producer path that turns a verified `strix-command-admission-v1` descriptor into that ticket is not wired into a live session yet. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
+The next extension point is verified without enabling execution. The runner RPC enforces the signed exec-ticket boundary before its execution gate, and the trusted broker now turns only a verified `strix-command-admission-v1` descriptor into that ticket. This producer path is still not wired into a live Strix session, so no process execution is enabled yet. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
 
 One integration blocker is explicit: the pinned runner still launches the official standalone PyInstaller binary, while the custom backend registration currently exists only in a Python process using the wheel API. The standalone binary does not automatically import `app.strix_backend_hook`. The repository now defines an inert `strix-python-bootstrap-plan-v1` that composes the attested v1.6.2 source, dependency lock and Python/uv toolchain, identifies only `check_docker_installed` and `pull_docker_image` as Docker-preflight patch candidates, and explicitly preserves `validate_environment`. The plan remains non-applying and non-executing: `patch_application_enabled=false`, `entrypoint_enabled=false`, and `active_execution_enabled=false`. The repository also defines `strix-python-preflight-compatibility-v1`, a context-managed shim that can temporarily replace only those two direct aliases in `strix.interface.main` after exact plan and import-identity checks. It leaves the upstream environment module untouched during normal operation, preserves `validate_environment`, restores guarded symbols on every exit path, and is not wired into the runner yet. `strix-python-bootstrap-runtime-v1` now composes those pieces into a prepared runtime context: it registers `xbow-remote-v1` before importing `strix.interface.main`, rechecks the registry after import, re-attests the preflight surface, applies the bounded compatibility shim for the lifetime of the context, and still never calls the Strix entrypoint itself. The next boundary is now explicit too: `strix-command-admission-v1` authenticates the signed execution contract and admits bounded argv only through reviewed profiles. `bootstrap-v1` currently permits only `curl`; `web-active-v1` includes reviewed web-assessment tools such as `nuclei`, `sqlmap`, `ffuf`, `katana`, `dalfox`, `feroxbuster`, `gobuster`, `httpx`, and `nikto`. Shell interpreters and executable paths are rejected, direct runner egress remains forbidden, and network scope must still be enforced by the broker.
 
