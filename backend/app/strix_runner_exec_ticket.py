@@ -83,6 +83,10 @@ def _secret_bytes(secret: str) -> bytes:
     return encoded
 
 
+def validate_strix_runner_exec_ticket_secret(secret: str) -> None:
+    _secret_bytes(secret)
+
+
 def _argv_digest(argv: Sequence[str]) -> tuple[str, int, int, str]:
     if isinstance(argv, (str, bytes)) or not 1 <= len(argv) <= 64:
         raise StrixRunnerExecTicketError("runner exec argv is invalid")
