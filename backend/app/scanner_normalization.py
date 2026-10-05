@@ -202,8 +202,8 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
         summary=str(info.get("description") or ""),
         evidence=_string_list(extracted),
         reproduction_steps=(),
-        impact="",
-        remediation=str(info.get("remediation") or info.get("reference") or ""),
+        impact=str(info.get("impact") or ""),
+        remediation=str(info.get("remediation") or ""),
         cwe=_optional_str(cwe),
         cvss=_optional_cvss(
             classification.get("cvss-score")
