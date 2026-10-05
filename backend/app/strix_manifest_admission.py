@@ -36,6 +36,8 @@ class StrixManifestEntryPlan:
     content_sha256: str | None
     local_source_present: bool
     local_source_path_redacted: bool
+    local_source_path_sha256: str | None
+    local_source_content_sha256: str | None
     local_source_content_inspected: bool
     content_uploaded: bool
 
@@ -154,6 +156,8 @@ def _plan_file(path: str, entry: object) -> StrixManifestEntryPlan:
         content_sha256=hashlib.sha256(payload).hexdigest(),
         local_source_present=False,
         local_source_path_redacted=False,
+        local_source_path_sha256=None,
+        local_source_content_sha256=None,
         local_source_content_inspected=False,
         content_uploaded=False,
     )
@@ -178,6 +182,10 @@ def _plan_local_dir(path: str, entry: object) -> StrixManifestEntryPlan:
         content_sha256=None,
         local_source_present=True,
         local_source_path_redacted=True,
+        local_source_path_sha256=hashlib.sha256(
+            source_text.encode("utf-8")
+        ).hexdigest(),
+        local_source_content_sha256=None,
         local_source_content_inspected=False,
         content_uploaded=False,
     )
