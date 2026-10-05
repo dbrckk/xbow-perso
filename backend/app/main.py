@@ -133,6 +133,7 @@ class Finding(BaseModel):
     epss_score: float | None = Field(default=None, ge=0, le=1)
     epss_percentile: float | None = Field(default=None, ge=0, le=1)
     references: list[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
     template_id: str | None = None
     template_verified: bool | None = None
     template_max_requests: int | None = Field(default=None, ge=0, le=10000)
