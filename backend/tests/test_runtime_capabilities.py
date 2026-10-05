@@ -326,6 +326,11 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_python_bootstrap_plan_contract_defined"] is True
     assert result["strix_python_preflight_patch_plan_contract_defined"] is True
     assert result["strix_python_preflight_patch_application_enabled"] is False
+    assert result["strix_python_preflight_compatibility_applied"] is False
+    assert (
+        result["strix_python_preflight_preserves_environment_validation"]
+        is True
+    )
     assert result["strix_upstream_docker_preflight_required"] is True
     assert "strix_runtime_contract_not_enforceable" in result["dispatch_block_reasons"]
     assert "strix_runner_rpc_execution_not_implemented" in result["dispatch_block_reasons"]
@@ -396,3 +401,17 @@ def test_capabilities_api_exposes_browser_runtime_detail(monkeypatch, tmp_path):
     assert browser["playwright_runtime_attested"] is True
     assert browser["dispatch_ready"] is True
     assert browser["contains_secrets"] is False
+
+
+
+def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_STRIX_SCANNER", "true")
+    monkeypatch.setenv("XBOW_ENABLE_STRIX_READONLY_EGRESS", "true")
+
+    result = scanner_runtime_capability()
+
+    assert result["strix_python_preflight_patch_application_enabled"] is False
+    assert result["strix_python_preflight_compatibility_applied"] is False
+    assert result["strix_python_bootstrap_ready"] is False
+    assert result["strix_runtime_contract_enforceable"] is False
+    assert result["active_scanner_ready"] is False
