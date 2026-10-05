@@ -6,6 +6,7 @@ import json
 from .main import Campaign, Finding
 from .observation_graph import Observation
 from .storage import Storage
+from .vulnerability_novelty import extract_cve_ids
 
 
 def observation_id(prefix: str, value: str) -> str:
@@ -82,6 +83,7 @@ def record_finding_chain(
             "endpoint": finding.endpoint,
             "cwe": finding.cwe,
             "cvss": finding.cvss,
+            "cve_ids": list(extract_cve_ids(finding)),
         },
     )
     store.put_observation(campaign.id, observation.to_dict())
