@@ -1,14 +1,15 @@
 # Change impact
 
-Base: 79351ecb17b826213b814c88205cde5d9f249e04
-Head: 01b2b1cb110af272fbad033fccac18f9588b3d25
+Base: 3a7a1ef48e17f72ffd768a49aedf2118150434da
+Head: 084fc611af4adebb309fc46f19f14bf2724e90f4
 
 ## Changed files
-- M .github/workflows/ci.yml
-- A backend/tests/test_ci_workflow.py
+- M backend/app/runtime_capabilities.py
+- A backend/app/strix_python_preflight_patch_plan.py
+- M backend/tests/test_runtime_capabilities.py
+- A backend/tests/test_strix_python_preflight_patch_plan.py
 
 ## Affected areas
-- .github
 - backend
 
 ## Related test candidates

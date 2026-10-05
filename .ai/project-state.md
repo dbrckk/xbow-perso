@@ -39,30 +39,30 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T07:35:52Z
+Generated: 2026-10-05T16:07:58Z
 
 ### Git
 - Branch: `main`
-- Head: `01b2b1cb110a`
-- Commit date: 2026-10-05T09:35:40+02:00
-- Commit: fix(ci): avoid frontend smoke broken pipe under pipefail
-- Tracked files: 625
+- Head: `084fc611af4a`
+- Commit date: 2026-10-05T18:07:46+02:00
+- Commit: feat(strix): define inert Docker preflight patch plan
+- Tracked files: 627
 
 ### Recently changed files
+- `backend/app/runtime_capabilities.py`
+- `backend/app/strix_python_preflight_patch_plan.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_python_preflight_patch_plan.py`
 - `.github/workflows/ci.yml`
 - `backend/tests/test_ci_workflow.py`
 - `backend/app/strix_python_preflight_surface.py`
 - `backend/tests/test_strix_python_preflight_surface.py`
 - `README.md`
-- `backend/app/runtime_capabilities.py`
 - `backend/app/strix_python_bootstrap_plan.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_python_bootstrap_plan.py`
 - `backend/app/strix_python_toolchain_probe.py`
 - `backend/strix-python-runtime.lock.json`
 - `backend/tests/test_strix_python_toolchain_probe.py`
-- `backend/app/strix_python_lock_probe.py`
-- `backend/tests/test_strix_python_lock_probe.py`
 
 ### Project signals
 - `pyproject.toml`

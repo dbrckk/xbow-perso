@@ -198,6 +198,7 @@ app/
   strix_python_bootstrap_plan.py
   strix_python_compat_probe.py
   strix_python_lock_probe.py
+  strix_python_preflight_patch_plan.py
   strix_python_preflight_surface.py
   strix_python_toolchain_probe.py
   strix_run_status.py
@@ -436,6 +437,7 @@ tests/
   test_strix_python_bootstrap_plan.py
   test_strix_python_compat_probe.py
   test_strix_python_lock_probe.py
+  test_strix_python_preflight_patch_plan.py
   test_strix_python_preflight_surface.py
   test_strix_python_toolchain_probe.py
   test_strix_run_status.py
@@ -11423,6 +11425,18 @@ parser = argparse.ArgumentParser()
 args = parser.parse_args()
 ```
 
+## File: app/strix_python_preflight_patch_plan.py
+```python
+STRIX_PYTHON_PREFLIGHT_PATCH_PLAN_SCHEMA = (
+_PATCH_SYMBOLS = [
+_PRESERVED_SYMBOLS = ["validate_environment"]
+_SURFACE_KEYS = {
+⋮----
+class StrixPythonPreflightPatchPlanError(RuntimeError)
+⋮----
+def _verify_surface(surface: dict[str, Any]) -> None
+```
+
 ## File: app/strix_python_preflight_surface.py
 ```python
 STRIX_PYTHON_PREFLIGHT_SURFACE_SCHEMA = (
@@ -21359,6 +21373,21 @@ def test_dependency_lock_probe_rejects_blob_mismatch(monkeypatch, tmp_path)
 def test_ci_attests_pinned_strix_dependency_lock()
 ⋮----
 workflow = Path(".github/workflows/ci.yml").read_text()
+```
+
+## File: tests/test_strix_python_preflight_patch_plan.py
+```python
+def _surface() -> dict
+⋮----
+def test_patch_plan_is_inert_and_exact()
+⋮----
+result = build_preflight_patch_plan(_surface())
+⋮----
+def test_patch_plan_rejects_unsafe_surface(mutate)
+⋮----
+surface = _surface()
+⋮----
+def test_patch_plan_rejects_unknown_surface_fields()
 ```
 
 ## File: tests/test_strix_python_preflight_surface.py

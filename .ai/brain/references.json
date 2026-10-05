@@ -5,18 +5,1606 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "test_frontend_smoke_test_avoids_pipefail_broken_pipe": {
+    "CapabilityConfigError": {
       "definition": {
-        "file": "backend/tests/test_ci_workflow.py",
-        "line": 4,
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 13,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 13,
+          "preview": "class CapabilityConfigError(ValueError):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 26,
+          "preview": "raise CapabilityConfigError(f\"{name} must be a boolean\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 87,
+          "preview": "except CapabilityConfigError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 221,
+          "preview": "except CapabilityConfigError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 295,
+          "preview": "except CapabilityConfigError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 348,
+          "preview": "except CapabilityConfigError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 5,
+          "preview": "CapabilityConfigError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 85,
+          "preview": "with pytest.raises(CapabilityConfigError, match=\"XBOW_ENABLE_PENTAGI\"):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "_strict_bool": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 17,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_ci_workflow.py",
-          "line": 4,
-          "preview": "def test_frontend_smoke_test_avoids_pipefail_broken_pipe():",
+          "file": "backend/app/api_rate_limit.py",
+          "line": 28,
+          "preview": "def _strict_bool(name: str, default: bool = False) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_rate_limit.py",
+          "line": 56,
+          "preview": "enabled=_strict_bool(\"XBOW_API_RATE_LIMIT_ENABLED\", False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 17,
+          "preview": "def _strict_bool(name: str, default: bool = False) -> tuple[bool, bool]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 58,
+          "preview": "submission_enabled, submission_valid = _strict_bool(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 62,
+          "preview": "report_sync_enabled, report_sync_valid = _strict_bool(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 17,
+          "preview": "def _strict_bool(name: str, default: bool = False) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 37,
+          "preview": "integration_enabled = _strict_bool(\"XBOW_ENABLE_PENTAGI\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 38,
+          "preview": "active_scans_enabled = _strict_bool(\"XBOW_ENABLE_ACTIVE_SCANS\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 39,
+          "preview": "dry_run = _strict_bool(\"DRY_RUN\", True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 40,
+          "preview": "worker_enabled = _strict_bool(\"XBOW_ENABLE_PENTAGI_WORKER\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 41,
+          "preview": "transport_enabled = _strict_bool(\"XBOW_ENABLE_PENTAGI_TRANSPORT\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 42,
+          "preview": "status_worker_enabled = _strict_bool(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 108,
+          "preview": "active_scans_enabled = _strict_bool(\"XBOW_ENABLE_ACTIVE_SCANS\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 109,
+          "preview": "scanner_worker_enabled = _strict_bool(\"XBOW_ENABLE_SCANNER_WORKER\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 110,
+          "preview": "nuclei_enabled = _strict_bool(\"XBOW_ENABLE_NUCLEI\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 111,
+          "preview": "dry_run = _strict_bool(\"DRY_RUN\", True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 270,
+          "preview": "enabled = _strict_bool(\"XBOW_ENABLE_BROWSER_AUTOMATION\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 309,
+          "preview": "recon_enabled = _strict_bool(\"XBOW_ENABLE_RECON\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 310,
+          "preview": "external_enabled = _strict_bool(\"XBOW_ENABLE_EXTERNAL_RECON\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 37,
+          "preview": "def _strict_bool(name: str, default: bool = False) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 120,
+          "preview": "read_only_rootfs = _strict_bool(\"XBOW_SANDBOX_READ_ONLY_ROOTFS\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 121,
+          "preview": "no_new_privileges = _strict_bool(\"XBOW_SANDBOX_NO_NEW_PRIVILEGES\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 122,
+          "preview": "cap_drop_all = _strict_bool(\"XBOW_SANDBOX_CAP_DROP_ALL\", False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_sandbox.py",
+          "line": 124,
+          "preview": "scanner_worker_enabled = _strict_bool(\"XBOW_ENABLE_SCANNER_WORKER\", False)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 24
+    },
+    "pentagi_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 29,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 29,
+          "preview": "def pentagi_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 86,
+          "preview": "return pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 7,
+          "preview": "pentagi_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 33,
+          "preview": "result = pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 54,
+          "preview": "result = pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 72,
+          "preview": "disabled = pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 77,
+          "preview": "enabled = pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 86,
+          "preview": "pentagi_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "safe_pentagi_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 82,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/deployment_preflight.py",
+          "line": 7,
+          "preview": "safe_pentagi_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/deployment_preflight.py",
+          "line": 44,
+          "preview": "pentagi = safe_pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 350,
+          "preview": "safe_pentagi_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 355,
+          "preview": "pentagi = safe_pentagi_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 82,
+          "preview": "def safe_pentagi_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 9,
+          "preview": "safe_pentagi_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 88,
+          "preview": "safe = safe_pentagi_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "scanner_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 107,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 107,
+          "preview": "def scanner_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 220,
+          "preview": "return scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 2,
+          "preview": "from app.runtime_capabilities import scanner_runtime_capability",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 34,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 11,
+          "preview": "scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 139,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 155,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 190,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 283,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 303,
+          "preview": "result = scanner_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 10
+    },
+    "safe_scanner_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 218,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 15,
+          "preview": "from .runtime_capabilities import safe_scanner_runtime_capability",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/campaign_control.py",
+          "line": 153,
+          "preview": "scanner = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/deployment_preflight.py",
+          "line": 8,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/deployment_preflight.py",
+          "line": 45,
+          "preview": "scanner = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 15,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 548,
+          "preview": "scanner=safe_scanner_runtime_capability(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 12,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 39,
+          "preview": "scanner = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 31,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 37,
+          "preview": "scanner = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 352,
+          "preview": "safe_scanner_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 356,
+          "preview": "scanners = safe_scanner_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 218,
+          "preview": "def safe_scanner_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 13
+    },
+    "browser_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 268,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 268,
+          "preview": "def browser_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 294,
+          "preview": "return browser_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 6,
+          "preview": "browser_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 351,
+          "preview": "result = browser_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 365,
+          "preview": "result = browser_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 378,
+          "preview": "result = browser_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "safe_browser_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 292,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 13,
+          "preview": "safe_browser_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 546,
+          "preview": "browser = safe_browser_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 10,
+          "preview": "safe_browser_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 41,
+          "preview": "browser = safe_browser_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 349,
+          "preview": "safe_browser_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 357,
+          "preview": "browser = safe_browser_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 40,
+          "preview": "from .runtime_capabilities import safe_browser_runtime_capability",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 353,
+          "preview": "browser_ready = safe_browser_runtime_capability().get(\"dispatch_ready\") is True",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 292,
+          "preview": "def safe_browser_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 9
+    },
+    "recon_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 307,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 307,
+          "preview": "def recon_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 347,
+          "preview": "return recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_live_activation_profile.py",
+          "line": 29,
+          "preview": "assert \"recon_runtime_capability\" in script",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 8,
+          "preview": "recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 201,
+          "preview": "result = recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 218,
+          "preview": "result = recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 239,
+          "preview": "result = recon_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "safe_recon_runtime_capability": {
+      "definition": {
+        "file": "backend/app/runtime_capabilities.py",
+        "line": 345,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 14,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_intelligence.py",
+          "line": 549,
+          "preview": "recon=safe_recon_runtime_capability(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 11,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hackerone_live_readiness.py",
+          "line": 40,
+          "preview": "recon = safe_recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 30,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 36,
+          "preview": "recon = safe_recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 351,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/main.py",
+          "line": 358,
+          "preview": "recon = safe_recon_runtime_capability()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/runtime_capabilities.py",
+          "line": 345,
+          "preview": "def safe_recon_runtime_capability() -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 10,
+          "preview": "safe_recon_runtime_capability,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 248,
+          "preview": "result = safe_recon_runtime_capability()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 11
+    },
+    "StrixPythonPreflightPatchPlanError": {
+      "definition": {
+        "file": "backend/app/strix_python_preflight_patch_plan.py",
+        "line": 30,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/strix_python_preflight_patch_plan.py",
+          "line": 30,
+          "preview": "class StrixPythonPreflightPatchPlanError(RuntimeError):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/strix_python_preflight_patch_plan.py",
+          "line": 36,
+          "preview": "raise StrixPythonPreflightPatchPlanError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/strix_python_preflight_patch_plan.py",
+          "line": 49,
+          "preview": "raise StrixPythonPreflightPatchPlanError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 7,
+          "preview": "StrixPythonPreflightPatchPlanError,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 66,
+          "preview": "with pytest.raises(StrixPythonPreflightPatchPlanError):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 75,
+          "preview": "StrixPythonPreflightPatchPlanError,",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_verify_surface": {
+      "definition": {
+        "file": "backend/app/strix_python_preflight_patch_plan.py",
+        "line": 34,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/strix_python_preflight_patch_plan.py",
+          "line": 34,
+          "preview": "def _verify_surface(surface: dict[str, Any]) -> None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/strix_python_preflight_patch_plan.py",
+          "line": 57,
+          "preview": "_verify_surface(surface)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "build_preflight_patch_plan": {
+      "definition": {
+        "file": "backend/app/strix_python_preflight_patch_plan.py",
+        "line": 54,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/strix_python_preflight_patch_plan.py",
+          "line": 54,
+          "preview": "def build_preflight_patch_plan(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 8,
+          "preview": "build_preflight_patch_plan,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 29,
+          "preview": "result = build_preflight_patch_plan(_surface())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 67,
+          "preview": "build_preflight_patch_plan(surface)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 78,
+          "preview": "build_preflight_patch_plan(surface)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "_clear": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 25,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 28,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 49,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 63,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 74,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 90,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 115,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 131,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 144,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 155,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 180,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 200,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 215,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 228,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 240,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 252,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 265,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_deployment_preflight.py",
+          "line": 278,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 21,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 44,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 72,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 88,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 115,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 126,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 142,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 175,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 188,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 206,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hackerone_live_readiness.py",
+          "line": 245,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 16,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 22,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_nuclei_preflight.py",
+          "line": 90,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 25,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 31,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 69,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 82,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 117,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_sandbox.py",
+          "line": 22,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_sandbox.py",
+          "line": 40,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_sandbox.py",
+          "line": 104,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 9,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 34,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 45,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 57,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 68,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_secrets.py",
+          "line": 77,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 13,
+          "preview": "def _clear(monkeypatch):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 19,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 30,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 42,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 54,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_worker_watchdog.py",
+          "line": 66,
+          "preview": "_clear(monkeypatch)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 51
+    },
+    "test_pentagi_capability_defaults_fail_closed": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 30,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 30,
+          "preview": "def test_pentagi_capability_defaults_fail_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_all_operator_gates_still_do_not_claim_pentagi_execution": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 46,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 46,
+          "preview": "def test_all_operator_gates_still_do_not_claim_pentagi_execution(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_status_tracking_requires_integration_and_status_worker": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 68,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 68,
+          "preview": "def test_status_tracking_requires_integration_and_status_worker(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_invalid_boolean_configuration_fails_closed": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 81,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_pentagi_admission.py",
+          "line": 118,
+          "preview": "def test_invalid_boolean_configuration_fails_closed(monkeypatch, name, value):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 81,
+          "preview": "def test_invalid_boolean_configuration_fails_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 96,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 96,
+          "preview": "def test_capabilities_api_exposes_runtime_pentagi_state_without_secrets(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_capabilities_api_reports_configuration_error_without_raising": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 116,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 116,
+          "preview": "def test_capabilities_api_reports_configuration_error_without_raising(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scanner_runtime_capability_defaults_fail_closed": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 129,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 129,
+          "preview": "def test_scanner_runtime_capability_defaults_fail_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 148,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 148,
+          "preview": "def test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_capabilities_api_exposes_scanner_worker_admission": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 167,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 167,
+          "preview": "def test_capabilities_api_exposes_scanner_worker_admission(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scanner_runtime_capability_rejects_unsupported_engine": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 183,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 183,
+          "preview": "def test_scanner_runtime_capability_rejects_unsupported_engine(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_recon_runtime_capability_defaults_fail_closed": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 197,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 197,
+          "preview": "def test_recon_runtime_capability_defaults_fail_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_external_recon_preflight_reports_missing_tools": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 210,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 210,
+          "preview": "def test_external_recon_preflight_reports_missing_tools(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_external_recon_preflight_ready_when_every_tool_exists": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 231,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 231,
+          "preview": "def test_external_recon_preflight_ready_when_every_tool_exists(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_recon_capability_invalid_configuration_fails_closed": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 245,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 245,
+          "preview": "def test_recon_capability_invalid_configuration_fails_closed(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_capabilities_api_exposes_recon_preflight": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 255,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 255,
+          "preview": "def test_capabilities_api_exposes_recon_preflight(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_strix_runtime_capability_fails_closed_without_binary_or_docker": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 275,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 275,
+          "preview": "def test_strix_runtime_capability_fails_closed_without_binary_or_docker(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_strix_runtime_capability_stays_blocked_when_cli_exists": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 292,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 292,
+          "preview": "def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_browser_runtime_capability_fails_closed_without_runtime_marker": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 346,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 346,
+          "preview": "def test_browser_runtime_capability_fails_closed_without_runtime_marker(monkeypatch, tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_browser_runtime_capability_ready_with_runtime_marker": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 359,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 359,
+          "preview": "def test_browser_runtime_capability_ready_with_runtime_marker(monkeypatch, tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_browser_runtime_capability_disabled_even_when_runtime_exists": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 372,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 372,
+          "preview": "def test_browser_runtime_capability_disabled_even_when_runtime_exists(monkeypatch, tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_capabilities_api_exposes_browser_runtime_detail": {
+      "definition": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "line": 385,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_runtime_capabilities.py",
+          "line": 385,
+          "preview": "def test_capabilities_api_exposes_browser_runtime_detail(monkeypatch, tmp_path):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "_surface": {
+      "definition": {
+        "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+        "line": 12,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 12,
+          "preview": "def _surface() -> dict:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 29,
+          "preview": "result = build_preflight_patch_plan(_surface())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 63,
+          "preview": "surface = _surface()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 71,
+          "preview": "surface = _surface()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "test_patch_plan_is_inert_and_exact": {
+      "definition": {
+        "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+        "line": 28,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 28,
+          "preview": "def test_patch_plan_is_inert_and_exact():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_patch_plan_rejects_unsafe_surface": {
+      "definition": {
+        "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+        "line": 62,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 62,
+          "preview": "def test_patch_plan_rejects_unsafe_surface(mutate):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_patch_plan_rejects_unknown_surface_fields": {
+      "definition": {
+        "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+        "line": 70,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_strix_python_preflight_patch_plan.py",
+          "line": 70,
+          "preview": "def test_patch_plan_rejects_unknown_surface_fields():",
           "definition_candidate": true
         }
       ],
