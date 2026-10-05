@@ -195,6 +195,7 @@ app/
   strix_egress.py
   strix_execution_contract.py
   strix_parser.py
+  strix_python_bootstrap_plan.py
   strix_python_compat_probe.py
   strix_python_lock_probe.py
   strix_python_toolchain_probe.py
@@ -430,6 +431,7 @@ tests/
   test_strix_egress_transport.py
   test_strix_egress.py
   test_strix_execution_contract.py
+  test_strix_python_bootstrap_plan.py
   test_strix_python_compat_probe.py
   test_strix_python_lock_probe.py
   test_strix_python_toolchain_probe.py
@@ -11269,6 +11271,28 @@ normalized = []
 finding = normalize_strix_item(item, campaign)
 ```
 
+## File: app/strix_python_bootstrap_plan.py
+```python
+STRIX_PYTHON_BOOTSTRAP_PLAN_SCHEMA = "strix-python-bootstrap-plan-v1"
+_DOCKER_PREFLIGHT_SYMBOLS = [
+_PRESERVED_VALIDATION_SYMBOL = "validate_environment"
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+⋮----
+_COMPAT_KEYS = {
+_LOCK_KEYS = {
+_TOOLCHAIN_KEYS = {
+⋮----
+class StrixPythonBootstrapPlanError(RuntimeError)
+⋮----
+def _verify_compatibility(descriptor: dict[str, Any]) -> None
+⋮----
+def _verify_dependency_lock(descriptor: dict[str, Any]) -> None
+⋮----
+def _verify_toolchain(descriptor: dict[str, Any]) -> None
+⋮----
+uv_sha256 = descriptor.get("uv_sha256")
+```
+
 ## File: app/strix_python_compat_probe.py
 ```python
 STRIX_PYTHON_COMPAT_SCHEMA = "strix-python-compat-probe-v1"
@@ -21240,6 +21264,25 @@ def test_job_change_invalidates_existing_contract(monkeypatch)
 def test_unsafe_campaign_flags_block_contract_issuance(monkeypatch, flag)
 ⋮----
 def test_automated_scanning_must_remain_enabled(monkeypatch)
+```
+
+## File: tests/test_strix_python_bootstrap_plan.py
+```python
+def _compat() -> dict
+⋮----
+def _lock() -> dict
+⋮----
+def _toolchain() -> dict
+⋮----
+def test_bootstrap_plan_composes_all_attestations()
+⋮----
+result = build_bootstrap_plan(
+⋮----
+descriptors = {
+⋮----
+def test_bootstrap_plan_rejects_unknown_fields()
+⋮----
+compatibility = _compat()
 ```
 
 ## File: tests/test_strix_python_compat_probe.py

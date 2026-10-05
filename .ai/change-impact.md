@@ -1,16 +1,17 @@
 # Change impact
 
-Base: 3d0918c3da40de3c60736dc40d1ebd4861a6fc79
-Head: b2f488308817a3084dc890f88b65291b497b33af
+Base: a926d9a24b61875b19ccb243694bb7cd1c704cb5
+Head: 9defa92bfa04e1f70f2f24eac65458a78ea39cf1
 
 ## Changed files
-- M .github/workflows/ci.yml
-- A backend/app/strix_python_toolchain_probe.py
-- A backend/strix-python-runtime.lock.json
-- A backend/tests/test_strix_python_toolchain_probe.py
+- M README.md
+- M backend/app/runtime_capabilities.py
+- A backend/app/strix_python_bootstrap_plan.py
+- M backend/tests/test_runtime_capabilities.py
+- A backend/tests/test_strix_python_bootstrap_plan.py
 
 ## Affected areas
-- .github
+- (root)
 - backend
 
 ## Related test candidates

@@ -211,6 +211,7 @@ backend/
     strix_egress.py
     strix_execution_contract.py
     strix_parser.py
+    strix_python_bootstrap_plan.py
     strix_python_compat_probe.py
     strix_python_lock_probe.py
     strix_python_toolchain_probe.py
@@ -446,6 +447,7 @@ backend/
     test_strix_egress_transport.py
     test_strix_egress.py
     test_strix_execution_contract.py
+    test_strix_python_bootstrap_plan.py
     test_strix_python_compat_probe.py
     test_strix_python_lock_probe.py
     test_strix_python_toolchain_probe.py
@@ -11877,6 +11879,28 @@ normalized = []
 finding = normalize_strix_item(item, campaign)
 ````
 
+## File: backend/app/strix_python_bootstrap_plan.py
+````python
+STRIX_PYTHON_BOOTSTRAP_PLAN_SCHEMA = "strix-python-bootstrap-plan-v1"
+_DOCKER_PREFLIGHT_SYMBOLS = [
+_PRESERVED_VALIDATION_SYMBOL = "validate_environment"
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+⋮----
+_COMPAT_KEYS = {
+_LOCK_KEYS = {
+_TOOLCHAIN_KEYS = {
+⋮----
+class StrixPythonBootstrapPlanError(RuntimeError)
+⋮----
+def _verify_compatibility(descriptor: dict[str, Any]) -> None
+⋮----
+def _verify_dependency_lock(descriptor: dict[str, Any]) -> None
+⋮----
+def _verify_toolchain(descriptor: dict[str, Any]) -> None
+⋮----
+uv_sha256 = descriptor.get("uv_sha256")
+````
+
 ## File: backend/app/strix_python_compat_probe.py
 ````python
 STRIX_PYTHON_COMPAT_SCHEMA = "strix-python-compat-probe-v1"
@@ -21850,6 +21874,25 @@ def test_unsafe_campaign_flags_block_contract_issuance(monkeypatch, flag)
 def test_automated_scanning_must_remain_enabled(monkeypatch)
 ````
 
+## File: backend/tests/test_strix_python_bootstrap_plan.py
+````python
+def _compat() -> dict
+⋮----
+def _lock() -> dict
+⋮----
+def _toolchain() -> dict
+⋮----
+def test_bootstrap_plan_composes_all_attestations()
+⋮----
+result = build_bootstrap_plan(
+⋮----
+descriptors = {
+⋮----
+def test_bootstrap_plan_rejects_unknown_fields()
+⋮----
+compatibility = _compat()
+````
+
 ## File: backend/tests/test_strix_python_compat_probe.py
 ````python
 def test_python_runtime_probe_reports_hook_and_docker_preflight(monkeypatch, tmp_path)
@@ -26630,7 +26673,7 @@ The service publishes no host port; port 8092 is exposed only to the internal `s
 
 The next extension point is verified without enabling execution. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
 
-One integration blocker is explicit: the pinned runner still launches the official standalone PyInstaller binary, while the custom backend registration currently exists only in a Python process using the wheel API. The standalone binary does not automatically import `app.strix_backend_hook`. A pinned Python bootstrap path (or another upstream-supported loading mechanism) is therefore required before `xbow-remote-v1` can participate in a real Strix run.
+One integration blocker is explicit: the pinned runner still launches the official standalone PyInstaller binary, while the custom backend registration currently exists only in a Python process using the wheel API. The standalone binary does not automatically import `app.strix_backend_hook`. The repository now defines an inert `strix-python-bootstrap-plan-v1` that composes the attested v1.6.2 source, dependency lock and Python/uv toolchain, identifies only `check_docker_installed` and `pull_docker_image` as Docker-preflight patch candidates, and explicitly preserves `validate_environment`. The plan remains non-applying and non-executing: `patch_application_enabled=false`, `entrypoint_enabled=false`, and `active_execution_enabled=false`.
 
 
 **Active Strix dispatch remains fail-closed.** A separately pinned/attested runner and authenticated internal RPC now exist, but session operations are unimplemented, the standalone Strix binary does not yet load the xbow backend hook, and full Strix behavior cannot be represented by the current read-only GET/HEAD subset. `GET /api/capabilities` therefore continues to report `strix_runtime_contract_not_enforceable` and `strix_broker_egress_enforced=false`, while advertising the bounded read-only boundary. Dry-run planning remains available.

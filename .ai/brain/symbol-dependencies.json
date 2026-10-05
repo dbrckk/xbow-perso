@@ -5,28 +5,28 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "StrixPythonToolchainError": {
+    "CapabilityConfigError": {
       "source": {
-        "file": "backend/app/strix_python_toolchain_probe.py",
-        "start": 20,
-        "end": 21
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 13,
+        "end": 14
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_read_bounded": {
+    "_strict_bool": {
       "source": {
-        "file": "backend/app/strix_python_toolchain_probe.py",
-        "start": 24,
-        "end": 35
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 17,
+        "end": 26
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixPythonToolchainError",
+          "symbol": "CapabilityConfigError",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 20,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 13,
               "kind": "class",
               "language": "python"
             }
@@ -36,19 +36,19 @@
       ],
       "dependency_count": 1
     },
-    "_sha256_file": {
+    "pentagi_runtime_capability": {
       "source": {
-        "file": "backend/app/strix_python_toolchain_probe.py",
-        "start": 38,
-        "end": 41
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 29,
+        "end": 79
       },
       "symbol_dependencies": [
         {
-          "symbol": "_read_bounded",
+          "symbol": "_strict_bool",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 24,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 17,
               "kind": "function",
               "language": "python"
             }
@@ -58,19 +58,19 @@
       ],
       "dependency_count": 1
     },
-    "_load_manifest": {
+    "safe_pentagi_runtime_capability": {
       "source": {
-        "file": "backend/app/strix_python_toolchain_probe.py",
-        "start": 44,
-        "end": 56
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 82,
+        "end": 104
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixPythonToolchainError",
+          "symbol": "CapabilityConfigError",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 20,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 13,
               "kind": "class",
               "language": "python"
             }
@@ -78,11 +78,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_read_bounded",
+          "symbol": "pentagi_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 24,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
@@ -92,31 +92,19 @@
       ],
       "dependency_count": 2
     },
-    "probe_toolchain": {
+    "scanner_runtime_capability": {
       "source": {
-        "file": "backend/app/strix_python_toolchain_probe.py",
-        "start": 59,
-        "end": 131
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 107,
+        "end": 214
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixPythonToolchainError",
+          "symbol": "_strict_bool",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_load_manifest",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 44,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 17,
               "kind": "function",
               "language": "python"
             }
@@ -124,88 +112,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_sha256_file",
+          "symbol": "strix_runtime_contract_enforceable",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_main": {
-      "source": {
-        "file": "backend/app/strix_python_toolchain_probe.py",
-        "start": 134,
-        "end": 163
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixPythonToolchainError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "probe_toolchain",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_runtime_toolchain_manifest_is_inert_and_pinned": {
-      "source": {
-        "file": "backend/tests/test_strix_python_toolchain_probe.py",
-        "start": 15,
-        "end": 30
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_toolchain_probe_accepts_exact_uv_archive": {
-      "source": {
-        "file": "backend/tests/test_strix_python_toolchain_probe.py",
-        "start": 33,
-        "end": 55
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_sha256_file",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "probe_toolchain",
-          "definitions": [
-            {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 59,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 92,
               "kind": "function",
               "language": "python"
             }
@@ -215,43 +126,43 @@
       ],
       "dependency_count": 2
     },
-    "test_toolchain_probe_rejects_digest_mismatch": {
+    "safe_scanner_runtime_capability": {
       "source": {
-        "file": "backend/tests/test_strix_python_toolchain_probe.py",
-        "start": 58,
-        "end": 72
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 217,
+        "end": 262
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixPythonToolchainError",
+          "symbol": "CapabilityConfigError",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 20,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 13,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "_sha256_file",
+          "symbol": "scanner_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 38,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 107,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "probe_toolchain",
+          "symbol": "strix_runtime_contract_enforceable",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 59,
+              "file": "backend/app/scanner_sandbox.py",
+              "line": 92,
               "kind": "function",
               "language": "python"
             }
@@ -261,31 +172,331 @@
       ],
       "dependency_count": 3
     },
-    "test_toolchain_probe_rejects_unknown_architecture": {
+    "browser_runtime_capability": {
       "source": {
-        "file": "backend/tests/test_strix_python_toolchain_probe.py",
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 266,
+        "end": 287
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "safe_browser_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 290,
+        "end": 302
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 266,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "recon_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 305,
+        "end": 340
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_strict_bool",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "safe_recon_runtime_capability": {
+      "source": {
+        "file": "backend/app/runtime_capabilities.py",
+        "start": 343,
+        "end": 362
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 305,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "StrixPythonBootstrapPlanError": {
+      "source": {
+        "file": "backend/app/strix_python_bootstrap_plan.py",
         "start": 75,
-        "end": 85
+        "end": 76
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_require_exact_contract": {
+      "source": {
+        "file": "backend/app/strix_python_bootstrap_plan.py",
+        "start": 79,
+        "end": 87
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixPythonToolchainError",
+          "symbol": "StrixPythonBootstrapPlanError",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 20,
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 75,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_verify_compatibility": {
+      "source": {
+        "file": "backend/app/strix_python_bootstrap_plan.py",
+        "start": 90,
+        "end": 113
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "probe_toolchain",
+          "symbol": "StrixPythonBootstrapPlanError",
           "definitions": [
             {
-              "file": "backend/app/strix_python_toolchain_probe.py",
-              "line": 59,
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_require_exact_contract",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_verify_dependency_lock": {
+      "source": {
+        "file": "backend/app/strix_python_bootstrap_plan.py",
+        "start": 116,
+        "end": 127
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixPythonBootstrapPlanError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_require_exact_contract",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_verify_toolchain": {
+      "source": {
+        "file": "backend/app/strix_python_bootstrap_plan.py",
+        "start": 130,
+        "end": 150
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixPythonBootstrapPlanError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_require_exact_contract",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "build_bootstrap_plan": {
+      "source": {
+        "file": "backend/app/strix_python_bootstrap_plan.py",
+        "start": 153,
+        "end": 183
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_verify_compatibility",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 90,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verify_dependency_lock",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 116,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verify_toolchain",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 130,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_clear": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 25,
+        "end": 27
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_pentagi_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 30,
+        "end": 43
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
@@ -295,14 +506,666 @@
       ],
       "dependency_count": 2
     },
-    "test_ci_verifies_official_uv_release_asset": {
+    "test_all_operator_gates_still_do_not_claim_pentagi_execution": {
       "source": {
-        "file": "backend/tests/test_strix_python_toolchain_probe.py",
-        "start": 88,
-        "end": 100
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 46,
+        "end": 65
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_status_tracking_requires_integration_and_status_worker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 68,
+        "end": 78
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_invalid_boolean_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 81,
+        "end": 93
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 96,
+        "end": 113
       },
       "symbol_dependencies": [],
       "dependency_count": 0
+    },
+    "test_capabilities_api_reports_configuration_error_without_raising": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 116,
+        "end": 125
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_scanner_runtime_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 129,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 107,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 148,
+        "end": 164
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 107,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_scanner_worker_admission": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 167,
+        "end": 179
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_scanner_runtime_capability_rejects_unsupported_engine": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 183,
+        "end": 193
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 107,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_runtime_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 197,
+        "end": 207
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 305,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_external_recon_preflight_reports_missing_tools": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 210,
+        "end": 228
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 305,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_external_recon_preflight_ready_when_every_tool_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 231,
+        "end": 242
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 305,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_capability_invalid_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 245,
+        "end": 252
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "safe_recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 343,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_recon_preflight": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 255,
+        "end": 272
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_strix_runtime_capability_fails_closed_without_binary_or_docker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 275,
+        "end": 289
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 107,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_strix_runtime_capability_stays_blocked_when_cli_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 292,
+        "end": 342
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 107,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_fails_closed_without_runtime_marker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 345,
+        "end": 355
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 266,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_ready_with_runtime_marker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 358,
+        "end": 368
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 266,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_disabled_even_when_runtime_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 371,
+        "end": 381
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 266,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_browser_runtime_detail": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 384,
+        "end": 397
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_compat": {
+      "source": {
+        "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+        "start": 12,
+        "end": 34
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_lock": {
+      "source": {
+        "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+        "start": 37,
+        "end": 50
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_toolchain": {
+      "source": {
+        "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+        "start": 53,
+        "end": 66
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_bootstrap_plan_composes_all_attestations": {
+      "source": {
+        "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+        "start": 69,
+        "end": 97
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_compat",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_lock",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_toolchain",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_bootstrap_plan",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 153,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_bootstrap_plan_fails_closed_on_attestation_mismatch": {
+      "source": {
+        "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+        "start": 135,
+        "end": 147
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixPythonBootstrapPlanError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_compat",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_lock",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_toolchain",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_bootstrap_plan",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 153,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_bootstrap_plan_rejects_unknown_fields": {
+      "source": {
+        "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+        "start": 150,
+        "end": 159
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixPythonBootstrapPlanError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 75,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_compat",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_lock",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_toolchain",
+          "definitions": [
+            {
+              "file": "backend/tests/test_strix_python_bootstrap_plan.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_bootstrap_plan",
+          "definitions": [
+            {
+              "file": "backend/app/strix_python_bootstrap_plan.py",
+              "line": 153,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
     }
   }
 }
