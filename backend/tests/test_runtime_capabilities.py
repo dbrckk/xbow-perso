@@ -414,4 +414,9 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
     assert result["strix_python_preflight_compatibility_applied"] is False
     assert result["strix_python_bootstrap_ready"] is False
     assert result["strix_runtime_contract_enforceable"] is False
-    assert result["active_scanner_ready"] is False
+    assert "strix_runtime_contract_not_enforceable" in result[
+        "dispatch_block_reasons"
+    ]
+    assert "strix_python_bootstrap_not_ready" in result[
+        "dispatch_block_reasons"
+    ]
