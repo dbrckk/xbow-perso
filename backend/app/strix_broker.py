@@ -121,7 +121,11 @@ def healthz() -> dict:
         egress_enabled = False
     return {
         "status": "ok",
-        "ready": bool(os.getenv("XBOW_STRIX_BROKER_HMAC_KEY", "")),
+        "ready": bool(os.getenv("XBOW_STRIX_BROKER_HMAC_KEY", ""))
+        and bool(os.getenv("XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY", "")),
+        "contract_verifier_ready": bool(
+            os.getenv("XBOW_STRIX_BROKER_HMAC_KEY", "")
+        ),
         "ticket_issuer_ready": bool(
             os.getenv("XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY", "")
         ),
