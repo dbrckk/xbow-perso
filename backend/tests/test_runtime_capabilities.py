@@ -323,6 +323,8 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_runner_rpc_execution_implemented"] is False
     assert result["strix_backend_hook_loaded_by_standalone_binary"] is False
     assert result["strix_python_bootstrap_ready"] is False
+    assert result["strix_python_bootstrap_plan_contract_defined"] is True
+    assert result["strix_python_preflight_patch_application_enabled"] is False
     assert result["strix_upstream_docker_preflight_required"] is True
     assert "strix_runtime_contract_not_enforceable" in result["dispatch_block_reasons"]
     assert "strix_runner_rpc_execution_not_implemented" in result["dispatch_block_reasons"]
