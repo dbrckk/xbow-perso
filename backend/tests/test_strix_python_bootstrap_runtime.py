@@ -149,6 +149,31 @@ def test_bootstrap_rejects_preimported_main(monkeypatch):
             pass
 
 
+def test_bootstrap_rejects_main_loaded_during_backend_registration(monkeypatch):
+    cache = {}
+
+    def register():
+        cache["strix.interface.main"] = object()
+        os.environ["STRIX_RUNTIME_BACKEND"] = "xbow-remote-v1"
+        return _backend_descriptor()
+
+    monkeypatch.setattr(
+        "app.strix_python_bootstrap_runtime.register_xbow_backend",
+        register,
+    )
+
+    with pytest.raises(
+        StrixPythonBootstrapRuntimeError,
+        match="loaded during backend registration",
+    ):
+        with prepared_strix_python_runtime(
+            bootstrap_plan=_plan(),
+            import_module=lambda _name: object(),
+            module_cache=cache,
+        ):
+            pass
+
+
 def test_bootstrap_rejects_unexpected_backend_descriptor(monkeypatch):
     monkeypatch.setattr(
         "app.strix_python_bootstrap_runtime.register_xbow_backend",
@@ -197,7 +222,7 @@ def test_bootstrap_rejects_backend_selection_drift(monkeypatch):
 
     with pytest.raises(
         StrixPythonBootstrapRuntimeError,
-        match="selection changed during bootstrap",
+        match="selection changed during interface import",
     ):
         with prepared_strix_python_runtime(
             bootstrap_plan=_plan(),
