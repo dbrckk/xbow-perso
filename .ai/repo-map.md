@@ -222,6 +222,7 @@ backend/
     strix_python_toolchain_probe.py
     strix_run_status.py
     strix_runner_attestation.py
+    strix_runner_exec_ticket.py
     strix_runner_rpc.py
     submission_api.py
     submission_state.py
@@ -465,6 +466,7 @@ backend/
     test_strix_python_toolchain_probe.py
     test_strix_run_status.py
     test_strix_runner_attestation.py
+    test_strix_runner_exec_ticket.py
     test_strix_runner_rpc.py
     test_submission_api.py
     test_submission_state.py
@@ -12380,6 +12382,97 @@ args = parser.parse_args()
 attestation = attest_strix_runner()
 ````
 
+## File: backend/app/strix_runner_exec_ticket.py
+````python
+STRIX_RUNNER_EXEC_TICKET_SCHEMA = "strix-runner-exec-ticket-v1"
+STRIX_COMMAND_ADMISSION_SCHEMA = "strix-command-admission-v1"
+STRIX_RUNNER_EXEC_TICKET_MIN_SECRET_BYTES = 32
+STRIX_RUNNER_EXEC_TICKET_MAX_SECRET_BYTES = 4096
+⋮----
+_SIGNATURE_DOMAIN = b"xbow:strix-runner-exec-ticket:v1\x00"
+_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_PROFILE_RE = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+_EXECUTABLE_RE = re.compile(r"^[A-Za-z0-9._+-]{1,64}$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_SHELL_INTERPRETERS = frozenset(
+⋮----
+_PROFILE_EXECUTABLES = {
+_PROFILE_MAX_TIMEOUT_SECONDS = {
+⋮----
+class StrixRunnerExecTicketError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class StrixRunnerExecTicket
+⋮----
+schema: str
+command_schema: str
+contract_hash: str
+session_id: str
+request_id: str
+profile: str
+executable: str
+argv_sha256: str
+argc: int
+argv_bytes: int
+timeout_seconds: float
+shell_interpreter_allowed: bool
+direct_egress_allowed: bool
+network_scope_enforcement: str
+active_execution_enabled: bool
+signature_alg: str
+signature: str
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def _secret_bytes(secret: str) -> bytes
+⋮----
+encoded = secret.encode("utf-8")
+⋮----
+def validate_strix_runner_exec_ticket_secret(secret: str) -> None
+⋮----
+def _argv_digest(argv: Sequence[str]) -> tuple[str, int, int, str]
+⋮----
+normalized: list[str] = []
+argv_bytes = 0
+⋮----
+executable = normalized[0]
+⋮----
+canonical = "\x00".join(normalized).encode("utf-8")
+⋮----
+def _unsigned_payload(values: Mapping[str, Any]) -> dict[str, Any]
+⋮----
+def _canonical_bytes(values: Mapping[str, Any]) -> bytes
+⋮----
+def _validate_descriptor(values: Mapping[str, Any]) -> None
+⋮----
+value = values.get(name)
+⋮----
+profile = values.get("profile")
+executable = values.get("executable")
+⋮----
+argc = values.get("argc")
+argv_bytes = values.get("argv_bytes")
+⋮----
+timeout = float(values.get("timeout_seconds"))
+⋮----
+def reviewed_runner_exec_ticket_profiles() -> dict[str, dict[str, Any]]
+⋮----
+secret = _secret_bytes(signing_secret)
+unsigned = _unsigned_payload(command_descriptor)
+signature = hmac.new(
+⋮----
+expected_keys = {
+⋮----
+descriptor = {
+⋮----
+signature = ticket_payload.get("signature")
+⋮----
+secret = _secret_bytes(verification_secret)
+expected_signature = hmac.new(
+⋮----
+timeout = float(timeout_seconds)
+````
+
 ## File: backend/app/strix_runner_rpc.py
 ````python
 RUNNER_RPC_PROTOCOL = "strix-runner-rpc-v1"
@@ -12460,6 +12553,7 @@ ports = payload.get("exposed_ports")
 ⋮----
 argv = payload.get("argv")
 timeout = payload.get("timeout_seconds")
+admission = payload.get("admission")
 ⋮----
 class BoundedThreadingHTTPServer(ThreadingHTTPServer)
 ⋮----
@@ -12508,6 +12602,10 @@ def log_message(self, _format: str, *_args: object) -> None
 def _rpc_secret_from_env() -> str | None
 ⋮----
 secret = os.getenv("XBOW_STRIX_RUNNER_RPC_HMAC_KEY", "")
+⋮----
+def _admission_secret_from_env() -> str | None
+⋮----
+secret = os.getenv("XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY", "")
 ⋮----
 def serve() -> None
 ⋮----
@@ -22489,10 +22587,49 @@ workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 def test_runner_has_no_direct_public_network_probe()
 ````
 
+## File: backend/tests/test_strix_runner_exec_ticket.py
+````python
+SECRET = "runner-exec-ticket-secret-at-least-32-bytes"
+⋮----
+def _descriptor(*, argv=None, timeout_seconds=10.0)
+⋮----
+argv = list(argv or ["curl", "-fsS", "http://127.0.0.1:48080/graphql"])
+canonical = "\x00".join(argv).encode("utf-8")
+⋮----
+def test_exec_ticket_round_trip_binds_request_identity_and_argv()
+⋮----
+argv = ["curl", "-fsS", "http://127.0.0.1:48080/graphql"]
+ticket = build_strix_runner_exec_ticket(
+⋮----
+verified = verify_strix_runner_exec_ticket(
+⋮----
+def test_exec_ticket_rejects_safety_invariant_drift(field, value)
+⋮----
+descriptor = _descriptor()
+⋮----
+@pytest.mark.parametrize("executable", ("sh", "bash", "python3", "/bin/curl"))
+def test_exec_ticket_rejects_shells_and_executable_paths(executable)
+⋮----
+def test_exec_ticket_rejects_wrong_verification_key()
+⋮----
+def test_exec_ticket_secret_requires_minimum_entropy_length()
+⋮----
+def test_runner_ticket_profiles_match_command_admission_profiles()
+⋮----
+def test_runner_ticket_enforces_profile_specific_timeout()
+⋮----
+descriptor = _descriptor(timeout_seconds=31.0)
+⋮----
+def test_runner_ticket_rejects_executable_outside_selected_profile()
+⋮----
+descriptor = _descriptor(argv=["nuclei", "-version"])
+````
+
 ## File: backend/tests/test_strix_runner_rpc.py
 ````python
 ROOT = Path(__file__).resolve().parents[2]
 SECRET = "fixture-runner-rpc-secret-at-least-32-bytes"
+ADMISSION_SECRET = "fixture-runner-admission-secret-at-least-32-bytes"
 NOW = 1_800_000_000
 NONCE = "0123456789abcdef0123456789abcdef"
 ⋮----
@@ -22500,9 +22637,14 @@ def _headers(path: str, body: bytes, *, nonce: str = NONCE)
 ⋮----
 signature = sign_runner_rpc_request(
 ⋮----
-def _service(*, secret=SECRET, active_execution=False)
-⋮----
 def _payload(path: str) -> dict
+⋮----
+argv = [
+timeout_seconds = 10.0
+request_id = "req-exec-1"
+session_id = "sess-1"
+canonical = chr(0).join(argv).encode("utf-8")
+descriptor = {
 ⋮----
 def _request(service: RunnerRpcService, path: str, payload: dict)
 ⋮----
@@ -22516,6 +22658,10 @@ def test_ready_requires_rpc_secret()
 ⋮----
 result = _service(secret=None).handle(
 ⋮----
+def test_ready_requires_exec_admission_secret()
+⋮----
+result = _service(admission_secret=None).handle(
+⋮----
 def test_authenticated_session_operations_still_fail_closed(path)
 ⋮----
 result = _request(_service(), path, _payload(path))
@@ -22524,6 +22670,18 @@ def test_even_active_flag_cannot_enable_unimplemented_rpc()
 ⋮----
 path = "/v1/session/create"
 result = _request(
+⋮----
+def test_valid_exec_ticket_still_cannot_enable_execution()
+⋮----
+path = "/v1/session/exec"
+⋮----
+def test_exec_rejects_tampered_admission_ticket_before_execution_gate()
+⋮----
+payload = _payload(path)
+⋮----
+result = _request(_service(), path, payload)
+⋮----
+def test_exec_rejects_ticket_bound_to_different_argv()
 ⋮----
 def test_missing_auth_is_rejected_before_payload_processing()
 ⋮----
@@ -22537,8 +22695,6 @@ original = json.dumps(
 tampered = original.replace(b"sess-1", b"sess-2")
 ⋮----
 def test_nonce_replay_is_rejected()
-⋮----
-payload = _payload(path)
 ⋮----
 headers = _headers(path, body)
 ⋮----
@@ -22559,8 +22715,6 @@ stale = NOW - 31
 ⋮----
 def test_unknown_payload_field_fails_closed()
 ⋮----
-result = _request(_service(), path, payload)
-⋮----
 def test_operation_schema_bounds_are_enforced(path, mutate)
 ⋮----
 def test_runner_compose_exposes_rpc_only_internally()
@@ -22572,7 +22726,7 @@ def test_ci_waits_for_runner_rpc_readiness()
 ⋮----
 workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 ⋮----
-def test_runner_image_contains_only_rpc_and_attestation_modules()
+def test_runner_image_contains_only_required_runner_modules()
 ⋮----
 dockerfile = (ROOT / "backend" / "Dockerfile.strix-runner").read_text()
 ⋮----
@@ -22601,6 +22755,8 @@ def test_runner_rpc_signer_rejects_short_secret()
 def test_runner_rpc_service_rejects_short_secret()
 ⋮----
 def test_runner_rpc_env_rejects_short_secret(monkeypatch)
+⋮----
+def test_runner_admission_env_rejects_short_secret(monkeypatch)
 ⋮----
 def test_runner_rpc_accepts_exact_minimum_secret_length()
 ⋮----
@@ -26306,6 +26462,7 @@ services:
     environment:
       XBOW_STRIX_ACTIVE_EXECUTION: "false"
       XBOW_STRIX_RUNNER_RPC_HMAC_KEY: ${XBOW_STRIX_RUNNER_RPC_HMAC_KEY:-}
+      XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY: ${XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY:-}
     expose:
       - "8092"
     read_only: true
@@ -27155,18 +27312,19 @@ For contract v1, `XBOW_STRIX_BROKER_HMAC_KEY` and `XBOW_STRIX_EGRESS_HMAC_KEY` m
 
 A separate `strix-runner` profile now pins the official Strix **v1.6.2** Linux release. The image verifies the official release-asset SHA-256 before extraction (amd64 and arm64 have separate pinned digests), verifies the CLI reports exactly `strix 1.6.2`, records the pinned source commit `ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2`, and re-attests the extracted binary SHA-256 at runtime. The container has no published ports, volumes, Docker socket or external network and runs as a non-root user with a read-only root filesystem and all Linux capabilities dropped.
 
-The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it now serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes. Its HTTP boundary also uses a 5-second idle socket timeout, a 10-second absolute header/body read deadline and a 16-connection concurrency cap. **All session operations are still unimplemented**; a valid request therefore fails closed instead of executing a command.
+The runner remains intentionally non-executing: `XBOW_STRIX_ACTIVE_EXECUTION=false` is mandatory. After runtime attestation it serves an internal-only authenticated control endpoint on port 8092 using `strix-runner-rpc-v1`. The RPC defines strict create/exec/resolve-port/delete request schemas, HMAC transport authentication, a 30-second timestamp window, nonce replay protection and bounded request sizes. Its HTTP boundary also uses a 5-second idle socket timeout, a 10-second absolute header/body read deadline and a 16-connection concurrency cap. `/v1/session/exec` now additionally requires a `strix-runner-exec-ticket-v1` signed with a separate admission key. The ticket binds the command-admission schema, execution-contract hash, session/request ids, argv SHA-256, argc/byte count, profile, executable and timeout. The runner independently rechecks the reviewed profile/tool allowlist, rejects shell interpreters and executable paths, and requires direct egress to remain disabled with broker-only network enforcement. **All session operations are still unimplemented**; even a valid ticket reaches only the disabled-execution gate and cannot launch a process.
 
-Provision a separate internal RPC key of at least 32 bytes before starting the runner. A 32-byte random value encoded as hex is sufficient:
+Provision separate internal RPC and exec-admission keys of at least 32 bytes before starting the runner. A 32-byte random value encoded as hex is sufficient for each:
 
 ```bash
 export XBOW_STRIX_RUNNER_RPC_HMAC_KEY="$(openssl rand -hex 32)"
+export XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY="$(openssl rand -hex 32)"
 docker compose --profile strix-runner up -d --build strix-runner
 ```
 
 The service publishes no host port; port 8092 is exposed only to the internal `strix-broker` network. CI verifies that the broker can reach the runner readiness endpoint while the runner cannot open a direct public-network connection.
 
-The next extension point is verified without enabling execution. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
+The next extension point is verified without enabling execution. The runner RPC now enforces the signed exec-ticket boundary before its execution gate, but the trusted producer path that turns a verified `strix-command-admission-v1` descriptor into that ticket is not wired into a live session yet. `app.strix_backend_hook` registers `xbow-remote-v1` through Strix v1.6.2's public runtime-backend registry, explicitly declares no bind-mount support, and then fails closed on every backend invocation. CI downloads the official `strix_agent-1.6.2-py3-none-manylinux_2_17_x86_64.whl`, verifies SHA-256 `1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b`, installs it without dependencies into an isolated temporary path, and runs the hook self-test against the real upstream registry API.
 
 One integration blocker is explicit: the pinned runner still launches the official standalone PyInstaller binary, while the custom backend registration currently exists only in a Python process using the wheel API. The standalone binary does not automatically import `app.strix_backend_hook`. The repository now defines an inert `strix-python-bootstrap-plan-v1` that composes the attested v1.6.2 source, dependency lock and Python/uv toolchain, identifies only `check_docker_installed` and `pull_docker_image` as Docker-preflight patch candidates, and explicitly preserves `validate_environment`. The plan remains non-applying and non-executing: `patch_application_enabled=false`, `entrypoint_enabled=false`, and `active_execution_enabled=false`. The repository also defines `strix-python-preflight-compatibility-v1`, a context-managed shim that can temporarily replace only those two direct aliases in `strix.interface.main` after exact plan and import-identity checks. It leaves the upstream environment module untouched during normal operation, preserves `validate_environment`, restores guarded symbols on every exit path, and is not wired into the runner yet. `strix-python-bootstrap-runtime-v1` now composes those pieces into a prepared runtime context: it registers `xbow-remote-v1` before importing `strix.interface.main`, rechecks the registry after import, re-attests the preflight surface, applies the bounded compatibility shim for the lifetime of the context, and still never calls the Strix entrypoint itself. The next boundary is now explicit too: `strix-command-admission-v1` authenticates the signed execution contract and admits bounded argv only through reviewed profiles. `bootstrap-v1` currently permits only `curl`; `web-active-v1` includes reviewed web-assessment tools such as `nuclei`, `sqlmap`, `ffuf`, `katana`, `dalfox`, `feroxbuster`, `gobuster`, `httpx`, and `nikto`. Shell interpreters and executable paths are rejected, direct runner egress remains forbidden, and network scope must still be enforced by the broker.
 

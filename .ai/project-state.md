@@ -39,26 +39,32 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T21:56:52Z
+Generated: 2026-10-05T22:07:16Z
 
 ### Git
 - Branch: `main`
-- Head: `56067593f9fd`
-- Commit date: 2026-10-05T23:56:40+02:00
-- Commit: feat(intelligence): add CVE and novel vulnerability signals
-- Tracked files: 635
+- Head: `1a9ff90b85fd`
+- Commit date: 2026-10-06T00:07:05+02:00
+- Commit: feat(strix): enforce authenticated exec tickets at runner RPC
+- Tracked files: 637
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `README.md`
+- `backend/Dockerfile.strix-runner`
+- `backend/app/runtime_capabilities.py`
+- `backend/app/strix_runner_exec_ticket.py`
+- `backend/app/strix_runner_rpc.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_runner_exec_ticket.py`
+- `backend/tests/test_strix_runner_rpc.py`
+- `docker-compose.yml`
 - `backend/app/finding_intelligence.py`
 - `backend/app/scanner_normalization.py`
 - `backend/app/vulnerability_intelligence.py`
 - `backend/tests/test_vulnerability_intelligence.py`
-- `README.md`
-- `backend/app/runtime_capabilities.py`
 - `backend/app/strix_command_admission.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_command_admission.py`
-- `.github/workflows/ci.yml`
 - `backend/app/strix_python_bootstrap_runtime.py`
 - `backend/tests/test_strix_python_bootstrap_runtime.py`
 - `backend/app/strix_python_preflight_compatibility.py`

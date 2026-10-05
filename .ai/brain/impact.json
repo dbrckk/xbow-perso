@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "ea40e27ff26a2aa930dfe6d773818f2c0e4d95cc",
-  "head": "56067593f9fdc6571a958a48584a68b7b8776437",
+  "base": "56067593f9fdc6571a958a48584a68b7b8776437",
+  "head": "1a9ff90b85fd955d99f463b213d2e492d7618b72",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -14,7 +14,7 @@
       "status": "M"
     },
     {
-      "path": "backend/app/finding_intelligence.py",
+      "path": "backend/Dockerfile.strix-runner",
       "status": "M"
     },
     {
@@ -22,86 +22,53 @@
       "status": "M"
     },
     {
-      "path": "backend/app/scanner_normalization.py",
+      "path": "backend/app/strix_runner_exec_ticket.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/app/strix_runner_rpc.py",
       "status": "M"
-    },
-    {
-      "path": "backend/app/strix_command_admission.py",
-      "status": "A"
-    },
-    {
-      "path": "backend/app/strix_python_bootstrap_runtime.py",
-      "status": "A"
-    },
-    {
-      "path": "backend/app/strix_python_preflight_compatibility.py",
-      "status": "A"
-    },
-    {
-      "path": "backend/app/vulnerability_intelligence.py",
-      "status": "A"
     },
     {
       "path": "backend/tests/test_runtime_capabilities.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_strix_command_admission.py",
+      "path": "backend/tests/test_strix_runner_exec_ticket.py",
       "status": "A"
     },
     {
-      "path": "backend/tests/test_strix_python_bootstrap_runtime.py",
-      "status": "A"
+      "path": "backend/tests/test_strix_runner_rpc.py",
+      "status": "M"
     },
     {
-      "path": "backend/tests/test_strix_python_preflight_compatibility.py",
-      "status": "A"
-    },
-    {
-      "path": "backend/tests/test_vulnerability_intelligence.py",
-      "status": "A"
+      "path": "docker-compose.yml",
+      "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/finding_intelligence.py",
     "backend/app/runtime_capabilities.py",
-    "backend/app/scanner_normalization.py",
-    "backend/app/strix_command_admission.py",
-    "backend/app/strix_python_bootstrap_runtime.py",
-    "backend/app/strix_python_preflight_compatibility.py",
-    "backend/app/vulnerability_intelligence.py",
+    "backend/app/strix_runner_exec_ticket.py",
+    "backend/app/strix_runner_rpc.py",
     "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_strix_command_admission.py",
-    "backend/tests/test_strix_python_bootstrap_runtime.py",
-    "backend/tests/test_strix_python_preflight_compatibility.py",
-    "backend/tests/test_vulnerability_intelligence.py"
+    "backend/tests/test_strix_runner_exec_ticket.py",
+    "backend/tests/test_strix_runner_rpc.py"
   ],
   "impacted_files": [
     "backend/app/campaign_control.py",
     "backend/app/deployment_preflight.py",
-    "backend/app/finding_intelligence.py",
     "backend/app/hackerone_intelligence.py",
     "backend/app/hackerone_live_readiness.py",
     "backend/app/htb_lab.py",
     "backend/app/main.py",
-    "backend/app/nuclei_parser.py",
     "backend/app/orchestrator.py",
     "backend/app/runtime_capabilities.py",
-    "backend/app/scanner_normalization.py",
-    "backend/app/strix_command_admission.py",
-    "backend/app/strix_parser.py",
-    "backend/app/strix_python_bootstrap_runtime.py",
-    "backend/app/strix_python_preflight_compatibility.py",
-    "backend/app/vulnerability_intelligence.py",
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_finding_intelligence.py",
+    "backend/app/strix_runner_exec_ticket.py",
+    "backend/app/strix_runner_rpc.py",
     "backend/tests/test_nuclei_preflight.py",
     "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_scanner_normalization.py",
-    "backend/tests/test_strix_command_admission.py",
-    "backend/tests/test_strix_python_bootstrap_runtime.py",
-    "backend/tests/test_strix_python_preflight_compatibility.py",
-    "backend/tests/test_vulnerability_intelligence.py"
+    "backend/tests/test_strix_runner_exec_ticket.py",
+    "backend/tests/test_strix_runner_rpc.py"
   ],
   "impacted_symbols": [
     {
@@ -181,18 +148,6 @@
       "kind": "function",
       "file": "backend/app/deployment_preflight.py",
       "line": 39
-    },
-    {
-      "name": "build_finding_intelligence",
-      "kind": "function",
-      "file": "backend/app/finding_intelligence.py",
-      "line": 20
-    },
-    {
-      "name": "campaign_finding_intelligence",
-      "kind": "function",
-      "file": "backend/app/finding_intelligence.py",
-      "line": 196
     },
     {
       "name": "_utcnow",
@@ -1011,24 +966,6 @@
       "line": 1864
     },
     {
-      "name": "NucleiParserError",
-      "kind": "class",
-      "file": "backend/app/nuclei_parser.py",
-      "line": 15
-    },
-    {
-      "name": "_max_nuclei_jsonl_bytes",
-      "kind": "function",
-      "file": "backend/app/nuclei_parser.py",
-      "line": 19
-    },
-    {
-      "name": "parse_nuclei_jsonl",
-      "kind": "function",
-      "file": "backend/app/nuclei_parser.py",
-      "line": 32
-    },
-    {
       "name": "_stable_id",
       "kind": "function",
       "file": "backend/app/orchestrator.py",
@@ -1134,403 +1071,343 @@
       "name": "CapabilityConfigError",
       "kind": "class",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 13
+      "line": 14
     },
     {
       "name": "_strict_bool",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 17
+      "line": 18
     },
     {
       "name": "pentagi_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 29
+      "line": 30
     },
     {
       "name": "safe_pentagi_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 82
+      "line": 83
     },
     {
       "name": "scanner_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 107
+      "line": 108
     },
     {
       "name": "safe_scanner_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 231
+      "line": 236
     },
     {
       "name": "browser_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 294
+      "line": 303
     },
     {
       "name": "safe_browser_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 318
+      "line": 327
     },
     {
       "name": "recon_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 333
+      "line": 342
     },
     {
       "name": "safe_recon_runtime_capability",
       "kind": "function",
       "file": "backend/app/runtime_capabilities.py",
-      "line": 371
+      "line": 380
     },
     {
-      "name": "NormalizedScannerFinding",
+      "name": "StrixRunnerExecTicketError",
       "kind": "class",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 18
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 65
     },
     {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 35
-    },
-    {
-      "name": "_optional_str",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 43
-    },
-    {
-      "name": "_optional_cvss",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 47
-    },
-    {
-      "name": "_severity",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 55
-    },
-    {
-      "name": "_string_list",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 60
-    },
-    {
-      "name": "_cve_ids",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 72
-    },
-    {
-      "name": "_with_cve_evidence",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 87
-    },
-    {
-      "name": "normalize_strix_item",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 96
-    },
-    {
-      "name": "normalize_nuclei_item",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 136
-    },
-    {
-      "name": "normalized_finding_id",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 185
-    },
-    {
-      "name": "to_campaign_finding",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 205
-    },
-    {
-      "name": "dedupe_normalized",
-      "kind": "function",
-      "file": "backend/app/scanner_normalization.py",
-      "line": 224
-    },
-    {
-      "name": "StrixCommandAdmissionError",
+      "name": "StrixRunnerExecTicket",
       "kind": "class",
-      "file": "backend/app/strix_command_admission.py",
+      "file": "backend/app/strix_runner_exec_ticket.py",
       "line": 70
     },
     {
-      "name": "StrixAuthorizedCommand",
-      "kind": "class",
-      "file": "backend/app/strix_command_admission.py",
-      "line": 75
-    },
-    {
       "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/strix_command_admission.py",
-      "line": 91
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 89
     },
     {
-      "name": "reviewed_command_profiles",
+      "name": "_secret_bytes",
       "kind": "function",
-      "file": "backend/app/strix_command_admission.py",
-      "line": 110
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 93
+    },
+    {
+      "name": "validate_strix_runner_exec_ticket_secret",
+      "kind": "function",
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 108
+    },
+    {
+      "name": "_argv_digest",
+      "kind": "function",
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 112
+    },
+    {
+      "name": "_unsigned_payload",
+      "kind": "function",
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 154
+    },
+    {
+      "name": "_canonical_bytes",
+      "kind": "function",
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 174
+    },
+    {
+      "name": "_validate_descriptor",
+      "kind": "function",
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 184
+    },
+    {
+      "name": "reviewed_runner_exec_ticket_profiles",
+      "kind": "function",
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 255
+    },
+    {
+      "name": "build_strix_runner_exec_ticket",
+      "kind": "function",
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 268
+    },
+    {
+      "name": "verify_strix_runner_exec_ticket",
+      "kind": "function",
+      "file": "backend/app/strix_runner_exec_ticket.py",
+      "line": 288
+    },
+    {
+      "name": "RunnerRpcResponse",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 52
+    },
+    {
+      "name": "RunnerRpcService",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 58
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 59
+    },
+    {
+      "name": "handle",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 78
+    },
+    {
+      "name": "_authenticate",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 169
+    },
+    {
+      "name": "_prune_nonces",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 222
+    },
+    {
+      "name": "_runner_rpc_secret_bytes",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 231
+    },
+    {
+      "name": "sign_runner_rpc_request",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 242
+    },
+    {
+      "name": "configure_runner_rpc_socket",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 270
+    },
+    {
+      "name": "_error",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 274
     },
     {
       "name": "_valid_id",
       "kind": "function",
-      "file": "backend/app/strix_command_admission.py",
-      "line": 123
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 285
     },
     {
-      "name": "_validate_contract",
+      "name": "_valid_digest",
       "kind": "function",
-      "file": "backend/app/strix_command_admission.py",
-      "line": 131
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 289
     },
     {
-      "name": "_validate_argv",
+      "name": "_valid_port",
       "kind": "function",
-      "file": "backend/app/strix_command_admission.py",
-      "line": 164
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 293
     },
     {
-      "name": "authorize_strix_command",
+      "name": "_exact_keys",
       "kind": "function",
-      "file": "backend/app/strix_command_admission.py",
-      "line": 218
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 301
     },
     {
-      "name": "StrixParserError",
+      "name": "_valid_common",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 305
+    },
+    {
+      "name": "_validate_operation_payload",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 312
+    },
+    {
+      "name": "BoundedThreadingHTTPServer",
       "kind": "class",
-      "file": "backend/app/strix_parser.py",
-      "line": 15
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 417
     },
     {
-      "name": "max_strix_json_bytes",
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/app/strix_parser.py",
-      "line": 19
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 418
     },
     {
-      "name": "parse_strix_json",
+      "name": "process_request",
       "kind": "function",
-      "file": "backend/app/strix_parser.py",
-      "line": 32
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 431
     },
     {
-      "name": "StrixPythonBootstrapRuntimeError",
+      "name": "process_request_thread",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 445
+    },
+    {
+      "name": "_RunnerRpcHttpHandler",
       "kind": "class",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 35
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 456
     },
     {
-      "name": "_module_namespace",
+      "name": "setup",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 39
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 459
     },
     {
-      "name": "_verify_backend_descriptor",
+      "name": "finish",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 53
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 469
     },
     {
-      "name": "prepared_strix_python_runtime",
+      "name": "_start_read_deadline",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 61
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 473
     },
     {
-      "name": "_self_test_plan",
+      "name": "_cancel_read_deadline",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 151
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 482
     },
     {
-      "name": "self_test",
+      "name": "_expire_read_deadline",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 176
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 489
     },
     {
-      "name": "check_docker_installed",
+      "name": "do_GET",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 177
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 493
     },
     {
-      "name": "pull_docker_image",
+      "name": "do_POST",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 180
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 496
     },
     {
-      "name": "validate_environment",
+      "name": "_dispatch",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 183
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 499
     },
     {
-      "name": "synthetic_import",
+      "name": "_write",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 198
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 542
+    },
+    {
+      "name": "log_message",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 557
+    },
+    {
+      "name": "_rpc_secret_from_env",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 561
+    },
+    {
+      "name": "_admission_secret_from_env",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 572
+    },
+    {
+      "name": "serve",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 583
     },
     {
       "name": "_main",
       "kind": "function",
-      "file": "backend/app/strix_python_bootstrap_runtime.py",
-      "line": 247
-    },
-    {
-      "name": "StrixPythonPreflightCompatibilityError",
-      "kind": "class",
-      "file": "backend/app/strix_python_preflight_compatibility.py",
-      "line": 33
-    },
-    {
-      "name": "_verified_noop_preflight",
-      "kind": "function",
-      "file": "backend/app/strix_python_preflight_compatibility.py",
-      "line": 37
-    },
-    {
-      "name": "_verify_patch_plan",
-      "kind": "function",
-      "file": "backend/app/strix_python_preflight_compatibility.py",
-      "line": 41
-    },
-    {
-      "name": "_verify_pre_patch_namespaces",
-      "kind": "function",
-      "file": "backend/app/strix_python_preflight_compatibility.py",
-      "line": 62
-    },
-    {
-      "name": "applied_preflight_compatibility",
-      "kind": "function",
-      "file": "backend/app/strix_python_preflight_compatibility.py",
-      "line": 84
-    },
-    {
-      "name": "VulnerabilitySignal",
-      "kind": "class",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 19
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 32
-    },
-    {
-      "name": "_extract_cve_ids",
-      "kind": "function",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 39
-    },
-    {
-      "name": "finding_cve_ids",
-      "kind": "function",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 53
-    },
-    {
-      "name": "build_vulnerability_signal",
-      "kind": "function",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 74
-    },
-    {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 10
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 23
-    },
-    {
-      "name": "test_validation_worker_persists_sanitized_differential_signal_without_confirming",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 40
-    },
-    {
-      "name": "test_finding_intelligence_surfaces_differential_signal_and_summary",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 91
-    },
-    {
-      "name": "test_red_team_decision_prioritizes_strong_signal_inside_existing_review_work",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 133
-    },
-    {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 8
-    },
-    {
-      "name": "_graph",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 20
-    },
-    {
-      "name": "test_finding_intelligence_consolidates_member_and_cluster_views",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 59
-    },
-    {
-      "name": "test_finding_intelligence_summary_reflects_cluster_saturation",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 94
-    },
-    {
-      "name": "test_finding_intelligence_does_not_expose_query_values",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 109
-    },
-    {
-      "name": "test_finding_intelligence_route_is_exposed",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 122
-    },
-    {
-      "name": "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 126
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 602
     },
     {
       "name": "_clear",
@@ -1680,240 +1557,325 @@
       "name": "test_browser_runtime_capability_fails_closed_without_runtime_marker",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 362
+      "line": 366
     },
     {
       "name": "test_browser_runtime_capability_ready_with_runtime_marker",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 375
+      "line": 379
     },
     {
       "name": "test_browser_runtime_capability_disabled_even_when_runtime_exists",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 388
+      "line": 392
     },
     {
       "name": "test_capabilities_api_exposes_browser_runtime_detail",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 401
+      "line": 405
     },
     {
       "name": "test_strix_capability_preflight_state_stays_fail_closed",
       "kind": "function",
       "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 418
+      "line": 422
     },
     {
-      "name": "_campaign",
+      "name": "_descriptor",
       "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 22
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 18
     },
     {
-      "name": "test_strix_and_nuclei_normalize_to_same_canonical_shape",
+      "name": "test_exec_ticket_round_trip_binds_request_identity_and_argv",
       "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 36
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 39
     },
     {
-      "name": "test_normalized_ids_are_engine_scoped_and_stable",
+      "name": "test_exec_ticket_rejects_safety_invariant_drift",
       "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 72
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 71
     },
     {
-      "name": "test_normalizers_fail_closed_outside_scope",
+      "name": "test_exec_ticket_rejects_shells_and_executable_paths",
       "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 91
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 83
     },
     {
-      "name": "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
+      "name": "test_exec_ticket_rejects_wrong_verification_key",
       "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 108
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 94
     },
     {
-      "name": "test_nuclei_jsonl_parser_rejects_invalid_line",
+      "name": "test_exec_ticket_rejects_request_binding_mismatch",
       "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 146
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 140
     },
     {
-      "name": "test_nuclei_jsonl_parser_rejects_oversized_file",
+      "name": "test_exec_ticket_secret_requires_minimum_entropy_length",
       "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 154
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 162
     },
     {
-      "name": "test_scanner_registry_exposes_supported_engines",
+      "name": "test_runner_ticket_profiles_match_command_admission_profiles",
       "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 164
-    },
-    {
-      "name": "test_scanner_registry_rejects_unknown_engine",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 172
-    },
-    {
-      "name": "test_scanner_registry_dispatches_strix_parser",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 177
-    },
-    {
-      "name": "test_scanner_registry_dispatches_nuclei_parser",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 200
-    },
-    {
-      "name": "test_scanner_registry_discovers_artifacts_by_adapter_glob",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 220
-    },
-    {
-      "name": "test_scanner_registry_rejects_symlinked_artifacts",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 233
-    },
-    {
-      "name": "test_scanner_registry_selects_latest_artifact",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 244
-    },
-    {
-      "name": "test_scanner_registry_missing_run_directory_is_empty",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_normalization.py",
-      "line": 262
-    },
-    {
-      "name": "_contract",
-      "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 16
-    },
-    {
-      "name": "_trust_contract",
-      "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 38
-    },
-    {
-      "name": "verify",
-      "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 41
-    },
-    {
-      "name": "test_reviewed_profiles_keep_shell_and_direct_egress_disabled",
-      "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 57
-    },
-    {
-      "name": "test_bootstrap_curl_is_admitted_without_enabling_execution",
-      "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 74
-    },
-    {
-      "name": "test_reviewed_web_active_tools_are_admissible",
-      "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 125
-    },
-    {
-      "name": "test_shells_paths_and_control_characters_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 153
-    },
-    {
-      "name": "test_tool_outside_profile_is_rejected",
-      "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
       "line": 167
     },
     {
-      "name": "test_profile_timeout_caps_are_enforced",
+      "name": "test_runner_ticket_enforces_profile_specific_timeout",
       "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 184
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 171
     },
     {
-      "name": "test_contract_safety_drift_is_rejected",
+      "name": "test_runner_ticket_rejects_executable_outside_selected_profile",
       "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 223
+      "file": "backend/tests/test_strix_runner_exec_ticket.py",
+      "line": 181
     },
     {
-      "name": "test_signature_verification_failure_is_wrapped",
+      "name": "_headers",
       "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 237
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 25
     },
     {
-      "name": "fail",
+      "name": "_service",
       "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 238
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 42
     },
     {
-      "name": "test_session_and_request_ids_are_bounded",
+      "name": "_payload",
       "kind": "function",
-      "file": "backend/tests/test_strix_command_admission.py",
-      "line": 271
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 56
     },
     {
-      "name": "_plan",
+      "name": "_request",
       "kind": "function",
-      "file": "backend/tests/test_strix_python_bootstrap_runtime.py",
-      "line": 15
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 118
     },
     {
-      "name": "_modules",
+      "name": "test_health_is_non_secret_and_execution_stays_disabled",
       "kind": "function",
-      "file": "backend/tests/test_strix_python_bootstrap_runtime.py",
-      "line": 40
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 132
     },
     {
-      "name": "check_docker_installed",
+      "name": "test_ready_requires_rpc_secret",
       "kind": "function",
-      "file": "backend/tests/test_strix_python_bootstrap_runtime.py",
-      "line": 41
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 150
     },
     {
-      "name": "pull_docker_image",
+      "name": "test_ready_requires_exec_admission_secret",
       "kind": "function",
-      "file": "backend/tests/test_strix_python_bootstrap_runtime.py",
-      "line": 44
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 162
     },
     {
-      "name": "validate_environment",
+      "name": "test_authenticated_session_operations_still_fail_closed",
       "kind": "function",
-      "file": "backend/tests/test_strix_python_bootstrap_runtime.py",
-      "line": 47
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 183
+    },
+    {
+      "name": "test_even_active_flag_cannot_enable_unimplemented_rpc",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 190
+    },
+    {
+      "name": "test_valid_exec_ticket_still_cannot_enable_execution",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 202
+    },
+    {
+      "name": "test_exec_rejects_tampered_admission_ticket_before_execution_gate",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 214
+    },
+    {
+      "name": "test_exec_rejects_ticket_bound_to_different_argv",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 225
+    },
+    {
+      "name": "test_missing_auth_is_rejected_before_payload_processing",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 236
+    },
+    {
+      "name": "test_signature_covers_body",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 249
+    },
+    {
+      "name": "test_nonce_replay_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 268
+    },
+    {
+      "name": "test_replay_cache_saturation_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 297
+    },
+    {
+      "name": "test_stale_timestamp_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 348
+    },
+    {
+      "name": "test_unknown_payload_field_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 380
+    },
+    {
+      "name": "test_operation_schema_bounds_are_enforced",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 407
+    },
+    {
+      "name": "test_runner_compose_exposes_rpc_only_internally",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 417
+    },
+    {
+      "name": "test_ci_waits_for_runner_rpc_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 434
+    },
+    {
+      "name": "test_runner_image_contains_only_required_runner_modules",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 442
+    },
+    {
+      "name": "test_runner_rpc_socket_timeout_is_bounded",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 451
+    },
+    {
+      "name": "FakeSocket",
+      "kind": "class",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 457
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 458
+    },
+    {
+      "name": "settimeout",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 461
+    },
+    {
+      "name": "test_runner_rpc_server_rejects_connections_above_cap",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 472
+    },
+    {
+      "name": "test_runner_rpc_server_releases_slot_after_request_thread",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 494
+    },
+    {
+      "name": "fail_request_thread",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 503
+    },
+    {
+      "name": "test_runner_rpc_signer_rejects_short_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 518
+    },
+    {
+      "name": "test_runner_rpc_service_rejects_short_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 530
+    },
+    {
+      "name": "test_runner_rpc_env_rejects_short_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 540
+    },
+    {
+      "name": "test_runner_admission_env_rejects_short_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 550
+    },
+    {
+      "name": "test_runner_rpc_accepts_exact_minimum_secret_length",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 560
+    },
+    {
+      "name": "test_runner_rpc_read_deadline_is_absolute",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 578
+    },
+    {
+      "name": "FakeTimer",
+      "kind": "class",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 588
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 589
+    },
+    {
+      "name": "start",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 597
     }
   ],
   "selected_tests": [
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_finding_intelligence.py",
     "backend/tests/test_nuclei_preflight.py",
     "backend/tests/test_runtime_capabilities.py",
-    "backend/tests/test_scanner_normalization.py",
-    "backend/tests/test_strix_command_admission.py",
-    "backend/tests/test_strix_python_bootstrap_runtime.py",
-    "backend/tests/test_strix_python_preflight_compatibility.py",
-    "backend/tests/test_vulnerability_intelligence.py"
+    "backend/tests/test_strix_runner_exec_ticket.py",
+    "backend/tests/test_strix_runner_rpc.py"
   ]
 }

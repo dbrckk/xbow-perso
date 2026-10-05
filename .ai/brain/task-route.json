@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 6,
     "tier": "bounded",
     "top_score": 27
   },
   "cache": {
-    "fingerprint": "23b68048392db505f329a68e50274cac47b3c8dbe1f78354b26b56c3c10628a7",
+    "fingerprint": "568c3e3e6970d1dac8298d59c92742a93d118b391fb62002703907bc3061a48c",
     "hit": false
   },
-  "candidate_count": 56,
+  "candidate_count": 51,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -51,12 +51,89 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_scanner_normalization.py",
+      "path": "backend/app/scanner_adaptation.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 27,
+      "score": 21,
+      "symbols": [
+        "ScannerAdaptation",
+        "_engine_memory",
+        "adapt_scanner_engines",
+        "rank_key"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_sandbox.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "ScannerSandboxAdmission",
+        "ScannerSandboxConfigError",
+        "_allowed_engines",
+        "_runtime_hardening_attestation",
+        "_strict_bool",
+        "require_scanner_sandbox",
+        "safe_scanner_sandbox_admission",
+        "scanner_sandbox_admission",
+        "strix_runtime_contract_enforceable"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "_campaign",
+        "fake_execute",
+        "test_nuclei_worker_dry_run_preserves_safe_default",
+        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+        "test_scan_engines_default_preserves_strix",
+        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+        "test_sqlite_queue_accepts_nuclei_scan"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_adaptation.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "_memory",
+        "test_adaptation_never_expands_configured_engines",
+        "test_adaptation_never_suppresses_last_configured_engine",
+        "test_adaptation_ranks_successful_memory_first",
+        "test_adaptation_rejects_unknown_or_duplicate_configuration",
+        "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_normalization.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
       "symbols": [
         "test_normalized_ids_are_engine_scoped_and_stable",
         "test_normalizers_fail_closed_outside_scope",
@@ -72,100 +149,6 @@
         "test_scanner_registry_rejects_unknown_engine",
         "test_scanner_registry_selects_latest_artifact",
         "test_strix_and_nuclei_normalize_to_same_canonical_shape"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_normalization.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "NormalizedScannerFinding",
-        "_cve_ids",
-        "_optional_cvss",
-        "_optional_str",
-        "_severity",
-        "_string_list",
-        "_with_cve_evidence",
-        "dedupe_normalized",
-        "normalize_nuclei_item",
-        "normalize_strix_item",
-        "normalized_finding_id",
-        "to_campaign_finding"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/strix_command_admission.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "StrixAuthorizedCommand",
-        "StrixCommandAdmissionError",
-        "_valid_id",
-        "_validate_argv",
-        "_validate_contract",
-        "authorize_strix_command",
-        "reviewed_command_profiles"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_strix_command_admission.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "_contract",
-        "_trust_contract",
-        "fail",
-        "test_bootstrap_curl_is_admitted_without_enabling_execution",
-        "test_contract_safety_drift_is_rejected",
-        "test_profile_timeout_caps_are_enforced",
-        "test_reviewed_profiles_keep_shell_and_direct_egress_disabled",
-        "test_reviewed_web_active_tools_are_admissible",
-        "test_session_and_request_ids_are_bounded",
-        "test_shells_paths_and_control_characters_fail_closed",
-        "test_signature_verification_failure_is_wrapped",
-        "test_tool_outside_profile_is_rejected",
-        "verify"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_adaptation.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "ScannerAdaptation",
-        "_engine_memory",
-        "adapt_scanner_engines",
-        "rank_key"
       ]
     }
   ],

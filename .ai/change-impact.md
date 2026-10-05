@@ -1,15 +1,23 @@
 # Change impact
 
-Base: 074db0fb98a9322164d67aafad3ebe174e9b9248
-Head: 56067593f9fdc6571a958a48584a68b7b8776437
+Base: 48a4729b79c4c7cc0042ea8b86688d753412eed5
+Head: 1a9ff90b85fd955d99f463b213d2e492d7618b72
 
 ## Changed files
-- M backend/app/finding_intelligence.py
-- M backend/app/scanner_normalization.py
-- A backend/app/vulnerability_intelligence.py
-- A backend/tests/test_vulnerability_intelligence.py
+- M .github/workflows/ci.yml
+- M README.md
+- M backend/Dockerfile.strix-runner
+- M backend/app/runtime_capabilities.py
+- A backend/app/strix_runner_exec_ticket.py
+- M backend/app/strix_runner_rpc.py
+- M backend/tests/test_runtime_capabilities.py
+- A backend/tests/test_strix_runner_exec_ticket.py
+- M backend/tests/test_strix_runner_rpc.py
+- M docker-compose.yml
 
 ## Affected areas
+- .github
+- (root)
 - backend
 
 ## Related test candidates

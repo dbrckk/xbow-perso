@@ -206,6 +206,7 @@ app/
   strix_python_toolchain_probe.py
   strix_run_status.py
   strix_runner_attestation.py
+  strix_runner_exec_ticket.py
   strix_runner_rpc.py
   submission_api.py
   submission_state.py
@@ -449,6 +450,7 @@ tests/
   test_strix_python_toolchain_probe.py
   test_strix_run_status.py
   test_strix_runner_attestation.py
+  test_strix_runner_exec_ticket.py
   test_strix_runner_rpc.py
   test_submission_api.py
   test_submission_state.py
@@ -11772,6 +11774,97 @@ args = parser.parse_args()
 attestation = attest_strix_runner()
 ```
 
+## File: app/strix_runner_exec_ticket.py
+```python
+STRIX_RUNNER_EXEC_TICKET_SCHEMA = "strix-runner-exec-ticket-v1"
+STRIX_COMMAND_ADMISSION_SCHEMA = "strix-command-admission-v1"
+STRIX_RUNNER_EXEC_TICKET_MIN_SECRET_BYTES = 32
+STRIX_RUNNER_EXEC_TICKET_MAX_SECRET_BYTES = 4096
+⋮----
+_SIGNATURE_DOMAIN = b"xbow:strix-runner-exec-ticket:v1\x00"
+_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_PROFILE_RE = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+_EXECUTABLE_RE = re.compile(r"^[A-Za-z0-9._+-]{1,64}$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_SHELL_INTERPRETERS = frozenset(
+⋮----
+_PROFILE_EXECUTABLES = {
+_PROFILE_MAX_TIMEOUT_SECONDS = {
+⋮----
+class StrixRunnerExecTicketError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class StrixRunnerExecTicket
+⋮----
+schema: str
+command_schema: str
+contract_hash: str
+session_id: str
+request_id: str
+profile: str
+executable: str
+argv_sha256: str
+argc: int
+argv_bytes: int
+timeout_seconds: float
+shell_interpreter_allowed: bool
+direct_egress_allowed: bool
+network_scope_enforcement: str
+active_execution_enabled: bool
+signature_alg: str
+signature: str
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def _secret_bytes(secret: str) -> bytes
+⋮----
+encoded = secret.encode("utf-8")
+⋮----
+def validate_strix_runner_exec_ticket_secret(secret: str) -> None
+⋮----
+def _argv_digest(argv: Sequence[str]) -> tuple[str, int, int, str]
+⋮----
+normalized: list[str] = []
+argv_bytes = 0
+⋮----
+executable = normalized[0]
+⋮----
+canonical = "\x00".join(normalized).encode("utf-8")
+⋮----
+def _unsigned_payload(values: Mapping[str, Any]) -> dict[str, Any]
+⋮----
+def _canonical_bytes(values: Mapping[str, Any]) -> bytes
+⋮----
+def _validate_descriptor(values: Mapping[str, Any]) -> None
+⋮----
+value = values.get(name)
+⋮----
+profile = values.get("profile")
+executable = values.get("executable")
+⋮----
+argc = values.get("argc")
+argv_bytes = values.get("argv_bytes")
+⋮----
+timeout = float(values.get("timeout_seconds"))
+⋮----
+def reviewed_runner_exec_ticket_profiles() -> dict[str, dict[str, Any]]
+⋮----
+secret = _secret_bytes(signing_secret)
+unsigned = _unsigned_payload(command_descriptor)
+signature = hmac.new(
+⋮----
+expected_keys = {
+⋮----
+descriptor = {
+⋮----
+signature = ticket_payload.get("signature")
+⋮----
+secret = _secret_bytes(verification_secret)
+expected_signature = hmac.new(
+⋮----
+timeout = float(timeout_seconds)
+```
+
 ## File: app/strix_runner_rpc.py
 ```python
 RUNNER_RPC_PROTOCOL = "strix-runner-rpc-v1"
@@ -11852,6 +11945,7 @@ ports = payload.get("exposed_ports")
 ⋮----
 argv = payload.get("argv")
 timeout = payload.get("timeout_seconds")
+admission = payload.get("admission")
 ⋮----
 class BoundedThreadingHTTPServer(ThreadingHTTPServer)
 ⋮----
@@ -11900,6 +11994,10 @@ def log_message(self, _format: str, *_args: object) -> None
 def _rpc_secret_from_env() -> str | None
 ⋮----
 secret = os.getenv("XBOW_STRIX_RUNNER_RPC_HMAC_KEY", "")
+⋮----
+def _admission_secret_from_env() -> str | None
+⋮----
+secret = os.getenv("XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY", "")
 ⋮----
 def serve() -> None
 ⋮----
@@ -21881,10 +21979,49 @@ workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 def test_runner_has_no_direct_public_network_probe()
 ```
 
+## File: tests/test_strix_runner_exec_ticket.py
+```python
+SECRET = "runner-exec-ticket-secret-at-least-32-bytes"
+⋮----
+def _descriptor(*, argv=None, timeout_seconds=10.0)
+⋮----
+argv = list(argv or ["curl", "-fsS", "http://127.0.0.1:48080/graphql"])
+canonical = "\x00".join(argv).encode("utf-8")
+⋮----
+def test_exec_ticket_round_trip_binds_request_identity_and_argv()
+⋮----
+argv = ["curl", "-fsS", "http://127.0.0.1:48080/graphql"]
+ticket = build_strix_runner_exec_ticket(
+⋮----
+verified = verify_strix_runner_exec_ticket(
+⋮----
+def test_exec_ticket_rejects_safety_invariant_drift(field, value)
+⋮----
+descriptor = _descriptor()
+⋮----
+@pytest.mark.parametrize("executable", ("sh", "bash", "python3", "/bin/curl"))
+def test_exec_ticket_rejects_shells_and_executable_paths(executable)
+⋮----
+def test_exec_ticket_rejects_wrong_verification_key()
+⋮----
+def test_exec_ticket_secret_requires_minimum_entropy_length()
+⋮----
+def test_runner_ticket_profiles_match_command_admission_profiles()
+⋮----
+def test_runner_ticket_enforces_profile_specific_timeout()
+⋮----
+descriptor = _descriptor(timeout_seconds=31.0)
+⋮----
+def test_runner_ticket_rejects_executable_outside_selected_profile()
+⋮----
+descriptor = _descriptor(argv=["nuclei", "-version"])
+```
+
 ## File: tests/test_strix_runner_rpc.py
 ```python
 ROOT = Path(__file__).resolve().parents[2]
 SECRET = "fixture-runner-rpc-secret-at-least-32-bytes"
+ADMISSION_SECRET = "fixture-runner-admission-secret-at-least-32-bytes"
 NOW = 1_800_000_000
 NONCE = "0123456789abcdef0123456789abcdef"
 ⋮----
@@ -21892,9 +22029,14 @@ def _headers(path: str, body: bytes, *, nonce: str = NONCE)
 ⋮----
 signature = sign_runner_rpc_request(
 ⋮----
-def _service(*, secret=SECRET, active_execution=False)
-⋮----
 def _payload(path: str) -> dict
+⋮----
+argv = [
+timeout_seconds = 10.0
+request_id = "req-exec-1"
+session_id = "sess-1"
+canonical = chr(0).join(argv).encode("utf-8")
+descriptor = {
 ⋮----
 def _request(service: RunnerRpcService, path: str, payload: dict)
 ⋮----
@@ -21908,6 +22050,10 @@ def test_ready_requires_rpc_secret()
 ⋮----
 result = _service(secret=None).handle(
 ⋮----
+def test_ready_requires_exec_admission_secret()
+⋮----
+result = _service(admission_secret=None).handle(
+⋮----
 def test_authenticated_session_operations_still_fail_closed(path)
 ⋮----
 result = _request(_service(), path, _payload(path))
@@ -21916,6 +22062,18 @@ def test_even_active_flag_cannot_enable_unimplemented_rpc()
 ⋮----
 path = "/v1/session/create"
 result = _request(
+⋮----
+def test_valid_exec_ticket_still_cannot_enable_execution()
+⋮----
+path = "/v1/session/exec"
+⋮----
+def test_exec_rejects_tampered_admission_ticket_before_execution_gate()
+⋮----
+payload = _payload(path)
+⋮----
+result = _request(_service(), path, payload)
+⋮----
+def test_exec_rejects_ticket_bound_to_different_argv()
 ⋮----
 def test_missing_auth_is_rejected_before_payload_processing()
 ⋮----
@@ -21929,8 +22087,6 @@ original = json.dumps(
 tampered = original.replace(b"sess-1", b"sess-2")
 ⋮----
 def test_nonce_replay_is_rejected()
-⋮----
-payload = _payload(path)
 ⋮----
 headers = _headers(path, body)
 ⋮----
@@ -21951,8 +22107,6 @@ stale = NOW - 31
 ⋮----
 def test_unknown_payload_field_fails_closed()
 ⋮----
-result = _request(_service(), path, payload)
-⋮----
 def test_operation_schema_bounds_are_enforced(path, mutate)
 ⋮----
 def test_runner_compose_exposes_rpc_only_internally()
@@ -21964,7 +22118,7 @@ def test_ci_waits_for_runner_rpc_readiness()
 ⋮----
 workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 ⋮----
-def test_runner_image_contains_only_rpc_and_attestation_modules()
+def test_runner_image_contains_only_required_runner_modules()
 ⋮----
 dockerfile = (ROOT / "backend" / "Dockerfile.strix-runner").read_text()
 ⋮----
@@ -21993,6 +22147,8 @@ def test_runner_rpc_signer_rejects_short_secret()
 def test_runner_rpc_service_rejects_short_secret()
 ⋮----
 def test_runner_rpc_env_rejects_short_secret(monkeypatch)
+⋮----
+def test_runner_admission_env_rejects_short_secret(monkeypatch)
 ⋮----
 def test_runner_rpc_accepts_exact_minimum_secret_length()
 ⋮----
