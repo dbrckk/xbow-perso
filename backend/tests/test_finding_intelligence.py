@@ -151,3 +151,31 @@ def test_finding_intelligence_surfaces_public_duplicate_similarity_without_block
     assert duplicate["automatic_report_block"] is False
     assert result["findings"][0]["status"] == "validation_required"
     assert result["summary"]["high_public_similarity_findings"] == 1
+
+
+def test_finding_intelligence_exposes_conservative_vulnerability_novelty():
+    findings = [_finding("f1", "https://example.test/a?id=one", severity="high")]
+    findings[0].summary = "Unexpected behavior without a known advisory"
+    findings[0].evidence = ["stable response delta"]
+    findings[0].cvss = 8.0
+
+    graph = _graph()
+    validation = next(
+        item for item in graph.by_kind("validation") if item.id == "validation:f1"
+    )
+    validation.metadata.update(
+        {
+            "differential_signal": "strong",
+            "differential_marker_reflected": True,
+            "differential_status_changed": False,
+            "differential_body_changed": True,
+        }
+    )
+
+    result = build_finding_intelligence(findings, graph)
+
+    novelty = result["findings"][0]["vulnerability_novelty"]
+    assert novelty["novelty_band"] == "candidate_novel"
+    assert novelty["automatic_exploitation"] is False
+    assert novelty["automatically_confirms_zero_day"] is False
+    assert result["summary"]["candidate_novel_findings"] == 1
