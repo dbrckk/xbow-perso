@@ -12,6 +12,7 @@ from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .observation_graph import load_observation_graph
 from .public_duplicate_intelligence import rank_public_duplicate_risk
+from .technology_fingerprint_intelligence import build_finding_fingerprint_intelligence
 from .vulnerability_novelty import assess_vulnerability_novelty
 
 router = APIRouter()
@@ -45,6 +46,11 @@ def build_finding_intelligence(
         threshold=threshold,
     )
     differential_signals = build_differential_signals(graph)
+    fingerprint_intelligence = build_finding_fingerprint_intelligence(findings, graph)
+    fingerprint_by_finding = {
+        row["finding_id"]: row
+        for row in fingerprint_intelligence["findings"]
+    }
 
     readiness_by_id = {item.finding_id: item for item in readiness}
     triage_by_id = {item.finding_id: item for item in triage}
@@ -76,6 +82,15 @@ def build_finding_intelligence(
             finding,
             differential_item,
         )
+        fingerprint = fingerprint_by_finding.get(
+            finding_id,
+            {
+                "finding_id": finding_id,
+                "matched_fingerprints": [],
+                "versioned_match_count": 0,
+                "high_confidence_match_count": 0,
+            },
+        )
         finding_rows.append(
             {
                 "finding_id": finding_id,
@@ -86,6 +101,7 @@ def build_finding_intelligence(
                 "differential": differential_item.to_dict(),
                 "public_duplicate_similarity": duplicate_similarity,
                 "vulnerability_novelty": novelty.to_dict(),
+                "technology_fingerprint": fingerprint,
                 "cluster_id": cluster_id,
                 "cluster_status": (
                     consensus_by_cluster[cluster_id].status
@@ -115,6 +131,7 @@ def build_finding_intelligence(
     return {
         "findings": finding_rows,
         "clusters": cluster_rows,
+        "technology_fingerprints": fingerprint_intelligence["fingerprints"],
         "similarities": [
             item.to_dict()
             for item in similarities
@@ -165,6 +182,16 @@ def build_finding_intelligence(
                 == "unexplained_behavior"
                 for row in finding_rows
             ),
+            "findings_with_versioned_technology_match": sum(
+                row["technology_fingerprint"]["versioned_match_count"] > 0
+                for row in finding_rows
+            ),
+            "technology_fingerprints": fingerprint_intelligence["summary"][
+                "technology_fingerprints"
+            ],
+            "versioned_technology_fingerprints": fingerprint_intelligence[
+                "summary"
+            ]["versioned_fingerprints"],
             "saturated_clusters": sum(
                 bool(row["saturation"]) and row["saturation"]["saturated"]
                 for row in cluster_rows
