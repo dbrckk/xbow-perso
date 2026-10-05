@@ -1,5 +1,6 @@
 import asyncio
 import inspect
+from types import SimpleNamespace
 
 import pytest
 
@@ -14,11 +15,23 @@ from app.strix_remote_session import (
 )
 
 
+def _manifest():
+    return SimpleNamespace(
+        version=1,
+        root="/workspace",
+        entries={},
+        environment=SimpleNamespace(value={}),
+        users=[],
+        groups=[],
+        extra_path_grants=(),
+    )
+
+
 def _prepared(*, ports=(48080,)):
     return asyncio.run(
         prepare_strix_remote_session(
             image="ghcr.io/example/strix-sandbox:fixture",
-            manifest=object(),
+            manifest=_manifest(),
             exposed_ports=ports,
             bind_mounts=[],
         )
@@ -33,6 +46,10 @@ def test_prepared_backend_returns_client_and_session_without_side_effects():
     assert session.descriptor.schema == STRIX_REMOTE_SESSION_SCHEMA
     assert session.descriptor.exposed_ports == (48080,)
     assert session.descriptor.manifest_present is True
+    assert session.descriptor.manifest_admission_schema == "strix-manifest-admission-v1"
+    assert session.descriptor.manifest_admitted is True
+    assert len(session.descriptor.manifest_digest) == 64
+    assert session.descriptor.manifest_entry_count == 0
     assert session.descriptor.manifest_materialized is False
     assert session.descriptor.bind_mounts_supported is False
     assert session.descriptor.network_io_performed is False
@@ -140,7 +157,7 @@ def test_prepared_backend_rejects_bind_mounts():
         asyncio.run(
             prepare_strix_remote_session(
                 image="fixture",
-                manifest=object(),
+                manifest=_manifest(),
                 exposed_ports=(48080,),
                 bind_mounts=[
                     {
