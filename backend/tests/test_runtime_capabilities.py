@@ -324,9 +324,10 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_backend_hook_loaded_by_standalone_binary"] is False
     assert result["strix_python_bootstrap_ready"] is False
     assert result["strix_python_bootstrap_plan_contract_defined"] is True
+    assert result["strix_python_bootstrap_runtime_contract_defined"] is True
+    assert result["strix_python_bootstrap_backend_first_import_enforced"] is True
+    assert result["strix_python_bootstrap_entrypoint_enabled"] is False
     assert result["strix_python_preflight_patch_plan_contract_defined"] is True
-    assert result["strix_python_preflight_compatibility_contract_defined"] is True
-    assert result["strix_python_preflight_patch_application_supported"] is True
     assert result["strix_python_preflight_compatibility_contract_defined"] is True
     assert result["strix_python_preflight_patch_application_supported"] is True
     assert result["strix_python_preflight_patch_application_enabled"] is False
@@ -414,6 +415,9 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
 
     result = scanner_runtime_capability()
 
+    assert result["strix_python_bootstrap_runtime_contract_defined"] is True
+    assert result["strix_python_bootstrap_backend_first_import_enforced"] is True
+    assert result["strix_python_bootstrap_entrypoint_enabled"] is False
     assert result["strix_python_preflight_patch_application_enabled"] is False
     assert result["strix_python_preflight_compatibility_applied"] is False
     assert result["strix_python_bootstrap_ready"] is False

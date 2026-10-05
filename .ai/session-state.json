@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-05",
-  "task": "Build the pinned Strix Python bootstrap around the bounded preflight compatibility shim",
+  "task": "Prepare the pinned Strix Python runtime for controlled offensive execution",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -46,10 +46,14 @@
     "Added strix-python-preflight-compatibility-v1 as a temporary context-managed patch that only replaces the two attested Docker preflight aliases in strix.interface.main.",
     "The compatibility shim verifies exact patch-plan fields and direct import identity, preserves validate_environment, guards the upstream environment namespace, and restores all guarded symbols on every exit path.",
     "Added regression tests for exact patching, tampered plans, import-identity mismatch, exception restoration, validation rebinding and upstream environment mutation.",
-    "Merged PR #525 after CI, security and supply-chain passed; the bounded Strix Python preflight compatibility shim is now on main."
+    "Merged PR #525 after CI, security and supply-chain passed; the bounded Strix Python preflight compatibility shim is now on main.",
+    "Added strix-python-bootstrap-runtime-v1, which registers xbow-remote-v1 before importing strix.interface.main and rejects a pre-imported main module.",
+    "The prepared bootstrap revalidates backend registry stability, attests the exact preflight surface, builds the bounded patch plan and applies the compatibility shim only for the context lifetime.",
+    "The bootstrap keeps validate_environment intact and never invokes the Strix entrypoint; active execution remains disabled.",
+    "CI now exercises the bootstrap contract against the real pinned Strix v1.6.2 backend registry API while using synthetic interface modules so no scan is launched."
   ],
-  "current_branch": "main",
-  "current_priority": "Build a reproducible pinned Python bootstrap that imports app.strix_backend_hook, applies the attested preflight compatibility shim, and still stops before the Strix entrypoint or runner RPC session execution.",
+  "current_branch": "codex/strix-python-bootstrap-runtime",
+  "current_priority": "Validate and merge the prepared Python bootstrap runtime, then design the command-admission boundary needed before allowing any Strix entrypoint execution.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
@@ -66,11 +70,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Define the pinned Python bootstrap contract around the verified Strix v1.6.2 wheel, source commit, dependency lock and Python/uv toolchain.",
-    "Load app.strix_backend_hook before importing the Strix entrypoint module and verify xbow-remote-v1 registration in the same runtime process.",
-    "Apply strix-python-preflight-compatibility-v1 only after the exact upstream import identities are re-attested.",
-    "Keep the Strix entrypoint disabled until command admission and the brokered network path are enforced end to end.",
-    "Keep runner RPC session operations unimplemented until end-to-end command and network admission controls are defined.",
-    "Keep strix_runtime_contract_enforceable false until execution and bypass tests pass."
+    "Validate and merge strix-python-bootstrap-runtime-v1 through CI, security and supply-chain.",
+    "Define a strict command-admission contract for Strix runtime sessions bound to the signed execution contract, allowed target scope and operation budget.",
+    "Implement only the minimum runner RPC session primitives required by xbow-remote-v1 after command admission is enforceable.",
+    "Route all target network access through the brokered egress boundary rather than direct runner egress.",
+    "Enable the Strix entrypoint only after bootstrap, command admission, network admission and cleanup invariants pass end-to-end tests.",
+    "Keep independent validation required before confirmed findings."
   ]
 }

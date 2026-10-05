@@ -69,6 +69,8 @@ jobs:
             python -m app.strix_backend_hook --self-test
           PYTHONPATH="$PWD/backend:$tmp/site" \
             python -m app.strix_python_compat_probe --self-test
+          PYTHONPATH="$PWD/backend:$tmp/site" \
+            python -m app.strix_python_bootstrap_runtime --self-test
           source_base="https://raw.githubusercontent.com/usestrix/strix/ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2"
           pyproject="$tmp/pyproject.toml"
           lockfile="$tmp/uv.lock"
