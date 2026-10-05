@@ -25,6 +25,7 @@ def build_finding_intelligence(
     threshold: float = 0.75,
     public_reports: list[dict[str, Any]] | None = None,
     program_handle: str | None = None,
+    temporal_profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     readiness = build_finding_readiness(
         findings,
@@ -49,6 +50,7 @@ def build_finding_intelligence(
         findings,
         graph,
         hypothesis_snapshots=hypothesis_snapshots,
+        temporal_profile=temporal_profile,
     )
 
     readiness_by_id = {item.finding_id: item for item in readiness}
@@ -208,6 +210,12 @@ def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):
     store = storage()
     graph = load_observation_graph(store, campaign.id)
     snapshots = store.list_hypothesis_snapshots(campaign.id, limit=50)
+    from .surface_temporal import build_temporal_surface_profile
+
+    temporal_profile = build_temporal_surface_profile(
+        store,
+        campaign.model_dump(mode="json"),
+    )
     intelligence = store.get_hackerone_intelligence_state() or {}
     public_reports = (
         list(intelligence.get("reports") or [])
@@ -232,6 +240,7 @@ def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):
         threshold=threshold,
         public_reports=public_reports,
         program_handle=program_handle,
+        temporal_profile=temporal_profile,
     )
     return {
         "campaign_id": campaign.id,
