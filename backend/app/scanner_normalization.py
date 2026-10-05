@@ -34,6 +34,7 @@ class NormalizedScannerFinding:
     epss_score: float | None = None
     epss_percentile: float | None = None
     references: tuple[str, ...] = ()
+    tags: tuple[str, ...] = ()
     template_verified: bool | None = None
     template_max_requests: int | None = None
     vendor: str | None = None
@@ -46,6 +47,7 @@ class NormalizedScannerFinding:
         payload["cve_ids"] = list(self.cve_ids)
         payload["cpe"] = list(self.cpe)
         payload["references"] = list(self.references)
+        payload["tags"] = list(self.tags)
         return payload
 
 
@@ -152,6 +154,7 @@ def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> Normalized
         epss_score=_optional_unit_interval(item.get("epss_score")),
         epss_percentile=_optional_unit_interval(item.get("epss_percentile")),
         references=_string_list(item.get("references") or item.get("reference")),
+        tags=_identifier_list(item.get("tags")),
         template_verified=(
             item.get("template_verified")
             if isinstance(item.get("template_verified"), bool)
@@ -223,6 +226,7 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
             or classification.get("epss_percentile")
         ),
         references=_string_list(references),
+        tags=_identifier_list(info.get("tags")),
         template_verified=(
             metadata.get("verified")
             if isinstance(metadata.get("verified"), bool)
@@ -277,6 +281,7 @@ def to_campaign_finding(item: NormalizedScannerFinding) -> Finding:
         epss_score=item.epss_score,
         epss_percentile=item.epss_percentile,
         references=list(item.references),
+        tags=list(item.tags),
         template_id=item.template_id,
         template_verified=item.template_verified,
         template_max_requests=item.template_max_requests,
