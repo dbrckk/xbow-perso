@@ -325,6 +325,10 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_python_bootstrap_ready"] is False
     assert result["strix_python_bootstrap_plan_contract_defined"] is True
     assert result["strix_python_preflight_patch_plan_contract_defined"] is True
+    assert result["strix_python_preflight_compatibility_contract_defined"] is True
+    assert result["strix_python_preflight_patch_application_supported"] is True
+    assert result["strix_python_preflight_compatibility_contract_defined"] is True
+    assert result["strix_python_preflight_patch_application_supported"] is True
     assert result["strix_python_preflight_patch_application_enabled"] is False
     assert result["strix_python_preflight_compatibility_applied"] is False
     assert (
