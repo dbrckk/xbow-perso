@@ -82,6 +82,17 @@ def record_finding_chain(
             "endpoint": finding.endpoint,
             "cwe": finding.cwe,
             "cvss": finding.cvss,
+            "cve_ids": list(finding.cve_ids[:20]),
+            "cpe": list(finding.cpe[:20]),
+            "cvss_vector": finding.cvss_vector,
+            "epss_score": finding.epss_score,
+            "epss_percentile": finding.epss_percentile,
+            "tags": list(finding.tags[:20]),
+            "template_id": finding.template_id,
+            "template_verified": finding.template_verified,
+            "template_max_requests": finding.template_max_requests,
+            "vendor": finding.vendor,
+            "product": finding.product,
         },
     )
     store.put_observation(campaign.id, observation.to_dict())
