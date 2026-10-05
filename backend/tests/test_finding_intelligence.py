@@ -179,3 +179,28 @@ def test_finding_intelligence_exposes_conservative_vulnerability_novelty():
     assert novelty["automatic_exploitation"] is False
     assert novelty["automatically_confirms_zero_day"] is False
     assert result["summary"]["candidate_novel_findings"] == 1
+
+
+def test_finding_intelligence_correlates_versioned_technology_evidence():
+    findings = [_finding("f1", "https://example.test/a?id=one", severity="high")]
+    findings[0].title = "nginx request parsing discrepancy"
+    findings[0].summary = "Unexpected nginx behavior"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "technology:nginx",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            metadata={"confidence": 0.9},
+        )
+    )
+
+    result = build_finding_intelligence(findings, graph)
+
+    row = result["findings"][0]["technology_fingerprint"]
+    assert row["versioned_match_count"] == 1
+    assert row["matched_fingerprints"][0]["version"] == "1.24.0"
+    assert result["summary"]["findings_with_versioned_technology_match"] == 1
+    assert result["summary"]["versioned_technology_fingerprints"] == 1
