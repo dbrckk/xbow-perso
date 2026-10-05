@@ -8,6 +8,11 @@ from dataclasses import asdict, dataclass
 from typing import Any, Sequence
 from uuid import uuid4
 
+from .strix_manifest_admission import (
+    STRIX_MANIFEST_ADMISSION_SCHEMA,
+    build_strix_manifest_admission_plan,
+)
+
 
 STRIX_REMOTE_SESSION_SCHEMA = "strix-remote-session-interface-v1"
 _ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
@@ -47,6 +52,12 @@ class PreparedRemoteSessionDescriptor:
     image: str
     exposed_ports: tuple[int, ...]
     manifest_present: bool
+    manifest_admission_schema: str
+    manifest_admitted: bool
+    manifest_digest: str
+    manifest_entry_count: int
+    manifest_inline_file_bytes: int
+    manifest_environment_value_bytes: int
     manifest_materialized: bool
     bind_mounts_supported: bool
     active_execution_enabled: bool
@@ -176,6 +187,18 @@ class PreparedStrixRemoteSession:
             )
         _valid_session_id(descriptor.session_id)
         if (
+            descriptor.manifest_admission_schema
+            != STRIX_MANIFEST_ADMISSION_SCHEMA
+            or not descriptor.manifest_admitted
+            or not re.fullmatch(r"[0-9a-f]{64}", descriptor.manifest_digest)
+            or descriptor.manifest_entry_count < 0
+            or descriptor.manifest_inline_file_bytes < 0
+            or descriptor.manifest_environment_value_bytes < 0
+        ):
+            raise StrixRemoteSessionError(
+                "prepared remote manifest admission descriptor is invalid"
+            )
+        if (
             descriptor.manifest_materialized
             or descriptor.bind_mounts_supported
             or descriptor.active_execution_enabled
@@ -299,12 +322,19 @@ async def prepare_strix_remote_session(
         raise StrixRemoteSessionError(
             "prepared Strix remote sessions do not support bind mounts"
         )
+    manifest_plan = build_strix_manifest_admission_plan(manifest)
     descriptor = PreparedRemoteSessionDescriptor(
         schema=STRIX_REMOTE_SESSION_SCHEMA,
         session_id=_new_session_id(),
         image=_validate_image(image),
         exposed_ports=_validate_ports(exposed_ports),
-        manifest_present=manifest is not None,
+        manifest_present=True,
+        manifest_admission_schema=manifest_plan.schema,
+        manifest_admitted=True,
+        manifest_digest=manifest_plan.manifest_digest,
+        manifest_entry_count=manifest_plan.entry_count,
+        manifest_inline_file_bytes=manifest_plan.inline_file_bytes,
+        manifest_environment_value_bytes=manifest_plan.environment_value_bytes,
         manifest_materialized=False,
         bind_mounts_supported=False,
         active_execution_enabled=False,
@@ -322,6 +352,12 @@ def prepared_remote_session_self_test() -> dict[str, Any]:
         image="fixture",
         exposed_ports=(48080,),
         manifest_present=True,
+        manifest_admission_schema=STRIX_MANIFEST_ADMISSION_SCHEMA,
+        manifest_admitted=True,
+        manifest_digest="a" * 64,
+        manifest_entry_count=0,
+        manifest_inline_file_bytes=0,
+        manifest_environment_value_bytes=0,
         manifest_materialized=False,
         bind_mounts_supported=False,
         active_execution_enabled=False,
@@ -353,6 +389,8 @@ def prepared_remote_session_self_test() -> dict[str, Any]:
         "exec_signature_compatible": True,
         "resolve_exposed_port_async": True,
         "delete_async": True,
+        "manifest_admission_schema": STRIX_MANIFEST_ADMISSION_SCHEMA,
+        "manifest_admitted": True,
         "manifest_materialized": False,
         "network_io_performed": False,
         "process_execution_performed": False,
