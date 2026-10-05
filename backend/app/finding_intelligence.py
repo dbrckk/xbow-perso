@@ -12,6 +12,7 @@ from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .observation_graph import load_observation_graph
 from .public_duplicate_intelligence import rank_public_duplicate_risk
+from .vulnerability_intelligence import build_vulnerability_intelligence
 
 router = APIRouter()
 
@@ -44,6 +45,11 @@ def build_finding_intelligence(
         threshold=threshold,
     )
     differential_signals = build_differential_signals(graph)
+    vulnerability_intelligence = build_vulnerability_intelligence(
+        findings,
+        graph,
+        hypothesis_snapshots=hypothesis_snapshots,
+    )
 
     readiness_by_id = {item.finding_id: item for item in readiness}
     triage_by_id = {item.finding_id: item for item in triage}
@@ -54,6 +60,10 @@ def build_finding_intelligence(
     }
     consensus_by_cluster = {item.cluster_id: item for item in cluster_consensus}
     saturation_by_cluster = {item.cluster_id: item for item in saturation}
+    vulnerability_by_id = {
+        item.finding_id: item
+        for item in vulnerability_intelligence
+    }
 
     finding_rows = []
     for finding in sorted(findings, key=lambda item: str(item.id)):
@@ -79,6 +89,11 @@ def build_finding_intelligence(
                 "readiness": readiness_item.to_dict() if readiness_item else None,
                 "triage": triage_item.to_dict() if triage_item else None,
                 "differential": differential_item.to_dict(),
+                "vulnerability_intelligence": (
+                    vulnerability_by_id[finding_id].to_dict()
+                    if finding_id in vulnerability_by_id
+                    else None
+                ),
                 "public_duplicate_similarity": duplicate_similarity,
                 "cluster_id": cluster_id,
                 "cluster_status": (
@@ -143,6 +158,33 @@ def build_finding_intelligence(
             "high_public_similarity_findings": sum(
                 row["public_duplicate_similarity"]["similarity_band"]
                 == "high_public_similarity"
+                for row in finding_rows
+            ),
+            "known_cve_findings": sum(
+                bool(row["vulnerability_intelligence"])
+                and row["vulnerability_intelligence"]["known_cve"]
+                for row in finding_rows
+            ),
+            "potential_zero_day_candidates": sum(
+                bool(row["vulnerability_intelligence"])
+                and row["vulnerability_intelligence"][
+                    "potential_zero_day_candidate"
+                ]
+                for row in finding_rows
+            ),
+            "high_exploitability_findings": sum(
+                bool(row["vulnerability_intelligence"])
+                and row["vulnerability_intelligence"][
+                    "exploitability_band"
+                ]
+                in {"high", "very_high"}
+                for row in finding_rows
+            ),
+            "exact_cve_recheck_eligible": sum(
+                bool(row["vulnerability_intelligence"])
+                and row["vulnerability_intelligence"][
+                    "authorized_target_recheck_eligible"
+                ]
                 for row in finding_rows
             ),
             "saturated_clusters": sum(
