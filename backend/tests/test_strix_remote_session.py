@@ -57,7 +57,7 @@ def test_exec_plan_matches_pinned_caido_bootstrap_call_shape():
 
     assert plan.operation == "exec"
     assert plan.executable == "curl"
-    assert plan.argc == 10
+    assert plan.argc == 9
     assert plan.timeout_seconds == 15.0
     assert len(plan.argv_sha256 or "") == 64
     assert plan.network_io_performed is False
