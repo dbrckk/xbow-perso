@@ -71,7 +71,7 @@ def _payload(path: str) -> dict:
         timeout_seconds = 10.0
         request_id = "req-exec-1"
         session_id = "sess-1"
-        canonical = "\\x00".join(argv).encode("utf-8")
+        canonical = chr(0).join(argv).encode("utf-8")
         descriptor = {
             "schema": "strix-command-admission-v1",
             "contract_hash": "c" * 64,
