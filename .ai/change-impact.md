@@ -1,13 +1,11 @@
 # Change impact
 
-Base: 3a7a1ef48e17f72ffd768a49aedf2118150434da
-Head: 084fc611af4adebb309fc46f19f14bf2724e90f4
+Base: a77d0bfff2461314f9c519e32a425d4d34e65f06
+Head: ea40e27ff26a2aa930dfe6d773818f2c0e4d95cc
 
 ## Changed files
 - M backend/app/runtime_capabilities.py
-- A backend/app/strix_python_preflight_patch_plan.py
 - M backend/tests/test_runtime_capabilities.py
-- A backend/tests/test_strix_python_preflight_patch_plan.py
 
 ## Affected areas
 - backend

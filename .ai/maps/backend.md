@@ -20315,6 +20315,8 @@ def test_browser_runtime_capability_disabled_even_when_runtime_exists(monkeypatc
 def test_capabilities_api_exposes_browser_runtime_detail(monkeypatch, tmp_path)
 ⋮----
 browser = result["execution"]["browser_detail"]
+⋮----
+def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch)
 ```
 
 ## File: tests/test_runtime_gap_analysis.py

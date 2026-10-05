@@ -39,19 +39,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T16:07:58Z
+Generated: 2026-10-05T18:37:01Z
 
 ### Git
 - Branch: `main`
-- Head: `084fc611af4a`
-- Commit date: 2026-10-05T18:07:46+02:00
-- Commit: feat(strix): define inert Docker preflight patch plan
+- Head: `ea40e27ff26a`
+- Commit date: 2026-10-05T20:36:46+02:00
+- Commit: security(strix): lock fail-closed preflight capability state
 - Tracked files: 627
 
 ### Recently changed files
 - `backend/app/runtime_capabilities.py`
-- `backend/app/strix_python_preflight_patch_plan.py`
 - `backend/tests/test_runtime_capabilities.py`
+- `backend/app/strix_python_preflight_patch_plan.py`
 - `backend/tests/test_strix_python_preflight_patch_plan.py`
 - `.github/workflows/ci.yml`
 - `backend/tests/test_ci_workflow.py`
@@ -60,9 +60,6 @@ Generated: 2026-10-05T16:07:58Z
 - `README.md`
 - `backend/app/strix_python_bootstrap_plan.py`
 - `backend/tests/test_strix_python_bootstrap_plan.py`
-- `backend/app/strix_python_toolchain_probe.py`
-- `backend/strix-python-runtime.lock.json`
-- `backend/tests/test_strix_python_toolchain_probe.py`
 
 ### Project signals
 - `pyproject.toml`
