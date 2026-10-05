@@ -69,6 +69,9 @@ def test_manifest_plan_admits_strix_local_dir_and_inline_file_without_raw_conten
     assert local.kind == "local_dir"
     assert local.local_source_present is True
     assert local.local_source_path_redacted is True
+    assert local.local_source_path_sha256 is not None
+    assert len(local.local_source_path_sha256) == 64
+    assert local.local_source_content_sha256 is None
     assert local.local_source_content_inspected is False
     inline = by_path[".strix/dependency-issues.jsonl"]
     assert inline.kind == "file"
@@ -99,6 +102,23 @@ def test_manifest_digest_is_order_independent():
     assert left.manifest_digest == right.manifest_digest
     assert [item.path for item in left.entries] == ["a.txt", "b.txt"]
     assert [item.key for item in left.environment] == ["A", "B"]
+
+
+
+
+def test_manifest_digest_binds_redacted_local_source_path_identity():
+    left = build_strix_manifest_admission_plan(
+        _manifest(entries={"repo": _local_dir("/private/source-a")})
+    )
+    right = build_strix_manifest_admission_plan(
+        _manifest(entries={"repo": _local_dir("/private/source-b")})
+    )
+
+    assert left.manifest_digest != right.manifest_digest
+    assert "/private/source-a" not in str(left.to_dict())
+    assert "/private/source-b" not in str(right.to_dict())
+    assert left.entries[0].local_source_content_sha256 is None
+    assert right.entries[0].local_source_content_sha256 is None
 
 
 def test_manifest_digest_changes_when_inline_file_changes():
