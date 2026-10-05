@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-05",
-  "task": "Define signed Strix command admission for controlled offensive sessions",
+  "task": "Improve CVE detection, exploitability validation and unknown-vulnerability discovery",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -51,10 +51,17 @@
     "The prepared bootstrap revalidates backend registry stability, attests the exact preflight surface, builds the bounded patch plan and applies the compatibility shim only for the context lifetime.",
     "The bootstrap keeps validate_environment intact and never invokes the Strix entrypoint; active execution remains disabled.",
     "CI now exercises the bootstrap contract against the real pinned Strix v1.6.2 backend registry API while using synthetic interface modules so no scan is launched.",
-    "Merged PR #526 after CI, security and supply-chain passed; strix-python-bootstrap-runtime-v1 is now on main."
+    "Merged PR #526 after CI, security and supply-chain passed; strix-python-bootstrap-runtime-v1 is now on main.",
+    "Expanded the pinned Nuclei discovery profile to include cve and vuln tags while retaining exclusions for dos, fuzz, intrusive, default-login and bruteforce templates.",
+    "Finding normalization now preserves CVE IDs, CPE, CVSS vector, EPSS score/percentile, references, scanner tags, verified-template state, declared max requests and vendor/product metadata.",
+    "Added bounded exact-template CVE recheck planning for verified Nuclei templates declaring at most five requests; existing scope, rate, sandbox and dry-run gates remain mandatory.",
+    "Added vulnerability intelligence that ranks known-CVE exploitability using severity, CVSS, EPSS, CPE, verified templates, KEV-like tags and evidence quality.",
+    "Added potential zero-day candidate scoring that requires no CVE plus high/critical severity, strong differential behavior and sufficient evidence/readiness; absence of a CVE alone never qualifies.",
+    "Unknown high-confidence candidates are routed to isolated-lab reproducer review and automatic zero-day exploitation remains disabled.",
+    "Finding intelligence now exposes known CVE counts, potential zero-day candidates, high exploitability findings and exact CVE recheck eligibility."
   ],
-  "current_branch": "main",
-  "current_priority": "Bind every future Strix session command to the signed execution contract, session identity, bounded argv and timeout before implementing runner execution.",
+  "current_branch": "codex/cve-unknown-vuln-intelligence-v1",
+  "current_priority": "Validate CVE/unknown-vulnerability intelligence and exact-template recheck planning through CI, then wire eligible CVE rechecks into independent validation with explicit policy provenance.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
@@ -71,11 +78,11 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Define a signed-contract-bound command admission descriptor for Strix session exec requests.",
-    "Reject untrusted executable paths, malformed argv, excessive timeouts and contract safety-invariant drift before RPC dispatch.",
-    "Define a minimal bootstrap executable profile and a separately reviewable offensive web-tool profile.",
-    "Wire command admission into runner RPC only after the contract is validated independently.",
-    "Keep direct runner egress blocked and route target network activity through the scoped broker boundary.",
-    "Implement session create/exec/delete only after manifest and lifecycle semantics match the pinned Strix backend API."
+    "Run CI, security and supply-chain for CVE metadata normalization, vulnerability intelligence and bounded exact-template rechecks.",
+    "After validation, queue exact-template CVE rechecks as a dedicated provenance-bound validation job rather than a generic discovery scan.",
+    "Record recheck request/response artifacts and tie them to the original CVE finding without self-confirming the finding.",
+    "Add optional read-only CISA KEV/EPSS refresh ingestion so Nuclei-bundled intelligence can be refreshed without changing execution admission.",
+    "Correlate product/version fingerprints with CPE before prioritizing CVE templates to reduce false positives.",
+    "Keep unknown-vulnerability reproduction lab-only until a human-approved payload and impact boundary are defined."
   ]
 }
