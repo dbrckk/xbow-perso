@@ -24,7 +24,7 @@ def test_scanner_finding_persists_canonical_asset_endpoint_finding_evidence_chai
 
     finding = Finding(
         id="strix-fixture",
-        title="Fixture issue",
+        title="Fixture issue CVE-2026-12345",
         severity="high",
         asset="https://app.example.test",
         endpoint="/profile",
@@ -52,6 +52,7 @@ def test_scanner_finding_persists_canonical_asset_endpoint_finding_evidence_chai
     assert finding_record["kind"] == "finding"
     assert finding_record["metadata"]["cwe"] == "CWE-284"
     assert finding_record["metadata"]["cvss"] == 7.5
+    assert finding_record["metadata"]["cve_ids"] == ["CVE-2026-12345"]
 
     evidence = [
         item for item in records
