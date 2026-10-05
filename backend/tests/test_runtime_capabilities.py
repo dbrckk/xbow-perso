@@ -321,6 +321,10 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_runner_rpc_protocol"] == "strix-runner-rpc-v1"
     assert result["strix_runner_rpc_contract_defined"] is True
     assert result["strix_runner_rpc_execution_implemented"] is False
+    assert result["strix_runner_exec_ticket_schema"] == "strix-runner-exec-ticket-v1"
+    assert result["strix_runner_exec_ticket_required"] is True
+    assert result["strix_runner_exec_ticket_enforced"] is True
+    assert result["strix_runner_exec_process_launch_enabled"] is False
     assert result["strix_command_admission_contract_defined"] is True
     assert result["strix_command_profiles"] == ["bootstrap-v1", "web-active-v1"]
     assert result["strix_command_shell_interpreters_allowed"] is False
@@ -421,6 +425,9 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
 
     result = scanner_runtime_capability()
 
+    assert result["strix_runner_exec_ticket_required"] is True
+    assert result["strix_runner_exec_ticket_enforced"] is True
+    assert result["strix_runner_exec_process_launch_enabled"] is False
     assert result["strix_command_admission_contract_defined"] is True
     assert result["strix_command_admission_enforced"] is False
     assert result["strix_command_direct_egress_allowed"] is False

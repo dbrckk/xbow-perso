@@ -18,6 +18,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
 from .strix_runner_attestation import attest_strix_runner
+from .strix_runner_exec_ticket import (
+    StrixRunnerExecTicketError,
+    validate_strix_runner_exec_ticket_secret,
+    verify_strix_runner_exec_ticket,
+)
 
 
 RUNNER_RPC_PROTOCOL = "strix-runner-rpc-v1"
@@ -55,12 +60,16 @@ class RunnerRpcService:
         self,
         *,
         secret: str | None,
+        admission_secret: str | None,
         active_execution: bool,
         now: Callable[[], float] = time.time,
     ) -> None:
         if secret:
             _runner_rpc_secret_bytes(secret)
+        if admission_secret:
+            validate_strix_runner_exec_ticket_secret(admission_secret)
         self._secret = secret if secret else None
+        self._admission_secret = admission_secret if admission_secret else None
         self._active_execution = bool(active_execution)
         self._now = now
         self._nonces: OrderedDict[str, float] = OrderedDict()
@@ -87,6 +96,7 @@ class RunnerRpcService:
                     "status": "ok",
                     "protocol": RUNNER_RPC_PROTOCOL,
                     "active_execution_enabled": self._active_execution,
+                    "exec_admission_required": True,
                     "implemented_operations": [],
                 },
             )
@@ -94,12 +104,16 @@ class RunnerRpcService:
         if normalized_method == "GET" and path == "/readyz":
             if not self._secret:
                 return _error(503, "rpc_key_unavailable")
+            if not self._admission_secret:
+                return _error(503, "exec_admission_key_unavailable")
             return RunnerRpcResponse(
                 status=200,
                 json_body={
                     "status": "ready",
                     "protocol": RUNNER_RPC_PROTOCOL,
                     "active_execution_enabled": self._active_execution,
+                    "exec_admission_required": True,
+                    "exec_admission_configured": True,
                     "implemented_operations": [],
                 },
             )
@@ -132,6 +146,21 @@ class RunnerRpcService:
             return _error(400, "invalid_request")
         if not _validate_operation_payload(path, payload):
             return _error(400, "invalid_request")
+
+        if path == "/v1/session/exec":
+            if not self._admission_secret:
+                return _error(503, "exec_admission_key_unavailable")
+            try:
+                verify_strix_runner_exec_ticket(
+                    payload["admission"],
+                    session_id=payload["session_id"],
+                    request_id=payload["request_id"],
+                    argv=payload["argv"],
+                    timeout_seconds=payload["timeout_seconds"],
+                    verification_secret=self._admission_secret,
+                )
+            except StrixRunnerExecTicketError:
+                return _error(403, "exec_admission_rejected")
 
         if not self._active_execution:
             return _error(503, "active_execution_disabled")
@@ -320,12 +349,14 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
                 "session_id",
                 "argv",
                 "timeout_seconds",
+                "admission",
             },
         ):
             return False
         argv = payload.get("argv")
         timeout = payload.get("timeout_seconds")
-        if not _valid_id(payload.get("session_id")):
+        admission = payload.get("admission")
+        if not _valid_id(payload.get("session_id")) or not isinstance(admission, dict):
             return False
         if (
             not isinstance(argv, list)
@@ -538,6 +569,17 @@ def _rpc_secret_from_env() -> str | None:
     return secret
 
 
+def _admission_secret_from_env() -> str | None:
+    secret = os.getenv("XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY", "")
+    if not secret:
+        return None
+    try:
+        validate_strix_runner_exec_ticket_secret(secret)
+    except StrixRunnerExecTicketError as exc:
+        raise RuntimeError(str(exc)) from exc
+    return secret
+
+
 def serve() -> None:
     attestation = attest_strix_runner()
     if attestation.get("active_execution_enabled") is not False:
@@ -545,6 +587,7 @@ def serve() -> None:
 
     service = RunnerRpcService(
         secret=_rpc_secret_from_env(),
+        admission_secret=_admission_secret_from_env(),
         active_execution=False,
     )
     server = BoundedThreadingHTTPServer(

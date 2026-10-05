@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-05",
-  "task": "Define signed Strix command admission for controlled offensive sessions",
+  "task": "Bind Strix runner exec RPC to authenticated admission tickets without enabling process execution",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -57,18 +57,26 @@
     "Command admission rejects shell interpreters, executable paths, control characters, malformed ids, oversized argv and per-profile timeout overruns.",
     "Command admission requires direct_egress_allowed=false, host_container_socket_allowed=false and independent_validation_required=true; network scope remains broker-enforced.",
     "Runtime capability exposes the reviewed command profiles while keeping strix_command_admission_enforced=false until RPC integration is implemented.",
-    "Supply-chain validation for PR #527 passed; CI test and security jobs were cancelled before acquiring a runner, while the CI build job itself passed."
+    "Supply-chain validation for PR #527 passed; CI test and security jobs were cancelled before acquiring a runner, while the CI build job itself passed.",
+    "Merged PR #527 after CI, security and supply-chain all passed; strix-command-admission-v1 is now on main.",
+    "Merged PR #530 after CI, security and supply-chain all passed; CVE identifiers and conservative novel-vulnerability signals are now on main.",
+    "Added strix-runner-exec-ticket-v1 with a dedicated HMAC domain and separate admission key.",
+    "Runner exec tickets bind execution-contract hash, session/request ids, reviewed profile, executable, argv SHA-256/count/bytes and timeout.",
+    "The runner independently enforces the reviewed bootstrap-v1/web-active-v1 tool and timeout policy, rejects shells/executable paths and requires broker-only network enforcement.",
+    "The /v1/session/exec RPC verifies the admission ticket before the active-execution gate; valid tickets still cannot launch a process because active execution remains disabled and all session operations remain unimplemented.",
+    "Runner readiness now requires both the RPC transport key and the separate exec-admission key; CI network proof configures both."
   ],
-  "current_branch": "codex/strix-command-admission-v1",
-  "current_priority": "Re-trigger cancelled CI/security jobs for PR #527, merge once all checks are green, then bind /v1/session/exec to authenticated admission without enabling direct runner egress.",
+  "current_branch": "codex/strix-runner-exec-admission-v1",
+  "current_priority": "Validate and merge the runner exec-ticket boundary, then implement a non-executing remote client/session lifecycle compatible with pinned Strix v1.6.2.",
   "blockers": [
     "Runner RPC session operations are deliberately unimplemented and always fail closed.",
+    "The trusted producer path that converts a verified strix-command-admission-v1 descriptor into a runner exec ticket is not wired into a live session yet.",
     "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
     "A pinned Python runtime/bootstrap using the verified Strix v1.6.2 package is required before the custom backend can be selected by a real run.",
     "Strix v1.6.2's Python entrypoint still performs Docker CLI/image preflight before scan execution even when a custom runtime backend is selected.",
     "The bounded broker path supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
     "The upstream v1.6.2 Git tag object is unsigned; trust is anchored to the pinned source commit and official release-asset digests.",
-    "Contract v1 still uses symmetric HMAC verification rather than asymmetric verification."
+    "Execution contract and runner admission ticket v1 still use symmetric HMAC verification rather than asymmetric verification."
   ],
   "safety_invariants": [
     "Authorized targets only.",
@@ -77,9 +85,9 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Re-trigger the cancelled CI/security jobs and merge PR #527 only after CI, security and supply-chain are all green.",
-    "Extend runner RPC exec payloads with the execution-contract identity and command-admission descriptor, rejecting mismatches before any process creation.",
-    "Implement a session lifecycle abstraction compatible with the pinned Strix BaseSandboxSession interface.",
+    "Validate and merge strix-runner-exec-admission-v1 through CI, security and supply-chain.",
+    "Add a trusted producer adapter that turns only a verified StrixAuthorizedCommand into a runner exec ticket without exposing the signing key to the runner caller.",
+    "Implement a non-executing remote client/session lifecycle compatible with the pinned Strix BaseSandboxSession interface.",
     "Keep target traffic broker-routed and fail closed on any direct runner egress attempt.",
     "Add manifest-entry upload and cleanup semantics before enabling session creation.",
     "Enable active Strix entrypoint execution only after session create/exec/resolve/delete and broker scope enforcement pass end-to-end tests."
