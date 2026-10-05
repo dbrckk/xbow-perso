@@ -423,6 +423,7 @@ def test_runner_compose_exposes_rpc_only_internally():
 
     assert 'XBOW_STRIX_ACTIVE_EXECUTION: "false"' in block
     assert "XBOW_STRIX_RUNNER_RPC_HMAC_KEY:" in block
+    assert "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY:" in block
     assert 'networks: [strix-broker]' in block
     assert '"8092"' in block
     assert "\n    ports:" not in block
