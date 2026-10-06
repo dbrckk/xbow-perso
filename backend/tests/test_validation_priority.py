@@ -112,3 +112,24 @@ def test_resolved_findings_never_receive_more_validation_priority():
 
         assert result.band == "resolved"
         assert result.recommended_state == "no_action"
+
+
+def test_high_cve_risk_context_increases_priority_without_execution_authority():
+    base = build_validation_priority(
+        _finding(severity="high"),
+        cve_verdict=_cve("version_candidate"),
+        vulnerability_signal=_vuln(known=True),
+        triage_score=0.4,
+        cve_risk_score=0.0,
+    )
+    elevated = build_validation_priority(
+        _finding(severity="high"),
+        cve_verdict=_cve("version_candidate"),
+        vulnerability_signal=_vuln(known=True),
+        triage_score=0.4,
+        cve_risk_score=0.95,
+    )
+
+    assert elevated.score > base.score
+    assert "high_cve_risk_context" in elevated.reasons
+    assert elevated.automatic_execution_authorized is False
