@@ -25,6 +25,7 @@ from .technology_fingerprint_intelligence import (
     match_finding_technology,
 )
 from .validation_priority import build_validation_priority
+from .version_ambiguity import analyze_version_ambiguity
 from .vulnerability_intelligence import build_vulnerability_signal
 
 router = APIRouter()
@@ -114,6 +115,10 @@ def build_finding_intelligence(
             item.version is not None and item.confidence >= 0.75
             for item in matched_fingerprints
         )
+        version_ambiguity = analyze_version_ambiguity(
+            finding,
+            matched_fingerprints,
+        )
         vulnerability = build_vulnerability_signal(
             finding,
             differential_signal=differential_item.signal,
@@ -132,6 +137,7 @@ def build_finding_intelligence(
             high_confidence_fingerprint_match_count=(
                 high_confidence_fingerprint_match_count
             ),
+            ambiguity_reasons=version_ambiguity.reasons,
         )
         cve_risk_context = build_cve_risk_context(
             finding,
@@ -172,6 +178,7 @@ def build_finding_intelligence(
                 ),
                 "vulnerability": vulnerability.to_dict(),
                 "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
+                "version_ambiguity": version_ambiguity.to_dict(),
                 "cve_risk_context": cve_risk_context.to_dict(),
                 "cve_validation_plan": cve_validation_plan.to_dict(),
                 "validation_priority": validation_priority.to_dict(),
@@ -283,6 +290,11 @@ def build_finding_intelligence(
             ),
             "high_confidence_version_correlated_cve_candidates": sum(
                 row["vulnerability"]["high_confidence_fingerprint_match_count"] > 0
+                and row["vulnerability"]["known_cve_candidate"]
+                for row in finding_rows
+            ),
+            "ambiguous_version_candidates": sum(
+                row["version_ambiguity"]["ambiguous"]
                 and row["vulnerability"]["known_cve_candidate"]
                 for row in finding_rows
             ),
