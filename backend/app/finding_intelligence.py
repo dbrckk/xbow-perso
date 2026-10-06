@@ -4,6 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .cve_evidence_verdict import build_cve_evidence_verdict
 from .differential_intelligence import DifferentialSignal, build_differential_signals
 from .finding_cluster_consensus import build_cluster_consensus
 from .finding_cluster_saturation import build_cluster_saturation
@@ -105,6 +106,14 @@ def build_finding_intelligence(
                 high_confidence_fingerprint_match_count
             ),
         )
+        cve_evidence_verdict = build_cve_evidence_verdict(
+            finding,
+            differential_signal=differential_item.signal,
+            versioned_fingerprint_match_count=versioned_fingerprint_match_count,
+            high_confidence_fingerprint_match_count=(
+                high_confidence_fingerprint_match_count
+            ),
+        )
 
         finding_rows.append(
             {
@@ -115,6 +124,7 @@ def build_finding_intelligence(
                 "triage": triage_item.to_dict() if triage_item else None,
                 "differential": differential_item.to_dict(),
                 "vulnerability": vulnerability.to_dict(),
+                "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
                 "technology": {
                     "matched_fingerprints": [
                         item.to_dict() for item in matched_fingerprints
