@@ -120,6 +120,90 @@ class BrokerCommandTicketResponse(BaseModel):
     process_execution_performed: Literal[False] = False
 
 
+class BrokerManifestAdmissionDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema: Literal["strix-manifest-admission-v1"]
+    manifest_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    entry_count: int = Field(ge=0, le=128)
+    inline_file_count: int = Field(ge=0, le=128)
+    local_dir_count: int = Field(ge=0, le=128)
+    inline_file_bytes: int = Field(ge=0, le=4 * 1024 * 1024)
+    environment_value_bytes: int = Field(ge=0, le=16 * 1024)
+    host_paths_included: Literal[False]
+    raw_file_content_included: Literal[False]
+    filesystem_io_performed: Literal[False]
+    manifest_materialized: Literal[False]
+    upload_enabled: Literal[False]
+
+    @model_validator(mode="after")
+    def validate_counts(self):
+        if self.inline_file_count + self.local_dir_count != self.entry_count:
+            raise ValueError("manifest entry counts are inconsistent")
+        return self
+
+
+class BrokerManifestTicketRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    contract: BrokerContractDocument
+    request_id: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9._:-]+$",
+    )
+    image: str = Field(min_length=1, max_length=512)
+    exposed_ports: list[int] = Field(default_factory=list, max_length=16)
+    manifest: BrokerManifestAdmissionDocument
+
+    @model_validator(mode="after")
+    def validate_ports(self):
+        if (
+            any(
+                isinstance(port, bool)
+                or not 1 <= port <= 65535
+                for port in self.exposed_ports
+            )
+            or len(set(self.exposed_ports)) != len(self.exposed_ports)
+        ):
+            raise ValueError("exposed ports are invalid")
+        return self
+
+
+class BrokerRunnerManifestTicketDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema: Literal["strix-runner-manifest-ticket-v1"]
+    manifest_schema: Literal["strix-manifest-admission-v1"]
+    contract_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    request_id: str = Field(min_length=1, max_length=128)
+    image: str = Field(min_length=1, max_length=512)
+    exposed_ports: list[int] = Field(default_factory=list, max_length=16)
+    manifest_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    entry_count: int = Field(ge=0, le=128)
+    inline_file_count: int = Field(ge=0, le=128)
+    local_dir_count: int = Field(ge=0, le=128)
+    inline_file_bytes: int = Field(ge=0, le=4 * 1024 * 1024)
+    environment_value_bytes: int = Field(ge=0, le=16 * 1024)
+    host_paths_included: Literal[False]
+    raw_file_content_included: Literal[False]
+    filesystem_io_performed: Literal[False]
+    manifest_materialized: Literal[False]
+    upload_enabled: Literal[False]
+    active_execution_enabled: Literal[False]
+    signature_alg: Literal["hmac-sha256"]
+    signature: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class BrokerManifestTicketResponse(BaseModel):
+    allowed: Literal[True]
+    ticket: BrokerRunnerManifestTicketDocument
+    mode: Literal["ticket_issuer_only"] = "ticket_issuer_only"
+    network_io_performed: Literal[False] = False
+    process_execution_performed: Literal[False] = False
+    manifest_materialized: Literal[False] = False
+
+
 class BrokerHttpRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
