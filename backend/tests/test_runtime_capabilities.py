@@ -8,7 +8,9 @@ from app.runtime_capabilities import (
     recon_runtime_capability,
     safe_pentagi_runtime_capability,
     safe_recon_runtime_capability,
+    safe_validation_runtime_capability,
     scanner_runtime_capability,
+    validation_runtime_capability,
 )
 
 
@@ -471,3 +473,91 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
     assert result["strix_python_bootstrap_ready"] is False
     assert result["strix_runtime_contract_enforceable"] is False
     assert result["strix_upstream_docker_preflight_required"] is True
+
+
+
+def test_validation_v2_capability_defaults_fail_closed(monkeypatch):
+    for name in (
+        "XBOW_ENABLE_HTTP_VALIDATION",
+        "XBOW_ENABLE_PARAMETER_VALIDATION_V2",
+        "XBOW_ENABLE_CORS_VALIDATION",
+        "XBOW_ENABLE_REDIRECT_VALIDATION",
+        "XBOW_VALIDATION_MAX_PARAMETERS",
+        "XBOW_VALIDATION_MAX_REQUESTS",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+    result = validation_runtime_capability()
+
+    assert result["mode"] == "disabled"
+    assert result["planning_enabled"] is False
+    assert result["safe_probe_plan_schema"] == "safe-probe-plan-v1"
+    assert result["max_parameters"] == 5
+    assert result["max_requests"] == 8
+    assert result["allowed_methods"] == ["GET"]
+    assert result["redirects_followed"] is False
+    assert result["scope_revalidation_required"] is True
+    assert result["automatic_execution_authorized"] is False
+    assert result["v2_network_execution_implemented"] is False
+    assert result["contains_secrets"] is False
+
+
+def test_validation_v2_capability_reports_planning_only(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_PARAMETER_VALIDATION_V2", "true")
+    monkeypatch.setenv("XBOW_ENABLE_CORS_VALIDATION", "false")
+    monkeypatch.setenv("XBOW_ENABLE_REDIRECT_VALIDATION", "false")
+    monkeypatch.setenv("XBOW_VALIDATION_MAX_PARAMETERS", "7")
+    monkeypatch.setenv("XBOW_VALIDATION_MAX_REQUESTS", "12")
+
+    result = validation_runtime_capability()
+
+    assert result["mode"] == "planning_only"
+    assert result["planning_enabled"] is True
+    assert result["parameter_validation_v2_enabled"] is True
+    assert result["max_parameters"] == 7
+    assert result["max_requests"] == 12
+    assert result["automatic_execution_authorized"] is False
+    assert result["v2_network_execution_implemented"] is False
+
+
+@pytest.mark.parametrize(
+    ("name", "value"),
+    (
+        ("XBOW_ENABLE_CORS_VALIDATION", "invalid"),
+        ("XBOW_VALIDATION_MAX_PARAMETERS", "11"),
+        ("XBOW_VALIDATION_MAX_REQUESTS", "17"),
+    ),
+)
+def test_validation_v2_capability_invalid_config_fails_closed(
+    monkeypatch,
+    name,
+    value,
+):
+    monkeypatch.setenv(name, value)
+
+    result = safe_validation_runtime_capability()
+
+    assert result["mode"] == "configuration_error"
+    assert result["configuration_error"] is True
+    assert result["planning_enabled"] is False
+    assert result["automatic_execution_authorized"] is False
+    assert result["v2_network_execution_implemented"] is False
+
+
+def test_capabilities_api_exposes_validation_planning_without_execution(
+    monkeypatch,
+):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_CORS_VALIDATION", "true")
+
+    result = main.system_capabilities()
+
+    validation = result["execution"]["http_validation_detail"]
+    assert result["execution"]["http_validation"] == "planning_only"
+    assert validation["planning_enabled"] is True
+    assert validation["cors_validation_enabled"] is True
+    assert validation["automatic_execution_authorized"] is False
+    assert validation["v2_network_execution_implemented"] is False
+    assert result["safety"]["validation_automatic_execution_authorized"] is False
+    assert result["safety"]["validation_scope_revalidation_required"] is True
