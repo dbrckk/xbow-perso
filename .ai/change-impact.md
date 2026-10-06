@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 1364d6cfd42490bb9daf3c3f2fdd3bf7a46e0640
-Head: c617b2e44ad5e9dcfeb94c2039fb610a1529ff3a
+Base: 1f1fd123a7e8aa77270a7e0393ced1bcda671dec
+Head: 373738a347dafccc69ed81eb4a0e7ced146222b1
 
 ## Changed files
 - M backend/app/finding_intelligence.py
-- A backend/app/repeat_validation_outcome.py
+- M backend/app/technology_fingerprint_intelligence.py
 - M backend/tests/test_finding_intelligence.py
-- A backend/tests/test_repeat_validation_outcome.py
+- M backend/tests/test_technology_fingerprint_intelligence.py
 
 ## Affected areas
 - backend

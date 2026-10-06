@@ -8,20 +8,20 @@
     "build_finding_intelligence": {
       "definition": {
         "file": "backend/app/finding_intelligence.py",
-        "line": 33,
+        "line": 34,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 33,
+          "line": 34,
           "preview": "def build_finding_intelligence(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 382,
+          "line": 388,
           "preview": "payload = build_finding_intelligence(",
           "definition_candidate": false
         },
@@ -110,6 +110,12 @@
           "definition_candidate": false
         },
         {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 475,
+          "preview": "result = build_finding_intelligence([finding], graph)",
+          "definition_candidate": false
+        },
+        {
           "file": "backend/tests/test_vulnerability_intelligence.py",
           "line": 135,
           "preview": "from app.finding_intelligence import build_finding_intelligence",
@@ -134,58 +140,82 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 20
+      "occurrence_count": 21
     },
     "campaign_finding_intelligence": {
       "definition": {
         "file": "backend/app/finding_intelligence.py",
-        "line": 358,
+        "line": 364,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 358,
+          "line": 364,
           "preview": "def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "RepeatValidationOutcome": {
+    "TechnologyFingerprint": {
       "definition": {
-        "file": "backend/app/repeat_validation_outcome.py",
-        "line": 13,
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "line": 18,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/repeat_validation_outcome.py",
-          "line": 13,
-          "preview": "class RepeatValidationOutcome:",
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 18,
+          "preview": "class TechnologyFingerprint:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/repeat_validation_outcome.py",
-          "line": 33,
-          "preview": ") -> RepeatValidationOutcome:",
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 50,
+          "preview": ") -> tuple[TechnologyFingerprint, ...]:",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/repeat_validation_outcome.py",
-          "line": 74,
-          "preview": "return RepeatValidationOutcome(",
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 78,
+          "preview": "result: list[TechnologyFingerprint] = []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 91,
+          "preview": "TechnologyFingerprint(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 113,
+          "preview": "fingerprints: tuple[TechnologyFingerprint, ...],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 114,
+          "preview": ") -> tuple[TechnologyFingerprint, ...]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 135,
+          "preview": "fingerprints: tuple[TechnologyFingerprint, ...],",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 7
     },
     "to_dict": {
       "definition": {
-        "file": "backend/app/repeat_validation_outcome.py",
-        "line": 25,
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "line": 26,
         "kind": "function",
         "language": "python"
       },
@@ -498,91 +528,91 @@
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 166,
+          "line": 171,
           "preview": "\"readiness\": readiness_item.to_dict() if readiness_item else None,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 167,
+          "line": 172,
           "preview": "\"triage\": triage_item.to_dict() if triage_item else None,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 168,
+          "line": 173,
           "preview": "\"differential\": differential_item.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 169,
+          "line": 174,
           "preview": "\"differential_quality\": differential_quality_item.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 171,
+          "line": 176,
           "preview": "repeat_validation_outcome.to_dict()",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 173,
+          "line": 178,
           "preview": "\"vulnerability\": vulnerability.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 174,
+          "line": 179,
           "preview": "\"cve_evidence_verdict\": cve_evidence_verdict.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 175,
+          "line": 180,
           "preview": "\"cve_risk_context\": cve_risk_context.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 176,
+          "line": 181,
           "preview": "\"cve_validation_plan\": cve_validation_plan.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 177,
+          "line": 182,
           "preview": "\"validation_priority\": validation_priority.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 180,
+          "line": 185,
           "preview": "item.to_dict() for item in matched_fingerprints",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 204,
+          "line": 210,
           "preview": "\"cluster\": cluster.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 205,
+          "line": 211,
           "preview": "\"consensus\": consensus.to_dict() if consensus else None,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 206,
+          "line": 212,
           "preview": "\"saturation\": saturated.to_dict() if saturated else None,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 214,
+          "line": 220,
           "preview": "item.to_dict()",
           "definition_candidate": false
         },
@@ -913,70 +943,275 @@
       ],
       "occurrence_count": 120
     },
-    "build_repeat_validation_outcome": {
+    "_normalize_product": {
       "definition": {
-        "file": "backend/app/repeat_validation_outcome.py",
-        "line": 31,
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "line": 33,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 33,
+          "preview": "def _normalize_product(value: str) -> str:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 55,
+          "preview": "normalized = _normalize_product(product)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 123,
+          "preview": "haystack = _normalize_product(\" \".join(parts))",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_parse_technology": {
+      "definition": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "line": 38,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 38,
+          "preview": "def _parse_technology(value: str) -> tuple[str, str | None]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 54,
+          "preview": "product, version = _parse_technology(observation.value)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "build_technology_fingerprints": {
+      "definition": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "line": 48,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 22,
-          "preview": "from .repeat_validation_outcome import build_repeat_validation_outcome",
+          "line": 24,
+          "preview": "build_technology_fingerprints,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 91,
-          "preview": "repeat_validation_outcome = build_repeat_validation_outcome(",
+          "line": 64,
+          "preview": "technology_fingerprints = build_technology_fingerprints(graph)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/repeat_validation_outcome.py",
-          "line": 31,
-          "preview": "def build_repeat_validation_outcome(",
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 48,
+          "preview": "def build_technology_fingerprints(",
           "definition_candidate": true
         },
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 4,
-          "preview": "build_repeat_validation_outcome,",
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 158,
+          "preview": "fingerprints = build_technology_fingerprints(graph)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 49,
-          "preview": "result = build_repeat_validation_outcome(",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 6,
+          "preview": "build_technology_fingerprints,",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 62,
-          "preview": "result = build_repeat_validation_outcome(_quality())",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 55,
+          "preview": "fingerprints = build_technology_fingerprints(_graph())",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 74,
-          "preview": "result = build_repeat_validation_outcome(",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 68,
+          "preview": "fingerprints = build_technology_fingerprints(_graph())",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 92,
-          "preview": "result = build_repeat_validation_outcome(",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 76,
+          "preview": "fingerprints = build_technology_fingerprints(_graph())",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 110,
-          "preview": "result = build_repeat_validation_outcome(",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 88,
+          "preview": "fingerprints = build_technology_fingerprints(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 130,
+          "preview": "build_technology_fingerprints(graph),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 142,
+          "preview": "build_technology_fingerprints(_graph()),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 11
+    },
+    "match_finding_technology": {
+      "definition": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "line": 111,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 25,
+          "preview": "match_finding_technology,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 107,
+          "preview": "matched_fingerprints = match_finding_technology(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 111,
+          "preview": "def match_finding_technology(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 161,
+          "preview": "matched = match_finding_technology(finding, fingerprints)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 7,
+          "preview": "match_finding_technology,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 77,
+          "preview": "matched = match_finding_technology(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 90,
+          "preview": "assert match_finding_technology(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 128,
+          "preview": "matched = match_finding_technology(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 140,
+          "preview": "matched = match_finding_technology(",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 9
+    },
+    "fingerprint_ambiguity_reasons": {
+      "definition": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "line": 134,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 26,
+          "preview": "fingerprint_ambiguity_reasons,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 118,
+          "preview": "fingerprint_ambiguity = fingerprint_ambiguity_reasons(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 134,
+          "preview": "def fingerprint_ambiguity_reasons(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 8,
+          "preview": "fingerprint_ambiguity_reasons,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 133,
+          "preview": "assert fingerprint_ambiguity_reasons(matched) == (",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 145,
+          "preview": "assert fingerprint_ambiguity_reasons(matched) == ()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "build_finding_fingerprint_intelligence": {
+      "definition": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "line": 154,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/technology_fingerprint_intelligence.py",
+          "line": 154,
+          "preview": "def build_finding_fingerprint_intelligence(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 5,
+          "preview": "build_finding_fingerprint_intelligence,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 97,
+          "preview": "result = build_finding_fingerprint_intelligence(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
     },
     "_finding": {
       "definition": {
@@ -1443,6 +1678,12 @@
           "definition_candidate": false
         },
         {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 445,
+          "preview": "finding = _finding(",
+          "definition_candidate": false
+        },
+        {
           "file": "backend/tests/test_finding_lifecycle.py",
           "line": 8,
           "preview": "def _finding(finding_id: str, status: str):",
@@ -1699,12 +1940,6 @@
           "line": 223,
           "preview": "finding = _finding(\"f1\", \"confirmed\")",
           "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_report_readiness.py",
-          "line": 268,
-          "preview": "finding = _finding(\"f1\", \"confirmed\")",
-          "definition_candidate": false
         }
       ],
       "occurrence_count": 120
@@ -1934,6 +2169,12 @@
           "definition_candidate": false
         },
         {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 455,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
           "file": "backend/tests/test_form_waf_reasoning.py",
           "line": 7,
           "preview": "def _graph() -> ObservationGraph:",
@@ -2067,38 +2308,44 @@
         },
         {
           "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-          "line": 11,
+          "line": 12,
           "preview": "def _graph():",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-          "line": 54,
+          "line": 55,
           "preview": "fingerprints = build_technology_fingerprints(_graph())",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-          "line": 67,
+          "line": 68,
           "preview": "fingerprints = build_technology_fingerprints(_graph())",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-          "line": 75,
+          "line": 76,
           "preview": "fingerprints = build_technology_fingerprints(_graph())",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-          "line": 87,
+          "line": 88,
           "preview": "fingerprints = build_technology_fingerprints(_graph())",
           "definition_candidate": false
         },
         {
           "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-          "line": 98,
+          "line": 99,
           "preview": "_graph(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 142,
+          "preview": "build_technology_fingerprints(_graph()),",
           "definition_candidate": false
         },
         {
@@ -2150,7 +2397,7 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 72
+      "occurrence_count": 74
     },
     "test_finding_intelligence_consolidates_member_and_cluster_views": {
       "definition": {
@@ -2356,133 +2603,137 @@
       ],
       "occurrence_count": 1
     },
-    "_quality": {
+    "test_conflicting_product_versions_downgrade_cve_verdict": {
       "definition": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "line": 8,
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 444,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 8,
-          "preview": "def _quality(",
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 444,
+          "preview": "def test_conflicting_product_versions_downgrade_cve_verdict():",
           "definition_candidate": true
-        },
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_versioned_technology_fingerprints_are_aggregated_by_source": {
+      "definition": {
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "line": 54,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 50,
-          "preview": "_quality(observations=1, strong=1, reproducible=False, score=0.6)",
-          "definition_candidate": false
-        },
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 54,
+          "preview": "def test_versioned_technology_fingerprints_are_aggregated_by_source():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_unversioned_technology_remains_advisory": {
+      "definition": {
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "line": 67,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 62,
-          "preview": "result = build_repeat_validation_outcome(_quality())",
-          "definition_candidate": false
-        },
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 67,
+          "preview": "def test_unversioned_technology_remains_advisory():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_matches_observed_product_without_guessing_version": {
+      "definition": {
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "line": 75,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
           "line": 75,
-          "preview": "_quality(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 93,
-          "preview": "_quality(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 111,
-          "preview": "_quality(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "test_repeat_outcome_waits_for_second_observation": {
-      "definition": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "line": 48,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 48,
-          "preview": "def test_repeat_outcome_waits_for_second_observation():",
+          "preview": "def test_finding_matches_observed_product_without_guessing_version():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_two_consistent_strong_observations_are_reproduced_not_confirmed": {
+    "test_unrelated_finding_does_not_receive_fingerprint": {
       "definition": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "line": 61,
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "line": 87,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 61,
-          "preview": "def test_two_consistent_strong_observations_are_reproduced_not_confirmed():",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 87,
+          "preview": "def test_unrelated_finding_does_not_receive_fingerprint():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_conflicting_repeat_is_explicitly_contradictory": {
+    "test_fingerprint_intelligence_never_enables_exploitation": {
       "definition": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "line": 73,
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "line": 96,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 73,
-          "preview": "def test_conflicting_repeat_is_explicitly_contradictory():",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 96,
+          "preview": "def test_fingerprint_intelligence_never_enables_exploitation():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_unreproduced_strong_signal_is_inconclusive": {
+    "test_conflicting_versions_are_marked_ambiguous": {
       "definition": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "line": 91,
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "line": 108,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 91,
-          "preview": "def test_unreproduced_strong_signal_is_inconclusive():",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 108,
+          "preview": "def test_conflicting_versions_are_marked_ambiguous():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_two_non_strong_observations_are_not_reproduced": {
+    "test_multi_source_same_version_is_not_ambiguous": {
       "definition": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "line": 109,
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "line": 139,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_repeat_validation_outcome.py",
-          "line": 109,
-          "preview": "def test_two_non_strong_observations_are_not_reproduced():",
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 139,
+          "preview": "def test_multi_source_same_version_is_not_ambiguous():",
           "definition_candidate": true
         }
       ],

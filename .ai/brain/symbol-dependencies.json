@@ -8,8 +8,8 @@
     "build_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 33,
-        "end": 354
+        "start": 34,
+        "end": 360
       },
       "symbol_dependencies": [
         {
@@ -205,6 +205,18 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "fingerprint_ambiguity_reasons",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "match_finding_technology",
           "definitions": [
             {
@@ -265,13 +277,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 19
+      "dependency_count": 20
     },
     "campaign_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 358,
-        "end": 399
+        "start": 364,
+        "end": 405
       },
       "symbol_dependencies": [
         {
@@ -291,7 +303,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -325,41 +337,28 @@
       ],
       "dependency_count": 4
     },
-    "RepeatValidationOutcome": {
+    "TechnologyFingerprint": {
       "source": {
-        "file": "backend/app/repeat_validation_outcome.py",
-        "start": 13,
-        "end": 28
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "start": 18,
+        "end": 30
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/differential_quality.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
     "to_dict": {
       "source": {
-        "file": "backend/app/repeat_validation_outcome.py",
-        "start": 25,
-        "end": 145
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "start": 26,
+        "end": 146
       },
       "symbol_dependencies": [
         {
-          "symbol": "DifferentialQuality",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/differential_quality.py",
-              "line": 14,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
               "kind": "class",
               "language": "python"
             }
@@ -367,11 +366,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "RepeatValidationOutcome",
+          "symbol": "TechnologyFingerprint",
           "definitions": [
             {
-              "file": "backend/app/repeat_validation_outcome.py",
-              "line": 13,
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 18,
               "kind": "class",
               "language": "python"
             }
@@ -379,11 +378,321 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_repeat_validation_outcome",
+          "symbol": "_normalize_product",
           "definitions": [
             {
-              "file": "backend/app/repeat_validation_outcome.py",
-              "line": 31,
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_parse_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fingerprint_ambiguity_reasons",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "match_finding_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 111,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "values",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "_normalize_product": {
+      "source": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "start": 33,
+        "end": 35
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_parse_technology": {
+      "source": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "start": 38,
+        "end": 45
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_technology_fingerprints": {
+      "source": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "start": 48,
+        "end": 108
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TechnologyFingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_normalize_product",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_parse_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "match_finding_technology": {
+      "source": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "start": 111,
+        "end": 130
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "TechnologyFingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_normalize_product",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "fingerprint_ambiguity_reasons": {
+      "source": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "start": 134,
+        "end": 152
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "TechnologyFingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "values",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "build_finding_fingerprint_intelligence": {
+      "source": {
+        "file": "backend/app/technology_fingerprint_intelligence.py",
+        "start": 154,
+        "end": 191
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "match_finding_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 111,
               "kind": "function",
               "language": "python"
             }
@@ -392,40 +701,6 @@
         }
       ],
       "dependency_count": 3
-    },
-    "build_repeat_validation_outcome": {
-      "source": {
-        "file": "backend/app/repeat_validation_outcome.py",
-        "start": 31,
-        "end": 85
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "DifferentialQuality",
-          "definitions": [
-            {
-              "file": "backend/app/differential_quality.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "RepeatValidationOutcome",
-          "definitions": [
-            {
-              "file": "backend/app/repeat_validation_outcome.py",
-              "line": 13,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
     },
     "_finding": {
       "source": {
@@ -518,7 +793,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -564,7 +839,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -610,7 +885,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -678,7 +953,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -724,7 +999,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -770,7 +1045,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -816,7 +1091,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -874,7 +1149,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -956,7 +1231,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -1026,7 +1301,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -1096,7 +1371,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 33,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -1106,41 +1381,31 @@
       ],
       "dependency_count": 5
     },
-    "_quality": {
+    "test_conflicting_product_versions_downgrade_cve_verdict": {
       "source": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "start": 8,
-        "end": 45
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 444,
+        "end": 487
       },
       "symbol_dependencies": [
         {
-          "symbol": "DifferentialQuality",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/app/differential_quality.py",
-              "line": 14,
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_repeat_outcome_waits_for_second_observation": {
-      "source": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "start": 48,
-        "end": 58
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "_quality",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_repeat_validation_outcome.py",
-              "line": 8,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
               "kind": "function",
               "language": "python"
             }
@@ -1148,11 +1413,69 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_repeat_validation_outcome",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/app/repeat_validation_outcome.py",
-              "line": 31,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_versioned_technology_fingerprints_are_aggregated_by_source": {
+      "source": {
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "start": 54,
+        "end": 64
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
               "kind": "function",
               "language": "python"
             }
@@ -1162,19 +1485,19 @@
       ],
       "dependency_count": 2
     },
-    "test_two_consistent_strong_observations_are_reproduced_not_confirmed": {
+    "test_unversioned_technology_remains_advisory": {
       "source": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "start": 61,
-        "end": 70
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "start": 67,
+        "end": 72
       },
       "symbol_dependencies": [
         {
-          "symbol": "_quality",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/tests/test_repeat_validation_outcome.py",
-              "line": 8,
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 12,
               "kind": "function",
               "language": "python"
             }
@@ -1182,11 +1505,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_repeat_validation_outcome",
+          "symbol": "build_technology_fingerprints",
           "definitions": [
             {
-              "file": "backend/app/repeat_validation_outcome.py",
-              "line": 31,
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
               "kind": "function",
               "language": "python"
             }
@@ -1196,19 +1519,19 @@
       ],
       "dependency_count": 2
     },
-    "test_conflicting_repeat_is_explicitly_contradictory": {
+    "test_finding_matches_observed_product_without_guessing_version": {
       "source": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "start": 73,
-        "end": 88
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "start": 75,
+        "end": 84
       },
       "symbol_dependencies": [
         {
-          "symbol": "_quality",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_repeat_validation_outcome.py",
-              "line": 8,
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 43,
               "kind": "function",
               "language": "python"
             }
@@ -1216,11 +1539,35 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_repeat_validation_outcome",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/app/repeat_validation_outcome.py",
-              "line": 31,
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "match_finding_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 111,
               "kind": "function",
               "language": "python"
             }
@@ -1228,21 +1575,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 4
     },
-    "test_unreproduced_strong_signal_is_inconclusive": {
+    "test_unrelated_finding_does_not_receive_fingerprint": {
       "source": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "start": 91,
-        "end": 106
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "start": 87,
+        "end": 93
       },
       "symbol_dependencies": [
         {
-          "symbol": "_quality",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_repeat_validation_outcome.py",
-              "line": 8,
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 43,
               "kind": "function",
               "language": "python"
             }
@@ -1250,11 +1597,35 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_repeat_validation_outcome",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/app/repeat_validation_outcome.py",
-              "line": 31,
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "match_finding_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 111,
               "kind": "function",
               "language": "python"
             }
@@ -1262,21 +1633,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 4
     },
-    "test_two_non_strong_observations_are_not_reproduced": {
+    "test_fingerprint_intelligence_never_enables_exploitation": {
       "source": {
-        "file": "backend/tests/test_repeat_validation_outcome.py",
-        "start": 109,
-        "end": 125
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "start": 96,
+        "end": 105
       },
       "symbol_dependencies": [
         {
-          "symbol": "_quality",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_repeat_validation_outcome.py",
-              "line": 8,
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 43,
               "kind": "function",
               "language": "python"
             }
@@ -1284,11 +1655,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_repeat_validation_outcome",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/app/repeat_validation_outcome.py",
-              "line": 31,
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_fingerprint_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 154,
               "kind": "function",
               "language": "python"
             }
@@ -1296,7 +1679,171 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
+    },
+    "test_conflicting_versions_are_marked_ambiguous": {
+      "source": {
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "start": 108,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fingerprint_ambiguity_reasons",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "match_finding_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 111,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "test_multi_source_same_version_is_not_ambiguous": {
+      "source": {
+        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+        "start": 139,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fingerprint_ambiguity_reasons",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "match_finding_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 111,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
     }
   }
 }

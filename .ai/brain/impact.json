@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "1b349fcdd88c3d045f40b4c1140ccdb5619cbfb0",
-  "head": "c617b2e44ad5e9dcfeb94c2039fb610a1529ff3a",
+  "base": "c617b2e44ad5e9dcfeb94c2039fb610a1529ff3a",
+  "head": "373738a347dafccc69ed81eb4a0e7ced146222b1",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -10,31 +10,31 @@
       "status": "M"
     },
     {
-      "path": "backend/app/repeat_validation_outcome.py",
-      "status": "A"
+      "path": "backend/app/technology_fingerprint_intelligence.py",
+      "status": "M"
     },
     {
       "path": "backend/tests/test_finding_intelligence.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_repeat_validation_outcome.py",
-      "status": "A"
+      "path": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "status": "M"
     }
   ],
   "changed_source_files": [
     "backend/app/finding_intelligence.py",
-    "backend/app/repeat_validation_outcome.py",
+    "backend/app/technology_fingerprint_intelligence.py",
     "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_repeat_validation_outcome.py"
+    "backend/tests/test_technology_fingerprint_intelligence.py"
   ],
   "impacted_files": [
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/app/repeat_validation_outcome.py",
+    "backend/app/technology_fingerprint_intelligence.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_repeat_validation_outcome.py",
+    "backend/tests/test_technology_fingerprint_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_symbols": [
@@ -42,13 +42,13 @@
       "name": "build_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 33
+      "line": 34
     },
     {
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 358
+      "line": 364
     },
     {
       "name": "authenticate_control_api",
@@ -597,22 +597,52 @@
       "line": 1879
     },
     {
-      "name": "RepeatValidationOutcome",
+      "name": "TechnologyFingerprint",
       "kind": "class",
-      "file": "backend/app/repeat_validation_outcome.py",
-      "line": 13
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 18
     },
     {
       "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/repeat_validation_outcome.py",
-      "line": 25
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 26
     },
     {
-      "name": "build_repeat_validation_outcome",
+      "name": "_normalize_product",
       "kind": "function",
-      "file": "backend/app/repeat_validation_outcome.py",
-      "line": 31
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 33
+    },
+    {
+      "name": "_parse_technology",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 38
+    },
+    {
+      "name": "build_technology_fingerprints",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 48
+    },
+    {
+      "name": "match_finding_technology",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 111
+    },
+    {
+      "name": "fingerprint_ambiguity_reasons",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 134
+    },
+    {
+      "name": "build_finding_fingerprint_intelligence",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 154
     },
     {
       "name": "_finding",
@@ -729,40 +759,64 @@
       "line": 379
     },
     {
-      "name": "_quality",
+      "name": "test_conflicting_product_versions_downgrade_cve_verdict",
       "kind": "function",
-      "file": "backend/tests/test_repeat_validation_outcome.py",
-      "line": 8
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 444
     },
     {
-      "name": "test_repeat_outcome_waits_for_second_observation",
+      "name": "_graph",
       "kind": "function",
-      "file": "backend/tests/test_repeat_validation_outcome.py",
-      "line": 48
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 12
     },
     {
-      "name": "test_two_consistent_strong_observations_are_reproduced_not_confirmed",
+      "name": "_finding",
       "kind": "function",
-      "file": "backend/tests/test_repeat_validation_outcome.py",
-      "line": 61
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 43
     },
     {
-      "name": "test_conflicting_repeat_is_explicitly_contradictory",
+      "name": "test_versioned_technology_fingerprints_are_aggregated_by_source",
       "kind": "function",
-      "file": "backend/tests/test_repeat_validation_outcome.py",
-      "line": 73
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 54
     },
     {
-      "name": "test_unreproduced_strong_signal_is_inconclusive",
+      "name": "test_unversioned_technology_remains_advisory",
       "kind": "function",
-      "file": "backend/tests/test_repeat_validation_outcome.py",
-      "line": 91
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 67
     },
     {
-      "name": "test_two_non_strong_observations_are_not_reproduced",
+      "name": "test_finding_matches_observed_product_without_guessing_version",
       "kind": "function",
-      "file": "backend/tests/test_repeat_validation_outcome.py",
-      "line": 109
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 75
+    },
+    {
+      "name": "test_unrelated_finding_does_not_receive_fingerprint",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 87
+    },
+    {
+      "name": "test_fingerprint_intelligence_never_enables_exploitation",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 96
+    },
+    {
+      "name": "test_conflicting_versions_are_marked_ambiguous",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 108
+    },
+    {
+      "name": "test_multi_source_same_version_is_not_ambiguous",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 139
     },
     {
       "name": "_campaign",
@@ -840,8 +894,7 @@
   "selected_tests": [
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_repeat_validation.py",
-    "backend/tests/test_repeat_validation_outcome.py",
+    "backend/tests/test_technology_fingerprint_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ]
 }

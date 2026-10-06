@@ -3748,6 +3748,7 @@ corroborating_sources = {
 matched_fingerprints = match_finding_technology(
 versioned_fingerprint_match_count = sum(
 high_confidence_fingerprint_match_count = sum(
+fingerprint_ambiguity = fingerprint_ambiguity_reasons(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
 cve_risk_context = build_cve_risk_context(
@@ -14179,6 +14180,13 @@ matches = []
 ⋮----
 product = fingerprint.normalized_product
 ⋮----
+"""Return conservative ambiguity markers for conflicting matched versions."""
+versions_by_product: dict[str, set[str]] = {}
+⋮----
+reasons: set[str] = set()
+⋮----
+versioned = [item for item in fingerprints if item.version]
+⋮----
 fingerprints = build_technology_fingerprints(graph)
 rows = []
 ⋮----
@@ -17180,6 +17188,10 @@ def test_finding_intelligence_surfaces_reproduced_repeat_outcome()
 outcome = result["findings"][0]["repeat_validation_outcome"]
 ⋮----
 def test_finding_intelligence_surfaces_contradictory_repeat_outcome()
+⋮----
+def test_conflicting_product_versions_downgrade_cve_verdict()
+⋮----
+graph = _graph()
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
@@ -24839,6 +24851,10 @@ def test_unrelated_finding_does_not_receive_fingerprint()
 def test_fingerprint_intelligence_never_enables_exploitation()
 ⋮----
 result = build_finding_fingerprint_intelligence(
+⋮----
+def test_conflicting_versions_are_marked_ambiguous()
+⋮----
+def test_multi_source_same_version_is_not_ambiguous()
 ````
 
 ## File: backend/tests/test_validation_priority.py

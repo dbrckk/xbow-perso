@@ -39,19 +39,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T19:57:11Z
+Generated: 2026-10-06T21:42:47Z
 
 ### Git
 - Branch: `main`
-- Head: `c617b2e44ad5`
-- Commit date: 2026-10-06T21:56:47+02:00
-- Commit: feat(validation): classify repeat differential outcomes
+- Head: `373738a347da`
+- Commit date: 2026-10-06T23:42:35+02:00
+- Commit: feat(vuln): downgrade CVEs on conflicting fingerprints
 - Tracked files: 667
 
 ### Recently changed files
 - `backend/app/finding_intelligence.py`
-- `backend/app/repeat_validation_outcome.py`
+- `backend/app/technology_fingerprint_intelligence.py`
 - `backend/tests/test_finding_intelligence.py`
+- `backend/tests/test_technology_fingerprint_intelligence.py`
+- `backend/app/repeat_validation_outcome.py`
 - `backend/tests/test_repeat_validation_outcome.py`
 - `backend/app/main.py`
 - `backend/app/runtime_capabilities.py`
@@ -65,8 +67,6 @@ Generated: 2026-10-06T19:57:11Z
 - `backend/app/vulnerability_intelligence.py`
 - `backend/tests/test_differential_quality.py`
 - `backend/tests/test_vulnerability_intelligence.py`
-- `backend/app/cve_validation_priority.py`
-- `backend/tests/test_cve_validation_priority.py`
 
 ### Project signals
 - `pyproject.toml`
