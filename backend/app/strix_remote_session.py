@@ -299,6 +299,28 @@ async def prepare_strix_remote_session(
         raise StrixRemoteSessionError(
             "prepared Strix remote sessions do not support bind mounts"
         )
+    if manifest is not None:
+        from .strix_manifest_admission import (
+            StrixManifestAdmissionError,
+            build_strix_manifest_admission_plan,
+        )
+
+        try:
+            manifest_plan = build_strix_manifest_admission_plan(manifest)
+        except StrixManifestAdmissionError as exc:
+            raise StrixRemoteSessionError(
+                f"prepared Strix manifest rejected: {exc}"
+            ) from exc
+        if (
+            manifest_plan.manifest_materialized
+            or manifest_plan.upload_enabled
+            or manifest_plan.filesystem_io_performed
+            or manifest_plan.host_paths_included
+            or manifest_plan.raw_file_content_included
+        ):
+            raise StrixRemoteSessionError(
+                "prepared Strix manifest safety invariants changed"
+            )
     descriptor = PreparedRemoteSessionDescriptor(
         schema=STRIX_REMOTE_SESSION_SCHEMA,
         session_id=_new_session_id(),
