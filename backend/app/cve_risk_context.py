@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+from .kev_catalog import finding_has_authoritative_kev
+
+if TYPE_CHECKING:
+    from .kev_catalog import KevCatalog
 
 from .vulnerability_intelligence import finding_cve_ids
 
@@ -61,6 +66,7 @@ def build_cve_risk_context(
     finding: Any,
     *,
     authoritative_kev_verified: bool = False,
+    kev_catalog: "KevCatalog | None" = None,
 ) -> CveRiskContext:
     cve_ids = finding_cve_ids(finding)
     cvss = _cvss(getattr(finding, "cvss", None))
@@ -80,6 +86,13 @@ def build_cve_risk_context(
         if str(tag).strip()
     }
     scanner_tagged_kev = "kev" in tags
+    catalog_authoritative = bool(
+        kev_catalog is not None
+        and finding_has_authoritative_kev(kev_catalog, cve_ids)
+    )
+    authoritative = bool(
+        authoritative_kev_verified or catalog_authoritative
+    )
 
     if not cve_ids:
         return CveRiskContext(
@@ -127,7 +140,6 @@ def build_cve_risk_context(
         score += 0.05
         reasons.append("verified_template")
 
-    authoritative = bool(authoritative_kev_verified)
     if authoritative:
         score += 0.20
         reasons.append("authoritative_kev_verified")

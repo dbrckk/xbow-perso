@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 from app.finding_intelligence import build_finding_intelligence
+from app.kev_catalog import build_kev_catalog
 from app.main import app
 from app.observation_graph import Observation, ObservationGraph
 
@@ -203,3 +204,48 @@ def test_finding_intelligence_exposes_cve_risk_context_without_confirmation():
     assert risk["authoritative_kev_verified"] is False
     assert risk["exploitability_confirmed"] is False
     assert row["validation_priority"]["automatic_execution_authorized"] is False
+
+
+def test_finding_intelligence_counts_verified_kev_candidates():
+    finding = _finding(
+        "f1",
+        "https://example.test/a?id=one",
+        severity="critical",
+    )
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.cvss = 9.8
+    finding.tags = ["kev"]
+
+    catalog = build_kev_catalog(
+        {
+            "catalogVersion": "fixture",
+            "dateReleased": "2026-10-06",
+            "count": 1,
+            "vulnerabilities": [
+                {
+                    "cveID": "CVE-2026-12345",
+                    "vendorProject": "Vendor",
+                    "product": "Product",
+                    "dateAdded": "2026-10-01",
+                    "dueDate": "2026-10-20",
+                    "knownRansomwareCampaignUse": "Unknown",
+                }
+            ],
+        },
+        source_verified=True,
+    )
+
+    result = build_finding_intelligence(
+        [finding],
+        _graph(),
+        kev_catalog=catalog,
+    )
+
+    assert result["findings"][0]["cve_risk_context"][
+        "authoritative_kev_verified"
+    ] is True
+    assert result["summary"]["authoritative_kev_candidates"] == 1
+    assert result["findings"][0]["validation_priority"][
+        "automatic_execution_authorized"
+    ] is False
