@@ -218,6 +218,7 @@ app/
   surface_temporal.py
   swarm_coordinator.py
   target_memory.py
+  technology_fingerprint_intelligence.py
   validation_state.py
   validator.py
   value_efficiency.py
@@ -256,6 +257,7 @@ tests/
   test_control_plane_health.py
   test_control_views.py
   test_coverage.py
+  test_cve_metadata_normalization.py
   test_decision_audit.py
   test_decision_consensus.py
   test_decision_timeline.py
@@ -465,6 +467,7 @@ tests/
   test_surface_temporal.py
   test_swarm_coordinator.py
   test_target_memory.py
+  test_technology_fingerprint_intelligence.py
   test_validation_state.py
   test_validator.py
   test_value_efficiency.py
@@ -2734,6 +2737,7 @@ triage = build_finding_triage(findings, graph)
 cluster_consensus = build_cluster_consensus(
 saturation = build_cluster_saturation(
 differential_signals = build_differential_signals(graph)
+technology_fingerprints = build_technology_fingerprints(graph)
 ⋮----
 readiness_by_id = {item.finding_id: item for item in readiness}
 triage_by_id = {item.finding_id: item for item in triage}
@@ -2754,6 +2758,9 @@ duplicate_similarity = rank_public_duplicate_risk(
 ⋮----
 member_ids = cluster.finding_ids if cluster else (finding_id,)
 corroborating_sources = {
+matched_fingerprints = match_finding_technology(
+versioned_fingerprint_match_count = sum(
+high_confidence_fingerprint_match_count = sum(
 vulnerability = build_vulnerability_signal(
 ⋮----
 cluster_rows = []
@@ -6048,6 +6055,18 @@ impact: str = ""
 remediation: str = ""
 cwe: str | None = None
 cvss: float | None = Field(default=None, ge=0, le=10)
+cve_ids: list[str] = Field(default_factory=list)
+cpe: list[str] = Field(default_factory=list)
+cvss_vector: str | None = None
+epss_score: float | None = Field(default=None, ge=0, le=1)
+epss_percentile: float | None = Field(default=None, ge=0, le=1)
+references: list[str] = Field(default_factory=list)
+tags: list[str] = Field(default_factory=list)
+template_id: str | None = None
+template_verified: bool | None = None
+template_max_requests: int | None = Field(default=None, ge=0, le=10000)
+vendor: str | None = None
+product: str | None = None
 status: Literal["candidate", "validation_required", "confirmed", "rejected"] = "candidate"
 discovered_by: str = "unknown"
 validated_by: str | None = None
@@ -10143,8 +10162,18 @@ remediation: str = ""
 cwe: str | None = None
 cvss: float | None = None
 cve_ids: tuple[str, ...] = ()
+cpe: tuple[str, ...] = ()
+cvss_vector: str | None = None
+epss_score: float | None = None
+epss_percentile: float | None = None
+references: tuple[str, ...] = ()
+tags: tuple[str, ...] = ()
 template_id: str | None = None
 matcher_name: str | None = None
+template_verified: bool | None = None
+template_max_requests: int | None = None
+vendor: str | None = None
+product: str | None = None
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -10159,6 +10188,20 @@ score = float(value)
 def _severity(value: Any) -> str
 ⋮----
 normalized = str(value or "info").lower().strip()
+⋮----
+def _optional_unit_interval(value: Any) -> float | None
+⋮----
+def _optional_nonnegative_int(value: Any) -> int | None
+⋮----
+result = int(value)
+⋮----
+def _identifier_list(value: Any, *, limit: int = 50) -> tuple[str, ...]
+⋮----
+values = _string_list(value, limit=limit)
+seen: set[str] = set()
+result: list[str] = []
+⋮----
+normalized = item.strip()
 ⋮----
 def _string_list(value: Any, *, limit: int = 50) -> tuple[str, ...]
 ⋮----
@@ -10198,6 +10241,9 @@ extracted = item.get("extracted-results") or item.get("extracted_results") or []
 ⋮----
 matcher = item.get("matcher-name") or item.get("matcher_name")
 template_id = item.get("template-id") or item.get("template_id")
+metadata = info.get("metadata") if isinstance(info.get("metadata"), dict) else {}
+references = info.get("reference") or info.get("references") or []
+cpe = _identifier_list(classification.get("cpe"))
 ⋮----
 def normalized_finding_id(item: NormalizedScannerFinding) -> str
 ⋮----
@@ -10208,7 +10254,6 @@ def to_campaign_finding(item: NormalizedScannerFinding) -> Finding
 ⋮----
 def dedupe_normalized(items: Iterable[NormalizedScannerFinding]) -> list[NormalizedScannerFinding]
 ⋮----
-seen: set[str] = set()
 result: list[NormalizedScannerFinding] = []
 ⋮----
 finding_id = normalized_finding_id(item)
@@ -12869,6 +12914,77 @@ persistent = sorted(current_keys & previous_keys)
 by_kind: dict[str, int] = {kind: 0 for kind in SURFACE_KINDS}
 ```
 
+## File: app/technology_fingerprint_intelligence.py
+```python
+_VERSIONED_TECH_RE = re.compile(
+_TOKEN_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+\-]{1,80}")
+⋮----
+@dataclass(frozen=True)
+class TechnologyFingerprint
+⋮----
+product: str
+normalized_product: str
+version: str | None
+confidence: float
+sources: tuple[str, ...]
+observation_ids: tuple[str, ...]
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _normalize_product(value: str) -> str
+⋮----
+tokens = _TOKEN_RE.findall(value.lower())
+⋮----
+def _parse_technology(value: str) -> tuple[str, str | None]
+⋮----
+raw = str(value or "").strip()
+match = _VERSIONED_TECH_RE.fullmatch(raw)
+⋮----
+product = match.group("product").strip(" -_./:")
+version = match.group("version")
+⋮----
+grouped: dict[tuple[str, str | None], dict[str, Any]] = {}
+⋮----
+normalized = _normalize_product(product)
+⋮----
+key = (normalized, version)
+current = grouped.setdefault(
+⋮----
+raw_confidence = observation.metadata.get("confidence")
+⋮----
+confidence = float(raw_confidence)
+⋮----
+confidence = None
+⋮----
+result: list[TechnologyFingerprint] = []
+⋮----
+sources = tuple(sorted(payload["sources"]))
+explicit = payload["explicit_confidences"]
+base = 0.45
+⋮----
+base = max(base, sum(explicit) / len(explicit))
+confidence = round(min(1.0, base), 3)
+⋮----
+parts = []
+⋮----
+value = getattr(finding, name, None)
+⋮----
+evidence = getattr(finding, "evidence", None)
+⋮----
+haystack = _normalize_product(" ".join(parts))
+⋮----
+matches = []
+⋮----
+product = fingerprint.normalized_product
+⋮----
+fingerprints = build_technology_fingerprints(graph)
+rows = []
+⋮----
+matched = match_finding_technology(finding, fingerprints)
+```
+
 ## File: app/validation_state.py
 ```python
 @dataclass(frozen=True)
@@ -13275,6 +13391,10 @@ novel_candidate: bool
 novelty_signal: str
 corroborating_sources: tuple[str, ...]
 corroborating_source_count: int
+versioned_fingerprint_match_count: int
+high_confidence_fingerprint_match_count: int
+version_correlated: bool
+exploitability_evidence_level: str
 independent_validation_required: bool
 exploitability_confirmed: bool
 zero_day_claim: bool
@@ -13298,6 +13418,9 @@ finding_id = str(getattr(finding, "id", ""))
 cve_ids = finding_cve_ids(finding)
 sources = tuple(
 source_count = len(sources)
+versioned_count = max(0, int(versioned_fingerprint_match_count))
+high_confidence_count = max(0, int(high_confidence_fingerprint_match_count))
+version_correlated = bool(cve_ids and versioned_count > 0)
 ⋮----
 cve_signal = "multi_scanner_cve_candidate"
 ⋮----
@@ -13310,6 +13433,16 @@ high_impact = _SEVERITY_WEIGHT.get(severity, -1) >= _SEVERITY_WEIGHT["high"]
 differential = str(differential_signal).lower()
 ⋮----
 novel_candidate = (
+⋮----
+exploitability_evidence_level = "cve_plus_high_confidence_version"
+⋮----
+exploitability_evidence_level = "cve_plus_version"
+⋮----
+exploitability_evidence_level = "cve_identifier_only"
+⋮----
+exploitability_evidence_level = "behavioral_corroboration"
+⋮----
+exploitability_evidence_level = "insufficient"
 ⋮----
 novelty_signal = "strong_behavioral_candidate"
 ⋮----
@@ -14732,6 +14865,25 @@ def test_low_yield_scan_deprioritization_preserves_kind_and_target()
 action = PlannedAction(
 ⋮----
 def test_coverage_priority_never_changes_non_scan_action()
+```
+
+## File: tests/test_cve_metadata_normalization.py
+```python
+def _campaign() -> Campaign
+⋮----
+def test_nuclei_cve_metadata_survives_normalization()
+⋮----
+normalized = normalize_nuclei_item(
+⋮----
+finding = to_campaign_finding(normalized)
+⋮----
+def test_strix_structured_metadata_is_bounded_and_persisted()
+⋮----
+normalized = normalize_strix_item(
+⋮----
+def test_cve_metadata_defaults_keep_existing_findings_compatible()
+⋮----
+finding = Finding(
 ```
 
 ## File: tests/test_decision_audit.py
@@ -23032,6 +23184,35 @@ form = store.put_observation(
 waf = store.put_observation(
 ```
 
+## File: tests/test_technology_fingerprint_intelligence.py
+```python
+def _graph()
+⋮----
+graph = ObservationGraph()
+⋮----
+def _finding(text: str)
+⋮----
+def test_versioned_technology_fingerprints_are_aggregated_by_source()
+⋮----
+fingerprints = build_technology_fingerprints(_graph())
+⋮----
+nginx = next(
+⋮----
+def test_unversioned_technology_remains_advisory()
+⋮----
+rails = next(item for item in fingerprints if "ruby" in item.normalized_product)
+⋮----
+def test_finding_matches_observed_product_without_guessing_version()
+⋮----
+matched = match_finding_technology(
+⋮----
+def test_unrelated_finding_does_not_receive_fingerprint()
+⋮----
+def test_fingerprint_intelligence_never_enables_exploitation()
+⋮----
+result = build_finding_fingerprint_intelligence(
+```
+
 ## File: tests/test_validation_state.py
 ```python
 def _graph(validation_value="observed", validation_source="validator")
@@ -23272,6 +23453,13 @@ finding = SimpleNamespace(
 ⋮----
 result = build_finding_intelligence([finding], ObservationGraph())
 row = result["findings"][0]["vulnerability"]
+⋮----
+def test_version_correlated_cve_raises_evidence_quality_not_confirmation()
+⋮----
+graph = ObservationGraph()
+⋮----
+result = build_finding_intelligence([finding], graph)
+row = result["findings"][0]
 ```
 
 ## File: tests/test_watchdog_observability.py

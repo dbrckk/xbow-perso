@@ -39,16 +39,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T10:37:50Z
+Generated: 2026-10-06T10:46:10Z
 
 ### Git
 - Branch: `main`
-- Head: `4b57a506d640`
-- Commit date: 2026-10-06T12:37:40+02:00
-- Commit: feat(strix): require signed manifest tickets for session creation
-- Tracked files: 643
+- Head: `cf3abac124e8`
+- Commit date: 2026-10-06T12:45:58+02:00
+- Commit: feat(vuln): correlate CVEs with product/version evidence
+- Tracked files: 646
 
 ### Recently changed files
+- `backend/app/finding_intelligence.py`
+- `backend/app/main.py`
+- `backend/app/scanner_normalization.py`
+- `backend/app/technology_fingerprint_intelligence.py`
+- `backend/app/vulnerability_intelligence.py`
+- `backend/tests/test_cve_metadata_normalization.py`
+- `backend/tests/test_technology_fingerprint_intelligence.py`
+- `backend/tests/test_vulnerability_intelligence.py`
 - `backend/Dockerfile.strix-runner`
 - `backend/app/runtime_capabilities.py`
 - `backend/app/strix_broker.py`
@@ -61,14 +69,6 @@ Generated: 2026-10-06T10:37:50Z
 - `backend/tests/test_strix_runner_rpc.py`
 - `backend/app/strix_backend_hook.py`
 - `backend/app/strix_manifest_admission.py`
-- `backend/app/strix_remote_session.py`
-- `backend/tests/test_strix_backend_hook.py`
-- `backend/tests/test_strix_manifest_admission.py`
-- `backend/tests/test_strix_remote_session.py`
-- `README.md`
-- `backend/tests/test_strix_broker_runtime.py`
-- `docker-compose.yml`
-- `.github/workflows/ci.yml`
 
 ### Project signals
 - `pyproject.toml`

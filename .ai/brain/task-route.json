@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 1,
+    "score_margin": 0,
     "tier": "bounded",
     "top_score": 27
   },
   "cache": {
-    "fingerprint": "c1fff60344a111abd3355fa10757121aed5519dc795b2c4725c057d92f3a8310",
+    "fingerprint": "f4fb65b5d4ad1fef72db0a77f6ce63a7c117d1c0fb9361081558fe6f8794d02b",
     "hit": false
   },
-  "candidate_count": 56,
+  "candidate_count": 183,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -51,107 +51,12 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/strix_broker.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "_authorize",
-        "_broker_verification_secret",
-        "_read_only_egress_enabled",
-        "_runner_admission_signing_secret",
-        "admit",
-        "healthz",
-        "issue_command_ticket",
-        "issue_manifest_ticket",
-        "readyz",
-        "request_http"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/strix_broker_models.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "BrokerAdmissionRequest",
-        "BrokerAdmissionResponse",
-        "BrokerCommandTicketRequest",
-        "BrokerCommandTicketResponse",
-        "BrokerContractDocument",
-        "BrokerHeader",
-        "BrokerHttpRequest",
-        "BrokerHttpResponse",
-        "BrokerManifestAdmissionDocument",
-        "BrokerManifestTicketRequest",
-        "BrokerManifestTicketResponse",
-        "BrokerRunnerExecTicketDocument",
-        "BrokerRunnerManifestTicketDocument",
-        "normalize_scope",
-        "to_contract",
-        "validate_counts",
-        "validate_ports"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_adaptation.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "ScannerAdaptation",
-        "_engine_memory",
-        "adapt_scanner_engines",
-        "rank_key"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_sandbox.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "ScannerSandboxAdmission",
-        "ScannerSandboxConfigError",
-        "_allowed_engines",
-        "_runtime_hardening_attestation",
-        "_strict_bool",
-        "require_scanner_sandbox",
-        "safe_scanner_sandbox_admission",
-        "scanner_sandbox_admission",
-        "strix_runtime_contract_enforceable"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
       "path": "backend/tests/test_nuclei_queue_lifecycle.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_campaign",
         "fake_execute",
@@ -160,6 +65,95 @@
         "test_scan_engines_default_preserves_strix",
         "test_scan_engines_support_explicit_nuclei_and_fail_closed",
         "test_sqlite_queue_accepts_nuclei_scan"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_normalization.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "test_normalized_ids_are_engine_scoped_and_stable",
+        "test_normalizers_fail_closed_outside_scope",
+        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
+        "test_nuclei_jsonl_parser_rejects_invalid_line",
+        "test_nuclei_jsonl_parser_rejects_oversized_file",
+        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
+        "test_scanner_registry_dispatches_nuclei_parser",
+        "test_scanner_registry_dispatches_strix_parser",
+        "test_scanner_registry_exposes_supported_engines",
+        "test_scanner_registry_missing_run_directory_is_empty",
+        "test_scanner_registry_rejects_symlinked_artifacts",
+        "test_scanner_registry_rejects_unknown_engine",
+        "test_scanner_registry_selects_latest_artifact",
+        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_normalization.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 26,
+      "symbols": [
+        "NormalizedScannerFinding",
+        "_cve_ids",
+        "_identifier_list",
+        "_optional_cvss",
+        "_optional_nonnegative_int",
+        "_optional_str",
+        "_optional_unit_interval",
+        "_severity",
+        "_string_list",
+        "_with_cve_evidence",
+        "dedupe_normalized",
+        "normalize_nuclei_item",
+        "normalize_strix_item",
+        "normalized_finding_id",
+        "to_campaign_finding"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/report.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "render_markdown"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_ingestion.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "ScannerIngestionResult",
+        "ingest_scanner_run"
       ]
     }
   ],

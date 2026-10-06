@@ -154,6 +154,7 @@
         "backend/app/strix_execution_contract.py",
         "backend/app/strix_parser.py",
         "backend/app/submission_api.py",
+        "backend/app/technology_fingerprint_intelligence.py",
         "backend/app/validation_state.py",
         "backend/app/validator.py",
         "backend/app/vulnerability_intelligence.py",
@@ -176,6 +177,7 @@
         "backend/tests/test_control_plane_health.py",
         "backend/tests/test_control_views.py",
         "backend/tests/test_coverage.py",
+        "backend/tests/test_cve_metadata_normalization.py",
         "backend/tests/test_decision_consensus.py",
         "backend/tests/test_decision_timeline.py",
         "backend/tests/test_differential_evidence_integration.py",
@@ -271,7 +273,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 202,
+      "in_degree": 204,
       "out_degree": 60,
       "path": "backend/app/main.py"
     },
@@ -308,6 +310,7 @@
         "backend/tests/test_control_plane_health.py",
         "backend/tests/test_control_views.py",
         "backend/tests/test_coverage.py",
+        "backend/tests/test_cve_metadata_normalization.py",
         "backend/tests/test_decision_audit.py",
         "backend/tests/test_decision_consensus.py",
         "backend/tests/test_decision_timeline.py",
@@ -508,6 +511,7 @@
         "backend/tests/test_surface_temporal.py",
         "backend/tests/test_swarm_coordinator.py",
         "backend/tests/test_target_memory.py",
+        "backend/tests/test_technology_fingerprint_intelligence.py",
         "backend/tests/test_validation_state.py",
         "backend/tests/test_validator.py",
         "backend/tests/test_value_efficiency.py",
@@ -525,7 +529,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 241,
+      "in_degree": 243,
       "out_degree": 4,
       "path": "frontend/app.js"
     },
@@ -592,6 +596,7 @@
         "backend/app/storage_core.py",
         "backend/app/submission_api.py",
         "backend/app/surface_confidence.py",
+        "backend/app/technology_fingerprint_intelligence.py",
         "backend/app/validation_state.py",
         "backend/app/worker_service.py",
         "backend/tests/test_adaptive_cycle.py",
@@ -652,11 +657,12 @@
         "backend/tests/test_scanner_ingestion.py",
         "backend/tests/test_submission_api.py",
         "backend/tests/test_swarm_coordinator.py",
+        "backend/tests/test_technology_fingerprint_intelligence.py",
         "backend/tests/test_validation_state.py",
         "backend/tests/test_vulnerability_intelligence.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 119,
+      "in_degree": 121,
       "out_degree": 3,
       "path": "backend/app/observation_graph.py"
     },
@@ -817,6 +823,66 @@
     },
     {
       "dependencies": [
+        "backend/app/alert_delivery.py",
+        "frontend/app.js"
+      ],
+      "dependents": [
+        "backend/app/alert_delivery.py",
+        "backend/app/api_rate_limit.py",
+        "backend/app/browser.py",
+        "backend/app/github_learning_sync.py",
+        "backend/app/hackerone_api.py",
+        "backend/app/hackerone_client.py",
+        "backend/app/hackerone_feasibility.py",
+        "backend/app/hackerone_intelligence.py",
+        "backend/app/hackerone_needs_info.py",
+        "backend/app/hackerone_report_tracking.py",
+        "backend/app/high_value_intelligence.py",
+        "backend/app/knowledge_memory.py",
+        "backend/app/main.py",
+        "backend/app/openapi_testgen.py",
+        "backend/app/passive_response_intelligence.py",
+        "backend/app/pentagi_flow_status.py",
+        "backend/app/pentagi_transport.py",
+        "backend/app/pentagi_worker_service.py",
+        "backend/app/recon_worker.py",
+        "backend/app/strix_broker_client.py",
+        "backend/app/strix_egress_transport.py",
+        "backend/app/validator.py",
+        "backend/tests/test_auth.py",
+        "backend/tests/test_finding_review_metadata.py",
+        "backend/tests/test_hackerone_batch_api.py",
+        "backend/tests/test_hackerone_client.py",
+        "backend/tests/test_hackerone_control_center_api.py",
+        "backend/tests/test_hackerone_feasibility.py",
+        "backend/tests/test_hackerone_launch_api.py",
+        "backend/tests/test_hackerone_needs_info.py",
+        "backend/tests/test_hackerone_remote_binding.py",
+        "backend/tests/test_hackerone_report_sync_worker.py",
+        "backend/tests/test_hackerone_review_profiles.py",
+        "backend/tests/test_hackerone_reviewed_batch_api.py",
+        "backend/tests/test_hackerone_scope_preview_api.py",
+        "backend/tests/test_incident_http_api.py",
+        "backend/tests/test_observer_health_http.py",
+        "backend/tests/test_pentagi_flow_status.py",
+        "backend/tests/test_pentagi_transport.py",
+        "backend/tests/test_recon_worker.py",
+        "backend/tests/test_report_approval_api.py",
+        "backend/tests/test_scanner_observation_chain.py",
+        "backend/tests/test_strix_broker_client.py",
+        "backend/tests/test_strix_egress_transport.py",
+        "backend/tests/test_technology_fingerprint_intelligence.py",
+        "backend/tests/test_validator.py",
+        "frontend/app.js",
+        "frontend/hackerone.js",
+        "frontend/simple.js"
+      ],
+      "in_degree": 49,
+      "out_degree": 2,
+      "path": "backend/tests/test_alert_delivery.py"
+    },
+    {
+      "dependencies": [
         "backend/app/adaptive_cycle.py",
         "backend/app/agent_registry.py",
         "backend/app/attack_surface.py",
@@ -874,65 +940,6 @@
       "in_degree": 11,
       "out_degree": 40,
       "path": "backend/app/orchestrator.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/alert_delivery.py",
-        "frontend/app.js"
-      ],
-      "dependents": [
-        "backend/app/alert_delivery.py",
-        "backend/app/api_rate_limit.py",
-        "backend/app/browser.py",
-        "backend/app/github_learning_sync.py",
-        "backend/app/hackerone_api.py",
-        "backend/app/hackerone_client.py",
-        "backend/app/hackerone_feasibility.py",
-        "backend/app/hackerone_intelligence.py",
-        "backend/app/hackerone_needs_info.py",
-        "backend/app/hackerone_report_tracking.py",
-        "backend/app/high_value_intelligence.py",
-        "backend/app/knowledge_memory.py",
-        "backend/app/main.py",
-        "backend/app/openapi_testgen.py",
-        "backend/app/passive_response_intelligence.py",
-        "backend/app/pentagi_flow_status.py",
-        "backend/app/pentagi_transport.py",
-        "backend/app/pentagi_worker_service.py",
-        "backend/app/recon_worker.py",
-        "backend/app/strix_broker_client.py",
-        "backend/app/strix_egress_transport.py",
-        "backend/app/validator.py",
-        "backend/tests/test_auth.py",
-        "backend/tests/test_finding_review_metadata.py",
-        "backend/tests/test_hackerone_batch_api.py",
-        "backend/tests/test_hackerone_client.py",
-        "backend/tests/test_hackerone_control_center_api.py",
-        "backend/tests/test_hackerone_feasibility.py",
-        "backend/tests/test_hackerone_launch_api.py",
-        "backend/tests/test_hackerone_needs_info.py",
-        "backend/tests/test_hackerone_remote_binding.py",
-        "backend/tests/test_hackerone_report_sync_worker.py",
-        "backend/tests/test_hackerone_review_profiles.py",
-        "backend/tests/test_hackerone_reviewed_batch_api.py",
-        "backend/tests/test_hackerone_scope_preview_api.py",
-        "backend/tests/test_incident_http_api.py",
-        "backend/tests/test_observer_health_http.py",
-        "backend/tests/test_pentagi_flow_status.py",
-        "backend/tests/test_pentagi_transport.py",
-        "backend/tests/test_recon_worker.py",
-        "backend/tests/test_report_approval_api.py",
-        "backend/tests/test_scanner_observation_chain.py",
-        "backend/tests/test_strix_broker_client.py",
-        "backend/tests/test_strix_egress_transport.py",
-        "backend/tests/test_validator.py",
-        "frontend/app.js",
-        "frontend/hackerone.js",
-        "frontend/simple.js"
-      ],
-      "in_degree": 48,
-      "out_degree": 2,
-      "path": "backend/tests/test_alert_delivery.py"
     },
     {
       "dependencies": [
@@ -1492,6 +1499,30 @@
     },
     {
       "dependencies": [
+        "backend/app/differential_intelligence.py",
+        "backend/app/finding_cluster_consensus.py",
+        "backend/app/finding_cluster_saturation.py",
+        "backend/app/finding_correlation.py",
+        "backend/app/finding_readiness.py",
+        "backend/app/finding_triage.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/public_duplicate_intelligence.py",
+        "backend/app/technology_fingerprint_intelligence.py",
+        "backend/app/vulnerability_intelligence.py"
+      ],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_finding_intelligence.py",
+        "backend/tests/test_vulnerability_intelligence.py"
+      ],
+      "in_degree": 4,
+      "out_degree": 11,
+      "path": "backend/app/finding_intelligence.py"
+    },
+    {
+      "dependencies": [
         "backend/app/main.py",
         "backend/app/observation_graph.py"
       ],
@@ -1581,29 +1612,6 @@
       "in_degree": 7,
       "out_degree": 7,
       "path": "backend/app/metrics.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/differential_intelligence.py",
-        "backend/app/finding_cluster_consensus.py",
-        "backend/app/finding_cluster_saturation.py",
-        "backend/app/finding_correlation.py",
-        "backend/app/finding_readiness.py",
-        "backend/app/finding_triage.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/public_duplicate_intelligence.py",
-        "backend/app/vulnerability_intelligence.py"
-      ],
-      "dependents": [
-        "backend/app/main.py",
-        "backend/tests/test_differential_evidence_integration.py",
-        "backend/tests/test_finding_intelligence.py",
-        "backend/tests/test_vulnerability_intelligence.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 10,
-      "path": "backend/app/finding_intelligence.py"
     },
     {
       "dependencies": [
@@ -2300,8 +2308,8 @@
       "path": "backend/app/review_queue.py"
     }
   ],
-  "edge_count": 2075,
+  "edge_count": 2086,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 440,
+  "node_count": 443,
   "schema_version": 1
 }
