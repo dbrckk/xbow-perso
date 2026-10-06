@@ -7,6 +7,7 @@ from typing import Any
 
 from .scanner_sandbox import strix_runtime_contract_enforceable
 from .strix_execution_contract import STRIX_EXECUTION_CONTRACT_SCHEMA
+from .strix_manifest_admission import STRIX_MANIFEST_ADMISSION_SCHEMA
 from .strix_runner_rpc import RUNNER_RPC_PROTOCOL
 from .strix_remote_session import STRIX_REMOTE_SESSION_SCHEMA
 from .strix_runner_exec_ticket import STRIX_RUNNER_EXEC_TICKET_SCHEMA
@@ -215,6 +216,12 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_command_admission_enforced": False,
         "strix_remote_session_schema": STRIX_REMOTE_SESSION_SCHEMA,
         "strix_remote_backend_returns_client_session": True,
+        "strix_manifest_admission_schema": STRIX_MANIFEST_ADMISSION_SCHEMA,
+        "strix_manifest_admission_enforced": True,
+        "strix_manifest_host_paths_included": False,
+        "strix_manifest_raw_content_included": False,
+        "strix_manifest_filesystem_io_performed": False,
+        "strix_manifest_upload_enabled": False,
         "strix_remote_manifest_materialized": False,
         "strix_remote_resolve_port_enabled": False,
         "strix_remote_exec_enabled": False,
@@ -293,6 +300,12 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_command_admission_enforced": False,
             "strix_remote_session_schema": STRIX_REMOTE_SESSION_SCHEMA,
             "strix_remote_backend_returns_client_session": True,
+            "strix_manifest_admission_schema": STRIX_MANIFEST_ADMISSION_SCHEMA,
+            "strix_manifest_admission_enforced": True,
+            "strix_manifest_host_paths_included": False,
+            "strix_manifest_raw_content_included": False,
+            "strix_manifest_filesystem_io_performed": False,
+            "strix_manifest_upload_enabled": False,
             "strix_remote_manifest_materialized": False,
             "strix_remote_resolve_port_enabled": False,
             "strix_remote_exec_enabled": False,
