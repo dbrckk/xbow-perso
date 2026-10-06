@@ -1,67 +1,54 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "cf3abac124e81cbb0543298f01e92c973fb54906",
-  "head": "b5f57a6c1d5dfa1dfd0dd6fec96f0ecdb208ad7b",
+  "base": "b5f57a6c1d5dfa1dfd0dd6fec96f0ecdb208ad7b",
+  "head": "30c6befff67f7a3b0c82992b3309548011a30b81",
   "index_mode": "incremental",
   "changed_files": [
-    {
-      "path": "backend/app/cve_evidence_verdict.py",
-      "status": "A"
-    },
     {
       "path": "backend/app/finding_intelligence.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_cve_evidence_verdict.py",
+      "path": "backend/app/validation_priority.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/tests/test_finding_intelligence.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_validation_priority.py",
       "status": "A"
     }
   ],
   "changed_source_files": [
-    "backend/app/cve_evidence_verdict.py",
     "backend/app/finding_intelligence.py",
-    "backend/tests/test_cve_evidence_verdict.py"
+    "backend/app/validation_priority.py",
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_validation_priority.py"
   ],
   "impacted_files": [
-    "backend/app/cve_evidence_verdict.py",
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/tests/test_cve_evidence_verdict.py",
+    "backend/app/validation_priority.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_validation_priority.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_symbols": [
     {
-      "name": "CveEvidenceVerdict",
-      "kind": "class",
-      "file": "backend/app/cve_evidence_verdict.py",
-      "line": 13
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/cve_evidence_verdict.py",
-      "line": 26
-    },
-    {
-      "name": "build_cve_evidence_verdict",
-      "kind": "function",
-      "file": "backend/app/cve_evidence_verdict.py",
-      "line": 33
-    },
-    {
       "name": "build_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 25
+      "line": 26
     },
     {
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 244
+      "line": 276
     },
     {
       "name": "authenticate_control_api",
@@ -610,40 +597,28 @@
       "line": 1876
     },
     {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_cve_evidence_verdict.py",
-      "line": 9
+      "name": "ValidationPriority",
+      "kind": "class",
+      "file": "backend/app/validation_priority.py",
+      "line": 28
     },
     {
-      "name": "test_identifier_only_never_confirms_exploitability",
+      "name": "to_dict",
       "kind": "function",
-      "file": "backend/tests/test_cve_evidence_verdict.py",
-      "line": 19
+      "file": "backend/app/validation_priority.py",
+      "line": 39
     },
     {
-      "name": "test_version_match_is_candidate_not_confirmation",
+      "name": "_field",
       "kind": "function",
-      "file": "backend/tests/test_cve_evidence_verdict.py",
-      "line": 29
+      "file": "backend/app/validation_priority.py",
+      "line": 45
     },
     {
-      "name": "test_strong_behavior_plus_high_confidence_version_is_high_confidence_candidate",
+      "name": "build_validation_priority",
       "kind": "function",
-      "file": "backend/tests/test_cve_evidence_verdict.py",
-      "line": 41
-    },
-    {
-      "name": "test_backport_or_banner_ambiguity_downgrades_even_strong_candidate",
-      "kind": "function",
-      "file": "backend/tests/test_cve_evidence_verdict.py",
-      "line": 55
-    },
-    {
-      "name": "test_non_cve_finding_is_not_promoted",
-      "kind": "function",
-      "file": "backend/tests/test_cve_evidence_verdict.py",
-      "line": 73
+      "file": "backend/app/validation_priority.py",
+      "line": 51
     },
     {
       "name": "_finding",
@@ -718,6 +693,66 @@
       "line": 126
     },
     {
+      "name": "test_finding_intelligence_exposes_advisory_validation_priority_only",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 156
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 9
+    },
+    {
+      "name": "_cve",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 13
+    },
+    {
+      "name": "_vuln",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 20
+    },
+    {
+      "name": "test_behaviorally_supported_critical_cve_is_urgent_but_not_auto_executed",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 27
+    },
+    {
+      "name": "test_identifier_only_candidate_is_not_urgent",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 44
+    },
+    {
+      "name": "test_version_ambiguity_forces_passive_review",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 56
+    },
+    {
+      "name": "test_saturated_cluster_defers_duplicate_validation",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 73
+    },
+    {
+      "name": "test_corroborated_unknown_candidate_can_be_prioritized_without_zero_day_claim",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 89
+    },
+    {
+      "name": "test_resolved_findings_never_receive_more_validation_priority",
+      "kind": "function",
+      "file": "backend/tests/test_validation_priority.py",
+      "line": 103
+    },
+    {
       "name": "_campaign",
       "kind": "function",
       "file": "backend/tests/test_vulnerability_intelligence.py",
@@ -773,9 +808,9 @@
     }
   ],
   "selected_tests": [
-    "backend/tests/test_cve_evidence_verdict.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_validation_priority.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ]
 }

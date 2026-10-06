@@ -39,18 +39,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T17:42:58Z
+Generated: 2026-10-06T17:47:08Z
 
 ### Git
 - Branch: `main`
-- Head: `b5f57a6c1d5d`
-- Commit date: 2026-10-06T19:42:46+02:00
-- Commit: feat(vuln): add conservative CVE evidence verdicts
-- Tracked files: 648
+- Head: `30c6befff67f`
+- Commit date: 2026-10-06T19:46:55+02:00
+- Commit: feat(vuln): prioritize bounded non-destructive validation
+- Tracked files: 650
 
 ### Recently changed files
-- `backend/app/cve_evidence_verdict.py`
 - `backend/app/finding_intelligence.py`
+- `backend/app/validation_priority.py`
+- `backend/tests/test_finding_intelligence.py`
+- `backend/tests/test_validation_priority.py`
+- `backend/app/cve_evidence_verdict.py`
 - `backend/tests/test_cve_evidence_verdict.py`
 - `backend/app/main.py`
 - `backend/app/scanner_normalization.py`
@@ -66,9 +69,6 @@ Generated: 2026-10-06T17:42:58Z
 - `backend/app/strix_runner_manifest_ticket.py`
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_runtime_capabilities.py`
-- `backend/tests/test_strix_broker.py`
-- `backend/tests/test_strix_runner_manifest_ticket.py`
-- `backend/tests/test_strix_runner_rpc.py`
 
 ### Project signals
 - `pyproject.toml`

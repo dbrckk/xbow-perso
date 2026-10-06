@@ -1,12 +1,13 @@
 # Change impact
 
-Base: 5329c11aa22c32dbd4930835078d1af5bdd5c3e3
-Head: b5f57a6c1d5dfa1dfd0dd6fec96f0ecdb208ad7b
+Base: 9fdcdac0227769f7e4bc82d23482e25ab26aa2bd
+Head: 30c6befff67f7a3b0c82992b3309548011a30b81
 
 ## Changed files
-- A backend/app/cve_evidence_verdict.py
 - M backend/app/finding_intelligence.py
-- A backend/tests/test_cve_evidence_verdict.py
+- A backend/app/validation_priority.py
+- M backend/tests/test_finding_intelligence.py
+- A backend/tests/test_validation_priority.py
 
 ## Affected areas
 - backend

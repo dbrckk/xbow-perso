@@ -5,113 +5,11 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "CveEvidenceVerdict": {
-      "source": {
-        "file": "backend/app/cve_evidence_verdict.py",
-        "start": 13,
-        "end": 30
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "to_dict": {
-      "source": {
-        "file": "backend/app/cve_evidence_verdict.py",
-        "start": 26,
-        "end": 146
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveEvidenceVerdict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 13,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cve_evidence_verdict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding_cve_ids",
-          "definitions": [
-            {
-              "file": "backend/app/vulnerability_intelligence.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "build_cve_evidence_verdict": {
-      "source": {
-        "file": "backend/app/cve_evidence_verdict.py",
-        "start": 33,
-        "end": 86
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveEvidenceVerdict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 13,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding_cve_ids",
-          "definitions": [
-            {
-              "file": "backend/app/vulnerability_intelligence.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
     "build_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 25,
-        "end": 240
+        "start": 26,
+        "end": 272
       },
       "symbol_dependencies": [
         {
@@ -211,6 +109,18 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "build_vulnerability_signal",
           "definitions": [
             {
@@ -295,13 +205,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 13
+      "dependency_count": 14
     },
     "campaign_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 244,
-        "end": 285
+        "start": 276,
+        "end": 317
       },
       "symbol_dependencies": [
         {
@@ -321,7 +231,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 25,
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -355,28 +265,40 @@
       ],
       "dependency_count": 4
     },
-    "_finding": {
+    "ValidationPriority": {
       "source": {
-        "file": "backend/tests/test_cve_evidence_verdict.py",
-        "start": 9,
-        "end": 16
+        "file": "backend/app/validation_priority.py",
+        "start": 28,
+        "end": 42
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_identifier_only_never_confirms_exploitability": {
+    "to_dict": {
       "source": {
-        "file": "backend/tests/test_cve_evidence_verdict.py",
-        "start": 19,
-        "end": 26
+        "file": "backend/app/validation_priority.py",
+        "start": 39,
+        "end": 159
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "ValidationPriority",
           "definitions": [
             {
-              "file": "backend/tests/test_cve_evidence_verdict.py",
-              "line": 9,
+              "file": "backend/app/validation_priority.py",
+              "line": 28,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_field",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
@@ -384,11 +306,109 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_cve_evidence_verdict",
+          "symbol": "build_validation_priority",
           "definitions": [
             {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_field": {
+      "source": {
+        "file": "backend/app/validation_priority.py",
+        "start": 45,
+        "end": 48
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_validation_priority": {
+      "source": {
+        "file": "backend/app/validation_priority.py",
+        "start": 51,
+        "end": 151
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ValidationPriority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 28,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_field",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 45,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_finding": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 8,
+        "end": 17
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_graph": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 20,
+        "end": 56
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
               "kind": "function",
               "language": "python"
             }
@@ -396,21 +416,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     },
-    "test_version_match_is_candidate_not_confirmation": {
+    "test_finding_intelligence_consolidates_member_and_cluster_views": {
       "source": {
-        "file": "backend/tests/test_cve_evidence_verdict.py",
-        "start": 29,
-        "end": 38
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 59,
+        "end": 91
       },
       "symbol_dependencies": [
         {
           "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_cve_evidence_verdict.py",
-              "line": 9,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 8,
               "kind": "function",
               "language": "python"
             }
@@ -418,33 +438,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_cve_evidence_verdict",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_strong_behavior_plus_high_confidence_version_is_high_confidence_candidate": {
-      "source": {
-        "file": "backend/tests/test_cve_evidence_verdict.py",
-        "start": 41,
-        "end": 52
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cve_evidence_verdict.py",
-              "line": 9,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 20,
               "kind": "function",
               "language": "python"
             }
@@ -452,11 +450,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_cve_evidence_verdict",
+          "symbol": "build_finding_intelligence",
           "definitions": [
             {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
+              "file": "backend/app/finding_intelligence.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -464,21 +462,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     },
-    "test_backport_or_banner_ambiguity_downgrades_even_strong_candidate": {
+    "test_finding_intelligence_summary_reflects_cluster_saturation": {
       "source": {
-        "file": "backend/tests/test_cve_evidence_verdict.py",
-        "start": 55,
-        "end": 70
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 94,
+        "end": 106
       },
       "symbol_dependencies": [
         {
           "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_cve_evidence_verdict.py",
-              "line": 9,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 8,
               "kind": "function",
               "language": "python"
             }
@@ -486,11 +484,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_cve_evidence_verdict",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -498,29 +508,533 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     },
-    "test_non_cve_finding_is_not_promoted": {
+    "test_finding_intelligence_does_not_expose_query_values": {
       "source": {
-        "file": "backend/tests/test_cve_evidence_verdict.py",
-        "start": 73,
-        "end": 89
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 109,
+        "end": 119
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_cve_evidence_verdict",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 8,
               "kind": "function",
               "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 122,
+        "end": 123
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
             }
           ],
           "relation": "imported_module"
         }
       ],
       "dependency_count": 1
+    },
+    "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 126,
+        "end": 153
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_exposes_advisory_validation_priority_only": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 156,
+        "end": 179
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_cve": {
+      "source": {
+        "file": "backend/tests/test_validation_priority.py",
+        "start": 13,
+        "end": 17
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_vuln": {
+      "source": {
+        "file": "backend/tests/test_validation_priority.py",
+        "start": 20,
+        "end": 24
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_behaviorally_supported_critical_cve_is_urgent_but_not_auto_executed": {
+      "source": {
+        "file": "backend/tests/test_validation_priority.py",
+        "start": 27,
+        "end": 41
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_cve",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_vuln",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_identifier_only_candidate_is_not_urgent": {
+      "source": {
+        "file": "backend/tests/test_validation_priority.py",
+        "start": 44,
+        "end": 53
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_cve",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_vuln",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_version_ambiguity_forces_passive_review": {
+      "source": {
+        "file": "backend/tests/test_validation_priority.py",
+        "start": 56,
+        "end": 70
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_cve",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_vuln",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_saturated_cluster_defers_duplicate_validation": {
+      "source": {
+        "file": "backend/tests/test_validation_priority.py",
+        "start": 73,
+        "end": 86
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_cve",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_vuln",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_corroborated_unknown_candidate_can_be_prioritized_without_zero_day_claim": {
+      "source": {
+        "file": "backend/tests/test_validation_priority.py",
+        "start": 89,
+        "end": 100
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_cve",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_vuln",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_resolved_findings_never_receive_more_validation_priority": {
+      "source": {
+        "file": "backend/tests/test_validation_priority.py",
+        "start": 103,
+        "end": 114
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_cve",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_vuln",
+          "definitions": [
+            {
+              "file": "backend/tests/test_validation_priority.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
     }
   }
 }

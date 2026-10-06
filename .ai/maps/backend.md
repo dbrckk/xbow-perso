@@ -220,6 +220,7 @@ app/
   swarm_coordinator.py
   target_memory.py
   technology_fingerprint_intelligence.py
+  validation_priority.py
   validation_state.py
   validator.py
   value_efficiency.py
@@ -470,6 +471,7 @@ tests/
   test_swarm_coordinator.py
   test_target_memory.py
   test_technology_fingerprint_intelligence.py
+  test_validation_priority.py
   test_validation_state.py
   test_validator.py
   test_value_efficiency.py
@@ -2811,6 +2813,8 @@ versioned_fingerprint_match_count = sum(
 high_confidence_fingerprint_match_count = sum(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
+cluster_saturated = bool(
+validation_priority = build_validation_priority(
 ⋮----
 cluster_rows = []
 ⋮----
@@ -13034,6 +13038,78 @@ rows = []
 matched = match_finding_technology(finding, fingerprints)
 ```
 
+## File: app/validation_priority.py
+```python
+VALIDATION_PRIORITY_SCHEMA = "validation-priority-v1"
+⋮----
+_SEVERITY_WEIGHT = {
+⋮----
+_CVE_VERDICT_WEIGHT = {
+⋮----
+@dataclass(frozen=True)
+class ValidationPriority
+⋮----
+schema: str
+finding_id: str
+score: float
+band: str
+recommended_state: str
+reasons: tuple[str, ...]
+non_destructive_only: bool
+automatic_execution_authorized: bool
+independent_validation_required: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _field(value: Any, name: str, default: Any = None) -> Any
+⋮----
+finding_id = str(getattr(finding, "id", ""))
+status = str(getattr(finding, "status", ""))
+severity = str(getattr(finding, "severity", "")).lower()
+severity_weight = _SEVERITY_WEIGHT.get(severity, 0.0)
+⋮----
+verdict = str(_field(cve_verdict, "verdict", "not_a_cve_candidate"))
+cve_weight = _CVE_VERDICT_WEIGHT.get(verdict, 0.0)
+ambiguity = tuple(_field(cve_verdict, "ambiguity_reasons", ()) or ())
+⋮----
+novel_candidate = bool(_field(vulnerability_signal, "novel_candidate", False))
+known_cve_candidate = bool(
+⋮----
+differential = str(differential_signal).lower()
+differential_weight = 0.15 if differential == "strong" else 0.07 if differential == "weak" else 0.0
+⋮----
+triage = max(0.0, min(1.0, float(triage_score)))
+⋮----
+triage = 0.0
+⋮----
+score = (
+⋮----
+score = round(max(0.0, min(1.0, score)), 4)
+⋮----
+reasons: list[str] = []
+⋮----
+band = "resolved"
+recommended = "no_action"
+⋮----
+band = "deferred"
+recommended = "defer_duplicate_validation"
+⋮----
+band = "review"
+recommended = "passive_review"
+⋮----
+band = "urgent"
+recommended = "safe_active_validation"
+⋮----
+band = "high"
+⋮----
+band = "medium"
+⋮----
+band = "low"
+recommended = "defer_low_signal"
+```
+
 ## File: app/validation_state.py
 ```python
 @dataclass(frozen=True)
@@ -15743,6 +15819,14 @@ findings = [_finding("f1", "https://example.test/graphql", severity="high")]
 public_reports = [
 ⋮----
 duplicate = result["findings"][0]["public_duplicate_similarity"]
+⋮----
+def test_finding_intelligence_exposes_advisory_validation_priority_only()
+⋮----
+finding = _finding(
+⋮----
+result = build_finding_intelligence([finding], _graph())
+row = result["findings"][0]
+priority = row["validation_priority"]
 ```
 
 ## File: tests/test_finding_lifecycle.py
@@ -23281,6 +23365,29 @@ def test_unrelated_finding_does_not_receive_fingerprint()
 def test_fingerprint_intelligence_never_enables_exploitation()
 ⋮----
 result = build_finding_fingerprint_intelligence(
+```
+
+## File: tests/test_validation_priority.py
+```python
+def _finding(*, severity="high", status="validation_required")
+⋮----
+def _cve(verdict, *, ambiguity=())
+⋮----
+def _vuln(*, known=False, novel=False)
+⋮----
+def test_behaviorally_supported_critical_cve_is_urgent_but_not_auto_executed()
+⋮----
+result = build_validation_priority(
+⋮----
+def test_identifier_only_candidate_is_not_urgent()
+⋮----
+def test_version_ambiguity_forces_passive_review()
+⋮----
+def test_saturated_cluster_defers_duplicate_validation()
+⋮----
+def test_corroborated_unknown_candidate_can_be_prioritized_without_zero_day_claim()
+⋮----
+def test_resolved_findings_never_receive_more_validation_priority()
 ```
 
 ## File: tests/test_validation_state.py
