@@ -485,3 +485,48 @@ def test_conflicting_product_versions_downgrade_cve_verdict():
     assert row["cve_evidence_verdict"]["confidence"] == "low"
     assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
     assert row["validation_priority"]["recommended_state"] == "passive_review"
+
+
+def test_declared_cve_product_missing_from_observed_stack_downgrades_verdict():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "generic parsing issue"
+    finding.product = "apache"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:nginx-a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            metadata={"confidence": 0.9},
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:nginx-b",
+            "technology",
+            "nginx 1.24.0",
+            "wappalyzer",
+            metadata={"confidence": 0.9},
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["technology"]["ambiguity_reasons"] == [
+        "declared_product_not_observed",
+    ]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
+    assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
+    assert row["validation_priority"]["recommended_state"] == "passive_review"
