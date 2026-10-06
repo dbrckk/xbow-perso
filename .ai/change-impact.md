@@ -1,13 +1,15 @@
 # Change impact
 
-Base: a29d2d4ac6dcc43fb7bc8cf5bf0c6c09b1a5d71b
-Head: 5ec233d77ae2a716b4798c7a22b58cdea9f8ab31
+Base: 5eccccffcfd79088b6583378af65f6cbc59c4162
+Head: 78c4fcf6573401b854a852ef5ca30d22db7300cc
 
 ## Changed files
-- A backend/app/cve_validation_priority.py
+- A backend/app/differential_quality.py
 - M backend/app/finding_intelligence.py
-- A backend/tests/test_cve_validation_priority.py
+- M backend/app/vulnerability_intelligence.py
+- A backend/tests/test_differential_quality.py
 - M backend/tests/test_finding_intelligence.py
+- M backend/tests/test_vulnerability_intelligence.py
 
 ## Affected areas
 - backend

@@ -39,28 +39,30 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T19:24:08Z
+Generated: 2026-10-06T19:31:13Z
 
 ### Git
 - Branch: `main`
-- Head: `5ec233d77ae2`
-- Commit date: 2026-10-06T21:23:54+02:00
-- Commit: feat(vuln): add bounded CVE validation plans
-- Tracked files: 660
+- Head: `78c4fcf65734`
+- Commit date: 2026-10-06T21:31:02+02:00
+- Commit: feat(vuln): score unknown-vulnerability reproducibility
+- Tracked files: 662
 
 ### Recently changed files
-- `backend/app/cve_validation_priority.py`
+- `backend/app/differential_quality.py`
 - `backend/app/finding_intelligence.py`
-- `backend/tests/test_cve_validation_priority.py`
+- `backend/app/vulnerability_intelligence.py`
+- `backend/tests/test_differential_quality.py`
 - `backend/tests/test_finding_intelligence.py`
+- `backend/tests/test_vulnerability_intelligence.py`
+- `backend/app/cve_validation_priority.py`
+- `backend/tests/test_cve_validation_priority.py`
 - `backend/app/version_ambiguity.py`
 - `backend/tests/test_version_ambiguity.py`
 - `backend/app/cve_risk_context.py`
 - `backend/tests/test_cve_risk_context.py`
 - `backend/app/validator.py`
 - `backend/tests/test_validator.py`
-- `backend/app/kev_catalog.py`
-- `backend/tests/test_kev_catalog.py`
 
 ### Project signals
 - `pyproject.toml`

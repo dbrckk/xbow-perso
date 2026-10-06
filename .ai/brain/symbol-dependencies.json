@@ -5,19 +5,19 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "CveValidationPlan": {
+    "DifferentialQuality": {
       "source": {
-        "file": "backend/app/cve_validation_priority.py",
-        "start": 11,
-        "end": 25
+        "file": "backend/app/differential_quality.py",
+        "start": 14,
+        "end": 44
       },
       "symbol_dependencies": [
         {
           "symbol": "to_dict",
           "definitions": [
             {
-              "file": "backend/app/cve_validation_priority.py",
-              "line": 22,
+              "file": "backend/app/differential_quality.py",
+              "line": 39,
               "kind": "function",
               "language": "python"
             }
@@ -29,17 +29,17 @@
     },
     "to_dict": {
       "source": {
-        "file": "backend/app/cve_validation_priority.py",
-        "start": 22,
-        "end": 142
+        "file": "backend/app/differential_quality.py",
+        "start": 39,
+        "end": 159
       },
       "symbol_dependencies": [
         {
-          "symbol": "CveValidationPlan",
+          "symbol": "DifferentialQuality",
           "definitions": [
             {
-              "file": "backend/app/cve_validation_priority.py",
-              "line": 11,
+              "file": "backend/app/differential_quality.py",
+              "line": 14,
               "kind": "class",
               "language": "python"
             }
@@ -47,11 +47,71 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_cve_validation_plan",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/cve_validation_priority.py",
-              "line": 28,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_finding_id",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "empty_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 57,
               "kind": "function",
               "language": "python"
             }
@@ -59,21 +119,30 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 7
     },
-    "build_cve_validation_plan": {
+    "_finding_id": {
       "source": {
-        "file": "backend/app/cve_validation_priority.py",
-        "start": 28,
-        "end": 90
+        "file": "backend/app/differential_quality.py",
+        "start": 47,
+        "end": 54
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "empty_differential_quality": {
+      "source": {
+        "file": "backend/app/differential_quality.py",
+        "start": 57,
+        "end": 82
       },
       "symbol_dependencies": [
         {
-          "symbol": "CveValidationPlan",
+          "symbol": "DifferentialQuality",
           "definitions": [
             {
-              "file": "backend/app/cve_validation_priority.py",
-              "line": 11,
+              "file": "backend/app/differential_quality.py",
+              "line": 14,
               "kind": "class",
               "language": "python"
             }
@@ -83,11 +152,105 @@
       ],
       "dependency_count": 1
     },
+    "build_differential_quality": {
+      "source": {
+        "file": "backend/app/differential_quality.py",
+        "start": 85,
+        "end": 255
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "DifferentialQuality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_finding_id",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "empty_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "values",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
     "build_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 28,
-        "end": 300
+        "start": 32,
+        "end": 332
       },
       "symbol_dependencies": [
         {
@@ -163,6 +326,18 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "build_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "build_differential_signals",
           "definitions": [
             {
@@ -227,7 +402,7 @@
           "definitions": [
             {
               "file": "backend/app/vulnerability_intelligence.py",
-              "line": 78,
+              "line": 82,
               "kind": "function",
               "language": "python"
             }
@@ -240,6 +415,18 @@
             {
               "file": "backend/app/finding_correlation.py",
               "line": 238,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "empty_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 57,
               "kind": "function",
               "language": "python"
             }
@@ -298,8 +485,8 @@
               "language": "python"
             },
             {
-              "file": "backend/app/finding_cluster_consensus.py",
-              "line": 30,
+              "file": "backend/app/differential_quality.py",
+              "line": 39,
               "kind": "function",
               "language": "python"
             }
@@ -307,13 +494,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 16
+      "dependency_count": 18
     },
     "campaign_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 304,
-        "end": 345
+        "start": 336,
+        "end": 377
       },
       "symbol_dependencies": [
         {
@@ -333,7 +520,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -367,192 +554,85 @@
       ],
       "dependency_count": 4
     },
-    "_finding": {
+    "VulnerabilitySignal": {
       "source": {
-        "file": "backend/tests/test_cve_validation_priority.py",
-        "start": 10,
-        "end": 17
+        "file": "backend/app/vulnerability_intelligence.py",
+        "start": 19,
+        "end": 44
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_behaviorally_supported_candidate_gets_safe_active_non_destructive_plan": {
+    "_extract_cve_ids": {
       "source": {
-        "file": "backend/tests/test_cve_validation_priority.py",
-        "start": 20,
-        "end": 38
+        "file": "backend/app/vulnerability_intelligence.py",
+        "start": 47,
+        "end": 58
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "finding_cve_ids": {
+      "source": {
+        "file": "backend/app/vulnerability_intelligence.py",
+        "start": 61,
+        "end": 79
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "_extract_cve_ids",
           "definitions": [
             {
-              "file": "backend/tests/test_cve_validation_priority.py",
-              "line": 10,
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 47,
               "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "build_vulnerability_signal": {
+      "source": {
+        "file": "backend/app/vulnerability_intelligence.py",
+        "start": 82,
+        "end": 195
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "VulnerabilitySignal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 19,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "build_cve_evidence_verdict",
+          "symbol": "finding_cve_ids",
           "definitions": [
             {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_cve_validation_plan",
-          "definitions": [
-            {
-              "file": "backend/app/cve_validation_priority.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_ambiguous_backport_candidate_is_forced_to_passive_recheck": {
-      "source": {
-        "file": "backend/tests/test_cve_validation_priority.py",
-        "start": 41,
-        "end": 55
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cve_validation_priority.py",
-              "line": 10,
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 61,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "build_cve_evidence_verdict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_cve_validation_plan",
-          "definitions": [
-            {
-              "file": "backend/app/cve_validation_priority.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_identifier_only_candidate_gets_metadata_recheck": {
-      "source": {
-        "file": "backend/tests/test_cve_validation_priority.py",
-        "start": 58,
-        "end": 69
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cve_validation_priority.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cve_evidence_verdict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_cve_validation_plan",
-          "definitions": [
-            {
-              "file": "backend/app/cve_validation_priority.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_non_cve_low_signal_path_is_deferred": {
-      "source": {
-        "file": "backend/tests/test_cve_validation_priority.py",
-        "start": 72,
-        "end": 86
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_cve_evidence_verdict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_evidence_verdict.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_cve_validation_plan",
-          "definitions": [
-            {
-              "file": "backend/app/cve_validation_priority.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 2
     },
     "_graph": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 21,
-        "end": 57
+        "file": "backend/tests/test_differential_quality.py",
+        "start": 8,
+        "end": 20
       },
       "symbol_dependencies": [
         {
@@ -594,6 +674,337 @@
       ],
       "dependency_count": 3
     },
+    "_add_validation": {
+      "source": {
+        "file": "backend/tests/test_differential_quality.py",
+        "start": 23,
+        "end": 50
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_quality_defaults_to_high_false_positive_risk_without_observations": {
+      "source": {
+        "file": "backend/tests/test_differential_quality.py",
+        "start": 53,
+        "end": 62
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_single_marker_reflection_is_specific_but_not_reproducible": {
+      "source": {
+        "file": "backend/tests/test_differential_quality.py",
+        "start": 65,
+        "end": 76
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_add_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_repeated_same_parameter_signal_reduces_false_positive_risk": {
+      "source": {
+        "file": "backend/tests/test_differential_quality.py",
+        "start": 79,
+        "end": 92
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_add_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_multi_validator_repeat_is_highest_reproducibility_level": {
+      "source": {
+        "file": "backend/tests/test_differential_quality.py",
+        "start": 95,
+        "end": 105
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_add_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_mixed_signal_on_same_parameter_is_flagged_as_contradictory": {
+      "source": {
+        "file": "backend/tests/test_differential_quality.py",
+        "start": 108,
+        "end": 126
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_add_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_quality_does_not_persist_parameter_values": {
+      "source": {
+        "file": "backend/tests/test_differential_quality.py",
+        "start": 129,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_add_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_differential_quality.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_differential_quality",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/differential_quality.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_finding": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 9,
+        "end": 18
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
     "test_finding_intelligence_consolidates_member_and_cluster_views": {
       "source": {
         "file": "backend/tests/test_finding_intelligence.py",
@@ -630,7 +1041,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -676,7 +1087,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -722,7 +1133,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -790,7 +1201,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -836,7 +1247,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -882,7 +1293,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -928,7 +1339,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -986,7 +1397,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 28,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1007,6 +1418,618 @@
         }
       ],
       "dependency_count": 4
+    },
+    "test_finding_intelligence_surfaces_reproducible_differential_quality": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 269,
+        "end": 322
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_campaign": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 11,
+        "end": 131
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 172,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finding_cve_ids",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "normalize_nuclei_item",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_normalization.py",
+              "line": 196,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_known_cve_candidate_never_confirms_exploitability",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_low_severity_unknown_is_not_promoted_to_novel_candidate",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_nuclei_classification_preserves_cve_as_stable_evidence",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_strong_unknown_requires_independent_corroboration_for_novel_candidate",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_textual_cve_extraction_is_case_insensitive_and_deduplicated",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_campaign_finding",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_normalization.py",
+              "line": 293,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "test_nuclei_classification_preserves_cve_as_stable_evidence": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 44,
+        "end": 67
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "finding_cve_ids",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "normalize_nuclei_item",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_normalization.py",
+              "line": 196,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_campaign_finding",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_normalization.py",
+              "line": 293,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_known_cve_candidate_never_confirms_exploitability": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 70,
+        "end": 82
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_strong_unknown_requires_independent_corroboration_for_novel_candidate": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 85,
+        "end": 107
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_low_severity_unknown_is_not_promoted_to_novel_candidate": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 110,
+        "end": 118
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_textual_cve_extraction_is_case_insensitive_and_deduplicated": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 121,
+        "end": 131
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "finding_cve_ids",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_finding_intelligence_surfaces_cve_signal_without_auto_confirmation": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 134,
+        "end": 159
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_version_correlated_cve_raises_evidence_quality_not_confirmation": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 162,
+        "end": 216
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_reproducible_unknown_signal_gets_high_novelty_confidence_without_zero_day_claim": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 219,
+        "end": 237
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_single_unknown_signal_requires_repeat_validation": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 240,
+        "end": 252
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_known_cve_novelty_confidence_is_not_applicable": {
+      "source": {
+        "file": "backend/tests/test_vulnerability_intelligence.py",
+        "start": 255,
+        "end": 269
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_vulnerability_intelligence.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
     }
   }
 }

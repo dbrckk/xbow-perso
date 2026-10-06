@@ -489,6 +489,18 @@
       "in_degree": 4,
       "out_degree": 2
     },
+    "backend/app/differential_quality.py": {
+      "dependencies": [
+        "backend/app/main.py",
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/finding_intelligence.py",
+        "backend/tests/test_differential_quality.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 2
+    },
     "backend/app/domain_incident_lifecycle.py": {
       "dependencies": [
         "backend/tests/test_hackerone_prelaunch.py"
@@ -658,6 +670,7 @@
         "backend/app/cve_risk_context.py",
         "backend/app/cve_validation_priority.py",
         "backend/app/differential_intelligence.py",
+        "backend/app/differential_quality.py",
         "backend/app/finding_cluster_consensus.py",
         "backend/app/finding_cluster_saturation.py",
         "backend/app/finding_correlation.py",
@@ -677,7 +690,7 @@
         "backend/tests/test_vulnerability_intelligence.py"
       ],
       "in_degree": 4,
-      "out_degree": 15
+      "out_degree": 16
     },
     "backend/app/finding_lifecycle.py": {
       "dependencies": [
@@ -1415,6 +1428,7 @@
         "backend/app/decision_consensus.py",
         "backend/app/decision_timeline.py",
         "backend/app/differential_intelligence.py",
+        "backend/app/differential_quality.py",
         "backend/app/evidence_chain.py",
         "backend/app/evidence_quality.py",
         "backend/app/finding_cluster_consensus.py",
@@ -1600,7 +1614,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 207,
+      "in_degree": 208,
       "out_degree": 60
     },
     "backend/app/metrics.py": {
@@ -1659,6 +1673,7 @@
         "backend/app/decision_consensus.py",
         "backend/app/decision_timeline.py",
         "backend/app/differential_intelligence.py",
+        "backend/app/differential_quality.py",
         "backend/app/evidence_chain.py",
         "backend/app/evidence_quality.py",
         "backend/app/finding_cluster_consensus.py",
@@ -1719,6 +1734,7 @@
         "backend/tests/test_decision_timeline.py",
         "backend/tests/test_differential_evidence_integration.py",
         "backend/tests/test_differential_intelligence.py",
+        "backend/tests/test_differential_quality.py",
         "backend/tests/test_evidence_backed_planner.py",
         "backend/tests/test_evidence_chain.py",
         "backend/tests/test_evidence_quality.py",
@@ -1766,7 +1782,7 @@
         "backend/tests/test_vulnerability_intelligence.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 121,
+      "in_degree": 123,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -4003,6 +4019,16 @@
     "backend/tests/test_differential_intelligence.py": {
       "dependencies": [
         "backend/app/differential_intelligence.py",
+        "backend/app/observation_graph.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
+    "backend/tests/test_differential_quality.py": {
+      "dependencies": [
+        "backend/app/differential_quality.py",
         "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
@@ -6460,6 +6486,7 @@
         "backend/tests/test_deployment_preflight.py",
         "backend/tests/test_differential_evidence_integration.py",
         "backend/tests/test_differential_intelligence.py",
+        "backend/tests/test_differential_quality.py",
         "backend/tests/test_distributed_concurrency.py",
         "backend/tests/test_domain_incident_lifecycle.py",
         "backend/tests/test_domain_lifecycle_integration.py",
@@ -6675,7 +6702,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 250,
+      "in_degree": 251,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

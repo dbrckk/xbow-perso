@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "d359de8edf6f7a320936b203939c12cbba81d3b5",
-  "head": "5ec233d77ae2a716b4798c7a22b58cdea9f8ab31",
+  "base": "5ec233d77ae2a716b4798c7a22b58cdea9f8ab31",
+  "head": "78c4fcf6573401b854a852ef5ca30d22db7300cc",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/cve_validation_priority.py",
+      "path": "backend/app/differential_quality.py",
       "status": "A"
     },
     {
@@ -14,59 +14,132 @@
       "status": "M"
     },
     {
-      "path": "backend/tests/test_cve_validation_priority.py",
+      "path": "backend/app/vulnerability_intelligence.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_differential_quality.py",
       "status": "A"
     },
     {
       "path": "backend/tests/test_finding_intelligence.py",
       "status": "M"
+    },
+    {
+      "path": "backend/tests/test_vulnerability_intelligence.py",
+      "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/cve_validation_priority.py",
+    "backend/app/differential_quality.py",
     "backend/app/finding_intelligence.py",
-    "backend/tests/test_cve_validation_priority.py",
-    "backend/tests/test_finding_intelligence.py"
+    "backend/app/vulnerability_intelligence.py",
+    "backend/tests/test_differential_quality.py",
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_files": [
-    "backend/app/cve_validation_priority.py",
+    "backend/app/cve_evidence_verdict.py",
+    "backend/app/cve_risk_context.py",
+    "backend/app/differential_quality.py",
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/tests/test_cve_validation_priority.py",
+    "backend/app/vulnerability_intelligence.py",
     "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_differential_quality.py",
     "backend/tests/test_finding_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_symbols": [
     {
-      "name": "CveValidationPlan",
+      "name": "CveEvidenceVerdict",
       "kind": "class",
-      "file": "backend/app/cve_validation_priority.py",
-      "line": 11
+      "file": "backend/app/cve_evidence_verdict.py",
+      "line": 13
     },
     {
       "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/cve_validation_priority.py",
-      "line": 22
+      "file": "backend/app/cve_evidence_verdict.py",
+      "line": 26
     },
     {
-      "name": "build_cve_validation_plan",
+      "name": "build_cve_evidence_verdict",
       "kind": "function",
-      "file": "backend/app/cve_validation_priority.py",
-      "line": 28
+      "file": "backend/app/cve_evidence_verdict.py",
+      "line": 33
+    },
+    {
+      "name": "CveRiskContext",
+      "kind": "class",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 18
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 34
+    },
+    {
+      "name": "_unit_interval",
+      "kind": "function",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 41
+    },
+    {
+      "name": "_cvss",
+      "kind": "function",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 53
+    },
+    {
+      "name": "build_cve_risk_context",
+      "kind": "function",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 65
+    },
+    {
+      "name": "DifferentialQuality",
+      "kind": "class",
+      "file": "backend/app/differential_quality.py",
+      "line": 14
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/differential_quality.py",
+      "line": 39
+    },
+    {
+      "name": "_finding_id",
+      "kind": "function",
+      "file": "backend/app/differential_quality.py",
+      "line": 47
+    },
+    {
+      "name": "empty_differential_quality",
+      "kind": "function",
+      "file": "backend/app/differential_quality.py",
+      "line": 57
+    },
+    {
+      "name": "build_differential_quality",
+      "kind": "function",
+      "file": "backend/app/differential_quality.py",
+      "line": 85
     },
     {
       "name": "build_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 28
+      "line": 32
     },
     {
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 304
+      "line": 336
     },
     {
       "name": "authenticate_control_api",
@@ -615,34 +688,34 @@
       "line": 1876
     },
     {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_cve_validation_priority.py",
-      "line": 10
+      "name": "VulnerabilitySignal",
+      "kind": "class",
+      "file": "backend/app/vulnerability_intelligence.py",
+      "line": 19
     },
     {
-      "name": "test_behaviorally_supported_candidate_gets_safe_active_non_destructive_plan",
+      "name": "to_dict",
       "kind": "function",
-      "file": "backend/tests/test_cve_validation_priority.py",
-      "line": 20
+      "file": "backend/app/vulnerability_intelligence.py",
+      "line": 40
     },
     {
-      "name": "test_ambiguous_backport_candidate_is_forced_to_passive_recheck",
+      "name": "_extract_cve_ids",
       "kind": "function",
-      "file": "backend/tests/test_cve_validation_priority.py",
-      "line": 41
+      "file": "backend/app/vulnerability_intelligence.py",
+      "line": 47
     },
     {
-      "name": "test_identifier_only_candidate_gets_metadata_recheck",
+      "name": "finding_cve_ids",
       "kind": "function",
-      "file": "backend/tests/test_cve_validation_priority.py",
-      "line": 58
+      "file": "backend/app/vulnerability_intelligence.py",
+      "line": 61
     },
     {
-      "name": "test_non_cve_low_signal_path_is_deferred",
+      "name": "build_vulnerability_signal",
       "kind": "function",
-      "file": "backend/tests/test_cve_validation_priority.py",
-      "line": 72
+      "file": "backend/app/vulnerability_intelligence.py",
+      "line": 82
     },
     {
       "name": "_finding",
@@ -673,6 +746,54 @@
       "kind": "function",
       "file": "backend/tests/test_differential_evidence_integration.py",
       "line": 133
+    },
+    {
+      "name": "_graph",
+      "kind": "function",
+      "file": "backend/tests/test_differential_quality.py",
+      "line": 8
+    },
+    {
+      "name": "_add_validation",
+      "kind": "function",
+      "file": "backend/tests/test_differential_quality.py",
+      "line": 23
+    },
+    {
+      "name": "test_quality_defaults_to_high_false_positive_risk_without_observations",
+      "kind": "function",
+      "file": "backend/tests/test_differential_quality.py",
+      "line": 53
+    },
+    {
+      "name": "test_single_marker_reflection_is_specific_but_not_reproducible",
+      "kind": "function",
+      "file": "backend/tests/test_differential_quality.py",
+      "line": 65
+    },
+    {
+      "name": "test_repeated_same_parameter_signal_reduces_false_positive_risk",
+      "kind": "function",
+      "file": "backend/tests/test_differential_quality.py",
+      "line": 79
+    },
+    {
+      "name": "test_multi_validator_repeat_is_highest_reproducibility_level",
+      "kind": "function",
+      "file": "backend/tests/test_differential_quality.py",
+      "line": 95
+    },
+    {
+      "name": "test_mixed_signal_on_same_parameter_is_flagged_as_contradictory",
+      "kind": "function",
+      "file": "backend/tests/test_differential_quality.py",
+      "line": 108
+    },
+    {
+      "name": "test_quality_does_not_persist_parameter_values",
+      "kind": "function",
+      "file": "backend/tests/test_differential_quality.py",
+      "line": 129
     },
     {
       "name": "_finding",
@@ -741,6 +862,12 @@
       "line": 254
     },
     {
+      "name": "test_finding_intelligence_surfaces_reproducible_differential_quality",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 269
+    },
+    {
       "name": "_campaign",
       "kind": "function",
       "file": "backend/tests/test_vulnerability_intelligence.py",
@@ -793,13 +920,30 @@
       "kind": "function",
       "file": "backend/tests/test_vulnerability_intelligence.py",
       "line": 162
+    },
+    {
+      "name": "test_reproducible_unknown_signal_gets_high_novelty_confidence_without_zero_day_claim",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 219
+    },
+    {
+      "name": "test_single_unknown_signal_requires_repeat_validation",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 240
+    },
+    {
+      "name": "test_known_cve_novelty_confidence_is_not_applicable",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 255
     }
   ],
   "selected_tests": [
-    "backend/tests/test_cve_validation_priority.py",
     "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_differential_quality.py",
     "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_validation_priority.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ]
 }

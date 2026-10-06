@@ -85,6 +85,7 @@ backend/
     decision_timeline.py
     deployment_preflight.py
     differential_intelligence.py
+    differential_quality.py
     domain_incident_lifecycle.py
     dr_cli.py
     dr_manifest.py
@@ -292,6 +293,7 @@ backend/
     test_deployment_preflight.py
     test_differential_evidence_integration.py
     test_differential_intelligence.py
+    test_differential_quality.py
     test_distributed_concurrency.py
     test_domain_incident_lifecycle.py
     test_domain_lifecycle_integration.py
@@ -2924,6 +2926,110 @@ selected = max(
 def differential_signal_rank(signal: DifferentialSignalLevel | str) -> int
 ````
 
+## File: backend/app/differential_quality.py
+````python
+DIFFERENTIAL_QUALITY_SCHEMA = "differential-quality-v1"
+_SIGNAL_LEVELS = {"none", "weak", "strong"}
+⋮----
+@dataclass(frozen=True)
+class DifferentialQuality
+⋮----
+schema: str
+finding_id: str
+observation_count: int
+strong_observation_count: int
+weak_observation_count: int
+none_observation_count: int
+validator_sources: tuple[str, ...]
+validator_source_count: int
+parameters: tuple[str, ...]
+strong_parameters: tuple[str, ...]
+strong_parameter_consistent: bool
+marker_reflection_count: int
+status_change_count: int
+body_change_count: int
+reproducible: bool
+contradictory: bool
+reproducibility_level: str
+specificity_level: str
+quality_score: float
+false_positive_risk: str
+independent_validation_required: bool
+exploitability_confirmed: bool
+zero_day_claim: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _finding_id(observation: Any) -> str | None
+⋮----
+value = observation.metadata.get("finding_id")
+⋮----
+def empty_differential_quality(finding_id: str) -> DifferentialQuality
+⋮----
+finding_ids: set[str] = set()
+⋮----
+rows: dict[str, list[Any]] = {}
+⋮----
+finding_id = _finding_id(observation)
+⋮----
+signal = observation.metadata.get("differential_signal")
+⋮----
+result: dict[str, DifferentialQuality] = {}
+⋮----
+observations = rows.get(finding_id, [])
+⋮----
+levels = [
+strong = [item for item in observations if item.metadata.get("differential_signal") == "strong"]
+weak_count = sum(level == "weak" for level in levels)
+none_count = sum(level == "none" for level in levels)
+⋮----
+validator_sources = tuple(
+parameters = tuple(
+strong_parameters = tuple(
+strong_parameter_consistent = (
+⋮----
+marker_reflections = sum(
+status_changes = sum(
+body_changes = sum(
+⋮----
+signals_by_parameter: dict[str, set[str]] = {}
+⋮----
+parameter = item.metadata.get("differential_parameter")
+signal = item.metadata.get("differential_signal")
+⋮----
+contradictory = any(
+⋮----
+reproducible = len(strong) >= 2 and strong_parameter_consistent
+⋮----
+reproducibility_level = "multi_source_repeated"
+⋮----
+reproducibility_level = "repeated"
+⋮----
+reproducibility_level = "single"
+⋮----
+reproducibility_level = "none"
+⋮----
+specificity_level = "high"
+⋮----
+specificity_level = "medium"
+⋮----
+specificity_level = "low"
+⋮----
+specificity_level = "none"
+⋮----
+score = 0.0
+⋮----
+score = round(max(0.0, min(1.0, score)), 4)
+⋮----
+false_positive_risk = "high"
+⋮----
+false_positive_risk = "medium"
+⋮----
+false_positive_risk = "low"
+````
+
 ## File: backend/app/domain_incident_lifecycle.py
 ````python
 DOMAINS = ("workload", "control_plane", "observability")
@@ -3610,6 +3716,7 @@ triage = build_finding_triage(findings, graph)
 cluster_consensus = build_cluster_consensus(
 saturation = build_cluster_saturation(
 differential_signals = build_differential_signals(graph)
+differential_quality = build_differential_quality(graph)
 technology_fingerprints = build_technology_fingerprints(graph)
 ⋮----
 readiness_by_id = {item.finding_id: item for item in readiness}
@@ -3627,6 +3734,7 @@ triage_item = triage_by_id.get(finding_id)
 cluster = cluster_by_member.get(finding_id)
 cluster_id = cluster.cluster_id if cluster else None
 differential_item = differential_signals.get(
+differential_quality_item = differential_quality.get(
 duplicate_similarity = rank_public_duplicate_risk(
 ⋮----
 member_ids = cluster.finding_ids if cluster else (finding_id,)
@@ -14479,6 +14587,10 @@ known_cve_candidate: bool
 cve_signal: str
 novel_candidate: bool
 novelty_signal: str
+novelty_confidence: str
+differential_reproducible: bool
+differential_quality_score: float
+repeat_validation_required: bool
 corroborating_sources: tuple[str, ...]
 corroborating_source_count: int
 versioned_fingerprint_match_count: int
@@ -14522,6 +14634,11 @@ severity = str(getattr(finding, "severity", "")).lower()
 high_impact = _SEVERITY_WEIGHT.get(severity, -1) >= _SEVERITY_WEIGHT["high"]
 differential = str(differential_signal).lower()
 ⋮----
+quality_score = max(0.0, min(1.0, float(differential_quality_score)))
+⋮----
+quality_score = 0.0
+reproducible = bool(differential_reproducible)
+⋮----
 novel_candidate = (
 ⋮----
 exploitability_evidence_level = "cve_plus_high_confidence_version"
@@ -14541,6 +14658,20 @@ novelty_signal = "behavioral_candidate_needs_corroboration"
 novelty_signal = "corroborated_unknown_candidate"
 ⋮----
 novelty_signal = "none"
+⋮----
+novelty_confidence = "not_applicable"
+repeat_validation_required = False
+⋮----
+novelty_confidence = "high"
+⋮----
+novelty_confidence = "medium"
+repeat_validation_required = True
+⋮----
+novelty_confidence = "low"
+⋮----
+novelty_confidence = "none"
+⋮----
+exploitability_evidence_level = (
 ````
 
 ## File: backend/app/worker_audit.py
@@ -16277,6 +16408,33 @@ signal = signals["f1"]
 def test_graph_signal_aggregation_defaults_to_none_for_findings_without_differential_metadata()
 ````
 
+## File: backend/tests/test_differential_quality.py
+````python
+def _graph() -> ObservationGraph
+⋮----
+graph = ObservationGraph()
+⋮----
+def test_quality_defaults_to_high_false_positive_risk_without_observations()
+⋮----
+result = build_differential_quality(_graph())["f1"]
+⋮----
+def test_single_marker_reflection_is_specific_but_not_reproducible()
+⋮----
+graph = _graph()
+⋮----
+result = build_differential_quality(graph)["f1"]
+⋮----
+def test_repeated_same_parameter_signal_reduces_false_positive_risk()
+⋮----
+def test_multi_validator_repeat_is_highest_reproducibility_level()
+⋮----
+def test_mixed_signal_on_same_parameter_is_flagged_as_contradictory()
+⋮----
+def test_quality_does_not_persist_parameter_values()
+⋮----
+serialized = str(build_differential_quality(graph)["f1"].to_dict())
+````
+
 ## File: backend/tests/test_distributed_concurrency.py
 ````python
 def _postgres_url()
@@ -16866,6 +17024,10 @@ def test_finding_intelligence_exposes_bounded_cve_validation_plan()
 finding = _finding("f1", "https://example.test/a")
 ⋮----
 plan = result["findings"][0]["cve_validation_plan"]
+⋮----
+def test_finding_intelligence_surfaces_reproducible_differential_quality()
+⋮----
+result = build_finding_intelligence([finding], graph)
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
@@ -24749,6 +24911,12 @@ graph = ObservationGraph()
 ⋮----
 result = build_finding_intelligence([finding], graph)
 row = result["findings"][0]
+⋮----
+def test_reproducible_unknown_signal_gets_high_novelty_confidence_without_zero_day_claim()
+⋮----
+def test_single_unknown_signal_requires_repeat_validation()
+⋮----
+def test_known_cve_novelty_confidence_is_not_applicable()
 ````
 
 ## File: backend/tests/test_watchdog_observability.py
