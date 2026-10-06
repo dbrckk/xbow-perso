@@ -23,6 +23,11 @@ from .strix_runner_exec_ticket import (
     validate_strix_runner_exec_ticket_secret,
     verify_strix_runner_exec_ticket,
 )
+from .strix_runner_manifest_ticket import (
+    StrixRunnerManifestTicketError,
+    validate_strix_runner_manifest_ticket_secret,
+    verify_strix_runner_manifest_ticket,
+)
 
 
 RUNNER_RPC_PROTOCOL = "strix-runner-rpc-v1"
@@ -68,6 +73,7 @@ class RunnerRpcService:
             _runner_rpc_secret_bytes(secret)
         if admission_secret:
             validate_strix_runner_exec_ticket_secret(admission_secret)
+            validate_strix_runner_manifest_ticket_secret(admission_secret)
         self._secret = secret if secret else None
         self._admission_secret = admission_secret if admission_secret else None
         self._active_execution = bool(active_execution)
@@ -97,6 +103,7 @@ class RunnerRpcService:
                     "protocol": RUNNER_RPC_PROTOCOL,
                     "active_execution_enabled": self._active_execution,
                     "exec_admission_required": True,
+                    "manifest_admission_required": True,
                     "implemented_operations": [],
                 },
             )
@@ -114,6 +121,8 @@ class RunnerRpcService:
                     "active_execution_enabled": self._active_execution,
                     "exec_admission_required": True,
                     "exec_admission_configured": True,
+                    "manifest_admission_required": True,
+                    "manifest_admission_configured": True,
                     "implemented_operations": [],
                 },
             )
@@ -146,6 +155,21 @@ class RunnerRpcService:
             return _error(400, "invalid_request")
         if not _validate_operation_payload(path, payload):
             return _error(400, "invalid_request")
+
+        if path == "/v1/session/create":
+            if not self._admission_secret:
+                return _error(503, "manifest_admission_key_unavailable")
+            try:
+                verify_strix_runner_manifest_ticket(
+                    payload["admission"],
+                    request_id=payload["request_id"],
+                    image=payload["image"],
+                    exposed_ports=payload["exposed_ports"],
+                    manifest_digest=payload["manifest_digest"],
+                    verification_secret=self._admission_secret,
+                )
+            except StrixRunnerManifestTicketError:
+                return _error(403, "manifest_admission_rejected")
 
         if path == "/v1/session/exec":
             if not self._admission_secret:
@@ -322,11 +346,13 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
                 "image",
                 "exposed_ports",
                 "manifest_digest",
+                "admission",
             },
         ):
             return False
         image = payload.get("image")
         ports = payload.get("exposed_ports")
+        admission = payload.get("admission")
         if (
             not isinstance(image, str)
             or not 1 <= len(image) <= 512
@@ -336,6 +362,7 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             or any(not _valid_port(port) for port in ports)
             or len(set(ports)) != len(ports)
             or not _valid_digest(payload.get("manifest_digest"))
+            or not isinstance(admission, dict)
         ):
             return False
         return True
@@ -575,7 +602,8 @@ def _admission_secret_from_env() -> str | None:
         return None
     try:
         validate_strix_runner_exec_ticket_secret(secret)
-    except StrixRunnerExecTicketError as exc:
+        validate_strix_runner_manifest_ticket_secret(secret)
+    except (StrixRunnerExecTicketError, StrixRunnerManifestTicketError) as exc:
         raise RuntimeError(str(exc)) from exc
     return secret
 
