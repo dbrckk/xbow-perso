@@ -177,3 +177,29 @@ def test_finding_intelligence_exposes_advisory_validation_priority_only():
         "defer_duplicate_validation",
         "no_action",
     }
+
+
+def test_finding_intelligence_exposes_cve_risk_context_without_confirmation():
+    finding = _finding(
+        "f1",
+        "https://example.test/a?id=one",
+        severity="critical",
+    )
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.cvss = 9.8
+    finding.epss_score = 0.8
+    finding.epss_percentile = 0.99
+    finding.cpe = ["cpe:2.3:a:vendor:product:1.2.3:*:*:*:*:*:*:*"]
+    finding.template_verified = True
+    finding.tags = ["kev"]
+
+    result = build_finding_intelligence([finding], _graph())
+    row = result["findings"][0]
+    risk = row["cve_risk_context"]
+
+    assert risk["risk_band"] == "critical_priority"
+    assert risk["scanner_tagged_kev"] is True
+    assert risk["authoritative_kev_verified"] is False
+    assert risk["exploitability_confirmed"] is False
+    assert row["validation_priority"]["automatic_execution_authorized"] is False
