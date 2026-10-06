@@ -53,12 +53,14 @@ COPY --from=fetch /opt/strix /opt/strix
 COPY app/strix_runner_attestation.py /app/app/strix_runner_attestation.py
 COPY app/strix_runner_rpc.py /app/app/strix_runner_rpc.py
 COPY app/strix_runner_exec_ticket.py /app/app/strix_runner_exec_ticket.py
+COPY app/strix_runner_manifest_ticket.py /app/app/strix_runner_manifest_ticket.py
 
 RUN chmod 0555 /opt/strix/strix \
     && chmod 0444 /opt/strix/manifest.json \
     && chmod 0444 /app/app/strix_runner_attestation.py \
     && chmod 0444 /app/app/strix_runner_rpc.py \
-    && chmod 0444 /app/app/strix_runner_exec_ticket.py
+    && chmod 0444 /app/app/strix_runner_exec_ticket.py \
+    && chmod 0444 /app/app/strix_runner_manifest_ticket.py
 
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
