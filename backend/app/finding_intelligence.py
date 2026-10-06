@@ -17,6 +17,7 @@ from .technology_fingerprint_intelligence import (
     build_technology_fingerprints,
     match_finding_technology,
 )
+from .validation_priority import build_validation_priority
 from .vulnerability_intelligence import build_vulnerability_signal
 
 router = APIRouter()
@@ -114,6 +115,21 @@ def build_finding_intelligence(
                 high_confidence_fingerprint_match_count
             ),
         )
+        cluster_saturated = bool(
+            cluster_id in saturation_by_cluster
+            and saturation_by_cluster[cluster_id].saturated
+        )
+        validation_priority = build_validation_priority(
+            finding,
+            cve_verdict=cve_evidence_verdict,
+            vulnerability_signal=vulnerability,
+            differential_signal=differential_item.signal,
+            triage_score=(triage_item.score if triage_item else 0.0),
+            duplicate_candidate=bool(
+                triage_item and triage_item.duplicate_candidate
+            ),
+            cluster_saturated=cluster_saturated,
+        )
 
         finding_rows.append(
             {
@@ -125,6 +141,7 @@ def build_finding_intelligence(
                 "differential": differential_item.to_dict(),
                 "vulnerability": vulnerability.to_dict(),
                 "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
+                "validation_priority": validation_priority.to_dict(),
                 "technology": {
                     "matched_fingerprints": [
                         item.to_dict() for item in matched_fingerprints
@@ -141,11 +158,7 @@ def build_finding_intelligence(
                     if cluster_id in consensus_by_cluster
                     else None
                 ),
-                "cluster_saturated": (
-                    saturation_by_cluster[cluster_id].saturated
-                    if cluster_id in saturation_by_cluster
-                    else False
-                ),
+                "cluster_saturated": cluster_saturated,
             }
         )
 
@@ -220,6 +233,25 @@ def build_finding_intelligence(
             "novel_candidates_needing_corroboration": sum(
                 row["vulnerability"]["novelty_signal"]
                 == "behavioral_candidate_needs_corroboration"
+                for row in finding_rows
+            ),
+            "urgent_validation_candidates": sum(
+                row["validation_priority"]["band"] == "urgent"
+                for row in finding_rows
+            ),
+            "safe_active_validation_candidates": sum(
+                row["validation_priority"]["recommended_state"]
+                == "safe_active_validation"
+                for row in finding_rows
+            ),
+            "passive_review_candidates": sum(
+                row["validation_priority"]["recommended_state"]
+                == "passive_review"
+                for row in finding_rows
+            ),
+            "deferred_duplicate_validations": sum(
+                row["validation_priority"]["recommended_state"]
+                == "defer_duplicate_validation"
                 for row in finding_rows
             ),
             "high_public_similarity_findings": sum(
