@@ -6,7 +6,13 @@ import pytest
 
 import app.validator as validator
 from app.main import Campaign, Finding, ProgramRules, TargetInput
-from app.validator import ValidationPolicyError, _preview_body, build_probe_url, safe_http_probe
+from app.validator import (
+    ValidationPolicyError,
+    _preview_body,
+    build_probe_url,
+    build_safe_http_probe_plan_v2,
+    safe_http_probe,
+)
 
 
 def campaign() -> Campaign:
@@ -236,3 +242,119 @@ def test_invalid_differential_validation_gate_fails_closed_before_network(monkey
         )
 
     assert opener.urls == []
+
+
+
+def test_v2_plan_is_disabled_by_default_and_performs_no_network(monkeypatch):
+    monkeypatch.delenv("XBOW_ENABLE_HTTP_VALIDATION", raising=False)
+    monkeypatch.delenv("XBOW_ENABLE_PARAMETER_VALIDATION_V2", raising=False)
+    monkeypatch.delenv("XBOW_ENABLE_CORS_VALIDATION", raising=False)
+    monkeypatch.delenv("XBOW_ENABLE_REDIRECT_VALIDATION", raising=False)
+    monkeypatch.setattr(
+        validator,
+        "build_opener",
+        lambda *_args: (_ for _ in ()).throw(
+            AssertionError("network executor should not be constructed")
+        ),
+    )
+
+    plan = build_safe_http_probe_plan_v2(
+        campaign(),
+        finding(endpoint="https://app.example.test/search?q=private"),
+    )
+
+    assert plan.enabled is False
+    assert plan.probes == ()
+    assert plan.automatic_execution_authorized is False
+    assert "private" not in str(plan.to_dict())
+
+
+def test_v2_parameter_plan_requires_http_gate_and_feature_gate(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_PARAMETER_VALIDATION_V2", "true")
+    monkeypatch.setenv("XBOW_ENABLE_CORS_VALIDATION", "false")
+    monkeypatch.setenv("XBOW_ENABLE_REDIRECT_VALIDATION", "false")
+
+    plan = build_safe_http_probe_plan_v2(
+        campaign(),
+        finding(endpoint="https://app.example.test/search?q=value&id=42"),
+    )
+
+    assert plan.enabled is True
+    assert [probe.kind for probe in plan.probes] == [
+        "baseline",
+        "parameter_differential",
+        "parameter_differential",
+    ]
+    assert all(probe.method == "GET" for probe in plan.probes)
+    assert plan.automatic_execution_authorized is False
+
+
+def test_v2_feature_gate_alone_cannot_enable_plan(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "false")
+    monkeypatch.setenv("XBOW_ENABLE_CORS_VALIDATION", "true")
+
+    plan = build_safe_http_probe_plan_v2(
+        campaign(),
+        finding(endpoint="https://app.example.test/account"),
+    )
+
+    assert plan.enabled is False
+    assert plan.probes == ()
+
+
+@pytest.mark.parametrize(
+    ("name", "value", "message"),
+    (
+        (
+            "XBOW_VALIDATION_MAX_PARAMETERS",
+            "11",
+            "between 0 and 10",
+        ),
+        (
+            "XBOW_VALIDATION_MAX_REQUESTS",
+            "17",
+            "between 1 and 16",
+        ),
+        (
+            "XBOW_VALIDATION_MAX_REQUESTS",
+            "not-int",
+            "must be an integer",
+        ),
+    ),
+)
+def test_v2_plan_limits_fail_closed(monkeypatch, name, value, message):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_PARAMETER_VALIDATION_V2", "true")
+    monkeypatch.setenv(name, value)
+
+    with pytest.raises(ValidationPolicyError, match=message):
+        build_safe_http_probe_plan_v2(
+            campaign(),
+            finding(endpoint="https://app.example.test/search?q=value"),
+        )
+
+
+def test_invalid_v2_gate_fails_closed(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_CORS_VALIDATION", "sometimes")
+
+    with pytest.raises(
+        ValidationPolicyError,
+        match="XBOW_ENABLE_CORS_VALIDATION",
+    ):
+        build_safe_http_probe_plan_v2(
+            campaign(),
+            finding(endpoint="https://app.example.test/account"),
+        )
+
+
+def test_v2_plan_reuses_scope_checker(monkeypatch):
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_PARAMETER_VALIDATION_V2", "true")
+
+    with pytest.raises(ValidationPolicyError, match="outside declared scope"):
+        build_safe_http_probe_plan_v2(
+            campaign(),
+            finding(endpoint="https://evil.invalid/search?q=value"),
+        )
