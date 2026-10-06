@@ -6,6 +6,7 @@ from fastapi import APIRouter
 
 from .cve_evidence_verdict import build_cve_evidence_verdict
 from .cve_risk_context import build_cve_risk_context
+from .cve_validation_priority import build_cve_validation_plan
 from .differential_intelligence import DifferentialSignal, build_differential_signals
 from .finding_cluster_consensus import build_cluster_consensus
 from .finding_cluster_saturation import build_cluster_saturation
@@ -121,6 +122,10 @@ def build_finding_intelligence(
             finding,
             kev_catalog=kev_catalog,
         )
+        cve_validation_plan = build_cve_validation_plan(
+            finding,
+            verdict=cve_evidence_verdict,
+        )
         cluster_saturated = bool(
             cluster_id in saturation_by_cluster
             and saturation_by_cluster[cluster_id].saturated
@@ -149,6 +154,7 @@ def build_finding_intelligence(
                 "vulnerability": vulnerability.to_dict(),
                 "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
                 "cve_risk_context": cve_risk_context.to_dict(),
+                "cve_validation_plan": cve_validation_plan.to_dict(),
                 "validation_priority": validation_priority.to_dict(),
                 "technology": {
                     "matched_fingerprints": [
