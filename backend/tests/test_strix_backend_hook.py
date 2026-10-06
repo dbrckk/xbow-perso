@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 import types
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -109,10 +110,19 @@ def test_registered_backend_returns_prepared_non_executing_client_session(monkey
     register_xbow_backend()
     backend = registry[STRIX_BACKEND_NAME]
 
+    manifest = SimpleNamespace(
+        version=1,
+        root="/workspace",
+        entries={},
+        environment=SimpleNamespace(value={}),
+        users=[],
+        groups=[],
+        extra_path_grants=(),
+    )
     client, session = asyncio.run(
         backend(
             image="fixture",
-            manifest=object(),
+            manifest=manifest,
             exposed_ports=(48080,),
             bind_mounts=[],
         )
