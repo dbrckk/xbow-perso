@@ -8,7 +8,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from .strix_manifest_admission import STRIX_MANIFEST_ADMISSION_SCHEMA
+STRIX_MANIFEST_ADMISSION_SCHEMA = "strix-manifest-admission-v1"
 
 
 STRIX_RUNNER_MANIFEST_TICKET_SCHEMA = "strix-runner-manifest-ticket-v1"
