@@ -1,17 +1,14 @@
 # Change impact
 
-Base: 17982715e1d1da26e1e1d713dcead1c08a1ac992
-Head: e79bf561816aae5fec71374ff0d5bf58bdfb3311
+Base: aa1bfa5958273db5ec33b810baa3fedf668e46fe
+Head: 1b349fcdd88c3d045f40b4c1140ccdb5619cbfb0
 
 ## Changed files
-- M .env.example
-- M backend/app/orchestrator.py
-- A backend/app/repeat_validation.py
-- A backend/tests/test_repeat_validation.py
-- A backend/tests/test_repeat_validation_orchestrator.py
+- M backend/app/main.py
+- M backend/app/runtime_capabilities.py
+- M backend/tests/test_runtime_capabilities.py
 
 ## Affected areas
-- (root)
 - backend
 
 ## Related test candidates

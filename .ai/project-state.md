@@ -39,16 +39,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T19:42:32Z
+Generated: 2026-10-06T19:51:59Z
 
 ### Git
 - Branch: `main`
-- Head: `e79bf561816a`
-- Commit date: 2026-10-06T21:42:21+02:00
-- Commit: feat(validation): add one bounded repeat for strong unknown signals
+- Head: `1b349fcdd88c`
+- Commit date: 2026-10-06T21:51:42+02:00
+- Commit: feat(validation): consolidate bounded validation capability state
 - Tracked files: 665
 
 ### Recently changed files
+- `backend/app/main.py`
+- `backend/app/runtime_capabilities.py`
+- `backend/tests/test_runtime_capabilities.py`
 - `.env.example`
 - `backend/app/orchestrator.py`
 - `backend/app/repeat_validation.py`
@@ -64,8 +67,6 @@ Generated: 2026-10-06T19:42:32Z
 - `backend/tests/test_cve_validation_priority.py`
 - `backend/app/version_ambiguity.py`
 - `backend/tests/test_version_ambiguity.py`
-- `backend/app/cve_risk_context.py`
-- `backend/tests/test_cve_risk_context.py`
 
 ### Project signals
 - `pyproject.toml`

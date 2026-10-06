@@ -6623,6 +6623,7 @@ pentagi = safe_pentagi_runtime_capability()
 scanners = safe_scanner_runtime_capability()
 browser = safe_browser_runtime_capability()
 recon = safe_recon_runtime_capability()
+validation = safe_validation_runtime_capability()
 ⋮----
 @app.post("/api/testing/openapi/preview")
 def preview_openapi_tests(payload: OpenApiPreviewInput)
@@ -10474,6 +10475,38 @@ def _strict_bool(name: str, default: bool = False) -> bool
 raw = os.getenv(name)
 ⋮----
 value = raw.strip().lower()
+⋮----
+raw = os.getenv(name, str(default))
+⋮----
+value = int(raw)
+⋮----
+def validation_runtime_capability() -> dict[str, Any]
+⋮----
+http_enabled = _strict_bool("XBOW_ENABLE_HTTP_VALIDATION", False)
+differential_enabled = _strict_bool(
+repeat_enabled = _strict_bool(
+parameter_v2_enabled = _strict_bool(
+cors_enabled = _strict_bool("XBOW_ENABLE_CORS_VALIDATION", False)
+redirect_enabled = _strict_bool(
+max_parameters = _bounded_int_env(
+max_requests = _bounded_int_env(
+⋮----
+v2_feature_enabled = bool(
+v2_planning_enabled = bool(http_enabled and v2_feature_enabled)
+legacy_differential_ready = bool(http_enabled and differential_enabled)
+repeat_ready = bool(legacy_differential_ready and repeat_enabled)
+⋮----
+mode = "bounded_repeat_enabled"
+⋮----
+mode = "bounded_differential_enabled"
+⋮----
+mode = "bounded_http_enabled"
+⋮----
+mode = "planner_gates_waiting_for_http"
+⋮----
+mode = "disabled"
+⋮----
+def safe_validation_runtime_capability() -> dict[str, Any]
 ⋮----
 def pentagi_runtime_capability() -> dict[str, Any]
 ⋮----
@@ -22129,6 +22162,32 @@ def test_capabilities_api_exposes_browser_runtime_detail(monkeypatch, tmp_path)
 browser = result["execution"]["browser_detail"]
 ⋮----
 def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch)
+⋮----
+_VALIDATION_FLAGS = (
+⋮----
+def _clear_validation(monkeypatch)
+⋮----
+def test_validation_capability_defaults_fail_closed(monkeypatch)
+⋮----
+result = validation_runtime_capability()
+⋮----
+def test_repeat_validation_readiness_requires_http_and_differential(monkeypatch)
+⋮----
+gated = validation_runtime_capability()
+⋮----
+ready = validation_runtime_capability()
+⋮----
+def test_v2_planner_state_does_not_claim_network_execution(monkeypatch)
+⋮----
+def test_invalid_validation_configuration_fails_closed(monkeypatch)
+⋮----
+safe = safe_validation_runtime_capability()
+⋮----
+def test_validation_limits_fail_closed(monkeypatch)
+⋮----
+def test_capabilities_api_exposes_validation_state(monkeypatch)
+⋮----
+detail = execution["http_validation_detail"]
 ```
 
 ## File: tests/test_runtime_gap_analysis.py
