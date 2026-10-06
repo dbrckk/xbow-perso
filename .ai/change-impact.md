@@ -1,11 +1,11 @@
 # Change impact
 
-Base: fc25067a7e27b00615eb34403c84b4ab334b95ff
-Head: 1bb0ad68531de0bb49ac347a1ad7df242ac177b3
+Base: 9fd8a23c193074b84b92e835e4d6de573b51f736
+Head: e28bb1be3c4955613fa453ab318de6416541ab1a
 
 ## Changed files
-- A backend/app/active_validation.py
-- A backend/tests/test_active_validation.py
+- A backend/app/kev_catalog.py
+- A backend/tests/test_kev_catalog.py
 
 ## Affected areas
 - backend

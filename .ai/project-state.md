@@ -39,36 +39,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T17:54:27Z
+Generated: 2026-10-06T17:59:49Z
 
 ### Git
 - Branch: `main`
-- Head: `1bb0ad68531d`
-- Commit date: 2026-10-06T19:54:12+02:00
-- Commit: feat(validation): add bounded inert active-validation planner
-- Tracked files: 652
+- Head: `e28bb1be3c49`
+- Commit date: 2026-10-06T19:59:37+02:00
+- Commit: feat(vuln): add provenance-gated CISA KEV catalog
+- Tracked files: 656
 
 ### Recently changed files
-- `backend/app/active_validation.py`
-- `backend/tests/test_active_validation.py`
+- `backend/app/kev_catalog.py`
+- `backend/tests/test_kev_catalog.py`
+- `backend/app/cve_risk_context.py`
 - `backend/app/finding_intelligence.py`
 - `backend/app/validation_priority.py`
+- `backend/tests/test_cve_risk_context.py`
 - `backend/tests/test_finding_intelligence.py`
 - `backend/tests/test_validation_priority.py`
+- `backend/app/active_validation.py`
+- `backend/tests/test_active_validation.py`
 - `backend/app/cve_evidence_verdict.py`
 - `backend/tests/test_cve_evidence_verdict.py`
-- `backend/app/main.py`
-- `backend/app/scanner_normalization.py`
-- `backend/app/technology_fingerprint_intelligence.py`
-- `backend/app/vulnerability_intelligence.py`
-- `backend/tests/test_cve_metadata_normalization.py`
-- `backend/tests/test_technology_fingerprint_intelligence.py`
-- `backend/tests/test_vulnerability_intelligence.py`
-- `backend/Dockerfile.strix-runner`
-- `backend/app/runtime_capabilities.py`
-- `backend/app/strix_broker.py`
-- `backend/app/strix_broker_models.py`
-- `backend/app/strix_runner_manifest_ticket.py`
 
 ### Project signals
 - `pyproject.toml`

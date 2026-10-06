@@ -62,6 +62,7 @@ app/
   control_plane_health.py
   coverage.py
   cve_evidence_verdict.py
+  cve_risk_context.py
   decision_audit.py
   decision_consensus.py
   decision_timeline.py
@@ -112,6 +113,7 @@ app/
   incident_store.py
   job_provenance.py
   jobqueue.py
+  kev_catalog.py
   knowledge_memory.py
   learning_memory.py
   local_outcome_intelligence.py
@@ -263,6 +265,7 @@ tests/
   test_coverage.py
   test_cve_evidence_verdict.py
   test_cve_metadata_normalization.py
+  test_cve_risk_context.py
   test_decision_audit.py
   test_decision_consensus.py
   test_decision_timeline.py
@@ -342,6 +345,7 @@ tests/
   test_job_provenance_integration.py
   test_job_provenance.py
   test_jobqueue.py
+  test_kev_catalog.py
   test_knowledge_memory.py
   test_learning_memory.py
   test_live_activation_profile.py
@@ -1898,6 +1902,64 @@ verdict = "version_candidate"
 verdict = "identifier_only_candidate"
 ```
 
+## File: app/cve_risk_context.py
+```python
+CVE_RISK_CONTEXT_SCHEMA = "cve-risk-context-v1"
+⋮----
+@dataclass(frozen=True)
+class CveRiskContext
+⋮----
+schema: str
+finding_id: str
+cve_ids: tuple[str, ...]
+cvss: float | None
+epss_score: float | None
+epss_percentile: float | None
+cpe_present: bool
+template_verified: bool
+scanner_tagged_kev: bool
+authoritative_kev_verified: bool
+risk_score: float
+risk_band: str
+reasons: tuple[str, ...]
+exploitability_confirmed: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _unit_interval(value: object) -> float | None
+⋮----
+result = float(value)
+⋮----
+def _cvss(value: object) -> float | None
+⋮----
+cve_ids = finding_cve_ids(finding)
+cvss = _cvss(getattr(finding, "cvss", None))
+epss_score = _unit_interval(getattr(finding, "epss_score", None))
+epss_percentile = _unit_interval(
+cpe = getattr(finding, "cpe", None)
+cpe_present = bool(
+template_verified = getattr(finding, "template_verified", None) is True
+tags = {
+scanner_tagged_kev = "kev" in tags
+⋮----
+score = 0.0
+reasons: list[str] = []
+⋮----
+authoritative = bool(authoritative_kev_verified)
+⋮----
+score = round(max(0.0, min(1.0, score)), 4)
+⋮----
+band = "critical_priority"
+⋮----
+band = "high_priority"
+⋮----
+band = "medium_priority"
+⋮----
+band = "low_priority"
+```
+
 ## File: app/decision_audit.py
 ```python
 _AUDIT_FIELDS = {
@@ -2925,6 +2987,7 @@ versioned_fingerprint_match_count = sum(
 high_confidence_fingerprint_match_count = sum(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
+cve_risk_context = build_cve_risk_context(finding)
 cluster_saturated = bool(
 validation_priority = build_validation_priority(
 ⋮----
@@ -5924,6 +5987,74 @@ status = "completed" if success else ("queued" if row["attempts"] < row["max_att
     def _decode(row: sqlite3.Row) -> dict[str, Any]
 ⋮----
 result = dict(row)
+```
+
+## File: app/kev_catalog.py
+```python
+KEV_CATALOG_SCHEMA = "kev-catalog-v1"
+_MAX_ENTRIES = 10000
+_CVE_RE = re.compile(r"^CVE-(\d{4})-(\d{4,10})$", re.IGNORECASE)
+⋮----
+class KevCatalogError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class KevEntry
+⋮----
+cve_id: str
+vendor_project: str
+product: str
+date_added: str
+due_date: str
+known_ransomware_campaign_use: str
+authoritative: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+@dataclass(frozen=True)
+class KevCatalog
+⋮----
+schema: str
+source_name: str
+source_verified: bool
+catalog_version: str
+date_released: str
+source_digest_sha256: str
+entries: tuple[KevEntry, ...]
+entry_count: int
+⋮----
+payload = asdict(self)
+⋮----
+def _text(value: object, *, name: str, max_len: int = 512) -> str
+⋮----
+result = value.strip()
+⋮----
+def _normalize_cve(value: object) -> str
+⋮----
+text = _text(value, name="cveID", max_len=32).upper()
+match = _CVE_RE.fullmatch(text)
+⋮----
+def _canonical_digest(document: Mapping[str, Any]) -> str
+⋮----
+encoded = json.dumps(
+⋮----
+raw_entries = document.get("vulnerabilities")
+⋮----
+declared_count = document.get("count")
+⋮----
+catalog_version = _text(
+date_released = _text(
+⋮----
+by_cve: dict[str, KevEntry] = {}
+⋮----
+cve_id = _normalize_cve(raw.get("cveID"))
+entry = KevEntry(
+existing = by_cve.get(cve_id)
+⋮----
+entries = tuple(by_cve[cve_id] for cve_id in sorted(by_cve))
+⋮----
+def authoritative_kev_ids(catalog: KevCatalog) -> frozenset[str]
+⋮----
+authoritative = authoritative_kev_ids(catalog)
 ```
 
 ## File: app/knowledge_memory.py
@@ -13196,6 +13327,10 @@ triage = max(0.0, min(1.0, float(triage_score)))
 ⋮----
 triage = 0.0
 ⋮----
+cve_risk = max(0.0, min(1.0, float(cve_risk_score)))
+⋮----
+cve_risk = 0.0
+⋮----
 score = (
 ⋮----
 score = round(max(0.0, min(1.0, score)), 4)
@@ -15144,6 +15279,35 @@ def test_cve_metadata_defaults_keep_existing_findings_compatible()
 finding = Finding(
 ```
 
+## File: tests/test_cve_risk_context.py
+```python
+def _finding(**overrides)
+⋮----
+values = {
+⋮----
+def test_risk_context_combines_structured_cve_metadata_without_confirmation()
+⋮----
+result = build_cve_risk_context(_finding())
+⋮----
+def test_scanner_kev_tag_never_becomes_authoritative_automatically()
+⋮----
+result = build_cve_risk_context(_finding(tags=["kev"]))
+⋮----
+def test_explicit_authoritative_kev_verification_is_distinct()
+⋮----
+result = build_cve_risk_context(
+⋮----
+def test_non_cve_finding_is_not_ranked_as_cve_risk()
+⋮----
+finding = _finding(
+⋮----
+result = build_cve_risk_context(finding)
+⋮----
+def test_missing_external_metrics_remains_usable_and_conservative()
+⋮----
+def test_invalid_metric_values_are_ignored()
+```
+
 ## File: tests/test_decision_audit.py
 ```python
 def _decision(seq, previous_hash, *, observation_id=None, action="scan")
@@ -15939,6 +16103,10 @@ finding = _finding(
 result = build_finding_intelligence([finding], _graph())
 row = result["findings"][0]
 priority = row["validation_priority"]
+⋮----
+def test_finding_intelligence_exposes_cve_risk_context_without_confirmation()
+⋮----
+risk = row["cve_risk_context"]
 ```
 
 ## File: tests/test_finding_lifecycle.py
@@ -18506,6 +18674,36 @@ def test_recovery_snapshot_is_bounded_and_never_reads_payloads(tmp_path)
 q = JobQueue(str(tmp_path / "recovery.sqlite3"))
 ⋮----
 snapshot = q.recovery_snapshot(limit=1)
+```
+
+## File: tests/test_kev_catalog.py
+```python
+def _document()
+⋮----
+def test_unverified_snapshot_never_creates_authoritative_kev_claim()
+⋮----
+catalog = build_kev_catalog(_document(), source_verified=False)
+⋮----
+def test_verified_snapshot_exposes_only_catalogued_cves_as_authoritative()
+⋮----
+catalog = build_kev_catalog(_document(), source_verified=True)
+⋮----
+def test_catalog_digest_is_stable_for_same_document()
+⋮----
+first = build_kev_catalog(_document())
+second = build_kev_catalog(_document())
+⋮----
+def test_declared_count_mismatch_fails_closed()
+⋮----
+document = _document()
+⋮----
+def test_invalid_cve_id_fails_closed()
+⋮----
+def test_conflicting_duplicate_cve_fails_closed()
+⋮----
+duplicate = dict(document["vulnerabilities"][0])
+⋮----
+def test_unsupported_source_cannot_be_treated_as_cisa_kev()
 ```
 
 ## File: tests/test_knowledge_memory.py
@@ -23500,6 +23698,11 @@ def test_saturated_cluster_defers_duplicate_validation()
 def test_corroborated_unknown_candidate_can_be_prioritized_without_zero_day_claim()
 ⋮----
 def test_resolved_findings_never_receive_more_validation_priority()
+⋮----
+def test_high_cve_risk_context_increases_priority_without_execution_authority()
+⋮----
+base = build_validation_priority(
+elevated = build_validation_priority(
 ```
 
 ## File: tests/test_validation_state.py

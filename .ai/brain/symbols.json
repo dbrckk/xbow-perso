@@ -1079,6 +1079,41 @@
       "line": 33
     },
     {
+      "file": "backend/app/cve_risk_context.py",
+      "language": "python",
+      "kind": "class",
+      "name": "CveRiskContext",
+      "line": 13
+    },
+    {
+      "file": "backend/app/cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "to_dict",
+      "line": 29
+    },
+    {
+      "file": "backend/app/cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_unit_interval",
+      "line": 36
+    },
+    {
+      "file": "backend/app/cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_cvss",
+      "line": 48
+    },
+    {
+      "file": "backend/app/cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "build_cve_risk_context",
+      "line": 60
+    },
+    {
       "file": "backend/app/decision_audit.py",
       "language": "python",
       "kind": "function",
@@ -1734,14 +1769,14 @@
       "language": "python",
       "kind": "function",
       "name": "build_finding_intelligence",
-      "line": 26
+      "line": 27
     },
     {
       "file": "backend/app/finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "campaign_finding_intelligence",
-      "line": 276
+      "line": 290
     },
     {
       "file": "backend/app/finding_lifecycle.py",
@@ -4178,6 +4213,83 @@
       "kind": "function",
       "name": "_decode",
       "line": 478
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "class",
+      "name": "KevCatalogError",
+      "line": 15
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "class",
+      "name": "KevEntry",
+      "line": 20
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "to_dict",
+      "line": 29
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "class",
+      "name": "KevCatalog",
+      "line": 34
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "to_dict",
+      "line": 44
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_text",
+      "line": 50
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_normalize_cve",
+      "line": 63
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_canonical_digest",
+      "line": 71
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "build_kev_catalog",
+      "line": 84
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "authoritative_kev_ids",
+      "line": 169
+    },
+    {
+      "file": "backend/app/kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "finding_has_authoritative_kev",
+      "line": 183
     },
     {
       "file": "backend/app/knowledge_memory.py",
@@ -13798,6 +13910,55 @@
       "line": 118
     },
     {
+      "file": "backend/tests/test_cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_finding",
+      "line": 9
+    },
+    {
+      "file": "backend/tests/test_cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_risk_context_combines_structured_cve_metadata_without_confirmation",
+      "line": 27
+    },
+    {
+      "file": "backend/tests/test_cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_scanner_kev_tag_never_becomes_authoritative_automatically",
+      "line": 39
+    },
+    {
+      "file": "backend/tests/test_cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_explicit_authoritative_kev_verification_is_distinct",
+      "line": 47
+    },
+    {
+      "file": "backend/tests/test_cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_non_cve_finding_is_not_ranked_as_cve_risk",
+      "line": 58
+    },
+    {
+      "file": "backend/tests/test_cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_missing_external_metrics_remains_usable_and_conservative",
+      "line": 76
+    },
+    {
+      "file": "backend/tests/test_cve_risk_context.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_invalid_metric_values_are_ignored",
+      "line": 93
+    },
+    {
       "file": "backend/tests/test_decision_audit.py",
       "language": "python",
       "kind": "function",
@@ -15063,6 +15224,13 @@
       "kind": "function",
       "name": "test_finding_intelligence_exposes_advisory_validation_priority_only",
       "line": 156
+    },
+    {
+      "file": "backend/tests/test_finding_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_finding_intelligence_exposes_cve_risk_context_without_confirmation",
+      "line": 182
     },
     {
       "file": "backend/tests/test_finding_lifecycle.py",
@@ -19445,6 +19613,62 @@
       "kind": "function",
       "name": "test_recovery_snapshot_is_bounded_and_never_reads_payloads",
       "line": 514
+    },
+    {
+      "file": "backend/tests/test_kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_document",
+      "line": 12
+    },
+    {
+      "file": "backend/tests/test_kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unverified_snapshot_never_creates_authoritative_kev_claim",
+      "line": 39
+    },
+    {
+      "file": "backend/tests/test_kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_verified_snapshot_exposes_only_catalogued_cves_as_authoritative",
+      "line": 51
+    },
+    {
+      "file": "backend/tests/test_kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_catalog_digest_is_stable_for_same_document",
+      "line": 68
+    },
+    {
+      "file": "backend/tests/test_kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_declared_count_mismatch_fails_closed",
+      "line": 76
+    },
+    {
+      "file": "backend/tests/test_kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_invalid_cve_id_fails_closed",
+      "line": 84
+    },
+    {
+      "file": "backend/tests/test_kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_conflicting_duplicate_cve_fails_closed",
+      "line": 92
+    },
+    {
+      "file": "backend/tests/test_kev_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unsupported_source_cannot_be_treated_as_cisa_kev",
+      "line": 103
     },
     {
       "file": "backend/tests/test_knowledge_memory.py",
@@ -29014,6 +29238,13 @@
       "kind": "function",
       "name": "test_resolved_findings_never_receive_more_validation_priority",
       "line": 103
+    },
+    {
+      "file": "backend/tests/test_validation_priority.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_high_cve_risk_context_increases_priority_without_execution_authority",
+      "line": 117
     },
     {
       "file": "backend/tests/test_validation_state.py",
